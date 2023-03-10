@@ -4,43 +4,107 @@
  */
 
 export type paths = {
-  /** User can authenticate themselves with their username and password */
-  "/user/authenticate": {
-    /** Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints. */
-    post: operations["userAuthentication"];
+  "/user/updateTeam": {
+    post: operations["updateUserTeamFromSwitchTeams"];
   };
-  "/getTopics": {
-    get: operations["topicsGet"];
+  "/uploadSchema": {
+    post: operations["uploadSchema"];
   };
-  "/getTopicsOnly": {
-    get: operations["topicsGetOnly"];
+  "/updateUser": {
+    post: operations["updateUser"];
   };
-  "/getTopicTeam": {
-    get: operations["topicGetTeam"];
+  "/updateTopics": {
+    post: operations["createTopicsUpdateRequest"];
   };
-  "/createTopics": {
-    post: operations["topicCreate"];
+  "/updateTeam": {
+    post: operations["updateTeam"];
   };
-  "/getAdvancedTopicConfigs": {
-    get: operations["topicAdvancedConfigGet"];
+  "/updateSyncTopics": {
+    post: operations["updateSyncTopics"];
   };
-  "/getAllTeamsSUOnly": {
-    get: operations["teamNamesGet"];
+  "/updateSyncTopicsBulk": {
+    post: operations["updateSyncTopicsBulk"];
   };
-  "/getAllTeamsSU": {
-    get: operations["teamsGet"];
+  "/updateSyncConnectors": {
+    post: operations["updateSyncConnectors"];
   };
-  "/getEnvs": {
-    get: operations["environmentsGet"];
+  "/updateSyncBackTopics": {
+    post: operations["updateSyncBackTopics"];
   };
-  "/getEnvsBaseClusterFilteredForTeam": {
-    get: operations["envsBaseClusterFilteredForTeamGet"];
+  "/updateSyncBackAcls": {
+    post: operations["updateSyncBackAcls"];
   };
-  "/getClusterInfoFromEnv": {
-    get: operations["clusterInfoFromEnvironmentGet"];
+  "/updateSyncAcls": {
+    post: operations["updateSyncAcls"];
   };
-  "/getAclRequestsForApprover": {
-    get: operations["getAclRequestsForApprover"];
+  "/updateProfile": {
+    post: operations["updateProfile"];
+  };
+  "/updatePermissions": {
+    post: operations["updatePermissions"];
+  };
+  "/updateKwCustomProperty": {
+    post: operations["updateKwCustomProperty"];
+  };
+  "/udpateTenant": {
+    post: operations["udpateTenant"];
+  };
+  "/udpateTenantExtension": {
+    post: operations["udpateTenantExtension"];
+  };
+  "/sendMessageToAdmin": {
+    post: operations["sendMessageToAdmin"];
+  };
+  "/saveTopicDocumentation": {
+    post: operations["saveTopicDocumentation"];
+  };
+  "/saveConnectorDocumentation": {
+    post: operations["saveConnectorDocumentation"];
+  };
+  "/resetPassword": {
+    post: operations["resetPassword"];
+  };
+  "/request/decline": {
+    post: operations["declineRequest"];
+  };
+  "/request/approve": {
+    post: operations["approveRequest"];
+  };
+  "/registerUser": {
+    post: operations["registerUser"];
+  };
+  "/registerUserSaas": {
+    post: operations["registerUserSaas"];
+  };
+  "/promote/schema": {
+    post: operations["promoteSchema"];
+  };
+  "/logout": {
+    post: operations["logout"];
+  };
+  "/execTopicRequests": {
+    post: operations["approveTopicRequests"];
+  };
+  "/execTopicRequestsDecline": {
+    post: operations["declineTopicRequests"];
+  };
+  "/execSchemaRequests": {
+    post: operations["execSchemaRequests"];
+  };
+  "/execSchemaRequestsDecline": {
+    post: operations["execSchemaRequestsDecline"];
+  };
+  "/execNewUserRequestDecline": {
+    post: operations["declineNewUserRequests"];
+  };
+  "/execNewUserRequestApprove": {
+    post: operations["approveNewUserRequests"];
+  };
+  "/execConnectorRequests": {
+    post: operations["approveTopicRequests_1"];
+  };
+  "/execConnectorRequestsDecline": {
+    post: operations["declineConnectorRequests"];
   };
   "/execAclRequest": {
     post: operations["approveAclRequests"];
@@ -48,51 +112,368 @@ export type paths = {
   "/execAclRequestDecline": {
     post: operations["declineAclRequests"];
   };
+  "/deleteUserRequest": {
+    post: operations["deleteUser"];
+  };
+  "/deleteTopicRequests": {
+    post: operations["deleteTopicRequests"];
+  };
+  "/deleteTenant": {
+    post: operations["deleteTenant"];
+  };
+  "/deleteTeamRequest": {
+    post: operations["deleteTeam"];
+  };
+  "/deleteSchemaRequests": {
+    post: operations["deleteSchemaRequests"];
+  };
+  "/deleteRole": {
+    post: operations["deleteRole"];
+  };
+  "/deleteEnvironmentRequest": {
+    post: operations["deleteEnvironment"];
+  };
+  "/deleteConnectorRequests": {
+    post: operations["deleteConnectorRequests"];
+  };
+  "/deleteCluster": {
+    post: operations["deleteCluster"];
+  };
+  "/deleteAclRequests": {
+    post: operations["deleteAclRequests"];
+  };
+  "/createTopics": {
+    post: operations["createTopicsCreateRequest"];
+  };
+  "/createTopicDeleteRequest": {
+    post: operations["createTopicDeleteRequest"];
+  };
+  "/createDeleteAclSubscriptionRequest": {
+    post: operations["deleteAclSubscriptionRequest"];
+  };
+  "/createConnector": {
+    post: operations["createConnectorRequest"];
+  };
+  "/createConnectorDeleteRequest": {
+    post: operations["createConnectorDeleteRequest"];
+  };
+  "/createClaimTopicRequest": {
+    post: operations["createClaimTopicRequest"];
+  };
+  "/createClaimConnectorRequest": {
+    post: operations["createClaimConnectorRequest"];
+  };
   "/createAcl": {
-    post: operations["createAclRequest"];
+    post: operations["createAcl"];
   };
-  "/getSchemaRegEnvs": {
-    get: operations["schemaRegEnvsGet"];
+  "/chPwd": {
+    post: operations["changePwd"];
   };
-  "/uploadSchema": {
-    post: operations["schemaUpload"];
+  "/addTenantId": {
+    post: operations["addTenantId"];
   };
-  "/getTopicRequestsForApprover": {
-    get: operations["getTopicRequestsForApprover"];
+  "/addRoleId": {
+    post: operations["addRoleId"];
   };
-  "/getAuth": {
-    get: operations["getAuth"];
+  "/addNewUser": {
+    post: operations["addNewUser"];
   };
-  "/request/approve": {
-    post: operations["approveRequest"];
+  "/addNewTeam": {
+    post: operations["addNewTeam"];
   };
-  "/request/decline": {
-    post: operations["declineRequest"];
+  "/addNewEnv": {
+    post: operations["addNewEnv"];
+  };
+  "/addNewCluster": {
+    post: operations["addNewCluster"];
+  };
+  "/user/{userId}/switchTeamsList": {
+    get: operations["getSwitchTeams"];
+  };
+  "/testClusterApiConnection": {
+    get: operations["testClusterApiConnection"];
+  };
+  "/shutdownContext": {
+    get: operations["shutdownApp"];
+  };
+  "/showUserList": {
+    get: operations["showUsers"];
+  };
+  "/resetMemoryCache/{tenantName}/{entityType}/{operationType}": {
+    get: operations["resetMemoryCache"];
+  };
+  "/resetCache": {
+    get: operations["resetCache"];
   };
   "/requests/statistics": {
     get: operations["getRequestStatistics"];
   };
+  "/getUserInfoFromRegistrationId": {
+    get: operations["getRegistrationInfoFromId"];
+  };
+  "/getUserDetails": {
+    get: operations["getUserDetails"];
+  };
+  "/getUpdateEnvStatus": {
+    get: operations["getUpdateEnvStatus"];
+  };
+  "/getTopics": {
+    get: operations["getTopics"];
+  };
+  "/getTopicsRowView": {
+    get: operations["getTopicsRowView"];
+  };
+  "/getTopicsOnly": {
+    get: operations["getTopicsOnly"];
+  };
+  "/getTopicsCountPerEnv": {
+    get: operations["getTopicsCountPerEnv"];
+  };
+  "/getTopicTeam": {
+    get: operations["getTopicTeam"];
+  };
+  "/getTopicRequests": {
+    get: operations["getTopicRequests"];
+  };
+  "/getTopicRequestsForApprover": {
+    get: operations["getTopicRequestsForApprover"];
+  };
+  "/getTopicEvents": {
+    get: operations["getTopicEvents"];
+  };
+  "/getTopicDetailsPerEnv": {
+    get: operations["getTopicDetailsPerEnv"];
+  };
+  "/getTenants": {
+    get: operations["getTenants"];
+  };
+  "/getTenantsInfo": {
+    get: operations["getTenantsInfo"];
+  };
+  "/getTeamsOverview": {
+    get: operations["getTeamsOverview"];
+  };
+  "/getTeamDetails": {
+    get: operations["getTeamDetails"];
+  };
+  "/getSyncTopics": {
+    get: operations["getSyncTopics"];
+  };
+  "/getSyncEnv": {
+    get: operations["getSyncEnv"];
+  };
+  "/getSyncConnectors": {
+    get: operations["getSyncTopics_1"];
+  };
+  "/getSyncConnectorsEnv": {
+    get: operations["getSyncConnectorsEnv"];
+  };
+  "/getSyncBackAcls": {
+    get: operations["getSyncBackAcls"];
+  };
+  "/getSyncAcls": {
+    get: operations["getSyncAcls"];
+  };
+  "/getStandardEnvNames": {
+    get: operations["getStandardEnvNames"];
+  };
+  "/getSchemaRequests": {
+    get: operations["getSchemaRequests"];
+  };
   "/getSchemaRequestsForApprover": {
     get: operations["getSchemaRequestsForApprover"];
+  };
+  "/getSchemaRegEnvs": {
+    get: operations["getSchemaRegEnvs"];
+  };
+  "/getSchemaOfTopic": {
+    get: operations["getSchemaOfTopic"];
+  };
+  "/getRoles": {
+    get: operations["getRoles"];
+  };
+  "/getRolesFromDb": {
+    get: operations["getRolesFromDb"];
+  };
+  "/getRequestTypeStatuses": {
+    get: operations["getRequestTypeStatuses"];
+  };
+  "/getPermissions": {
+    get: operations["getPermissions"];
+  };
+  "/getPermissionDescriptions": {
+    get: operations["getPermissionDescriptions"];
+  };
+  "/getNewUserRequests": {
+    get: operations["getNewUserRequests"];
+  };
+  "/getMyTenantInfo": {
+    get: operations["getMyTenantInfo"];
+  };
+  "/getMyProfileInfo": {
+    get: operations["getMyProfileInfo"];
+  };
+  "/getKwReport": {
+    get: operations["getKwReport"];
+  };
+  "/getKwPubkey": {
+    get: operations["getKwPubkey"];
+  };
+  "/getKafkaProtocols": {
+    get: operations["getSupportedKafkaProtocols"];
+  };
+  "/getKafkaConnectEnvs": {
+    get: operations["getKafkaConnectEnvs"];
+  };
+  "/getExtensionPeriods": {
+    get: operations["getExtensionPeriods"];
+  };
+  "/getEnvs": {
+    get: operations["getEnvs"];
+  };
+  "/getEnvsPaginated": {
+    get: operations["getEnvsPaginated"];
+  };
+  "/getEnvsForSchemaRequests": {
+    get: operations["getRequestForSchemas"];
+  };
+  "/getEnvsBaseCluster": {
+    get: operations["getEnvsBaseCluster"];
+  };
+  "/getEnvsBaseClusterFilteredForTeam": {
+    get: operations["getEnvsBaseClusterFilteredForTeam"];
+  };
+  "/getEnvParams": {
+    get: operations["getEnvParams"];
+  };
+  "/getEnvDetails": {
+    get: operations["getEnvDetails"];
+  };
+  "/getDbAuth": {
+    get: operations["getDbAuth"];
+  };
+  "/getDashboardStats": {
+    get: operations["getDashboardStats"];
+  };
+  "/getConsumerOffsets": {
+    get: operations["getConsumerOffsets"];
+  };
+  "/getConnectors": {
+    get: operations["getConnectors"];
+  };
+  "/getConnectorRequests": {
+    get: operations["getConnectorRequests"];
+  };
+  "/getConnectorRequestsForApproval": {
+    get: operations["getCreatedConnectorRequests"];
+  };
+  "/getConnectorOverview": {
+    get: operations["getConnectorOverview"];
+  };
+  "/getConnectorDetails": {
+    get: operations["getConnectorDetails"];
+  };
+  "/getConnectorDetailsPerEnv": {
+    get: operations["getConnectorDetailsPerEnv"];
+  };
+  "/getClusters": {
+    get: operations["getClusters"];
+  };
+  "/getClustersPaginated": {
+    get: operations["getClustersPaginated"];
+  };
+  "/getClusterInfoFromEnv": {
+    get: operations["getClusterInfoFromEnv"];
+  };
+  "/getClusterDetails": {
+    get: operations["getClusterDetails"];
+  };
+  "/getBrokerTopMetrics": {
+    get: operations["getBrokerTopMetrics"];
+  };
+  "/getBasicInfo": {
+    get: operations["getBasicInfo"];
+  };
+  "/getAuth": {
+    get: operations["getAuth"];
+  };
+  "/getAllTeamsSU": {
+    get: operations["getAllTeamsSU"];
+  };
+  "/getAllTeamsSUOnly": {
+    get: operations["getAllTeamsSUOnly"];
+  };
+  "/getAllTeamsSUFromRegisterUsers": {
+    get: operations["getAllTeamsSUFromRegisterUsers"];
+  };
+  "/getAllServerEditableConfig": {
+    get: operations["getAllEditableProps"];
+  };
+  "/getAllServerConfig": {
+    get: operations["getAllProperties"];
+  };
+  "/getAivenServiceAccounts": {
+    get: operations["getAivenServiceAccounts"];
+  };
+  "/getAivenServiceAccount": {
+    get: operations["getAivenServiceAccountDetails"];
+  };
+  "/getAdvancedTopicConfigs": {
+    get: operations["getAdvancedTopicConfigs"];
+  };
+  "/getActivityLogPerEnv": {
+    get: operations["showActivityLog"];
+  };
+  "/getActivityLogForTeamOverview": {
+    get: operations["getActivityLogForTeamOverview"];
+  };
+  "/getActivationInfo": {
+    get: operations["getActivationInfo"];
+  };
+  "/getAcls": {
+    get: operations["getAcls"];
+  };
+  "/getAclsCountPerEnv": {
+    get: operations["getAclsCountPerEnv"];
+  };
+  "/getAclRequests": {
+    get: operations["getAclRequests"];
+  };
+  "/getAclRequestsForApprover": {
+    get: operations["getAclRequestsForApprover"];
+  };
+  "/getAclCommands": {
+    get: operations["getAclCommand"];
   };
 };
 
 export type components = {
   schemas: {
-    CommonError: {
-      /**
-       * message
-       * @description Description for user why a certain operation failed
-       */
-      message?: string;
+    UserInfoModel: {
+      username: string;
+      userPassword?: string;
+      team?: string;
+      /** Format: int32 */
+      teamId?: number;
+      role?: string;
+      fullname: string;
+      mailid?: string;
+      switchTeams?: boolean;
+      switchAllowedTeamIds?: number[];
+      switchAllowedTeamNames?: string[];
+      tenantName?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      totalNoPages?: string;
+      allPageNos?: string[];
     };
-    /** GenericApiResponse */
-    GenericApiResponse: {
+    ApiResponse: {
       /** @enum {string} */
       status?:
         | "100 CONTINUE"
         | "101 SWITCHING_PROTOCOLS"
         | "102 PROCESSING"
+        | "103 EARLY_HINTS"
         | "103 CHECKPOINT"
         | "200 OK"
         | "201 CREATED"
@@ -158,189 +539,99 @@ export type components = {
         | "509 BANDWIDTH_LIMIT_EXCEEDED"
         | "510 NOT_EXTENDED"
         | "511 NETWORK_AUTHENTICATION_REQUIRED";
-      /**
-       * Timestamp
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
-       */
+      /** Format: date-time */
       timestamp?: string;
       message?: string;
       debugMessage?: string;
-      result?: string;
+      result: string;
       data?: { [key: string]: unknown };
     };
-    /**
-     * Type of request operation
-     * @example UPDATE
-     * @enum {string}
-     */
-    RequestOperationType: "CREATE" | "UPDATE" | "DELETE" | "CLAIM" | "PROMOTE";
-    /**
-     * Status of a request
-     * @example CREATED
-     * @enum {string}
-     */
-    RequestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-    UserAuthenticationRequest: {
-      /**
-       * username
-       * @description Username
-       * @example john.doe@klaw-project.io
-       */
-      username: string;
-      /**
-       * password
-       * @example password123
-       */
-      password: string;
+    SchemaRequestModel: {
+      /** Format: int32 */
+      req_no?: number;
+      schemafull: string;
+      remarks?: string;
+      topicname?: string;
+      environment?: string;
+      environmentName?: string;
+      schemaversion?: string;
+      teamname?: string;
+      /** Format: int32 */
+      teamId?: number;
+      appname?: string;
+      username?: string;
+      /** Format: date-time */
+      requesttime?: string;
+      requesttimestring?: string;
+      /** @enum {string} */
+      requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** @enum {string} */
+      requestOperationType?:
+        | "CREATE"
+        | "UPDATE"
+        | "PROMOTE"
+        | "CLAIM"
+        | "DELETE";
+      forceRegister?: boolean;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      approvingTeamDetails?: string;
+      totalNoPages?: string;
+      allPageNos?: string[];
+      currentPage?: string;
+      deletable?: boolean;
+      editable?: boolean;
     };
-    UserAuthenticationResponse: {
-      /**
-       * token
-       * @description Klaw authentication token
-       * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-       */
-      token: string;
-      /**
-       * Token type
-       * @example JWT
-       * @enum {string}
-       */
-      tokenType: "JWT";
+    TopicConfigEntry: {
+      configKey?: string;
+      configValue?: string;
     };
-    TopicsGetResponse: components["schemas"]["TopicInfo"][][];
-    /**
-     * @example [
-     *   "myTopic",
-     *   "otherTopic"
-     * ]
-     */
-    TopicsGetOnlyResponse: string[];
-    /**
-     * @example {
-     *   "team": "Team A"
-     * }
-     */
-    TopicGetTeamResponse: {
-      team: string;
-    };
-    TopicInfo: {
-      /**
-       * Topic identifier
-       * Format: int32
-       * @description This identifier is used in Klaw metadata store to ensure uniquenes.
-       * @example 1010
-       */
-      topicid: number;
-      /**
-       * Total number of pages
-       * @example 1
-       */
-      totalNoPages: string;
-      /**
-       * Current page number
-       * @example 1
-       */
-      currentPage: string;
-      /**
-       * All page numbers
-       * @description List of all page numbers
-       * @example [
-       *   "1"
-       * ]
-       */
-      allPageNos: string[];
-      /**
-       * Topic name
-       * @description Kafka Topic name
-       * @example topicName
-       */
-      topicName: string;
-      /**
-       * Number of partitions
-       * Format: int32
-       * @description Topic partition count
-       * @example 10
-       */
-      noOfPartitions: number;
-      /**
-       * Description
-       * @description Kafka topic description stored in Klaw metadata.
-       * @example Main PostgreSQL change data capture stream
-       */
+    TopicUpdateRequestModel: {
+      topicname: string;
+      environment: string;
+      /** Format: int32 */
+      topicpartitions: number;
+      teamname?: string;
+      remarks?: string;
       description: string;
-      /**
-       * Documentation
-       * @deprecated
-       */
-      documentation: string | null;
-      /**
-       * Number of replicas
-       * @description Topic replica count
-       * @example 2
-       */
-      noOfReplicas?: string;
-      /**
-       * Sequence
-       * @deprecated
-       */
+      approvingTeamId?: string;
+      replicationfactor: string;
+      environmentName?: string;
+      /** Format: int32 */
+      topicid?: number;
+      advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
+      appname?: string;
+      /** @enum {string} */
+      requestOperationType?:
+        | "CREATE"
+        | "UPDATE"
+        | "PROMOTE"
+        | "CLAIM"
+        | "DELETE";
+      /** @enum {string} */
+      requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      requestor?: string;
+      /** Format: date-time */
+      requesttime?: string;
+      requesttimestring?: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
       sequence?: string;
-      /**
-       * Team name
-       * @description Topic owner team name
-       * @example application-X-developers
-       */
-      teamname: string;
-      /**
-       * cluster
-       * @deprecated
-       * @example 1
-       */
-      cluster: string;
-      /**
-       * Cluster identifier
-       * @deprecated
-       */
-      clusterId: string | null;
-      /**
-       * Environments list
-       * @description List of environments where the topic is present.
-       * @example [
-       *   "DEV",
-       *   "TEST"
-       * ]
-       */
-      environmentsList: string[];
-      /**
-       * Show edit topic
-       * @description Describes if the user should see topic edit action.
-       * @example false
-       */
-      showEditTopic: boolean;
-      /**
-       * Show delete topic
-       * @description Describes if the user should see topic delete action.
-       * @example true
-       */
-      showDeleteTopic: boolean;
-      /**
-       * Topic deletable
-       * @description Describes if the topic can be deleted.
-       * @example true
-       */
-      topicDeletable: boolean;
-    } & {
-      noOfReplcias: unknown;
+      username?: string;
+      totalNoPages?: string;
+      approvingTeamDetails?: string;
+      otherParams?: string;
+      /** Format: int32 */
+      teamId?: number;
+      allPageNos?: string[];
+      possibleTeams?: string[];
+      currentPage?: string;
+      deletable?: boolean;
+      editable?: boolean;
     };
-    /**
-     * @example [
-     *   "All teams",
-     *   "Team A",
-     *   "Team B"
-     * ]
-     */
-    TeamNamesGetResponse: string[];
-    TeamsGetResponse: {
+    TeamModel: {
       teamname: string;
       teammail?: string;
       teamphone: string;
@@ -354,680 +645,110 @@ export type components = {
       tenantName?: string;
       envList?: string[];
     };
-    Environment: {
-      /**
-       * id
-       * @description Environment identifier
-       * @example 1
-       */
-      id: string;
-      /**
-       * Name
-       * @description Environment name
-       * @example DEV
-       */
-      name: string;
-      /**
-       * Type
-       * @description Environment type
-       * @enum {string}
-       */
-      type: "kafka" | "kafkaconnect" | "schema";
-      /**
-       * TenantId
-       * @description Tenant identifier
-       * @example 101
-       */
-      tenantId: number;
-      /**
-       * Topic prefix
-       * @description Topic name prefix
-       * @example test-
-       */
-      topicprefix: string | null;
-      /**
-       * Topic suffix
-       * @description Topic name suffix
-       * @example -test
-       */
-      topicsuffix: string | null;
-      /**
-       * Cluster identifier
-       * @example 1
-       */
-      clusterId: number;
-      /**
-       * Tenant name
-       * @example default
-       */
-      tenantName: string;
-      /**
-       * Cluster name
-       * @example DEV
-       */
-      clusterName: string;
-      /**
-       * Environment status
-       * @example ONLINE
-       * @enum {string}
-       */
-      envStatus: "ONLINE" | "OFFLINE";
-      /**
-       * Other parameters
-       * @description Topic configuration parameters
-       * @example default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
-       */
-      otherParams: string;
-      /**
-       * Default partitions
-       * @example 1
-       */
-      defaultPartitions: string | null;
-      /**
-       * Maximum partitions
-       * @example 2
-       */
-      maxPartitions: string | null;
-      /**
-       * Default replication factor
-       * @example 1
-       */
-      defaultReplicationFactor: string | null;
-      /**
-       * Maximum replication factor
-       * @example 2
-       */
-      maxReplicationFactor: string | null;
-      /**
-       * Show delete environment
-       * @description Describes if the user should see environment delete action.
-       * @example true
-       */
-      showDeleteEnv: boolean;
-      /**
-       * Total number of pages
-       * @example 1
-       */
-      totalNoPages: string;
-      /**
-       * All page numbers
-       * @description List of all page numbers
-       * @example [
-       *   "1"
-       * ]
-       */
-      allPageNos: string[];
-    };
-    /**
-     * TopicAdvancedConfigGetResponse
-     * @example {
-     *   "CLEANUP_POLICY": "cleanup.policy",
-     *   "COMPRESSION_TYPE": "compression.type",
-     *   "DELETE_RETENTION_MS": "delete.retention.ms",
-     *   "FILE_DELETE_DELAY_MS": "file.delete.delay.ms",
-     *   "FLUSH_MESSAGES": "flush.messages",
-     *   "FLUSH_MS": "flush.ms",
-     *   "FOLLOWER_REPLICATION_THROTTLED_REPLICAS": "follower.replication.throttled.replicas",
-     *   "INDEX_INTERVAL_BYTES": "index.interval.bytes",
-     *   "LEADER_REPLICATION_THROTTLED_REPLICAS": "leader.replication.throttled.replicas",
-     *   "MAX_COMPACTION_LAG_MS": "max.compaction.lag.ms",
-     *   "MAX_MESSAGE_BYTES": "max.message.bytes",
-     *   "MESSAGE_DOWNCONVERSION_ENABLE": "message.downconversion.enable",
-     *   "MESSAGE_FORMAT_VERSION": "message.format.version",
-     *   "MESSAGE_TIMESTAMP_DIFFERENCE_MAX_MS": "message.timestamp.difference.max.ms",
-     *   "MESSAGE_TIMESTAMP_TYPE": "message.timestamp.type",
-     *   "MIN_CLEANABLE_DIRTY_RATIO": "min.cleanable.dirty.ratio",
-     *   "MIN_COMPACTION_LAG_MS": "min.compaction.lag.ms",
-     *   "MIN_INSYNC_REPLICAS": "min.insync.replicas",
-     *   "PREALLOCATE": "preallocate",
-     *   "RETENTION_BYTES": "retention.bytes",
-     *   "RETENTION_MS": "retention.ms",
-     *   "SEGMENT_BYTES": "segment.bytes",
-     *   "SEGMENT_INDEX_BYTES": "segment.index.bytes",
-     *   "SEGMENT_JITTER_MS": "segment.jitter.ms",
-     *   "SEGMENT_MS": "segment.ms",
-     *   "UNCLEAN_LEADER_ELECTION_ENABLE": "unclean.leader.election.enable"
-     * }
-     */
-    topicAdvancedConfigGetResponse: { [key: string]: string };
-    /**
-     * @description Flavor of Kafka cluster (Aiven or other)
-     * @example {
-     *   "aivenCluster": "false"
-     * }
-     */
-    environmentGetClusterInfoResponse: {
-      /** @enum {string} */
-      aivenCluster: "true" | "false";
-    };
-    /** TopicCreateRequest */
-    topicCreateRequest: {
-      /**
-       * Topic name
-       * @description Kafka Topic name
-       * @example topicName
-       */
-      topicname: string;
-      environment: string;
+    SyncTopicUpdates: {
+      sequence?: string;
+      req_no?: string;
+      topicName?: string;
       /** Format: int32 */
-      topicpartitions: number;
-      /**
-       * Team name
-       * @example Marketing
-       */
-      teamname?: string;
-      /**
-       * Remarks
-       * @description Message for the approval
-       */
-      remarks?: string;
-      /** Description */
-      description: string;
-      /**
-       * Replication factor
-       * @example 1
-       */
-      replicationfactor: string;
-      /**
-       * Environment name
-       * @example DEV
-       */
-      environmentName?: string;
-      /**
-       * Topic identifier
-       * Format: int32
-       * @description This identifier is used in Klaw metadata store to ensure uniquenes.
-       * @example 1010
-       */
-      topicid?: number;
-      advancedTopicConfigEntries?: {
-        configKey?: string;
-        configValue?: string;
-      }[];
-      /** App name */
-      appname?: string;
-      requestOperationType?: components["schemas"]["RequestOperationType"];
-      /** Requestor */
-      requestor?: string;
-      /**
-       * Request time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
-       */
-      requesttime?: string;
-      /** Request time string */
-      requesttimestring?: string;
-      requestStatus?: components["schemas"]["RequestStatus"];
-      /**
-       * Approver
-       * @example jon.snow@klaw-project.io
-       */
-      approver?: string;
-      /**
-       * Approving time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
-       */
-      approvingtime?: string;
-      /**
-       * Sequence
-       * @deprecated
-       */
+      partitions?: number;
+      replicationFactor?: string;
+      teamSelected?: string;
+      envSelected?: string;
+    };
+    SyncTopicsBulk: {
+      topicNames?: string[];
+      sourceEnv?: string;
+      selectedTeam?: string;
+      typeOfSync?: string;
+      topicDetails?: { [key: string]: unknown }[];
+      topicSearchFilter?: string;
+    };
+    SyncConnectorUpdates: {
       sequence?: string;
-      /**
-       * Username
-       * @example jon.snow@klaw-project.io
-       */
-      username?: string;
-      /**
-       * Total number of pages
-       * @example 1
-       */
-      totalNoPages?: string;
-      approvingTeamDetails?: string;
-      otherParams?: string;
-      /**
-       * Team identifier
-       * Format: int32
-       * @example 1010
-       */
-      teamId?: number;
-      /**
-       * All page numbers
-       * @description List of all page numbers
-       * @example [
-       *   "1"
-       * ]
-       */
-      allPageNos?: string[];
-      /** Possible teams */
-      possibleTeams?: string[];
-      /**
-       * Current page number
-       * @example 1
-       */
-      currentPage?: string;
+      req_no?: string;
+      connectorName?: string;
+      teamSelected?: string;
+      envSelected?: string;
     };
-    aclRequest: {
-      /**
-       * @description A comment on the request for the approver.
-       * @example Hello, thank you.
-       */
-      remarks?: string;
-      /**
-       * @description This is mandatory if acl type is consumer
-       * @example Group-one
-       */
-      consumergroup?: string;
-      /**
-       * @example [
-       *   "35.239.43.144",
-       *   "35.239.43.145"
-       * ]
-       */
-      acl_ip?: string[];
-      /**
-       * @example [
-       *   "username",
-       *   "username-two"
-       * ]
-       */
-      acl_ssl?: string[];
-      /**
-       * @description If aclType is consumer, this field can only be LITERAL. If aclType is producer, this field can be LITERAL or PREFIXED
-       * @example LITERAL
-       * @enum {string}
-       */
-      aclPatternType: "LITERAL" | "PREFIXED";
-      /**
-       * @description Only available if aclPatternType is LITERAL
-       * @example id-123
-       */
-      transactionalId?: string;
-      /**
-       * unique identifier
-       * Format: int32
-       * @example 100
-       */
-      req_no?: number;
-      /**
-       * @description Only topics available in chosen environment are allowed
-       * @example myTopic
-       */
-      topicname: string;
-      /**
-       * @description ID of environment
-       * @example 1
-       */
-      environment: string;
-      /**
-       * @description Name of environment
-       * @example DEV
-       */
-      environmentName?: string;
-      /** @example Ospo */
-      teamname: string;
-      /**
-       * Format: int32
-       * @example 1
-       */
-      teamId?: number;
-      /**
-       * Format: int32
-       * @example 1
-       */
-      requestingteam?: number;
-      /** @example Ospo */
-      requestingTeamName?: string;
-      /** @example App */
-      appname?: string;
-      /**
-       * @example PRODUCER
-       * @enum {string}
-       */
-      aclType: "PRODUCER" | "CONSUMER";
-      /** @example User */
-      username?: string;
-      /**
-       * Format: date-time
-       * @example 2018-03-20T09:12:28Z
-       */
-      requesttime?: string;
-      /** @example 10-11-2020 10:45:30 */
-      requesttimestring?: string;
-      requestStatus?: components["schemas"]["RequestStatus"];
-      requestOperationType?: components["schemas"]["RequestOperationType"];
-      approver?: string;
-      /**
-       * Format: date-time
-       * @example 2018-03-20T09:12:28Z
-       */
-      approvingtime?: string;
-      /**
-       * @example PRINCIPAL
-       * @enum {string}
-       */
-      aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
-      /**
-       * @description Other possible values GROUP, CLUSTER
-       * @example TOPIC
-       */
-      aclResourceType?: string;
-      /** @example 1 */
-      currentPage?: string;
-      otherParams?: string;
-      /** @example 10 */
-      totalNoPages?: string;
-      /**
-       * @example [
-       *   "1",
-       *   "2"
-       * ]
-       */
-      allPageNos?: string[];
-      /** @example DevRel */
-      approvingTeamDetails?: string;
-      editable?: boolean;
-      deletable?: boolean;
+    SyncBackTopics: {
+      topicIds?: string[];
+      sourceEnv?: string;
+      targetEnv?: string;
+      typeOfSync?: string;
     };
-    /** SchemaRequest */
-    SchemaRequest: {
-      /**
-       * unique identifier
-       * Format: int32
-       */
-      req_no: number;
-      /**
-       * Topic name
-       * @description Kafka Topic name
-       * @example testtopic
-       */
-      topicname: string;
-      /**
-       * environment
-       * @description Id of the environment
-       * @example 3
-       */
-      environment: string;
-      /**
-       * environmentName
-       * @description Name of the environment
-       * @example DEV
-       */
-      environmentName: string;
-      /**
-       * schemaversion
-       * @description SchemaRequest version
-       * @example 1.0
-       */
-      schemaversion: string;
-      /**
-       * Team name
-       * @description Topic owner team name
-       * @example Infra
-       */
-      teamname: string;
-      /**
-       * Team ID
-       * Format: int32
-       * @description Team identifier
-       * @example 1010
-       */
-      teamId: number;
-      /**
-       * App name
-       * @example App
-       */
-      appname: string;
-      /**
-       * schemafull
-       * @description A valid json/avro schema
-       * @example {
-       *   "doc": "exampleTopic",
-       *   "fields": [
-       *     {
-       *       "default": "123456",
-       *        "doc": "test",
-       *       "name": "test",
-       *       "namespace": "test",
-       *       "type": "string"
-       *  }
-       *   ],
-       *   "name": "exampleTopic",
-       *   "namespace": "exampleTopic",
-       *   "type": "record"
-       * }
-       */
-      schemafull: string;
-      /**
-       * username
-       * @description Username
-       * @example jon.snow@klaw-project.io
-       */
-      username: string;
-      /**
-       * Request time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
-       */
-      requesttime: string;
-      /**
-       * Request time string representation
-       * @example 28-Dec-2022 14:54:57
-       */
-      requesttimestring: string;
-      requestStatus: components["schemas"]["RequestStatus"];
-      requestOperationType: components["schemas"]["RequestOperationType"];
-      forceRegister?: boolean;
-      /**
-       * Remarks
-       * @description SchemaRequest specific comment
-       * @example Please approve
-       */
-      remarks?: string;
-      /** Approver */
-      approver?: string;
-      /**
-       * Approving time
-       * Format: date-time
-       * @example 2022-11-13T20:20:39.000Z
-       */
-      approvingtime?: string;
-      /**
-       * Approving team details
-       * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
-       */
-      approvingTeamDetails: string;
-      /**
-       * Total number of pages
-       * @example 3
-       */
-      totalNoPages?: string;
-      /**
-       * All page numbers
-       * @description List of all page numbers
-       * @example [
-       *   "1",
-       *   "2",
-       *   "3"
-       * ]
-       */
-      allPageNos?: string[];
-      /**
-       * Current page number
-       * @example 2
-       */
-      currentPage?: string;
-      editable: boolean;
-      deletable: boolean;
+    SyncBackAcls: {
+      aclIds?: string[];
+      sourceEnv?: string;
+      targetEnv?: string;
+      typeOfSync?: string;
     };
-    TopicRequest: {
-      /**
-       * Topic name
-       * @description Kafka Topic name
-       * @example topicName
-       */
-      topicname: string;
-      /**
-       * Environment
-       * @description ID of environment
-       * @example 1
-       */
-      environment: string;
-      /**
-       * Topic partitions
-       * Format: int32
-       */
-      topicpartitions: number;
-      /**
-       * Team name
-       * @description Topic owner team name
-       * @example application-X-developers
-       */
-      teamname: string;
-      /**
-       * Remarks
-       * @description Message for the approval
-       */
-      remarks?: string;
-      /**
-       * Description
-       * @description Kafka topic description stored in Klaw metadata.
-       * @example Main PostgreSQL change data capture stream
-       */
+    SyncAclUpdates: {
+      sequence?: string;
+      req_no?: string;
+      topicName?: string;
+      teamSelected?: string;
+      consumerGroup?: string;
+      aclIp?: string;
+      aclSsl?: string;
+      aclType?: string;
+      envSelected?: string;
+    };
+    KwRolesPermissionsModel: {
+      /** Format: int32 */
+      id?: number;
+      roleId?: string;
+      permission?: string;
       description?: string;
-      /**
-       * Replication factor
-       * @example 1
-       */
-      replicationfactor: string;
-      /**
-       * Environment name
-       * @example DEV
-       */
-      environmentName: string;
-      /**
-       * Topic identifier
-       * Format: int32
-       * @description This identifier is used in Klaw metadata store to ensure uniquenes.
-       * @example 1010
-       */
-      topicid: number;
-      /** Advanced topic configuration entries */
-      advancedTopicConfigEntries?: {
-        configKey?: string;
-        configValue?: string;
-      }[];
-      /** App name */
-      appname?: string;
-      requestOperationType: components["schemas"]["RequestOperationType"];
-      /** Requestor */
-      requestor: string;
-      /**
-       * Request time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
-       */
-      requesttime: string;
-      /** Request time string */
-      requesttimestring: string;
-      requestStatus: components["schemas"]["RequestStatus"];
-      /**
-       * Approver
-       * @example jon.snow@klaw-project.io
-       */
-      approver?: string;
-      /**
-       * Approving time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
-       */
-      approvingtime?: string;
-      /**
-       * Sequence
-       * @deprecated
-       */
-      sequence?: string;
-      /**
-       * Username
-       * @description Username
-       * @example john.doe@klaw-project.io
-       */
-      username?: string;
-      /**
-       * Total number of pages
-       * @example 1
-       */
-      totalNoPages?: string;
-      /**
-       * Approving team details
-       * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
-       */
-      approvingTeamDetails: string;
-      /**
-       * Other parameters
-       * @description Topic configuration parameters
-       * @example default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
-       */
-      otherParams?: string;
-      /**
-       * Team identifier
-       * Format: int32
-       * @example 1010
-       */
-      teamId: number;
-      /**
-       * All page numbers
-       * @description List of all page numbers
-       * @example [
-       *   "1"
-       * ]
-       */
-      allPageNos?: string[];
-      /** Possible teams */
-      possibleTeams?: string[];
-      /**
-       * Current page number
-       * @example 1
-       */
-      currentPage?: string;
-      /** Topic can be edited */
-      editable: boolean;
-      /** Topic can be deleted */
-      deletable: boolean;
+      rolePermission?: string;
+      permissionEnabled?: string;
     };
-    /** GetAuthResponse */
-    GetAuthResponse: {
-      /**
-       * Schema Notifications
-       * @description Number of schema requests waiting for approval
-       * @example 6
-       */
-      notificationsSchemas: string;
-      /**
-       * Connector Notifications
-       * @description Number of connector requests waiting for approval
-       * @example 2
-       */
-      notificationsConnectors: string;
-      /**
-       * ACL Notifications
-       * @description Number of ACL requests waiting for approval
-       * @example 4
-       */
-      notificationsAcls: string;
-      /**
-       * User Notifications
-       * @description Number of user requests waiting for approval
-       * @example 4
-       */
-      notificationsUsers: string;
-      /**
-       * Topic Notifications
-       * @description Number of topic requests waiting for approval
-       * @example 5
-       */
-      notifications: string;
+    KwPropertiesModel: {
+      kwKey?: string;
+      kwValue?: string;
+      kwDesc?: string;
+    };
+    TopicInfo: {
+      /** Format: int32 */
+      topicid?: number;
+      sequence?: string;
+      totalNoPages?: string;
+      currentPage?: string;
+      allPageNos?: string[];
+      topicName?: string;
+      /** Format: int32 */
+      noOfPartitions?: number;
+      description?: string;
+      documentation?: string;
+      noOfReplcias?: string;
+      teamname?: string;
+      cluster?: string;
+      clusterId?: string;
+      environmentsList?: string[];
+      showEditTopic?: boolean;
+      showDeleteTopic?: boolean;
+      topicDeletable?: boolean;
+    };
+    KafkaConnectorModel: {
+      /** Format: int32 */
+      sequence?: number;
+      /** Format: int32 */
+      connectorId?: number;
+      connectorName?: string;
+      connectorConfig?: string;
+      environmentName?: string;
+      environmentId?: string;
+      teamName?: string;
+      possibleTeams?: string[];
+      allPageNos?: string[];
+      totalNoPages?: string;
+      currentPage?: string;
+      remarks?: string;
+      documentation?: string;
+      environmentsList?: string[];
+      description?: string;
+      showEditConnector?: boolean;
+      showDeleteConnector?: boolean;
+      connectorDeletable?: boolean;
     };
     RequestVerdict: {
       reason?: string;
@@ -1035,8 +756,244 @@ export type components = {
       requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
       reqIds: string[];
     };
-    RequestsCountOverview: {
-      requestEntityStatistics?: components["schemas"]["RequestEntityStatusCount"][];
+    RegisterUserInfoModel: {
+      username: string;
+      pwd?: string;
+      team?: string;
+      /** Format: int32 */
+      teamId?: number;
+      role?: string;
+      fullname: string;
+      mailid?: string;
+      status?: string;
+      /** Format: date-time */
+      registeredTime?: string;
+      approver?: string;
+      registrationId?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      tenantName?: string;
+    };
+    RegisterSaasUserInfoModel: {
+      fullname: string;
+      mailid?: string;
+      recaptchaStr?: string;
+      status?: string;
+      /** Format: date-time */
+      registeredTime?: string;
+      approver?: string;
+      registrationId?: string;
+      tenantName?: string;
+    };
+    SchemaPromotion: {
+      targetEnvironment: string;
+      sourceEnvironment: string;
+      topicName: string;
+      schemaVersion: string;
+      schemaFull: string;
+      forceRegister?: boolean;
+      appName: string;
+      remarks: string;
+    };
+    TopicCreateRequestModel: {
+      topicname: string;
+      environment: string;
+      /** Format: int32 */
+      topicpartitions: number;
+      teamname?: string;
+      remarks?: string;
+      description: string;
+      approvingTeamId?: string;
+      replicationfactor: string;
+      environmentName?: string;
+      /** Format: int32 */
+      topicid?: number;
+      advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
+      appname?: string;
+      /** @enum {string} */
+      requestOperationType?:
+        | "CREATE"
+        | "UPDATE"
+        | "PROMOTE"
+        | "CLAIM"
+        | "DELETE";
+      /** @enum {string} */
+      requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      requestor?: string;
+      /** Format: date-time */
+      requesttime?: string;
+      requesttimestring?: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      sequence?: string;
+      username?: string;
+      totalNoPages?: string;
+      approvingTeamDetails?: string;
+      otherParams?: string;
+      /** Format: int32 */
+      teamId?: number;
+      allPageNos?: string[];
+      possibleTeams?: string[];
+      currentPage?: string;
+      deletable?: boolean;
+      editable?: boolean;
+    };
+    KafkaConnectorRequestModel: {
+      connectorName: string;
+      connectorConfig?: string;
+      environment: string;
+      teamName: string;
+      remarks?: string;
+      description: string;
+      /** @enum {string} */
+      requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** @enum {string} */
+      requestOperationType?:
+        | "CREATE"
+        | "UPDATE"
+        | "PROMOTE"
+        | "CLAIM"
+        | "DELETE";
+      environmentName?: string;
+      /** Format: int32 */
+      teamId?: number;
+      /** Format: int32 */
+      connectorId?: number;
+      requestor?: string;
+      /** Format: date-time */
+      requesttime?: string;
+      requesttimestring?: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      sequence?: string;
+      username?: string;
+      totalNoPages?: string;
+      approvingTeamDetails?: string;
+      approvingTeamId?: string;
+      otherParams?: string;
+      allPageNos?: string[];
+      possibleTeams?: string[];
+      currentPage?: string;
+      editable?: boolean;
+      deletable?: boolean;
+    };
+    AclRequestsModel: {
+      remarks?: string;
+      consumergroup?: string;
+      acl_ip?: string[];
+      acl_ssl?: string[];
+      aclPatternType: string;
+      transactionalId?: string;
+      /** Format: int32 */
+      req_no?: number;
+      topicname: string;
+      environment: string;
+      teamname: string;
+      /** @enum {string} */
+      aclType: "PRODUCER" | "CONSUMER";
+      /** @enum {string} */
+      aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
+      /** @enum {string} */
+      requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** @enum {string} */
+      requestOperationType?:
+        | "CREATE"
+        | "UPDATE"
+        | "PROMOTE"
+        | "CLAIM"
+        | "DELETE";
+      environmentName?: string;
+      /** Format: int32 */
+      teamId?: number;
+      /** Format: int32 */
+      requestingteam?: number;
+      requestingTeamName?: string;
+      appname?: string;
+      username?: string;
+      /** Format: date-time */
+      requesttime?: string;
+      requesttimestring?: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      aclResourceType?: string;
+      currentPage?: string;
+      otherParams?: string;
+      totalNoPages?: string;
+      allPageNos?: string[];
+      approvingTeamDetails?: string;
+      deletable?: boolean;
+      editable?: boolean;
+    };
+    KwTenantModel: {
+      tenantName: string;
+      tenantDesc: string;
+      /** Format: int32 */
+      tenantId?: number;
+      licenseExpiryDate?: string;
+      contactPerson?: string;
+      inTrialPhase?: boolean;
+      numberOfDays?: string;
+      numberOfHours?: string;
+      orgName?: string;
+      authorizedToDelete?: boolean;
+      emailId?: string;
+      activeTenant?: boolean;
+    };
+    EnvModel: {
+      id?: string;
+      name: string;
+      type: string;
+      /** Format: int32 */
+      tenantId?: number;
+      topicprefix?: string;
+      topicsuffix?: string;
+      /** Format: int32 */
+      clusterId: number;
+      tenantName?: string;
+      clusterName?: string;
+      envStatus?: string;
+      otherParams?: string;
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      defaultReplicationFactor?: string;
+      maxReplicationFactor?: string;
+      showDeleteEnv?: boolean;
+      totalNoPages?: string;
+      allPageNos?: string[];
+      associatedEnv?: components["schemas"]["EnvTag"];
+      /** @enum {string} */
+      clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
+    };
+    EnvTag: {
+      id?: string;
+      name?: string;
+    };
+    KwClustersModel: {
+      /** Format: int32 */
+      clusterId?: number;
+      clusterName: string;
+      bootstrapServers: string;
+      /** @enum {string} */
+      protocol:
+        | "PLAINTEXT"
+        | "SSL"
+        | "SASL_PLAIN"
+        | "SASL_SSL_PLAIN_MECHANISM"
+        | "SASL_SSL_GSSAPI_MECHANISM"
+        | "SASL_SSL_SCRAM_MECHANISM_256"
+        | "SASL_SSL_SCRAM_MECHANISM_512";
+      clusterType: string;
+      kafkaFlavor: string;
+      projectName?: string;
+      serviceName?: string;
+      publicKey?: string;
+      showDeleteCluster?: boolean;
+      clusterStatus?: string;
+      totalNoPages?: string;
+      allPageNos?: string[];
     };
     RequestEntityStatusCount: {
       /** @enum {string} */
@@ -1050,6 +1007,9 @@ export type components = {
       /** Format: int64 */
       count?: number;
     };
+    RequestsCountOverview: {
+      requestEntityStatistics?: components["schemas"]["RequestEntityStatusCount"][];
+    };
     RequestsOperationTypeCount: {
       /** @enum {string} */
       requestOperationType?:
@@ -1061,188 +1021,704 @@ export type components = {
       /** Format: int64 */
       count?: number;
     };
+    TopicRequestModel: {
+      topicname: string;
+      environment: string;
+      /** Format: int32 */
+      topicpartitions: number;
+      teamname?: string;
+      remarks?: string;
+      description: string;
+      approvingTeamId?: string;
+      replicationfactor: string;
+      environmentName?: string;
+      /** Format: int32 */
+      topicid?: number;
+      advancedTopicConfigEntries?: components["schemas"]["TopicConfigEntry"][];
+      appname?: string;
+      /** @enum {string} */
+      requestOperationType?:
+        | "CREATE"
+        | "UPDATE"
+        | "PROMOTE"
+        | "CLAIM"
+        | "DELETE";
+      /** @enum {string} */
+      requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      requestor?: string;
+      /** Format: date-time */
+      requesttime?: string;
+      requesttimestring?: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      sequence?: string;
+      username?: string;
+      totalNoPages?: string;
+      approvingTeamDetails?: string;
+      otherParams?: string;
+      /** Format: int32 */
+      teamId?: number;
+      allPageNos?: string[];
+      possibleTeams?: string[];
+      currentPage?: string;
+      deletable?: boolean;
+      editable?: boolean;
+    };
+    ChartsJsOverview: {
+      data?: number[];
+      labels?: string[];
+      colors?: string[];
+      options?: components["schemas"]["Options"];
+      series?: string[];
+      titleForReport?: string;
+      xaxisLabel?: string;
+      yaxisLabel?: string;
+    };
+    Options: {
+      title?: components["schemas"]["Title"];
+      scales?: components["schemas"]["Scales"];
+    };
+    Scales: {
+      yaxes?: components["schemas"]["YAx"][];
+      xaxes?: components["schemas"]["YAx"][];
+    };
+    TeamOverview: {
+      producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
+      consumerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
+      aclsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+      topicsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
+      topicsPerTeamPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+      topicsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+      partitionsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+      activityLogOverview?: components["schemas"]["ChartsJsOverview"];
+      tenantName?: string;
+    };
+    Title: {
+      display?: boolean;
+      text?: string;
+      position?: string;
+      fontColor?: string;
+      fontFamily?: string;
+      fontStyle?: string;
+    };
+    YAx: {
+      id?: string;
+      type?: string;
+      display?: boolean;
+      position?: string;
+    };
+    AclInfo: {
+      sequence?: string;
+      req_no?: string;
+      acl_ip?: string;
+      acl_ssl?: string;
+      topicname?: string;
+      topictype?: string;
+      consumergroup?: string;
+      environment?: string;
+      environmentName?: string;
+      teamname?: string;
+      /** Format: int32 */
+      teamid?: number;
+      operation?: string;
+      permission?: string;
+      transactionalId?: string;
+      aclPatternType?: string;
+      totalNoPages?: string;
+      allPageNos?: string[];
+      possibleTeams?: string[];
+      currentPage?: string;
+      showDeleteAcl?: boolean;
+      /** @enum {string} */
+      kafkaFlavorType?:
+        | "APACHE_KAFKA"
+        | "AIVEN_FOR_APACHE_KAFKA"
+        | "CONFLUENT"
+        | "CONFLUENT_CLOUD"
+        | "OTHERS";
+    };
+    SchemaOverview: {
+      topicExists?: boolean;
+      schemaExists?: boolean;
+      prefixAclsExists?: boolean;
+      txnAclsExists?: boolean;
+      allSchemaVersions?: { [key: string]: number[] };
+      latestVersion?: { [key: string]: number };
+      schemaPromotionDetails?: { [key: string]: { [key: string]: string } };
+      schemaDetails?: { [key: string]: string }[];
+    };
+    ConnectorOverview: {
+      topicInfoList?: components["schemas"]["KafkaConnectorModel"][];
+      topicHistoryList?: components["schemas"]["TopicHistory"][];
+      promotionDetails?: { [key: string]: string };
+      connectorExists?: boolean;
+      topicDocumentation?: string;
+      /** Format: int32 */
+      topicIdForDocumentation?: number;
+    };
+    TopicHistory: {
+      environmentName?: string;
+      teamName?: string;
+      requestedBy?: string;
+      requestedTime?: string;
+      approvedBy?: string;
+      approvedTime?: string;
+      remarks?: string;
+    };
+    JmxOverview: {
+      brokerTopMetricsOverview?: components["schemas"]["ChartsJsOverview"];
+    };
+    ServerConfigProperties: {
+      id?: string;
+      key?: string;
+      value?: string;
+    };
+    ActivityLog: {
+      /** Format: int32 */
+      req_no?: number;
+      /** Format: int32 */
+      tenantId?: number;
+      activityName?: string;
+      activityType?: string;
+      /** Format: date-time */
+      activityTime?: string;
+      activityTimeString?: string;
+      details?: string;
+      user?: string;
+      /** Format: int32 */
+      teamId?: number;
+      env?: string;
+      envName?: string;
+      team?: string;
+      totalNoPages?: string;
+      currentPage?: string;
+      allPageNos?: string[];
+    };
+    TopicOverview: {
+      topicExists?: boolean;
+      schemaExists?: boolean;
+      prefixAclsExists?: boolean;
+      txnAclsExists?: boolean;
+      topicInfoList?: components["schemas"]["TopicInfo"][];
+      aclInfoList?: components["schemas"]["AclInfo"][];
+      prefixedAclInfoList?: components["schemas"]["AclInfo"][];
+      transactionalAclInfoList?: components["schemas"]["AclInfo"][];
+      topicHistoryList?: components["schemas"]["TopicHistory"][];
+      topicPromotionDetails?: { [key: string]: string };
+      topicDocumentation?: string;
+      /** Format: int32 */
+      topicIdForDocumentation?: number;
+    };
   };
 };
 
 export type operations = {
-  /** Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints. */
-  userAuthentication: {
+  updateUserTeamFromSwitchTeams: {
     responses: {
-      /** Successful authentication */
+      /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["UserAuthenticationResponse"];
-        };
-      };
-      /** Invalid credentials */
-      403: {
-        content: {
-          "application/json": components["schemas"]["CommonError"];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserAuthenticationRequest"];
+        "application/json": components["schemas"]["UserInfoModel"];
       };
     };
   };
-  topicsGet: {
-    parameters: {
-      query: {
-        /** The value should be either an environment identifier or "ALL". */
-        env: string;
-        pageNo: string;
-        currentPage?: string;
-        topicnamesearch?: string;
-        teamName?: string;
-        topicType?: "Producer" | "Consumer";
-      };
-    };
+  uploadSchema: {
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["TopicsGetResponse"];
-        };
-      };
-    };
-  };
-  topicsGetOnly: {
-    parameters: {
-      query: {
-        /** Set to true to only get the topic names for topics belonging to the team of the current user */
-        isMyTeamTopics?: components["schemas"]["TopicsGetOnlyResponse"];
-        /** Pass an environment ID to get only the names of the topics in that environment */
-        envSelected?: components["schemas"]["TopicsGetOnlyResponse"];
-      };
-    };
-    responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": string[];
-        };
-      };
-    };
-  };
-  topicGetTeam: {
-    parameters: {
-      query: {
-        /** The name of the topic */
-        topicName: string;
-        /** The pattern type of the topic */
-        patternType?: "LITERAL" | "PREFIXED";
-      };
-    };
-    responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicGetTeamResponse"];
-        };
-      };
-    };
-  };
-  topicCreate: {
-    responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["topicCreateRequest"];
+        "application/json": components["schemas"]["SchemaRequestModel"];
       };
     };
   };
-  topicAdvancedConfigGet: {
+  updateUser: {
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["topicAdvancedConfigGetResponse"];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserInfoModel"];
+      };
+    };
   };
-  teamNamesGet: {
+  createTopicsUpdateRequest: {
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["TeamNamesGetResponse"];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicUpdateRequestModel"];
+      };
+    };
   };
-  teamsGet: {
+  updateTeam: {
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["TeamsGetResponse"][];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TeamModel"];
+      };
+    };
   };
-  environmentsGet: {
+  updateSyncTopics: {
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["Environment"][];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncTopicUpdates"][];
+      };
+    };
   };
-  envsBaseClusterFilteredForTeamGet: {
+  updateSyncTopicsBulk: {
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["Environment"][];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncTopicsBulk"];
+      };
+    };
   };
-  clusterInfoFromEnvironmentGet: {
+  updateSyncConnectors: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncConnectorUpdates"][];
+      };
+    };
+  };
+  updateSyncBackTopics: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncBackTopics"];
+      };
+    };
+  };
+  updateSyncBackAcls: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncBackAcls"];
+      };
+    };
+  };
+  updateSyncAcls: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncAclUpdates"][];
+      };
+    };
+  };
+  updateProfile: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserInfoModel"];
+      };
+    };
+  };
+  updatePermissions: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KwRolesPermissionsModel"][];
+      };
+    };
+  };
+  updateKwCustomProperty: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KwPropertiesModel"];
+      };
+    };
+  };
+  udpateTenant: {
     parameters: {
       query: {
-        /** The environment for which to get the cluster info */
-        envSelected: string;
-        /** The type of  environment for which to get the cluster info */
-        envType: "kafka" | "kafkaconnect" | "schema";
+        orgName: string;
       };
     };
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["environmentGetClusterInfoResponse"];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
   };
-  getAclRequestsForApprover: {
+  udpateTenantExtension: {
     parameters: {
       query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: components["schemas"]["RequestStatus"];
-        topic?: string;
-        env?: string;
-        aclType?: "CONSUMER" | "PRODUCER";
+        selectedTenantExtensionPeriod: string;
       };
     };
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["aclRequest"][];
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  sendMessageToAdmin: {
+    parameters: {
+      query: {
+        contactFormSubject: string;
+        contactFormMessage: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  saveTopicDocumentation: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicInfo"];
+      };
+    };
+  };
+  saveConnectorDocumentation: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KafkaConnectorModel"];
+      };
+    };
+  };
+  resetPassword: {
+    parameters: {
+      query: {
+        username: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": { [key: string]: string };
+        };
+      };
+    };
+  };
+  declineRequest: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"][];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RequestVerdict"];
+      };
+    };
+  };
+  approveRequest: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"][];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RequestVerdict"];
+      };
+    };
+  };
+  registerUser: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RegisterUserInfoModel"];
+      };
+    };
+  };
+  registerUserSaas: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RegisterSaasUserInfoModel"];
+      };
+    };
+  };
+  promoteSchema: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SchemaPromotion"];
+      };
+    };
+  };
+  logout: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": { [key: string]: string };
+        };
+      };
+    };
+  };
+  approveTopicRequests: {
+    parameters: {
+      query: {
+        topicId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  declineTopicRequests: {
+    parameters: {
+      query: {
+        topicId: string;
+        reasonForDecline: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  execSchemaRequests: {
+    parameters: {
+      query: {
+        avroSchemaReqId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  execSchemaRequestsDecline: {
+    parameters: {
+      query: {
+        avroSchemaReqId: string;
+        reasonForDecline: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  declineNewUserRequests: {
+    parameters: {
+      query: {
+        username: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  approveNewUserRequests: {
+    parameters: {
+      query: {
+        username: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  approveTopicRequests_1: {
+    parameters: {
+      query: {
+        connectorId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  declineConnectorRequests: {
+    parameters: {
+      query: {
+        connectorId: string;
+        reasonForDecline: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1257,7 +1733,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1265,9 +1741,7 @@ export type operations = {
   declineAclRequests: {
     parameters: {
       query: {
-        /** reqNo of the ACL request */
         req_no: string;
-        /** Stated reason for declining request (URL formatted string) */
         reasonForDecline: string;
       };
     };
@@ -1275,48 +1749,629 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
   };
-  createAclRequest: {
+  deleteUser: {
+    parameters: {
+      query: {
+        userId: string;
+      };
+    };
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteTopicRequests: {
+    parameters: {
+      query: {
+        topicId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteTenant: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteTeam: {
+    parameters: {
+      query: {
+        teamId: number;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteSchemaRequests: {
+    parameters: {
+      query: {
+        req_no: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteRole: {
+    parameters: {
+      query: {
+        roleId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteEnvironment: {
+    parameters: {
+      query: {
+        envId: string;
+        envType: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteConnectorRequests: {
+    parameters: {
+      query: {
+        connectorId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteCluster: {
+    parameters: {
+      query: {
+        clusterId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteAclRequests: {
+    parameters: {
+      query: {
+        req_no: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createTopicsCreateRequest: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["aclRequest"];
+        "application/json": components["schemas"]["TopicCreateRequestModel"];
       };
     };
   };
-  schemaRegEnvsGet: {
+  createTopicDeleteRequest: {
+    parameters: {
+      query: {
+        topicName: string;
+        env: string;
+      };
+    };
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["Environment"][];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
   };
-  schemaUpload: {
+  deleteAclSubscriptionRequest: {
+    parameters: {
+      query: {
+        req_no: string;
+      };
+    };
     responses: {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createConnectorRequest: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SchemaRequest"];
+        "application/json": components["schemas"]["KafkaConnectorRequestModel"];
+      };
+    };
+  };
+  createConnectorDeleteRequest: {
+    parameters: {
+      query: {
+        connectorName: string;
+        env: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createClaimTopicRequest: {
+    parameters: {
+      query: {
+        topicName: string;
+        env: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createClaimConnectorRequest: {
+    parameters: {
+      query: {
+        connectorName: string;
+        env: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createAcl: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AclRequestsModel"];
+      };
+    };
+  };
+  changePwd: {
+    parameters: {
+      query: {
+        changePwd: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  addTenantId: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KwTenantModel"];
+      };
+    };
+  };
+  addRoleId: {
+    parameters: {
+      query: {
+        roleId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  addNewUser: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserInfoModel"];
+      };
+    };
+  };
+  addNewTeam: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TeamModel"];
+      };
+    };
+  };
+  addNewEnv: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EnvModel"];
+      };
+    };
+  };
+  addNewCluster: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KwClustersModel"];
+      };
+    };
+  };
+  getSwitchTeams: {
+    parameters: {
+      path: {
+        userId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamModel"][];
+        };
+      };
+    };
+  };
+  testClusterApiConnection: {
+    parameters: {
+      query: {
+        clusterApiUrl: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  shutdownApp: {
+    responses: {
+      /** OK */
+      200: unknown;
+    };
+  };
+  showUsers: {
+    parameters: {
+      query: {
+        teamName?: string;
+        pageNo?: string;
+        searchUserParam?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserInfoModel"][];
+        };
+      };
+    };
+  };
+  resetMemoryCache: {
+    parameters: {
+      path: {
+        tenantName: string;
+        entityType: string;
+        operationType: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  resetCache: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getRequestStatistics: {
+    parameters: {
+      query: {
+        requestMode: "TO_APPROVE" | "MY_APPROVALS" | "MY_REQUESTS";
+      };
+    };
+    responses: {
+      /** default response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["RequestsCountOverview"];
+        };
+      };
+    };
+  };
+  getRegistrationInfoFromId: {
+    parameters: {
+      query: {
+        userRegistrationId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["RegisterUserInfoModel"];
+        };
+      };
+    };
+  };
+  getUserDetails: {
+    parameters: {
+      query: {
+        userId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserInfoModel"];
+        };
+      };
+    };
+  };
+  getUpdateEnvStatus: {
+    parameters: {
+      query: {
+        envId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getTopics: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        teamName?: string;
+        topicType?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicInfo"][][];
+        };
+      };
+    };
+  };
+  getTopicsRowView: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        teamName?: string;
+        topicType?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicInfo"][];
+        };
+      };
+    };
+  };
+  getTopicsOnly: {
+    parameters: {
+      query: {
+        isMyTeamTopics?: string;
+        envSelected?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+    };
+  };
+  getTopicsCountPerEnv: {
+    parameters: {
+      query: {
+        sourceEnvSelected: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getTopicTeam: {
+    parameters: {
+      query: {
+        topicName: string;
+        patternType?: "PREFIXED" | "LITERAL";
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getTopicRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        env?: string;
+        isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicRequestModel"][];
+        };
       };
     };
   };
@@ -1325,71 +2380,224 @@ export type operations = {
       query: {
         pageNo: string;
         currentPage?: string;
-        requestStatus?: components["schemas"]["RequestStatus"];
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         teamId?: number;
         env?: string;
         search?: string;
       };
     };
     responses: {
-      /** successful operation */
+      /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["TopicRequest"][];
+          "application/json": components["schemas"]["TopicRequestModel"][];
         };
       };
     };
   };
-  getAuth: {
-    responses: {
-      200: {
-        content: {
-          "application/json": components["schemas"]["GetAuthResponse"];
-        };
-      };
-    };
-  };
-  approveRequest: {
-    responses: {
-      /** successful operation */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"][];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RequestVerdict"];
-      };
-    };
-  };
-  declineRequest: {
-    responses: {
-      /** successful operation */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"][];
-        };
-      };
-    };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["RequestVerdict"];
-      };
-    };
-  };
-  getRequestStatistics: {
+  getTopicEvents: {
     parameters: {
       query: {
-        requestMode: "TO_APPROVE" | "MY_REQUESTS" | "MY_APPROVALS";
+        envId: string;
+        topicName: string;
+        consumerGroupId: string;
+        offsetId: string;
       };
     };
     responses: {
-      /** successful operation */
+      /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["RequestsCountOverview"];
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getTopicDetailsPerEnv: {
+    parameters: {
+      query: {
+        envSelected: string;
+        topicname: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+    };
+  };
+  getTenants: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KwTenantModel"][];
+        };
+      };
+    };
+  };
+  getTenantsInfo: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: number };
+        };
+      };
+    };
+  };
+  getTeamsOverview: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamOverview"][];
+        };
+      };
+    };
+  };
+  getTeamDetails: {
+    parameters: {
+      query: {
+        teamId: number;
+        tenantName: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamModel"];
+        };
+      };
+    };
+  };
+  getSyncTopics: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        showAllTopics?: string;
+        isBulkOption?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+    };
+  };
+  getSyncEnv: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string }[];
+        };
+      };
+    };
+  };
+  getSyncTopics_1: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        connectornamesearch?: string;
+        isBulkOption?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KafkaConnectorModel"][];
+        };
+      };
+    };
+  };
+  getSyncConnectorsEnv: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModel"][];
+        };
+      };
+    };
+  };
+  getSyncBackAcls: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        teamName?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AclInfo"][];
+        };
+      };
+    };
+  };
+  getSyncAcls: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        showAllAcls?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AclInfo"][];
+        };
+      };
+    };
+  };
+  getStandardEnvNames: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+    };
+  };
+  getSchemaRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        topic?: string;
+        env?: string;
+        isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SchemaRequestModel"][];
         };
       };
     };
@@ -1399,19 +2607,715 @@ export type operations = {
       query: {
         pageNo: string;
         currentPage?: string;
-        requestStatus?: components["schemas"]["RequestStatus"];
-        /** Name of a topic */
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         topic?: string;
-        /** Environment identifier */
         env?: string;
         search?: string;
       };
     };
     responses: {
-      /** successful operation */
+      /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["SchemaRequest"][];
+          "application/json": components["schemas"]["SchemaRequestModel"][];
+        };
+      };
+    };
+  };
+  getSchemaRegEnvs: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModel"][];
+        };
+      };
+    };
+  };
+  getSchemaOfTopic: {
+    parameters: {
+      query: {
+        topicnamesearch: string;
+        schemaVersionSearch?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SchemaOverview"];
+        };
+      };
+    };
+  };
+  getRoles: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+    };
+  };
+  getRolesFromDb: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+    };
+  };
+  getRequestTypeStatuses: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+    };
+  };
+  getPermissions: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: { [key: string]: boolean }[] };
+        };
+      };
+    };
+  };
+  getPermissionDescriptions: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getNewUserRequests: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["RegisterUserInfoModel"][];
+        };
+      };
+    };
+  };
+  getMyTenantInfo: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KwTenantModel"];
+        };
+      };
+    };
+  };
+  getMyProfileInfo: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserInfoModel"];
+        };
+      };
+    };
+  };
+  getKwReport: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getKwPubkey: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getSupportedKafkaProtocols: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string }[];
+        };
+      };
+    };
+  };
+  getKafkaConnectEnvs: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModel"][];
+        };
+      };
+    };
+  };
+  getExtensionPeriods: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+    };
+  };
+  getEnvs: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModel"][];
+        };
+      };
+    };
+  };
+  getEnvsPaginated: {
+    parameters: {
+      query: {
+        pageNo: string;
+        envId?: string;
+        searchEnvParam?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModel"][];
+        };
+      };
+    };
+  };
+  getRequestForSchemas: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModel"][];
+        };
+      };
+    };
+  };
+  getEnvsBaseCluster: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModel"][];
+        };
+      };
+    };
+  };
+  getEnvsBaseClusterFilteredForTeam: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModel"][];
+        };
+      };
+    };
+  };
+  getEnvParams: {
+    parameters: {
+      query: {
+        envSelected: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string[] };
+        };
+      };
+    };
+  };
+  getEnvDetails: {
+    parameters: {
+      query: {
+        envSelected: string;
+        envType: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModel"];
+        };
+      };
+    };
+  };
+  getDbAuth: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getDashboardStats: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getConsumerOffsets: {
+    parameters: {
+      query: {
+        env: string;
+        topicName: string;
+        consumerGroupId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string }[];
+        };
+      };
+    };
+  };
+  getConnectors: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        connectornamesearch?: string;
+        teamName?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KafkaConnectorModel"][][];
+        };
+      };
+    };
+  };
+  getConnectorRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KafkaConnectorRequestModel"][];
+        };
+      };
+    };
+  };
+  getCreatedConnectorRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        env?: string;
+        search?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KafkaConnectorRequestModel"][];
+        };
+      };
+    };
+  };
+  getConnectorOverview: {
+    parameters: {
+      query: {
+        connectornamesearch: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ConnectorOverview"];
+        };
+      };
+    };
+  };
+  getConnectorDetails: {
+    parameters: {
+      query: {
+        env: string;
+        connectorName: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getConnectorDetailsPerEnv: {
+    parameters: {
+      query: {
+        envSelected: string;
+        connectorName: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+    };
+  };
+  getClusters: {
+    parameters: {
+      query: {
+        clusterType: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KwClustersModel"][];
+        };
+      };
+    };
+  };
+  getClustersPaginated: {
+    parameters: {
+      query: {
+        clusterType: string;
+        pageNo: string;
+        clusterId?: string;
+        searchClusterParam?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KwClustersModel"][];
+        };
+      };
+    };
+  };
+  getClusterInfoFromEnv: {
+    parameters: {
+      query: {
+        envSelected: string;
+        envType: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getClusterDetails: {
+    parameters: {
+      query: {
+        clusterId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KwClustersModel"];
+        };
+      };
+    };
+  };
+  getBrokerTopMetrics: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["JmxOverview"];
+        };
+      };
+    };
+  };
+  getBasicInfo: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: unknown };
+        };
+      };
+    };
+  };
+  getAuth: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getAllTeamsSU: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamModel"][];
+        };
+      };
+    };
+  };
+  getAllTeamsSUOnly: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": string[];
+        };
+      };
+    };
+  };
+  getAllTeamsSUFromRegisterUsers: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamModel"][];
+        };
+      };
+    };
+  };
+  getAllEditableProps: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string }[];
+        };
+      };
+    };
+  };
+  getAllProperties: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ServerConfigProperties"][];
+        };
+      };
+    };
+  };
+  getAivenServiceAccounts: {
+    parameters: {
+      query: {
+        env: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  getAivenServiceAccountDetails: {
+    parameters: {
+      query: {
+        env: string;
+        topicName: string;
+        userName: string;
+        aclReqNo: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  getAdvancedTopicConfigs: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  showActivityLog: {
+    parameters: {
+      query: {
+        env?: string;
+        pageNo: string;
+        currentPage?: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ActivityLog"][];
+        };
+      };
+    };
+  };
+  getActivityLogForTeamOverview: {
+    parameters: {
+      query: {
+        activityLogForTeam: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamOverview"];
+        };
+      };
+    };
+  };
+  getActivationInfo: {
+    parameters: {
+      query: {
+        userActivationId: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getAcls: {
+    parameters: {
+      query: {
+        topicnamesearch: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicOverview"];
+        };
+      };
+    };
+  };
+  getAclsCountPerEnv: {
+    parameters: {
+      query: {
+        sourceEnvSelected: string;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
+        };
+      };
+    };
+  };
+  getAclRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        topic?: string;
+        env?: string;
+        aclType?: "PRODUCER" | "CONSUMER";
+        isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AclRequestsModel"][];
+        };
+      };
+    };
+  };
+  getAclRequestsForApprover: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        topic?: string;
+        env?: string;
+        aclType?: "PRODUCER" | "CONSUMER";
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AclRequestsModel"][];
+        };
+      };
+    };
+  };
+  getAclCommand: {
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": { [key: string]: string };
         };
       };
     };
@@ -1421,27 +3325,151 @@ export type operations = {
 export type external = {};
 
 export enum ApiPaths {
-  userAuthentication = "/user/authenticate",
-  topicsGet = "/getTopics",
-  topicsGetOnly = "/getTopicsOnly",
-  topicGetTeam = "/getTopicTeam",
-  topicCreate = "/createTopics",
-  topicAdvancedConfigGet = "/getAdvancedTopicConfigs",
-  teamNamesGet = "/getAllTeamsSUOnly",
-  teamsGet = "/getAllTeamsSU",
-  environmentsGet = "/getEnvs",
-  envsBaseClusterFilteredForTeamGet = "/getEnvsBaseClusterFilteredForTeam",
-  clusterInfoFromEnvironmentGet = "/getClusterInfoFromEnv",
-  getAclRequestsForApprover = "/getAclRequestsForApprover",
+  updateUserTeamFromSwitchTeams = "/user/updateTeam",
+  uploadSchema = "/uploadSchema",
+  updateUser = "/updateUser",
+  createTopicsUpdateRequest = "/updateTopics",
+  updateTeam = "/updateTeam",
+  updateSyncTopics = "/updateSyncTopics",
+  updateSyncTopicsBulk = "/updateSyncTopicsBulk",
+  updateSyncConnectors = "/updateSyncConnectors",
+  updateSyncBackTopics = "/updateSyncBackTopics",
+  updateSyncBackAcls = "/updateSyncBackAcls",
+  updateSyncAcls = "/updateSyncAcls",
+  updateProfile = "/updateProfile",
+  updatePermissions = "/updatePermissions",
+  updateKwCustomProperty = "/updateKwCustomProperty",
+  udpateTenant = "/udpateTenant",
+  udpateTenantExtension = "/udpateTenantExtension",
+  sendMessageToAdmin = "/sendMessageToAdmin",
+  saveTopicDocumentation = "/saveTopicDocumentation",
+  saveConnectorDocumentation = "/saveConnectorDocumentation",
+  resetPassword = "/resetPassword",
+  declineRequest = "/request/decline",
+  approveRequest = "/request/approve",
+  registerUser = "/registerUser",
+  registerUserSaas = "/registerUserSaas",
+  promoteSchema = "/promote/schema",
+  logout = "/logout",
+  approveTopicRequests = "/execTopicRequests",
+  declineTopicRequests = "/execTopicRequestsDecline",
+  execSchemaRequests = "/execSchemaRequests",
+  execSchemaRequestsDecline = "/execSchemaRequestsDecline",
+  declineNewUserRequests = "/execNewUserRequestDecline",
+  approveNewUserRequests = "/execNewUserRequestApprove",
+  approveTopicRequests_1 = "/execConnectorRequests",
+  declineConnectorRequests = "/execConnectorRequestsDecline",
   approveAclRequests = "/execAclRequest",
   declineAclRequests = "/execAclRequestDecline",
-  createAclRequest = "/createAcl",
-  schemaRegEnvsGet = "/getSchemaRegEnvs",
-  schemaUpload = "/uploadSchema",
-  getTopicRequestsForApprover = "/getTopicRequestsForApprover",
-  getAuth = "/getAuth",
-  approveRequest = "/request/approve",
-  declineRequest = "/request/decline",
+  deleteUser = "/deleteUserRequest",
+  deleteTopicRequests = "/deleteTopicRequests",
+  deleteTenant = "/deleteTenant",
+  deleteTeam = "/deleteTeamRequest",
+  deleteSchemaRequests = "/deleteSchemaRequests",
+  deleteRole = "/deleteRole",
+  deleteEnvironment = "/deleteEnvironmentRequest",
+  deleteConnectorRequests = "/deleteConnectorRequests",
+  deleteCluster = "/deleteCluster",
+  deleteAclRequests = "/deleteAclRequests",
+  createTopicsCreateRequest = "/createTopics",
+  createTopicDeleteRequest = "/createTopicDeleteRequest",
+  deleteAclSubscriptionRequest = "/createDeleteAclSubscriptionRequest",
+  createConnectorRequest = "/createConnector",
+  createConnectorDeleteRequest = "/createConnectorDeleteRequest",
+  createClaimTopicRequest = "/createClaimTopicRequest",
+  createClaimConnectorRequest = "/createClaimConnectorRequest",
+  createAcl = "/createAcl",
+  changePwd = "/chPwd",
+  addTenantId = "/addTenantId",
+  addRoleId = "/addRoleId",
+  addNewUser = "/addNewUser",
+  addNewTeam = "/addNewTeam",
+  addNewEnv = "/addNewEnv",
+  addNewCluster = "/addNewCluster",
+  getSwitchTeams = "/user/:userId/switchTeamsList",
+  testClusterApiConnection = "/testClusterApiConnection",
+  shutdownApp = "/shutdownContext",
+  showUsers = "/showUserList",
+  resetMemoryCache = "/resetMemoryCache/:tenantName/:entityType/:operationType",
+  resetCache = "/resetCache",
   getRequestStatistics = "/requests/statistics",
+  getRegistrationInfoFromId = "/getUserInfoFromRegistrationId",
+  getUserDetails = "/getUserDetails",
+  getUpdateEnvStatus = "/getUpdateEnvStatus",
+  getTopics = "/getTopics",
+  getTopicsRowView = "/getTopicsRowView",
+  getTopicsOnly = "/getTopicsOnly",
+  getTopicsCountPerEnv = "/getTopicsCountPerEnv",
+  getTopicTeam = "/getTopicTeam",
+  getTopicRequests = "/getTopicRequests",
+  getTopicRequestsForApprover = "/getTopicRequestsForApprover",
+  getTopicEvents = "/getTopicEvents",
+  getTopicDetailsPerEnv = "/getTopicDetailsPerEnv",
+  getTenants = "/getTenants",
+  getTenantsInfo = "/getTenantsInfo",
+  getTeamsOverview = "/getTeamsOverview",
+  getTeamDetails = "/getTeamDetails",
+  getSyncTopics = "/getSyncTopics",
+  getSyncEnv = "/getSyncEnv",
+  getSyncTopics_1 = "/getSyncConnectors",
+  getSyncConnectorsEnv = "/getSyncConnectorsEnv",
+  getSyncBackAcls = "/getSyncBackAcls",
+  getSyncAcls = "/getSyncAcls",
+  getStandardEnvNames = "/getStandardEnvNames",
+  getSchemaRequests = "/getSchemaRequests",
   getSchemaRequestsForApprover = "/getSchemaRequestsForApprover",
+  getSchemaRegEnvs = "/getSchemaRegEnvs",
+  getSchemaOfTopic = "/getSchemaOfTopic",
+  getRoles = "/getRoles",
+  getRolesFromDb = "/getRolesFromDb",
+  getRequestTypeStatuses = "/getRequestTypeStatuses",
+  getPermissions = "/getPermissions",
+  getPermissionDescriptions = "/getPermissionDescriptions",
+  getNewUserRequests = "/getNewUserRequests",
+  getMyTenantInfo = "/getMyTenantInfo",
+  getMyProfileInfo = "/getMyProfileInfo",
+  getKwReport = "/getKwReport",
+  getKwPubkey = "/getKwPubkey",
+  getSupportedKafkaProtocols = "/getKafkaProtocols",
+  getKafkaConnectEnvs = "/getKafkaConnectEnvs",
+  getExtensionPeriods = "/getExtensionPeriods",
+  getEnvs = "/getEnvs",
+  getEnvsPaginated = "/getEnvsPaginated",
+  getRequestForSchemas = "/getEnvsForSchemaRequests",
+  getEnvsBaseCluster = "/getEnvsBaseCluster",
+  getEnvsBaseClusterFilteredForTeam = "/getEnvsBaseClusterFilteredForTeam",
+  getEnvParams = "/getEnvParams",
+  getEnvDetails = "/getEnvDetails",
+  getDbAuth = "/getDbAuth",
+  getDashboardStats = "/getDashboardStats",
+  getConsumerOffsets = "/getConsumerOffsets",
+  getConnectors = "/getConnectors",
+  getConnectorRequests = "/getConnectorRequests",
+  getCreatedConnectorRequests = "/getConnectorRequestsForApproval",
+  getConnectorOverview = "/getConnectorOverview",
+  getConnectorDetails = "/getConnectorDetails",
+  getConnectorDetailsPerEnv = "/getConnectorDetailsPerEnv",
+  getClusters = "/getClusters",
+  getClustersPaginated = "/getClustersPaginated",
+  getClusterInfoFromEnv = "/getClusterInfoFromEnv",
+  getClusterDetails = "/getClusterDetails",
+  getBrokerTopMetrics = "/getBrokerTopMetrics",
+  getBasicInfo = "/getBasicInfo",
+  getAuth = "/getAuth",
+  getAllTeamsSU = "/getAllTeamsSU",
+  getAllTeamsSUOnly = "/getAllTeamsSUOnly",
+  getAllTeamsSUFromRegisterUsers = "/getAllTeamsSUFromRegisterUsers",
+  getAllEditableProps = "/getAllServerEditableConfig",
+  getAllProperties = "/getAllServerConfig",
+  getAivenServiceAccounts = "/getAivenServiceAccounts",
+  getAivenServiceAccountDetails = "/getAivenServiceAccount",
+  getAdvancedTopicConfigs = "/getAdvancedTopicConfigs",
+  showActivityLog = "/getActivityLogPerEnv",
+  getActivityLogForTeamOverview = "/getActivityLogForTeamOverview",
+  getActivationInfo = "/getActivationInfo",
+  getAcls = "/getAcls",
+  getAclsCountPerEnv = "/getAclsCountPerEnv",
+  getAclRequests = "/getAclRequests",
+  getAclRequestsForApprover = "/getAclRequestsForApprover",
+  getAclCommand = "/getAclCommands",
 }
