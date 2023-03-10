@@ -92,6 +92,20 @@ describe("TopicApprovalsTable", () => {
     { columnHeader: "", relatedField: null },
   ];
 
+  it("shows a message to user in case there are no requests that match the search criteria", () => {
+    render(
+      <TopicApprovalsTable
+        setDetailsModal={mockedSetDetailsModal}
+        requests={[]}
+        quickActionLoading={false}
+        setDeclineModal={mockedSetDeclineModal}
+        approveRequest={mockedApproveRequest}
+      />
+    );
+    screen.getByText("No Topic requests");
+    screen.getByText("No Topic request matched your criteria.");
+  });
+
   describe("renders all necessary elements", () => {
     beforeAll(() => {
       mockIntersectionObserver();

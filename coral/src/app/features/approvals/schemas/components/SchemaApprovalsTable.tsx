@@ -1,6 +1,7 @@
 import {
   DataTable,
   DataTableColumn,
+  EmptyState,
   GhostButton,
   Icon,
 } from "@aivenio/aquarium";
@@ -169,6 +170,14 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
       };
     }
   );
+
+  if (!rows.length) {
+    return (
+      <EmptyState title="No Schema requests">
+        No Schema request matched your criteria.
+      </EmptyState>
+    );
+  }
 
   return (
     <DataTable
