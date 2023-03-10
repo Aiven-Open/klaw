@@ -8,7 +8,7 @@ import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {
   transformGetTopicAdvancedConfigOptionsResponse,
-  transformGetTopicRequestsForApproverResponse,
+  transformGetTopicRequestsResponse,
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import {
@@ -125,7 +125,34 @@ const getTopicRequestsForApprover = (
     .get<KlawApiResponse<"getTopicRequestsForApprover">>(
       `/getTopicRequestsForApprover?${new URLSearchParams(filteredParams)}`
     )
-    .then(transformGetTopicRequestsForApproverResponse);
+    .then(transformGetTopicRequestsResponse);
+};
+
+const getTopicRequests = (
+  params: KlawApiRequestQueryParameters<"getTopicRequests">
+): Promise<TopicRequestApiResponse> => {
+  const filteredParams = omitBy(
+    { ...params, isMyRequest: String(Boolean(params.isMyRequest)) },
+    (value, property) => {
+      const omitIsMyRequest = property === "isMyRequest" && value === "false";
+      const omitSearch = property === "search" && value === "";
+      const omitEnv =
+        property === "env" && (value === "ALL" || value === undefined);
+      const omitRequestOperationType =
+        property === "requestOperationType" &&
+        (value === "ALL" || value === undefined);
+
+      return (
+        omitIsMyRequest || omitSearch || omitEnv || omitRequestOperationType
+      );
+    }
+  );
+
+  return api
+    .get<KlawApiResponse<"getTopicRequests">>(
+      `/getTopicRequests?${new URLSearchParams(filteredParams)}`
+    )
+    .then(transformGetTopicRequestsResponse);
 };
 
 type ApproveTopicRequestPayload = RequestVerdictApproval<"TOPIC">;
@@ -151,6 +178,7 @@ export {
   getTopicAdvancedConfigOptions,
   requestTopic,
   getTopicRequestsForApprover,
+  getTopicRequests,
   approveTopicRequest,
   declineTopicRequest,
 };
