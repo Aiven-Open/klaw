@@ -7,7 +7,7 @@ import { KlawApiResponse } from "types/utils";
 
 // @TODO check zod for this!
 function transformTopicApiResponse(
-  apiResponse: KlawApiResponse<"topicsGet">
+  apiResponse: KlawApiResponse<"getTopics">
 ): TopicApiResponse {
   if (apiResponse.length === 0) {
     return {
@@ -135,7 +135,7 @@ const ADVANCED_TOPIC_CONFIG_DOCUMENTATION: Record<
 };
 
 function transformGetTopicAdvancedConfigOptionsResponse(
-  apiResponse: KlawApiResponse<"topicAdvancedConfigGet">
+  apiResponse: KlawApiResponse<"getAdvancedTopicConfigs">
 ): TopicAdvancedConfigurationOptions[] {
   return Object.entries(apiResponse).map(([key, name]) => {
     const base = { key, name };

@@ -18,7 +18,7 @@ const mockCreateSchemaRequest = createSchemaRequest as jest.MockedFunction<
   typeof createSchemaRequest
 >;
 
-describe("SchemaRequest", () => {
+describe("SchemaRequestModel", () => {
   describe("renders the page to request a new schema for a topic", () => {
     const topicName = "my-awesome-topic";
 

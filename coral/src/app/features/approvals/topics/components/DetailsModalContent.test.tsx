@@ -33,7 +33,7 @@ const noAdvancedConfigRequest: TopicRequest = {
 
 const withAdvancedConfigRequest: TopicRequest = {
   requestOperationType: "CREATE",
-  description: undefined,
+  description: "Description is mandatory",
   remarks: undefined,
   topicid: 1015,
   topicpartitions: 2,

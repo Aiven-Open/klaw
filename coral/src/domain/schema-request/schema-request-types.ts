@@ -8,7 +8,7 @@ import { operations } from "types/api";
 type CreatedSchemaRequests = ResolveIntersectionTypes<
   Required<
     Pick<
-      KlawApiModel<"SchemaRequest">,
+      KlawApiModel<"SchemaRequestModel">,
       | "req_no"
       | "topicname"
       | "environmentName"
@@ -21,17 +21,19 @@ type CreatedSchemaRequests = ResolveIntersectionTypes<
 type CreateSchemaRequestPayload = ResolveIntersectionTypes<
   Required<
     Pick<
-      KlawApiModel<"SchemaRequest">,
+      KlawApiModel<"SchemaRequestModel">,
       "environment" | "schemafull" | "topicname"
     >
   > &
-    Partial<KlawApiModel<"SchemaRequest">>
+    Partial<KlawApiModel<"SchemaRequestModel">>
 >;
 
 type SchemaRequestOperationType = RequestOperationType;
 type SchemaRequestStatus = RequestStatus;
 
-type SchemaRequest = ResolveIntersectionTypes<KlawApiModel<"SchemaRequest">>;
+type SchemaRequest = ResolveIntersectionTypes<
+  KlawApiModel<"SchemaRequestModel">
+>;
 
 type SchemaRequestApiResponse = ResolveIntersectionTypes<
   Paginated<SchemaRequest[]>

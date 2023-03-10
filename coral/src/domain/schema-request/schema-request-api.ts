@@ -13,14 +13,14 @@ import {
 
 const createSchemaRequest = (
   params: CreateSchemaRequestPayload
-): Promise<KlawApiResponse<"schemaUpload">> => {
+): Promise<KlawApiResponse<"uploadSchema">> => {
   const payload = {
     ...params,
     schemaversion: "1.0",
     appname: "App",
   };
 
-  return api.post<KlawApiResponse<"schemaUpload">, CreateSchemaRequestPayload>(
+  return api.post<KlawApiResponse<"uploadSchema">, CreateSchemaRequestPayload>(
     `/uploadSchema`,
     payload
   );
