@@ -8,6 +8,10 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.clusterapi.models.ApiResponse;
+import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
@@ -82,5 +86,36 @@ class SchemaServiceTest {
 
     assertThat(schemaService.getSchema("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1", "topic"))
         .isNotEmpty();
+  }
+
+  @Test
+  public void deleteSchema() {
+    ClusterTopicRequest clusterTopicRequest = deleteTopicRequest("testtopic");
+
+    String deleteSchemaUrl = "schemaservers/subjects/testtopic-value";
+    when(getAdminClient.getRequestDetails(eq(deleteSchemaUrl), eq(KafkaSupportedProtocol.SSL)))
+        .thenReturn(Pair.of(deleteSchemaUrl, restTemplate));
+
+    this.mockRestServiceServer.expect(requestTo("/" + deleteSchemaUrl)).andRespond(withSuccess());
+
+    ApiResponse apiResponse = schemaService.deleteSchema(clusterTopicRequest);
+    assertThat(apiResponse.getResult())
+        .isEqualTo("Schema deletion " + ApiResultStatus.SUCCESS.value);
+  }
+
+  private static ClusterTopicRequest deleteTopicRequest(String topicName) {
+    return ClusterTopicRequest.builder()
+        .clusterName("DEV2")
+        .topicName(topicName)
+        .env("bootStrapServersSsl")
+        .protocol(KafkaSupportedProtocol.SSL)
+        .partitions(1)
+        .replicationFactor(Short.parseShort("1"))
+        .aclsNativeType(AclsNativeType.NATIVE)
+        .deleteAssociatedSchema(true)
+        .schemaClusterIdentification("DEV3")
+        .schemaEnv("schemaservers")
+        .schemaEnvProtocol(KafkaSupportedProtocol.SSL)
+        .build();
   }
 }

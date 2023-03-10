@@ -12,10 +12,9 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.AclRequests;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.EnvModel;
@@ -76,16 +75,12 @@ public class TopicAclControllerIT {
   private static final String superAdminPwd = "kwsuperadmin123$$";
   private static final String user1 = "tkwusera", user2 = "tkwuserb", user3 = "tkwuserc";
   private static final String topicName = "testtopic";
-  private static final int topicId = 1001;
-
-  private static Env env;
+  private static final int topicId1 = 1001, topicId3 = 1004;
 
   @BeforeAll
   public static void setup() {
     utilMethods = new UtilMethods();
     mockMethods = new MockMethods();
-    env = new Env();
-    env.setName("DEV");
   }
 
   // Create user with USER role success
@@ -218,7 +213,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List clusterModels = OBJECT_MAPPER.readValue(response, List.class);
+    List<Map<String, Object>> clusterModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(clusterModels).hasSize(1);
   }
 
@@ -258,7 +254,7 @@ public class TopicAclControllerIT {
   @Test
   @Order(5)
   public void createTopicRequest() throws Exception {
-    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId);
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId1);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     String response =
         mvc.perform(
@@ -291,7 +287,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TopicRequest> response = OBJECT_MAPPER.readValue(res, List.class);
+    List<TopicRequestModel> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response).hasSize(1);
   }
 
@@ -311,7 +307,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TopicRequest> response = OBJECT_MAPPER.readValue(res, List.class);
+    List<TopicRequestModel> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response).hasSize(1);
   }
 
@@ -319,7 +315,7 @@ public class TopicAclControllerIT {
   @Order(8)
   @Test
   public void approveTopic() throws Exception {
-    String topicName = this.topicName + topicId;
+    String topicName = TopicAclControllerIT.topicName + topicId1;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
         .thenReturn("ONLINE");
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
@@ -332,7 +328,7 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/execTopicRequests")
                     .with(user(user2).password(PASSWORD))
-                    .param("topicId", topicId + "")
+                    .param("topicId", topicId1 + "")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -388,7 +384,7 @@ public class TopicAclControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.get("/getTopicTeam")
                     .with(user(user1).password(PASSWORD))
-                    .param("topicName", topicName + topicId)
+                    .param("topicName", topicName + topicId1)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -457,7 +453,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<List<TopicInfo>> response = OBJECT_MAPPER.readValue(res, List.class);
+    List<List<TopicInfo>> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response).hasSize(1);
     assertThat(response.get(0)).hasSize(1);
   }
@@ -532,7 +528,7 @@ public class TopicAclControllerIT {
   @Order(16)
   @Test
   public void aclRequest() throws Exception {
-    AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId);
+    AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId1);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
 
     String response =
@@ -587,14 +583,13 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List response = OBJECT_MAPPER.readValue(res, List.class);
-    Object obj = response.get(0);
-    Map<String, Integer> hMap = (HashMap) obj;
+    List<Map<String, Object>> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    Map<String, Object> hMap = response.get(0);
 
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
-    Integer reqNo = hMap.get("req_no");
+    Integer reqNo = (Integer) hMap.get("req_no");
 
     res =
         mvc.perform(
@@ -615,7 +610,7 @@ public class TopicAclControllerIT {
   @Order(19)
   @Test
   public void requestAnAcl() throws Exception {
-    AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId);
+    AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId1);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
 
     String response =
@@ -649,10 +644,9 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List response = OBJECT_MAPPER.readValue(res, List.class);
-    Object obj = response.get(0);
-    Map<String, Integer> hMap = (HashMap) obj;
-    Integer reqNo = hMap.get("req_no");
+    List<Map<String, Object>> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    Map<String, Object> hMap = response.get(0);
+    Integer reqNo = (Integer) hMap.get("req_no");
 
     String resNew =
         mvc.perform(
@@ -686,9 +680,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<AclRequests> response = OBJECT_MAPPER.readValue(res, List.class);
-    Object obj = response.get(0);
-    Map<String, Integer> hMap = (HashMap) obj;
+    List<Map<String, Object>> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    Map<String, Object> hMap = response.get(0);
 
     String responseNew =
         mvc.perform(
@@ -718,7 +711,7 @@ public class TopicAclControllerIT {
         mvc.perform(
                 get("/getAcls")
                     .with(user(user3).password(PASSWORD))
-                    .param("topicnamesearch", topicName + topicId)
+                    .param("topicnamesearch", topicName + topicId1)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
@@ -753,7 +746,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<AclInfo> response = OBJECT_MAPPER.readValue(res, List.class);
+    List<AclInfo> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response).hasSize(1);
   }
 
@@ -773,9 +766,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<AclRequests> response = OBJECT_MAPPER.readValue(res, List.class);
-    Object obj = response.get(0);
-    Map<String, Integer> hMap = (HashMap) obj;
+    List<Map<String, Object>> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    Map<String, Object> hMap = response.get(0);
 
     String responseNew =
         mvc.perform(
@@ -792,15 +784,85 @@ public class TopicAclControllerIT {
     assertThat(responseNew).contains(ApiResultStatus.FAILURE.value);
   }
 
-  private void login(String user, String pwd, String role) throws Exception {
+  @Test
+  @Order(25)
+  public void createDeleteTopicRequest() throws Exception {
+    String topicName = createAndApproveTopic();
+
+    // create topic delete request
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/createTopicDeleteRequest")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .param("topicName", topicName)
+                    .param("env", "1")
+                    .param("deleteAssociatedSchema", "true")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+
+    String res =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getTopicRequests")
+                    .with(user(user3).password(PASSWORD))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .param("pageNo", "1")
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<TopicRequestModel> topicRequestModels =
+        OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    TopicRequestModel deleteTopicRequestModel =
+        topicRequestModels.stream()
+            .filter(topicRequestModel -> topicRequestModel.getTopicname().equals(topicName))
+            .findFirst()
+            .get();
+    assertThat(deleteTopicRequestModel.getDeleteAssociatedSchema()).isTrue();
+  }
+
+  private String createAndApproveTopic() throws Exception {
+    // Create a topic
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId3);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     mvc.perform(
-            get("/login")
-                .with(user(user).password(pwd).roles(role))
+            MockMvcRequestBuilders.post("/createTopics")
+                .with(user(user1).password(PASSWORD).roles("USER"))
+                .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andReturn()
         .getResponse()
         .getContentAsString();
+
+    // approve the topic
+    String topicName = TopicAclControllerIT.topicName + topicId3;
+    when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
+        .thenReturn("ONLINE");
+    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+
+    when(clusterApiService.approveTopicRequests(
+            topicName, RequestOperationType.CREATE.value, 2, "1", "1", new HashMap<>(), 101, null))
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
+
+    mvc.perform(
+            MockMvcRequestBuilders.post("/execTopicRequests")
+                .with(user(user3).password(PASSWORD))
+                .param("topicId", topicId3 + "")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+    return topicName;
   }
 }

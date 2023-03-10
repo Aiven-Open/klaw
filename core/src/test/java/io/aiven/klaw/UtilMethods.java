@@ -355,6 +355,7 @@ public class UtilMethods {
     topicRequest.setRequestStatus(RequestStatus.CREATED);
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     topicRequest.setDescription("Test desc");
+    topicRequest.setRequestor("kwusera");
     return topicRequest;
   }
 
