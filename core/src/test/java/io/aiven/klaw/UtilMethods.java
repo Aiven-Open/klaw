@@ -410,6 +410,7 @@ public class UtilMethods {
     schemaRequest.setSchemafull("schemafdsfsd");
     schemaRequest.setTeamId(1001);
     schemaRequest.setRemarks("pls approve");
+    schemaRequest.setTopicname("testtopic");
     schemaList.add(schemaRequest);
     return schemaList;
   }

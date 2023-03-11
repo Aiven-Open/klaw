@@ -2,14 +2,10 @@ package io.aiven.klaw.model.requests;
 
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -17,9 +13,11 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class AclRequestsModel implements Serializable {
+public class AclRequestsModel extends BaseRequestModel implements Serializable {
 
-  private String remarks;
+  @NotNull
+  @Pattern(message = "Invalid topic name", regexp = "^[a-zA-Z0-9._-]{3,}$")
+  private String topicname;
 
   @Pattern(message = "Invalid consumer group", regexp = "^$|^[a-zA-Z0-9_.-]{3,}$")
   private String consumergroup;
@@ -43,56 +41,17 @@ public class AclRequestsModel implements Serializable {
 
   private Integer req_no;
 
-  @NotNull private String topicname;
-
-  @NotNull private String environment;
-
-  @NotNull private String teamname;
-
   // Producer/Consumer
   @NotNull private AclType aclType;
 
   @NotNull private AclIPPrincipleType aclIpPrincipleType;
 
-  private RequestStatus requestStatus;
-
-  // Create/Delete
-  private RequestOperationType requestOperationType;
-
-  private String environmentName;
-
-  private Integer teamId;
-
   private Integer requestingteam;
 
   private String requestingTeamName;
 
-  private String appname;
-
-  private String username;
-
-  private Timestamp requesttime;
-
-  private String requesttimestring;
-
-  private String approver;
-
-  private Timestamp approvingtime;
-
   // Always TOPIC (for now)
   private String aclResourceType;
 
-  private String currentPage;
-
   private String otherParams;
-
-  private String totalNoPages;
-
-  private List<String> allPageNos;
-
-  private String approvingTeamDetails;
-
-  boolean isEditable;
-
-  boolean isDeletable;
 }

@@ -487,7 +487,7 @@ public class KafkaConnectControllerService {
         getConnectorRequestModels(kafkaConnectorRequests, true);
 
     for (KafkaConnectorRequestModel kafkaConnectorRequestModel : connectorRequestModels) {
-      kafkaConnectorRequestModel.setTeamName(
+      kafkaConnectorRequestModel.setTeamname(
           manageDatabase.getTeamNameFromTeamId(tenantId, kafkaConnectorRequestModel.getTeamId()));
       kafkaConnectorRequestModel.setEnvironmentName(
           getKafkaConnectEnvDetails(kafkaConnectorRequestModel.getEnvironment()).getName());
@@ -1180,7 +1180,7 @@ public class KafkaConnectControllerService {
           RequestStatus.of(connectorRequest.getRequestStatus()));
       kafkaConnectorRequestModel.setRequestOperationType(
           RequestOperationType.of(connectorRequest.getRequestOperationType()));
-      kafkaConnectorRequestModel.setTeamName(
+      kafkaConnectorRequestModel.setTeamname(
           manageDatabase.getTeamNameFromTeamId(tenantId, kafkaConnectorRequestModel.getTeamId()));
 
       if (fromSyncTopics) {
