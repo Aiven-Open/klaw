@@ -337,6 +337,61 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/aclRequest"
+  /getAclRequests:
+    get:
+      operationId: getAclRequests
+      summary: "Get ACL requests with aclstatus: created"
+      tags:
+        - ACL
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: currentPage
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: requestStatus
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/RequestStatus"
+          example: "CREATED"
+        - name: topic
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: env
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: aclType
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: ["PRODUCER", "CONSUMER"]
+        - name: isMyRequest
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  "$ref": "#/components/schemas/AclRequestsModel"
+
   /execAclRequest:
     post:
       tags:
