@@ -174,7 +174,9 @@ describe("TopicRequestsTable", () => {
     const onDetails = jest.fn();
     renderFromProps({ onDetails });
     await userEvent.click(
-      within(within(getNthRow(1)).getAllByRole("cell")[7]).getByRole("button")
+      within(within(getNthRow(1)).getAllByRole("cell")[7]).getByRole("button", {
+        name: "View",
+      })
     );
     expect(onDetails).toHaveBeenNthCalledWith(
       1,
@@ -186,7 +188,9 @@ describe("TopicRequestsTable", () => {
     const onEdit = jest.fn();
     renderFromProps({ onEdit });
     await userEvent.click(
-      within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button")
+      within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
+        name: "Edit",
+      })
     );
     expect(onEdit).toHaveBeenNthCalledWith(
       1,
@@ -198,11 +202,35 @@ describe("TopicRequestsTable", () => {
     const onDelete = jest.fn();
     renderFromProps({ onDelete });
     await userEvent.click(
-      within(within(getNthRow(1)).getAllByRole("cell")[9]).getByRole("button")
+      within(within(getNthRow(1)).getAllByRole("cell")[9]).getByRole("button", {
+        name: "Delete",
+      })
     );
     expect(onDelete).toHaveBeenNthCalledWith(
       1,
       String(mockedRequests[0].topicid)
     );
+  });
+
+  it("disables the edit button for a request if the request is not editable", () => {
+    const onEdit = jest.fn();
+    const nonEditableRequest = { ...mockedRequests[0], editable: false };
+    renderFromProps({ requests: [nonEditableRequest], onEdit });
+    expect(
+      within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
+        name: "Edit",
+      })
+    ).toBeDisabled();
+  });
+
+  it("disables the delete button for a request if the request is not deletable", () => {
+    const onDelete = jest.fn();
+    const nonDeletableRequest = { ...mockedRequests[0], deletable: false };
+    renderFromProps({ requests: [nonDeletableRequest], onDelete });
+    expect(
+      within(within(getNthRow(1)).getAllByRole("cell")[9]).getByRole("button", {
+        name: "Delete",
+      })
+    ).toBeDisabled();
   });
 });

@@ -21,6 +21,8 @@ interface TopicRequestTableRow {
   teamname: TopicRequest["teamname"];
   requestor: TopicRequest["requestor"];
   requesttimestring: TopicRequest["requesttimestring"];
+  deletable: TopicRequest["deletable"];
+  editable: TopicRequest["editable"];
 }
 
 type TopicRequestsTableProps = {
@@ -95,10 +97,11 @@ function TopicRequestsTable({
       headerName: "Edit",
       headerInvisible: true,
       width: 30,
-      action: ({ id }) => ({
+      action: ({ id, editable }) => ({
         text: "Edit",
         icon: editIcon,
         onClick: () => onEdit(String(id)),
+        disabled: !editable,
       }),
     },
     {
@@ -106,10 +109,11 @@ function TopicRequestsTable({
       headerName: "Delete",
       headerInvisible: true,
       width: 30,
-      action: ({ id }) => ({
+      action: ({ id, deletable }) => ({
         text: "Delete",
         icon: deleteIcon,
         onClick: () => onDelete(String(id)),
+        disabled: !deletable,
       }),
     },
   ];
@@ -124,6 +128,8 @@ function TopicRequestsTable({
       teamname: request.teamname,
       requestor: request.requestor,
       requesttimestring: request.requesttimestring,
+      deletable: request.deletable,
+      editable: request.editable,
     };
   });
 
