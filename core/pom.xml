@@ -33,7 +33,7 @@
         <pnpm.version>7.14.0</pnpm.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
-        <springdoc-openapi-ui.version>2.0.2</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>2.0.3</springdoc-openapi-ui.version>
     </properties>
 
     <dependencies>
