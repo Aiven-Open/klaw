@@ -437,7 +437,8 @@ public class ClusterApiService {
       String replicationFactor,
       String topicEnvId,
       Map<String, String> advancedTopicConfiguration,
-      int tenantId)
+      int tenantId,
+      Boolean deleteAssociatedSchema)
       throws KlawException {
     log.info("approveTopicRequests {} {}", topicName, topicEnvId);
     getClusterApiProperties(tenantId);
@@ -480,6 +481,25 @@ public class ClusterApiService {
                 .build();
       } else {
         uri = clusterConnUrl + URI_DELETE_TOPICS;
+        if (deleteAssociatedSchema) {
+          // get associated schema env
+          Env schemaEnvSelected =
+              manageDatabase
+                  .getHandleDbRequests()
+                  .selectEnvDetails(envSelected.getAssociatedEnv().getId(), tenantId);
+          KwClusters kwClustersSchemaEnv =
+              manageDatabase
+                  .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+                  .get(schemaEnvSelected.getClusterId());
+          clusterTopicRequest =
+              clusterTopicRequest.toBuilder()
+                  .deleteAssociatedSchema(true)
+                  .schemaClusterIdentification(
+                      kwClustersSchemaEnv.getClusterName() + kwClustersSchemaEnv.getClusterId())
+                  .schemaEnv(kwClustersSchemaEnv.getBootstrapServers())
+                  .schemaEnvProtocol(kwClustersSchemaEnv.getProtocol())
+                  .build();
+        }
       }
 
       HttpHeaders headers = createHeaders(clusterApiUser);

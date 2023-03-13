@@ -2,6 +2,8 @@ package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
+import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
@@ -40,6 +42,9 @@ public class SchemaService {
   public static final String SCHEMA_REGISTRY_CONTENT_TYPE =
       "application/vnd.schemaregistry.v1+json";
   public static final String SCHEMA_COMPATIBILITY_NOT_SET = "NOT SET";
+  public static final String SCHEMA_VALUE_URI = "-value";
+
+  public static final String SCHEMA_SUBJECTS_URI = "subjects";
 
   @Value("${klaw.schemaregistry.compatibility.default:BACKWARD}")
   private String defaultSchemaCompatibility;
@@ -82,6 +87,28 @@ public class SchemaService {
               null);
         }
       }
+
+      String suffixUrl =
+          clusterSchemaRequest.getEnv()
+              + "/"
+              + SCHEMA_SUBJECTS_URI
+              + "/"
+              + clusterSchemaRequest.getTopicName()
+              + SCHEMA_VALUE_URI
+              + "/versions";
+      Pair<String, RestTemplate> reqDetails =
+          clusterApiUtils.getRequestDetails(suffixUrl, clusterSchemaRequest.getProtocol());
+
+      Map<String, String> params = new HashMap<>();
+      params.put("schema", clusterSchemaRequest.getFullSchema());
+
+      HttpHeaders headers =
+          clusterApiUtils.createHeaders(
+              clusterSchemaRequest.getClusterIdentification(), KafkaClustersType.SCHEMA_REGISTRY);
+      headers.set("Content-Type", SCHEMA_REGISTRY_CONTENT_TYPE);
+      HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
+      ResponseEntity<String> responseNew =
+          reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
 
       String updateTopicReqStatus = registerSchemaPostCall(clusterSchemaRequest);
 
@@ -182,7 +209,14 @@ public class SchemaService {
       if (versionsList != null) {
         for (Integer schemaVersion : versionsList) {
           String suffixUrl =
-              environmentVal + "/subjects/" + topicName + "-value/versions/" + schemaVersion;
+              environmentVal
+                  + "/"
+                  + SCHEMA_SUBJECTS_URI
+                  + "/"
+                  + topicName
+                  + SCHEMA_VALUE_URI
+                  + "/versions/"
+                  + schemaVersion;
           Pair<String, RestTemplate> reqDetails =
               clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
@@ -222,7 +256,14 @@ public class SchemaService {
         return null;
       }
 
-      String suffixUrl = environmentVal + "/subjects/" + topicName + "-value/versions";
+      String suffixUrl =
+          environmentVal
+              + "/"
+              + SCHEMA_SUBJECTS_URI
+              + "/"
+              + topicName
+              + SCHEMA_VALUE_URI
+              + "/versions";
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
@@ -326,7 +367,7 @@ public class SchemaService {
         return false;
       }
 
-      String suffixUrl = environmentVal + "/config/" + topicName + "-value";
+      String suffixUrl = environmentVal + "/config/" + topicName + SCHEMA_VALUE_URI;
 
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
@@ -366,7 +407,7 @@ public class SchemaService {
   protected ClusterStatus getSchemaRegistryStatus(
       String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
 
-    String suffixUrl = environmentVal + "/subjects";
+    String suffixUrl = environmentVal + "/" + SCHEMA_SUBJECTS_URI;
     Pair<String, RestTemplate> reqDetails = clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
     HttpEntity<Object> request = createSchemaRegistryRequest(clusterIdentification);
@@ -380,6 +421,35 @@ public class SchemaService {
     } catch (RestClientException e) {
       log.error("Exception:", e);
       return ClusterStatus.OFFLINE;
+    }
+  }
+
+  public ApiResponse deleteSchema(ClusterTopicRequest clusterTopicRequest) {
+    String suffixUrl =
+        clusterTopicRequest.getSchemaEnv()
+            + "/subjects/"
+            + clusterTopicRequest.getTopicName()
+            + SCHEMA_VALUE_URI;
+    Pair<String, RestTemplate> reqDetails =
+        clusterApiUtils.getRequestDetails(suffixUrl, clusterTopicRequest.getSchemaEnvProtocol());
+    HttpEntity<Object> request =
+        createSchemaRegistryRequest(clusterTopicRequest.getSchemaClusterIdentification());
+
+    try {
+      reqDetails
+          .getRight()
+          .exchange(
+              reqDetails.getLeft(),
+              HttpMethod.DELETE,
+              request,
+              new ParameterizedTypeReference<>() {});
+      log.info("Schema deleted {}", clusterTopicRequest);
+      return ApiResponse.builder()
+          .result("Schema deletion " + ApiResultStatus.SUCCESS.value)
+          .build();
+    } catch (RestClientException e) {
+      log.error("Exception:", e);
+      return ApiResponse.builder().result("Schema deletion failure " + e.getMessage()).build();
     }
   }
 }

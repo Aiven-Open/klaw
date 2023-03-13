@@ -3,12 +3,12 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.TopicCreateRequestModel;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicRequestModel;
-import io.aiven.klaw.model.TopicUpdateRequestModel;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.TopicCreateRequestModel;
+import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.service.TopicControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -52,10 +52,14 @@ public class TopicController {
       value = "/createTopicDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createTopicDeleteRequest(
-      @RequestParam("topicName") String topicName, @RequestParam("env") String envId)
+      @RequestParam("topicName") String topicName,
+      @RequestParam("env") String envId,
+      @RequestParam(value = "deleteAssociatedSchema", defaultValue = "false")
+          boolean deleteAssociatedSchema)
       throws KlawException, KlawNotAuthorizedException {
     return new ResponseEntity<>(
-        topicControllerService.createTopicDeleteRequest(topicName, envId), HttpStatus.OK);
+        topicControllerService.createTopicDeleteRequest(topicName, envId, deleteAssociatedSchema),
+        HttpStatus.OK);
   }
 
   @PostMapping(

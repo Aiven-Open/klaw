@@ -36,8 +36,11 @@ public class ApacheKafkaTopicService {
 
   private final ClusterApiUtils clusterApiUtils;
 
-  public ApacheKafkaTopicService(ClusterApiUtils clusterApiUtils) {
+  private final SchemaService schemaService;
+
+  public ApacheKafkaTopicService(ClusterApiUtils clusterApiUtils, SchemaService schemaService) {
     this.clusterApiUtils = clusterApiUtils;
+    this.schemaService = schemaService;
   }
 
   public synchronized Set<Map<String, String>> loadTopics(
@@ -200,7 +203,16 @@ public class ApacheKafkaTopicService {
           .values()
           .get(clusterTopicRequest.getTopicName())
           .get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
-      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+
+      // delete associated schema if requested
+      String schemaDeletionStatus = "";
+      if (clusterTopicRequest.getDeleteAssociatedSchema()) {
+        schemaDeletionStatus = schemaService.deleteSchema(clusterTopicRequest).getResult();
+      }
+      return ApiResponse.builder()
+          .result(ApiResultStatus.SUCCESS.value)
+          .message(schemaDeletionStatus)
+          .build();
     } catch (KafkaException e) {
       log.error("Invalid properties: ", e);
       throw e;

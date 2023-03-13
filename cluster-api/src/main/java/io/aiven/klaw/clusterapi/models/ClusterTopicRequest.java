@@ -9,7 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -29,4 +29,15 @@ public class ClusterTopicRequest {
   @JsonProperty private Map<String, String> advancedTopicConfiguration;
 
   @JsonProperty private AclsNativeType aclsNativeType;
+
+  @JsonProperty private Boolean deleteAssociatedSchema;
+
+  // required to delete associated schema
+  @JsonProperty private String schemaEnv;
+
+  // required to delete associated schema
+  @JsonProperty private String schemaClusterIdentification;
+
+  // required to delete associated schema
+  @JsonProperty private KafkaSupportedProtocol schemaEnvProtocol;
 }

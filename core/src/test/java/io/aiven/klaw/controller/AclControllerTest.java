@@ -10,11 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.AclInfo;
-import io.aiven.klaw.model.AclRequestsModel;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.AclSyncControllerService;
 import io.aiven.klaw.service.TopicOverviewService;

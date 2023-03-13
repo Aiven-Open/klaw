@@ -3,6 +3,8 @@ package io.aiven.klaw.clusterapi;
 import static io.aiven.klaw.clusterapi.models.enums.ClusterStatus.ONLINE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,9 +14,11 @@ import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.enums.AclIPPrincipleType;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.enums.RequestOperationType;
+import io.aiven.klaw.clusterapi.services.SchemaService;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import java.security.Key;
@@ -49,6 +53,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -86,6 +91,8 @@ public class ClusterApiControllerIT {
 
   @Autowired private MockMvc mvc;
   ObjectMapper mapper = new ObjectMapper();
+
+  @MockBean SchemaService schemaService;
 
   @Test
   @Order(1)
@@ -402,6 +409,52 @@ public class ClusterApiControllerIT {
             log.error("Error : ", e);
           }
         });
+  }
+
+  @Test
+  @Order(9)
+  public void deleteTopics() throws Exception {
+    // Create a topic
+    String topicName = "testtopic-todelete";
+    ClusterTopicRequest clusterTopicRequest = createTopicRequest(topicName);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
+    String url = "/topics/createTopics";
+    executeCreateTopicRequest(jsonReq, url);
+
+    embeddedKafkaBroker.doWithAdmin(
+        adminClient -> {
+          try {
+            Set<String> topicsSet = adminClient.listTopics().names().get();
+            assertThat(topicsSet).contains(topicName);
+          } catch (InterruptedException | ExecutionException e) {
+            log.error("Error : ", e);
+          }
+        });
+
+    // Delete the topic
+    clusterTopicRequest = clusterTopicRequest.toBuilder().deleteAssociatedSchema(true).build();
+    jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
+    url = "/topics/deleteTopics";
+    when(schemaService.deleteSchema(any()))
+        .thenReturn(
+            ApiResponse.builder()
+                .result("Schema deletion " + ApiResultStatus.SUCCESS.value)
+                .build());
+    MockHttpServletResponse response = executeCreateTopicRequest(jsonReq, url);
+
+    embeddedKafkaBroker.doWithAdmin(
+        adminClient -> {
+          try {
+            Set<String> topicsSet = adminClient.listTopics().names().get();
+            assertThat(topicsSet).doesNotContain(topicName);
+          } catch (InterruptedException | ExecutionException e) {
+            log.error("Error : ", e);
+          }
+        });
+
+    ApiResponse apiResponse = mapper.readValue(response.getContentAsString(), ApiResponse.class);
+    assertThat(apiResponse.getMessage())
+        .isEqualTo("Schema deletion " + ApiResultStatus.SUCCESS.value);
   }
 
   private MockHttpServletResponse executeCreateTopicRequest(String jsonReq, String url)

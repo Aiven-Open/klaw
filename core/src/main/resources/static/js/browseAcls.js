@@ -258,42 +258,65 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                     closeOnConfirm: true,
                     closeOnCancel: true
                 }).then(function(isConfirm){
-                    if (isConfirm.dismiss != "cancel") {
-                        $http({
-                                method: "POST",
-                                url: "createTopicDeleteRequest",
-                                headers : { 'Content-Type' : 'application/json' },
-                                params: {'topicName' : $scope.topicSelectedParam,
-                                                           'env' : env},
-                                data: {'topicName' : $scope.topicSelectedParam,
-                                                           'env' : env},
-                            }).success(function(output) {
-
-                                if(output.result == 'success'){
-                                    swal({
-                                         title: "",
-                                         text: "Topic Delete Request : "+output.result,
-                                         showConfirmButton: true
-                                     }).then(function(isConfirm){
-                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=CREATED&deleteTopicCreated=true";
-                                        });
-                                }
-                                else{
-                                        $scope.alertTopicDelete = "Topic Delete Request : "+output.result;
-                                        $scope.alertnote = $scope.alertTopicDelete;
-                                        $scope.showSubmitFailed('','');
-                                    }
-                            }).error(
-                                function(error)
-                                {
-                                    $scope.handleValidationErrors(error);
-                                }
-                            );
+                    if (isConfirm.dismiss !== "cancel") {
+                        swal({
+                            title: "Delete schema ?",
+                            text: "Delete associated schema (all versions) of this topic, if it exists ?",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#DD6B55",
+                            confirmButtonText: "Yes, delete schema!",
+                            cancelButtonText: "No, don't delete schema!",
+                            closeOnConfirm: true,
+                            closeOnCancel: true
+                        }).then(function(isConfirm){
+                            if (isConfirm.dismiss !== "cancel") {
+                                $scope.createTopicDeleteRequestHttpCall(env, true); // delete schema
+                            } else {
+                                $scope.createTopicDeleteRequestHttpCall(env, false); // don't delete schema
+                            }
+                        });
                     } else {
                         return;
                     }
                 });
 	}
+
+    $scope.createTopicDeleteRequestHttpCall = function(env, deleteAssociatedSchema){
+        $http({
+            method: "POST",
+            url: "createTopicDeleteRequest",
+            headers : { 'Content-Type' : 'application/json' },
+            params: {'topicName' : $scope.topicSelectedParam,
+                'env' : env,
+                'deleteAssociatedSchema' : deleteAssociatedSchema
+            },
+            data: {'topicName' : $scope.topicSelectedParam,
+                'env' : env,
+                'deleteAssociatedSchema' : deleteAssociatedSchema
+            },
+        }).success(function(output) {
+            if(output.result === 'success'){
+                swal({
+                    title: "",
+                    text: "Topic Delete Request : "+output.result,
+                    showConfirmButton: true
+                }).then(function(isConfirm){
+                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=CREATED&deleteTopicCreated=true";
+                });
+            }
+            else{
+                $scope.alertTopicDelete = "Topic Delete Request : "+output.result;
+                $scope.alertnote = $scope.alertTopicDelete;
+                $scope.showSubmitFailed('','');
+            }
+        }).error(
+            function(error)
+            {
+                $scope.handleValidationErrors(error);
+            }
+        );
+    }
 
 	$scope.onClaimTopic = function(topicName, env){
     	    $scope.alert = null;

@@ -3,7 +3,7 @@ package io.aiven.klaw.perf;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicRequestModel;
+import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.service.TopicControllerService;
 import java.util.Calendar;
 import java.util.List;

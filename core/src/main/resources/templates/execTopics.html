@@ -583,10 +583,15 @@
 											</div>
 										</div>
 
-										<div class="p-2 border-left" style="width:20%">
+										<div ng-show="topicRequest.requestOperationType == 'DELETE'" class="p-2 border-left" style="width:20%">
+											<h6 class="text-primary">Delete Associated Schema</h6>
+											<b>{{ topicRequest.deleteAssociatedSchema }}</b>
+										</div>
+
+										<div class="p-2 border-left" style="width:15%">
 											<h6 class="text-primary">Description</h6><b>{{ topicRequest.description }}</b>
 										</div>
-										<div class="p-2 border-left" style="width:35%">
+										<div class="p-2 border-left" style="width:20%">
 											<h6 class="text-primary">Remarks</h6><b>{{ topicRequest.remarks }}</b>
 										</div>
 

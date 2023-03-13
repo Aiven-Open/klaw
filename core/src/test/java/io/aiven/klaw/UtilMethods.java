@@ -22,6 +22,12 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.requests.SchemaPromotion;
+import io.aiven.klaw.model.requests.SchemaRequestModel;
+import io.aiven.klaw.model.requests.TopicCreateRequestModel;
+import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -349,6 +355,7 @@ public class UtilMethods {
     topicRequest.setRequestStatus(RequestStatus.CREATED);
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     topicRequest.setDescription("Test desc");
+    topicRequest.setRequestor("kwusera");
     return topicRequest;
   }
 
@@ -403,6 +410,7 @@ public class UtilMethods {
     schemaRequest.setSchemafull("schemafdsfsd");
     schemaRequest.setTeamId(1001);
     schemaRequest.setRemarks("pls approve");
+    schemaRequest.setTopicname("testtopic");
     schemaList.add(schemaRequest);
     return schemaList;
   }

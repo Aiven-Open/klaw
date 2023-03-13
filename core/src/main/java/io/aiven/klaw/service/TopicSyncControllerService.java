@@ -16,13 +16,13 @@ import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.SyncTopicsBulk;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.TopicRequestModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -560,7 +560,8 @@ public class TopicSyncControllerService {
               topicFound.getNoOfReplcias(),
               syncBackTopics.getTargetEnv(),
               null,
-              tenantId);
+              tenantId,
+              false);
 
       if (!Objects.equals(
           Objects.requireNonNull(response.getBody()).getResult(), ApiResultStatus.SUCCESS.value)) {

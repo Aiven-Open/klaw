@@ -416,7 +416,7 @@ class SchemaServiceRegisterSchemaTest {
     // change schema compatibility to NONE, once
     verify(restTemplate, times(1)).put(any(), any(), eq(String.class));
 
-    verify(restTemplate, times(1))
+    verify(restTemplate, times(2))
         .postForEntity(anyString(), any(HttpEntity.class), eq(String.class));
     // 2 calls to get the current SchemaCompatibility (subject, global) as isForce==false
     verify(restTemplate, times(2))

@@ -24,7 +24,6 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorOverview;
 import io.aiven.klaw.model.KafkaConnectorModel;
-import io.aiven.klaw.model.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.connectorconfig.ConnectorConfig;
@@ -33,6 +32,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -487,7 +487,7 @@ public class KafkaConnectControllerService {
         getConnectorRequestModels(kafkaConnectorRequests, true);
 
     for (KafkaConnectorRequestModel kafkaConnectorRequestModel : connectorRequestModels) {
-      kafkaConnectorRequestModel.setTeamName(
+      kafkaConnectorRequestModel.setTeamname(
           manageDatabase.getTeamNameFromTeamId(tenantId, kafkaConnectorRequestModel.getTeamId()));
       kafkaConnectorRequestModel.setEnvironmentName(
           getKafkaConnectEnvDetails(kafkaConnectorRequestModel.getEnvironment()).getName());
@@ -1180,7 +1180,7 @@ public class KafkaConnectControllerService {
           RequestStatus.of(connectorRequest.getRequestStatus()));
       kafkaConnectorRequestModel.setRequestOperationType(
           RequestOperationType.of(connectorRequest.getRequestOperationType()));
-      kafkaConnectorRequestModel.setTeamName(
+      kafkaConnectorRequestModel.setTeamname(
           manageDatabase.getTeamNameFromTeamId(tenantId, kafkaConnectorRequestModel.getTeamId()));
 
       if (fromSyncTopics) {

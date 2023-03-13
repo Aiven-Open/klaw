@@ -976,3 +976,14 @@ databaseChangeLog:
                 - column:
                     name: associatedenv
                     type: CLOB
+    - changeSet:
+        id: 09-03-2023 New Column- schema to be deleted when topic is deleted
+        author: muralibasani
+        changes:
+          - addColumn:
+              tableName: kwtopicrequests
+              columns:
+                - column:
+                    name: deleteassociatedschema
+                    type: BOOLEAN
+                    defaultValue: false

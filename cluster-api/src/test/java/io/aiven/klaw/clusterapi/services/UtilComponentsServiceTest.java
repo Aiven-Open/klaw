@@ -105,7 +105,7 @@ public class UtilComponentsServiceTest {
     confluentCloudApiService = new ConfluentCloudApiService(env, clusterApiUtils);
     utilComponentsService = new UtilComponentsService(env, clusterApiUtils);
     apacheKafkaAclService = new ApacheKafkaAclService(clusterApiUtils);
-    apacheKafkaTopicService = new ApacheKafkaTopicService(clusterApiUtils);
+    apacheKafkaTopicService = new ApacheKafkaTopicService(clusterApiUtils, schemaService);
     schemaService = new SchemaService(clusterApiUtils);
     utilMethods = new UtilMethods();
   }

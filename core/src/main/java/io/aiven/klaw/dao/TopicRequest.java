@@ -84,6 +84,9 @@ public class TopicRequest implements Serializable {
   @Column(name = "description")
   private String description;
 
+  @Column(name = "deleteassociatedschema")
+  private Boolean deleteAssociatedSchema;
+
   @Transient private String sequence;
 
   @Transient private String history;

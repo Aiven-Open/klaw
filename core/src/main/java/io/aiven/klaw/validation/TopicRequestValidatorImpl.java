@@ -1,10 +1,10 @@
 package io.aiven.klaw.validation;
 
 import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.model.TopicRequestModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.service.CommonUtilsService;
 import io.aiven.klaw.service.MailUtils;
 import io.aiven.klaw.service.TopicControllerService;
