@@ -4,7 +4,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("HomePage", () => {
   beforeAll(() => {
-    customRender(<HomePage />, { memoryRouter: true });
+    customRender(<HomePage />, { memoryRouter: true, queryClient: true });
   });
 
   afterAll(cleanup);

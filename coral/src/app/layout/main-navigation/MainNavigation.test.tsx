@@ -108,42 +108,6 @@ describe("MainNavigation.tsx", () => {
     });
   });
 
-  describe("user can see their current team", () => {
-    beforeEach(() => {
-      customRender(<MainNavigation />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
-      cleanup();
-    });
-
-    it("renders the user's current team", () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: "Team-name", isLoading: false });
-
-      const teamLabel = screen.getByText("Team");
-      const teamName = screen.getByText("Team-name"); // -> fails because team name is "Fetching team..."
-      expect(teamLabel).toBeVisible();
-      expect(teamName).toBeVisible();
-    });
-
-    it("renders loading state", () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: undefined, isLoading: true });
-
-      const teamLabel = screen.getByText("Team");
-      const teamName = screen.getByText("Fetching team..."); // -> Fails because teamName is "Team-name"
-      expect(teamLabel).toBeVisible();
-      expect(teamName).toBeVisible();
-    });
-  });
-
   describe("user can open submenus and see more links", () => {
     beforeEach(() => {
       customRender(<MainNavigation />, {
@@ -256,6 +220,39 @@ describe("MainNavigation.tsx", () => {
           expect(link).toHaveFocus();
         });
       });
+    });
+  });
+
+  describe("user can see their current team", () => {
+    beforeEach(() => {
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      useQuerySpy.mockReturnValue({ data: "Team-name", isLoading: true });
+    });
+
+    afterEach(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      useQuerySpy.mockReturnValue({ data: "Team-name", isLoading: false });
+      cleanup();
+    });
+
+    it("renders loading state", () => {
+      const teamLabel = screen.getByText("Team");
+      const teamName = screen.getByText("Fetching team..."); // -> Fails because teamName is "Team-name"
+      expect(teamLabel).toBeVisible();
+      expect(teamName).toBeVisible();
+    });
+
+    it("renders the user's current team", () => {
+      const teamLabel = screen.getByText("Team");
+      const teamName = screen.getByText("Team-name"); // -> fails because team name is "Fetching team..."
+      expect(teamLabel).toBeVisible();
+      expect(teamName).toBeVisible();
     });
   });
 });
