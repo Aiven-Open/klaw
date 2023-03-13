@@ -1,5 +1,5 @@
 import * as ReactQuery from "@tanstack/react-query";
-import { cleanup, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
