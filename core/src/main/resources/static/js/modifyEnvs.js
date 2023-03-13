@@ -77,9 +77,9 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     params: {'clusterId' : clusterId },
                     data: {'clusterId' : clusterId}
                 }).success(function(output) {
-                    if(output != null && output != ""){
+                    if(output != null && output !== ""){
                         $scope.clusterDetails = output;
-                        if($scope.clusterDetails.aivenCluster==true)
+                        if($scope.clusterDetails.aivenCluster === true)
                             $scope.clusterDetails.aivenClusterType='Aiven';
                         else
                             $scope.clusterDetails.aivenClusterType='Non-Aiven';
@@ -103,11 +103,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
             for (var i = 0; i < sURLVariables.length; i++)
                 {
                     var sParameterName = sURLVariables[i].split('=');
-                    if (sParameterName[0] == "clusterId")
+                    if (sParameterName[0] === "clusterId")
                     {
                         clusterId = sParameterName[1];
                     }
-                    else if (sParameterName[0] == "clusterType")
+                    else if (sParameterName[0] === "clusterType")
                     {
                         clusterType = sParameterName[1];
                     }
@@ -135,11 +135,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
             for (var i = 0; i < sURLVariables.length; i++)
                 {
                     var sParameterName = sURLVariables[i].split('=');
-                    if (sParameterName[0] == "envId")
+                    if (sParameterName[0] === "envId")
                     {
                         envId = sParameterName[1];
                     }
-                    else if (sParameterName[0] == "envType")
+                    else if (sParameterName[0] === "envType")
                     {
                         envType = sParameterName[1];
                     }
@@ -161,7 +161,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     params: {'envSelected' : envId, 'envType' : envType },
                     data: {'envSelected' : envId, 'envType' : envType}
                 }).success(function(output) {
-                    if(output != null && output != ""){
+                    if(output != null && output !== ""){
                         $scope.envDetails = output;
                         $scope.onChangeCluster(output.clusterId);
                     }else
@@ -178,7 +178,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
 
         $scope.onChangeProtocol = function(protocol)
         {
-            if(protocol == 'SSL')
+            if(protocol === 'SSL')
                 $scope.sslparams = "true";
             else
                 $scope.sslparams = "false";
@@ -347,14 +347,14 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
 
                 $scope.clusterDetails.type = 'schemaregistry';
 
-                if($scope.clusterDetails.bootstrapServers == undefined)
+                if($scope.clusterDetails.bootstrapServers === undefined)
                     {
                         $scope.alertnote = "Please fill in bootstrapServer";
                         $scope.showAlertToast();
                         return;
                     }
 
-                if($scope.clusterDetails.clusterName == undefined)
+                if($scope.clusterDetails.clusterName === undefined)
                 {
                     $scope.alertnote = "Please fill in a name for cluster";
                     $scope.showAlertToast();
@@ -386,7 +386,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     data: serviceInput
                 }).success(function(output) {
                     $scope.alert = "Schema registry cluster updated: "+output.result;
-                    if(output.result == 'success'){
+                    if(output.result === 'success'){
                         swal({
                              title: "",
                              text: "Schema registry cluster updated : "+output.result,
@@ -404,6 +404,68 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 );
 
             };
+
+        $scope.editKafkaRestApiCluster = function() {
+
+            $scope.clusterDetails.type = 'kafkarestapi';
+
+            if($scope.clusterDetails.bootstrapServers === undefined)
+            {
+                $scope.alertnote = "Please fill in Rest Api server";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.clusterDetails.clusterName === undefined)
+            {
+                $scope.alertnote = "Please fill in a name for cluster";
+                $scope.showAlertToast();
+                return;
+            }
+
+            if($scope.clusterDetails.clusterName.length > 15)
+            {
+                $scope.alertnote = "Cluster name cannot be more than 15 characters.";
+                $scope.showAlertToast();
+                return;
+            }
+
+            var serviceInput = {};
+            serviceInput['clusterId'] = $scope.clusterToEdit;
+            serviceInput['clusterName'] = $scope.clusterDetails.clusterName;
+            serviceInput['bootstrapServers'] = $scope.clusterDetails.bootstrapServers;
+            serviceInput['protocol'] = $scope.clusterDetails.protocol;
+            serviceInput['clusterType'] = $scope.clusterDetails.type;
+            serviceInput['kafkaFlavor'] = $scope.clusterDetails.kafkaFlavor;
+
+            serviceInput['otherParams'] = "default.partitions=na,max.partitions=na,replication.factor=na";
+
+            $http({
+                method: "POST",
+                url: "addNewCluster",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'addNewEnv' : serviceInput },
+                data: serviceInput
+            }).success(function(output) {
+                $scope.alert = "Rest Api cluster updated: "+output.result;
+                if(output.result === 'success'){
+                    swal({
+                        title: "",
+                        text: "Rest Api cluster updated : "+output.result,
+                        timer: 2000,
+                        showConfirmButton: true
+                    }).then(function(isConfirm){
+                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/clusters";
+                    });
+                }else $scope.showSubmitFailed('','');
+            }).error(
+                function(error)
+                {
+                    $scope.handleValidationErrors(error);
+                }
+            );
+
+        };
 
        $scope.editKafkaConnectCluster = function() {
 

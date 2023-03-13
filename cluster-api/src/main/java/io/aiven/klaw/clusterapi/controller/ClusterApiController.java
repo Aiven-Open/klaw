@@ -330,6 +330,12 @@ public class ClusterApiController {
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
+  /**
+   * Register a schema on schema registry. If force register is enabled - Get subject compatibility
+   * - Set subject compatibility to NONE, if it's not NONE or NOT SET - Register schema - If subject
+   * compatibility is NOT_SET, get global compatibility - Apply global compatibility on subject
+   * level If force register is not enabled - Register schema
+   */
   @PostMapping(value = "/postSchema")
   public ResponseEntity<ApiResponse> postSchema(
       @RequestBody @Valid ClusterSchemaRequest clusterSchemaRequest) {

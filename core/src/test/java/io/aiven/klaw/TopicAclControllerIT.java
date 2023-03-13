@@ -149,7 +149,7 @@ public class TopicAclControllerIT {
   @Test
   @Order(2)
   public void addNewCluster() throws Exception {
-    KwClustersModel kwClustersModel = mockMethods.getClusterModel("DEV_CLUSTER");
+    KwClustersModel kwClustersModel = mockMethods.getKafkaClusterModel("DEV_CLUSTER");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
 
     String response =

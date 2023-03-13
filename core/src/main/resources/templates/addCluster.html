@@ -488,6 +488,7 @@
 													<option value="kafka">Kafka</option>
 													<option value="schemaregistry">SchemaRegistry</option>
 													<option value="kafkaconnect">KafkaConnect</option>
+													<option value="kafkarestapi">KafkaRestApi</option>
 												</select>
 
 											</div>
@@ -531,6 +532,13 @@
 												<small class="form-control-feedback">Ex : server1:8083</small>
 											</div>
 										</div>
+										<div class="col-md-6" ng-show="addNewCluster.clusterType == 'kafkarestapi'">
+											<div class="form-group">
+												<label>Rest proxy server</label>
+												<input type="text" class="form-control" required ng-model="addNewCluster.host" minlength="3" placeholder="https://server:12695">
+												<small class="form-control-feedback">Ex : https://server:12695</small>
+											</div>
+										</div>
 										<!--/span-->
 									</div>
 									<!--/row-->
@@ -563,6 +571,18 @@
 											</div>
 										</div>
 										<div class="col-md-6">
+										</div>
+									</div>
+
+									<div class="row" ng-show="addNewCluster.clusterType == 'kafkarestapi'">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Protocol</label>
+												<select required class="form-control custom-select" ng-change="onChangeProtocol(addNewCluster.protocol)" ng-model="addNewCluster.protocol">
+													<option value="PLAINTEXT">PLAINTEXT</option>
+													<option value="SSL">SSL</option>
+												</select>
+											</div>
 										</div>
 									</div>
 
@@ -624,7 +644,7 @@
 										</div>
 									</div>
 
-									<div class="row">
+									<div class="row" ng-show="addNewCluster.clusterType != 'kafkarestapi'">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Kafka Flavor</label>

@@ -57,28 +57,27 @@ public class SchemaService {
 
   public synchronized ApiResponse registerSchema(ClusterSchemaRequest clusterSchemaRequest) {
     String schemaCompatibility = null;
-    boolean schemaCompatibilityCompleted = false;
+    boolean schemaCompatibilitySetOnSubject = false;
     try {
-      log.debug("RegisterSchema on {} ", clusterSchemaRequest.getTopicName());
-      //            set default compatibility
-      log.info("isForceRegisterEnabled {}", clusterSchemaRequest.isForceRegister());
+      log.debug(
+          "RegisterSchema on {} isForceRegisterEnabled {}",
+          clusterSchemaRequest.getTopicName(),
+          clusterSchemaRequest.isForceRegister());
       if (clusterSchemaRequest.isForceRegister()) {
-        log.debug("RegisterSchema - Force Register Enabled");
         schemaCompatibility =
             getSubjectSchemaCompatibility(
                 clusterSchemaRequest.getEnv(),
                 clusterSchemaRequest.getTopicName(),
                 clusterSchemaRequest.getProtocol(),
                 clusterSchemaRequest.getClusterIdentification());
-        // Error thrown preventing progress if Schema Compatibility not retrieved correctly.
-        schemaCompatibilityCompleted =
-            checkSchemaCompatibilitySuccessfullyRetrieved(schemaCompatibility);
+        // Verify if schema compatibility is set on subject
+        schemaCompatibilitySetOnSubject = checkIfSchemaCompatibilitySet(schemaCompatibility);
         log.debug(
             "RegisterSchema - original Schema Compatibility {} for Topic {}",
             schemaCompatibility,
             clusterSchemaRequest.getTopicName());
-        // only reset if we have the previous schema to revert to.
-        if (schemaCompatibilityCompleted) {
+        // set subject compatibility to NONE, if it's not NONE, or NOT SET
+        if (!schemaCompatibilitySetOnSubject || !schemaCompatibility.equals("NONE")) {
           setSchemaCompatibility(
               clusterSchemaRequest.getEnv(),
               clusterSchemaRequest.getTopicName(),
@@ -88,6 +87,7 @@ public class SchemaService {
               null);
         }
       }
+
       String suffixUrl =
           clusterSchemaRequest.getEnv()
               + "/"
@@ -110,13 +110,11 @@ public class SchemaService {
       ResponseEntity<String> responseNew =
           reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
 
-      String updateTopicReqStatus = responseNew.getBody();
-      log.info("SchemaRequest response body {}", responseNew.getBody());
+      String updateTopicReqStatus = registerSchemaPostCall(clusterSchemaRequest);
 
       return ApiResponse.builder().result(updateTopicReqStatus).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-
       if (e instanceof HttpClientErrorException
           && ((HttpClientErrorException.Conflict) e).getStatusCode().value() == 409) {
         return ApiResponse.builder()
@@ -126,10 +124,29 @@ public class SchemaService {
       return ApiResponse.builder().result("Failure in registering schema.").build();
     } finally {
       // Ensure the Schema compatibility is returned to previous setting before the force update.
-      // (Set isForce to false in all cases to revert it.
-      if (clusterSchemaRequest.isForceRegister() && schemaCompatibilityCompleted) {
+      resetCompatibilityOnSubject(
+          clusterSchemaRequest, schemaCompatibility, schemaCompatibilitySetOnSubject);
+    }
+  }
+
+  private void resetCompatibilityOnSubject(
+      ClusterSchemaRequest clusterSchemaRequest,
+      String schemaCompatibility,
+      boolean subjectSchemaCompatibilitySet) {
+    if (clusterSchemaRequest.isForceRegister()) {
+      if (!subjectSchemaCompatibilitySet) // check if subject compatibility is not set before
+      {
+        // get global compatibility on subject level
+        schemaCompatibility =
+            getGlobalSchemaCompatibility(
+                clusterSchemaRequest.getEnv(),
+                clusterSchemaRequest.getProtocol(),
+                clusterSchemaRequest.getClusterIdentification());
+      }
+      if (schemaCompatibility != null
+          && !schemaCompatibility.equals(SCHEMA_COMPATIBILITY_NOT_SET)) {
         log.info(
-            "RegisterSchema - Force Commit revert to original Schema Compatibility {} for Topic {}",
+            "RegisterSchema - Force Commit revert to original Schema Compatibility(Subject/Global) {} for Topic {}",
             schemaCompatibility,
             clusterSchemaRequest.getTopicName());
         setSchemaCompatibility(
@@ -141,6 +158,31 @@ public class SchemaService {
             schemaCompatibility);
       }
     }
+  }
+
+  private String registerSchemaPostCall(ClusterSchemaRequest clusterSchemaRequest) {
+    String suffixUrl =
+        clusterSchemaRequest.getEnv()
+            + "/subjects/"
+            + clusterSchemaRequest.getTopicName()
+            + "-value/versions";
+    Pair<String, RestTemplate> reqDetails =
+        clusterApiUtils.getRequestDetails(suffixUrl, clusterSchemaRequest.getProtocol());
+
+    Map<String, String> params = new HashMap<>();
+    params.put("schema", clusterSchemaRequest.getFullSchema());
+
+    HttpHeaders headers =
+        clusterApiUtils.createHeaders(
+            clusterSchemaRequest.getClusterIdentification(), KafkaClustersType.SCHEMA_REGISTRY);
+    headers.set("Content-Type", SCHEMA_REGISTRY_CONTENT_TYPE);
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
+    ResponseEntity<String> responseNew =
+        reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
+
+    String updateTopicReqStatus = responseNew.getBody();
+    log.info("SchemaRequest response body {}", responseNew.getBody());
+    return updateTopicReqStatus;
   }
 
   public Map<Integer, Map<String, Object>> getSchema(
@@ -158,6 +200,10 @@ public class SchemaService {
           getSchemaVersions(environmentVal, topicName, protocol, clusterIdentification);
       String schemaCompatibility =
           getSubjectSchemaCompatibility(environmentVal, topicName, protocol, clusterIdentification);
+      if (Objects.equals(schemaCompatibility, SCHEMA_COMPATIBILITY_NOT_SET)) {
+        schemaCompatibility =
+            getGlobalSchemaCompatibility(environmentVal, protocol, clusterIdentification);
+      }
       Map<Integer, Map<String, Object>> allSchemaObjects = new TreeMap<>();
 
       if (versionsList != null) {
@@ -252,19 +298,39 @@ public class SchemaService {
         return null;
       }
 
-      String suffixUrl = environmentVal + "/config/" + topicName + SCHEMA_VALUE_URI;
-      Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(suffixUrl, protocol);
-
-      ResponseEntity<Map<String, String>> responseList =
-          getSubjectSchemaCompatibilityRequest(
-              reqDetails, new HashMap<>(), createSchemaRegistryRequest(clusterIdentification));
-      log.info("Schema compatibility " + responseList);
-      return responseList.getBody().get("compatibilityLevel");
+      String suffixUrl = environmentVal + "/config/" + topicName + "-value";
+      return getCompatibility(protocol, clusterIdentification, suffixUrl);
     } catch (Exception e) {
       log.error("Error in getting schema compatibility ", e);
       return SCHEMA_COMPATIBILITY_NOT_SET;
     }
+  }
+
+  private String getGlobalSchemaCompatibility(
+      String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
+    try {
+      log.info("Into global getSchema compatibility {}", environmentVal);
+      if (environmentVal == null) {
+        return null;
+      }
+
+      String suffixUrl = environmentVal + "/config";
+      return getCompatibility(protocol, clusterIdentification, suffixUrl);
+    } catch (Exception e) {
+      log.error("Error in getting schema compatibility ", e);
+      return SCHEMA_COMPATIBILITY_NOT_SET;
+    }
+  }
+
+  private String getCompatibility(
+      KafkaSupportedProtocol protocol, String clusterIdentification, String suffixUrl) {
+    Pair<String, RestTemplate> reqDetails = clusterApiUtils.getRequestDetails(suffixUrl, protocol);
+
+    ResponseEntity<Map<String, String>> responseList =
+        getSubjectSchemaCompatibilityRequest(
+            reqDetails, new HashMap<>(), createSchemaRegistryRequest(clusterIdentification));
+    log.info("Schema compatibility " + responseList);
+    return responseList.getBody().get("compatibilityLevel");
   }
 
   private HttpEntity<Object> createSchemaRegistryRequest(String clusterIdentification) {
@@ -329,8 +395,7 @@ public class SchemaService {
     }
   }
 
-  private boolean checkSchemaCompatibilitySuccessfullyRetrieved(String schemaCompatibility)
-      throws Exception {
+  private boolean checkIfSchemaCompatibilitySet(String schemaCompatibility) throws Exception {
     if (schemaCompatibility != null && !schemaCompatibility.equals(SCHEMA_COMPATIBILITY_NOT_SET)) {
       log.info("Current Schema Compatibility set to {}", schemaCompatibility);
       return true;
