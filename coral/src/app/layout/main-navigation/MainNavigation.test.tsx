@@ -1,5 +1,5 @@
 import * as ReactQuery from "@tanstack/react-query";
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -224,33 +224,37 @@ describe("MainNavigation.tsx", () => {
   });
 
   describe("user can see their current team", () => {
-    beforeEach(() => {
+    afterEach(() => {
+      cleanup();
+      useQuerySpy.mockClear();
+    });
+
+    it("renders loading state", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      useQuerySpy.mockReturnValue({ data: undefined, isLoading: true });
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,
       });
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: "Team-name", isLoading: true });
-    });
 
-    afterEach(() => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: "Team-name", isLoading: false });
-      cleanup();
-    });
-
-    it("renders loading state", () => {
       const teamLabel = screen.getByText("Team");
-      const teamName = screen.getByText("Fetching team..."); // -> Fails because teamName is "Team-name"
+      const teamName = screen.getByText("Fetching team...");
       expect(teamLabel).toBeVisible();
       expect(teamName).toBeVisible();
     });
 
-    it("renders the user's current team", () => {
+    it("renders the user's current team", async () => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      useQuerySpy.mockReturnValue({ data: "Team-name", isLoading: false });
+      customRender(<MainNavigation />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
       const teamLabel = screen.getByText("Team");
-      const teamName = screen.getByText("Team-name"); // -> fails because team name is "Fetching team..."
+      const teamName = screen.getByText("Team-name");
       expect(teamLabel).toBeVisible();
       expect(teamName).toBeVisible();
     });
