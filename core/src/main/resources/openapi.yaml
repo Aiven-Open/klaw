@@ -599,6 +599,8 @@
     "/request/delete" : {
       "post" : {
         "tags" : [ "request-controller" ],
+        "summary" : "Delete a Request",
+        "description" : "Updates the Status of a request to Deleted",
         "operationId" : "deleteRequest",
         "requestBody" : {
           "content" : {
@@ -623,6 +625,45 @@
                 }
               }
             }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
+          },
+          "207" : {
+            "description" : "Multi Status",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
+          },
+          "405" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -630,6 +671,8 @@
     "/request/decline" : {
       "post" : {
         "tags" : [ "request-controller" ],
+        "summary" : "Decline a Request",
+        "description" : "Updates the Status of a request to Declined",
         "operationId" : "declineRequest",
         "requestBody" : {
           "content" : {
@@ -654,6 +697,45 @@
                 }
               }
             }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
+          },
+          "207" : {
+            "description" : "Multi Status",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
+          },
+          "405" : {
+            "description" : "Bad Request",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -661,6 +743,8 @@
     "/request/approve" : {
       "post" : {
         "tags" : [ "request-controller" ],
+        "summary" : "Approve a Request",
+        "description" : "Updates the Status of a request to Approved and provisions the request",
         "operationId" : "approveRequest",
         "requestBody" : {
           "content" : {
@@ -675,6 +759,45 @@
         "responses" : {
           "200" : {
             "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "description" : "Internal Server Error",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
+          },
+          "207" : {
+            "description" : "Multi Status",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
+          },
+          "405" : {
+            "description" : "Bad Request",
             "content" : {
               "application/json" : {
                 "schema" : {
