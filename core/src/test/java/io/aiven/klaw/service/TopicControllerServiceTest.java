@@ -33,6 +33,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -412,7 +413,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
-    List<TopicRequestModel> listTopicRqs =
+    List<TopicRequestsResponseModel> listTopicRqs =
         topicControllerService.getTopicRequests("1", "", "all", null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
@@ -434,7 +435,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
-    List<TopicRequestModel> listTopicRqs =
+    List<TopicRequestsResponseModel> listTopicRqs =
         topicControllerService.getTopicRequests("1", "", "all", null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
@@ -456,7 +457,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
-    List<TopicRequestModel> listTopicRqs =
+    List<TopicRequestsResponseModel> listTopicRqs =
         topicControllerService.getTopicRequests("1", "", "created", null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
@@ -542,7 +543,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
-    List<TopicRequestModel> topicList =
+    List<TopicRequestsResponseModel> topicList =
         topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(2);
@@ -568,7 +569,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
-    List<TopicRequestModel> topicList =
+    List<TopicRequestsResponseModel> topicList =
         topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(5);
@@ -1181,7 +1182,6 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicname("newtopicname");
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
-    topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
     TopicConfigEntry topicConfigEntry1 = new TopicConfigEntry("compression.type", "snappy");
@@ -1197,7 +1197,6 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicname("newtopicname");
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
-    topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     return topicRequest;
   }
@@ -1218,7 +1217,6 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicname("newtopicname");
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(-1);
-    topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     return topicRequest;
   }

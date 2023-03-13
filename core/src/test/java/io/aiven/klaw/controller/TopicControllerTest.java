@@ -19,6 +19,7 @@ import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.service.TopicControllerService;
 import io.aiven.klaw.service.TopicSyncControllerService;
 import java.util.Arrays;
@@ -113,7 +114,7 @@ public class TopicControllerTest {
   @Test
   @Order(3)
   public void getTopicRequests() throws Exception {
-    List<TopicRequestModel> topicRequests = utilMethods.getTopicRequestsModel();
+    List<TopicRequestsResponseModel> topicRequests = utilMethods.getTopicRequestsModel();
 
     when(topicControllerService.getTopicRequests("1", "", "all", null, false))
         .thenReturn(topicRequests);
@@ -133,6 +134,7 @@ public class TopicControllerTest {
     String topicName = "testtopic";
     Map<String, String> teamMap = new HashMap<>();
     teamMap.put("team", "Team1");
+    teamMap.put("teamId", "1001");
     when(topicControllerService.getTopicTeamOnly(topicName, AclPatternType.LITERAL))
         .thenReturn(teamMap);
 
@@ -146,15 +148,14 @@ public class TopicControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    Map<String, String> resp =
-        new ObjectMapper().readValue(res, new TypeReference<Map<String, String>>() {});
-    assertThat(resp).containsEntry("team", "Team1");
+    Map<String, String> resp = new ObjectMapper().readValue(res, new TypeReference<>() {});
+    assertThat(resp).containsEntry("team", "Team1").containsEntry("teamId", "1001");
   }
 
   @Test
   @Order(5)
   public void getCreatedTopicRequests() throws Exception {
-    List<TopicRequestModel> topicReqs = utilMethods.getTopicRequestsList();
+    List<TopicRequestsResponseModel> topicReqs = utilMethods.getTopicRequestsList();
     when(topicControllerService.getTopicRequestsForApprover("1", "", "created", null, null, null))
         .thenReturn(topicReqs);
 
@@ -257,7 +258,6 @@ public class TopicControllerTest {
   public void getSyncTopics() throws Exception {
     Map<String, Object> hashMap = new HashMap<>();
     hashMap.put("", "");
-    List<TopicRequestModel> topicRequests = utilMethods.getTopicRequestsModel();
 
     when(topicSyncControllerService.getSyncTopics(
             anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean()))

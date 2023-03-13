@@ -33,11 +33,11 @@ public class TopicRequestModel extends BaseRequestModel implements Serializable 
   @Pattern(message = "Invalid description", regexp = "^[a-zA-Z 0-9_.,-]{3,}$")
   private String description;
 
+  private Integer teamId;
+
   private String approvingTeamId;
 
   private Integer topicid;
-
-  private String requestor;
 
   private String sequence;
 

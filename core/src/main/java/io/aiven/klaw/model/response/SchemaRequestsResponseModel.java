@@ -1,4 +1,4 @@
-package io.aiven.klaw.model.requests;
+package io.aiven.klaw.model.response;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -9,9 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class SchemaRequestModel extends BaseRequestModel implements Serializable {
-
-  private Integer req_no;
+public class SchemaRequestsResponseModel extends BaseRequestsResponseModel implements Serializable {
 
   @NotNull
   @Pattern(message = "Invalid topic name", regexp = "^[a-zA-Z0-9._-]{3,}$")
@@ -21,9 +19,9 @@ public class SchemaRequestModel extends BaseRequestModel implements Serializable
   @Size(min = 8, message = "Please fill in a valid schema.")
   private String schemafull;
 
+  private Integer req_no;
+
   private String schemaversion;
 
   private Boolean forceRegister;
-
-  private Integer teamId;
 }

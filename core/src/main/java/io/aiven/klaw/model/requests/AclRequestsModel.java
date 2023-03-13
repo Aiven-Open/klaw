@@ -39,7 +39,7 @@ public class AclRequestsModel extends BaseRequestModel implements Serializable {
   @Pattern(message = "Invalid transactionalID", regexp = "^$|^[a-zA-Z0-9_.-]{3,}$")
   private String transactionalId;
 
-  private Integer req_no;
+  @NotNull private Integer teamId;
 
   // Producer/Consumer
   @NotNull private AclType aclType;

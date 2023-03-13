@@ -141,7 +141,7 @@ public class DeleteDataJdbc {
     log.debug("deleteSchemaRequest {}", avroSchemaId);
     SchemaRequestID schemaRequestID = new SchemaRequestID(avroSchemaId, tenantId);
     Optional<SchemaRequest> schemaReq = schemaRequestRepo.findById(schemaRequestID);
-    if (schemaReq.isPresent() && schemaReq.get().getUsername().equals(userName)) {
+    if (schemaReq.isPresent() && schemaReq.get().getRequestor().equals(userName)) {
       schemaReq.get().setRequestStatus(RequestStatus.DELETED.value);
       schemaRequestRepo.save(schemaReq.get());
       return ApiResultStatus.SUCCESS.value;
@@ -157,7 +157,7 @@ public class DeleteDataJdbc {
     aclRequestID.setReq_no(aclId);
     aclRequestID.setTenantId(tenantId);
     Optional<AclRequests> optAclRequests = aclRequestsRepo.findById(aclRequestID);
-    if (optAclRequests.isPresent() && optAclRequests.get().getUsername().equals(userName)) {
+    if (optAclRequests.isPresent() && optAclRequests.get().getRequestor().equals(userName)) {
       optAclRequests.get().setRequestStatus(RequestStatus.DELETED.value);
       aclRequestsRepo.save(optAclRequests.get());
       return ApiResultStatus.SUCCESS.value;

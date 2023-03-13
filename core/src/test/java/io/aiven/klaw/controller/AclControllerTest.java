@@ -15,6 +15,7 @@ import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.AclSyncControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
@@ -101,7 +102,7 @@ public class AclControllerTest {
   @Test
   public void getAclRequests() throws Exception {
 
-    List<AclRequestsModel> aclRequests = utilMethods.getAclRequestsModel();
+    List<AclRequestsResponseModel> aclRequests = utilMethods.getAclRequestsModel();
 
     when(aclControllerService.getAclRequests("1", "", "all", null, null, null, false))
         .thenReturn(aclRequests);
@@ -119,7 +120,7 @@ public class AclControllerTest {
   @Test
   public void getCreatedAclRequests() throws Exception {
 
-    List<AclRequestsModel> aclRequests = utilMethods.getAclRequestsList();
+    List<AclRequestsResponseModel> aclRequests = utilMethods.getAclRequestsList();
 
     when(aclControllerService.getAclRequestsForApprover("1", "", "created", null, null, null))
         .thenReturn(aclRequests);

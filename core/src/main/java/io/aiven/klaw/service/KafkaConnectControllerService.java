@@ -33,6 +33,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,7 +120,6 @@ public class KafkaConnectControllerService {
     }
 
     connectorRequestModel.setRequestor(userName);
-    connectorRequestModel.setUsername(userName);
     Integer userTeamId = commonUtilsService.getTeamId(userName);
     connectorRequestModel.setTeamId(userTeamId);
     String envSelected = connectorRequestModel.getEnvironment();
@@ -454,7 +454,7 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public List<KafkaConnectorRequestModel> getCreatedConnectorRequests(
+  public List<KafkaConnectorRequestsResponseModel> getCreatedConnectorRequests(
       String pageNo, String currentPage, String requestsType, String env, String search) {
     log.debug("getCreatedTopicRequests {} {}", pageNo, requestsType);
     String userDetails = getUserName();
@@ -481,12 +481,12 @@ public class KafkaConnectControllerService {
     return updateCreateConnectorReqsList(createdTopicReqList, tenantId);
   }
 
-  private List<KafkaConnectorRequestModel> updateCreateConnectorReqsList(
+  private List<KafkaConnectorRequestsResponseModel> updateCreateConnectorReqsList(
       List<KafkaConnectorRequest> kafkaConnectorRequests, int tenantId) {
-    List<KafkaConnectorRequestModel> connectorRequestModels =
+    List<KafkaConnectorRequestsResponseModel> connectorRequestModels =
         getConnectorRequestModels(kafkaConnectorRequests, true);
 
-    for (KafkaConnectorRequestModel kafkaConnectorRequestModel : connectorRequestModels) {
+    for (KafkaConnectorRequestsResponseModel kafkaConnectorRequestModel : connectorRequestModels) {
       kafkaConnectorRequestModel.setTeamname(
           manageDatabase.getTeamNameFromTeamId(tenantId, kafkaConnectorRequestModel.getTeamId()));
       kafkaConnectorRequestModel.setEnvironmentName(
@@ -727,7 +727,6 @@ public class KafkaConnectControllerService {
     }
 
     kafkaConnectorRequest.setRequestor(userDetails);
-    kafkaConnectorRequest.setUsername(userDetails);
     kafkaConnectorRequest.setTeamId(userTeamId);
     kafkaConnectorRequest.setEnvironment(envId);
     kafkaConnectorRequest.setConnectorName(connectorName);
@@ -789,7 +788,7 @@ public class KafkaConnectControllerService {
     return orderedEnv.contains(envId);
   }
 
-  public List<KafkaConnectorRequestModel> getConnectorRequests(
+  public List<KafkaConnectorRequestsResponseModel> getConnectorRequests(
       String pageNo, String currentPage, String requestsType) {
     log.debug("getConnectorRequests page {} requestsType {}", pageNo, requestsType);
     String userDetails = getUserName();
@@ -848,7 +847,6 @@ public class KafkaConnectControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userDetails);
 
     connectorRequest.setRequestor(userDetails);
-    connectorRequest.setUsername(userDetails);
     connectorRequest.setTeamId(userTeamId);
     connectorRequest.setEnvironment(envId);
     connectorRequest.setConnectorName(connectorName);
@@ -1094,9 +1092,7 @@ public class KafkaConnectControllerService {
 
       if (kafkaConnectors != null && kafkaConnectors.size() > 0) {
         List<String> envList = new ArrayList<>();
-        List<String> finalEnvList = envList;
-        kafkaConnectors.forEach(topic -> finalEnvList.add(topic.getEnvironment()));
-        envList = finalEnvList;
+        kafkaConnectors.forEach(topic -> envList.add(topic.getEnvironment()));
 
         // tenant filtering
         String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
@@ -1160,10 +1156,10 @@ public class KafkaConnectControllerService {
     }
   }
 
-  private List<KafkaConnectorRequestModel> getConnectorRequestModels(
+  private List<KafkaConnectorRequestsResponseModel> getConnectorRequestModels(
       List<KafkaConnectorRequest> topicsList, boolean fromSyncTopics) {
-    List<KafkaConnectorRequestModel> topicRequestModelList = new ArrayList<>();
-    KafkaConnectorRequestModel kafkaConnectorRequestModel;
+    List<KafkaConnectorRequestsResponseModel> topicRequestModelList = new ArrayList<>();
+    KafkaConnectorRequestsResponseModel kafkaConnectorRequestModel;
     String userName = getUserName();
     Integer userTeamId = commonUtilsService.getTeamId(userName);
 
@@ -1174,7 +1170,7 @@ public class KafkaConnectControllerService {
         manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
 
     for (KafkaConnectorRequest connectorRequest : topicsList) {
-      kafkaConnectorRequestModel = new KafkaConnectorRequestModel();
+      kafkaConnectorRequestModel = new KafkaConnectorRequestsResponseModel();
       copyProperties(connectorRequest, kafkaConnectorRequestModel);
       kafkaConnectorRequestModel.setRequestStatus(
           RequestStatus.of(connectorRequest.getRequestStatus()));
@@ -1214,8 +1210,8 @@ public class KafkaConnectControllerService {
     return topicRequestModelList;
   }
 
-  private KafkaConnectorRequestModel setRequestorPermissions(
-      KafkaConnectorRequestModel req, String userName) {
+  private KafkaConnectorRequestsResponseModel setRequestorPermissions(
+      KafkaConnectorRequestsResponseModel req, String userName) {
     if (RequestStatus.CREATED == req.getRequestStatus()
         && userName != null
         && userName.equals(req.getRequestor())) {
