@@ -4,19 +4,37 @@ import { getTopicRequests } from "src/domain/topic/topic-api";
 import { TopicRequestsTable } from "src/app/features/requests/components/topics/components/TopicRequestsTable";
 import { useSearchParams } from "react-router-dom";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import { Pagination } from "src/app/components/Pagination";
 
 function TopicRequests() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentTopic = searchParams.get("topic") ?? "";
+  const currentPage = searchParams.get("page")
+    ? Number(searchParams.get("page"))
+    : 1;
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["topicRequests", currentTopic],
+    queryKey: ["topicRequests", currentTopic, currentPage],
     queryFn: () =>
       getTopicRequests({
-        pageNo: "1",
+        pageNo: String(currentPage),
         search: currentTopic,
       }),
   });
+
+  const setCurrentPage = (page: number) => {
+    searchParams.set("page", page.toString());
+    setSearchParams(searchParams);
+  };
+
+  const pagination =
+    data?.totalPages && data.totalPages > 1 ? (
+      <Pagination
+        activePage={data.currentPage}
+        totalPages={data?.totalPages}
+        setActivePage={setCurrentPage}
+      />
+    ) : undefined;
 
   return (
     <TableLayout
@@ -29,6 +47,7 @@ function TopicRequests() {
           onDelete={() => null}
         />
       }
+      pagination={pagination}
       isLoading={isLoading}
       isErrorLoading={isError}
       errorMessage={error}
