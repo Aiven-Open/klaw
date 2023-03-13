@@ -48,6 +48,16 @@ public class RequestController {
     return wrapInResponseEntity(service.processDeclineRequests(verdict));
   }
 
+  @RequestMapping(
+      value = "/delete",
+      method = RequestMethod.POST,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<ApiResponse>> deleteRequest(@Valid @RequestBody RequestVerdict verdict)
+      throws KlawException, KlawRestException {
+    log.info("Delete Requests : {}", verdict);
+    return wrapInResponseEntity(service.processDeleteRequests(verdict));
+  }
+
   private ResponseEntity<List<ApiResponse>> wrapInResponseEntity(List<ApiResponse> obj) {
     int failure = 0, success = 0;
     HttpStatus status;

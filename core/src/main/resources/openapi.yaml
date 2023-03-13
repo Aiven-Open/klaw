@@ -596,6 +596,37 @@
         }
       }
     },
+    "/request/delete" : {
+      "post" : {
+        "tags" : [ "request-controller" ],
+        "operationId" : "deleteRequest",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/RequestVerdict"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/ApiResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/request/decline" : {
       "post" : {
         "tags" : [ "request-controller" ],
