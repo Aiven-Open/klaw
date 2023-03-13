@@ -348,7 +348,6 @@ public class UtilMethods {
 
   public TopicCreateRequestModel getTopicCreateRequestModel(int topicId) {
     TopicCreateRequestModel topicRequest = new TopicCreateRequestModel();
-    topicRequest.setTopicid(topicId);
     topicRequest.setRequestor("kwusera");
     topicRequest.setTopicname("testtopic" + topicId);
     topicRequest.setTopicpartitions(2);
@@ -362,7 +361,6 @@ public class UtilMethods {
 
   public TopicUpdateRequestModel getTopicUpdateRequestModel(int topicId) {
     TopicUpdateRequestModel topicRequest = new TopicUpdateRequestModel();
-    topicRequest.setTopicid(topicId);
     topicRequest.setRequestor("kwusera");
     topicRequest.setTopicname("testtopic" + topicId);
     topicRequest.setTopicpartitions(2);
@@ -422,7 +420,7 @@ public class UtilMethods {
     List<SchemaRequestsResponseModel> schemaList = new ArrayList<>();
     SchemaRequestsResponseModel schemaRequest = new SchemaRequestsResponseModel();
     schemaRequest.setEnvironment("1");
-    schemaRequest.setUsername("kwusera");
+    schemaRequest.setRequestor("kwusera");
     schemaRequest.setSchemafull("schemafdsfsd");
     schemaRequest.setTeamId(1001);
     schemaRequest.setRemarks("pls approve");

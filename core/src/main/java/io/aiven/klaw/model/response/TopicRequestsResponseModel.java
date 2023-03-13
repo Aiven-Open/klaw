@@ -23,8 +23,6 @@ public class TopicRequestsResponseModel extends BaseRequestsResponseModel implem
 
   @NotNull private Integer topicid;
 
-  @NotNull private String requestor;
-
   @NotNull private Boolean deleteAssociatedSchema;
 
   @NotNull private List<TopicConfigEntry> advancedTopicConfigEntries;

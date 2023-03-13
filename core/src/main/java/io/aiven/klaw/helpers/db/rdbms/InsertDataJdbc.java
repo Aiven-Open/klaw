@@ -262,8 +262,6 @@ public class InsertDataJdbc {
     schemaRequest.setSchemafull(schemaRequest.getSchemafull().trim());
     schemaRequest.setRequestStatus(RequestStatus.CREATED.value);
     schemaRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
-    schemaRequest.setTeamId(
-        jdbcSelectHelper.selectUserInfo(schemaRequest.getRequestor()).getTeamId());
 
     schemaRequestRepo.save(schemaRequest);
 

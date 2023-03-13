@@ -224,7 +224,7 @@ public class AclControllerService {
       AclRequestsResponseModel req, String userName) {
     if (RequestStatus.CREATED == req.getRequestStatus()
         && userName != null
-        && userName.equals(req.getUsername())) {
+        && userName.equals(req.getRequestor())) {
       req.setDeletable(true);
       req.setEditable(true);
     }
@@ -270,7 +270,7 @@ public class AclControllerService {
                   aclRequestsModel.getRequestOperationType(),
                   aclRequestsModel.getRequestingteam(),
                   approverRoles,
-                  aclRequestsModel.getUsername(),
+                  aclRequestsModel.getRequestor(),
                   tenantId));
         }
 

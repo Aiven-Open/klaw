@@ -24,19 +24,19 @@ public class AclRequestsResponseModel extends BaseRequestsResponseModel implemen
 
   @NotNull private AclIPPrincipleType aclIpPrincipleType;
 
-  private String consumergroup;
+  @NotNull private Integer req_no;
+
+  @NotNull private Integer requestingteam;
+
+  @NotNull private String requestingTeamName;
+
+  @NotNull private String consumergroup;
 
   private ArrayList<String> acl_ip;
 
   private ArrayList<String> acl_ssl;
 
   private String transactionalId;
-
-  private Integer req_no;
-
-  private Integer requestingteam;
-
-  private String requestingTeamName;
 
   // Always TOPIC (for now)
   private String aclResourceType;

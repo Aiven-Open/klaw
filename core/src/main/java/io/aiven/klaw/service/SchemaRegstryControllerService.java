@@ -107,7 +107,7 @@ public class SchemaRegstryControllerService {
                   userList,
                   manageDatabase.getTeamNameFromTeamId(tenantId, userTeamId),
                   approverRoles,
-                  schemaRequestModel.getUsername()));
+                  schemaRequestModel.getRequestor()));
         }
         schemaRequestModels.add(setRequestorPermissions(schemaRequestModel, userName));
       }
@@ -135,7 +135,7 @@ public class SchemaRegstryControllerService {
 
     if (RequestStatus.CREATED == req.getRequestStatus()
         && userName != null
-        && userName.equals(req.getUsername())) {
+        && userName.equals(req.getRequestor())) {
       req.setDeletable(true);
       req.setEditable(true);
     }
@@ -384,7 +384,7 @@ public class SchemaRegstryControllerService {
 
   public ApiResponse uploadSchema(SchemaRequestModel schemaRequest) throws KlawException {
     log.info("uploadSchema {}", schemaRequest);
-    String userDetails = getUserName();
+    String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
@@ -398,7 +398,8 @@ public class SchemaRegstryControllerService {
       return ApiResponse.builder().result("Failure. Invalid json").build();
     }
 
-    Integer userTeamId = commonUtilsService.getTeamId(userDetails);
+    Integer userTeamId = commonUtilsService.getTeamId(userName);
+    schemaRequest.setTeamId(userTeamId);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (!userAndTopicOwnerAreOnTheSameTeam(schemaRequest.getTopicname(), userTeamId, tenantId)) {
       return ApiResponse.builder()
@@ -409,7 +410,7 @@ public class SchemaRegstryControllerService {
     List<SchemaRequest> schemaReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getAllSchemaRequests(false, userDetails, tenantId, null, null, null, null, false);
+            .getAllSchemaRequests(false, userName, tenantId, null, null, null, null, false);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
@@ -436,7 +437,7 @@ public class SchemaRegstryControllerService {
       }
     }
 
-    schemaRequest.setRequestor(userDetails);
+    schemaRequest.setRequestor(userName);
     SchemaRequest schemaRequestDao = new SchemaRequest();
     copyProperties(schemaRequest, schemaRequestDao);
     schemaRequestDao.setRequestOperationType(RequestOperationType.CREATE.value);

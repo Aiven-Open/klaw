@@ -20,45 +20,40 @@ public class BaseRequestsResponseModel implements Serializable {
 
   @NotNull private String environment;
 
-  private Integer req_no;
+  @NotNull private String environmentName;
 
-  private Integer requestingteam;
+  @NotNull private String requestor;
 
-  private String requestingTeamName;
+  // topic owner team
+  @NotNull private Integer teamId;
 
-  private String otherParams;
+  @NotNull private String teamname;
 
-  private String environmentName;
+  @NotNull private RequestStatus requestStatus;
 
-  private String appname;
+  @NotNull private Timestamp requesttime;
 
-  private Integer teamId;
+  @NotNull private String requesttimestring;
 
-  private String teamname;
+  @NotNull private boolean isDeletable;
 
-  private RequestStatus requestStatus;
+  @NotNull private boolean isEditable;
 
-  private String remarks;
+  @NotNull private String currentPage;
 
-  private Timestamp requesttime;
+  @NotNull private String totalNoPages;
 
-  private String requesttimestring;
-
-  private String username;
+  @NotNull private List<String> allPageNos;
 
   private String approver;
 
   private Timestamp approvingtime;
 
-  private boolean isDeletable;
-
-  private boolean isEditable;
-
-  private String currentPage;
-
-  private String totalNoPages;
-
-  private List<String> allPageNos;
+  private String remarks;
 
   private String approvingTeamDetails;
+
+  private String appname;
+
+  private String otherParams;
 }
