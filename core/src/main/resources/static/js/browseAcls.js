@@ -261,7 +261,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                     if (isConfirm.dismiss !== "cancel") {
                         swal({
                             title: "Delete schema ?",
-                            text: "Delete associated schema of the topic, if exists?",
+                            text: "Delete associated schema (all versions) of this topic, if it exists ?",
                             type: "warning",
                             showCancelButton: true,
                             confirmButtonColor: "#DD6B55",

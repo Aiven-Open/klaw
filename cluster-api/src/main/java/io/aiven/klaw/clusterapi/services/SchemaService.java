@@ -42,6 +42,9 @@ public class SchemaService {
   public static final String SCHEMA_REGISTRY_CONTENT_TYPE =
       "application/vnd.schemaregistry.v1+json";
   public static final String SCHEMA_COMPATIBILITY_NOT_SET = "NOT SET";
+  public static final String SCHEMA_VALUE_URI = "-value";
+
+  public static final String SCHEMA_SUBJECTS_URI = "subjects";
 
   @Value("${klaw.schemaregistry.compatibility.default:BACKWARD}")
   private String defaultSchemaCompatibility;
@@ -87,9 +90,12 @@ public class SchemaService {
       }
       String suffixUrl =
           clusterSchemaRequest.getEnv()
-              + "/subjects/"
+              + "/"
+              + SCHEMA_SUBJECTS_URI
+              + "/"
               + clusterSchemaRequest.getTopicName()
-              + "-value/versions";
+              + SCHEMA_VALUE_URI
+              + "/versions";
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, clusterSchemaRequest.getProtocol());
 
@@ -157,7 +163,14 @@ public class SchemaService {
       if (versionsList != null) {
         for (Integer schemaVersion : versionsList) {
           String suffixUrl =
-              environmentVal + "/subjects/" + topicName + "-value/versions/" + schemaVersion;
+              environmentVal
+                  + "/"
+                  + SCHEMA_SUBJECTS_URI
+                  + "/"
+                  + topicName
+                  + SCHEMA_VALUE_URI
+                  + "/versions/"
+                  + schemaVersion;
           Pair<String, RestTemplate> reqDetails =
               clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
@@ -197,7 +210,14 @@ public class SchemaService {
         return null;
       }
 
-      String suffixUrl = environmentVal + "/subjects/" + topicName + "-value/versions";
+      String suffixUrl =
+          environmentVal
+              + "/"
+              + SCHEMA_SUBJECTS_URI
+              + "/"
+              + topicName
+              + SCHEMA_VALUE_URI
+              + "/versions";
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
@@ -232,7 +252,7 @@ public class SchemaService {
         return null;
       }
 
-      String suffixUrl = environmentVal + "/config/" + topicName + "-value";
+      String suffixUrl = environmentVal + "/config/" + topicName + SCHEMA_VALUE_URI;
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
@@ -281,7 +301,7 @@ public class SchemaService {
         return false;
       }
 
-      String suffixUrl = environmentVal + "/config/" + topicName + "-value";
+      String suffixUrl = environmentVal + "/config/" + topicName + SCHEMA_VALUE_URI;
 
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
@@ -322,7 +342,7 @@ public class SchemaService {
   protected ClusterStatus getSchemaRegistryStatus(
       String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
 
-    String suffixUrl = environmentVal + "/subjects";
+    String suffixUrl = environmentVal + "/" + SCHEMA_SUBJECTS_URI;
     Pair<String, RestTemplate> reqDetails = clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
     HttpEntity<Object> request = createSchemaRegistryRequest(clusterIdentification);
@@ -344,7 +364,7 @@ public class SchemaService {
         clusterTopicRequest.getSchemaEnv()
             + "/subjects/"
             + clusterTopicRequest.getTopicName()
-            + "-value";
+            + SCHEMA_VALUE_URI;
     Pair<String, RestTemplate> reqDetails =
         clusterApiUtils.getRequestDetails(suffixUrl, clusterTopicRequest.getSchemaEnvProtocol());
     HttpEntity<Object> request =
