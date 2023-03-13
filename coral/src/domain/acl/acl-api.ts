@@ -23,18 +23,32 @@ const createAclRequest = (
   >("/createAcl", aclParams);
 };
 
-const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
-  const filteredParams = omitBy(params, (value, property) => {
+const filterGetAclRequestParams = (params: GetCreatedAclRequestParameters) => {
+  return omitBy(params, (value, property) => {
     const omitEnv = property === "env" && value === "ALL";
     const omitAclType = property === "aclType" && value === "ALL";
     const omitTopic = property === "topic" && value === "";
 
     return omitEnv || omitAclType || omitTopic;
   });
+};
+
+const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
+  const filteredParams = filterGetAclRequestParams(params);
 
   return api
     .get<KlawApiResponse<"getAclRequestsForApprover">>(
       `/getAclRequestsForApprover?${new URLSearchParams(filteredParams)}`
+    )
+    .then(transformAclRequestApiResponse);
+};
+
+const getAclRequests = (params: GetCreatedAclRequestParameters) => {
+  const filteredParams = filterGetAclRequestParams(params);
+
+  return api
+    .get<KlawApiResponse<"getAclRequests">>(
+      `/getAclRequests?${new URLSearchParams(filteredParams)}`
     )
     .then(transformAclRequestApiResponse);
 };
@@ -58,6 +72,7 @@ const declineAclRequest = (payload: DeclineAclRequestPayload) => {
 export {
   createAclRequest,
   getAclRequestsForApprover,
+  getAclRequests,
   approveAclRequest,
   declineAclRequest,
 };
