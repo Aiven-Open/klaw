@@ -39,9 +39,7 @@ public class RequestService {
         case CONNECTOR:
           return kafkaConnectControllerService.approveConnectorRequests(reqId);
         default:
-          return ApiResponse.builder()
-              .result("Failure Unable to determine target resource.")
-              .build();
+          return undeterinableResource();
       }
     } catch (Exception ex) {
 
@@ -58,6 +56,36 @@ public class RequestService {
         .collect(Collectors.toList());
   }
 
+  public List<ApiResponse> processDeleteRequests(RequestVerdict requestVerdict) {
+    return requestVerdict.getReqIds().stream()
+        .map(req -> processDeleteRequest(req, requestVerdict.getRequestEntityType()))
+        .collect(Collectors.toList());
+  }
+
+  private ApiResponse processDeleteRequest(String reqId, RequestEntityType requestEntityType) {
+    try {
+      switch (requestEntityType) {
+        case TOPIC:
+          return topicControllerService.deleteTopicRequests(reqId);
+        case ACL:
+          return aclControllerService.deleteAclRequests(reqId);
+        case SCHEMA:
+          return schemaRegstryControllerService.deleteSchemaRequests(reqId);
+        case CONNECTOR:
+          return kafkaConnectControllerService.deleteConnectorRequests(reqId);
+        default:
+          return undeterinableResource();
+      }
+
+    } catch (Exception ex) {
+      return ApiResponse.builder().result("Failure unable to delete requestId " + reqId).build();
+    }
+  }
+
+  private static ApiResponse undeterinableResource() {
+    return ApiResponse.builder().result("Failure Unable to determine target resource.").build();
+  }
+
   private ApiResponse processDeclineRequests(
       String reqId, String reason, RequestEntityType requestEntityType) {
     try {
@@ -71,14 +99,12 @@ public class RequestService {
         case CONNECTOR:
           return kafkaConnectControllerService.declineConnectorRequests(reqId, reason);
         default:
-          return ApiResponse.builder()
-              .result("Failure Unable to determine target resource.")
-              .build();
+          return undeterinableResource();
       }
 
     } catch (Exception ex) {
 
-      return ApiResponse.builder().result("Failure unable to approve requestId " + reqId).build();
+      return ApiResponse.builder().result("Failure unable to decline requestId " + reqId).build();
     }
   }
 }
