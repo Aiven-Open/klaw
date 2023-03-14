@@ -83,8 +83,6 @@ public class TopicSyncControllerServiceTest {
 
   private TopicSyncControllerService topicSyncControllerService;
 
-  @Mock RolesPermissionsControllerService rolesPermissionsControllerService;
-
   @Mock Map<Integer, KwTenantConfigModel> tenantConfig;
 
   @Mock KwTenantConfigModel tenantConfigModel;
@@ -109,10 +107,6 @@ public class TopicSyncControllerServiceTest {
         topicSyncControllerService, "commonUtilsService", commonUtilsService);
     ReflectionTestUtils.setField(
         topicSyncControllerService, "clusterApiService", clusterApiService);
-    ReflectionTestUtils.setField(
-        topicSyncControllerService,
-        "rolesPermissionsControllerService",
-        rolesPermissionsControllerService);
 
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     loginMock();
@@ -200,8 +194,6 @@ public class TopicSyncControllerServiceTest {
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
-    when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
-        .thenReturn(List.of("USER"));
 
     Map<String, Object> topicRequests =
         topicSyncControllerService.getSyncTopics(

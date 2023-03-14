@@ -117,32 +117,32 @@ public class SelectDataJdbc {
       // in the acl request the username is mapped to the requestor column in the database.
       aclListSub =
           aclListSub.stream()
-              .filter(req -> !req.getUsername().equals(requestor))
+              .filter(req -> !req.getRequestor().equals(requestor))
               .collect(Collectors.toList());
     }
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
     for (AclRequests row : aclListSub) {
-      Integer teamName;
+      Integer teamId;
       String requestOperationType = row.getRequestOperationType();
       if (allReqs) {
         if ("requestor_subscriptions".equals(role)) {
-          teamName = row.getRequestingteam();
+          teamId = row.getRequestingteam();
         } else {
-          teamName = row.getTeamId();
+          teamId = row.getTeamId();
         }
 
         if (RequestOperationType.DELETE.value.equals(requestOperationType)) {
-          teamName = row.getRequestingteam();
+          teamId = row.getRequestingteam();
         }
 
       } else {
-        teamName = row.getRequestingteam();
+        teamId = row.getRequestingteam();
       }
 
       if (showRequestsOfAllTeams) { // show all requests of all teams
         aclList.add(row);
-      } else if (teamSelected != null && teamSelected.equals(teamName)) {
+      } else if (teamSelected != null && teamSelected.equals(teamId)) {
         aclList.add(row);
       }
 
@@ -194,7 +194,7 @@ public class SelectDataJdbc {
     }
 
     if (requestor != null && !requestor.isEmpty()) {
-      request.setUsername(requestor);
+      request.setRequestor(requestor);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
     // string
@@ -242,7 +242,7 @@ public class SelectDataJdbc {
       // Placed here as it should only apply for approvers.
       schemaListSub =
           schemaListSub.stream()
-              .filter(request -> !request.getUsername().equals(requestor))
+              .filter(request -> !request.getRequestor().equals(requestor))
               .collect(Collectors.toList());
 
       if (wildcardSearch != null && !wildcardSearch.isEmpty()) {
@@ -303,7 +303,7 @@ public class SelectDataJdbc {
       request.setTeamId(teamId);
     }
     if (userName != null && !userName.isEmpty()) {
-      request.setUsername(userName);
+      request.setRequestor(userName);
     }
     request.setForceRegister(null);
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
