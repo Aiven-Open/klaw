@@ -15,19 +15,20 @@ import lombok.ToString;
 @ToString
 public class BaseRequestsResponseModel implements Serializable {
 
-  // CREATE / DELETE / ..
-  @NotNull private RequestOperationType requestOperationType;
-
   @NotNull private String environment;
 
   @NotNull private String environmentName;
 
   @NotNull private String requestor;
 
-  // topic owner team
+  // topic owner team id
   @NotNull private Integer teamId;
 
+  // topic owner team
   @NotNull private String teamname;
+
+  // CREATE / DELETE / ..
+  @NotNull private RequestOperationType requestOperationType;
 
   @NotNull private RequestStatus requestStatus;
 
@@ -45,13 +46,13 @@ public class BaseRequestsResponseModel implements Serializable {
 
   @NotNull private List<String> allPageNos;
 
+  @NotNull private String approvingTeamDetails;
+
   private String approver;
 
   private Timestamp approvingtime;
 
   private String remarks;
-
-  private String approvingTeamDetails;
 
   private String appname;
 
