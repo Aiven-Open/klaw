@@ -60,7 +60,8 @@ public class MigrationUtility {
 
     // Update the database with the version if there was no
     String postMigrationDataVersion = getLatestDataVersion();
-    if(!isVersionGreaterThenOrEqualToCurrentVersion(postMigrationDataVersion,currentKlawVersion)) {
+    if (!isVersionGreaterThenOrEqualToCurrentVersion(
+        postMigrationDataVersion, currentKlawVersion)) {
       updateDataVersionInDB(currentKlawVersion);
     }
   }
@@ -68,7 +69,7 @@ public class MigrationUtility {
   private String getLatestDataVersion() {
     DataVersion latestDataVersion = versionRepo.findTopByOrderByIdDesc();
     if (latestDataVersion == null || latestDataVersion.getVersion() == null) {
-      //If there is no data version we assume a clean system
+      // If there is no data version we assume a clean system
       return "0.0.0";
     } else {
       return latestDataVersion.getVersion();
