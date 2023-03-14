@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @DataMigration(version = "2.2.0", order = 0)
 @Slf4j
 @Configuration // Spring will automatically scan and instantiate this class for retrieval.
-public class MigrationRunner2x2x0 {
+public class MigrateData2x2x0 {
 
   @Autowired private SelectDataJdbc selectDataJdbc;
 

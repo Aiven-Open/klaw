@@ -39,12 +39,11 @@ public class MigrationUtility {
       throws InvocationTargetException, IllegalAccessException, KlawDataMigrationException {
 
     // Find the latest version in DB
-    DataVersion currentDataVersion = versionRepo.findTopByOrderByIdDesc();
-    if (isVersionGreaterThenOrEqualToCurrentVersion(
-        currentDataVersion.getVersion(), currentKlawVersion)) {
+    String latestDataVersion = getLatestDataVersion();
+    if (isVersionGreaterThenOrEqualToCurrentVersion(latestDataVersion, currentKlawVersion)) {
       log.info(
           "Current Data Version {} is greater then or equal to the Klaw version {}, no action needed.",
-          currentDataVersion.getVersion(),
+          latestDataVersion,
           currentKlawVersion);
       return;
     }
@@ -54,14 +53,26 @@ public class MigrationUtility {
     Set<Class<?>> classes = reflections.getTypesAnnotatedWith(DataMigration.class);
 
     SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions =
-        orderApplicableMigrationInstructions(currentDataVersion, classes);
+        orderApplicableMigrationInstructions(latestDataVersion, classes);
 
     // execute the migration
     executeMigrationInstructions(orderedMapOfMigrationInstructions);
 
-    // Update the database with the version
-    // need to see if already created.
-    updateDataVersionInDB(currentKlawVersion);
+    // Update the database with the version if there was no
+    String postMigrationDataVersion = getLatestDataVersion();
+    if(!isVersionGreaterThenOrEqualToCurrentVersion(postMigrationDataVersion,currentKlawVersion)) {
+      updateDataVersionInDB(currentKlawVersion);
+    }
+  }
+
+  private String getLatestDataVersion() {
+    DataVersion latestDataVersion = versionRepo.findTopByOrderByIdDesc();
+    if (latestDataVersion == null || latestDataVersion.getVersion() == null) {
+      //If there is no data version we assume a clean system
+      return "0.0.0";
+    } else {
+      return latestDataVersion.getVersion();
+    }
   }
 
   private void updateDataVersionInDB(String version) {
@@ -81,7 +92,7 @@ public class MigrationUtility {
    * @return A sorted map that has removed any unnecessary instructions and ordered the rest.
    */
   private SortedMap<Integer, Pair<String, Class<?>>> orderApplicableMigrationInstructions(
-      DataVersion currentDataVersion, Set<Class<?>> classes) {
+      String currentDataVersion, Set<Class<?>> classes) {
     SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions = new TreeMap<>();
     log.info("Classes discovered {}, number of classes {}", classes, classes.size());
     // order the Migration classes and remove any instructions from previous releases that have
@@ -90,8 +101,7 @@ public class MigrationUtility {
         migrate -> {
           DataMigration migration = migrate.getAnnotation(DataMigration.class);
           if (isVersionGreaterThenOrEqualToCurrentVersion(
-              currentDataVersion.getVersion(), migration.version())) {
-            // TODO add the version and class as a tuple that way we can set the DB for each
+              currentDataVersion, migration.version())) {
             // successfully run data migration.
             Pair<String, Class<?>> pair = Pair.of(migration.version(), migrate);
 

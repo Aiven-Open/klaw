@@ -1,17 +1,28 @@
 package io.aiven.klaw.dao;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
+@ToString
+@Getter
+@Setter
+@Entity
 @Data
 @Table(name = "kwdatamigration")
 public class DataVersion implements Serializable {
-  @Column(name = "version")
   @Id
+  @Column(name = "id")
+  private int id;
+
+  @Column(name = "version")
   private String version;
 
   @Column(name = "executedat")
