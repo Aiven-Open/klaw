@@ -4,6 +4,7 @@ import {
 } from "src/domain/auth-user/auth-user-types";
 
 import api from "src/services/api";
+import { KlawApiResponse } from "types/utils";
 
 const getAuthUser = (userLogin: AuthUserLoginData): Promise<AuthUser> => {
   const data = new URLSearchParams();
@@ -13,4 +14,10 @@ const getAuthUser = (userLogin: AuthUserLoginData): Promise<AuthUser> => {
   return api.post("/login", data);
 };
 
-export { getAuthUser };
+function getUserTeamName(): Promise<string> {
+  return api
+    .get<KlawApiResponse<"getAuth">>("/getAuth")
+    .then((response) => response.teamname);
+}
+
+export { getAuthUser, getUserTeamName };

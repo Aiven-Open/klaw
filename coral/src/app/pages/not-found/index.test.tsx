@@ -6,7 +6,7 @@ import { tabNavigateTo } from "src/services/test-utils/tabbing";
 describe("NotFound", () => {
   describe("renders a Not Found page with correct text", () => {
     beforeAll(() => {
-      customRender(<NotFound />, { memoryRouter: true });
+      customRender(<NotFound />, { memoryRouter: true, queryClient: true });
     });
 
     it("renders a headline", async () => {
