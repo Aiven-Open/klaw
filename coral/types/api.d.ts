@@ -42,6 +42,9 @@ export type paths = {
   "/getAclRequestsForApprover": {
     get: operations["getAclRequestsForApprover"];
   };
+  "/getAclRequests": {
+    get: operations["getAclRequests"];
+  };
   "/execAclRequest": {
     post: operations["approveAclRequests"];
   };
@@ -1250,6 +1253,27 @@ export type operations = {
       };
     };
   };
+  getAclRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: components["schemas"]["RequestStatus"];
+        topic?: string;
+        env?: string;
+        aclType?: "PRODUCER" | "CONSUMER";
+        isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["AclRequestsModel"][];
+        };
+      };
+    };
+  };
   approveAclRequests: {
     parameters: {
       query: {
@@ -1457,6 +1481,7 @@ export enum ApiPaths {
   envsBaseClusterFilteredForTeamGet = "/getEnvsBaseClusterFilteredForTeam",
   clusterInfoFromEnvironmentGet = "/getClusterInfoFromEnv",
   getAclRequestsForApprover = "/getAclRequestsForApprover",
+  getAclRequests = "/getAclRequests",
   approveAclRequests = "/execAclRequest",
   declineAclRequests = "/execAclRequestDecline",
   createAclRequest = "/createAcl",
