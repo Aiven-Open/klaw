@@ -20,6 +20,7 @@ function TopicRequests() {
         pageNo: String(currentPage),
         search: currentTopic,
       }),
+    keepPreviousData: true,
   });
 
   const setCurrentPage = (page: number) => {
