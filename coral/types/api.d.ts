@@ -94,6 +94,9 @@ export type paths = {
   "/request/decline": {
     post: operations["declineRequest"];
   };
+  "/request/delete": {
+    post: operations["deleteRequest"];
+  };
   "/requests/statistics": {
     /** Get counts of all request entity types for different status, operation types */
     get: operations["getRequestStatistics"];
@@ -1440,6 +1443,39 @@ export type operations = {
       200: {
         content: {
           "application/json": (components["schemas"]["GenericApiResponse"])[];
+        };
+      };
+    };
+  };
+  deleteRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RequestVerdict"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Multi Status */
+      207: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Bad Request */
+      405: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
         };
       };
     };

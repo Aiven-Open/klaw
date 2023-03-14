@@ -171,6 +171,14 @@ const declineTopicRequest = (payload: DeclineTopicRequestPayload) => {
   >(`/request/decline`, payload);
 };
 
+type DeleteTopicRequestPayload = RequestVerdictApproval<"TOPIC">;
+const deleteTopicRequest = (payload: DeleteTopicRequestPayload) => {
+  return api.post<KlawApiResponse<"deleteRequest">, DeleteTopicRequestPayload>(
+    `/request/delete`,
+    payload
+  );
+};
+
 export {
   getTopics,
   getTopicNames,
@@ -181,4 +189,5 @@ export {
   getTopicRequests,
   approveTopicRequest,
   declineTopicRequest,
+  deleteTopicRequest,
 };
