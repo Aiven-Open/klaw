@@ -3,9 +3,10 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
+import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -67,7 +68,7 @@ public class EnvsClustersTenantsController {
       value = "/getEnvsBaseCluster",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModel>> getEnvsBaseCluster() {
+  public ResponseEntity<List<EnvModelResponse>> getEnvsBaseCluster() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getEnvsForRequestTopicsCluster(), HttpStatus.OK);
   }
@@ -76,7 +77,7 @@ public class EnvsClustersTenantsController {
       value = "/getEnvsBaseClusterFilteredForTeam",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModel>> getEnvsBaseClusterFilteredForTeam() {
+  public ResponseEntity<List<EnvModelResponse>> getEnvsBaseClusterFilteredForTeam() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getEnvsForRequestTopicsClusterFiltered(),
         HttpStatus.OK);
@@ -100,7 +101,7 @@ public class EnvsClustersTenantsController {
       value = "/getEnvs",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModel>> getEnvs() {
+  public ResponseEntity<List<EnvModelResponse>> getEnvs() {
     return new ResponseEntity<>(envsClustersTenantsControllerService.getKafkaEnvs(), HttpStatus.OK);
   }
 
@@ -108,7 +109,7 @@ public class EnvsClustersTenantsController {
       value = "/getSyncConnectorsEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModel>> getSyncConnectorsEnv() {
+  public ResponseEntity<List<EnvModelResponse>> getSyncConnectorsEnv() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getConnectorEnvs(), HttpStatus.OK);
   }
@@ -117,7 +118,7 @@ public class EnvsClustersTenantsController {
       value = "/getEnvsPaginated",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModel>> getEnvsPaginated(
+  public ResponseEntity<List<EnvModelResponse>> getEnvsPaginated(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "envId", defaultValue = "") String envId,
       @RequestParam(value = "searchEnvParam", defaultValue = "") String searchEnvParam) {
@@ -130,7 +131,7 @@ public class EnvsClustersTenantsController {
       value = "/getEnvDetails",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<EnvModel> getEnvDetails(
+  public ResponseEntity<EnvModelResponse> getEnvDetails(
       @RequestParam(value = "envSelected") String envSelected,
       @RequestParam(value = "envType") String envType) {
     return new ResponseEntity<>(
@@ -159,7 +160,7 @@ public class EnvsClustersTenantsController {
       value = "/getSchemaRegEnvs",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModel>> getSchemaRegEnvs() {
+  public ResponseEntity<List<EnvModelResponse>> getSchemaRegEnvs() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getSchemaRegEnvs(), HttpStatus.OK);
   }
@@ -168,7 +169,7 @@ public class EnvsClustersTenantsController {
       value = "/getEnvsForSchemaRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModel>> getRequestForSchemas() {
+  public ResponseEntity<List<EnvModelResponse>> getRequestForSchemas() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getEnvsForSchemaRequests(), HttpStatus.OK);
   }
@@ -177,7 +178,7 @@ public class EnvsClustersTenantsController {
       value = "/getKafkaConnectEnvs",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModel>> getKafkaConnectEnvs() {
+  public ResponseEntity<List<EnvModelResponse>> getKafkaConnectEnvs() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getKafkaConnectEnvs(), HttpStatus.OK);
   }

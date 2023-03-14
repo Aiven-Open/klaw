@@ -2904,7 +2904,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/EnvModel"
+                    "$ref" : "#/components/schemas/EnvModelResponse"
                   }
                 }
               }
@@ -3198,7 +3198,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/EnvModel"
+                    "$ref" : "#/components/schemas/EnvModelResponse"
                   }
                 }
               }
@@ -3487,7 +3487,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/EnvModel"
+                    "$ref" : "#/components/schemas/EnvModelResponse"
                   }
                 }
               }
@@ -3529,7 +3529,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/EnvModel"
+                    "$ref" : "#/components/schemas/EnvModelResponse"
                   }
                 }
               }
@@ -3574,7 +3574,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/EnvModel"
+                    "$ref" : "#/components/schemas/EnvModelResponse"
                   }
                 }
               }
@@ -3595,7 +3595,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/EnvModel"
+                    "$ref" : "#/components/schemas/EnvModelResponse"
                   }
                 }
               }
@@ -3616,7 +3616,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/EnvModel"
+                    "$ref" : "#/components/schemas/EnvModelResponse"
                   }
                 }
               }
@@ -3637,7 +3637,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/EnvModel"
+                    "$ref" : "#/components/schemas/EnvModelResponse"
                   }
                 }
               }
@@ -3703,7 +3703,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/EnvModel"
+                  "$ref" : "#/components/schemas/EnvModelResponse"
                 }
               }
             }
@@ -5215,18 +5215,6 @@
           "sequence" : {
             "type" : "string"
           },
-          "totalNoPages" : {
-            "type" : "string"
-          },
-          "currentPage" : {
-            "type" : "string"
-          },
-          "allPageNos" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
           "topicName" : {
             "type" : "string"
           },
@@ -5237,9 +5225,6 @@
           "description" : {
             "type" : "string"
           },
-          "documentation" : {
-            "type" : "string"
-          },
           "noOfReplcias" : {
             "type" : "string"
           },
@@ -5247,9 +5232,6 @@
             "type" : "string"
           },
           "cluster" : {
-            "type" : "string"
-          },
-          "clusterId" : {
             "type" : "string"
           },
           "environmentsList" : {
@@ -5266,8 +5248,27 @@
           },
           "topicDeletable" : {
             "type" : "boolean"
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "documentation" : {
+            "type" : "string"
+          },
+          "clusterId" : {
+            "type" : "string"
           }
-        }
+        },
+        "required" : [ "allPageNos", "cluster", "currentPage", "description", "environmentsList", "noOfPartitions", "noOfReplcias", "sequence", "showDeleteTopic", "showEditTopic", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
       },
       "KafkaConnectorModel" : {
         "properties" : {
@@ -5693,9 +5694,6 @@
       },
       "EnvModel" : {
         "properties" : {
-          "id" : {
-            "type" : "string"
-          },
           "name" : {
             "type" : "string",
             "maxLength" : 10,
@@ -5705,7 +5703,7 @@
           "type" : {
             "type" : "string"
           },
-          "tenantId" : {
+          "clusterId" : {
             "type" : "integer",
             "format" : "int32"
           },
@@ -5717,20 +5715,10 @@
             "type" : "string",
             "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
           },
-          "clusterId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "tenantName" : {
-            "type" : "string"
-          },
-          "clusterName" : {
-            "type" : "string"
-          },
-          "envStatus" : {
-            "type" : "string"
-          },
           "otherParams" : {
+            "type" : "string"
+          },
+          "id" : {
             "type" : "string"
           },
           "defaultPartitions" : {
@@ -5745,25 +5733,12 @@
           "maxReplicationFactor" : {
             "type" : "string"
           },
-          "showDeleteEnv" : {
-            "type" : "boolean"
-          },
-          "totalNoPages" : {
-            "type" : "string"
-          },
-          "allPageNos" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
           "associatedEnv" : {
             "$ref" : "#/components/schemas/EnvTag"
           },
-          "clusterType" : {
-            "type" : "string",
-            "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT", "KAFKA_REST_API" ],
-            "writeOnly" : true
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         },
         "required" : [ "clusterId", "name", "type" ]
@@ -6134,6 +6109,78 @@
             "type" : "string"
           }
         }
+      },
+      "EnvModelResponse" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "clusterId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "tenantName" : {
+            "type" : "string"
+          },
+          "clusterName" : {
+            "type" : "string"
+          },
+          "envStatus" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "showDeleteEnv" : {
+            "type" : "boolean"
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "associatedEnv" : {
+            "$ref" : "#/components/schemas/EnvTag"
+          },
+          "topicprefix" : {
+            "type" : "string"
+          },
+          "topicsuffix" : {
+            "type" : "string"
+          },
+          "defaultPartitions" : {
+            "type" : "string"
+          },
+          "maxPartitions" : {
+            "type" : "string"
+          },
+          "defaultReplicationFactor" : {
+            "type" : "string"
+          },
+          "maxReplicationFactor" : {
+            "type" : "string"
+          },
+          "clusterType" : {
+            "type" : "string",
+            "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT", "KAFKA_REST_API" ],
+            "writeOnly" : true
+          }
+        },
+        "required" : [ "allPageNos", "clusterId", "clusterName", "envStatus", "id", "name", "otherParams", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
       },
       "AclInfo" : {
         "properties" : {

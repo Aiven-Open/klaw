@@ -12,11 +12,12 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import io.aiven.klaw.service.UiConfigControllerService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
@@ -86,7 +87,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(1)
   public void getEnvs() throws Exception {
-    List<EnvModel> envList = utilMethods.getEnvList();
+    List<EnvModelResponse> envList = utilMethods.getEnvList();
     when(envsClustersTenantsControllerService.getKafkaEnvs()).thenReturn(envList);
 
     mvcEnvs
@@ -117,7 +118,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(4)
   public void getSchemaRegEnvs() throws Exception {
-    List<EnvModel> envList = utilMethods.getEnvList();
+    List<EnvModelResponse> envList = utilMethods.getEnvList();
     when(envsClustersTenantsControllerService.getSchemaRegEnvs()).thenReturn(envList);
 
     mvcEnvs
@@ -162,7 +163,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(7)
   public void addNewEnvName3Chars() throws Exception {
-    EnvModel env = utilMethods.getEnvList().get(0);
+    EnvModel env = utilMethods.getEnvListToAdd().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
@@ -180,7 +181,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(8)
   public void addNewEnvName10charsAllowed() throws Exception {
-    EnvModel env = utilMethods.getEnvList().get(0);
+    EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("ABCDEFGHIJ"); // 10 chars allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
@@ -199,7 +200,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(9)
   public void addNewEnvMoreThan10CharsFailure() throws Exception {
-    EnvModel env = utilMethods.getEnvList().get(0);
+    EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("ABCDEFGHIJKL"); // > 10 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
@@ -216,7 +217,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(10)
   public void addNewEnvLessThan2CharsFailure() throws Exception {
-    EnvModel env = utilMethods.getEnvList().get(0);
+    EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("A"); // < 2 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
@@ -233,7 +234,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(11)
   public void addNewEnvNoClusterIdFailure() throws Exception {
-    EnvModel env = utilMethods.getEnvList().get(0);
+    EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setClusterId(null);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();

@@ -23,11 +23,13 @@ import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.nio.charset.StandardCharsets;
@@ -525,12 +527,23 @@ public class UtilMethods {
     return envList;
   }
 
-  public List<EnvModel> getEnvList() {
+  public List<EnvModelResponse> getEnvList() {
+    List<EnvModelResponse> envList = new ArrayList<>();
+    EnvModelResponse env = new EnvModelResponse();
+    env.setId("1");
+    env.setName("DEV");
+    env.setClusterType(KafkaClustersType.KAFKA);
+    env.setClusterId(101);
+    envList.add(env);
+    return envList;
+  }
+
+  public List<EnvModel> getEnvListToAdd() {
     List<EnvModel> envList = new ArrayList<>();
     EnvModel env = new EnvModel();
     env.setId("1");
     env.setName("DEV");
-    env.setClusterType(KafkaClustersType.KAFKA);
+    env.setType(KafkaClustersType.KAFKA.value);
     env.setClusterId(101);
     envList.add(env);
     return envList;
