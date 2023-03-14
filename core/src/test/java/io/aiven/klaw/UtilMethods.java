@@ -31,6 +31,7 @@ import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
+import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
@@ -306,9 +307,9 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
-  public List<TeamModel> getTeamsModel() {
-    List<TeamModel> allTopicReqs = new ArrayList<>();
-    TeamModel team = new TeamModel();
+  public List<TeamModelResponse> getTeamsModel() {
+    List<TeamModelResponse> allTopicReqs = new ArrayList<>();
+    TeamModelResponse team = new TeamModelResponse();
     team.setTeamname("Seahorses");
     allTopicReqs.add(team);
     return allTopicReqs;

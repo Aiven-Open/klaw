@@ -1927,7 +1927,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/TeamModel"
+                    "$ref" : "#/components/schemas/TeamModelResponse"
                   }
                 }
               }
@@ -2398,6 +2398,7 @@
     "/getTopicTeam" : {
       "get" : {
         "tags" : [ "topic-controller" ],
+        "summary" : "Get team, teamId of a topic",
         "operationId" : "getTopicTeam",
         "parameters" : [ {
           "name" : "topicName",
@@ -2417,15 +2418,12 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "description" : "OK",
+          "default" : {
+            "description" : "default response",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/TopicTeamResponse"
                 }
               }
             }
@@ -2736,7 +2734,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/TeamModel"
+                  "$ref" : "#/components/schemas/TeamModelResponse"
                 }
               }
             }
@@ -4275,7 +4273,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/TeamModel"
+                    "$ref" : "#/components/schemas/TeamModelResponse"
                   }
                 }
               }
@@ -4317,7 +4315,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/TeamModel"
+                    "$ref" : "#/components/schemas/TeamModelResponse"
                   }
                 }
               }
@@ -5806,6 +5804,46 @@
         },
         "required" : [ "bootstrapServers", "clusterName", "clusterType", "kafkaFlavor", "protocol" ]
       },
+      "TeamModelResponse" : {
+        "properties" : {
+          "teamname" : {
+            "type" : "string"
+          },
+          "teamphone" : {
+            "type" : "string"
+          },
+          "contactperson" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "showDeleteTeam" : {
+            "type" : "boolean"
+          },
+          "tenantName" : {
+            "type" : "string"
+          },
+          "app" : {
+            "type" : "string"
+          },
+          "teammail" : {
+            "type" : "string"
+          },
+          "envList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "contactperson", "showDeleteTeam", "teamId", "teamname", "teamphone", "tenantId", "tenantName" ]
+      },
       "RequestEntityStatusCount" : {
         "properties" : {
           "requestEntityType" : {
@@ -5862,6 +5900,24 @@
             "format" : "int64"
           }
         }
+      },
+      "TopicTeamResponse" : {
+        "properties" : {
+          "team" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "status" ]
       },
       "TopicRequestsResponseModel" : {
         "properties" : {
@@ -6801,7 +6857,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "allPageNos", "approvingTeamDetails", "consumergroup", "currentPage", "environment", "environmentName", "req_no", "requestOperationType", "requestStatus", "requestingTeamName", "requestingteam", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicname", "totalNoPages" ]
+        "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "acl_ip", "acl_ssl", "allPageNos", "approvingTeamDetails", "consumergroup", "currentPage", "environment", "environmentName", "req_no", "requestOperationType", "requestStatus", "requestingTeamName", "requestingteam", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicname", "totalNoPages" ]
       }
     }
   }

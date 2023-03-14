@@ -16,6 +16,7 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
@@ -132,11 +133,12 @@ public class TopicControllerTest {
   @Order(4)
   public void getTopicTeam() throws Exception {
     String topicName = "testtopic";
-    Map<String, String> teamMap = new HashMap<>();
-    teamMap.put("team", "Team1");
-    teamMap.put("teamId", "1001");
+    //    Map<String, String> teamMap = new HashMap<>();
+    TopicTeamResponse topicTeamResponse = new TopicTeamResponse();
+    topicTeamResponse.setTeam("Team1");
+    topicTeamResponse.setTeamId(1001);
     when(topicControllerService.getTopicTeamOnly(topicName, AclPatternType.LITERAL))
-        .thenReturn(teamMap);
+        .thenReturn(topicTeamResponse);
 
     String res =
         mvc.perform(

@@ -22,6 +22,7 @@ import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -378,9 +379,10 @@ public class TopicControllerService {
     return newList;
   }
 
-  public Map<String, String> getTopicTeamOnly(String topicName, AclPatternType patternType) {
+  public TopicTeamResponse getTopicTeamOnly(String topicName, AclPatternType patternType) {
     log.debug("getTopicTeamOnly {} {}", topicName, patternType);
-    Map<String, String> teamMap = new HashMap<>();
+    TopicTeamResponse topicTeamResponse = new TopicTeamResponse();
+    topicTeamResponse.setStatus(false);
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     List<Topic> topics;
@@ -403,20 +405,19 @@ public class TopicControllerService {
               });
 
       if (allTopicsStartingWithPattern.isEmpty()) {
-        teamMap.put(
-            "error", "There are no topics found with this prefix. You may synchronize metadata.");
-        return teamMap;
+        topicTeamResponse.setError(
+            "There are no topics found with this prefix. You may synchronize metadata.");
+        return topicTeamResponse;
       }
 
       Set<Integer> stringTeamsFound = new HashSet<>();
       allTopicsStartingWithPattern.forEach(top -> stringTeamsFound.add(top.getTeamId()));
 
       if (stringTeamsFound.size() > 1) {
-        teamMap.put(
-            "error", "There are atleast two topics with same prefix owned by different teams.");
+        topicTeamResponse.setError(
+            "There are atleast two topics with same prefix owned by different teams.");
       } else {
-        teamMap.put(
-            "team",
+        topicTeamResponse.setTeam(
             manageDatabase.getTeamNameFromTeamId(tenantId, stringTeamsFound.iterator().next()));
       }
     } else {
@@ -425,14 +426,15 @@ public class TopicControllerService {
       topics = commonUtilsService.getFilteredTopicsForTenant(topics);
 
       if (!topics.isEmpty()) {
-        teamMap.put(
-            "team", manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()));
-        teamMap.put("teamId", "" + topics.get(0).getTeamId());
+        topicTeamResponse.setTeam(
+            manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()));
+        topicTeamResponse.setTeamId(topics.get(0).getTeamId());
+        topicTeamResponse.setStatus(true);
       } else {
-        teamMap.put("error", "No team found");
+        topicTeamResponse.setError("No team found");
       }
     }
-    return teamMap;
+    return topicTeamResponse;
   }
 
   public List<TopicRequestsResponseModel> getTopicRequestsForApprover(

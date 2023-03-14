@@ -32,9 +32,9 @@ public class AclRequestsResponseModel extends BaseRequestsResponseModel implemen
 
   @NotNull private String consumergroup;
 
-  private ArrayList<String> acl_ip;
+  @NotNull private ArrayList<String> acl_ip;
 
-  private ArrayList<String> acl_ssl;
+  @NotNull private ArrayList<String> acl_ssl;
 
   private String transactionalId;
 

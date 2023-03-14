@@ -12,12 +12,12 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
+import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import io.aiven.klaw.service.UiConfigControllerService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
@@ -133,7 +133,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(5)
   public void getAllTeamsSU() throws Exception {
-    List<TeamModel> teamList = utilMethods.getTeamsModel();
+    List<TeamModelResponse> teamList = utilMethods.getTeamsModel();
     when(usersTeamsControllerService.getAllTeamsSU()).thenReturn(teamList);
 
     mvcUserTeams

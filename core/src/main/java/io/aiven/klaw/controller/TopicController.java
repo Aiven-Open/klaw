@@ -4,12 +4,16 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.service.TopicControllerService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Map;
@@ -97,11 +101,17 @@ public class TopicController {
         HttpStatus.OK);
   }
 
+  @Operation(
+      summary = "Get team, teamId of a topic",
+      responses = {
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            content = @Content(schema = @Schema(implementation = TopicTeamResponse.class)))
+      })
   @RequestMapping(
       value = "/getTopicTeam",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getTopicTeam(
+  public ResponseEntity<TopicTeamResponse> getTopicTeam(
       @RequestParam("topicName") String topicName,
       @RequestParam(value = "patternType", defaultValue = "LITERAL") AclPatternType patternType)
       throws KlawException {

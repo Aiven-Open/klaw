@@ -677,24 +677,24 @@ export type components = {
     };
     TopicInfo: {
       /** Format: int32 */
-      topicid?: number;
-      sequence?: string;
-      totalNoPages?: string;
-      currentPage?: string;
-      allPageNos?: string[];
-      topicName?: string;
+      topicid: number;
+      sequence: string;
+      topicName: string;
       /** Format: int32 */
-      noOfPartitions?: number;
-      description?: string;
+      noOfPartitions: number;
+      description: string;
+      noOfReplcias: string;
+      teamname: string;
+      cluster: string;
+      environmentsList: string[];
+      showEditTopic: boolean;
+      showDeleteTopic: boolean;
+      topicDeletable: boolean;
+      totalNoPages: string;
+      currentPage: string;
+      allPageNos: string[];
       documentation?: string;
-      noOfReplcias?: string;
-      teamname?: string;
-      cluster?: string;
       clusterId?: string;
-      environmentsList?: string[];
-      showEditTopic?: boolean;
-      showDeleteTopic?: boolean;
-      topicDeletable?: boolean;
     };
     KafkaConnectorModel: {
       /** Format: int32 */
@@ -851,34 +851,21 @@ export type components = {
       activeTenant?: boolean;
     };
     EnvModel: {
-      id?: string;
       name: string;
       type: string;
       /** Format: int32 */
-      tenantId?: number;
+      clusterId: number;
       topicprefix?: string;
       topicsuffix?: string;
-      /** Format: int32 */
-      clusterId: number;
-      tenantName?: string;
-      clusterName?: string;
-      envStatus?: string;
       otherParams?: string;
+      id?: string;
       defaultPartitions?: string;
       maxPartitions?: string;
       defaultReplicationFactor?: string;
       maxReplicationFactor?: string;
-      showDeleteEnv?: boolean;
-      totalNoPages?: string;
-      allPageNos?: string[];
       associatedEnv?: components["schemas"]["EnvTag"];
-      /** @enum {string} */
-      clusterType?:
-        | "ALL"
-        | "KAFKA"
-        | "SCHEMA_REGISTRY"
-        | "KAFKA_CONNECT"
-        | "KAFKA_REST_API";
+      /** Format: int32 */
+      tenantId?: number;
     };
     EnvTag: {
       id?: string;
@@ -1020,6 +1007,36 @@ export type components = {
       type?: string;
       display?: boolean;
       position?: string;
+    };
+    EnvModelResponse: {
+      id: string;
+      name: string;
+      type: string;
+      /** Format: int32 */
+      tenantId: number;
+      /** Format: int32 */
+      clusterId: number;
+      tenantName: string;
+      clusterName: string;
+      envStatus: string;
+      otherParams: string;
+      showDeleteEnv: boolean;
+      totalNoPages: string;
+      allPageNos: string[];
+      associatedEnv?: components["schemas"]["EnvTag"];
+      topicprefix?: string;
+      topicsuffix?: string;
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      defaultReplicationFactor?: string;
+      maxReplicationFactor?: string;
+      /** @enum {string} */
+      clusterType?:
+        | "ALL"
+        | "KAFKA"
+        | "SCHEMA_REGISTRY"
+        | "KAFKA_CONNECT"
+        | "KAFKA_REST_API";
     };
     AclInfo: {
       sequence?: string;
@@ -2640,7 +2657,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvModel"][];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -2738,7 +2755,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvModel"][];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -2874,7 +2891,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvModel"][];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -2894,7 +2911,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvModel"][];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -2911,7 +2928,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvModel"][];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -2921,7 +2938,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvModel"][];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -2931,7 +2948,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvModel"][];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -2941,7 +2958,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvModel"][];
+          "application/json": components["schemas"]["EnvModelResponse"][];
         };
       };
     };
@@ -2972,7 +2989,7 @@ export type operations = {
       /** OK */
       200: {
         content: {
-          "application/json": components["schemas"]["EnvModel"];
+          "application/json": components["schemas"]["EnvModelResponse"];
         };
       };
     };

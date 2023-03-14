@@ -26,6 +26,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -468,9 +469,9 @@ public class TopicControllerServiceTest {
     String topicName = "testtopic";
     stubUserInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    Map<String, String> topicTeamMap =
+    TopicTeamResponse topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
-    assertThat(topicTeamMap.get("error")).contains("There are no topics found with this prefix.");
+    assertThat(topicTeamMap.getError()).contains("There are no topics found with this prefix.");
   }
 
   @Test
@@ -488,9 +489,9 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getAllTopics(anyInt())).thenReturn(topicList);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    Map<String, String> topicTeamMap =
+    TopicTeamResponse topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
-    assertThat(topicTeamMap.get("error"))
+    assertThat(topicTeamMap.getError())
         .contains("There are atleast two topics with same prefix owned by different teams.");
   }
 
@@ -505,9 +506,9 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
-    Map<String, String> topicTeamMap =
+    TopicTeamResponse topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
-    assertThat(topicTeamMap.get("team")).isEqualTo(teamName);
+    assertThat(topicTeamMap.getTeam()).isEqualTo(teamName);
   }
 
   @Test
@@ -521,9 +522,9 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(topicList);
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
-    Map<String, String> topicTeamMap =
+    TopicTeamResponse topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.LITERAL);
-    assertThat(topicTeamMap.get("team")).isEqualTo(teamName);
+    assertThat(topicTeamMap.getTeam()).isEqualTo(teamName);
   }
 
   @Test

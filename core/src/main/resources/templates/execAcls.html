@@ -553,16 +553,16 @@
 										<div  style="width:20%" class="p-2 border-right" ng-show="aclRequest.topictype == 'Consumer'">
 											<h6 class="text-primary">Consumer Group</h6><b>{{ aclRequest.consumergroup }}</b>
 										</div>
-										<div ng-show="aclRequest.acl_ip != null" class="p-2 border-right" style="width:15%">
+										<div ng-show="aclRequest.acl_ip.length != 0" class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">IP Address</h6>
 											<li ng-repeat="oneip in aclRequest.acl_ip">
 												<b>{{ oneip }}</b>
 											</li>
 										</div>
-										<div ng-show="aclRequest.acl_ip == null" class="p-2 border-right" style="width:15%">
+										<div ng-show="aclRequest.acl_ip.length == 0" class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">IP Address</h6><b>*</b>
 										</div>
-										<div ng-show="aclRequest.acl_ssl != null" class="p-2 border-right" style="width:30%">
+										<div ng-show="aclRequest.acl_ssl.length != 0" class="p-2 border-right" style="width:30%">
 											<h6 class="text-primary">Principal / Username</h6>
 											<table>
 												<tr ng-repeat="onessl in aclRequest.acl_ssl">
