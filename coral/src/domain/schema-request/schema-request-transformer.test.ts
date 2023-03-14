@@ -1,4 +1,4 @@
-import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
+import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
 import {
   SchemaRequest,
   SchemaRequestApiResponse,
@@ -7,9 +7,7 @@ import {
 describe("schema-request-transformer.ts", () => {
   describe("transformGetSchemaRequestsForApproverResponse", () => {
     it("transforms empty payload into empty array", () => {
-      const transformedResponse = transformGetSchemaRequestsForApproverResponse(
-        []
-      );
+      const transformedResponse = transformGetSchemaRequests([]);
 
       const result: SchemaRequestApiResponse = {
         totalPages: 0,
@@ -75,8 +73,7 @@ describe("schema-request-transformer.ts", () => {
           forceRegister: false,
         },
       ];
-      const transformedResponse =
-        transformGetSchemaRequestsForApproverResponse(mockedResponse);
+      const transformedResponse = transformGetSchemaRequests(mockedResponse);
 
       const result: SchemaRequestApiResponse = {
         totalPages: 4,

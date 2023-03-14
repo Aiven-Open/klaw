@@ -1,5 +1,8 @@
 import {
+  approveSchemaRequest,
   createSchemaRequest,
+  declineSchemaRequest,
+  getSchemaRequests,
   getSchemaRequestsForApprover,
 } from "src/domain/schema-request/schema-request-api";
 import {
@@ -8,4 +11,10 @@ import {
 } from "src/domain/schema-request/schema-request-types";
 
 export type { CreatedSchemaRequests, SchemaRequest };
-export { createSchemaRequest, getSchemaRequestsForApprover };
+export {
+  createSchemaRequest,
+  getSchemaRequestsForApprover,
+  getSchemaRequests,
+  approveSchemaRequest,
+  declineSchemaRequest,
+};
