@@ -14,10 +14,7 @@ type MockApi<T extends keyof operations> = {
   };
 };
 
-function mockGetEnvironments({
-  mswInstance,
-  response,
-}: MockApi<"environmentsGet">) {
+function mockGetEnvironments({ mswInstance, response }: MockApi<"getEnvs">) {
   const url = `${getHTTPBaseAPIUrl()}/getEnvs`;
   mswInstance.use(
     rest.get(url, async (req, res, ctx) => {
@@ -29,7 +26,7 @@ function mockGetEnvironments({
 function mockGetEnvironmentsForTeam({
   mswInstance,
   response,
-}: MockApi<"envsBaseClusterFilteredForTeamGet">) {
+}: MockApi<"getEnvsBaseClusterFilteredForTeam">) {
   const url = `${getHTTPBaseAPIUrl()}/getEnvsBaseClusterFilteredForTeam`;
   mswInstance.use(
     rest.get(url, async (req, res, ctx) => {
@@ -41,7 +38,7 @@ function mockGetEnvironmentsForTeam({
 function mockGetSchemaRegistryEnvironments({
   mswInstance,
   response,
-}: MockApi<"schemaRegEnvsGet">) {
+}: MockApi<"getSchemaRegEnvs">) {
   const url = `${getHTTPBaseAPIUrl()}/getSchemaRegEnvs`;
   mswInstance.use(
     rest.get(url, async (req, res, ctx) => {
@@ -57,7 +54,7 @@ const mockedEnvironmentResponse = [
 
 interface GetClusterInfoFromEnvRequestArgs {
   mswInstance: MswInstance;
-  response: KlawApiResponse<"clusterInfoFromEnvironmentGet">;
+  response: KlawApiResponse<"getClusterInfoFromEnv">;
 }
 
 function mockGetClusterInfoFromEnv({

@@ -4,16 +4,17 @@ import { KlawApiModel } from "types/utils";
 // for creating a TopicRequest, we should check this
 // with backend and align API and our types/needs
 type Environment = {
-  name: KlawApiModel<"Environment">["name"];
-  id: KlawApiModel<"Environment">["id"];
+  name: KlawApiModel<"EnvModel">["name"];
+  id: KlawApiModel<"EnvModel">["id"];
   defaultPartitions: number | undefined;
   defaultReplicationFactor: number | undefined;
   maxPartitions: number | undefined;
   maxReplicationFactor: number | undefined;
   topicNamePrefix: string | undefined;
   topicNameSuffix: string | undefined;
-  type: KlawApiModel<"Environment">["type"];
+  type: KlawApiModel<"EnvModel">["type"];
 };
+// getClusterInfoFromEnv inline object, not a model
 type ClusterInfo = KlawApiModel<"environmentGetClusterInfoResponse">;
 
 const ALL_ENVIRONMENTS_VALUE = "ALL";

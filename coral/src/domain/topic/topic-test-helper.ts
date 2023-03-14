@@ -13,11 +13,11 @@ const baseTestObjectMockedTopic = () => {
     sequence: "341",
     allPageNos: ["1"],
     description: "Topic description",
-    documentation: null,
+    documentation: undefined,
     noOfReplcias: "2",
     teamname: "DevRel",
     cluster: "1",
-    clusterId: null,
+    clusterId: undefined,
     environmentsList: expect.arrayContaining([expect.any(String)]),
     showEditTopic: false,
     showDeleteTopic: false,
@@ -47,11 +47,11 @@ function createMockTopic({
     topicName: topicName,
     noOfPartitions: 2,
     description: "Topic description",
-    documentation: null,
+    documentation: undefined,
     noOfReplcias: "2",
     teamname: "DevRel",
     cluster: "1",
-    clusterId: null,
+    clusterId: undefined,
     environmentsList,
     showEditTopic: false,
     showDeleteTopic: false,
@@ -67,8 +67,8 @@ function createMockTopicApiResponse({
   entries: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
   totalPages?: number;
   currentPage?: number;
-}): KlawApiResponse<"topicsGet"> {
-  const response: KlawApiResponse<"topicsGet"> = [[]];
+}): KlawApiResponse<"getTopics"> {
+  const response: KlawApiResponse<"getTopics"> = [[]];
 
   const totalPageNumber = currentPage > totalPages ? currentPage : totalPages;
   if (entries >= 4 && entries <= 6) {

@@ -47,7 +47,7 @@ describe("topic-transformer.ts", () => {
     });
 
     it("transforms a response with no entries", () => {
-      const apiResponse: KlawApiResponse<"topicsGet"> = [];
+      const apiResponse: KlawApiResponse<"getTopics"> = [];
       const result: TopicApiResponse = {
         totalPages: 0,
         currentPage: 0,
@@ -60,7 +60,7 @@ describe("topic-transformer.ts", () => {
 
   describe("transformGetTopicAdvancedConfigOptionsResponse", () => {
     it("transforms an config without known documentation", () => {
-      const apiResponse: KlawApiResponse<"topicAdvancedConfigGet"> = {
+      const apiResponse: KlawApiResponse<"getAdvancedTopicConfigs"> = {
         MIN_COMPACTION_LAG_MS: "min.compaction.lag.ms",
       };
       const result = [
@@ -78,7 +78,7 @@ describe("topic-transformer.ts", () => {
       ).toStrictEqual(result);
     });
     it("transforms an config without known documentation", () => {
-      const apiResponse: KlawApiResponse<"topicAdvancedConfigGet"> = {
+      const apiResponse: KlawApiResponse<"getAdvancedTopicConfigs"> = {
         CONFIG_WITHOUT_DOCUMENTATION: "config.without.documentation",
       };
       const result = [

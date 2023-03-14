@@ -16,11 +16,11 @@ const createAclRequest = (
   aclParams:
     | CreateAclRequestTopicTypeProducer
     | CreateAclRequestTopicTypeConsumer
-): Promise<KlawApiResponse<"createAclRequest">> => {
-  return api.post<
-    KlawApiResponse<"createAclRequest">,
-    KlawApiRequest<"createAclRequest">
-  >("/createAcl", aclParams);
+): Promise<KlawApiResponse<"createAcl">> => {
+  return api.post<KlawApiResponse<"createAcl">, KlawApiRequest<"createAcl">>(
+    "/createAcl",
+    aclParams
+  );
 };
 
 const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {

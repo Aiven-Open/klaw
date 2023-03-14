@@ -8,20 +8,20 @@ import { KlawApiResponse } from "types/utils";
 
 const getEnvironments = async (): Promise<Environment[]> => {
   return api
-    .get<KlawApiResponse<"environmentsGet">>("/getEnvs")
+    .get<KlawApiResponse<"getEnvs">>("/getEnvs")
     .then(transformEnvironmentApiResponse);
 };
 
 const getEnvironmentsForTeam = (): Promise<Environment[]> => {
-  const url = "/getEnvsBaseClusterFilteredForTeam";
+  const url = "/";
   return api
-    .get<KlawApiResponse<"envsBaseClusterFilteredForTeamGet">>(url)
+    .get<KlawApiResponse<"getEnvsBaseClusterFilteredForTeam">>(url)
     .then(transformEnvironmentApiResponse);
 };
 
 const getSchemaRegistryEnvironments = (): Promise<Environment[]> => {
   return api
-    .get<KlawApiResponse<"schemaRegEnvsGet">>("/getSchemaRegEnvs")
+    .get<KlawApiResponse<"getSchemaRegEnvs">>("/getSchemaRegEnvs")
     .then(transformEnvironmentApiResponse);
 };
 
@@ -33,7 +33,7 @@ const getClusterInfo = async ({
   envType: Environment["type"];
 }): Promise<ClusterInfo> => {
   const params = new URLSearchParams({ envSelected, envType });
-  return api.get<KlawApiResponse<"clusterInfoFromEnvironmentGet">>(
+  return api.get<KlawApiResponse<"getClusterInfoFromEnv">>(
     `/getClusterInfoFromEnv?${params}`
   );
 };
