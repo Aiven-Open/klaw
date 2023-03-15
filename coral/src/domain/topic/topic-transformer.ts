@@ -139,7 +139,7 @@ function transformGetTopicAdvancedConfigOptionsResponse(
 ): TopicAdvancedConfigurationOptions[] {
   return Object.entries(apiResponse).map(([key, name]) => {
     const base = { key, name };
-    if (name in ADVANCED_TOPIC_CONFIG_DOCUMENTATION) {
+    if (name && name in ADVANCED_TOPIC_CONFIG_DOCUMENTATION) {
       return {
         ...base,
         documentation: ADVANCED_TOPIC_CONFIG_DOCUMENTATION[name],

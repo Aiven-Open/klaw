@@ -3,61 +3,80 @@
  * Do not make direct changes to the file.
  */
 
+
 export type paths = {
-  /** User can authenticate themselves with their username and password */
   "/user/authenticate": {
-    /** Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints. */
+    /**
+     * Authenticate user 
+     * @description Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints.
+     */
     post: operations["userAuthentication"];
   };
   "/getTopics": {
+    /** Get topics */
     get: operations["topicsGet"];
   };
   "/getTopicsOnly": {
+    /** Get topic names list */
     get: operations["topicsGetOnly"];
   };
   "/getTopicTeam": {
+    /** Get the name of the team a topic belongs to */
     get: operations["topicGetTeam"];
   };
   "/createTopics": {
+    /** Create topic request */
     post: operations["topicCreate"];
   };
   "/getAdvancedTopicConfigs": {
+    /** Get advanced topic configuration options */
     get: operations["topicAdvancedConfigGet"];
   };
   "/getAllTeamsSUOnly": {
+    /** Get team names */
     get: operations["teamNamesGet"];
   };
   "/getAllTeamsSU": {
+    /** Get teams */
     get: operations["teamsGet"];
   };
   "/getEnvs": {
+    /** Get environments */
     get: operations["environmentsGet"];
   };
   "/getEnvsBaseClusterFilteredForTeam": {
+    /** Get environments */
     get: operations["envsBaseClusterFilteredForTeamGet"];
   };
   "/getClusterInfoFromEnv": {
+    /** Get flavor of Kafka cluster (Aiven cluster or other type of cluster) */
     get: operations["clusterInfoFromEnvironmentGet"];
   };
   "/getAclRequestsForApprover": {
+    /** Get ACL requests with aclstatus: created */
     get: operations["getAclRequestsForApprover"];
   };
   "/getAclRequests": {
+    /** Get ACL requests with aclstatus: created */
     get: operations["getAclRequests"];
   };
   "/execAclRequest": {
+    /** Approve an ACL request */
     post: operations["approveAclRequests"];
   };
   "/execAclRequestDecline": {
+    /** Decline an ACL request */
     post: operations["declineAclRequests"];
   };
   "/createAcl": {
     post: operations["createAclRequest"];
   };
   "/getSchemaRegEnvs": {
+    /** get schema registry environments */
     get: operations["schemaRegEnvsGet"];
   };
   "/uploadSchema": {
+    /** post schema upload */
     post: operations["schemaUpload"];
   };
   "/getTopicRequestsForApprover": {
@@ -76,6 +95,7 @@ export type paths = {
     post: operations["declineRequest"];
   };
   "/requests/statistics": {
+    /** Get counts of all request entity types for different status, operation types */
     get: operations["getRequestStatistics"];
   };
   "/getSchemaRequestsForApprover": {
@@ -83,11 +103,13 @@ export type paths = {
   };
 };
 
+export type webhooks = Record<string, never>;
+
 export type components = {
   schemas: {
     CommonError: {
       /**
-       * message
+       * message 
        * @description Description for user why a certain operation failed
        */
       message?: string;
@@ -95,133 +117,65 @@ export type components = {
     /** GenericApiResponse */
     GenericApiResponse: {
       /** @enum {string} */
-      status?:
-        | "100 CONTINUE"
-        | "101 SWITCHING_PROTOCOLS"
-        | "102 PROCESSING"
-        | "103 CHECKPOINT"
-        | "200 OK"
-        | "201 CREATED"
-        | "202 ACCEPTED"
-        | "203 NON_AUTHORITATIVE_INFORMATION"
-        | "204 NO_CONTENT"
-        | "205 RESET_CONTENT"
-        | "206 PARTIAL_CONTENT"
-        | "207 MULTI_STATUS"
-        | "208 ALREADY_REPORTED"
-        | "226 IM_USED"
-        | "300 MULTIPLE_CHOICES"
-        | "301 MOVED_PERMANENTLY"
-        | "302 FOUND"
-        | "302 MOVED_TEMPORARILY"
-        | "303 SEE_OTHER"
-        | "304 NOT_MODIFIED"
-        | "305 USE_PROXY"
-        | "307 TEMPORARY_REDIRECT"
-        | "308 PERMANENT_REDIRECT"
-        | "400 BAD_REQUEST"
-        | "401 UNAUTHORIZED"
-        | "402 PAYMENT_REQUIRED"
-        | "403 FORBIDDEN"
-        | "404 NOT_FOUND"
-        | "405 METHOD_NOT_ALLOWED"
-        | "406 NOT_ACCEPTABLE"
-        | "407 PROXY_AUTHENTICATION_REQUIRED"
-        | "408 REQUEST_TIMEOUT"
-        | "409 CONFLICT"
-        | "410 GONE"
-        | "411 LENGTH_REQUIRED"
-        | "412 PRECONDITION_FAILED"
-        | "413 PAYLOAD_TOO_LARGE"
-        | "413 REQUEST_ENTITY_TOO_LARGE"
-        | "414 URI_TOO_LONG"
-        | "414 REQUEST_URI_TOO_LONG"
-        | "415 UNSUPPORTED_MEDIA_TYPE"
-        | "416 REQUESTED_RANGE_NOT_SATISFIABLE"
-        | "417 EXPECTATION_FAILED"
-        | "418 I_AM_A_TEAPOT"
-        | "419 INSUFFICIENT_SPACE_ON_RESOURCE"
-        | "420 METHOD_FAILURE"
-        | "421 DESTINATION_LOCKED"
-        | "422 UNPROCESSABLE_ENTITY"
-        | "423 LOCKED"
-        | "424 FAILED_DEPENDENCY"
-        | "425 TOO_EARLY"
-        | "426 UPGRADE_REQUIRED"
-        | "428 PRECONDITION_REQUIRED"
-        | "429 TOO_MANY_REQUESTS"
-        | "431 REQUEST_HEADER_FIELDS_TOO_LARGE"
-        | "451 UNAVAILABLE_FOR_LEGAL_REASONS"
-        | "500 INTERNAL_SERVER_ERROR"
-        | "501 NOT_IMPLEMENTED"
-        | "502 BAD_GATEWAY"
-        | "503 SERVICE_UNAVAILABLE"
-        | "504 GATEWAY_TIMEOUT"
-        | "505 HTTP_VERSION_NOT_SUPPORTED"
-        | "506 VARIANT_ALSO_NEGOTIATES"
-        | "507 INSUFFICIENT_STORAGE"
-        | "508 LOOP_DETECTED"
-        | "509 BANDWIDTH_LIMIT_EXCEEDED"
-        | "510 NOT_EXTENDED"
-        | "511 NETWORK_AUTHENTICATION_REQUIRED";
+      status?: "100 CONTINUE" | "101 SWITCHING_PROTOCOLS" | "102 PROCESSING" | "103 CHECKPOINT" | "200 OK" | "201 CREATED" | "202 ACCEPTED" | "203 NON_AUTHORITATIVE_INFORMATION" | "204 NO_CONTENT" | "205 RESET_CONTENT" | "206 PARTIAL_CONTENT" | "207 MULTI_STATUS" | "208 ALREADY_REPORTED" | "226 IM_USED" | "300 MULTIPLE_CHOICES" | "301 MOVED_PERMANENTLY" | "302 FOUND" | "302 MOVED_TEMPORARILY" | "303 SEE_OTHER" | "304 NOT_MODIFIED" | "305 USE_PROXY" | "307 TEMPORARY_REDIRECT" | "308 PERMANENT_REDIRECT" | "400 BAD_REQUEST" | "401 UNAUTHORIZED" | "402 PAYMENT_REQUIRED" | "403 FORBIDDEN" | "404 NOT_FOUND" | "405 METHOD_NOT_ALLOWED" | "406 NOT_ACCEPTABLE" | "407 PROXY_AUTHENTICATION_REQUIRED" | "408 REQUEST_TIMEOUT" | "409 CONFLICT" | "410 GONE" | "411 LENGTH_REQUIRED" | "412 PRECONDITION_FAILED" | "413 PAYLOAD_TOO_LARGE" | "413 REQUEST_ENTITY_TOO_LARGE" | "414 URI_TOO_LONG" | "414 REQUEST_URI_TOO_LONG" | "415 UNSUPPORTED_MEDIA_TYPE" | "416 REQUESTED_RANGE_NOT_SATISFIABLE" | "417 EXPECTATION_FAILED" | "418 I_AM_A_TEAPOT" | "419 INSUFFICIENT_SPACE_ON_RESOURCE" | "420 METHOD_FAILURE" | "421 DESTINATION_LOCKED" | "422 UNPROCESSABLE_ENTITY" | "423 LOCKED" | "424 FAILED_DEPENDENCY" | "425 TOO_EARLY" | "426 UPGRADE_REQUIRED" | "428 PRECONDITION_REQUIRED" | "429 TOO_MANY_REQUESTS" | "431 REQUEST_HEADER_FIELDS_TOO_LARGE" | "451 UNAVAILABLE_FOR_LEGAL_REASONS" | "500 INTERNAL_SERVER_ERROR" | "501 NOT_IMPLEMENTED" | "502 BAD_GATEWAY" | "503 SERVICE_UNAVAILABLE" | "504 GATEWAY_TIMEOUT" | "505 HTTP_VERSION_NOT_SUPPORTED" | "506 VARIANT_ALSO_NEGOTIATES" | "507 INSUFFICIENT_STORAGE" | "508 LOOP_DETECTED" | "509 BANDWIDTH_LIMIT_EXCEEDED" | "510 NOT_EXTENDED" | "511 NETWORK_AUTHENTICATION_REQUIRED";
       /**
-       * Timestamp
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
+       * Timestamp 
+       * Format: date-time 
+       * @example "2018-11-13T20:20:39.000Z"
        */
       timestamp?: string;
       message?: string;
       debugMessage?: string;
       result?: string;
-      data?: { [key: string]: unknown };
+      data?: Record<string, never>;
     };
     /**
-     * Type of request operation
-     * @example UPDATE
+     * Type of request operation 
+     * @example UPDATE 
      * @enum {string}
      */
     RequestOperationType: "CREATE" | "UPDATE" | "DELETE" | "CLAIM" | "PROMOTE";
     /**
-     * Status of a request
-     * @example CREATED
+     * Status of a request 
+     * @example CREATED 
      * @enum {string}
      */
     RequestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
     UserAuthenticationRequest: {
       /**
-       * username
-       * @description Username
+       * username 
+       * @description Username 
        * @example john.doe@klaw-project.io
        */
       username: string;
       /**
-       * password
+       * password 
        * @example password123
        */
       password: string;
     };
     UserAuthenticationResponse: {
       /**
-       * token
-       * @description Klaw authentication token
+       * token 
+       * @description Klaw authentication token 
        * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
        */
       token: string;
       /**
-       * Token type
-       * @example JWT
+       * Token type 
+       * @example JWT 
        * @enum {string}
        */
       tokenType: "JWT";
     };
-    TopicsGetResponse: components["schemas"]["TopicInfo"][][];
+    TopicsGetResponse: ((components["schemas"]["TopicInfo"])[])[];
     /**
      * @example [
      *   "myTopic",
      *   "otherTopic"
      * ]
      */
-    TopicsGetOnlyResponse: string[];
+    TopicsGetOnlyResponse: (string)[];
     /**
      * @example {
      *   "team": "Team A"
@@ -232,111 +186,109 @@ export type components = {
     };
     TopicInfo: {
       /**
-       * Topic identifier
-       * Format: int32
-       * @description This identifier is used in Klaw metadata store to ensure uniquenes.
+       * Topic identifier 
+       * Format: int32 
+       * @description This identifier is used in Klaw metadata store to ensure uniquenes. 
        * @example 1010
        */
       topicid: number;
       /**
-       * Total number of pages
+       * Total number of pages 
        * @example 1
        */
       totalNoPages: string;
       /**
-       * Current page number
+       * Current page number 
        * @example 1
        */
       currentPage: string;
       /**
-       * All page numbers
-       * @description List of all page numbers
+       * All page numbers 
+       * @description List of all page numbers 
        * @example [
        *   "1"
        * ]
        */
-      allPageNos: string[];
+      allPageNos: (string)[];
       /**
-       * Topic name
-       * @description Kafka Topic name
+       * Topic name 
+       * @description Kafka Topic name 
        * @example topicName
        */
       topicName: string;
       /**
-       * Number of partitions
-       * Format: int32
-       * @description Topic partition count
+       * Number of partitions 
+       * Format: int32 
+       * @description Topic partition count 
        * @example 10
        */
       noOfPartitions: number;
       /**
-       * Description
-       * @description Kafka topic description stored in Klaw metadata.
+       * Description 
+       * @description Kafka topic description stored in Klaw metadata. 
        * @example Main PostgreSQL change data capture stream
        */
       description: string;
       /**
-       * Documentation
+       * Documentation 
        * @deprecated
        */
       documentation: string | null;
       /**
-       * Number of replicas
-       * @description Topic replica count
+       * Number of replicas 
+       * @description Topic replica count 
        * @example 2
        */
       noOfReplicas?: string;
       /**
-       * Sequence
+       * Sequence 
        * @deprecated
        */
       sequence?: string;
       /**
-       * Team name
-       * @description Topic owner team name
+       * Team name 
+       * @description Topic owner team name 
        * @example application-X-developers
        */
       teamname: string;
       /**
-       * cluster
-       * @deprecated
+       * cluster 
+       * @deprecated 
        * @example 1
        */
       cluster: string;
       /**
-       * Cluster identifier
+       * Cluster identifier 
        * @deprecated
        */
       clusterId: string | null;
       /**
-       * Environments list
-       * @description List of environments where the topic is present.
+       * Environments list 
+       * @description List of environments where the topic is present. 
        * @example [
        *   "DEV",
        *   "TEST"
        * ]
        */
-      environmentsList: string[];
+      environmentsList: (string)[];
       /**
-       * Show edit topic
-       * @description Describes if the user should see topic edit action.
+       * Show edit topic 
+       * @description Describes if the user should see topic edit action. 
        * @example false
        */
       showEditTopic: boolean;
       /**
-       * Show delete topic
-       * @description Describes if the user should see topic delete action.
+       * Show delete topic 
+       * @description Describes if the user should see topic delete action. 
        * @example true
        */
       showDeleteTopic: boolean;
       /**
-       * Topic deletable
-       * @description Describes if the topic can be deleted.
+       * Topic deletable 
+       * @description Describes if the topic can be deleted. 
        * @example true
        */
       topicDeletable: boolean;
-    } & {
-      noOfReplcias: unknown;
     };
     /**
      * @example [
@@ -345,7 +297,7 @@ export type components = {
      *   "Team B"
      * ]
      */
-    TeamNamesGetResponse: string[];
+    TeamNamesGetResponse: (string)[];
     TeamsGetResponse: {
       teamname: string;
       teammail?: string;
@@ -358,114 +310,114 @@ export type components = {
       app?: string;
       showDeleteTeam?: boolean;
       tenantName?: string;
-      envList?: string[];
+      envList?: (string)[];
     };
     Environment: {
       /**
-       * id
-       * @description Environment identifier
+       * id 
+       * @description Environment identifier 
        * @example 1
        */
       id: string;
       /**
-       * Name
-       * @description Environment name
+       * Name 
+       * @description Environment name 
        * @example DEV
        */
       name: string;
       /**
-       * Type
-       * @description Environment type
+       * Type 
+       * @description Environment type 
        * @enum {string}
        */
       type: "kafka" | "kafkaconnect" | "schema";
       /**
-       * TenantId
-       * @description Tenant identifier
+       * TenantId 
+       * @description Tenant identifier 
        * @example 101
        */
       tenantId: number;
       /**
-       * Topic prefix
-       * @description Topic name prefix
+       * Topic prefix 
+       * @description Topic name prefix 
        * @example test-
        */
       topicprefix: string | null;
       /**
-       * Topic suffix
-       * @description Topic name suffix
+       * Topic suffix 
+       * @description Topic name suffix 
        * @example -test
        */
       topicsuffix: string | null;
       /**
-       * Cluster identifier
+       * Cluster identifier 
        * @example 1
        */
       clusterId: number;
       /**
-       * Tenant name
+       * Tenant name 
        * @example default
        */
       tenantName: string;
       /**
-       * Cluster name
+       * Cluster name 
        * @example DEV
        */
       clusterName: string;
       /**
-       * Environment status
-       * @example ONLINE
+       * Environment status 
+       * @example ONLINE 
        * @enum {string}
        */
       envStatus: "ONLINE" | "OFFLINE";
       /**
-       * Other parameters
-       * @description Topic configuration parameters
+       * Other parameters 
+       * @description Topic configuration parameters 
        * @example default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
        */
       otherParams: string;
       /**
-       * Default partitions
+       * Default partitions 
        * @example 1
        */
       defaultPartitions: string | null;
       /**
-       * Maximum partitions
+       * Maximum partitions 
        * @example 2
        */
       maxPartitions: string | null;
       /**
-       * Default replication factor
+       * Default replication factor 
        * @example 1
        */
       defaultReplicationFactor: string | null;
       /**
-       * Maximum replication factor
+       * Maximum replication factor 
        * @example 2
        */
       maxReplicationFactor: string | null;
       /**
-       * Show delete environment
-       * @description Describes if the user should see environment delete action.
+       * Show delete environment 
+       * @description Describes if the user should see environment delete action. 
        * @example true
        */
       showDeleteEnv: boolean;
       /**
-       * Total number of pages
+       * Total number of pages 
        * @example 1
        */
       totalNoPages: string;
       /**
-       * All page numbers
-       * @description List of all page numbers
+       * All page numbers 
+       * @description List of all page numbers 
        * @example [
        *   "1"
        * ]
        */
-      allPageNos: string[];
+      allPageNos: (string)[];
     };
     /**
-     * TopicAdvancedConfigGetResponse
+     * TopicAdvancedConfigGetResponse 
      * @example {
      *   "CLEANUP_POLICY": "cleanup.policy",
      *   "COMPRESSION_TYPE": "compression.type",
@@ -495,9 +447,11 @@ export type components = {
      *   "UNCLEAN_LEADER_ELECTION_ENABLE": "unclean.leader.election.enable"
      * }
      */
-    topicAdvancedConfigGetResponse: { [key: string]: string };
+    topicAdvancedConfigGetResponse: {
+      [key: string]: string | undefined;
+    };
     /**
-     * @description Flavor of Kafka cluster (Aiven or other)
+     * @description Flavor of Kafka cluster (Aiven or other) 
      * @example {
      *   "aivenCluster": "false"
      * }
@@ -509,8 +463,8 @@ export type components = {
     /** TopicCreateRequest */
     topicCreateRequest: {
       /**
-       * Topic name
-       * @description Kafka Topic name
+       * Topic name 
+       * @description Kafka Topic name 
        * @example topicName
        */
       topicname: string;
@@ -518,110 +472,110 @@ export type components = {
       /** Format: int32 */
       topicpartitions: number;
       /**
-       * Team name
+       * Team name 
        * @example Marketing
        */
       teamname?: string;
       /**
-       * Remarks
+       * Remarks 
        * @description Message for the approval
        */
       remarks?: string;
       /** Description */
       description: string;
       /**
-       * Replication factor
+       * Replication factor 
        * @example 1
        */
       replicationfactor: string;
       /**
-       * Environment name
+       * Environment name 
        * @example DEV
        */
       environmentName?: string;
       /**
-       * Topic identifier
-       * Format: int32
-       * @description This identifier is used in Klaw metadata store to ensure uniquenes.
+       * Topic identifier 
+       * Format: int32 
+       * @description This identifier is used in Klaw metadata store to ensure uniquenes. 
        * @example 1010
        */
       topicid?: number;
-      advancedTopicConfigEntries?: {
-        configKey?: string;
-        configValue?: string;
-      }[];
+      advancedTopicConfigEntries?: ({
+          configKey?: string;
+          configValue?: string;
+        })[];
       /** App name */
       appname?: string;
       requestOperationType?: components["schemas"]["RequestOperationType"];
       /** Requestor */
       requestor?: string;
       /**
-       * Request time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
+       * Request time 
+       * Format: date-time 
+       * @example "2018-11-13T20:20:39.000Z"
        */
       requesttime?: string;
       /** Request time string */
       requesttimestring?: string;
       requestStatus?: components["schemas"]["RequestStatus"];
       /**
-       * Approver
+       * Approver 
        * @example jon.snow@klaw-project.io
        */
       approver?: string;
       /**
-       * Approving time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
+       * Approving time 
+       * Format: date-time 
+       * @example "2018-11-13T20:20:39.000Z"
        */
       approvingtime?: string;
       /**
-       * Sequence
+       * Sequence 
        * @deprecated
        */
       sequence?: string;
       /**
-       * Username
+       * Username 
        * @example jon.snow@klaw-project.io
        */
       username?: string;
       /**
-       * Total number of pages
+       * Total number of pages 
        * @example 1
        */
       totalNoPages?: string;
       approvingTeamDetails?: string;
       otherParams?: string;
       /**
-       * Team identifier
-       * Format: int32
+       * Team identifier 
+       * Format: int32 
        * @example 1010
        */
       teamId?: number;
       /**
-       * All page numbers
-       * @description List of all page numbers
+       * All page numbers 
+       * @description List of all page numbers 
        * @example [
        *   "1"
        * ]
        */
-      allPageNos?: string[];
+      allPageNos?: (string)[];
       /** Possible teams */
-      possibleTeams?: string[];
+      possibleTeams?: (string)[];
       /**
-       * Current page number
+       * Current page number 
        * @example 1
        */
       currentPage?: string;
     };
     aclRequest: {
       /**
-       * @description A comment on the request for the approver.
+       * @description A comment on the request for the approver. 
        * @example Hello, thank you.
        */
       remarks?: string;
       /**
-       * @description This is mandatory if acl type is consumer
+       * @description This is mandatory if acl type is consumer 
        * @example Group-one
        */
       consumergroup?: string;
@@ -631,55 +585,55 @@ export type components = {
        *   "35.239.43.145"
        * ]
        */
-      acl_ip?: string[];
+      acl_ip?: (string)[];
       /**
        * @example [
        *   "username",
        *   "username-two"
        * ]
        */
-      acl_ssl?: string[];
+      acl_ssl?: (string)[];
       /**
-       * @description If aclType is consumer, this field can only be LITERAL. If aclType is producer, this field can be LITERAL or PREFIXED
-       * @example LITERAL
+       * @description If aclType is consumer, this field can only be LITERAL. If aclType is producer, this field can be LITERAL or PREFIXED 
+       * @example LITERAL 
        * @enum {string}
        */
       aclPatternType: "LITERAL" | "PREFIXED";
       /**
-       * @description Only available if aclPatternType is LITERAL
+       * @description Only available if aclPatternType is LITERAL 
        * @example id-123
        */
       transactionalId?: string;
       /**
-       * unique identifier
-       * Format: int32
+       * unique identifier 
+       * Format: int32 
        * @example 100
        */
       req_no?: number;
       /**
-       * @description Only topics available in chosen environment are allowed
+       * @description Only topics available in chosen environment are allowed 
        * @example myTopic
        */
       topicname: string;
       /**
-       * @description ID of environment
+       * @description ID of environment 
        * @example 1
        */
       environment: string;
       /**
-       * @description Name of environment
+       * @description Name of environment 
        * @example DEV
        */
       environmentName?: string;
       /** @example Ospo */
       teamname: string;
       /**
-       * Format: int32
+       * Format: int32 
        * @example 1
        */
       teamId?: number;
       /**
-       * Format: int32
+       * Format: int32 
        * @example 1
        */
       requestingteam?: number;
@@ -688,14 +642,14 @@ export type components = {
       /** @example App */
       appname?: string;
       /**
-       * @example PRODUCER
+       * @example PRODUCER 
        * @enum {string}
        */
       aclType: "PRODUCER" | "CONSUMER";
       /** @example User */
       username?: string;
       /**
-       * Format: date-time
+       * Format: date-time 
        * @example 2018-03-20T09:12:28Z
        */
       requesttime?: string;
@@ -705,17 +659,17 @@ export type components = {
       requestOperationType?: components["schemas"]["RequestOperationType"];
       approver?: string;
       /**
-       * Format: date-time
+       * Format: date-time 
        * @example 2018-03-20T09:12:28Z
        */
       approvingtime?: string;
       /**
-       * @example PRINCIPAL
+       * @example PRINCIPAL 
        * @enum {string}
        */
       aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
       /**
-       * @description Other possible values GROUP, CLUSTER
+       * @description Other possible values GROUP, CLUSTER 
        * @example TOPIC
        */
       aclResourceType?: string;
@@ -730,7 +684,7 @@ export type components = {
        *   "2"
        * ]
        */
-      allPageNos?: string[];
+      allPageNos?: (string)[];
       /** @example DevRel */
       approvingTeamDetails?: string;
       editable?: boolean;
@@ -739,55 +693,55 @@ export type components = {
     /** SchemaRequest */
     SchemaRequest: {
       /**
-       * unique identifier
+       * unique identifier 
        * Format: int32
        */
       req_no: number;
       /**
-       * Topic name
-       * @description Kafka Topic name
+       * Topic name 
+       * @description Kafka Topic name 
        * @example testtopic
        */
       topicname: string;
       /**
-       * environment
-       * @description Id of the environment
+       * environment 
+       * @description Id of the environment 
        * @example 3
        */
       environment: string;
       /**
-       * environmentName
-       * @description Name of the environment
+       * environmentName 
+       * @description Name of the environment 
        * @example DEV
        */
       environmentName: string;
       /**
-       * schemaversion
-       * @description SchemaRequest version
+       * schemaversion 
+       * @description SchemaRequest version 
        * @example 1.0
        */
       schemaversion: string;
       /**
-       * Team name
-       * @description Topic owner team name
+       * Team name 
+       * @description Topic owner team name 
        * @example Infra
        */
       teamname: string;
       /**
-       * Team ID
-       * Format: int32
-       * @description Team identifier
+       * Team ID 
+       * Format: int32 
+       * @description Team identifier 
        * @example 1010
        */
       teamId: number;
       /**
-       * App name
+       * App name 
        * @example App
        */
       appname: string;
       /**
-       * schemafull
-       * @description A valid json/avro schema
+       * schemafull 
+       * @description A valid json/avro schema 
        * @example {
        *   "doc": "exampleTopic",
        *   "fields": [
@@ -806,19 +760,19 @@ export type components = {
        */
       schemafull: string;
       /**
-       * username
-       * @description Username
+       * username 
+       * @description Username 
        * @example jon.snow@klaw-project.io
        */
       username: string;
       /**
-       * Request time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
+       * Request time 
+       * Format: date-time 
+       * @example "2018-11-13T20:20:39.000Z"
        */
       requesttime: string;
       /**
-       * Request time string representation
+       * Request time string representation 
        * @example 28-Dec-2022 14:54:57
        */
       requesttimestring: string;
@@ -826,41 +780,41 @@ export type components = {
       requestOperationType: components["schemas"]["RequestOperationType"];
       forceRegister?: boolean;
       /**
-       * Remarks
-       * @description SchemaRequest specific comment
+       * Remarks 
+       * @description SchemaRequest specific comment 
        * @example Please approve
        */
       remarks?: string;
       /** Approver */
       approver?: string;
       /**
-       * Approving time
-       * Format: date-time
-       * @example 2022-11-13T20:20:39.000Z
+       * Approving time 
+       * Format: date-time 
+       * @example "2022-11-13T20:20:39.000Z"
        */
       approvingtime?: string;
       /**
-       * Approving team details
+       * Approving team details 
        * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
        */
       approvingTeamDetails: string;
       /**
-       * Total number of pages
+       * Total number of pages 
        * @example 3
        */
       totalNoPages?: string;
       /**
-       * All page numbers
-       * @description List of all page numbers
+       * All page numbers 
+       * @description List of all page numbers 
        * @example [
        *   "1",
        *   "2",
        *   "3"
        * ]
        */
-      allPageNos?: string[];
+      allPageNos?: (string)[];
       /**
-       * Current page number
+       * Current page number 
        * @example 2
        */
       currentPage?: string;
@@ -869,131 +823,131 @@ export type components = {
     };
     TopicRequest: {
       /**
-       * Topic name
-       * @description Kafka Topic name
+       * Topic name 
+       * @description Kafka Topic name 
        * @example topicName
        */
       topicname: string;
       /**
-       * Environment
-       * @description ID of environment
+       * Environment 
+       * @description ID of environment 
        * @example 1
        */
       environment: string;
       /**
-       * Topic partitions
+       * Topic partitions 
        * Format: int32
        */
       topicpartitions: number;
       /**
-       * Team name
-       * @description Topic owner team name
+       * Team name 
+       * @description Topic owner team name 
        * @example application-X-developers
        */
       teamname: string;
       /**
-       * Remarks
+       * Remarks 
        * @description Message for the approval
        */
       remarks?: string;
       /**
-       * Description
-       * @description Kafka topic description stored in Klaw metadata.
+       * Description 
+       * @description Kafka topic description stored in Klaw metadata. 
        * @example Main PostgreSQL change data capture stream
        */
       description?: string;
       /**
-       * Replication factor
+       * Replication factor 
        * @example 1
        */
       replicationfactor: string;
       /**
-       * Environment name
+       * Environment name 
        * @example DEV
        */
       environmentName: string;
       /**
-       * Topic identifier
-       * Format: int32
-       * @description This identifier is used in Klaw metadata store to ensure uniquenes.
+       * Topic identifier 
+       * Format: int32 
+       * @description This identifier is used in Klaw metadata store to ensure uniquenes. 
        * @example 1010
        */
       topicid: number;
       /** Advanced topic configuration entries */
-      advancedTopicConfigEntries?: {
-        configKey?: string;
-        configValue?: string;
-      }[];
+      advancedTopicConfigEntries?: ({
+          configKey?: string;
+          configValue?: string;
+        })[];
       /** App name */
       appname?: string;
       requestOperationType: components["schemas"]["RequestOperationType"];
       /** Requestor */
       requestor: string;
       /**
-       * Request time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
+       * Request time 
+       * Format: date-time 
+       * @example "2018-11-13T20:20:39.000Z"
        */
       requesttime: string;
       /** Request time string */
       requesttimestring: string;
       requestStatus: components["schemas"]["RequestStatus"];
       /**
-       * Approver
+       * Approver 
        * @example jon.snow@klaw-project.io
        */
       approver?: string;
       /**
-       * Approving time
-       * Format: date-time
-       * @example 2018-11-13T20:20:39.000Z
+       * Approving time 
+       * Format: date-time 
+       * @example "2018-11-13T20:20:39.000Z"
        */
       approvingtime?: string;
       /**
-       * Sequence
+       * Sequence 
        * @deprecated
        */
       sequence?: string;
       /**
-       * Username
-       * @description Username
+       * Username 
+       * @description Username 
        * @example john.doe@klaw-project.io
        */
       username?: string;
       /**
-       * Total number of pages
+       * Total number of pages 
        * @example 1
        */
       totalNoPages?: string;
       /**
-       * Approving team details
+       * Approving team details 
        * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
        */
       approvingTeamDetails: string;
       /**
-       * Other parameters
-       * @description Topic configuration parameters
+       * Other parameters 
+       * @description Topic configuration parameters 
        * @example default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
        */
       otherParams?: string;
       /**
-       * Team identifier
-       * Format: int32
+       * Team identifier 
+       * Format: int32 
        * @example 1010
        */
       teamId: number;
       /**
-       * All page numbers
-       * @description List of all page numbers
+       * All page numbers 
+       * @description List of all page numbers 
        * @example [
        *   "1"
        * ]
        */
-      allPageNos?: string[];
+      allPageNos?: (string)[];
       /** Possible teams */
-      possibleTeams?: string[];
+      possibleTeams?: (string)[];
       /**
-       * Current page number
+       * Current page number 
        * @example 1
        */
       currentPage?: string;
@@ -1005,38 +959,38 @@ export type components = {
     /** GetAuthResponse */
     GetAuthResponse: {
       /**
-       * Schema Notifications
-       * @description Number of schema requests waiting for approval
+       * Schema Notifications 
+       * @description Number of schema requests waiting for approval 
        * @example 6
        */
       notificationsSchemas: string;
       /**
-       * Connector Notifications
-       * @description Number of connector requests waiting for approval
+       * Connector Notifications 
+       * @description Number of connector requests waiting for approval 
        * @example 2
        */
       notificationsConnectors: string;
       /**
-       * ACL Notifications
-       * @description Number of ACL requests waiting for approval
+       * ACL Notifications 
+       * @description Number of ACL requests waiting for approval 
        * @example 4
        */
       notificationsAcls: string;
       /**
-       * User Notifications
-       * @description Number of user requests waiting for approval
+       * User Notifications 
+       * @description Number of user requests waiting for approval 
        * @example 4
        */
       notificationsUsers: string;
       /**
-       * Topic Notifications
-       * @description Number of topic requests waiting for approval
+       * Topic Notifications 
+       * @description Number of topic requests waiting for approval 
        * @example 5
        */
       notifications: string;
       /**
-       * Team name
-       * @description Name of the team the user is currently in
+       * Team name 
+       * @description Name of the team the user is currently in 
        * @example Ospo
        */
       teamname: string;
@@ -1045,16 +999,16 @@ export type components = {
       reason?: string;
       /** @enum {string} */
       requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
-      reqIds: string[];
+      reqIds: (string)[];
     };
     RequestsCountOverview: {
-      requestEntityStatistics?: components["schemas"]["RequestEntityStatusCount"][];
+      requestEntityStatistics?: (components["schemas"]["RequestEntityStatusCount"])[];
     };
     RequestEntityStatusCount: {
       /** @enum {string} */
       requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
-      requestStatusCountSet?: components["schemas"]["RequestStatusCount"][];
-      requestsOperationTypeCountSet?: components["schemas"]["RequestsOperationTypeCount"][];
+      requestStatusCountSet?: (components["schemas"]["RequestStatusCount"])[];
+      requestsOperationTypeCountSet?: (components["schemas"]["RequestsOperationTypeCount"])[];
     };
     RequestStatusCount: {
       /** @enum {string} */
@@ -1064,55 +1018,70 @@ export type components = {
     };
     RequestsOperationTypeCount: {
       /** @enum {string} */
-      requestOperationType?:
-        | "CREATE"
-        | "UPDATE"
-        | "PROMOTE"
-        | "CLAIM"
-        | "DELETE";
+      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       /** Format: int64 */
       count?: number;
     };
   };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 };
 
+export type external = Record<string, never>;
+
 export type operations = {
-  /** Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints. */
+
+  /**
+   * Authenticate user 
+   * @description Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints.
+   */
   userAuthentication: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserAuthenticationRequest"];
+      };
+    };
     responses: {
-      /** Successful authentication */
+      /** @description Successful authentication */
       200: {
         content: {
           "application/json": components["schemas"]["UserAuthenticationResponse"];
         };
       };
-      /** Invalid credentials */
+      /** @description Invalid credentials */
       403: {
         content: {
           "application/json": components["schemas"]["CommonError"];
         };
       };
     };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["UserAuthenticationRequest"];
-      };
-    };
   };
+  /** Get topics */
   topicsGet: {
     parameters: {
       query: {
-        /** The value should be either an environment identifier or "ALL". */
+        /**
+         * @description The value should be either an environment identifier or "ALL". 
+         * @example ALL
+         */
         env: string;
+        /** @example 1 */
         pageNo: string;
+        /** @example 1 */
         currentPage?: string;
+        /** @example searchTerm */
         topicnamesearch?: string;
+        /** @example application-X-developers */
         teamName?: string;
+        /** @example Producer */
         topicType?: "Producer" | "Consumer";
       };
     };
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
           "application/json": components["schemas"]["TopicsGetResponse"];
@@ -1120,35 +1089,37 @@ export type operations = {
       };
     };
   };
+  /** Get topic names list */
   topicsGetOnly: {
     parameters: {
       query: {
-        /** Set to true to only get the topic names for topics belonging to the team of the current user */
+        /** @description Set to true to only get the topic names for topics belonging to the team of the current user */
         isMyTeamTopics?: components["schemas"]["TopicsGetOnlyResponse"];
-        /** Pass an environment ID to get only the names of the topics in that environment */
+        /** @description Pass an environment ID to get only the names of the topics in that environment */
         envSelected?: components["schemas"]["TopicsGetOnlyResponse"];
       };
     };
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
-          "application/json": string[];
+          "application/json": (string)[];
         };
       };
     };
   };
+  /** Get the name of the team a topic belongs to */
   topicGetTeam: {
     parameters: {
       query: {
-        /** The name of the topic */
+        /** @description The name of the topic */
         topicName: string;
-        /** The pattern type of the topic */
+        /** @description The pattern type of the topic */
         patternType?: "LITERAL" | "PREFIXED";
       };
     };
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
           "application/json": components["schemas"]["TopicGetTeamResponse"];
@@ -1156,24 +1127,26 @@ export type operations = {
       };
     };
   };
+  /** Create topic request */
   topicCreate: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["topicCreateRequest"];
+      };
+    };
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
           "application/json": components["schemas"]["GenericApiResponse"];
         };
       };
     };
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["topicCreateRequest"];
-      };
-    };
   };
+  /** Get advanced topic configuration options */
   topicAdvancedConfigGet: {
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
           "application/json": components["schemas"]["topicAdvancedConfigGetResponse"];
@@ -1181,9 +1154,10 @@ export type operations = {
       };
     };
   };
+  /** Get team names */
   teamNamesGet: {
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
           "application/json": components["schemas"]["TeamNamesGetResponse"];
@@ -1191,47 +1165,54 @@ export type operations = {
       };
     };
   };
+  /** Get teams */
   teamsGet: {
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["TeamsGetResponse"][];
+          "application/json": (components["schemas"]["TeamsGetResponse"])[];
         };
       };
     };
   };
+  /** Get environments */
   environmentsGet: {
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["Environment"][];
+          "application/json": (components["schemas"]["Environment"])[];
         };
       };
     };
   };
+  /** Get environments */
   envsBaseClusterFilteredForTeamGet: {
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["Environment"][];
+          "application/json": (components["schemas"]["Environment"])[];
         };
       };
     };
   };
+  /** Get flavor of Kafka cluster (Aiven cluster or other type of cluster) */
   clusterInfoFromEnvironmentGet: {
     parameters: {
       query: {
-        /** The environment for which to get the cluster info */
+        /**
+         * @description The environment for which to get the cluster info 
+         * @example 2
+         */
         envSelected: string;
-        /** The type of  environment for which to get the cluster info */
+        /** @description The type of  environment for which to get the cluster info */
         envType: "kafka" | "kafkaconnect" | "schema";
       };
     };
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
           "application/json": components["schemas"]["environmentGetClusterInfoResponse"];
@@ -1239,31 +1220,38 @@ export type operations = {
       };
     };
   };
+  /** Get ACL requests with aclstatus: created */
   getAclRequestsForApprover: {
     parameters: {
       query: {
         pageNo: string;
         currentPage?: string;
+        /** @example CREATED */
         requestStatus?: components["schemas"]["RequestStatus"];
+        /** @example mytopic */
         topic?: string;
+        /** @example 1 */
         env?: string;
+        /** @example CONSUMER */
         aclType?: "CONSUMER" | "PRODUCER";
       };
     };
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["aclRequest"][];
+          "application/json": (components["schemas"]["aclRequest"])[];
         };
       };
     };
   };
+  /** Get ACL requests with aclstatus: created */
   getAclRequests: {
     parameters: {
       query: {
         pageNo: string;
         currentPage?: string;
+        /** @example CREATED */
         requestStatus?: components["schemas"]["RequestStatus"];
         topic?: string;
         env?: string;
@@ -1272,22 +1260,24 @@ export type operations = {
       };
     };
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["AclRequestsModel"][];
+          "application/json": (components["schemas"]["AclRequestsModel"])[];
         };
       };
     };
   };
+  /** Approve an ACL request */
   approveAclRequests: {
     parameters: {
       query: {
+        /** @example 1008 */
         req_no: string;
       };
     };
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
           "application/json": components["schemas"]["GenericApiResponse"];
@@ -1295,17 +1285,24 @@ export type operations = {
       };
     };
   };
+  /** Decline an ACL request */
   declineAclRequests: {
     parameters: {
       query: {
-        /** reqNo of the ACL request */
+        /**
+         * @description reqNo of the ACL request 
+         * @example 1008
+         */
         req_no: string;
-        /** Stated reason for declining request (URL formatted string) */
+        /**
+         * @description Stated reason for declining request (URL formatted string) 
+         * @example I+don%27t+know+why+you+need+access
+         */
         reasonForDecline: string;
       };
     };
     responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
           "application/json": components["schemas"]["GenericApiResponse"];
@@ -1314,61 +1311,67 @@ export type operations = {
     };
   };
   createAclRequest: {
-    responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
-        };
-      };
-    };
     requestBody: {
       content: {
         "application/json": components["schemas"]["aclRequest"];
       };
     };
-  };
-  schemaRegEnvsGet: {
     responses: {
-      /** OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["Environment"][];
-        };
-      };
-    };
-  };
-  schemaUpload: {
-    responses: {
-      /** OK */
+      /** @description OK */
       200: {
         content: {
           "application/json": components["schemas"]["GenericApiResponse"];
         };
       };
     };
+  };
+  /** get schema registry environments */
+  schemaRegEnvsGet: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["Environment"])[];
+        };
+      };
+    };
+  };
+  /** post schema upload */
+  schemaUpload: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["SchemaRequest"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["GenericApiResponse"];
+        };
       };
     };
   };
   getTopicRequestsForApprover: {
     parameters: {
       query: {
+        /** @example 2 */
         pageNo: string;
+        /** @example 2 */
         currentPage?: string;
+        /** @example CREATED */
         requestStatus?: components["schemas"]["RequestStatus"];
         teamId?: number;
+        /** @example 1 */
         env?: string;
         search?: string;
       };
     };
     responses: {
-      /** successful operation */
+      /** @description successful operation */
       200: {
         content: {
-          "application/json": components["schemas"]["TopicRequest"][];
+          "application/json": (components["schemas"]["TopicRequest"])[];
         };
       };
     };
@@ -1376,20 +1379,25 @@ export type operations = {
   getTopicRequests: {
     parameters: {
       query: {
+        /** @example 2 */
         pageNo: string;
+        /** @example 2 */
         currentPage?: string;
+        /** @example CREATED */
         requestStatus?: components["schemas"]["RequestStatus"];
+        /** @example CREATE */
         requestOperationType?: components["schemas"]["RequestOperationType"];
+        /** @example 1 */
         env?: string;
         search?: string;
         isMyRequest?: boolean;
       };
     };
     responses: {
-      /** successful operation */
+      /** @description successful operation */
       200: {
         content: {
-          "application/json": components["schemas"]["TopicRequest"][];
+          "application/json": (components["schemas"]["TopicRequest"])[];
         };
       };
     };
@@ -1404,35 +1412,36 @@ export type operations = {
     };
   };
   approveRequest: {
-    responses: {
-      /** successful operation */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"][];
-        };
-      };
-    };
-    requestBody: {
+    requestBody?: {
       content: {
         "application/json": components["schemas"]["RequestVerdict"];
+      };
+    };
+    responses: {
+      /** @description successful operation */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["GenericApiResponse"])[];
+        };
       };
     };
   };
   declineRequest: {
-    responses: {
-      /** successful operation */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"][];
-        };
-      };
-    };
-    requestBody: {
+    requestBody?: {
       content: {
         "application/json": components["schemas"]["RequestVerdict"];
       };
     };
+    responses: {
+      /** @description successful operation */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["GenericApiResponse"])[];
+        };
+      };
+    };
   };
+  /** Get counts of all request entity types for different status, operation types */
   getRequestStatistics: {
     parameters: {
       query: {
@@ -1440,7 +1449,7 @@ export type operations = {
       };
     };
     responses: {
-      /** successful operation */
+      /** @description successful operation */
       200: {
         content: {
           "application/json": components["schemas"]["RequestsCountOverview"];
@@ -1451,53 +1460,32 @@ export type operations = {
   getSchemaRequestsForApprover: {
     parameters: {
       query: {
+        /** @example 1 */
         pageNo: string;
+        /** @example 1 */
         currentPage?: string;
+        /** @example CREATED */
         requestStatus?: components["schemas"]["RequestStatus"];
-        /** Name of a topic */
+        /**
+         * @description Name of a topic 
+         * @example testtopic1
+         */
         topic?: string;
-        /** Environment identifier */
+        /**
+         * @description Environment identifier 
+         * @example 3
+         */
         env?: string;
         search?: string;
       };
     };
     responses: {
-      /** successful operation */
+      /** @description successful operation */
       200: {
         content: {
-          "application/json": components["schemas"]["SchemaRequest"][];
+          "application/json": (components["schemas"]["SchemaRequest"])[];
         };
       };
     };
   };
 };
-
-export type external = {};
-
-export enum ApiPaths {
-  userAuthentication = "/user/authenticate",
-  topicsGet = "/getTopics",
-  topicsGetOnly = "/getTopicsOnly",
-  topicGetTeam = "/getTopicTeam",
-  topicCreate = "/createTopics",
-  topicAdvancedConfigGet = "/getAdvancedTopicConfigs",
-  teamNamesGet = "/getAllTeamsSUOnly",
-  teamsGet = "/getAllTeamsSU",
-  environmentsGet = "/getEnvs",
-  envsBaseClusterFilteredForTeamGet = "/getEnvsBaseClusterFilteredForTeam",
-  clusterInfoFromEnvironmentGet = "/getClusterInfoFromEnv",
-  getAclRequestsForApprover = "/getAclRequestsForApprover",
-  getAclRequests = "/getAclRequests",
-  approveAclRequests = "/execAclRequest",
-  declineAclRequests = "/execAclRequestDecline",
-  createAclRequest = "/createAcl",
-  schemaRegEnvsGet = "/getSchemaRegEnvs",
-  schemaUpload = "/uploadSchema",
-  getTopicRequestsForApprover = "/getTopicRequestsForApprover",
-  getTopicRequests = "/getTopicRequests",
-  getAuth = "/getAuth",
-  approveRequest = "/request/approve",
-  declineRequest = "/request/decline",
-  getRequestStatistics = "/requests/statistics",
-  getSchemaRequestsForApprover = "/getSchemaRequestsForApprover",
-}

@@ -18,7 +18,7 @@ type TopicTeam = ResolveIntersectionTypes<KlawApiModel<"TopicGetTeamResponse">>;
 
 type TopicAdvancedConfigurationOptions = {
   key: string;
-  name: string;
+  name?: string;
   documentation?: {
     link: string;
     text: string;
