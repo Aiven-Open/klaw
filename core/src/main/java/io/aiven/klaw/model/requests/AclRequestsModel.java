@@ -39,8 +39,7 @@ public class AclRequestsModel extends BaseRequestModel implements Serializable {
   @Pattern(message = "Invalid transactionalID", regexp = "^$|^[a-zA-Z0-9_.-]{3,}$")
   private String transactionalId;
 
-  // topic owner team id
-  @NotNull private Integer teamId;
+  private Integer req_no;
 
   // Producer/Consumer
   @NotNull private AclType aclType;
@@ -48,6 +47,8 @@ public class AclRequestsModel extends BaseRequestModel implements Serializable {
   @NotNull private AclIPPrincipleType aclIpPrincipleType;
 
   private Integer requestingteam;
+
+  private String requestingTeamName;
 
   // Always TOPIC (for now)
   private String aclResourceType;

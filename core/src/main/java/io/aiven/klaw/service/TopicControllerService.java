@@ -22,7 +22,6 @@ import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -31,7 +30,6 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
-import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -102,6 +100,7 @@ public class TopicControllerService {
     String userName = getUserName();
 
     topicRequestReq.setRequestor(userName);
+    topicRequestReq.setUsername(userName);
     topicRequestReq.setTeamId(commonUtilsService.getTeamId(userName));
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -189,6 +188,7 @@ public class TopicControllerService {
 
     TopicRequest topicRequestReq = new TopicRequest();
     topicRequestReq.setRequestor(userName);
+    topicRequestReq.setUsername(userName);
     topicRequestReq.setTeamId(userTeamId);
     topicRequestReq.setEnvironment(envId);
     topicRequestReq.setTopicname(topicName);
@@ -268,6 +268,7 @@ public class TopicControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userName);
 
     topicRequestReq.setRequestor(userName);
+    topicRequestReq.setUsername(userName);
     topicRequestReq.setTeamId(userTeamId);
     topicRequestReq.setTenantId(tenantId);
     topicRequestReq.setEnvironment(envId);
@@ -305,7 +306,7 @@ public class TopicControllerService {
     }
   }
 
-  public List<TopicRequestsResponseModel> getTopicRequests(
+  public List<TopicRequestModel> getTopicRequests(
       String pageNo, String currentPage, String requestsType, String env, boolean isMyRequest) {
     log.debug("getTopicRequests page {} requestsType {}", pageNo, requestsType);
     String userName = getUserName();
@@ -327,8 +328,7 @@ public class TopicControllerService {
     return getTopicRequestModels(topicReqs, true);
   }
 
-  private TopicRequestsResponseModel setRequestorPermissions(
-      TopicRequestsResponseModel req, String userName) {
+  private TopicRequestModel setRequestorPermissions(TopicRequestModel req, String userName) {
     log.debug(
         " My Topic Status {} and userName {} and userName {}",
         req.getRequestStatus(),
@@ -379,10 +379,9 @@ public class TopicControllerService {
     return newList;
   }
 
-  public TopicTeamResponse getTopicTeamOnly(String topicName, AclPatternType patternType) {
+  public Map<String, String> getTopicTeamOnly(String topicName, AclPatternType patternType) {
     log.debug("getTopicTeamOnly {} {}", topicName, patternType);
-    TopicTeamResponse topicTeamResponse = new TopicTeamResponse();
-    topicTeamResponse.setStatus(false);
+    Map<String, String> teamMap = new HashMap<>();
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     List<Topic> topics;
@@ -405,19 +404,20 @@ public class TopicControllerService {
               });
 
       if (allTopicsStartingWithPattern.isEmpty()) {
-        topicTeamResponse.setError(
-            "There are no topics found with this prefix. You may synchronize metadata.");
-        return topicTeamResponse;
+        teamMap.put(
+            "error", "There are no topics found with this prefix. You may synchronize metadata.");
+        return teamMap;
       }
 
       Set<Integer> stringTeamsFound = new HashSet<>();
       allTopicsStartingWithPattern.forEach(top -> stringTeamsFound.add(top.getTeamId()));
 
       if (stringTeamsFound.size() > 1) {
-        topicTeamResponse.setError(
-            "There are atleast two topics with same prefix owned by different teams.");
+        teamMap.put(
+            "error", "There are atleast two topics with same prefix owned by different teams.");
       } else {
-        topicTeamResponse.setTeam(
+        teamMap.put(
+            "team",
             manageDatabase.getTeamNameFromTeamId(tenantId, stringTeamsFound.iterator().next()));
       }
     } else {
@@ -426,18 +426,16 @@ public class TopicControllerService {
       topics = commonUtilsService.getFilteredTopicsForTenant(topics);
 
       if (!topics.isEmpty()) {
-        topicTeamResponse.setTeam(
-            manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()));
-        topicTeamResponse.setTeamId(topics.get(0).getTeamId());
-        topicTeamResponse.setStatus(true);
+        teamMap.put(
+            "team", manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()));
       } else {
-        topicTeamResponse.setError("No team found");
+        teamMap.put("error", "No team found");
       }
     }
-    return topicTeamResponse;
+    return teamMap;
   }
 
-  public List<TopicRequestsResponseModel> getTopicRequestsForApprover(
+  public List<TopicRequestModel> getTopicRequestsForApprover(
       String pageNo,
       String currentPage,
       String requestsType,
@@ -479,12 +477,11 @@ public class TopicControllerService {
     return updateCreateTopicReqsList(createdTopicReqList, tenantId);
   }
 
-  private List<TopicRequestsResponseModel> updateCreateTopicReqsList(
+  private List<TopicRequestModel> updateCreateTopicReqsList(
       List<TopicRequest> topicsList, int tenantId) {
-    List<TopicRequestsResponseModel> topicRequestModelList =
-        getTopicRequestModels(topicsList, true);
+    List<TopicRequestModel> topicRequestModelList = getTopicRequestModels(topicsList, true);
 
-    for (TopicRequestsResponseModel topicInfo : topicRequestModelList) {
+    for (TopicRequestModel topicInfo : topicRequestModelList) {
       topicInfo.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicInfo.getTeamId()));
       topicInfo.setEnvironmentName(getEnvDetails(topicInfo.getEnvironment()).getName());
     }
@@ -492,10 +489,10 @@ public class TopicControllerService {
     return topicRequestModelList;
   }
 
-  private List<TopicRequestsResponseModel> getTopicRequestModels(
+  private List<TopicRequestModel> getTopicRequestModels(
       List<TopicRequest> topicsList, boolean fromSyncTopics) {
-    List<TopicRequestsResponseModel> topicRequestModelList = new ArrayList<>();
-    TopicRequestsResponseModel topicRequestModel;
+    List<TopicRequestModel> topicRequestModelList = new ArrayList<>();
+    TopicRequestModel topicRequestModel;
     String userName = getUserName();
     Integer userTeamId = commonUtilsService.getTeamId(userName);
 
@@ -506,7 +503,7 @@ public class TopicControllerService {
         manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
 
     for (TopicRequest topicReq : topicsList) {
-      topicRequestModel = new TopicRequestsResponseModel();
+      topicRequestModel = new TopicRequestModel();
       copyProperties(topicReq, topicRequestModel);
       topicRequestModel.setRequestStatus(RequestStatus.of(topicReq.getRequestStatus()));
       topicRequestModel.setRequestOperationType(
@@ -548,7 +545,7 @@ public class TopicControllerService {
   }
 
   private void validateAndCopyTopicConfigs(
-      TopicRequest topicReq, TopicRequestsResponseModel topicRequestModel) {
+      TopicRequest topicReq, TopicRequestModel topicRequestModel) {
     try {
       if (topicReq.getJsonParams() != null) {
         List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();

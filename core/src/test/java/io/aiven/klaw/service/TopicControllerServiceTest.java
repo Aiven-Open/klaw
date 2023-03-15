@@ -26,7 +26,6 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -34,7 +33,6 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
-import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -414,7 +412,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
-    List<TopicRequestsResponseModel> listTopicRqs =
+    List<TopicRequestModel> listTopicRqs =
         topicControllerService.getTopicRequests("1", "", "all", null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
@@ -436,7 +434,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
-    List<TopicRequestsResponseModel> listTopicRqs =
+    List<TopicRequestModel> listTopicRqs =
         topicControllerService.getTopicRequests("1", "", "all", null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
@@ -458,7 +456,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
-    List<TopicRequestsResponseModel> listTopicRqs =
+    List<TopicRequestModel> listTopicRqs =
         topicControllerService.getTopicRequests("1", "", "created", null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
@@ -469,9 +467,9 @@ public class TopicControllerServiceTest {
     String topicName = "testtopic";
     stubUserInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    TopicTeamResponse topicTeamMap =
+    Map<String, String> topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
-    assertThat(topicTeamMap.getError()).contains("There are no topics found with this prefix.");
+    assertThat(topicTeamMap.get("error")).contains("There are no topics found with this prefix.");
   }
 
   @Test
@@ -489,9 +487,9 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getAllTopics(anyInt())).thenReturn(topicList);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    TopicTeamResponse topicTeamMap =
+    Map<String, String> topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
-    assertThat(topicTeamMap.getError())
+    assertThat(topicTeamMap.get("error"))
         .contains("There are atleast two topics with same prefix owned by different teams.");
   }
 
@@ -506,9 +504,9 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
-    TopicTeamResponse topicTeamMap =
+    Map<String, String> topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.PREFIXED);
-    assertThat(topicTeamMap.getTeam()).isEqualTo(teamName);
+    assertThat(topicTeamMap.get("team")).isEqualTo(teamName);
   }
 
   @Test
@@ -522,9 +520,9 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(topicList);
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
-    TopicTeamResponse topicTeamMap =
+    Map<String, String> topicTeamMap =
         topicControllerService.getTopicTeamOnly(topicName, AclPatternType.LITERAL);
-    assertThat(topicTeamMap.getTeam()).isEqualTo(teamName);
+    assertThat(topicTeamMap.get("team")).isEqualTo(teamName);
   }
 
   @Test
@@ -544,7 +542,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
-    List<TopicRequestsResponseModel> topicList =
+    List<TopicRequestModel> topicList =
         topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(2);
@@ -570,7 +568,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
-    List<TopicRequestsResponseModel> topicList =
+    List<TopicRequestModel> topicList =
         topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
 
     assertThat(topicList).hasSize(5);
@@ -1183,6 +1181,7 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicname("newtopicname");
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
+    topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
     TopicConfigEntry topicConfigEntry1 = new TopicConfigEntry("compression.type", "snappy");
@@ -1198,6 +1197,7 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicname("newtopicname");
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(2);
+    topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     return topicRequest;
   }
@@ -1218,6 +1218,7 @@ public class TopicControllerServiceTest {
     topicRequest.setTopicname("newtopicname");
     topicRequest.setEnvironment(env.getId());
     topicRequest.setTopicpartitions(-1);
+    topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     return topicRequest;
   }

@@ -11,6 +11,8 @@ import lombok.Setter;
 @Setter
 public class SchemaRequestModel extends BaseRequestModel implements Serializable {
 
+  private Integer req_no;
+
   @NotNull
   @Pattern(message = "Invalid topic name", regexp = "^[a-zA-Z0-9._-]{3,}$")
   private String topicname;
@@ -22,6 +24,4 @@ public class SchemaRequestModel extends BaseRequestModel implements Serializable
   private String schemaversion;
 
   private Boolean forceRegister;
-
-  private Integer teamId;
 }

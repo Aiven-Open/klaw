@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwPropertiesModel;
@@ -27,9 +28,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
-import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.TopicRequestModel;
-import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.service.ClusterApiService;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -288,8 +287,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TopicRequestsResponseModel> response =
-        OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    List<TopicRequestModel> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response).hasSize(1);
   }
 
@@ -309,8 +307,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TopicRequestsResponseModel> response =
-        OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    List<TopicRequestModel> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response).hasSize(1);
   }
 
@@ -821,9 +818,9 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TopicRequestsResponseModel> topicRequestModels =
+    List<TopicRequestModel> topicRequestModels =
         OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
-    TopicRequestsResponseModel deleteTopicRequestModel =
+    TopicRequestModel deleteTopicRequestModel =
         topicRequestModels.stream()
             .filter(topicRequestModel -> topicRequestModel.getTopicname().equals(topicName))
             .findFirst()

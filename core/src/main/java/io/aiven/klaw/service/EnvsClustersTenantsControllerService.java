@@ -17,6 +17,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
@@ -27,8 +28,6 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.requests.EnvModel;
-import io.aiven.klaw.model.response.EnvModelResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -100,7 +99,7 @@ public class EnvsClustersTenantsControllerService {
     this.mailService = mailService;
   }
 
-  public synchronized EnvModelResponse getEnvDetails(String envSelected, String clusterType) {
+  public synchronized EnvModel getEnvDetails(String envSelected, String clusterType) {
     String userName = getUserName();
     log.debug("getEnvDetails {}", envSelected);
     int tenantId = commonUtilsService.getTenantId(userName);
@@ -118,7 +117,7 @@ public class EnvsClustersTenantsControllerService {
     }
 
     if (env != null) {
-      EnvModelResponse envModel = new EnvModelResponse();
+      EnvModel envModel = new EnvModel();
       copyProperties(env, envModel);
       envModel.setClusterName(
           manageDatabase
@@ -134,7 +133,7 @@ public class EnvsClustersTenantsControllerService {
     return null;
   }
 
-  private void extractKwEnvParameters(EnvModelResponse env) {
+  private void extractKwEnvParameters(EnvModel env) {
     String defPartns = "",
         defMaxPartns = "",
         defaultRf = "",
@@ -314,8 +313,8 @@ public class EnvsClustersTenantsControllerService {
 
     Map<String, String> hMap;
     List<Map<String, String>> envsOnly = new ArrayList<>();
-    List<EnvModelResponse> envList = getKafkaEnvs();
-    for (EnvModelResponse env : envList) {
+    List<EnvModel> envList = getKafkaEnvs();
+    for (EnvModel env : envList) {
       hMap = new HashMap<>();
       hMap.put("id", env.getId());
       String baseClusterDropDownStr = " (Base Sync cluster)";
@@ -331,7 +330,7 @@ public class EnvsClustersTenantsControllerService {
     return envsOnly;
   }
 
-  public List<EnvModelResponse> getEnvsForRequestTopicsCluster() {
+  public List<EnvModel> getEnvsForRequestTopicsCluster() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
 
     String requestTopicsEnvs = mailService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
@@ -341,7 +340,7 @@ public class EnvsClustersTenantsControllerService {
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
     String[] reqTopicsEnvs = requestTopicsEnvs.split(",");
     List<Env> listEnvs = manageDatabase.getKafkaEnvList(tenantId);
-    List<EnvModelResponse> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA, tenantId);
+    List<EnvModel> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA, tenantId);
 
     envModelList = filterEnvironmentModelList(reqTopicsEnvs, envModelList);
     if (orderOfEnvs == null) {
@@ -351,15 +350,15 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public List<EnvModelResponse> getEnvsForRequestTopicsClusterFiltered() {
+  public List<EnvModel> getEnvsForRequestTopicsClusterFiltered() {
     return getKafkaEnvs();
   }
 
-  public List<EnvModelResponse> getKafkaEnvs() {
+  public List<EnvModel> getKafkaEnvs() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
     List<Env> listEnvs = manageDatabase.getKafkaEnvList(tenantId);
-    List<EnvModelResponse> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA, tenantId);
+    List<EnvModel> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA, tenantId);
     envModelList.forEach(
         envModel ->
             envModel.setTenantName(manageDatabase.getTenantMap().get(envModel.getTenantId())));
@@ -381,12 +380,11 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public List<EnvModelResponse> getConnectorEnvs() {
+  public List<EnvModel> getConnectorEnvs() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
     List<Env> listEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
-    List<EnvModelResponse> envModelList =
-        getEnvModels(listEnvs, KafkaClustersType.KAFKA_CONNECT, tenantId);
+    List<EnvModel> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA_CONNECT, tenantId);
 
     envModelList.forEach(
         envModel ->
@@ -416,9 +414,8 @@ public class EnvsClustersTenantsControllerService {
     return allTenantsEnvModelsUpdated;
   }
 
-  public List<EnvModelResponse> getEnvsPaginated(
-      String envId, String pageNo, String searchEnvParam) {
-    List<EnvModelResponse> envListMap = getKafkaEnvs();
+  public List<EnvModel> getEnvsPaginated(String envId, String pageNo, String searchEnvParam) {
+    List<EnvModel> envListMap = getKafkaEnvs();
     if (envId != null && !envId.equals("")) {
       envListMap =
           envListMap.stream()
@@ -427,21 +424,21 @@ public class EnvsClustersTenantsControllerService {
     }
 
     if (searchEnvParam != null && !searchEnvParam.equals("")) {
-      List<EnvModelResponse> envListMap1 =
+      List<EnvModel> envListMap1 =
           envListMap.stream()
               .filter(env -> env.getName().toLowerCase().contains(searchEnvParam.toLowerCase()))
               .collect(Collectors.toList());
-      List<EnvModelResponse> envListMap2 =
+      List<EnvModel> envListMap2 =
           envListMap.stream()
               .filter(
                   env -> env.getClusterName().toLowerCase().contains(searchEnvParam.toLowerCase()))
-              .toList();
-      List<EnvModelResponse> envListMap3 =
+              .collect(Collectors.toList());
+      List<EnvModel> envListMap3 =
           envListMap.stream()
               .filter(
                   env -> env.getOtherParams().toLowerCase().contains(searchEnvParam.toLowerCase()))
-              .toList();
-      List<EnvModelResponse> envListMap4 =
+              .collect(Collectors.toList());
+      List<EnvModel> envListMap4 =
           envListMap.stream()
               .filter(
                   env ->
@@ -450,7 +447,7 @@ public class EnvsClustersTenantsControllerService {
                           .get(env.getTenantId())
                           .toLowerCase()
                           .contains(searchEnvParam.toLowerCase()))
-              .toList();
+              .collect(Collectors.toList());
       envListMap1.addAll(envListMap2);
       envListMap1.addAll(envListMap3);
       envListMap1.addAll(envListMap4);
@@ -461,16 +458,15 @@ public class EnvsClustersTenantsControllerService {
               .collect(
                   Collectors.collectingAndThen(
                       Collectors.toCollection(
-                          () -> new TreeSet<>(Comparator.comparing(EnvModelResponse::getId))),
+                          () -> new TreeSet<>(Comparator.comparing(EnvModel::getId))),
                       ArrayList::new));
     }
 
     return getEnvModelsPaginated(pageNo, envListMap);
   }
 
-  private List<EnvModelResponse> getEnvModelsPaginated(
-      String pageNo, List<EnvModelResponse> envListMap) {
-    List<EnvModelResponse> envListMapUpdated = new ArrayList<>();
+  private List<EnvModel> getEnvModelsPaginated(String pageNo, List<EnvModel> envListMap) {
+    List<EnvModel> envListMapUpdated = new ArrayList<>();
     int totalRecs = envListMap.size();
     int recsPerPage = 10;
 
@@ -484,7 +480,7 @@ public class EnvsClustersTenantsControllerService {
     for (int i = 0; i < totalRecs; i++) {
 
       if (i >= startVar && i < lastVar) {
-        EnvModelResponse mp = envListMap.get(i);
+        EnvModel mp = envListMap.get(i);
 
         mp.setTotalNoPages(totalPages + "");
         List<String> numList = new ArrayList<>();
@@ -498,15 +494,15 @@ public class EnvsClustersTenantsControllerService {
     return envListMapUpdated;
   }
 
-  private List<EnvModelResponse> getEnvModels(
+  private List<EnvModel> getEnvModels(
       List<Env> listEnvs, KafkaClustersType clusterType, int tenantId) {
-    List<EnvModelResponse> envModelList = new ArrayList<>();
-    EnvModelResponse envModel;
+    List<EnvModel> envModelList = new ArrayList<>();
+    EnvModel envModel;
     KwClusters kwCluster;
     for (Env listEnv : listEnvs) {
       kwCluster = manageDatabase.getClusters(clusterType, tenantId).get(listEnv.getClusterId());
       if (kwCluster != null) {
-        envModel = new EnvModelResponse();
+        envModel = new EnvModel();
         copyProperties(listEnv, envModel);
         envModel.setClusterName(
             manageDatabase
@@ -527,11 +523,11 @@ public class EnvsClustersTenantsControllerService {
         .get(targetEnv);
   }
 
-  public List<EnvModelResponse> getSchemaRegEnvs() {
+  public List<EnvModel> getSchemaRegEnvs() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
     List<Env> listEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
 
-    List<EnvModelResponse> envModelList =
+    List<EnvModel> envModelList =
         getEnvModels(listEnvs, KafkaClustersType.SCHEMA_REGISTRY, tenantId);
 
     envModelList.forEach(
@@ -554,7 +550,7 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public List<EnvModelResponse> getEnvsForSchemaRequests() {
+  public List<EnvModel> getEnvsForSchemaRequests() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
 
     String requestSchemasEnvs = mailService.getEnvProperty(tenantId, "REQUEST_SCHEMA_OF_ENVS");
@@ -564,7 +560,7 @@ public class EnvsClustersTenantsControllerService {
     String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_SCHEMA_ENVS");
     String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
     List<Env> listEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
-    List<EnvModelResponse> envModelList =
+    List<EnvModel> envModelList =
         getEnvModels(listEnvs, KafkaClustersType.SCHEMA_REGISTRY, tenantId);
     log.debug("orderOfEnvs {}, RequestForSchemas {}, ", orderOfEnvs, reqSchemaEnvs);
     envModelList = filterEnvironmentModelList(reqSchemaEnvs, envModelList);
@@ -575,8 +571,7 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  private List<EnvModelResponse> filterEnvironmentModelList(
-      String[] reqEnvs, List<EnvModelResponse> envModelList) {
+  private List<EnvModel> filterEnvironmentModelList(String[] reqEnvs, List<EnvModel> envModelList) {
     envModelList =
         envModelList.stream()
             .filter(
@@ -594,7 +589,7 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public List<EnvModelResponse> getKafkaConnectEnvs() {
+  public List<EnvModel> getKafkaConnectEnvs() {
     String userName = getUserName();
     int tenantId = getUserDetails(userName).getTenantId();
     List<Env> listEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
@@ -608,8 +603,7 @@ public class EnvsClustersTenantsControllerService {
               .collect(Collectors.toList());
     }
 
-    List<EnvModelResponse> envModelList =
-        getEnvModels(listEnvs, KafkaClustersType.KAFKA_CONNECT, tenantId);
+    List<EnvModel> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA_CONNECT, tenantId);
 
     envModelList.forEach(
         envModel ->

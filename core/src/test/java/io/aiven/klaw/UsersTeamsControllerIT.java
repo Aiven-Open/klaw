@@ -7,10 +7,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.requests.TeamModel;
-import io.aiven.klaw.model.response.TeamModelResponse;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -216,7 +215,7 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    TeamModelResponse teamModel = OBJECT_MAPPER.readValue(response, TeamModelResponse.class);
+    TeamModel teamModel = OBJECT_MAPPER.readValue(response, TeamModel.class);
     assertThat(teamModel.getTeammail()).isEqualTo(emailId);
   }
 

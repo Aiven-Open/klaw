@@ -6,7 +6,6 @@ import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
-import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.service.SchemaOverviewService;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
@@ -45,7 +44,7 @@ public class SchemaRegstryController {
       value = "/getSchemaRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<SchemaRequestsResponseModel>> getSchemaRequests(
+  public ResponseEntity<List<SchemaRequestModel>> getSchemaRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
@@ -73,7 +72,7 @@ public class SchemaRegstryController {
       value = "/getSchemaRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<SchemaRequestsResponseModel>> getSchemaRequestsForApprover(
+  public ResponseEntity<List<SchemaRequestModel>> getSchemaRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,

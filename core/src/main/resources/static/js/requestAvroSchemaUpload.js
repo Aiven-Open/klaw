@@ -185,7 +185,6 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
             serviceInput['remarks'] = $scope.addSchema.remarks;
             serviceInput['schemafull'] = $scope.addSchema.schemafull;
             serviceInput['schemaversion'] = "1.0";
-            serviceInput['requestOperationType'] = 'CREATE';
 
             $http({
                 method: "POST",

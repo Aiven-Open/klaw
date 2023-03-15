@@ -415,7 +415,7 @@ public class AclRequestsIntegrationTest {
             false, "Jackie", "USER", "ALL", true, null, null, null, true, 101);
     assertThat(jackie.size()).isEqualTo(31);
     for (AclRequests req : jackie) {
-      assertThat(req.getRequestor()).isEqualTo("Jackie");
+      assertThat(req.getUsername()).isEqualTo("Jackie");
     }
   }
 
@@ -427,7 +427,7 @@ public class AclRequestsIntegrationTest {
             false, "Jackie", "USER", "ALL", true, null, "dev", null, true, 101);
     assertThat(jackie.size()).isEqualTo(20);
     for (AclRequests req : jackie) {
-      assertThat(req.getRequestor()).isEqualTo("Jackie");
+      assertThat(req.getUsername()).isEqualTo("Jackie");
       assertThat(req.getEnvironment()).isEqualTo("dev");
     }
   }
@@ -440,7 +440,7 @@ public class AclRequestsIntegrationTest {
             false, "Jackie", "USER", "ALL", true, null, null, AclType.PRODUCER, true, 101);
     assertThat(jackie.size()).isEqualTo(1);
     for (AclRequests req : jackie) {
-      assertThat(req.getRequestor()).isEqualTo("Jackie");
+      assertThat(req.getUsername()).isEqualTo("Jackie");
       assertThat(req.getAclType()).isEqualTo(AclType.PRODUCER.value);
     }
   }
@@ -453,7 +453,7 @@ public class AclRequestsIntegrationTest {
             false, "Jackie", "USER", "ALL", true, "firsttopic", null, null, true, 101);
     assertThat(jackie.size()).isEqualTo(10);
     for (AclRequests req : jackie) {
-      assertThat(req.getRequestor()).isEqualTo("Jackie");
+      assertThat(req.getUsername()).isEqualTo("Jackie");
       assertThat(req.getTopicname()).isEqualTo("firsttopic");
     }
   }
@@ -466,7 +466,7 @@ public class AclRequestsIntegrationTest {
             false, "Jackie", "USER", "ALL", true, null, "test", null, true, 101);
     assertThat(jackie.size()).isEqualTo(11);
     for (AclRequests req : jackie) {
-      assertThat(req.getRequestor()).isEqualTo("Jackie");
+      assertThat(req.getUsername()).isEqualTo("Jackie");
       assertThat(req.getTopicname()).isEqualTo("secondtopic");
       assertThat(req.getEnvironment()).isEqualTo("test");
     }
@@ -481,7 +481,7 @@ public class AclRequestsIntegrationTest {
             false, "Jackie", "USER", "ALL", true, null, "test", AclType.CONSUMER, true, 101);
     assertThat(jackie.size()).isEqualTo(10);
     for (AclRequests req : jackie) {
-      assertThat(req.getRequestor()).isEqualTo("Jackie");
+      assertThat(req.getUsername()).isEqualTo("Jackie");
       assertThat(req.getTopicname()).isEqualTo("secondtopic");
       assertThat(req.getEnvironment()).isEqualTo("test");
       assertThat(req.getAclType()).isEqualTo(AclType.CONSUMER.value);
@@ -555,7 +555,7 @@ public class AclRequestsIntegrationTest {
       acl.setReq_no(requestNumber++);
       acl.setTopicname(topicName);
       acl.setEnvironment(env);
-      acl.setRequestor("Jackie");
+      acl.setUsername("Jackie");
       acl.setRequestOperationType(aclType.value);
       acl.setRequestOperationType(requestOperationType.value); // Create/Delete ..
       acl.setAclType(aclType.value);

@@ -92,7 +92,7 @@ public class InsertDataJdbc {
     topicRequest.setRequesttime((new Timestamp(System.currentTimeMillis())));
     topicRequestsRepo.save(topicRequest);
 
-    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(topicRequest.getRequestor());
+    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(topicRequest.getUsername());
 
     ActivityLog activityLog = new ActivityLog();
     activityLog.setReq_no(getNextActivityLogRequestId(topicRequest.getTenantId()));
@@ -101,7 +101,7 @@ public class InsertDataJdbc {
     activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
     activityLog.setTeamId(userInfo.getTeamId());
     activityLog.setDetails(topicRequest.getTopicname());
-    activityLog.setUser(topicRequest.getRequestor());
+    activityLog.setUser(topicRequest.getUsername());
     activityLog.setEnv(topicRequest.getEnvironment());
     activityLog.setTenantId(topicRequest.getTenantId());
 
@@ -128,7 +128,7 @@ public class InsertDataJdbc {
     connectorRequest.setRequesttime((new Timestamp(System.currentTimeMillis())));
     kafkaConnectorRequestsRepo.save(connectorRequest);
 
-    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(connectorRequest.getRequestor());
+    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(connectorRequest.getUsername());
 
     ActivityLog activityLog = new ActivityLog();
     activityLog.setReq_no(getNextActivityLogRequestId(connectorRequest.getTenantId()));
@@ -138,7 +138,7 @@ public class InsertDataJdbc {
     activityLog.setTeamId(userInfo.getTeamId());
     activityLog.setDetails(
         connectorRequest.getConnectorName() + "," + connectorRequest.getRequestOperationType());
-    activityLog.setUser(connectorRequest.getRequestor());
+    activityLog.setUser(connectorRequest.getUsername());
     activityLog.setEnv(connectorRequest.getEnvironment());
     activityLog.setTenantId(connectorRequest.getTenantId());
 
@@ -211,10 +211,10 @@ public class InsertDataJdbc {
 
     aclReq.setRequestStatus(RequestStatus.CREATED.value);
     aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
-    aclReq.setRequestingteam(jdbcSelectHelper.selectUserInfo(aclReq.getRequestor()).getTeamId());
+    aclReq.setRequestingteam(jdbcSelectHelper.selectUserInfo(aclReq.getUsername()).getTeamId());
     aclRequestsRepo.save(aclReq);
 
-    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(aclReq.getRequestor());
+    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(aclReq.getUsername());
 
     ActivityLog activityLog = new ActivityLog();
     activityLog.setReq_no(getNextActivityLogRequestId(aclReq.getTenantId()));
@@ -232,7 +232,7 @@ public class InsertDataJdbc {
             + aclReq.getConsumergroup()
             + "-"
             + aclReq.getAclType());
-    activityLog.setUser(aclReq.getRequestor());
+    activityLog.setUser(aclReq.getUsername());
     activityLog.setEnv(aclReq.getEnvironment());
     activityLog.setTenantId(aclReq.getTenantId());
 
@@ -262,10 +262,12 @@ public class InsertDataJdbc {
     schemaRequest.setSchemafull(schemaRequest.getSchemafull().trim());
     schemaRequest.setRequestStatus(RequestStatus.CREATED.value);
     schemaRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
+    schemaRequest.setTeamId(
+        jdbcSelectHelper.selectUserInfo(schemaRequest.getUsername()).getTeamId());
 
     schemaRequestRepo.save(schemaRequest);
 
-    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(schemaRequest.getRequestor());
+    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(schemaRequest.getUsername());
 
     ActivityLog activityLog = new ActivityLog();
     activityLog.setReq_no(getNextActivityLogRequestId(schemaRequest.getTenantId()));
@@ -274,7 +276,7 @@ public class InsertDataJdbc {
     activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
     activityLog.setTeamId(userInfo.getTeamId());
     activityLog.setDetails(schemaRequest.getTopicname() + "-" + schemaRequest.getRemarks());
-    activityLog.setUser(schemaRequest.getRequestor());
+    activityLog.setUser(schemaRequest.getUsername());
     activityLog.setEnv(schemaRequest.getEnvironment());
     activityLog.setTenantId(schemaRequest.getTenantId());
 

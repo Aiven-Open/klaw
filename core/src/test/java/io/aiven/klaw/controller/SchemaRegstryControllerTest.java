@@ -14,7 +14,6 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
-import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.service.SchemaRegstryControllerService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +55,7 @@ public class SchemaRegstryControllerTest {
   @Test
   @Order(1)
   public void getSchemaRequests() throws Exception {
-    List<SchemaRequestsResponseModel> schRequests = utilMethods.getSchemaRequestsResponse();
+    List<SchemaRequestModel> schRequests = utilMethods.getSchemaRequests();
 
     when(schemaRegstryControllerService.getSchemaRequests(
             anyString(),

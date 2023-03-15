@@ -218,7 +218,7 @@ public class SchemaRequestsIntegrationTest {
 
     for (SchemaRequest req : results) {
       assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -239,7 +239,7 @@ public class SchemaRequestsIntegrationTest {
               RequestStatus.APPROVED.value,
               RequestStatus.DECLINED.value,
               RequestStatus.DELETED.value);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -255,7 +255,7 @@ public class SchemaRequestsIntegrationTest {
     for (SchemaRequest req : results) {
       // All Statuses allowed
       assertThat(req.getRequestStatus()).containsAnyOf(RequestStatus.DECLINED.value);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -271,7 +271,7 @@ public class SchemaRequestsIntegrationTest {
     for (SchemaRequest req : results) {
       // All Statuses allowed
       assertThat(req.getRequestStatus()).containsAnyOf(RequestStatus.APPROVED.value);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -287,7 +287,7 @@ public class SchemaRequestsIntegrationTest {
     for (SchemaRequest req : results) {
       // All Statuses allowed
       assertThat(req.getRequestStatus()).containsAnyOf(RequestStatus.DECLINED.value);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -303,7 +303,7 @@ public class SchemaRequestsIntegrationTest {
     for (SchemaRequest req : results) {
       // All Statuses allowed
       assertThat(req.getRequestStatus()).containsAnyOf(RequestStatus.APPROVED.value);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -320,7 +320,7 @@ public class SchemaRequestsIntegrationTest {
     for (SchemaRequest req : results) {
       // firsttopic1 is the noly one that should match.
       assertThat(req.getTopicname()).containsAnyOf("firsttopic1", "firsttopic10");
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -337,7 +337,7 @@ public class SchemaRequestsIntegrationTest {
     for (SchemaRequest req : results) {
       // firstopic5 was created by james so should not be returned.
       assertThat(req.getTopicname()).isNotEqualTo("firsttopic5");
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -358,7 +358,7 @@ public class SchemaRequestsIntegrationTest {
               RequestStatus.APPROVED.value,
               RequestStatus.DECLINED.value,
               RequestStatus.DELETED.value);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -379,7 +379,7 @@ public class SchemaRequestsIntegrationTest {
               RequestStatus.APPROVED.value,
               RequestStatus.DECLINED.value,
               RequestStatus.DELETED.value);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -395,7 +395,7 @@ public class SchemaRequestsIntegrationTest {
     for (SchemaRequest req : results) {
       // firstopic5 was created by james so should not be returned.
       assertThat(req.getTopicname()).isNotEqualTo("firsttopic5");
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -416,7 +416,7 @@ public class SchemaRequestsIntegrationTest {
               RequestStatus.APPROVED.value,
               RequestStatus.DECLINED.value,
               RequestStatus.DELETED.value);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -432,7 +432,7 @@ public class SchemaRequestsIntegrationTest {
     for (SchemaRequest req : results) {
       // firsttopic1 is the noly one that should match.
       assertThat(req.getTopicname()).isEqualTo("firsttopic10");
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -456,7 +456,7 @@ public class SchemaRequestsIntegrationTest {
             false, "Jackie", 101, null, null, RequestStatus.ALL.value, null, true);
     assertThat(results.size()).isEqualTo(17);
     for (SchemaRequest req : results) {
-      assertThat(req.getRequestor()).isEqualTo("Jackie");
+      assertThat(req.getUsername()).isEqualTo("Jackie");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -470,7 +470,7 @@ public class SchemaRequestsIntegrationTest {
             false, "Jackie", 101, null, "dev", RequestStatus.ALL.value, null, true);
     assertThat(results.size()).isEqualTo(17);
     for (SchemaRequest req : results) {
-      assertThat(req.getRequestor()).isEqualTo("Jackie");
+      assertThat(req.getUsername()).isEqualTo("Jackie");
       assertThat(req.getTeamId()).isEqualTo(101);
     }
   }
@@ -494,7 +494,7 @@ public class SchemaRequestsIntegrationTest {
             false, "John", 101, null, "dev", RequestStatus.ALL.value, null, false);
     assertThat(results.size()).isEqualTo(4);
     for (SchemaRequest req : results) {
-      assertThat(req.getRequestor()).isNotEqualTo("John");
+      assertThat(req.getUsername()).isNotEqualTo("John");
       assertThat(req.getTeamId()).isEqualTo(103);
     }
   }
@@ -577,7 +577,7 @@ public class SchemaRequestsIntegrationTest {
       schemaRequest.setReq_no(topicIdentifier + i);
       schemaRequest.setSchemafull("{schema}");
       schemaRequest.setForceRegister(false);
-      schemaRequest.setRequestor(requestor);
+      schemaRequest.setUsername(requestor);
       entityManager.persistAndFlush(schemaRequest);
     }
   }

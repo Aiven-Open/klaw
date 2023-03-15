@@ -16,14 +16,13 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.RegisterUserInfoModel;
+import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
-import io.aiven.klaw.model.requests.TeamModel;
-import io.aiven.klaw.model.response.TeamModelResponse;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -210,14 +209,14 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public TeamModelResponse getTeamDetails(Integer teamId, String tenantName) {
+  public TeamModel getTeamDetails(Integer teamId, String tenantName) {
     log.debug("getTeamDetails {} {}", teamId, tenantName);
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     Team teamDao = manageDatabase.getHandleDbRequests().selectTeamDetails(teamId, tenantId);
     if (teamDao != null) {
-      TeamModelResponse teamModel = new TeamModelResponse();
+      TeamModel teamModel = new TeamModel();
       copyProperties(teamDao, teamModel);
       if (teamDao.getRequestTopicsEnvs() != null) {
         teamModel.setEnvList(Arrays.asList(teamDao.getRequestTopicsEnvs().split("\\s*,\\s*")));
@@ -278,15 +277,15 @@ public class UsersTeamsControllerService {
     return userMap;
   }
 
-  private List<TeamModelResponse> getTeamModels(List<Team> teams) {
-    List<TeamModelResponse> teamModels = new ArrayList<>();
-    TeamModelResponse teamModel;
+  private List<TeamModel> getTeamModels(List<Team> teams) {
+    List<TeamModel> teamModels = new ArrayList<>();
+    TeamModel teamModel;
     List<String> allList = new ArrayList<>();
     allList.add("ALL");
     List<String> tmpConvertedList;
 
     for (Team team : teams) {
-      teamModel = new TeamModelResponse();
+      teamModel = new TeamModel();
       copyProperties(team, teamModel);
       if (team.getRequestTopicsEnvs() == null || team.getRequestTopicsEnvs().length() == 0) {
         teamModel.setEnvList(allList);
@@ -308,9 +307,9 @@ public class UsersTeamsControllerService {
     return teamModels;
   }
 
-  public List<TeamModelResponse> getAllTeamsSUFromRegisterUsers() {
+  public List<TeamModel> getAllTeamsSUFromRegisterUsers() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<TeamModelResponse> teamModels =
+    List<TeamModel> teamModels =
         getTeamModels(manageDatabase.getHandleDbRequests().selectAllTeams(tenantId));
 
     teamModels.forEach(
@@ -320,9 +319,9 @@ public class UsersTeamsControllerService {
     return teamModels;
   }
 
-  public List<TeamModelResponse> getAllTeamsSU() {
+  public List<TeamModel> getAllTeamsSU() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<TeamModelResponse> teamModels =
+    List<TeamModel> teamModels =
         getTeamModels(manageDatabase.getHandleDbRequests().selectAllTeams(tenantId));
 
     if (!commonUtilsService.isNotAuthorizedUser(
@@ -357,11 +356,11 @@ public class UsersTeamsControllerService {
 
     List<String> teams = new ArrayList<>();
     // tenant filtering
-    List<TeamModelResponse> teamsList = getAllTeamsSU();
+    List<TeamModel> teamsList = getAllTeamsSU();
     teams.add("All teams"); // team id 1
     teams.add(myTeamName);
 
-    for (TeamModelResponse team : teamsList) {
+    for (TeamModel team : teamsList) {
       if (!team.getTeamname().equals(myTeamName)) {
         teams.add(team.getTeamname());
       }
@@ -1005,15 +1004,15 @@ public class UsersTeamsControllerService {
     return m1.matches() || m2.matches();
   }
 
-  public List<TeamModelResponse> getSwitchTeams(String userId) {
-    List<TeamModelResponse> teamModelList = new ArrayList<>();
+  public List<TeamModel> getSwitchTeams(String userId) {
+    List<TeamModel> teamModelList = new ArrayList<>();
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (userInfo.isSwitchTeams()) {
       Set<Integer> teamIds = userInfo.getSwitchAllowedTeamIds();
       if (teamIds != null) {
         for (Integer switchAllowedTeamId : teamIds) {
-          TeamModelResponse teamModel = new TeamModelResponse();
+          TeamModel teamModel = new TeamModel();
           teamModel.setTeamId(switchAllowedTeamId);
           teamModel.setTeamname(
               manageDatabase.getTeamNameFromTeamId(tenantId, switchAllowedTeamId));

@@ -312,7 +312,7 @@ public class KafkaConnectorsIntegrationTest {
 
     for (KafkaConnectorRequest req : jackie) {
       assertThat(req.getEnvironment()).isEqualTo("test");
-      assertThat(req.getRequestor()).isEqualTo("Jackie");
+      assertThat(req.getUsername()).isNotEqualTo("Jackie");
     }
   }
 
@@ -445,7 +445,7 @@ public class KafkaConnectorsIntegrationTest {
     for (KafkaConnectorRequest req : joan) {
       assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
-      assertThat(req.getRequestor()).isNotEqualTo("Joan");
+      assertThat(req.getUsername()).isNotEqualTo("Joan");
     }
   }
 
@@ -461,7 +461,7 @@ public class KafkaConnectorsIntegrationTest {
     for (KafkaConnectorRequest req : joan) {
       assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.DELETED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
-      assertThat(req.getRequestor()).isNotEqualTo("Joan");
+      assertThat(req.getUsername()).isNotEqualTo("Joan");
     }
   }
 
@@ -476,7 +476,7 @@ public class KafkaConnectorsIntegrationTest {
     assertThat(resultSet.size()).isEqualTo(31);
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(103);
         assertThat(req.getApprovingTeamId()).isEqualTo("101");
@@ -497,7 +497,7 @@ public class KafkaConnectorsIntegrationTest {
     assertThat(resultSet.size()).isEqualTo(31);
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getApprovingTeamId()).isNotEqualTo("101");
       }
@@ -515,7 +515,7 @@ public class KafkaConnectorsIntegrationTest {
     assertThat(resultSet.size()).isEqualTo(31);
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(101);
         assertThat(req.getApprovingTeamId()).isEqualTo("103");
@@ -537,7 +537,7 @@ public class KafkaConnectorsIntegrationTest {
     // MyTeamsRequests only
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(103);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(103);
       if (req.getRequestStatus().equals(RequestOperationType.CLAIM.value)) {
         // only show my tems claim requests
@@ -559,7 +559,7 @@ public class KafkaConnectorsIntegrationTest {
     // MyTeamsRequests only
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      assertThat(req.getRequestor()).isNotEqualTo("James");
+      assertThat(req.getUsername()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(101);
       assertThat(req.getConnectorName()).isEqualTo("firstconn");
     }

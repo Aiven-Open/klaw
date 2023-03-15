@@ -29,7 +29,6 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
-import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,9 +69,11 @@ public class AclControllerService {
     log.info("createAcl {}", aclRequestsModel);
     String currentUserName = getCurrentUserName();
     aclRequestsModel.setRequestOperationType(RequestOperationType.CREATE);
-    aclRequestsModel.setRequestor(currentUserName);
+    aclRequestsModel.setUsername(currentUserName);
     int tenantId = commonUtilsService.getTenantId(currentUserName);
 
+    aclRequestsModel.setTeamId(
+        manageDatabase.getTeamIdFromTeamName(tenantId, aclRequestsModel.getTeamname()));
     aclRequestsModel.setRequestingteam(commonUtilsService.getTeamId(currentUserName));
 
     if (commonUtilsService.isNotAuthorizedUser(
@@ -191,7 +192,7 @@ public class AclControllerService {
     return false;
   }
 
-  public List<AclRequestsResponseModel> getAclRequests(
+  public List<AclRequestsModel> getAclRequests(
       String pageNo,
       String currentPage,
       String requestStatus,
@@ -220,11 +221,10 @@ public class AclControllerService {
     return getAclRequestsModels(aclReqs, tenantId, userName);
   }
 
-  private AclRequestsResponseModel setRequestorPermissions(
-      AclRequestsResponseModel req, String userName) {
+  private AclRequestsModel setRequestorPermissions(AclRequestsModel req, String userName) {
     if (RequestStatus.CREATED == req.getRequestStatus()
         && userName != null
-        && userName.equals(req.getRequestor())) {
+        && userName.equals(req.getUsername())) {
       req.setDeletable(true);
       req.setEditable(true);
     }
@@ -232,23 +232,22 @@ public class AclControllerService {
     return req;
   }
 
-  private List<AclRequestsResponseModel> getAclRequestsModels(
+  private List<AclRequestsModel> getAclRequestsModels(
       List<AclRequests> aclReqs, int tenantId, String userName) {
-    List<AclRequestsResponseModel> aclRequestsModels = new ArrayList<>();
-    AclRequestsResponseModel aclRequestsModel;
+    List<AclRequestsModel> aclRequestsModels = new ArrayList<>();
+    AclRequestsModel aclRequestsModel;
 
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("SUBSCRIPTIONS", tenantId);
 
     if (aclReqs != null)
       for (AclRequests aclRequests : aclReqs) {
-        aclRequestsModel = new AclRequestsResponseModel();
+        aclRequestsModel = new AclRequestsModel();
         copyProperties(aclRequests, aclRequestsModel);
         aclRequestsModel.setRequestOperationType(
             RequestOperationType.of(aclRequests.getRequestOperationType()));
         aclRequestsModel.setAclType(AclType.of(aclRequests.getAclType()));
         aclRequestsModel.setRequestStatus(RequestStatus.of(aclRequests.getRequestStatus()));
-
         if (aclRequests.getAcl_ip() != null) {
           String[] aclListIp = aclRequests.getAcl_ip().split(SEPARATOR_ACL);
           aclRequestsModel.setAcl_ip(new ArrayList<>(Arrays.asList(aclListIp)));
@@ -258,7 +257,6 @@ public class AclControllerService {
           String[] aclListSsl = aclRequests.getAcl_ssl().split(SEPARATOR_ACL);
           aclRequestsModel.setAcl_ssl(new ArrayList<>(Arrays.asList(aclListSsl)));
         }
-
         aclRequestsModel.setTeamname(
             manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getTeamId()));
         aclRequestsModel.setRequestingTeamName(
@@ -272,7 +270,7 @@ public class AclControllerService {
                   aclRequestsModel.getRequestOperationType(),
                   aclRequestsModel.getRequestingteam(),
                   approverRoles,
-                  aclRequestsModel.getRequestor(),
+                  aclRequestsModel.getUsername(),
                   tenantId));
         }
 
@@ -314,12 +312,9 @@ public class AclControllerService {
     return "";
   }
 
-  public List<AclRequestsResponseModel> getAclRequestModelPaged(
-      List<AclRequestsResponseModel> origActivityList,
-      String pageNo,
-      String currentPage,
-      int tenantId) {
-    List<AclRequestsResponseModel> newList = new ArrayList<>();
+  public List<AclRequestsModel> getAclRequestModelPaged(
+      List<AclRequestsModel> origActivityList, String pageNo, String currentPage, int tenantId) {
+    List<AclRequestsModel> newList = new ArrayList<>();
 
     if (origActivityList != null && origActivityList.size() > 0) {
       int totalRecs = origActivityList.size();
@@ -336,7 +331,7 @@ public class AclControllerService {
       commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
 
       for (int i = 0; i < totalRecs; i++) {
-        AclRequestsResponseModel aclRequestsModel = origActivityList.get(i);
+        AclRequestsModel aclRequestsModel = origActivityList.get(i);
         if (i >= startVar && i < lastVar) {
           aclRequestsModel.setAllPageNos(numList);
           aclRequestsModel.setTotalNoPages("" + totalPages);
@@ -388,7 +383,7 @@ public class AclControllerService {
     return newList;
   }
 
-  public List<AclRequestsResponseModel> getAclRequestsForApprover(
+  public List<AclRequestsModel> getAclRequestsForApprover(
       String pageNo,
       String currentPage,
       String requestStatus,
@@ -430,13 +425,13 @@ public class AclControllerService {
         tenantId);
   }
 
-  private List<AclRequestsResponseModel> updateCreatAclReqsList(
+  private List<AclRequestsModel> updateCreatAclReqsList(
       List<AclRequests> aclRequestsList, int tenantId, String userName) {
-    List<AclRequestsResponseModel> aclRequestsModels =
+    List<AclRequestsModel> aclRequestsModels =
         getAclRequestsModels(aclRequestsList, tenantId, userName);
     aclRequestsModels =
         aclRequestsModels.stream()
-            .sorted(Comparator.comparing(AclRequestsResponseModel::getRequesttime))
+            .sorted(Comparator.comparing(AclRequestsModel::getRequesttime))
             .collect(Collectors.toList());
 
     return aclRequestsModels;
@@ -490,7 +485,7 @@ public class AclControllerService {
     copyProperties(acl, aclRequestsDao);
     aclRequestsDao.setAcl_ip(acl.getAclip());
     aclRequestsDao.setAcl_ssl(acl.getAclssl());
-    aclRequestsDao.setRequestor(userDetails);
+    aclRequestsDao.setUsername(userDetails);
     aclRequestsDao.setRequestOperationType(RequestOperationType.DELETE.value);
     aclRequestsDao.setOtherParams(req_no);
     aclRequestsDao.setJsonParams(acl.getJsonParams());
@@ -533,7 +528,7 @@ public class AclControllerService {
         aclReq.getTopicname(),
         aclReq.getAclType(),
         "",
-        aclReq.getRequestor(),
+        aclReq.getUsername(),
         dbHandle,
         notifyUserType,
         commonUtilsService.getLoginUrl());
@@ -545,7 +540,7 @@ public class AclControllerService {
       return ApiResponse.builder().result("Record not found !").build();
     }
 
-    if (Objects.equals(aclReq.getRequestor(), userDetails)) {
+    if (Objects.equals(aclReq.getUsername(), userDetails)) {
       return ApiResponse.builder()
           .result("You are not allowed to approve your own subscription requests.")
           .build();
@@ -649,7 +644,7 @@ public class AclControllerService {
           aclReq.getTopicname(),
           aclReq.getAclType(),
           reasonToDecline,
-          aclReq.getRequestor(),
+          aclReq.getUsername(),
           dbHandle,
           ACL_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());

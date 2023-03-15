@@ -85,7 +85,7 @@ public class InsertDataJdbcTest {
     int topicName = 1001;
     UserInfo userInfo = utilMethods.getUserInfoMockDao();
     TopicRequest topicRequest = utilMethods.getTopicRequest(topicName);
-    when(jdbcSelectHelper.selectUserInfo(topicRequest.getRequestor())).thenReturn(userInfo);
+    when(jdbcSelectHelper.selectUserInfo(topicRequest.getUsername())).thenReturn(userInfo);
     when(topicRequestsRepo.getNextTopicRequestId(anyInt())).thenReturn(101);
     when(activityLogRepo.getNextActivityLogRequestId(anyInt())).thenReturn(101);
 

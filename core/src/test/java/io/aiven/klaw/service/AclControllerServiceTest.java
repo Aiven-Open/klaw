@@ -27,7 +27,6 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
-import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -302,7 +301,7 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
     when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(userList);
 
-    List<AclRequestsResponseModel> aclReqs =
+    List<AclRequestsModel> aclReqs =
         aclControllerService.getAclRequests("1", "", "all", null, null, null, false);
     assertThat(aclReqs.size()).isEqualTo(10);
     assertThat(aclReqs.get(0).getAcl_ip().size()).isEqualTo(3);
@@ -329,7 +328,7 @@ public class AclControllerServiceTest {
         .thenReturn("1", "2");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
-    List<AclRequestsResponseModel> listReqs =
+    List<AclRequestsModel> listReqs =
         aclControllerService.getAclRequestsForApprover("", "", "", null, null, null);
     assertThat(listReqs.size()).isEqualTo(10);
   }
@@ -350,7 +349,7 @@ public class AclControllerServiceTest {
         .thenReturn("1", "2");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
-    List<AclRequestsResponseModel> listReqs =
+    List<AclRequestsModel> listReqs =
         aclControllerService.getAclRequestsForApprover("", "", "", null, null, null);
     assertThat(listReqs.size()).isEqualTo(10);
   }
@@ -457,7 +456,7 @@ public class AclControllerServiceTest {
   public void approveAclRequestsOwnRequest() throws KlawException {
     stubUserInfo();
     AclRequests aclReq = getAclRequestDao();
-    aclReq.setRequestor("kwusera");
+    aclReq.setUsername("kwusera");
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.getResult())
@@ -702,6 +701,7 @@ public class AclControllerServiceTest {
     aclReq.setTopicname("testtopic");
     aclReq.setAclType(AclType.PRODUCER);
     aclReq.setRequestingteam(1);
+    aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
     aclReq.setAclPatternType(AclPatternType.LITERAL.value);
     aclReq.setAcl_ip(new ArrayList<>(List.of("1.1.1.1", "2.2.2.2")));
@@ -714,6 +714,7 @@ public class AclControllerServiceTest {
     aclReq.setTopicname("testtopic");
     aclReq.setAclType(AclType.CONSUMER);
     aclReq.setRequestingteam(1);
+    aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
     aclReq.setAclPatternType(AclPatternType.LITERAL.value);
     aclReq.setConsumergroup("testconsumergroup");
@@ -727,7 +728,7 @@ public class AclControllerServiceTest {
     aclReq.setRequestingteam(1);
     aclReq.setReq_no(112);
     aclReq.setEnvironment("1");
-    aclReq.setRequestor("kwuserb");
+    aclReq.setUsername("kwuserb");
     aclReq.setRequestStatus(RequestStatus.CREATED.value);
     aclReq.setAcl_ip("1.2.3.4");
     aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
@@ -748,7 +749,7 @@ public class AclControllerServiceTest {
       aclReq.setAcl_ip("1.2.3.4<ACL>3.2.4.5<ACL>11.22.33.44");
       aclReq.setReq_no(100 + i);
       aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
-      aclReq.setRequestor("testuser");
+      aclReq.setUsername("testuser");
       listReqs.add(aclReq);
     }
     return listReqs;

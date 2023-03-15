@@ -28,7 +28,6 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
-import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -139,7 +138,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 
-    List<SchemaRequestsResponseModel> listReqs =
+    List<SchemaRequestModel> listReqs =
         schemaRegstryControllerService.getSchemaRequests(
             "1", "", "all", true, null, null, null, false);
     assertThat(listReqs).hasSize(2);
@@ -182,7 +181,7 @@ public class SchemaRegistryControllerServiceTest {
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
-    schemaRequest.setRequestor("kwuserb");
+    schemaRequest.setUsername("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
 
@@ -210,7 +209,7 @@ public class SchemaRegistryControllerServiceTest {
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
-    schemaRequest.setRequestor("kwuserb");
+    schemaRequest.setUsername("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
 
@@ -239,7 +238,7 @@ public class SchemaRegistryControllerServiceTest {
 
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
-    schemaRequest.setRequestor("kwuserb");
+    schemaRequest.setUsername("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
 
@@ -270,7 +269,7 @@ public class SchemaRegistryControllerServiceTest {
   public void uploadSchemaSuccess() throws KlawException {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setSchemafull("{}");
-    schemaRequest.setRequestor("kwuserb");
+    schemaRequest.setUsername("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
     Topic topic = createTopic();
@@ -294,7 +293,7 @@ public class SchemaRegistryControllerServiceTest {
   public void uploadSchemaFailure() {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setSchemafull("{}");
-    schemaRequest.setRequestor("kwuserb");
+    schemaRequest.setUsername("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
     Topic topic = createTopic();

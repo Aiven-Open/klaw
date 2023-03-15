@@ -6,7 +6,6 @@ import io.aiven.klaw.model.ConnectorOverview;
 import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
-import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import io.aiven.klaw.service.KafkaConnectControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -49,7 +48,7 @@ public class KafkaConnectController {
       value = "/getConnectorRequestsForApproval",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<KafkaConnectorRequestsResponseModel>> getCreatedConnectorRequests(
+  public ResponseEntity<List<KafkaConnectorRequestModel>> getCreatedConnectorRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
@@ -107,7 +106,7 @@ public class KafkaConnectController {
       value = "/getConnectorRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<KafkaConnectorRequestsResponseModel>> getConnectorRequests(
+  public ResponseEntity<List<KafkaConnectorRequestModel>> getConnectorRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus) {

@@ -1,10 +1,12 @@
-package io.aiven.klaw.model.requests;
+package io.aiven.klaw.model;
 
 import io.aiven.klaw.dao.EnvTag;
+import io.aiven.klaw.model.enums.KafkaClustersType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -14,6 +16,8 @@ import lombok.ToString;
 @Setter
 public class EnvModel implements Serializable {
 
+  private String id;
+
   @NotNull
   @Size(min = 2, max = 10, message = "Please fill in a valid name")
   @Pattern(message = "Invalid environment name !!", regexp = "^[a-zA-Z0-9_.-]{3,}$")
@@ -21,7 +25,7 @@ public class EnvModel implements Serializable {
 
   @NotNull private String type;
 
-  @NotNull private Integer clusterId;
+  private Integer tenantId;
 
   @Pattern(message = "Invalid prefix", regexp = "^$|^[a-zA-Z0-9_.-]{3,}$")
   private String topicprefix;
@@ -29,9 +33,15 @@ public class EnvModel implements Serializable {
   @Pattern(message = "Invalid suffix", regexp = "^$|^[a-zA-Z0-9_.-]{3,}$")
   private String topicsuffix;
 
-  private String otherParams;
+  @NotNull private Integer clusterId;
 
-  private String id;
+  private String tenantName;
+
+  private String clusterName;
+
+  private String envStatus;
+
+  private String otherParams;
 
   private String defaultPartitions;
 
@@ -41,7 +51,14 @@ public class EnvModel implements Serializable {
 
   private String maxReplicationFactor;
 
+  private boolean showDeleteEnv;
+
+  private String totalNoPages;
+  private List<String> allPageNos;
+
   private EnvTag associatedEnv;
 
-  private Integer tenantId;
+  public void setClusterType(KafkaClustersType type) {
+    this.type = type.value;
+  }
 }
