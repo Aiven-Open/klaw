@@ -1,8 +1,10 @@
 import { KlawApiResponse } from "types/utils";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
 
-function transformGetSchemaRequestsForApproverResponse(
-  apiResponse: KlawApiResponse<"getSchemaRequestsForApprover">
+function transformGetSchemaRequests(
+  apiResponse:
+    | KlawApiResponse<"getSchemaRequestsForApprover">
+    | KlawApiResponse<"getSchemaRequests">
 ): SchemaRequestApiResponse {
   if (apiResponse.length === 0) {
     return {
@@ -19,4 +21,4 @@ function transformGetSchemaRequestsForApproverResponse(
   };
 }
 
-export { transformGetSchemaRequestsForApproverResponse };
+export { transformGetSchemaRequests };

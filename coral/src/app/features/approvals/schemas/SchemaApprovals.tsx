@@ -12,11 +12,11 @@ import EnvironmentFilter from "src/app/features/components/table-filters/Environ
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { RequestStatus } from "src/domain/requests/requests-types";
-import { getSchemaRequestsForApprover } from "src/domain/schema-request";
 import {
+  getSchemaRequestsForApprover,
   approveSchemaRequest,
   declineSchemaRequest,
-} from "src/domain/schema-request/schema-request-api";
+} from "src/domain/schema-request";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 function SchemaApprovals() {

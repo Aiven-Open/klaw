@@ -101,6 +101,9 @@ export type paths = {
   "/getSchemaRequestsForApprover": {
     get: operations["getSchemaRequestsForApprover"];
   };
+  "/getSchemaRequests": {
+    get: operations["getSchemaRequests"];
+  };
 };
 
 export type webhooks = Record<string, never>;
@@ -1481,6 +1484,26 @@ export type operations = {
     };
     responses: {
       /** @description successful operation */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["SchemaRequest"])[];
+        };
+      };
+    };
+  };
+  getSchemaRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: components["schemas"]["RequestStatus"];
+        topic?: string;
+        env?: string;
+        isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** @description OK */
       200: {
         content: {
           "application/json": (components["schemas"]["SchemaRequest"])[];

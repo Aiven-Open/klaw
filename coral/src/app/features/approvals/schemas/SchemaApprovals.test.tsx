@@ -8,12 +8,10 @@ import { transformEnvironmentApiResponse } from "src/domain/environment/environm
 import {
   getSchemaRequestsForApprover,
   SchemaRequest,
-} from "src/domain/schema-request";
-import {
   approveSchemaRequest,
   declineSchemaRequest,
-} from "src/domain/schema-request/schema-request-api";
-import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
+} from "src/domain/schema-request";
+import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -104,7 +102,7 @@ const mockedResponseSchemaRequests: SchemaRequest[] = [
 ];
 
 const mockedApiResponseSchemaRequests: SchemaRequestApiResponse =
-  transformGetSchemaRequestsForApproverResponse(mockedResponseSchemaRequests);
+  transformGetSchemaRequests(mockedResponseSchemaRequests);
 
 describe("SchemaApprovals", () => {
   const defaultApiParams = {

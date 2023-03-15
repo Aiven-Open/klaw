@@ -583,7 +583,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/TopicRequest"
-
   /getAuth:
     get:
       operationId: getAuth
@@ -689,6 +688,50 @@ paths:
       responses:
         200:
           description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SchemaRequest"
+  /getSchemaRequests:
+    get:
+      operationId: getSchemaRequests
+      parameters:
+        - name: pageNo
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: currentPage
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ""
+        - name: requestStatus
+          in: query
+          schema:
+            $ref: "#/components/schemas/RequestStatus"
+        - name: topic
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: env
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: isMyRequest
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: OK
           content:
             application/json:
               schema:
