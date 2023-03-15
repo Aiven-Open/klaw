@@ -133,6 +133,7 @@ describe("AclRequests", () => {
 
       expect(mockGetAclRequests).toHaveBeenCalledWith({
         pageNo: "100",
+        topic: "",
       });
     });
 
@@ -146,6 +147,7 @@ describe("AclRequests", () => {
 
       expect(mockGetAclRequests).toHaveBeenCalledWith({
         pageNo: "1",
+        topic: "",
       });
     });
 
@@ -249,6 +251,7 @@ describe("AclRequests", () => {
 
       expect(mockGetAclRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
+        topic: "",
       });
     });
   });
