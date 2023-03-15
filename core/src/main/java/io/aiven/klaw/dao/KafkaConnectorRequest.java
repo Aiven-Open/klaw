@@ -78,8 +78,6 @@ public class KafkaConnectorRequest implements Serializable {
 
   @Transient private String sequence;
 
-  @Transient private String username;
-
   @Transient private String totalNoPages;
 
   @Transient private String currentPage;

@@ -23,11 +23,16 @@ import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
-import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
+import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.EnvModelResponse;
+import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
+import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -302,9 +307,9 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
-  public List<TeamModel> getTeamsModel() {
-    List<TeamModel> allTopicReqs = new ArrayList<>();
-    TeamModel team = new TeamModel();
+  public List<TeamModelResponse> getTeamsModel() {
+    List<TeamModelResponse> allTopicReqs = new ArrayList<>();
+    TeamModelResponse team = new TeamModelResponse();
     team.setTeamname("Seahorses");
     allTopicReqs.add(team);
     return allTopicReqs;
@@ -321,9 +326,9 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
-  public List<TopicRequestModel> getTopicRequestsModel() {
-    List<TopicRequestModel> allTopicReqs = new ArrayList<>();
-    TopicRequestModel topicRequest = new TopicRequestModel();
+  public List<TopicRequestsResponseModel> getTopicRequestsModel() {
+    List<TopicRequestsResponseModel> allTopicReqs = new ArrayList<>();
+    TopicRequestsResponseModel topicRequest = new TopicRequestsResponseModel();
     topicRequest.setTeamname("Seahorses");
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
@@ -333,7 +338,7 @@ public class UtilMethods {
     TopicRequest topicRequest = new TopicRequest();
     topicRequest.setTopicid(topicId);
     topicRequest.setTeamId(1001); // INFRATEAM
-    topicRequest.setUsername("kwusera");
+    topicRequest.setRequestor("kwusera");
     topicRequest.setTopicname("testtopic" + topicId);
     topicRequest.setTopicpartitions(2);
     topicRequest.setReplicationfactor("1");
@@ -346,13 +351,11 @@ public class UtilMethods {
 
   public TopicCreateRequestModel getTopicCreateRequestModel(int topicId) {
     TopicCreateRequestModel topicRequest = new TopicCreateRequestModel();
-    topicRequest.setTopicid(topicId);
-    topicRequest.setUsername("kwusera");
+    topicRequest.setRequestor("kwusera");
     topicRequest.setTopicname("testtopic" + topicId);
     topicRequest.setTopicpartitions(2);
     topicRequest.setReplicationfactor("1");
     topicRequest.setEnvironment("1");
-    topicRequest.setRequestStatus(RequestStatus.CREATED);
     topicRequest.setRequestOperationType(RequestOperationType.CREATE);
     topicRequest.setDescription("Test desc");
     topicRequest.setRequestor("kwusera");
@@ -361,8 +364,7 @@ public class UtilMethods {
 
   public TopicUpdateRequestModel getTopicUpdateRequestModel(int topicId) {
     TopicUpdateRequestModel topicRequest = new TopicUpdateRequestModel();
-    topicRequest.setTopicid(topicId);
-    topicRequest.setUsername("kwusera");
+    topicRequest.setRequestor("kwusera");
     topicRequest.setTopicname("testtopic" + topicId);
     topicRequest.setTopicpartitions(2);
     topicRequest.setReplicationfactor("1");
@@ -377,7 +379,7 @@ public class UtilMethods {
     aclRequest.setTeamId(3);
     aclRequest.setEnvironment("1");
     aclRequest.setTopicname(topicName);
-    aclRequest.setUsername("kwusera");
+    aclRequest.setRequestor("kwusera");
     aclRequest.setAclType(AclType.CONSUMER.value);
     aclRequest.setRequestOperationType(RequestOperationType.DELETE.value);
     aclRequest.setConsumergroup("congroup1");
@@ -393,7 +395,7 @@ public class UtilMethods {
     aclRequest.setTeamId(3);
     aclRequest.setEnvironment("1");
     aclRequest.setTopicname(topicName);
-    aclRequest.setUsername("kwusera");
+    aclRequest.setRequestor("kwusera");
     aclRequest.setAclType(AclType.CONSUMER.value);
     aclRequest.setRequestOperationType(RequestOperationType.CREATE.value);
     aclRequest.setConsumergroup("congroup1");
@@ -406,7 +408,22 @@ public class UtilMethods {
     List<SchemaRequestModel> schemaList = new ArrayList<>();
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setEnvironment("1");
-    schemaRequest.setUsername("kwusera");
+    schemaRequest.setRequestor("kwusera");
+    schemaRequest.setSchemafull("schemafdsfsd");
+    schemaRequest.setTeamId(1001);
+    schemaRequest.setRemarks("pls approve");
+    schemaRequest.setTopicname("testtopic");
+    schemaRequest.setRequestOperationType(RequestOperationType.CREATE);
+    schemaList.add(schemaRequest);
+
+    return schemaList;
+  }
+
+  public List<SchemaRequestsResponseModel> getSchemaRequestsResponse() {
+    List<SchemaRequestsResponseModel> schemaList = new ArrayList<>();
+    SchemaRequestsResponseModel schemaRequest = new SchemaRequestsResponseModel();
+    schemaRequest.setEnvironment("1");
+    schemaRequest.setRequestor("kwusera");
     schemaRequest.setSchemafull("schemafdsfsd");
     schemaRequest.setTeamId(1001);
     schemaRequest.setRemarks("pls approve");
@@ -431,16 +448,16 @@ public class UtilMethods {
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setEnvironment("1");
     schemaRequest.setTeamId(3);
-    schemaRequest.setUsername("kwusera");
+    schemaRequest.setRequestor("kwusera");
     schemaRequest.setSchemafull("schema");
     schemaRequest.setTenantId(101);
     schemaList.add(schemaRequest);
     return schemaList;
   }
 
-  public List<AclRequestsModel> getAclRequestsModel() {
-    List<AclRequestsModel> aclRequests = new ArrayList<>();
-    AclRequestsModel aclRequests1 = new AclRequestsModel();
+  public List<AclRequestsResponseModel> getAclRequestsModel() {
+    List<AclRequestsResponseModel> aclRequests = new ArrayList<>();
+    AclRequestsResponseModel aclRequests1 = new AclRequestsResponseModel();
     aclRequests1.setTeamname("Seahorses");
     aclRequests1.setRequestingteam(2);
     aclRequests1.setRequestOperationType(RequestOperationType.CREATE);
@@ -460,23 +477,20 @@ public class UtilMethods {
     return aclRequests;
   }
 
-  public List<AclRequestsModel> getAclRequestsList() {
-    List<AclRequestsModel> aclList = new ArrayList<>();
-
-    List<AclRequestsModel> aclRequests = new ArrayList<>();
-    AclRequestsModel aclRequests1 = new AclRequestsModel();
+  public List<AclRequestsResponseModel> getAclRequestsList() {
+    List<AclRequestsResponseModel> aclRequests = new ArrayList<>();
+    AclRequestsResponseModel aclRequests1 = new AclRequestsResponseModel();
     aclRequests1.setTeamname("Seahorses");
     aclRequests1.setRequestingteam(3);
     aclRequests.add(aclRequests1);
     return aclRequests;
   }
 
-  public List<TopicRequestModel> getTopicRequestsList() {
-    List<TopicRequestModel> allTopicReqs = new ArrayList<>();
-    TopicRequestModel topicRequest = new TopicRequestModel();
+  public List<TopicRequestsResponseModel> getTopicRequestsList() {
+    List<TopicRequestsResponseModel> allTopicReqs = new ArrayList<>();
+    TopicRequestsResponseModel topicRequest = new TopicRequestsResponseModel();
     topicRequest.setTeamname("Seahorses");
     allTopicReqs.add(topicRequest);
-    //        topicReqs.add(allTopicReqs);
 
     return allTopicReqs;
   }
@@ -514,9 +528,9 @@ public class UtilMethods {
     return envList;
   }
 
-  public List<EnvModel> getEnvList() {
-    List<EnvModel> envList = new ArrayList<>();
-    EnvModel env = new EnvModel();
+  public List<EnvModelResponse> getEnvList() {
+    List<EnvModelResponse> envList = new ArrayList<>();
+    EnvModelResponse env = new EnvModelResponse();
     env.setId("1");
     env.setName("DEV");
     env.setClusterType(KafkaClustersType.KAFKA);
@@ -525,27 +539,14 @@ public class UtilMethods {
     return envList;
   }
 
-  public List<EnvModel> getDEVSchemaEnvList() {
+  public List<EnvModel> getEnvListToAdd() {
     List<EnvModel> envList = new ArrayList<>();
     EnvModel env = new EnvModel();
     env.setId("1");
     env.setName("DEV");
-    env.setClusterType(KafkaClustersType.SCHEMA_REGISTRY);
+    env.setType(KafkaClustersType.KAFKA.value);
     env.setClusterId(101);
     envList.add(env);
-
-    return envList;
-  }
-
-  public List<EnvModel> getTSTSchemaEnvList() {
-    List<EnvModel> envList = new ArrayList<>();
-    EnvModel env = new EnvModel();
-    env.setId("4");
-    env.setName("TST");
-    env.setClusterType(KafkaClustersType.SCHEMA_REGISTRY);
-    env.setClusterId(101);
-    envList.add(env);
-
     return envList;
   }
 
@@ -567,10 +568,10 @@ public class UtilMethods {
 
   public AclRequestsModel getAclRequestModel(String topic) {
     AclRequestsModel aclRequest = new AclRequestsModel();
-    aclRequest.setTeamId(3);
+    aclRequest.setTeamId(1001);
     aclRequest.setEnvironment("1");
     aclRequest.setTopicname(topic);
-    aclRequest.setUsername("kwusera");
+    aclRequest.setRequestor("kwusera");
     aclRequest.setAclType(AclType.CONSUMER);
     aclRequest.setConsumergroup("mygrp1");
     ArrayList<String> ipList = new ArrayList<>();
@@ -579,8 +580,8 @@ public class UtilMethods {
     aclRequest.setAcl_ssl(null);
     aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
     aclRequest.setRequestingteam(1);
-    aclRequest.setTeamname("INFRATEAM");
     aclRequest.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+    aclRequest.setRequestOperationType(RequestOperationType.CREATE);
 
     return aclRequest;
   }

@@ -395,6 +395,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         return;
                 }
                 $scope.addAcl.team = $scope.topicteamname;
+                $scope.addAcl.teamId = output.teamId;
             }).error(
                 function(error)
                 {
@@ -527,7 +528,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
              serviceInput['environment'] = $scope.addAcl.envName;
              serviceInput['topicname'] = $scope.addAcl.topicname;
              serviceInput['aclType'] = $scope.addAcl.topicreqtype.value;
-             serviceInput['teamname'] = $scope.addAcl.team;
+             serviceInput['teamId'] = $scope.addAcl.teamId;
              serviceInput['appname'] = "App";//$scope.addAcl.app;
              serviceInput['remarks'] = $scope.addAcl.remarks;
              serviceInput['acl_ip'] = $scope.acl_ipaddress;
@@ -536,6 +537,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
              serviceInput['aclPatternType'] = aclpatterntypetype;
              serviceInput['transactionalId'] = $scope.addAcl.transactionalId;
              serviceInput['aclIpPrincipleType'] = $scope.selectedAclType;
+             serviceInput['requestOperationType'] = 'CREATE';
 
             $http({
                 method: "POST",

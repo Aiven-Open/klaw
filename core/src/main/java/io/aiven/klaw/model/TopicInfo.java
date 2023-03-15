@@ -1,25 +1,42 @@
 package io.aiven.klaw.model;
 
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Data;
 
 @Data
 public class TopicInfo {
-  private Integer topicid;
-  private String sequence;
-  private String totalNoPages;
-  private String currentPage;
-  private List<String> allPageNos;
-  private String topicName;
-  private Integer noOfPartitions;
-  private String description;
+  @NotNull private Integer topicid;
+
+  @NotNull private String sequence;
+
+  @NotNull private String topicName;
+
+  @NotNull private Integer noOfPartitions;
+
+  @NotNull private String description;
+
+  @NotNull private String noOfReplcias;
+
+  @NotNull private String teamname;
+
+  @NotNull private String cluster;
+
+  @NotNull private List<String> environmentsList;
+
+  @NotNull private boolean showEditTopic;
+
+  @NotNull private boolean showDeleteTopic;
+
+  @NotNull private boolean topicDeletable;
+
+  @NotNull private String totalNoPages;
+
+  @NotNull private String currentPage;
+
+  @NotNull private List<String> allPageNos;
+
   private String documentation;
-  private String noOfReplcias;
-  private String teamname;
-  private String cluster;
+
   private String clusterId;
-  private List<String> environmentsList;
-  private boolean showEditTopic;
-  private boolean showDeleteTopic;
-  private boolean topicDeletable;
 }

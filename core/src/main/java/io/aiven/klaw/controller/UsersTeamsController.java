@@ -4,8 +4,9 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.RegisterSaasUserInfoModel;
 import io.aiven.klaw.model.RegisterUserInfoModel;
-import io.aiven.klaw.model.TeamModel;
 import io.aiven.klaw.model.UserInfoModel;
+import io.aiven.klaw.model.requests.TeamModel;
+import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.service.SaasService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import jakarta.validation.Valid;
@@ -35,7 +36,7 @@ public class UsersTeamsController {
       value = "/getAllTeamsSU",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<TeamModel>> getAllTeamsSU() {
+  public ResponseEntity<List<TeamModelResponse>> getAllTeamsSU() {
     return new ResponseEntity<>(usersTeamsControllerService.getAllTeamsSU(), HttpStatus.OK);
   }
 
@@ -43,7 +44,7 @@ public class UsersTeamsController {
       value = "/getAllTeamsSUFromRegisterUsers",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<TeamModel>> getAllTeamsSUFromRegisterUsers() {
+  public ResponseEntity<List<TeamModelResponse>> getAllTeamsSUFromRegisterUsers() {
     return new ResponseEntity<>(
         usersTeamsControllerService.getAllTeamsSUFromRegisterUsers(), HttpStatus.OK);
   }
@@ -162,7 +163,7 @@ public class UsersTeamsController {
       value = "/getTeamDetails",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<TeamModel> getTeamDetails(
+  public ResponseEntity<TeamModelResponse> getTeamDetails(
       @RequestParam(value = "teamId") Integer teamId,
       @RequestParam(value = "tenantName") String tenantName) {
     return new ResponseEntity<>(
@@ -218,7 +219,7 @@ public class UsersTeamsController {
       value = "/user/{userId}/switchTeamsList",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<TeamModel>> getSwitchTeams(
+  public ResponseEntity<List<TeamModelResponse>> getSwitchTeams(
       @PathVariable(value = "userId") String userId) {
     return new ResponseEntity<>(usersTeamsControllerService.getSwitchTeams(userId), HttpStatus.OK);
   }

@@ -60,8 +60,6 @@ public class CreateBulkTests {
       topicRequest.setTopicpartitions(1);
       topicRequest.setReplicationfactor("1");
       topicRequest.setRequestor("murali");
-      topicRequest.setUsername("murali");
-      topicRequest.setTeamname("Octopus");
 
       try {
         topicControllerService.createTopicsCreateRequest(topicRequest);

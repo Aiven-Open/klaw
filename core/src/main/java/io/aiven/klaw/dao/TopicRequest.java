@@ -91,8 +91,6 @@ public class TopicRequest implements Serializable {
 
   @Transient private String history;
 
-  @Transient private String username;
-
   @Transient private String totalNoPages;
 
   @Transient private String currentPage;
