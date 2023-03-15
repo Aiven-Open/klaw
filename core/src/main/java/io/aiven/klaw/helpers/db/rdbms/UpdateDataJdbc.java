@@ -135,12 +135,12 @@ public class UpdateDataJdbc {
   }
 
   public TopicRequest updateTopicRequest(TopicRequest topicRequest) {
-    log.debug("updateTopicRequestStatus {}", topicRequest.getTopicname());
+    log.debug("updateTopicRequest {}", topicRequest.getTopicname());
     return topicRequestsRepo.save(topicRequest);
   }
 
-  public KafkaConnectorRequest updateTopicRequest(KafkaConnectorRequest kcRequest) {
-    log.debug("updateTopicRequestStatus {}", kcRequest.getConnectorName());
+  public KafkaConnectorRequest updateConnectorRequest(KafkaConnectorRequest kcRequest) {
+    log.debug("updateKafkaConnectorRequest {}", kcRequest.getConnectorName());
     return kafkaConnectorRequestsRepo.save(kcRequest);
   }
 

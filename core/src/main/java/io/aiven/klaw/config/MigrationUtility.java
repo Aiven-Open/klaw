@@ -40,7 +40,7 @@ public class MigrationUtility {
 
     // Find the latest version in DB
     String latestDataVersion = getLatestDataVersion();
-    if (isVersionGreaterThenOrEqualToCurrentVersion(latestDataVersion, currentKlawVersion)) {
+    if (!isVersionGreaterThenOrEqualToCurrentVersion(latestDataVersion, currentKlawVersion)) {
       log.info(
           "Current Data Version {} is greater then or equal to the Klaw version {}, no action needed.",
           latestDataVersion,
@@ -127,8 +127,8 @@ public class MigrationUtility {
       for (Method method : runner.getDeclaredMethods()) {
         // Find the correct method to invoke to execute the migration instructions.
         if (method.isAnnotationPresent(MigrationRunner.class)) {
-          boolean status = (boolean) method.invoke(runner);
-
+          Object statusObj =  method.invoke(runner);
+          Boolean status = (Boolean) statusObj;
           // If not completed successfully do not continue
           if (!status) {
             throw new KlawDataMigrationException(
@@ -157,10 +157,10 @@ public class MigrationUtility {
     // currently klaw supports a 3 part version number.
     for (int i = 0; i < SUPPORTED_KLAW_VERSION_NUMBER_SYSTEM; i++) {
       if (Integer.parseInt(currentVersionParts[i]) < Integer.parseInt(compareVersionParts[i])) {
-        return false;
+        return true;
       }
     }
 
-    return true;
+    return false;
   }
 }

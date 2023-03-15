@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,6 +24,13 @@ public class MigrateData2x2x0 {
 
   @Autowired private UpdateDataJdbc updateDataJdbc;
 
+  public MigrateData2x2x0() {}
+
+  public MigrateData2x2x0(SelectDataJdbc selectDataJdbc, UpdateDataJdbc updateDataJdbc) {
+    this.selectDataJdbc = selectDataJdbc;
+    this.updateDataJdbc = updateDataJdbc;
+  }
+
   @MigrationRunner()
   public boolean migrate() {
     List<UserInfo> allUserInfo = selectDataJdbc.selectAllUsersAllTenants();
@@ -31,9 +39,10 @@ public class MigrateData2x2x0 {
 
     for (int tenantId : tenantIds) {
       List<Team> teams = selectDataJdbc.selectAllTeams(tenantId);
-      List<Integer> t = teams.stream().map(team -> team.getTeamId()).collect(Collectors.toList());
-      migrateTopics(t, tenantId);
-      migrateConnectors(t, tenantId);
+      List<Integer> teamIds =
+          teams.stream().map(team -> team.getTeamId()).collect(Collectors.toList());
+      migrateTopics(teamIds, tenantId);
+      migrateConnectors(teamIds, tenantId);
     }
 
     return true;
@@ -55,13 +64,14 @@ public class MigrateData2x2x0 {
     for (KafkaConnectorRequest req : kcRequests) {
 
       if (req.getApprovingTeamId() == null
+          && NumberUtils.isCreatable(req.getDescription())
           && teams.contains(Integer.valueOf(req.getDescription()))) {
         log.info(
             "Connector Request : {} of Type {} migrated to latest Database Schema.",
             req.getConnectorId(),
             req.getRequestOperationType());
         req.setApprovingTeamId(req.getDescription());
-        updateDataJdbc.updateTopicRequest(req);
+        updateDataJdbc.updateConnectorRequest(req);
         numberOfRequestsUpdated++;
       }
     }
@@ -86,6 +96,7 @@ public class MigrateData2x2x0 {
     numberOfRequests = topicRequests.size();
     for (TopicRequest req : topicRequests) {
       if (req.getApprovingTeamId() == null
+          && NumberUtils.isCreatable(req.getDescription())
           && teams.contains(Integer.valueOf(req.getDescription()))) {
         log.info(
             "Topic Request : {} of Type {} migrated to latest Database Schema.",
