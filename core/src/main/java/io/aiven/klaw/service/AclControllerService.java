@@ -252,16 +252,13 @@ public class AclControllerService {
         if (aclRequests.getAcl_ip() != null) {
           String[] aclListIp = aclRequests.getAcl_ip().split(SEPARATOR_ACL);
           aclRequestsModel.setAcl_ip(new ArrayList<>(Arrays.asList(aclListIp)));
-        } else {
-          aclRequestsModel.setAcl_ip(new ArrayList<>());
         }
 
         if (aclRequests.getAcl_ssl() != null) {
           String[] aclListSsl = aclRequests.getAcl_ssl().split(SEPARATOR_ACL);
           aclRequestsModel.setAcl_ssl(new ArrayList<>(Arrays.asList(aclListSsl)));
-        } else {
-          aclRequestsModel.setAcl_ssl(new ArrayList<>());
         }
+
         aclRequestsModel.setTeamname(
             manageDatabase.getTeamNameFromTeamId(tenantId, aclRequests.getTeamId()));
         aclRequestsModel.setRequestingTeamName(
