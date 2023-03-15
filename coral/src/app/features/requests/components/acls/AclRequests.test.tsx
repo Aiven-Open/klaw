@@ -1,6 +1,7 @@
 import {
   cleanup,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -252,6 +253,44 @@ describe("AclRequests", () => {
       expect(mockGetAclRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
         topic: "",
+      });
+    });
+  });
+
+  describe("user can filter topics based on the topic name", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?topic=abc",
+      });
+      expect(getAclRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        topic: "abc",
+      });
+    });
+
+    it("applies the topic filter by typing into to the search input", async () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+      const search = screen.getByRole("search");
+      expect(search).toBeVisible();
+      expect(search).toHaveAccessibleDescription(
+        'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+      );
+      await userEvent.type(search, "abc");
+      await waitFor(() => {
+        expect(getAclRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          topic: "abc",
+        });
       });
     });
   });
