@@ -4895,6 +4895,9 @@
           "requestor" : {
             "type" : "string"
           },
+          "username" : {
+            "type" : "string"
+          },
           "topicname" : {
             "type" : "string",
             "pattern" : "^[a-zA-Z0-9._-]{3,}$"
@@ -4915,7 +4918,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "environment", "requestOperationType", "schemafull", "topicname" ]
+        "required" : [ "environment", "schemafull", "topicname" ]
       },
       "TopicConfigEntry" : {
         "properties" : {
@@ -4943,6 +4946,9 @@
             "type" : "string"
           },
           "requestor" : {
+            "type" : "string"
+          },
+          "username" : {
             "type" : "string"
           },
           "topicname" : {
@@ -4981,7 +4987,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
+        "required" : [ "description", "environment", "replicationfactor", "topicname", "topicpartitions" ]
       },
       "TeamModel" : {
         "properties" : {
@@ -5495,6 +5501,9 @@
           "requestor" : {
             "type" : "string"
           },
+          "username" : {
+            "type" : "string"
+          },
           "topicname" : {
             "type" : "string",
             "pattern" : "^[a-zA-Z0-9._-]{3,}$"
@@ -5531,7 +5540,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
+        "required" : [ "description", "environment", "replicationfactor", "topicname", "topicpartitions" ]
       },
       "KafkaConnectorRequestModel" : {
         "properties" : {
@@ -5549,6 +5558,9 @@
             "type" : "string"
           },
           "requestor" : {
+            "type" : "string"
+          },
+          "username" : {
             "type" : "string"
           },
           "connectorName" : {
@@ -5570,7 +5582,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorConfig", "connectorName", "description", "environment", "requestOperationType" ]
+        "required" : [ "connectorConfig", "connectorName", "description", "environment" ]
       },
       "AclRequestsModel" : {
         "properties" : {
@@ -5588,6 +5600,9 @@
             "type" : "string"
           },
           "requestor" : {
+            "type" : "string"
+          },
+          "username" : {
             "type" : "string"
           },
           "topicname" : {
@@ -5621,6 +5636,9 @@
             "type" : "integer",
             "format" : "int32"
           },
+          "teamname" : {
+            "type" : "string"
+          },
           "aclType" : {
             "type" : "string",
             "enum" : [ "PRODUCER", "CONSUMER" ]
@@ -5640,7 +5658,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "environment", "requestOperationType", "teamId", "topicname" ]
+        "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "environment", "topicname" ]
       },
       "KwTenantModel" : {
         "properties" : {
@@ -5981,6 +5999,9 @@
             "type" : "string"
           },
           "otherParams" : {
+            "type" : "string"
+          },
+          "username" : {
             "type" : "string"
           },
           "topicname" : {
@@ -6377,6 +6398,9 @@
           "otherParams" : {
             "type" : "string"
           },
+          "username" : {
+            "type" : "string"
+          },
           "topicname" : {
             "type" : "string"
           },
@@ -6515,6 +6539,9 @@
             "type" : "string"
           },
           "otherParams" : {
+            "type" : "string"
+          },
+          "username" : {
             "type" : "string"
           },
           "connectorName" : {
@@ -6802,6 +6829,9 @@
             "type" : "string"
           },
           "otherParams" : {
+            "type" : "string"
+          },
+          "username" : {
             "type" : "string"
           },
           "topicname" : {

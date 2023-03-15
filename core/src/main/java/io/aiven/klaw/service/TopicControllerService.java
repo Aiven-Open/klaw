@@ -508,6 +508,7 @@ public class TopicControllerService {
     for (TopicRequest topicReq : topicsList) {
       topicRequestModel = new TopicRequestsResponseModel();
       copyProperties(topicReq, topicRequestModel);
+      topicRequestModel.setUsername(topicReq.getRequestor()); // OPENAPI Remove
       topicRequestModel.setRequestStatus(RequestStatus.of(topicReq.getRequestStatus()));
       topicRequestModel.setRequestOperationType(
           RequestOperationType.of(topicReq.getRequestOperationType()));
