@@ -41,12 +41,12 @@ type GetSchemaRequestsForApproverQueryParams = ResolveIntersectionTypes<
   Required<
     Pick<
       KlawApiRequestQueryParameters<"getSchemaRequestsForApprover">,
-      "pageNo" | "requestStatus"
+      "requestStatus"
     >
   > &
     Pick<
       KlawApiRequestQueryParameters<"getSchemaRequestsForApprover">,
-      "env" | "topic"
+      "pageNo" | "env" | "topic"
     >
 >;
 
@@ -70,11 +70,10 @@ const getSchemaRequestsForApprover = (
 };
 
 type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
-  Required<Pick<KlawApiRequestQueryParameters<"getSchemaRequests">, "pageNo">> &
-    Pick<
-      KlawApiRequestQueryParameters<"getSchemaRequests">,
-      "requestStatus" | "topic" | "env" | "isMyRequest"
-    >
+  Pick<
+    KlawApiRequestQueryParameters<"getSchemaRequests">,
+    "pageNo" | "requestStatus" | "topic" | "env" | "isMyRequest"
+  >
 >;
 
 const getSchemaRequests = (
