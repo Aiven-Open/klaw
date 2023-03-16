@@ -20,7 +20,7 @@ describe("MyRequestFilter", () => {
     await waitFor(() => {
       expect(
         screen.getByRole("checkbox", {
-          name: "Show My Requests Only show my requests",
+          name: "Show only my requests",
         })
       ).toBeChecked();
     });
@@ -37,7 +37,7 @@ describe("MyRequestFilter", () => {
     await waitFor(() => {
       expect(
         screen.getByRole("checkbox", {
-          name: "Show My Requests Only show my requests",
+          name: "Show only my requests",
         })
       ).not.toBeChecked();
     });
@@ -50,7 +50,7 @@ describe("MyRequestFilter", () => {
     });
     await waitFor(() => expect(window.location.search).toEqual(""));
     const showMyRequests = screen.getByRole("checkbox", {
-      name: "Show My Requests Only show my requests",
+      name: "Show only my requests",
     });
     await userEvent.click(showMyRequests);
     await waitFor(() => expect(showMyRequests).toBeChecked());
@@ -68,7 +68,7 @@ describe("MyRequestFilter", () => {
       expect(window.location.search).toEqual("?isMyRequest=true")
     );
     const showMyRequests = screen.getByRole("checkbox", {
-      name: "Show My Requests Only show my requests",
+      name: "Show only my requests",
     });
     await userEvent.click(showMyRequests);
     await waitFor(() => expect(showMyRequests).not.toBeChecked());

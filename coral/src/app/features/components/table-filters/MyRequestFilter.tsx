@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 function MyRequestFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const isMyRequest = searchParams.get("isMyRequest") === "true" ? true : false;
+  const isMyRequest = searchParams.get("isMyRequest") === "true";
 
   const handleChangeIsMyRequest = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -18,12 +18,8 @@ function MyRequestFilter() {
   };
 
   return (
-    <Switch
-      checked={isMyRequest}
-      onChange={handleChangeIsMyRequest}
-      caption="Only show my requests"
-    >
-      Show My Requests
+    <Switch checked={isMyRequest} onChange={handleChangeIsMyRequest}>
+      Show only my requests
     </Switch>
   );
 }

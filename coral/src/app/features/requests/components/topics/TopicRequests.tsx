@@ -9,8 +9,9 @@ import { MyRequestFilter } from "src/app/features/components/table-filters/MyReq
 
 function TopicRequests() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const currentTopic = searchParams.get("topic") ?? "";
-  const isMyRequest = searchParams.get("isMyRequest") === "true" ? true : false;
+  const currentTopic = searchParams.get("topic") ?? undefined;
+  const isMyRequest =
+    searchParams.get("isMyRequest") === "true" ? true : undefined;
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
