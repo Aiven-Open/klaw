@@ -25,7 +25,6 @@ function TopicRequests() {
         <TopicRequestsTable
           requests={data?.entries ?? []}
           onDetails={() => null}
-          onEdit={() => null}
           onDelete={() => null}
         />
       }

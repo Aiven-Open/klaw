@@ -1,6 +1,5 @@
 import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
 import infoIcon from "@aivenio/aquarium/dist/src/icons/infoSign";
-import editIcon from "@aivenio/aquarium/dist/src/icons/edit";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import { TopicRequest } from "src/domain/topic/topic-types";
 import {
@@ -22,20 +21,17 @@ interface TopicRequestTableRow {
   requestor: TopicRequest["requestor"];
   requesttimestring: TopicRequest["requesttimestring"];
   deletable: TopicRequest["deletable"];
-  editable: TopicRequest["editable"];
 }
 
 type TopicRequestsTableProps = {
   requests: TopicRequest[];
   onDetails: (topicId: string) => void;
-  onEdit: (topicId: string) => void;
   onDelete: (topicId: string) => void;
 };
 
 function TopicRequestsTable({
   requests,
   onDetails,
-  onEdit,
   onDelete,
 }: TopicRequestsTableProps) {
   const columns: Array<DataTableColumn<TopicRequestTableRow>> = [
@@ -94,18 +90,6 @@ function TopicRequestsTable({
     },
     {
       type: "action",
-      headerName: "Edit",
-      headerInvisible: true,
-      width: 30,
-      action: ({ id, editable }) => ({
-        text: "Edit",
-        icon: editIcon,
-        onClick: () => onEdit(String(id)),
-        disabled: !editable,
-      }),
-    },
-    {
-      type: "action",
       headerName: "Delete",
       headerInvisible: true,
       width: 30,
@@ -129,7 +113,6 @@ function TopicRequestsTable({
       requestor: request.requestor,
       requesttimestring: request.requesttimestring,
       deletable: request.deletable,
-      editable: request.editable,
     };
   });
 
