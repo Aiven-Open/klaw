@@ -42,7 +42,7 @@ const useExtendedEnvironments = () => {
         return {
           ...environment,
           topicNames,
-          isAivenCluster: clusterInfo.aivenCluster === "true",
+          isAivenCluster: clusterInfo.aivenCluster,
         };
       });
 

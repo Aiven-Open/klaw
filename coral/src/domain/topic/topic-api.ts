@@ -17,7 +17,6 @@ import {
   TopicRequestApiResponse,
 } from "src/domain/topic/topic-types";
 import api from "src/services/api";
-import { KlawApiModel } from "types/utils";
 import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
@@ -86,7 +85,7 @@ const getTopicTeam = async ({
 }: GetTopicTeamArgs) => {
   const params = { topicName, patternType };
 
-  return api.get<KlawApiModel<"TopicTeamResponse">>(
+  return api.get<KlawApiResponse<"getTopicTeam">>(
     `/getTopicTeam?${new URLSearchParams(params)}`
   );
 };

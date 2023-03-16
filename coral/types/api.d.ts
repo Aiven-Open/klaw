@@ -247,7 +247,6 @@ export type paths = {
     get: operations["getTopicsCountPerEnv"];
   };
   "/getTopicTeam": {
-    /** Get team, teamId of a topic */
     get: operations["getTopicTeam"];
   };
   "/getTopicRequests": {
@@ -620,7 +619,7 @@ export type components = {
       /** Format: int32 */
       noOfPartitions: number;
       description: string;
-      noOfReplcias: string;
+      noOfReplicas: string;
       teamname: string;
       cluster: string;
       environmentsList: (string)[];
@@ -1098,8 +1097,62 @@ export type components = {
       approvedTime?: string;
       remarks?: string;
     };
+    ClusterInfo: {
+      aivenCluster: boolean;
+    };
     JmxOverview: {
       brokerTopMetricsOverview?: components["schemas"]["ChartsJsOverview"];
+    };
+    AuthenticationInfo: {
+      contextPath: string;
+      teamsize: string;
+      schema_clusters_count: string;
+      kafka_clusters_count: string;
+      kafkaconnect_clusters_count: string;
+      canSwitchTeams: string;
+      broadcastText: string;
+      saasEnabled: string;
+      tenantActiveStatus: string;
+      username: string;
+      authenticationType: string;
+      teamname: string;
+      teamId: string;
+      tenantName: string;
+      userrole: string;
+      companyinfo: string;
+      klawversion: string;
+      notifications: string;
+      notificationsAcls: string;
+      notificationsSchemas: string;
+      notificationsUsers: string;
+      notificationsConnectors: string;
+      canShutdownKw: string;
+      canUpdatePermissions: string;
+      addEditRoles: string;
+      viewTopics: string;
+      requestItems: string;
+      viewKafkaConnect: string;
+      syncBackTopics: string;
+      syncBackAcls: string;
+      updateServerConfig: string;
+      showServerConfigEnvProperties: string;
+      addUser: string;
+      addTeams: string;
+      syncTopicsAcls: string;
+      syncConnectors: string;
+      approveAtleastOneRequest: string;
+      approveDeclineTopics: string;
+      approveDeclineSubscriptions: string;
+      approveDeclineSchemas: string;
+      approveDeclineConnectors: string;
+      pendingApprovalsRedirectionPage: string;
+      showAddDeleteTenants: string;
+      addDeleteEditClusters: string;
+      addDeleteEditEnvs: string;
+      coralEnabled: string;
+      adAuthRoleEnabled: string;
+      supportlink: string;
+      myteamtopics: string;
     };
     ServerConfigProperties: {
       id?: string;
@@ -2423,7 +2476,6 @@ export type operations = {
       };
     };
   };
-  /** Get team, teamId of a topic */
   getTopicTeam: {
     parameters: {
       query: {
@@ -2432,8 +2484,8 @@ export type operations = {
       };
     };
     responses: {
-      /** @description default response */
-      default: {
+      /** @description OK */
+      200: {
         content: {
           "application/json": components["schemas"]["TopicTeamResponse"];
         };
@@ -3167,9 +3219,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["ClusterInfo"];
         };
       };
     };
@@ -3216,9 +3266,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["AuthenticationInfo"];
         };
       };
     };
