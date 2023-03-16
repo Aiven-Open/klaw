@@ -13,6 +13,7 @@ const testRequest: SchemaRequest = {
   appname: "App",
   schemafull: "",
   username: "jlpicard",
+  requestor: "jlpicard",
   requesttime: "1987-09-28T13:37:00.001+00:00",
   requesttimestring: "28-Sep-1987 13:37:00",
   requestStatus: "CREATED",
@@ -77,7 +78,7 @@ describe("SchemaRequestDetails", () => {
       const definition = findDefinition(term);
 
       expect(term).toBeVisible();
-      expect(definition).toHaveTextContent(testRequest.schemaversion);
+      expect(definition).toHaveTextContent(testRequest.schemaversion as string);
     });
 
     it("shows a preview of the schema", () => {
@@ -101,7 +102,7 @@ describe("SchemaRequestDetails", () => {
       const definition = findDefinition(term);
 
       expect(term).toBeVisible();
-      expect(definition).toHaveTextContent(testRequest.username);
+      expect(definition).toHaveTextContent(testRequest.requestor);
     });
 
     it("shows the time the schema request was made", () => {

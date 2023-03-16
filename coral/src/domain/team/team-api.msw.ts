@@ -10,7 +10,7 @@ function mockGetTeams({
   mswInstance: MswInstance;
   response: {
     status?: number;
-    data: KlawApiResponse<"teamNamesGet"> | { message: string };
+    data: KlawApiResponse<"getAllTeamsSUOnly"> | { message: string };
   };
 }) {
   const url = `${getHTTPBaseAPIUrl()}/getAllTeamsSUOnly`;

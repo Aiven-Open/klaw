@@ -6,12 +6,12 @@ import {
   createMockTopicApiResponse,
 } from "src/domain/topic/topic-test-helper";
 import { getHTTPBaseAPIUrl } from "src/config";
-import { KlawApiResponse } from "types/utils";
+import { KlawApiResponse, KlawApiModel } from "types/utils";
 import { TopicTeam, TopicNames } from "src/domain/topic";
 
 type MockedResponse = {
   status?: number;
-  data: KlawApiResponse<"topicsGet"> | { message: string };
+  data: KlawApiResponse<"getTopics"> | { message: string };
 };
 
 type MockTopicGetRequestArgs =
@@ -53,7 +53,7 @@ function mockgetTopicAdvancedConfigOptions({
   mswInstance: MswInstance;
   response: {
     status?: number;
-    data: KlawApiResponse<"topicAdvancedConfigGet"> | { message: string };
+    data: KlawApiResponse<"getAdvancedTopicConfigs"> | { message: string };
   };
 }) {
   const url = `${getHTTPBaseAPIUrl()}/getAdvancedTopicConfigs`;
@@ -71,7 +71,7 @@ function mockRequestTopic({
   mswInstance: MswInstance;
   response: {
     status?: number;
-    data: KlawApiResponse<"topicCreate"> | { message: string };
+    data: KlawApiResponse<"createTopicsCreateRequest"> | { message: string };
   };
 }) {
   const url = `${getHTTPBaseAPIUrl()}/createTopics`;
@@ -113,12 +113,12 @@ const defaultgetTopicAdvancedConfigOptionsResponse = {
   UNCLEAN_LEADER_ELECTION_ENABLE: "unclean.leader.election.enable",
 };
 
-const mockedResponseSinglePage: KlawApiResponse<"topicsGet"> =
+const mockedResponseSinglePage: KlawApiResponse<"getTopics"> =
   createMockTopicApiResponse({
     entries: 10,
   });
 
-const mockedResponseMultiplePage: KlawApiResponse<"topicsGet"> =
+const mockedResponseMultiplePage: KlawApiResponse<"getTopics"> =
   createMockTopicApiResponse({
     entries: 2,
     totalPages: 4,
@@ -129,7 +129,7 @@ const mockedResponseMultiplePageTransformed = transformTopicApiResponse(
   mockedResponseMultiplePage
 );
 
-const mockedResponseTopicEnv: KlawApiResponse<"topicsGet"> = [
+const mockedResponseTopicEnv: KlawApiResponse<"getTopics"> = [
   [
     createMockTopic({
       topicName: "Topic 1",
@@ -173,13 +173,13 @@ function mockGetTopicNames({
   mswInstance.use(handler);
 }
 
-const mockedResponseTopicNames: KlawApiResponse<"topicsGetOnly"> = [
+const mockedResponseTopicNames: KlawApiResponse<"getTopicsOnly"> = [
   "aivtopic1",
   "topic-two",
   "topic-myteam",
 ];
 
-const mockedResponseTopicNamesMyTeamOnly: KlawApiResponse<"topicsGetOnly"> = [
+const mockedResponseTopicNamesMyTeamOnly: KlawApiResponse<"getTopicsOnly"> = [
   "topic-myteam",
 ];
 
@@ -203,10 +203,12 @@ function mockGetTopicTeam({
   mswInstance.use(handler);
 }
 
-const mockedResponseTopicTeamLiteral: KlawApiResponse<"topicGetTeam"> = {
+const mockedResponseTopicTeamLiteral: KlawApiModel<"TopicTeamResponse"> = {
+  status: true,
   team: "Ospo",
 };
-const mockedResponseTopicTeamPrefixed: KlawApiResponse<"topicGetTeam"> = {
+const mockedResponseTopicTeamPrefixed: KlawApiModel<"TopicTeamResponse"> = {
+  status: true,
   team: "prefixed-Ospo",
 };
 

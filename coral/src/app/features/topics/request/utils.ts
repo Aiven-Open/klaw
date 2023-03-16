@@ -4,7 +4,7 @@ import { Schema } from "src/app/features/topics/request/schemas/topic-request-fo
 
 function createTopicRequestPayload(
   formData: Schema
-): KlawApiRequest<"topicCreate"> {
+): KlawApiRequest<"createTopicsCreateRequest"> {
   return {
     description: formData.description,
     environment: formData.environment.id,

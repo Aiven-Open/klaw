@@ -1,5 +1,6 @@
 import type {
   KlawApiModel,
+  KlawApiResponse,
   Paginated,
   ResolveIntersectionTypes,
 } from "types/utils";
@@ -10,11 +11,9 @@ import {
 
 type TopicApiResponse = ResolveIntersectionTypes<Paginated<Topic[]>>;
 
-type Topic = ResolveIntersectionTypes<KlawApiModel<"TopicInfo">>;
-type TopicNames = ResolveIntersectionTypes<
-  KlawApiModel<"TopicsGetOnlyResponse">
->;
-type TopicTeam = ResolveIntersectionTypes<KlawApiModel<"TopicGetTeamResponse">>;
+type Topic = KlawApiModel<"TopicInfo">;
+type TopicNames = KlawApiResponse<"getTopicsOnly">;
+type TopicTeam = KlawApiModel<"TopicTeamResponse">;
 
 type TopicAdvancedConfigurationOptions = {
   key: string;
@@ -28,7 +27,7 @@ type TopicAdvancedConfigurationOptions = {
 type TopicRequestOperationTypes = RequestOperationType;
 type TopicRequestStatus = RequestStatus;
 
-type TopicRequest = ResolveIntersectionTypes<KlawApiModel<"TopicRequest">>;
+type TopicRequest = KlawApiModel<"TopicRequestsResponseModel">;
 
 type TopicRequestApiResponse = ResolveIntersectionTypes<
   Paginated<TopicRequest[]>

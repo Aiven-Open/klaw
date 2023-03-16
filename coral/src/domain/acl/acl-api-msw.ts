@@ -10,7 +10,7 @@ function mockCreateAclRequest({
   mswInstance: MswInstance;
   response: {
     status?: number;
-    data: KlawApiResponse<"createAclRequest"> | { message: string };
+    data: KlawApiResponse<"createAcl"> | { message: string };
   };
 }) {
   const url = `${getHTTPBaseAPIUrl()}/createAcl`;
