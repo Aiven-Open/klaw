@@ -221,12 +221,14 @@ describe("SchemaApprovals", () => {
       );
     });
 
-    it("shows a table with all schema requests", () => {
+    it("shows a table with all schema requests and a header row", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
-      const rows = within(table).getAllByRole("rowgroup");
+      const rows = within(table).getAllByRole("row");
 
       expect(table).toBeVisible();
-      expect(rows).toHaveLength(mockedApiResponseSchemaRequests.entries.length);
+      expect(rows).toHaveLength(
+        mockedApiResponseSchemaRequests.entries.length + 1
+      );
     });
   });
 
