@@ -1,5 +1,5 @@
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { getSchemaRequests } from "src/domain/schema-request";
 import { SchemaRequests } from "src/app/features/requests/components/schemas/SchemaRequests";
@@ -14,7 +14,11 @@ const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
 >;
 
 describe("SchemaRequest", () => {
-  const defaultApiParams = {};
+  const defaultApiParams = {
+    pageNo: "1",
+    topic: undefined,
+  };
+
   beforeAll(() => {
     mockIntersectionObserver();
   });
@@ -89,6 +93,15 @@ describe("SchemaRequest", () => {
     afterAll(() => {
       cleanup();
       jest.clearAllMocks();
+    });
+
+    it("shows a search input to search for topic names", () => {
+      const search = screen.getByRole("search");
+
+      expect(search).toBeVisible();
+      expect(search).toHaveAccessibleDescription(
+        'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+      );
     });
 
     it("shows a table with all schema requests", () => {
@@ -247,6 +260,42 @@ describe("SchemaRequest", () => {
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
         ...defaultApiParams,
         pageNo: "2",
+      });
+    });
+  });
+
+  describe("handles filtering entries in the table", () => {
+    beforeEach(async () => {
+      mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
+
+      customRender(<SchemaRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("enables user to search for topic", async () => {
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const search = screen.getByRole("search");
+
+      await userEvent.type(search, "myNiceTopic");
+
+      await waitFor(() => {
+        expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
+          ...defaultApiParams,
+          topic: "myNiceTopic",
+        });
       });
     });
   });
