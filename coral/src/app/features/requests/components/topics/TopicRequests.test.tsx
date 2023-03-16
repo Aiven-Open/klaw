@@ -116,11 +116,11 @@ describe("TopicRequests", () => {
       jest.resetAllMocks();
     });
 
-    it("populates the isMyRequest filter from the url search parameters", () => {
+    it("populates the MyRequests filter from the url search parameters", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
-        customRoutePath: "/?isMyRequest=true",
+        customRoutePath: "/?showOnlyMyRequests=true",
       });
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
@@ -129,7 +129,7 @@ describe("TopicRequests", () => {
       });
     });
 
-    it("applies the isMyRequest filter by toggling the switch", async () => {
+    it("applies the MyRequest filter by toggling the switch", async () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
@@ -147,11 +147,11 @@ describe("TopicRequests", () => {
       });
     });
 
-    it("unapplies the isMyRequest filter by untoggling the switch", async () => {
+    it("unapplies the MyRequest filter by untoggling the switch", async () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
-        customRoutePath: "/?isMyRequest=true",
+        customRoutePath: "/?showOnlyMyRequests=true",
       });
       const isMyRequestSwitch = screen.getByRole("checkbox", {
         name: "Show only my requests",

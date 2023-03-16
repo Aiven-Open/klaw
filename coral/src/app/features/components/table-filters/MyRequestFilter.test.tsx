@@ -9,13 +9,13 @@ describe("MyRequestFilter", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it("is checked if isMyRequest is true in the url search parameters", async () => {
-    window.history.replaceState(null, "", "/?isMyRequest=true");
+  it("is checked if showOnlyMyRequests is true in the url search parameters", async () => {
+    window.history.replaceState(null, "", "/?showOnlyMyRequests=true");
     customRender(<MyRequestFilter />, {
       browserRouter: true,
     });
     await waitFor(() =>
-      expect(window.location.search).toEqual("?isMyRequest=true")
+      expect(window.location.search).toEqual("?showOnlyMyRequests=true")
     );
     await waitFor(() => {
       expect(
@@ -26,13 +26,13 @@ describe("MyRequestFilter", () => {
     });
   });
 
-  it("is unchecked if isMyRequest in the url search parameters has other value than true", async () => {
-    window.history.replaceState(null, "", "/?isMyRequest=abc");
+  it("is unchecked if showOnlyMyRequests in the url search parameters has other value than true", async () => {
+    window.history.replaceState(null, "", "/?showOnlyMyRequests=abc");
     customRender(<MyRequestFilter />, {
       browserRouter: true,
     });
     await waitFor(() =>
-      expect(window.location.search).toEqual("?isMyRequest=abc")
+      expect(window.location.search).toEqual("?showOnlyMyRequests=abc")
     );
     await waitFor(() => {
       expect(
@@ -43,7 +43,7 @@ describe("MyRequestFilter", () => {
     });
   });
 
-  it("sets the isMyRequest and page search parameter when user toggles the switch", async () => {
+  it("sets the showOnlyMyRequests and page search parameter when user toggles the switch", async () => {
     window.history.replaceState(null, "", "/");
     customRender(<MyRequestFilter />, {
       browserRouter: true,
@@ -55,17 +55,17 @@ describe("MyRequestFilter", () => {
     await userEvent.click(showMyRequests);
     await waitFor(() => expect(showMyRequests).toBeChecked());
     await waitFor(() =>
-      expect(window.location.search).toEqual("?isMyRequest=true&page=1")
+      expect(window.location.search).toEqual("?showOnlyMyRequests=true&page=1")
     );
   });
 
-  it("unsets the isMyRequest and page search parameter when user untoggles the switch", async () => {
-    window.history.replaceState(null, "", "/?isMyRequest=true");
+  it("unsets the showOnlyMyRequests and page search parameter when user untoggles the switch", async () => {
+    window.history.replaceState(null, "", "/?showOnlyMyRequests=true");
     customRender(<MyRequestFilter />, {
       browserRouter: true,
     });
     await waitFor(() =>
-      expect(window.location.search).toEqual("?isMyRequest=true")
+      expect(window.location.search).toEqual("?showOnlyMyRequests=true")
     );
     const showMyRequests = screen.getByRole("checkbox", {
       name: "Show only my requests",
