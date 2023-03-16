@@ -69,7 +69,7 @@ describe("TopicRequests", () => {
     expect(getTopicRequests).toBeCalledTimes(1);
   });
 
-  describe("user can filter topics based on the topic name", () => {
+  describe("user can filter topic requests based on the topic name", () => {
     afterEach(() => {
       cleanup();
       jest.resetAllMocks();
@@ -84,6 +84,7 @@ describe("TopicRequests", () => {
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         search: "abc",
+        isMyRequest: undefined,
       });
     });
 
@@ -102,6 +103,64 @@ describe("TopicRequests", () => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
           search: "abc",
+          isMyRequest: undefined,
+        });
+      });
+    });
+  });
+
+  describe("user can filter topic requests to only display users own requests", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("populates the isMyRequest filter from the url search parameters", () => {
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?isMyRequest=true",
+      });
+      expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        isMyRequest: true,
+        search: undefined,
+      });
+    });
+
+    it("applies the isMyRequest filter by toggling the switch", async () => {
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+      const isMyRequestSwitch = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+      await userEvent.click(isMyRequestSwitch);
+      await waitFor(() => {
+        expect(getTopicRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          isMyRequest: true,
+          search: undefined,
+        });
+      });
+    });
+
+    it("unapplies the isMyRequest filter by untoggling the switch", async () => {
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?isMyRequest=true",
+      });
+      const isMyRequestSwitch = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+      await userEvent.click(isMyRequestSwitch);
+      await waitFor(() => {
+        expect(getTopicRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          isMyRequest: undefined,
+          search: undefined,
         });
       });
     });
@@ -132,7 +191,8 @@ describe("TopicRequests", () => {
 
       expect(mockGetTopicRequests).toHaveBeenCalledWith({
         pageNo: "100",
-        search: "",
+        search: undefined,
+        isMyRequest: undefined,
       });
     });
 
@@ -146,7 +206,8 @@ describe("TopicRequests", () => {
 
       expect(mockGetTopicRequests).toHaveBeenCalledWith({
         pageNo: "1",
-        search: "",
+        search: undefined,
+        isMyRequest: undefined,
       });
     });
 
@@ -250,7 +311,8 @@ describe("TopicRequests", () => {
 
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
-        search: "",
+        search: undefined,
+        isMyRequest: undefined,
       });
     });
   });

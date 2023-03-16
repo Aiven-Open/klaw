@@ -134,8 +134,8 @@ const getTopicRequests = (
   const filteredParams = omitBy(
     { ...params, isMyRequest: String(Boolean(params.isMyRequest)) },
     (value, property) => {
-      const omitIsMyRequest = property === "isMyRequest" && value === "false";
-      const omitSearch = property === "search" && value === "";
+      const omitIsMyRequest = property === "isMyRequest" && value !== "true"; // Omit if anything else than true
+      const omitSearch = property === "search" && !value;
       const omitEnv =
         property === "env" && (value === "ALL" || value === undefined);
       const omitRequestOperationType =
