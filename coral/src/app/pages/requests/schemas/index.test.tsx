@@ -20,6 +20,7 @@ describe("SchemaRequestPage", () => {
 
     customRender(<SchemaRequestsPage />, {
       queryClient: true,
+      memoryRouter: true,
     });
   });
 
