@@ -233,6 +233,15 @@ describe("SchemaApprovals", () => {
   });
 
   describe("renders pagination dependent on response", () => {
+    beforeEach(() => {
+      mockGetSchemaRequestsForApprover.mockResolvedValue({
+        entries: [],
+        totalPages: 1,
+        currentPage: 1,
+      });
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+    });
+
     afterEach(() => {
       cleanup();
       jest.clearAllMocks();
@@ -335,6 +344,8 @@ describe("SchemaApprovals", () => {
         currentPage: 1,
         entries: [],
       });
+
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
 
       customRender(<SchemaApprovals />, {
         queryClient: true,
