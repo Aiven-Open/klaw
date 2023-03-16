@@ -176,7 +176,7 @@ public class TopicOverviewService extends BaseOverviewService {
       topicInfo.setCluster(getEnvDetails(topic.getEnvironment(), tenantId).getName());
       topicInfo.setClusterId(topic.getEnvironment());
       topicInfo.setNoOfPartitions(topic.getNoOfPartitions());
-      topicInfo.setNoOfReplcias(topic.getNoOfReplcias());
+      topicInfo.setNoOfReplicas(topic.getNoOfReplicas());
       topicInfo.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topic.getTeamId()));
 
       if (syncCluster != null && syncCluster.equals(topic.getEnvironment())) {

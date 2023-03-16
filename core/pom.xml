@@ -278,7 +278,7 @@
                 <configuration>
                     <apiDocsUrl>http://localhost:9097/v3/api-docs</apiDocsUrl>
                     <outputFileName>openapi.yaml</outputFileName>
-                    <outputDir>${project.basedir}/src/main/resources</outputDir>
+                    <outputDir>${project.parent.basedir}</outputDir>
                     <skip>false</skip>
                     <headers>
                         <header1key>header1value</header1key>

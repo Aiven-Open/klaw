@@ -660,7 +660,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
     $scope.getSchemaOfTopic = function(){
 
-        if($scope.schemaDetails != null && $scope.newSchemaVersion === $scope.displayedSchemaVersion)
+        if($scope.schemaDetails && $scope.schemaDetails.length > 0 && $scope.newSchemaVersion === $scope.displayedSchemaVersion)
             return;
 
         $scope.displayedSchemaVersion = null;
@@ -674,7 +674,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 }
             }).success(function(output) {
                 $scope.ShowSpinnerStatusSchemas = false;
-                if(output.schemaDetails != null){
+                if(output.schemaDetails && output.schemaDetails.length > 0 ){
                     $scope.schemaDetails = output.schemaDetails;
                     $scope.schemaExists = output.schemaExists;
                     $scope.schemaPromotionDetails = output.schemaPromotionDetails;
@@ -829,7 +829,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                      'envId' : $scope.topicEventsSelectedEnv, 'consumerGroupId': "notdefined"}
                 }).success(function(output) {
                     $scope.ShowSpinnerStatus = false;
-                    if(output.status != null && output.status == "false"){
+                    if(output.status != null && output.status === "false"){
                         swal({
                              title: "",
                              text: "No events found or Could not be retrieved !!",

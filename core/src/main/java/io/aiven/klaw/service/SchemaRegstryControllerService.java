@@ -96,6 +96,7 @@ public class SchemaRegstryControllerService {
                 .selectEnvDetails(schemaReq.getEnvironment(), tenantId)
                 .getName());
         copyProperties(schemaReq, schemaRequestModel);
+        schemaRequestModel.setUsername(schemaReq.getRequestor()); // OPENAPI Remove
         schemaRequestModel.setRequestStatus(RequestStatus.of(schemaReq.getRequestStatus()));
         schemaRequestModel.setRequestOperationType(
             RequestOperationType.of(schemaReq.getRequestOperationType()));

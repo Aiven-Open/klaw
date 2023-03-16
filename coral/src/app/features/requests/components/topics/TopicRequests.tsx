@@ -21,7 +21,8 @@ function TopicRequests() {
     queryFn: () =>
       getTopicRequests({
         pageNo: String(currentPage),
-        search: currentTopic,
+        // search is not yet implemented as a param to getTopicRequests
+        // search: currentTopic,
         isMyRequest,
       }),
     keepPreviousData: true,

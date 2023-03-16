@@ -15,7 +15,7 @@ type MockApi<T extends keyof operations> = {
 function mockCreateSchemaRequest({
   mswInstance,
   response,
-}: MockApi<"schemaUpload">) {
+}: MockApi<"uploadSchema">) {
   const url = `${getHTTPBaseAPIUrl()}/uploadSchema`;
   mswInstance.use(
     rest.post(url, async (req, res, ctx) => {

@@ -1,37 +1,37 @@
 import {
-  KlawApiModel,
+  RequestVerdictApproval,
+  RequestVerdictDecline,
+} from "src/domain/requests/requests-types";
+import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
+import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
+import api from "src/services/api";
+import {
+  KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
   ResolveIntersectionTypes,
 } from "types/utils";
-import api from "src/services/api";
-import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
-import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
-import {
-  RequestVerdictApproval,
-  RequestVerdictDecline,
-} from "src/domain/requests/requests-types";
 
 type CreateSchemaRequestPayload = ResolveIntersectionTypes<
   Required<
     Pick<
-      KlawApiModel<"SchemaRequest">,
+      KlawApiRequest<"uploadSchema">,
       "environment" | "schemafull" | "topicname"
     >
   > &
-    Partial<KlawApiModel<"SchemaRequest">>
+    Partial<KlawApiRequest<"uploadSchema">>
 >;
 
 const createSchemaRequest = (
   params: CreateSchemaRequestPayload
-): Promise<KlawApiResponse<"schemaUpload">> => {
+): Promise<KlawApiResponse<"uploadSchema">> => {
   const payload = {
     ...params,
     schemaversion: "1.0",
     appname: "App",
   };
 
-  return api.post<KlawApiResponse<"schemaUpload">, CreateSchemaRequestPayload>(
+  return api.post<KlawApiResponse<"uploadSchema">, CreateSchemaRequestPayload>(
     `/uploadSchema`,
     payload
   );

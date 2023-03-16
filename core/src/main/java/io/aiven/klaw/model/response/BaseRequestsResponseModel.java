@@ -57,4 +57,6 @@ public class BaseRequestsResponseModel implements Serializable {
   private String appname;
 
   private String otherParams;
+
+  private String username; // OPENAPI Remove
 }

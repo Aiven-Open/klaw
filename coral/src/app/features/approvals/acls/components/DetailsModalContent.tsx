@@ -29,9 +29,6 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
     requestingTeamName = "Team name not found",
   } = aclRequest;
 
-  const ips = acl_ip ?? [];
-  const principals = acl_ssl ?? [];
-
   return (
     <Grid htmlTag={"dl"} cols={"2"} rows={"6"} rowGap={"6"}>
       <Flexbox direction={"column"} width={"min"}>
@@ -63,7 +60,7 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
         <Flexbox direction={"column"}>
           <Label>Principals/Usernames</Label>
           <Flexbox direction={"row"} gap={"2"}>
-            {principals.map((principal) => (
+            {acl_ssl.map((principal) => (
               <dd key={principal}>
                 <StatusChip status={"neutral"} text={`${principal} `} />
               </dd>
@@ -72,12 +69,12 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
         </Flexbox>
       </GridItem>
 
-      {ips.length > 0 && (
+      {acl_ip.length > 0 && (
         <GridItem colSpan={"span-2"}>
           <Flexbox direction={"column"}>
             <Label>IP addresses</Label>
             <Flexbox direction={"row"} gap={"2"}>
-              {ips.map((ip) => (
+              {acl_ip.map((ip) => (
                 <dd key={ip}>
                   <StatusChip status={"neutral"} text={`${ip} `} />
                 </dd>

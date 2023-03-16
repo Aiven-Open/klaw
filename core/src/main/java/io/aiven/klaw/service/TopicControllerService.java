@@ -217,7 +217,7 @@ public class TopicControllerService {
       }
 
       topicRequestReq.setTopicpartitions(topicOb.get().getNoOfPartitions());
-      topicRequestReq.setReplicationfactor(topicOb.get().getNoOfReplcias());
+      topicRequestReq.setReplicationfactor(topicOb.get().getNoOfReplicas());
       try {
         mailService.sendMail(
             topicRequestReq.getTopicname(),
@@ -508,6 +508,7 @@ public class TopicControllerService {
     for (TopicRequest topicReq : topicsList) {
       topicRequestModel = new TopicRequestsResponseModel();
       copyProperties(topicReq, topicRequestModel);
+      topicRequestModel.setUsername(topicReq.getRequestor()); // OPENAPI Remove
       topicRequestModel.setRequestStatus(RequestStatus.of(topicReq.getRequestStatus()));
       topicRequestModel.setRequestOperationType(
           RequestOperationType.of(topicReq.getRequestOperationType()));
@@ -886,7 +887,7 @@ public class TopicControllerService {
               .findFirst();
       if (topicOptional.isPresent()) {
         topicInfo.setNoOfPartitions(topicOptional.get().getNoOfPartitions());
-        topicInfo.setNoOfReplcias(topicOptional.get().getNoOfReplcias());
+        topicInfo.setNoOfReplicas(topicOptional.get().getNoOfReplicas());
         hashMap.put("topicId", "" + topicOptional.get().getTopicid());
         topicInfo.setDescription(topicDescription);
 
@@ -1171,7 +1172,7 @@ public class TopicControllerService {
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
 
-        mp.setNoOfReplcias(topicSOT.getNoOfReplcias());
+        mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
         mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
         mp.setDescription(topicSOT.getDescription());
 

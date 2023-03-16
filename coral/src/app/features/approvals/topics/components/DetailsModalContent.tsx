@@ -55,7 +55,7 @@ const DetailsModalContent = ({ topicRequest }: DetailsModalContentProps) => {
   } = topicRequest;
 
   const hasAdvancedConfig =
-    advancedTopicConfigEntries !== undefined &&
+    advancedTopicConfigEntries.length > 0 &&
     advancedTopicConfigEntries !== null &&
     !isEmpty(advancedTopicConfigEntries);
 
@@ -82,7 +82,7 @@ const DetailsModalContent = ({ topicRequest }: DetailsModalContentProps) => {
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
           <Label>Description</Label>
-          <dd>{description || <i>No description</i>}</dd>
+          <dd>{description}</dd>
         </Flexbox>
       </GridItem>
       <Flexbox direction={"column"}>

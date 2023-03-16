@@ -21,7 +21,7 @@ const getExtensionData = ({ envId, envType }: GetExtensionDataParams) => {
     }),
     getClusterInfo({
       envType,
-      envSelected: envId,
+      envSelected: envId as string,
     }),
   ]);
 };
@@ -42,7 +42,7 @@ const useExtendedEnvironments = () => {
         return {
           ...environment,
           topicNames,
-          isAivenCluster: clusterInfo.aivenCluster === "true",
+          isAivenCluster: clusterInfo.aivenCluster,
         };
       });
 

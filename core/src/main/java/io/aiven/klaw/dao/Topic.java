@@ -40,7 +40,7 @@ public class Topic implements Serializable {
   private Integer noOfPartitions;
 
   @Column(name = "replicationfactor")
-  private String noOfReplcias;
+  private String noOfReplicas;
 
   @Column(name = "teamid")
   private Integer teamId;

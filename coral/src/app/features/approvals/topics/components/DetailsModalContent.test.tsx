@@ -29,11 +29,13 @@ const noAdvancedConfigRequest: TopicRequest = {
     "Team : Ospo, Users : muralibasani,josepprat,samulisuortti,mirjamaulbach,smustafa,aindriul,",
   editable: false,
   deletable: false,
+  advancedTopicConfigEntries: [],
+  deleteAssociatedSchema: false,
 };
 
 const withAdvancedConfigRequest: TopicRequest = {
   requestOperationType: "CREATE",
-  description: undefined,
+  description: "Description is mandatory",
   remarks: undefined,
   topicid: 1015,
   topicpartitions: 2,
@@ -59,6 +61,7 @@ const withAdvancedConfigRequest: TopicRequest = {
   editable: false,
   deletable: false,
   advancedTopicConfigEntries: [{ configKey: "hello", configValue: "yes" }],
+  deleteAssociatedSchema: false,
 };
 
 const findDefinition = (term?: string) => {
@@ -148,7 +151,7 @@ describe("DetailsModalContent", () => {
     });
     it("renders Description", () => {
       expect(findTerm("Description")).toBeVisible();
-      expect(findDefinition("No description")).toBeVisible();
+      expect(findDefinition("Description is mandatory")).toBeVisible();
     });
     it("renders Topic partition", () => {
       expect(findTerm("Topic partition")).toBeVisible();

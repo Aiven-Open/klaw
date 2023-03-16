@@ -292,7 +292,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                         data: {'clusterType' : 'all'}
                     }).success(function(output) {
                         $scope.allclustersset = output;
-                        if(output[0] != null){
+                        if(output && output.length > 0 && output[0] != null){
                             $scope.resultPages = output[0].allPageNos;
                             $scope.resultPageSelected = pageNo;
                         }
@@ -545,7 +545,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 params: {'pageNo' : pageNo, 'envId' : $scope.envIdFromUrl, 'searchEnvParam' : $scope.searchEnvParam},
             }).success(function(output) {
                 $scope.allenvs = output;
-                if(output[0] != null){
+                if(output && output.length > 0 && output[0] != null){
                     $scope.resultPages = output[0].allPageNos;
                     $scope.resultPageSelected = pageNo;
                 }
