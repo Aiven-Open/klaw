@@ -14,6 +14,7 @@ import {
 } from "src/app/features/requests/components/schemas/utils/mocked-api-responses";
 import userEvent from "@testing-library/user-event";
 import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/schema-request/schema-request-api.ts");
@@ -31,6 +32,7 @@ describe("SchemaRequest", () => {
   const defaultApiParams = {
     env: "ALL",
     pageNo: "1",
+    requestStatus: "ALL",
     topic: undefined,
   };
 
@@ -38,7 +40,7 @@ describe("SchemaRequest", () => {
     mockIntersectionObserver();
   });
   // This block still covers important cases, but it could be brittle
-  // due to it's dependency on the async process of the api call
+  // due to its dependency on the async process of the api call
   // We'll add a helper for controlling api mocks better (get a loading state etc)
   describe("handles loading and error state when fetching the requests", () => {
     const originalConsoleError = console.error;
@@ -121,6 +123,13 @@ describe("SchemaRequest", () => {
 
       expect(select).toBeVisible();
       expect(select).toHaveDisplayValue("All Environments");
+    });
+
+    it("shows a select to filter by request status with default", () => {
+      const select = screen.getByLabelText("Filter by status");
+
+      expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("All statuses");
     });
 
     it("shows a search input to search for topic names", () => {
@@ -335,6 +344,28 @@ describe("SchemaRequest", () => {
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
         ...defaultApiParams,
         env: mockedEnvironmentResponse[0].id,
+      });
+    });
+
+    it("enables user to filter by 'status'", async () => {
+      const newStatus = "CREATED";
+
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by status",
+      });
+      const statusOption = screen.getByRole("option", {
+        name: requestStatusNameMap[newStatus],
+      });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        requestStatus: newStatus,
       });
     });
     it("enables user to search for topic", async () => {
