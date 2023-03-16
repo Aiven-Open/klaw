@@ -7,9 +7,9 @@ import {
   RequestStatus,
 } from "src/domain/requests/requests-types";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
-import { mockedSchemaRequests } from "src/app/features/requests/components/schemas/utils/mocked-schema-requests";
+import { mockedApiResponses } from "src/app/features/requests/components/schemas/utils/mocked-api-responses";
 
-const schemaRequests = [...mockedSchemaRequests];
+const schemaRequests = [...mockedApiResponses];
 const deletableRequests = schemaRequests.filter((entry) => entry.deletable);
 
 describe("SchemaRequestTable", () => {

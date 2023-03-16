@@ -1,8 +1,10 @@
 import { SchemaRequest } from "src/domain/schema-request";
 import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
+import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 
-const mockedSchemaRequests: SchemaRequest[] = [
+const mockedApiResponses: SchemaRequest[] = [
   {
     req_no: 1014,
     topicname: "testtopic-first",
@@ -87,6 +89,20 @@ const mockedSchemaRequests: SchemaRequest[] = [
 ];
 
 const mockedApiResponseSchemaRequests: SchemaRequestApiResponse =
-  transformGetSchemaRequests(mockedSchemaRequests);
+  transformGetSchemaRequests(mockedApiResponses);
 
-export { mockedSchemaRequests, mockedApiResponseSchemaRequests };
+const mockedEnvironments = [
+  { name: "DEV", id: "1" },
+  { name: "TST", id: "2" },
+];
+
+const mockedEnvironmentResponse = transformEnvironmentApiResponse([
+  createMockEnvironmentDTO(mockedEnvironments[0]),
+  createMockEnvironmentDTO(mockedEnvironments[1]),
+]);
+
+export {
+  mockedApiResponses,
+  mockedApiResponseSchemaRequests,
+  mockedEnvironmentResponse,
+};
