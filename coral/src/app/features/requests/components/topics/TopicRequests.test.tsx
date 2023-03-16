@@ -42,6 +42,7 @@ const mockGetTopicRequestsResponse = transformGetTopicRequestsResponse([
     currentPage: "1",
     editable: true,
     deletable: true,
+    deleteAssociatedSchema: false,
   },
 ]);
 
@@ -78,7 +79,7 @@ describe("TopicRequests", () => {
       });
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        search: "abc",
+        // search: "abc",
       });
     });
 
@@ -96,7 +97,7 @@ describe("TopicRequests", () => {
       await waitFor(() => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          search: "abc",
+          // search: "abc",
         });
       });
     });

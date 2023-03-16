@@ -37,6 +37,7 @@ const mockedRequests: TopicRequest[] = [
     currentPage: "1",
     editable: true,
     deletable: true,
+    deleteAssociatedSchema: false,
   },
   {
     topicname: "test-topic-2",
@@ -68,6 +69,7 @@ const mockedRequests: TopicRequest[] = [
     currentPage: "1",
     editable: true,
     deletable: true,
+    deleteAssociatedSchema: false,
   },
 ];
 

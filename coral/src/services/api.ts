@@ -4,7 +4,7 @@ import { components } from "types/api";
 import { objectHasProperty } from "src/services/type-utils";
 import { ResolveIntersectionTypes } from "types/utils";
 
-type GenericApiResponse = components["schemas"]["GenericApiResponse"];
+type GenericApiResponse = components["schemas"]["ApiResponse"];
 
 enum HTTPMethod {
   GET = "GET",

@@ -14,7 +14,7 @@ const getAuthUser = (userLogin: AuthUserLoginData): Promise<AuthUser> => {
   return api.post("/login", data);
 };
 
-function getUserTeamName(): Promise<string> {
+function getUserTeamName(): Promise<string | undefined> {
   return api
     .get<KlawApiResponse<"getAuth">>("/getAuth")
     .then((response) => response.teamname);

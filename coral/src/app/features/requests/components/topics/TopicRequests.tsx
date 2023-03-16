@@ -14,7 +14,8 @@ function TopicRequests() {
     queryFn: () =>
       getTopicRequests({
         pageNo: "1",
-        search: currentTopic,
+        // search is not yet implemented as a param to getTopicRequests
+        // search: currentTopic,
       }),
   });
 

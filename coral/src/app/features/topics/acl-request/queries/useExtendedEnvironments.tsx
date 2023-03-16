@@ -21,7 +21,7 @@ const getExtensionData = ({ envId, envType }: GetExtensionDataParams) => {
     }),
     getClusterInfo({
       envType,
-      envSelected: envId,
+      envSelected: envId as string,
     }),
   ]);
 };

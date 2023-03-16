@@ -67,24 +67,26 @@ const TopicAclRequest = () => {
     aclType === "PRODUCER"
       ? topicProducerForm.watch("topicname")
       : topicConsumerForm.watch("topicname");
-  useQuery<TopicTeam, Error>({
-    queryKey: ["topicTeam", selectedTopicName, selectedPatternType, aclType],
-    queryFn: () =>
-      getTopicTeam({
-        topicName: selectedTopicName,
-        patternType: selectedPatternType,
-      }),
-    onSuccess: (data) => {
-      if (data === undefined) {
-        throw new Error("Could not fetch team for current Topic");
-      }
-      return aclType === "PRODUCER"
-        ? topicProducerForm.setValue("teamname", data.team)
-        : topicConsumerForm.setValue("teamname", data.team);
-    },
-    enabled: selectedTopicName !== undefined,
-    keepPreviousData: true,
-  });
+  useQuery<TopicTeam, Error>(
+    ["topicTeam", selectedTopicName, selectedPatternType, aclType],
+    {
+      queryFn: () =>
+        getTopicTeam({
+          topicName: selectedTopicName,
+          patternType: selectedPatternType,
+        }),
+      onSuccess: (data) => {
+        if (data === undefined) {
+          throw new Error("Could not fetch team for current Topic");
+        }
+        return aclType === "PRODUCER"
+          ? topicProducerForm.setValue("teamname", data.team as string)
+          : topicConsumerForm.setValue("teamname", data.team as string);
+      },
+      enabled: selectedTopicName !== undefined,
+      keepPreviousData: true,
+    }
+  );
 
   // If the environment selected is an Aiven cluster, some fields can only have a certain value,
   // so we need to set those values when a user selects an environment which is an Aiven cluster

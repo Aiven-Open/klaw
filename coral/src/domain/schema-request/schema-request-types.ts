@@ -3,7 +3,7 @@ import { KlawApiModel, Paginated, ResolveIntersectionTypes } from "types/utils";
 type CreatedSchemaRequests = ResolveIntersectionTypes<
   Required<
     Pick<
-      KlawApiModel<"SchemaRequest">,
+      KlawApiModel<"SchemaRequestsResponseModel">,
       | "req_no"
       | "topicname"
       | "environmentName"
@@ -13,7 +13,9 @@ type CreatedSchemaRequests = ResolveIntersectionTypes<
   >
 >;
 
-type SchemaRequest = ResolveIntersectionTypes<KlawApiModel<"SchemaRequest">>;
+type SchemaRequest = ResolveIntersectionTypes<
+  KlawApiModel<"SchemaRequestsResponseModel">
+>;
 
 type SchemaRequestApiResponse = ResolveIntersectionTypes<
   Paginated<SchemaRequest[]>
