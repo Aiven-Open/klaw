@@ -5,20 +5,23 @@ import { TopicRequestsTable } from "src/app/features/requests/components/topics/
 import { useSearchParams } from "react-router-dom";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { Pagination } from "src/app/components/Pagination";
+import { MyRequestFilter } from "src/app/features/components/table-filters/MyRequestFilter";
 
 function TopicRequests() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTopic = searchParams.get("topic") ?? "";
+  const isMyRequest = searchParams.get("isMyRequest") === "true" ? true : false;
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["topicRequests", currentTopic, currentPage],
+    queryKey: ["topicRequests", currentTopic, currentPage, isMyRequest],
     queryFn: () =>
       getTopicRequests({
         pageNo: String(currentPage),
         search: currentTopic,
+        isMyRequest,
       }),
     keepPreviousData: true,
   });
@@ -39,7 +42,10 @@ function TopicRequests() {
 
   return (
     <TableLayout
-      filters={[<TopicFilter key={"topic"} />]}
+      filters={[
+        <TopicFilter key={"topic"} />,
+        <MyRequestFilter key={"isMyRequest"} />,
+      ]}
       table={
         <TopicRequestsTable
           requests={data?.entries ?? []}
