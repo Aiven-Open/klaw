@@ -3,15 +3,15 @@ import { useSearchParams } from "react-router-dom";
 
 function MyRequestFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const isMyRequest = searchParams.get("isMyRequest") === "true";
+  const isMyRequest = searchParams.get("showOnlyMyRequests") === "true";
 
   const handleChangeIsMyRequest = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (event.target.checked) {
-      searchParams.set("isMyRequest", "true");
+      searchParams.set("showOnlyMyRequests", "true");
     } else {
-      searchParams.delete("isMyRequest");
+      searchParams.delete("showOnlyMyRequests");
     }
     searchParams.set("page", "1");
     setSearchParams(searchParams);

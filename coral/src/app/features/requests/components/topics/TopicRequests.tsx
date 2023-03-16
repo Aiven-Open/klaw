@@ -10,20 +10,20 @@ import { MyRequestFilter } from "src/app/features/components/table-filters/MyReq
 function TopicRequests() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTopic = searchParams.get("topic") ?? undefined;
-  const isMyRequest =
-    searchParams.get("isMyRequest") === "true" ? true : undefined;
+  const showOnlyMyRequests =
+    searchParams.get("showOnlyMyRequests") === "true" ? true : undefined;
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["topicRequests", currentTopic, currentPage, isMyRequest],
+    queryKey: ["topicRequests", currentTopic, currentPage, showOnlyMyRequests],
     queryFn: () =>
       getTopicRequests({
         pageNo: String(currentPage),
         // search is not yet implemented as a param to getTopicRequests
         // search: currentTopic,
-        isMyRequest,
+        isMyRequest: showOnlyMyRequests,
       }),
     keepPreviousData: true,
   });
