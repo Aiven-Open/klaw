@@ -233,7 +233,7 @@ public class TopicIntegrationTest {
       topic.setTenantId(tenantId);
       topic.setTeamId(tenantId);
       topic.setNoOfPartitions(numberOfPartitions);
-      topic.setNoOfReplcias(String.valueOf(replicationFactor));
+      topic.setNoOfReplicas(String.valueOf(replicationFactor));
       topic.setTopicname(topicName + i);
       topic.setEnvironment(env);
       entityManager.persistAndFlush(topic);

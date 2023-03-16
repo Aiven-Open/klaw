@@ -6,6 +6,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.response.ClusterInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import jakarta.validation.Valid;
@@ -306,7 +307,7 @@ public class EnvsClustersTenantsController {
       value = "/getClusterInfoFromEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getClusterInfoFromEnv(
+  public ResponseEntity<ClusterInfo> getClusterInfoFromEnv(
       @RequestParam(value = "envSelected") String envSelected,
       @RequestParam(value = "envType") String envType) {
     return new ResponseEntity<>(

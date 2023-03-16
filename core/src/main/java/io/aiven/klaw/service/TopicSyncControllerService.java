@@ -403,7 +403,7 @@ public class TopicSyncControllerService {
         topicRequestModel.setTopicname(topicObj.getTopicname());
         topicRequestModel.setEnvironment(topicObj.getEnvironment());
         topicRequestModel.setTopicpartitions(topicObj.getNoOfPartitions());
-        topicRequestModel.setReplicationfactor(topicObj.getNoOfReplcias());
+        topicRequestModel.setReplicationfactor(topicObj.getNoOfReplicas());
         topicRequestModel.setTeamId(topicObj.getTeamId());
         topicRequestModel.setTeamname(
             manageDatabase.getTeamNameFromTeamId(tenantId, topicObj.getTeamId()));
@@ -505,7 +505,7 @@ public class TopicSyncControllerService {
               topicFound.getTopicname(),
               RequestOperationType.CREATE.value,
               topicFound.getNoOfPartitions(),
-              topicFound.getNoOfReplcias(),
+              topicFound.getNoOfReplicas(),
               syncBackTopics.getTargetEnv(),
               null,
               tenantId,
@@ -554,7 +554,7 @@ public class TopicSyncControllerService {
       topicRequest.setTopicname(topicFound.getTopicname());
       topicRequest.setEnvironment(syncBackTopics.getTargetEnv());
       topicRequest.setTopicpartitions(topicFound.getNoOfPartitions());
-      topicRequest.setReplicationfactor(topicFound.getNoOfReplcias());
+      topicRequest.setReplicationfactor(topicFound.getNoOfReplicas());
       topicRequest.setRequestor(getUserName());
       topicRequest.setTeamId(teamName);
       topicRequest.setTenantId(tenantId);
@@ -731,7 +731,7 @@ public class TopicSyncControllerService {
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
 
-        mp.setNoOfReplcias(topicSOT.getNoOfReplcias());
+        mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
         mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
         mp.setDescription(topicSOT.getDescription());
 
@@ -971,7 +971,7 @@ public class TopicSyncControllerService {
           t.setTopicid(topicId);
           t.setTopicname(topicUpdate.getTopicName());
           t.setNoOfPartitions(topicUpdate.getPartitions());
-          t.setNoOfReplcias(topicUpdate.getReplicationFactor());
+          t.setNoOfReplicas(topicUpdate.getReplicationFactor());
           t.setEnvironment(topicUpdate.getEnvSelected());
           t.setTeamId(
               manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
@@ -1022,7 +1022,7 @@ public class TopicSyncControllerService {
             t.setTopicid(topicId);
             t.setTopicname(topicUpdate.getTopicName());
             t.setNoOfPartitions(topicUpdate.getPartitions());
-            t.setNoOfReplcias(topicUpdate.getReplicationFactor());
+            t.setNoOfReplicas(topicUpdate.getReplicationFactor());
             t.setEnvironment(topicUpdate.getEnvSelected());
             t.setTeamId(
                 manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));

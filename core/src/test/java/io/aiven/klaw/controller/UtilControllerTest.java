@@ -10,12 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.RequestsCountOverview;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestMode;
+import io.aiven.klaw.model.response.AuthenticationInfo;
 import io.aiven.klaw.service.RequestStatisticsService;
 import io.aiven.klaw.service.UtilControllerService;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,9 +49,9 @@ public class UtilControllerTest {
   @Test
   @Order(1)
   public void getAuth() throws Exception {
-    HashMap<String, String> hMap = new HashMap<>();
-    hMap.put("status", ApiResultStatus.AUTHORIZED.value);
-    when(utilControllerService.getAuth()).thenReturn(hMap);
+    AuthenticationInfo authenticationInfo = new AuthenticationInfo();
+    authenticationInfo.setCoralEnabled("true");
+    when(utilControllerService.getAuth()).thenReturn(authenticationInfo);
 
     mvc.perform(
             MockMvcRequestBuilders.get("/getAuth")
@@ -61,7 +60,7 @@ public class UtilControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.status", is("Authorized")));
+        .andExpect(jsonPath("$.coralEnabled", is("true")));
   }
 
   @Test

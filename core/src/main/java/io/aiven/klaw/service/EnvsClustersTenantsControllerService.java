@@ -28,6 +28,7 @@ import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.response.ClusterInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -1332,9 +1333,9 @@ public class EnvsClustersTenantsControllerService {
     return tenantsInfo;
   }
 
-  public Map<String, String> getClusterInfoFromEnv(String envSelected, String clusterType) {
-    Map<String, String> clusterInfo = new HashMap<>();
-
+  public ClusterInfo getClusterInfoFromEnv(String envSelected, String clusterType) {
+    //    Map<String, String> clusterInfo = new HashMap<>();
+    ClusterInfo clusterInfo = new ClusterInfo();
     log.debug("getEnvDetails {}", envSelected);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(
@@ -1349,10 +1350,8 @@ public class EnvsClustersTenantsControllerService {
     KwClusters kwClusters =
         manageDatabase.getHandleDbRequests().getClusterDetails(env.getClusterId(), tenantId);
 
-    clusterInfo.put(
-        "aivenCluster",
-        "" + KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor()));
-
+    clusterInfo.setAivenCluster(
+        KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kwClusters.getKafkaFlavor()));
     return clusterInfo;
   }
 
