@@ -3,15 +3,22 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import SchemaRequestsPage from "src/app/pages/requests/schemas/index";
 import { cleanup, screen } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
+import { getSchemaRegistryEnvironments } from "src/domain/environment";
 
+jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 
+const mockGetSchemaRegistryEnvironments =
+  getSchemaRegistryEnvironments as jest.MockedFunction<
+    typeof getSchemaRegistryEnvironments
+  >;
 const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
   typeof getSchemaRequests
 >;
 
 describe("SchemaRequestPage", () => {
   beforeAll(() => {
+    mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
     mockGetSchemaRequests.mockResolvedValue({
       entries: [],
       totalPages: 1,

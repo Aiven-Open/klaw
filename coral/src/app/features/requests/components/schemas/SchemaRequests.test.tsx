@@ -1,13 +1,27 @@
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { cleanup, screen, waitFor, within } from "@testing-library/react";
+import {
+  cleanup,
+  screen,
+ waitFor, within,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { getSchemaRequests } from "src/domain/schema-request";
 import { SchemaRequests } from "src/app/features/requests/components/schemas/SchemaRequests";
-import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import { mockedApiResponseSchemaRequests } from "src/app/features/requests/components/schemas/utils/mocked-schema-requests";
+import {
+  mockedApiResponseSchemaRequests,
+  mockedEnvironmentResponse,
+} from "src/app/features/requests/components/schemas/utils/mocked-api-responses";
 import userEvent from "@testing-library/user-event";
+import { getSchemaRegistryEnvironments } from "src/domain/environment";
 
+jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/schema-request/schema-request-api.ts");
+
+const mockGetSchemaRegistryEnvironments =
+  getSchemaRegistryEnvironments as jest.MockedFunction<
+    typeof getSchemaRegistryEnvironments
+  >;
 
 const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
   typeof getSchemaRequests
@@ -15,6 +29,7 @@ const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
 
 describe("SchemaRequest", () => {
   const defaultApiParams = {
+    env: "ALL",
     pageNo: "1",
     topic: undefined,
   };
@@ -32,6 +47,9 @@ describe("SchemaRequest", () => {
       // while making sure to not swallow other console.errors
       console.error = jest.fn();
 
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetSchemaRequests.mockResolvedValue({
         entries: [],
         totalPages: 1,
@@ -80,6 +98,9 @@ describe("SchemaRequest", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
@@ -93,6 +114,13 @@ describe("SchemaRequest", () => {
     afterAll(() => {
       cleanup();
       jest.clearAllMocks();
+    });
+
+    it("shows a select to filter by environment with default", () => {
+      const select = screen.getByLabelText("Filter by Environment");
+
+      expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("All Environments");
     });
 
     it("shows a search input to search for topic names", () => {
@@ -118,6 +146,9 @@ describe("SchemaRequest", () => {
 
   describe("renders pagination dependent on response", () => {
     beforeEach(() => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetSchemaRequests.mockResolvedValue({
         entries: [],
         totalPages: 1,
@@ -221,6 +252,9 @@ describe("SchemaRequest", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetSchemaRequests.mockResolvedValue({
         totalPages: 3,
         currentPage: 1,
@@ -266,6 +300,9 @@ describe("SchemaRequest", () => {
 
   describe("handles filtering entries in the table", () => {
     beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
@@ -281,6 +318,25 @@ describe("SchemaRequest", () => {
       cleanup();
     });
 
+    it("enables user to filter by 'environment'", async () => {
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const environmentFilter = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
+      const environmentOption = screen.getByRole("option", {
+        name: mockedEnvironmentResponse[0].name,
+      });
+      await userEvent.selectOptions(environmentFilter, environmentOption);
+
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        env: mockedEnvironmentResponse[0].id,
+      });
+    });
     it("enables user to search for topic", async () => {
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         1,
