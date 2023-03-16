@@ -76,12 +76,12 @@ const TopicAclRequest = () => {
           patternType: selectedPatternType,
         }),
       onSuccess: (data) => {
-        if (data.error !== undefined) {
+        if (data.error !== undefined || data.team === undefined) {
           throw new Error(data.error);
         }
         return aclType === "PRODUCER"
-          ? topicProducerForm.setValue("teamname", data.team as string)
-          : topicConsumerForm.setValue("teamname", data.team as string);
+          ? topicProducerForm.setValue("teamname", data.team)
+          : topicConsumerForm.setValue("teamname", data.team);
       },
       enabled: selectedTopicName !== undefined,
       keepPreviousData: true,
