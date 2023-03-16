@@ -1,4 +1,4 @@
-import { cleanup, screen, waitFor } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   requestStatusNameMap,
@@ -8,10 +8,13 @@ import StatusFilter from "src/app/features/components/table-filters/StatusFilter
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const filterLabel = "Filter by status";
+
 describe("StatusFilter.tsx", () => {
+  const testDefaultStatus = "CREATED";
+
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      customRender(<StatusFilter />, {
+      customRender(<StatusFilter defaultStatus={testDefaultStatus} />, {
         memoryRouter: true,
       });
     });
@@ -26,7 +29,7 @@ describe("StatusFilter.tsx", () => {
       expect(select).toBeEnabled();
     });
 
-    it("renders a list of options for statuse", () => {
+    it("renders a list of options for statuses", () => {
       statusList.forEach((status) => {
         const option = screen.getByRole("option", {
           name: requestStatusNameMap[status],
@@ -36,22 +39,29 @@ describe("StatusFilter.tsx", () => {
       });
     });
 
-    it("shows CREATED status name as the default active option", () => {
-      const option = screen.getByRole("option", {
+    it("shows a status name as the default active option based on prop", () => {
+      const select = screen.getByRole("combobox", {
+        name: filterLabel,
+      });
+      const option = within(select).getByRole("option", {
         selected: true,
       });
-      expect(option).toHaveAccessibleName(requestStatusNameMap["CREATED"]);
+
+      expect(select).toHaveValue(testDefaultStatus);
+      expect(option).toHaveAccessibleName(
+        requestStatusNameMap[testDefaultStatus]
+      );
     });
   });
 
-  describe("sets the active environment based on a query param", () => {
+  describe("sets the active status based on a query param", () => {
     const declinedStatus = "DECLINED";
-    const declinedName = requestStatusNameMap["DECLINED"];
+    const declinedName = requestStatusNameMap[declinedStatus];
 
     beforeEach(async () => {
       const routePath = `/?status=${declinedStatus}`;
 
-      customRender(<StatusFilter />, {
+      customRender(<StatusFilter defaultStatus={"CREATED"} />, {
         memoryRouter: true,
         queryClient: true,
         customRoutePath: routePath,
@@ -63,21 +73,25 @@ describe("StatusFilter.tsx", () => {
     });
 
     it(`shows DECLINED name as the active option one`, async () => {
-      const option = await screen.findByRole("option", {
+      const select = await screen.findByRole("combobox", { name: filterLabel });
+      const option = await within(select).findByRole("option", {
         name: declinedName,
         selected: true,
       });
+
+      expect(select).toHaveValue(declinedStatus);
       expect(option).toBeVisible();
       expect(option).toHaveValue(declinedStatus);
     });
   });
 
   describe("handles user selecting a environment", () => {
+    const defaultStatus = "DECLINED";
     const approvedStatus = "APPROVED";
-    const approvedName = requestStatusNameMap["APPROVED"];
+    const approvedName = requestStatusNameMap[approvedStatus];
 
     beforeEach(async () => {
-      customRender(<StatusFilter />, {
+      customRender(<StatusFilter defaultStatus={defaultStatus} />, {
         queryClient: true,
         memoryRouter: true,
       });
@@ -91,6 +105,9 @@ describe("StatusFilter.tsx", () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
+
+      expect(select).toHaveValue(defaultStatus);
+
       const option = screen.getByRole("option", {
         name: approvedName,
       });
@@ -106,7 +123,7 @@ describe("StatusFilter.tsx", () => {
     const deletedName = requestStatusNameMap["DELETED"];
 
     beforeEach(async () => {
-      customRender(<StatusFilter />, {
+      customRender(<StatusFilter defaultStatus={"CREATED"} />, {
         queryClient: true,
         browserRouter: true,
       });
