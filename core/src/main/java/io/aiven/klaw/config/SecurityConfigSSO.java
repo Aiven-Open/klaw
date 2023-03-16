@@ -1,5 +1,7 @@
 package io.aiven.klaw.config;
 
+import static io.aiven.klaw.config.SecurityConfigSSO.OBJECT_MAPPER;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,6 +12,12 @@ import com.nimbusds.jwt.JWTParser;
 import com.nimbusds.jwt.SignedJWT;
 import io.aiven.klaw.auth.KwAuthenticationFailureHandler;
 import io.aiven.klaw.auth.KwAuthenticationSuccessHandler;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,15 +43,6 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.reactive.function.client.WebClient;
-
-import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
-
-import static io.aiven.klaw.config.SecurityConfigSSO.OBJECT_MAPPER;
 
 @Slf4j
 @Configuration
