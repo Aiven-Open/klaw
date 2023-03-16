@@ -223,16 +223,27 @@ describe("SchemaApprovals", () => {
       );
     });
 
-    it("shows a table with all schema requests", () => {
+    it("shows a table with all schema requests and a header row", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
-      const rows = within(table).getAllByRole("rowgroup");
+      const rows = within(table).getAllByRole("row");
 
       expect(table).toBeVisible();
-      expect(rows).toHaveLength(mockedApiResponseSchemaRequests.entries.length);
+      expect(rows).toHaveLength(
+        mockedApiResponseSchemaRequests.entries.length + 1
+      );
     });
   });
 
   describe("renders pagination dependent on response", () => {
+    beforeEach(() => {
+      mockGetSchemaRequestsForApprover.mockResolvedValue({
+        entries: [],
+        totalPages: 1,
+        currentPage: 1,
+      });
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+    });
+
     afterEach(() => {
       cleanup();
       jest.clearAllMocks();
@@ -335,6 +346,8 @@ describe("SchemaApprovals", () => {
         currentPage: 1,
         entries: [],
       });
+
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
 
       customRender(<SchemaApprovals />, {
         queryClient: true,

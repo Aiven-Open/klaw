@@ -79,7 +79,6 @@ describe("TopicRequestsTable", () => {
       <TopicRequestsTable
         requests={mockedRequests}
         onDetails={jest.fn()}
-        onEdit={jest.fn()}
         onDelete={jest.fn()}
         {...props}
       />
@@ -186,25 +185,11 @@ describe("TopicRequestsTable", () => {
     );
   });
 
-  it("has column for action to edit request", async () => {
-    const onEdit = jest.fn();
-    renderFromProps({ onEdit });
-    await userEvent.click(
-      within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
-        name: "Edit",
-      })
-    );
-    expect(onEdit).toHaveBeenNthCalledWith(
-      1,
-      String(mockedRequests[0].topicid)
-    );
-  });
-
   it("has column for action to delete request", async () => {
     const onDelete = jest.fn();
     renderFromProps({ onDelete });
     await userEvent.click(
-      within(within(getNthRow(1)).getAllByRole("cell")[9]).getByRole("button", {
+      within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
         name: "Delete",
       })
     );
@@ -214,23 +199,12 @@ describe("TopicRequestsTable", () => {
     );
   });
 
-  it("disables the edit button for a request if the request is not editable", () => {
-    const onEdit = jest.fn();
-    const nonEditableRequest = { ...mockedRequests[0], editable: false };
-    renderFromProps({ requests: [nonEditableRequest], onEdit });
-    expect(
-      within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
-        name: "Edit",
-      })
-    ).toBeDisabled();
-  });
-
   it("disables the delete button for a request if the request is not deletable", () => {
     const onDelete = jest.fn();
     const nonDeletableRequest = { ...mockedRequests[0], deletable: false };
     renderFromProps({ requests: [nonDeletableRequest], onDelete });
     expect(
-      within(within(getNthRow(1)).getAllByRole("cell")[9]).getByRole("button", {
+      within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
         name: "Delete",
       })
     ).toBeDisabled();

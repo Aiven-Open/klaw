@@ -1,4 +1,9 @@
-import { cleanup, screen, waitFor } from "@testing-library/react";
+import {
+  cleanup,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { getTopicRequests } from "src/domain/topic/topic-api";
 import { transformGetTopicRequestsResponse } from "src/domain/topic/topic-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
@@ -65,7 +70,7 @@ describe("TopicRequests", () => {
     expect(getTopicRequests).toBeCalledTimes(1);
   });
 
-  describe("user can filter topics based on the topic name", () => {
+  describe("user can filter topic requests based on the topic name", () => {
     afterEach(() => {
       cleanup();
       jest.resetAllMocks();
@@ -80,6 +85,7 @@ describe("TopicRequests", () => {
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         // search: "abc",
+        isMyRequest: undefined,
       });
     });
 
@@ -98,7 +104,216 @@ describe("TopicRequests", () => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
           // search: "abc",
+          isMyRequest: undefined,
         });
+      });
+    });
+  });
+
+  describe("user can filter topic requests to only display users own requests", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("populates the isMyRequest filter from the url search parameters", () => {
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?isMyRequest=true",
+      });
+      expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        isMyRequest: true,
+        search: undefined,
+      });
+    });
+
+    it("applies the isMyRequest filter by toggling the switch", async () => {
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+      const isMyRequestSwitch = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+      await userEvent.click(isMyRequestSwitch);
+      await waitFor(() => {
+        expect(getTopicRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          isMyRequest: true,
+          search: undefined,
+        });
+      });
+    });
+
+    it("unapplies the isMyRequest filter by untoggling the switch", async () => {
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?isMyRequest=true",
+      });
+      const isMyRequestSwitch = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+      await userEvent.click(isMyRequestSwitch);
+      await waitFor(() => {
+        expect(getTopicRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          isMyRequest: undefined,
+          search: undefined,
+        });
+      });
+    });
+  });
+
+  describe("renders pagination dependent on response", () => {
+    beforeEach(() => {
+      mockGetTopicRequests.mockResolvedValue({
+        totalPages: 1,
+        currentPage: 1,
+        entries: [],
+      });
+    });
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("fetches the right page number if a page is set in search params", async () => {
+      const routePath = "/?page=100";
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: routePath,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+
+      expect(mockGetTopicRequests).toHaveBeenCalledWith({
+        pageNo: "100",
+        search: undefined,
+        isMyRequest: undefined,
+      });
+    });
+
+    it("fetches the first page if no search param is defined", async () => {
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+
+      expect(mockGetTopicRequests).toHaveBeenCalledWith({
+        pageNo: "1",
+        search: undefined,
+        isMyRequest: undefined,
+      });
+    });
+
+    it("shows no pagination for a response with only one page", async () => {
+      mockGetTopicRequests.mockResolvedValue({
+        ...mockGetTopicRequestsResponse,
+        totalPages: 1,
+      });
+
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+
+      const pagination = screen.queryByRole("navigation", {
+        name: /Pagination/,
+      });
+      expect(pagination).not.toBeInTheDocument();
+    });
+
+    it("shows a pagination when response has more then one page", async () => {
+      mockGetTopicRequests.mockResolvedValue({
+        totalPages: 2,
+        currentPage: 1,
+        entries: [],
+      });
+
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+
+      const pagination = screen.getByRole("navigation", {
+        name: "Pagination navigation, you're on page 1 of 2",
+      });
+      expect(pagination).toBeVisible();
+    });
+
+    it("shows the currently active page based on api response", async () => {
+      mockGetTopicRequests.mockResolvedValue({
+        totalPages: 4,
+        currentPage: 2,
+        entries: [],
+      });
+
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+
+      const pagination = screen.getByRole("navigation", {
+        name: "Pagination navigation, you're on page 2 of 4",
+      });
+      expect(pagination).toBeVisible();
+    });
+  });
+
+  describe("handles user stepping through pagination", () => {
+    beforeEach(async () => {
+      mockGetTopicRequests.mockResolvedValue({
+        totalPages: 3,
+        currentPage: 1,
+        entries: [],
+      });
+
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows page 1 as currently active page and the total page number", () => {
+      const pagination = screen.getByRole("navigation", {
+        name: /Pagination/,
+      });
+
+      expect(pagination).toHaveAccessibleName(
+        "Pagination navigation, you're on page 1 of 3"
+      );
+    });
+
+    it("fetches new data when user clicks on next page", async () => {
+      const pageTwoButton = screen.getByRole("button", {
+        name: "Go to next page, page 2",
+      });
+
+      await userEvent.click(pageTwoButton);
+
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
+        pageNo: "2",
+        search: undefined,
+        isMyRequest: undefined,
       });
     });
   });

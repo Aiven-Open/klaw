@@ -244,12 +244,12 @@ describe("TopicApprovals", () => {
       );
     });
 
-    it("shows a table with all topic requests", () => {
+    it("shows a table with all topic requests and a header row", () => {
       const table = screen.getByRole("table", { name: "Topic requests" });
-      const rows = within(table).getAllByRole("rowgroup");
+      const rows = within(table).getAllByRole("row");
 
       expect(table).toBeVisible();
-      expect(rows).toHaveLength(mockedApiResponse.entries.length);
+      expect(rows).toHaveLength(mockedApiResponse.entries.length + 1);
     });
   });
 
