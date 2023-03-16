@@ -6630,7 +6630,8 @@
           "aivenCluster" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "aivenCluster" ]
       },
       "JmxOverview" : {
         "properties" : {
