@@ -654,7 +654,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                      'envId' : $scope.topicEventsSelectedEnv, 'consumerGroupId': "notdefined"}
                 }).success(function(output) {
                     $scope.ShowSpinnerStatus = false;
-                    if(output.status != null && output.status == "false"){
+                    if(output.status != null && output.status != undefined &&  output.status == "false"){
                         swal({
                              title: "",
                              text: "No events found or Could not be retrieved !!",

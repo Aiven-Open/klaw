@@ -77,7 +77,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     params: {'clusterId' : clusterId },
                     data: {'clusterId' : clusterId}
                 }).success(function(output) {
-                    if(output != null && output !== ""){
+                    if(output != null && output != undefined && output !== ""){
                         $scope.clusterDetails = output;
                         if($scope.clusterDetails.aivenCluster === true)
                             $scope.clusterDetails.aivenClusterType='Aiven';

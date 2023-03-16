@@ -736,7 +736,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 params: {'teamName' : decodeURI(teamSel) , 'pageNo' : pageNo, 'searchUserParam' : $scope.usersearch},
             }).success(function(output) {
                 $scope.userList = output;
-                if(output[0] != null){
+                if(output != null && output != undefined && output[0] != null){
                     $scope.resultPages = output[0].allPageNos;
                     $scope.resultPageSelected = pageNo;
                 }

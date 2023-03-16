@@ -57,9 +57,9 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                              params: {'envSelected' : envSelected }
                         }).success(function(output) {
                             $scope.envTopicMap = output;
-                            if(output.topicPrefix != null)
+                            if(output.topicPrefix != null && output.topicPrefix != undefined )
                                 $scope.topicPrefix = output.topicPrefix[0];
-                            if(output.topicSuffix != null)
+                            if(output.topicSuffix != null && output.topicSuffix != undefined)
                                 $scope.topicSuffix = output.topicSuffix[0];
                         }).error(
                             function(error)

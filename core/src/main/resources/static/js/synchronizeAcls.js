@@ -299,7 +299,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
 		}).success(function(output) {
 		    $scope.ShowSpinnerStatusAcls = false;
 			$scope.resultBrowse = output;
-			if(output != null && output.length > 0){
+			if(output != null && output != undefined && output.length > 0){
                 $scope.resultPages = output[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
                 $scope.currentPageSelected = output[0].currentPage;

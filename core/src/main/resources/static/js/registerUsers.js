@@ -281,7 +281,7 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                             data: {'userRegistrationId' : userRegistrationId}
                         }).success(function(output) {
                             $scope.registerUser = output;
-                            if(output != null && output != "")
+                            if(output != null && output != undefined && output != "")
                                 $scope.userNotFoundinKwDb = "true";
                         }).error(
                             function(error)
