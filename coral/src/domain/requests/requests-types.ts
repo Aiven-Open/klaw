@@ -1,9 +1,6 @@
 import { components } from "types/api";
 import { ResolveIntersectionTypes } from "types/utils";
 
-// Missing these two as components/schemas is sad
-// type RequestOperationType = components["schemas"]["RequestOperationType"];
-// type RequestStatus = components["schemas"]["RequestStatus"];
 type RequestOperationType =
   | "CREATE"
   | "UPDATE"

@@ -23,7 +23,7 @@ const mockGetTopicNames = getTopicNames as jest.MockedFunction<
   typeof getTopicNames
 >;
 
-describe("SchemaRequestModel", () => {
+describe("SchemaRequest", () => {
   describe("renders the page to request a new schema for a topic", () => {
     const topicName = "my-awesome-topic";
 
