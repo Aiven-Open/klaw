@@ -5,104 +5,463 @@
 
 
 export type paths = {
-  "/user/authenticate": {
+  "/user/updateTeam": {
+    post: operations["updateUserTeamFromSwitchTeams"];
+  };
+  "/uploadSchema": {
+    post: operations["uploadSchema"];
+  };
+  "/updateUser": {
+    post: operations["updateUser"];
+  };
+  "/updateTopics": {
+    post: operations["createTopicsUpdateRequest"];
+  };
+  "/updateTeam": {
+    post: operations["updateTeam"];
+  };
+  "/updateSyncTopics": {
+    post: operations["updateSyncTopics"];
+  };
+  "/updateSyncTopicsBulk": {
+    post: operations["updateSyncTopicsBulk"];
+  };
+  "/updateSyncConnectors": {
+    post: operations["updateSyncConnectors"];
+  };
+  "/updateSyncBackTopics": {
+    post: operations["updateSyncBackTopics"];
+  };
+  "/updateSyncBackAcls": {
+    post: operations["updateSyncBackAcls"];
+  };
+  "/updateSyncAcls": {
+    post: operations["updateSyncAcls"];
+  };
+  "/updateProfile": {
+    post: operations["updateProfile"];
+  };
+  "/updatePermissions": {
+    post: operations["updatePermissions"];
+  };
+  "/updateKwCustomProperty": {
+    post: operations["updateKwCustomProperty"];
+  };
+  "/udpateTenant": {
+    post: operations["udpateTenant"];
+  };
+  "/udpateTenantExtension": {
+    post: operations["udpateTenantExtension"];
+  };
+  "/sendMessageToAdmin": {
+    post: operations["sendMessageToAdmin"];
+  };
+  "/saveTopicDocumentation": {
+    post: operations["saveTopicDocumentation"];
+  };
+  "/saveConnectorDocumentation": {
+    post: operations["saveConnectorDocumentation"];
+  };
+  "/resetPassword": {
+    post: operations["resetPassword"];
+  };
+  "/request/delete": {
     /**
-     * Authenticate user 
-     * @description Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints.
+     * Delete a Request 
+     * @description Updates the Status of a request to Deleted
      */
-    post: operations["userAuthentication"];
+    post: operations["deleteRequest"];
   };
-  "/getTopics": {
-    /** Get topics */
-    get: operations["topicsGet"];
+  "/request/decline": {
+    /**
+     * Decline a Request 
+     * @description Updates the Status of a request to Declined
+     */
+    post: operations["declineRequest"];
   };
-  "/getTopicsOnly": {
-    /** Get topic names list */
-    get: operations["topicsGetOnly"];
+  "/request/approve": {
+    /**
+     * Approve a Request 
+     * @description Updates the Status of a request to Approved and provisions the request
+     */
+    post: operations["approveRequest"];
   };
-  "/getTopicTeam": {
-    /** Get the name of the team a topic belongs to */
-    get: operations["topicGetTeam"];
+  "/registerUser": {
+    post: operations["registerUser"];
   };
-  "/createTopics": {
-    /** Create topic request */
-    post: operations["topicCreate"];
+  "/registerUserSaas": {
+    post: operations["registerUserSaas"];
   };
-  "/getAdvancedTopicConfigs": {
-    /** Get advanced topic configuration options */
-    get: operations["topicAdvancedConfigGet"];
+  "/promote/schema": {
+    post: operations["promoteSchema"];
   };
-  "/getAllTeamsSUOnly": {
-    /** Get team names */
-    get: operations["teamNamesGet"];
+  "/logout": {
+    post: operations["logout"];
   };
-  "/getAllTeamsSU": {
-    /** Get teams */
-    get: operations["teamsGet"];
+  "/execTopicRequests": {
+    post: operations["approveTopicRequests"];
   };
-  "/getEnvs": {
-    /** Get environments */
-    get: operations["environmentsGet"];
+  "/execTopicRequestsDecline": {
+    post: operations["declineTopicRequests"];
   };
-  "/getEnvsBaseClusterFilteredForTeam": {
-    /** Get environments */
-    get: operations["envsBaseClusterFilteredForTeamGet"];
+  "/execSchemaRequests": {
+    post: operations["execSchemaRequests"];
   };
-  "/getClusterInfoFromEnv": {
-    /** Get flavor of Kafka cluster (Aiven cluster or other type of cluster) */
-    get: operations["clusterInfoFromEnvironmentGet"];
+  "/execSchemaRequestsDecline": {
+    post: operations["execSchemaRequestsDecline"];
   };
-  "/getAclRequestsForApprover": {
-    /** Get ACL requests with aclstatus: created */
-    get: operations["getAclRequestsForApprover"];
+  "/execNewUserRequestDecline": {
+    post: operations["declineNewUserRequests"];
   };
-  "/getAclRequests": {
-    /** Get ACL requests with aclstatus: created */
-    get: operations["getAclRequests"];
+  "/execNewUserRequestApprove": {
+    post: operations["approveNewUserRequests"];
+  };
+  "/execConnectorRequests": {
+    post: operations["approveTopicRequests_1"];
+  };
+  "/execConnectorRequestsDecline": {
+    post: operations["declineConnectorRequests"];
   };
   "/execAclRequest": {
-    /** Approve an ACL request */
     post: operations["approveAclRequests"];
   };
   "/execAclRequestDecline": {
-    /** Decline an ACL request */
     post: operations["declineAclRequests"];
   };
+  "/deleteUserRequest": {
+    post: operations["deleteUser"];
+  };
+  "/deleteTopicRequests": {
+    post: operations["deleteTopicRequests"];
+  };
+  "/deleteTenant": {
+    post: operations["deleteTenant"];
+  };
+  "/deleteTeamRequest": {
+    post: operations["deleteTeam"];
+  };
+  "/deleteSchemaRequests": {
+    post: operations["deleteSchemaRequests"];
+  };
+  "/deleteRole": {
+    post: operations["deleteRole"];
+  };
+  "/deleteEnvironmentRequest": {
+    post: operations["deleteEnvironment"];
+  };
+  "/deleteConnectorRequests": {
+    post: operations["deleteConnectorRequests"];
+  };
+  "/deleteCluster": {
+    post: operations["deleteCluster"];
+  };
+  "/deleteAclRequests": {
+    post: operations["deleteAclRequests"];
+  };
+  "/createTopics": {
+    post: operations["createTopicsCreateRequest"];
+  };
+  "/createTopicDeleteRequest": {
+    post: operations["createTopicDeleteRequest"];
+  };
+  "/createDeleteAclSubscriptionRequest": {
+    post: operations["deleteAclSubscriptionRequest"];
+  };
+  "/createConnector": {
+    post: operations["createConnectorRequest"];
+  };
+  "/createConnectorDeleteRequest": {
+    post: operations["createConnectorDeleteRequest"];
+  };
+  "/createClaimTopicRequest": {
+    post: operations["createClaimTopicRequest"];
+  };
+  "/createClaimConnectorRequest": {
+    post: operations["createClaimConnectorRequest"];
+  };
   "/createAcl": {
-    post: operations["createAclRequest"];
+    post: operations["createAcl"];
   };
-  "/getSchemaRegEnvs": {
-    /** get schema registry environments */
-    get: operations["schemaRegEnvsGet"];
+  "/chPwd": {
+    post: operations["changePwd"];
   };
-  "/uploadSchema": {
-    /** post schema upload */
-    post: operations["schemaUpload"];
+  "/addTenantId": {
+    post: operations["addTenantId"];
   };
-  "/getTopicRequestsForApprover": {
-    get: operations["getTopicRequestsForApprover"];
+  "/addRoleId": {
+    post: operations["addRoleId"];
+  };
+  "/addNewUser": {
+    post: operations["addNewUser"];
+  };
+  "/addNewTeam": {
+    post: operations["addNewTeam"];
+  };
+  "/addNewEnv": {
+    post: operations["addNewEnv"];
+  };
+  "/addNewCluster": {
+    post: operations["addNewCluster"];
+  };
+  "/user/{userId}/switchTeamsList": {
+    get: operations["getSwitchTeams"];
+  };
+  "/testClusterApiConnection": {
+    get: operations["testClusterApiConnection"];
+  };
+  "/shutdownContext": {
+    get: operations["shutdownApp"];
+  };
+  "/showUserList": {
+    get: operations["showUsers"];
+  };
+  "/resetMemoryCache/{tenantName}/{entityType}/{operationType}": {
+    get: operations["resetMemoryCache"];
+  };
+  "/resetCache": {
+    get: operations["resetCache"];
+  };
+  "/requests/statistics": {
+    /** Get counts of all request entity types for different status,operation types */
+    get: operations["getRequestStatistics"];
+  };
+  "/getUserInfoFromRegistrationId": {
+    get: operations["getRegistrationInfoFromId"];
+  };
+  "/getUserDetails": {
+    get: operations["getUserDetails"];
+  };
+  "/getUpdateEnvStatus": {
+    get: operations["getUpdateEnvStatus"];
+  };
+  "/getTopics": {
+    get: operations["getTopics"];
+  };
+  "/getTopicsRowView": {
+    get: operations["getTopicsRowView"];
+  };
+  "/getTopicsOnly": {
+    get: operations["getTopicsOnly"];
+  };
+  "/getTopicsCountPerEnv": {
+    get: operations["getTopicsCountPerEnv"];
+  };
+  "/getTopicTeam": {
+    /** Get team, teamId of a topic */
+    get: operations["getTopicTeam"];
   };
   "/getTopicRequests": {
     get: operations["getTopicRequests"];
   };
-  "/getAuth": {
-    get: operations["getAuth"];
+  "/getTopicRequestsForApprover": {
+    get: operations["getTopicRequestsForApprover"];
   };
-  "/request/approve": {
-    post: operations["approveRequest"];
+  "/getTopicEvents": {
+    get: operations["getTopicEvents"];
   };
-  "/request/decline": {
-    post: operations["declineRequest"];
+  "/getTopicDetailsPerEnv": {
+    get: operations["getTopicDetailsPerEnv"];
   };
-  "/requests/statistics": {
-    /** Get counts of all request entity types for different status, operation types */
-    get: operations["getRequestStatistics"];
+  "/getTenants": {
+    get: operations["getTenants"];
+  };
+  "/getTenantsInfo": {
+    get: operations["getTenantsInfo"];
+  };
+  "/getTeamsOverview": {
+    get: operations["getTeamsOverview"];
+  };
+  "/getTeamDetails": {
+    get: operations["getTeamDetails"];
+  };
+  "/getSyncTopics": {
+    get: operations["getSyncTopics"];
+  };
+  "/getSyncEnv": {
+    get: operations["getSyncEnv"];
+  };
+  "/getSyncConnectors": {
+    get: operations["getSyncTopics_1"];
+  };
+  "/getSyncConnectorsEnv": {
+    get: operations["getSyncConnectorsEnv"];
+  };
+  "/getSyncBackAcls": {
+    get: operations["getSyncBackAcls"];
+  };
+  "/getSyncAcls": {
+    get: operations["getSyncAcls"];
+  };
+  "/getStandardEnvNames": {
+    get: operations["getStandardEnvNames"];
+  };
+  "/getSchemaRequests": {
+    get: operations["getSchemaRequests"];
   };
   "/getSchemaRequestsForApprover": {
     get: operations["getSchemaRequestsForApprover"];
   };
-  "/getSchemaRequests": {
-    get: operations["getSchemaRequests"];
+  "/getSchemaRegEnvs": {
+    get: operations["getSchemaRegEnvs"];
+  };
+  "/getSchemaOfTopic": {
+    get: operations["getSchemaOfTopic"];
+  };
+  "/getRoles": {
+    get: operations["getRoles"];
+  };
+  "/getRolesFromDb": {
+    get: operations["getRolesFromDb"];
+  };
+  "/getRequestTypeStatuses": {
+    get: operations["getRequestTypeStatuses"];
+  };
+  "/getPermissions": {
+    get: operations["getPermissions"];
+  };
+  "/getPermissionDescriptions": {
+    get: operations["getPermissionDescriptions"];
+  };
+  "/getNewUserRequests": {
+    get: operations["getNewUserRequests"];
+  };
+  "/getMyTenantInfo": {
+    get: operations["getMyTenantInfo"];
+  };
+  "/getMyProfileInfo": {
+    get: operations["getMyProfileInfo"];
+  };
+  "/getKwReport": {
+    get: operations["getKwReport"];
+  };
+  "/getKwPubkey": {
+    get: operations["getKwPubkey"];
+  };
+  "/getKafkaProtocols": {
+    get: operations["getSupportedKafkaProtocols"];
+  };
+  "/getKafkaConnectEnvs": {
+    get: operations["getKafkaConnectEnvs"];
+  };
+  "/getExtensionPeriods": {
+    get: operations["getExtensionPeriods"];
+  };
+  "/getEnvs": {
+    get: operations["getEnvs"];
+  };
+  "/getEnvsPaginated": {
+    get: operations["getEnvsPaginated"];
+  };
+  "/getEnvsForSchemaRequests": {
+    get: operations["getRequestForSchemas"];
+  };
+  "/getEnvsBaseCluster": {
+    get: operations["getEnvsBaseCluster"];
+  };
+  "/getEnvsBaseClusterFilteredForTeam": {
+    get: operations["getEnvsBaseClusterFilteredForTeam"];
+  };
+  "/getEnvParams": {
+    get: operations["getEnvParams"];
+  };
+  "/getEnvDetails": {
+    get: operations["getEnvDetails"];
+  };
+  "/getDbAuth": {
+    get: operations["getDbAuth"];
+  };
+  "/getDashboardStats": {
+    get: operations["getDashboardStats"];
+  };
+  "/getConsumerOffsets": {
+    get: operations["getConsumerOffsets"];
+  };
+  "/getConnectors": {
+    get: operations["getConnectors"];
+  };
+  "/getConnectorRequests": {
+    get: operations["getConnectorRequests"];
+  };
+  "/getConnectorRequestsForApproval": {
+    get: operations["getCreatedConnectorRequests"];
+  };
+  "/getConnectorOverview": {
+    get: operations["getConnectorOverview"];
+  };
+  "/getConnectorDetails": {
+    get: operations["getConnectorDetails"];
+  };
+  "/getConnectorDetailsPerEnv": {
+    get: operations["getConnectorDetailsPerEnv"];
+  };
+  "/getClusters": {
+    get: operations["getClusters"];
+  };
+  "/getClustersPaginated": {
+    get: operations["getClustersPaginated"];
+  };
+  "/getClusterInfoFromEnv": {
+    get: operations["getClusterInfoFromEnv"];
+  };
+  "/getClusterDetails": {
+    get: operations["getClusterDetails"];
+  };
+  "/getBrokerTopMetrics": {
+    get: operations["getBrokerTopMetrics"];
+  };
+  "/getBasicInfo": {
+    get: operations["getBasicInfo"];
+  };
+  "/getAuth": {
+    get: operations["getAuth"];
+  };
+  "/getAllTeamsSU": {
+    get: operations["getAllTeamsSU"];
+  };
+  "/getAllTeamsSUOnly": {
+    get: operations["getAllTeamsSUOnly"];
+  };
+  "/getAllTeamsSUFromRegisterUsers": {
+    get: operations["getAllTeamsSUFromRegisterUsers"];
+  };
+  "/getAllServerEditableConfig": {
+    get: operations["getAllEditableProps"];
+  };
+  "/getAllServerConfig": {
+    get: operations["getAllProperties"];
+  };
+  "/getAivenServiceAccounts": {
+    get: operations["getAivenServiceAccounts"];
+  };
+  "/getAivenServiceAccount": {
+    get: operations["getAivenServiceAccountDetails"];
+  };
+  "/getAdvancedTopicConfigs": {
+    get: operations["getAdvancedTopicConfigs"];
+  };
+  "/getActivityLogPerEnv": {
+    get: operations["showActivityLog"];
+  };
+  "/getActivityLogForTeamOverview": {
+    get: operations["getActivityLogForTeamOverview"];
+  };
+  "/getActivationInfo": {
+    get: operations["getActivationInfo"];
+  };
+  "/getAcls": {
+    get: operations["getAcls"];
+  };
+  "/getAclsCountPerEnv": {
+    get: operations["getAclsCountPerEnv"];
+  };
+  "/getAclRequests": {
+    get: operations["getAclRequests"];
+  };
+  "/getAclRequestsForApprover": {
+    get: operations["getAclRequestsForApprover"];
+  };
+  "/getAclCommands": {
+    get: operations["getAclCommand"];
   };
 };
 
@@ -110,198 +469,74 @@ export type webhooks = Record<string, never>;
 
 export type components = {
   schemas: {
-    CommonError: {
-      /**
-       * message 
-       * @description Description for user why a certain operation failed
-       */
-      message?: string;
+    UserInfoModel: {
+      username: string;
+      userPassword?: string;
+      team?: string;
+      /** Format: int32 */
+      teamId?: number;
+      role?: string;
+      fullname: string;
+      mailid?: string;
+      switchTeams?: boolean;
+      switchAllowedTeamIds?: (number)[];
+      switchAllowedTeamNames?: (string)[];
+      tenantName?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      totalNoPages?: string;
+      allPageNos?: (string)[];
     };
-    /** GenericApiResponse */
-    GenericApiResponse: {
+    ApiResponse: {
       /** @enum {string} */
-      status?: "100 CONTINUE" | "101 SWITCHING_PROTOCOLS" | "102 PROCESSING" | "103 CHECKPOINT" | "200 OK" | "201 CREATED" | "202 ACCEPTED" | "203 NON_AUTHORITATIVE_INFORMATION" | "204 NO_CONTENT" | "205 RESET_CONTENT" | "206 PARTIAL_CONTENT" | "207 MULTI_STATUS" | "208 ALREADY_REPORTED" | "226 IM_USED" | "300 MULTIPLE_CHOICES" | "301 MOVED_PERMANENTLY" | "302 FOUND" | "302 MOVED_TEMPORARILY" | "303 SEE_OTHER" | "304 NOT_MODIFIED" | "305 USE_PROXY" | "307 TEMPORARY_REDIRECT" | "308 PERMANENT_REDIRECT" | "400 BAD_REQUEST" | "401 UNAUTHORIZED" | "402 PAYMENT_REQUIRED" | "403 FORBIDDEN" | "404 NOT_FOUND" | "405 METHOD_NOT_ALLOWED" | "406 NOT_ACCEPTABLE" | "407 PROXY_AUTHENTICATION_REQUIRED" | "408 REQUEST_TIMEOUT" | "409 CONFLICT" | "410 GONE" | "411 LENGTH_REQUIRED" | "412 PRECONDITION_FAILED" | "413 PAYLOAD_TOO_LARGE" | "413 REQUEST_ENTITY_TOO_LARGE" | "414 URI_TOO_LONG" | "414 REQUEST_URI_TOO_LONG" | "415 UNSUPPORTED_MEDIA_TYPE" | "416 REQUESTED_RANGE_NOT_SATISFIABLE" | "417 EXPECTATION_FAILED" | "418 I_AM_A_TEAPOT" | "419 INSUFFICIENT_SPACE_ON_RESOURCE" | "420 METHOD_FAILURE" | "421 DESTINATION_LOCKED" | "422 UNPROCESSABLE_ENTITY" | "423 LOCKED" | "424 FAILED_DEPENDENCY" | "425 TOO_EARLY" | "426 UPGRADE_REQUIRED" | "428 PRECONDITION_REQUIRED" | "429 TOO_MANY_REQUESTS" | "431 REQUEST_HEADER_FIELDS_TOO_LARGE" | "451 UNAVAILABLE_FOR_LEGAL_REASONS" | "500 INTERNAL_SERVER_ERROR" | "501 NOT_IMPLEMENTED" | "502 BAD_GATEWAY" | "503 SERVICE_UNAVAILABLE" | "504 GATEWAY_TIMEOUT" | "505 HTTP_VERSION_NOT_SUPPORTED" | "506 VARIANT_ALSO_NEGOTIATES" | "507 INSUFFICIENT_STORAGE" | "508 LOOP_DETECTED" | "509 BANDWIDTH_LIMIT_EXCEEDED" | "510 NOT_EXTENDED" | "511 NETWORK_AUTHENTICATION_REQUIRED";
-      /**
-       * Timestamp 
-       * Format: date-time 
-       * @example "2018-11-13T20:20:39.000Z"
-       */
+      status?: "100 CONTINUE" | "101 SWITCHING_PROTOCOLS" | "102 PROCESSING" | "103 EARLY_HINTS" | "103 CHECKPOINT" | "200 OK" | "201 CREATED" | "202 ACCEPTED" | "203 NON_AUTHORITATIVE_INFORMATION" | "204 NO_CONTENT" | "205 RESET_CONTENT" | "206 PARTIAL_CONTENT" | "207 MULTI_STATUS" | "208 ALREADY_REPORTED" | "226 IM_USED" | "300 MULTIPLE_CHOICES" | "301 MOVED_PERMANENTLY" | "302 FOUND" | "302 MOVED_TEMPORARILY" | "303 SEE_OTHER" | "304 NOT_MODIFIED" | "305 USE_PROXY" | "307 TEMPORARY_REDIRECT" | "308 PERMANENT_REDIRECT" | "400 BAD_REQUEST" | "401 UNAUTHORIZED" | "402 PAYMENT_REQUIRED" | "403 FORBIDDEN" | "404 NOT_FOUND" | "405 METHOD_NOT_ALLOWED" | "406 NOT_ACCEPTABLE" | "407 PROXY_AUTHENTICATION_REQUIRED" | "408 REQUEST_TIMEOUT" | "409 CONFLICT" | "410 GONE" | "411 LENGTH_REQUIRED" | "412 PRECONDITION_FAILED" | "413 PAYLOAD_TOO_LARGE" | "413 REQUEST_ENTITY_TOO_LARGE" | "414 URI_TOO_LONG" | "414 REQUEST_URI_TOO_LONG" | "415 UNSUPPORTED_MEDIA_TYPE" | "416 REQUESTED_RANGE_NOT_SATISFIABLE" | "417 EXPECTATION_FAILED" | "418 I_AM_A_TEAPOT" | "419 INSUFFICIENT_SPACE_ON_RESOURCE" | "420 METHOD_FAILURE" | "421 DESTINATION_LOCKED" | "422 UNPROCESSABLE_ENTITY" | "423 LOCKED" | "424 FAILED_DEPENDENCY" | "425 TOO_EARLY" | "426 UPGRADE_REQUIRED" | "428 PRECONDITION_REQUIRED" | "429 TOO_MANY_REQUESTS" | "431 REQUEST_HEADER_FIELDS_TOO_LARGE" | "451 UNAVAILABLE_FOR_LEGAL_REASONS" | "500 INTERNAL_SERVER_ERROR" | "501 NOT_IMPLEMENTED" | "502 BAD_GATEWAY" | "503 SERVICE_UNAVAILABLE" | "504 GATEWAY_TIMEOUT" | "505 HTTP_VERSION_NOT_SUPPORTED" | "506 VARIANT_ALSO_NEGOTIATES" | "507 INSUFFICIENT_STORAGE" | "508 LOOP_DETECTED" | "509 BANDWIDTH_LIMIT_EXCEEDED" | "510 NOT_EXTENDED" | "511 NETWORK_AUTHENTICATION_REQUIRED";
+      /** Format: date-time */
       timestamp?: string;
       message?: string;
       debugMessage?: string;
-      result?: string;
+      result: string;
       data?: Record<string, never>;
     };
-    /**
-     * Type of request operation 
-     * @example UPDATE 
-     * @enum {string}
-     */
-    RequestOperationType: "CREATE" | "UPDATE" | "DELETE" | "CLAIM" | "PROMOTE";
-    /**
-     * Status of a request 
-     * @example CREATED 
-     * @enum {string}
-     */
-    RequestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-    UserAuthenticationRequest: {
-      /**
-       * username 
-       * @description Username 
-       * @example john.doe@klaw-project.io
-       */
-      username: string;
-      /**
-       * password 
-       * @example password123
-       */
-      password: string;
+    SchemaRequestModel: {
+      /** @enum {string} */
+      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      environment: string;
+      appname?: string;
+      remarks?: string;
+      requestor?: string;
+      username?: string;
+      topicname: string;
+      schemafull: string;
+      schemaversion?: string;
+      forceRegister?: boolean;
+      /** Format: int32 */
+      teamId?: number;
     };
-    UserAuthenticationResponse: {
-      /**
-       * token 
-       * @description Klaw authentication token 
-       * @example eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
-       */
-      token: string;
-      /**
-       * Token type 
-       * @example JWT 
-       * @enum {string}
-       */
-      tokenType: "JWT";
+    TopicConfigEntry: {
+      configKey?: string;
+      configValue?: string;
     };
-    TopicsGetResponse: ((components["schemas"]["TopicInfo"])[])[];
-    /**
-     * @example [
-     *   "myTopic",
-     *   "otherTopic"
-     * ]
-     */
-    TopicsGetOnlyResponse: (string)[];
-    /**
-     * @example {
-     *   "team": "Team A"
-     * }
-     */
-    TopicGetTeamResponse: {
-      team: string;
-    };
-    TopicInfo: {
-      /**
-       * Topic identifier 
-       * Format: int32 
-       * @description This identifier is used in Klaw metadata store to ensure uniquenes. 
-       * @example 1010
-       */
-      topicid: number;
-      /**
-       * Total number of pages 
-       * @example 1
-       */
-      totalNoPages: string;
-      /**
-       * Current page number 
-       * @example 1
-       */
-      currentPage: string;
-      /**
-       * All page numbers 
-       * @description List of all page numbers 
-       * @example [
-       *   "1"
-       * ]
-       */
-      allPageNos: (string)[];
-      /**
-       * Topic name 
-       * @description Kafka Topic name 
-       * @example topicName
-       */
-      topicName: string;
-      /**
-       * Number of partitions 
-       * Format: int32 
-       * @description Topic partition count 
-       * @example 10
-       */
-      noOfPartitions: number;
-      /**
-       * Description 
-       * @description Kafka topic description stored in Klaw metadata. 
-       * @example Main PostgreSQL change data capture stream
-       */
+    TopicUpdateRequestModel: {
+      /** @enum {string} */
+      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      environment: string;
+      appname?: string;
+      remarks?: string;
+      requestor?: string;
+      username?: string;
+      topicname: string;
+      /** Format: int32 */
+      topicpartitions: number;
+      replicationfactor: string;
       description: string;
-      /**
-       * Documentation 
-       * @deprecated
-       */
-      documentation: string | null;
-      /**
-       * Number of replicas 
-       * @description Topic replica count 
-       * @example 2
-       */
-      noOfReplicas?: string;
-      /**
-       * Sequence 
-       * @deprecated
-       */
-      sequence?: string;
-      /**
-       * Team name 
-       * @description Topic owner team name 
-       * @example application-X-developers
-       */
-      teamname: string;
-      /**
-       * cluster 
-       * @deprecated 
-       * @example 1
-       */
-      cluster: string;
-      /**
-       * Cluster identifier 
-       * @deprecated
-       */
-      clusterId: string | null;
-      /**
-       * Environments list 
-       * @description List of environments where the topic is present. 
-       * @example [
-       *   "DEV",
-       *   "TEST"
-       * ]
-       */
-      environmentsList: (string)[];
-      /**
-       * Show edit topic 
-       * @description Describes if the user should see topic edit action. 
-       * @example false
-       */
-      showEditTopic: boolean;
-      /**
-       * Show delete topic 
-       * @description Describes if the user should see topic delete action. 
-       * @example true
-       */
-      showDeleteTopic: boolean;
-      /**
-       * Topic deletable 
-       * @description Describes if the topic can be deleted. 
-       * @example true
-       */
-      topicDeletable: boolean;
+      advancedTopicConfigEntries?: (components["schemas"]["TopicConfigEntry"])[];
+      /** Format: int32 */
+      teamId?: number;
+      approvingTeamId?: string;
+      deleteAssociatedSchema?: boolean;
+      otherParams?: string;
     };
-    /**
-     * @example [
-     *   "All teams",
-     *   "Team A",
-     *   "Team B"
-     * ]
-     */
-    TeamNamesGetResponse: (string)[];
-    TeamsGetResponse: {
+    TeamModel: {
       teamname: string;
       teammail?: string;
       teamphone: string;
@@ -315,688 +550,110 @@ export type components = {
       tenantName?: string;
       envList?: (string)[];
     };
-    Environment: {
-      /**
-       * id 
-       * @description Environment identifier 
-       * @example 1
-       */
-      id: string;
-      /**
-       * Name 
-       * @description Environment name 
-       * @example DEV
-       */
-      name: string;
-      /**
-       * Type 
-       * @description Environment type 
-       * @enum {string}
-       */
-      type: "kafka" | "kafkaconnect" | "schema";
-      /**
-       * TenantId 
-       * @description Tenant identifier 
-       * @example 101
-       */
-      tenantId: number;
-      /**
-       * Topic prefix 
-       * @description Topic name prefix 
-       * @example test-
-       */
-      topicprefix: string | null;
-      /**
-       * Topic suffix 
-       * @description Topic name suffix 
-       * @example -test
-       */
-      topicsuffix: string | null;
-      /**
-       * Cluster identifier 
-       * @example 1
-       */
-      clusterId: number;
-      /**
-       * Tenant name 
-       * @example default
-       */
-      tenantName: string;
-      /**
-       * Cluster name 
-       * @example DEV
-       */
-      clusterName: string;
-      /**
-       * Environment status 
-       * @example ONLINE 
-       * @enum {string}
-       */
-      envStatus: "ONLINE" | "OFFLINE";
-      /**
-       * Other parameters 
-       * @description Topic configuration parameters 
-       * @example default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
-       */
-      otherParams: string;
-      /**
-       * Default partitions 
-       * @example 1
-       */
-      defaultPartitions: string | null;
-      /**
-       * Maximum partitions 
-       * @example 2
-       */
-      maxPartitions: string | null;
-      /**
-       * Default replication factor 
-       * @example 1
-       */
-      defaultReplicationFactor: string | null;
-      /**
-       * Maximum replication factor 
-       * @example 2
-       */
-      maxReplicationFactor: string | null;
-      /**
-       * Show delete environment 
-       * @description Describes if the user should see environment delete action. 
-       * @example true
-       */
-      showDeleteEnv: boolean;
-      /**
-       * Total number of pages 
-       * @example 1
-       */
-      totalNoPages: string;
-      /**
-       * All page numbers 
-       * @description List of all page numbers 
-       * @example [
-       *   "1"
-       * ]
-       */
-      allPageNos: (string)[];
-    };
-    /**
-     * TopicAdvancedConfigGetResponse 
-     * @example {
-     *   "CLEANUP_POLICY": "cleanup.policy",
-     *   "COMPRESSION_TYPE": "compression.type",
-     *   "DELETE_RETENTION_MS": "delete.retention.ms",
-     *   "FILE_DELETE_DELAY_MS": "file.delete.delay.ms",
-     *   "FLUSH_MESSAGES": "flush.messages",
-     *   "FLUSH_MS": "flush.ms",
-     *   "FOLLOWER_REPLICATION_THROTTLED_REPLICAS": "follower.replication.throttled.replicas",
-     *   "INDEX_INTERVAL_BYTES": "index.interval.bytes",
-     *   "LEADER_REPLICATION_THROTTLED_REPLICAS": "leader.replication.throttled.replicas",
-     *   "MAX_COMPACTION_LAG_MS": "max.compaction.lag.ms",
-     *   "MAX_MESSAGE_BYTES": "max.message.bytes",
-     *   "MESSAGE_DOWNCONVERSION_ENABLE": "message.downconversion.enable",
-     *   "MESSAGE_FORMAT_VERSION": "message.format.version",
-     *   "MESSAGE_TIMESTAMP_DIFFERENCE_MAX_MS": "message.timestamp.difference.max.ms",
-     *   "MESSAGE_TIMESTAMP_TYPE": "message.timestamp.type",
-     *   "MIN_CLEANABLE_DIRTY_RATIO": "min.cleanable.dirty.ratio",
-     *   "MIN_COMPACTION_LAG_MS": "min.compaction.lag.ms",
-     *   "MIN_INSYNC_REPLICAS": "min.insync.replicas",
-     *   "PREALLOCATE": "preallocate",
-     *   "RETENTION_BYTES": "retention.bytes",
-     *   "RETENTION_MS": "retention.ms",
-     *   "SEGMENT_BYTES": "segment.bytes",
-     *   "SEGMENT_INDEX_BYTES": "segment.index.bytes",
-     *   "SEGMENT_JITTER_MS": "segment.jitter.ms",
-     *   "SEGMENT_MS": "segment.ms",
-     *   "UNCLEAN_LEADER_ELECTION_ENABLE": "unclean.leader.election.enable"
-     * }
-     */
-    topicAdvancedConfigGetResponse: {
-      [key: string]: string | undefined;
-    };
-    /**
-     * @description Flavor of Kafka cluster (Aiven or other) 
-     * @example {
-     *   "aivenCluster": "false"
-     * }
-     */
-    environmentGetClusterInfoResponse: {
-      /** @enum {string} */
-      aivenCluster: "true" | "false";
-    };
-    /** TopicCreateRequest */
-    topicCreateRequest: {
-      /**
-       * Topic name 
-       * @description Kafka Topic name 
-       * @example topicName
-       */
-      topicname: string;
-      environment: string;
+    SyncTopicUpdates: {
+      sequence?: string;
+      req_no?: string;
+      topicName?: string;
       /** Format: int32 */
-      topicpartitions: number;
-      /**
-       * Team name 
-       * @example Marketing
-       */
-      teamname?: string;
-      /**
-       * Remarks 
-       * @description Message for the approval
-       */
-      remarks?: string;
-      /** Description */
-      description: string;
-      /**
-       * Replication factor 
-       * @example 1
-       */
-      replicationfactor: string;
-      /**
-       * Environment name 
-       * @example DEV
-       */
-      environmentName?: string;
-      /**
-       * Topic identifier 
-       * Format: int32 
-       * @description This identifier is used in Klaw metadata store to ensure uniquenes. 
-       * @example 1010
-       */
-      topicid?: number;
-      advancedTopicConfigEntries?: ({
-          configKey?: string;
-          configValue?: string;
-        })[];
-      /** App name */
-      appname?: string;
-      requestOperationType?: components["schemas"]["RequestOperationType"];
-      /** Requestor */
-      requestor?: string;
-      /**
-       * Request time 
-       * Format: date-time 
-       * @example "2018-11-13T20:20:39.000Z"
-       */
-      requesttime?: string;
-      /** Request time string */
-      requesttimestring?: string;
-      requestStatus?: components["schemas"]["RequestStatus"];
-      /**
-       * Approver 
-       * @example jon.snow@klaw-project.io
-       */
-      approver?: string;
-      /**
-       * Approving time 
-       * Format: date-time 
-       * @example "2018-11-13T20:20:39.000Z"
-       */
-      approvingtime?: string;
-      /**
-       * Sequence 
-       * @deprecated
-       */
+      partitions?: number;
+      replicationFactor?: string;
+      teamSelected?: string;
+      envSelected?: string;
+    };
+    SyncTopicsBulk: {
+      topicNames?: (string)[];
+      sourceEnv?: string;
+      selectedTeam?: string;
+      typeOfSync?: string;
+      topicDetails?: (Record<string, never>)[];
+      topicSearchFilter?: string;
+    };
+    SyncConnectorUpdates: {
       sequence?: string;
-      /**
-       * Username 
-       * @example jon.snow@klaw-project.io
-       */
-      username?: string;
-      /**
-       * Total number of pages 
-       * @example 1
-       */
-      totalNoPages?: string;
-      approvingTeamDetails?: string;
-      otherParams?: string;
-      /**
-       * Team identifier 
-       * Format: int32 
-       * @example 1010
-       */
-      teamId?: number;
-      /**
-       * All page numbers 
-       * @description List of all page numbers 
-       * @example [
-       *   "1"
-       * ]
-       */
-      allPageNos?: (string)[];
-      /** Possible teams */
-      possibleTeams?: (string)[];
-      /**
-       * Current page number 
-       * @example 1
-       */
-      currentPage?: string;
+      req_no?: string;
+      connectorName?: string;
+      teamSelected?: string;
+      envSelected?: string;
     };
-    aclRequest: {
-      /**
-       * @description A comment on the request for the approver. 
-       * @example Hello, thank you.
-       */
-      remarks?: string;
-      /**
-       * @description This is mandatory if acl type is consumer 
-       * @example Group-one
-       */
-      consumergroup?: string;
-      /**
-       * @example [
-       *   "35.239.43.144",
-       *   "35.239.43.145"
-       * ]
-       */
-      acl_ip?: (string)[];
-      /**
-       * @example [
-       *   "username",
-       *   "username-two"
-       * ]
-       */
-      acl_ssl?: (string)[];
-      /**
-       * @description If aclType is consumer, this field can only be LITERAL. If aclType is producer, this field can be LITERAL or PREFIXED 
-       * @example LITERAL 
-       * @enum {string}
-       */
-      aclPatternType: "LITERAL" | "PREFIXED";
-      /**
-       * @description Only available if aclPatternType is LITERAL 
-       * @example id-123
-       */
-      transactionalId?: string;
-      /**
-       * unique identifier 
-       * Format: int32 
-       * @example 100
-       */
-      req_no?: number;
-      /**
-       * @description Only topics available in chosen environment are allowed 
-       * @example myTopic
-       */
-      topicname: string;
-      /**
-       * @description ID of environment 
-       * @example 1
-       */
-      environment: string;
-      /**
-       * @description Name of environment 
-       * @example DEV
-       */
-      environmentName?: string;
-      /** @example Ospo */
-      teamname: string;
-      /**
-       * Format: int32 
-       * @example 1
-       */
-      teamId?: number;
-      /**
-       * Format: int32 
-       * @example 1
-       */
-      requestingteam?: number;
-      /** @example Ospo */
-      requestingTeamName?: string;
-      /** @example App */
-      appname?: string;
-      /**
-       * @example PRODUCER 
-       * @enum {string}
-       */
-      aclType: "PRODUCER" | "CONSUMER";
-      /** @example User */
-      username?: string;
-      /**
-       * Format: date-time 
-       * @example 2018-03-20T09:12:28Z
-       */
-      requesttime?: string;
-      /** @example 10-11-2020 10:45:30 */
-      requesttimestring?: string;
-      requestStatus?: components["schemas"]["RequestStatus"];
-      requestOperationType?: components["schemas"]["RequestOperationType"];
-      approver?: string;
-      /**
-       * Format: date-time 
-       * @example 2018-03-20T09:12:28Z
-       */
-      approvingtime?: string;
-      /**
-       * @example PRINCIPAL 
-       * @enum {string}
-       */
-      aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
-      /**
-       * @description Other possible values GROUP, CLUSTER 
-       * @example TOPIC
-       */
-      aclResourceType?: string;
-      /** @example 1 */
-      currentPage?: string;
-      otherParams?: string;
-      /** @example 10 */
-      totalNoPages?: string;
-      /**
-       * @example [
-       *   "1",
-       *   "2"
-       * ]
-       */
-      allPageNos?: (string)[];
-      /** @example DevRel */
-      approvingTeamDetails?: string;
-      editable?: boolean;
-      deletable?: boolean;
+    SyncBackTopics: {
+      topicIds?: (string)[];
+      sourceEnv?: string;
+      targetEnv?: string;
+      typeOfSync?: string;
     };
-    /** SchemaRequest */
-    SchemaRequest: {
-      /**
-       * unique identifier 
-       * Format: int32
-       */
-      req_no: number;
-      /**
-       * Topic name 
-       * @description Kafka Topic name 
-       * @example testtopic
-       */
-      topicname: string;
-      /**
-       * environment 
-       * @description Id of the environment 
-       * @example 3
-       */
-      environment: string;
-      /**
-       * environmentName 
-       * @description Name of the environment 
-       * @example DEV
-       */
-      environmentName: string;
-      /**
-       * schemaversion 
-       * @description SchemaRequest version 
-       * @example 1.0
-       */
-      schemaversion: string;
-      /**
-       * Team name 
-       * @description Topic owner team name 
-       * @example Infra
-       */
-      teamname: string;
-      /**
-       * Team ID 
-       * Format: int32 
-       * @description Team identifier 
-       * @example 1010
-       */
-      teamId: number;
-      /**
-       * App name 
-       * @example App
-       */
-      appname: string;
-      /**
-       * schemafull 
-       * @description A valid json/avro schema 
-       * @example {
-       *   "doc": "exampleTopic",
-       *   "fields": [
-       *     {
-       *       "default": "123456",
-       *        "doc": "test",
-       *       "name": "test",
-       *       "namespace": "test",
-       *       "type": "string"
-       *  }
-       *   ],
-       *   "name": "exampleTopic",
-       *   "namespace": "exampleTopic",
-       *   "type": "record"
-       * }
-       */
-      schemafull: string;
-      /**
-       * username 
-       * @description Username 
-       * @example jon.snow@klaw-project.io
-       */
-      username: string;
-      /**
-       * Request time 
-       * Format: date-time 
-       * @example "2018-11-13T20:20:39.000Z"
-       */
-      requesttime: string;
-      /**
-       * Request time string representation 
-       * @example 28-Dec-2022 14:54:57
-       */
-      requesttimestring: string;
-      requestStatus: components["schemas"]["RequestStatus"];
-      requestOperationType: components["schemas"]["RequestOperationType"];
-      forceRegister?: boolean;
-      /**
-       * Remarks 
-       * @description SchemaRequest specific comment 
-       * @example Please approve
-       */
-      remarks?: string;
-      /** Approver */
-      approver?: string;
-      /**
-       * Approving time 
-       * Format: date-time 
-       * @example "2022-11-13T20:20:39.000Z"
-       */
-      approvingtime?: string;
-      /**
-       * Approving team details 
-       * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
-       */
-      approvingTeamDetails: string;
-      /**
-       * Total number of pages 
-       * @example 3
-       */
-      totalNoPages?: string;
-      /**
-       * All page numbers 
-       * @description List of all page numbers 
-       * @example [
-       *   "1",
-       *   "2",
-       *   "3"
-       * ]
-       */
-      allPageNos?: (string)[];
-      /**
-       * Current page number 
-       * @example 2
-       */
-      currentPage?: string;
-      editable: boolean;
-      deletable: boolean;
+    SyncBackAcls: {
+      aclIds?: (string)[];
+      sourceEnv?: string;
+      targetEnv?: string;
+      typeOfSync?: string;
     };
-    TopicRequest: {
-      /**
-       * Topic name 
-       * @description Kafka Topic name 
-       * @example topicName
-       */
-      topicname: string;
-      /**
-       * Environment 
-       * @description ID of environment 
-       * @example 1
-       */
-      environment: string;
-      /**
-       * Topic partitions 
-       * Format: int32
-       */
-      topicpartitions: number;
-      /**
-       * Team name 
-       * @description Topic owner team name 
-       * @example application-X-developers
-       */
-      teamname: string;
-      /**
-       * Remarks 
-       * @description Message for the approval
-       */
-      remarks?: string;
-      /**
-       * Description 
-       * @description Kafka topic description stored in Klaw metadata. 
-       * @example Main PostgreSQL change data capture stream
-       */
+    SyncAclUpdates: {
+      sequence?: string;
+      req_no?: string;
+      topicName?: string;
+      teamSelected?: string;
+      consumerGroup?: string;
+      aclIp?: string;
+      aclSsl?: string;
+      aclType?: string;
+      envSelected?: string;
+    };
+    KwRolesPermissionsModel: {
+      /** Format: int32 */
+      id?: number;
+      roleId?: string;
+      permission?: string;
       description?: string;
-      /**
-       * Replication factor 
-       * @example 1
-       */
-      replicationfactor: string;
-      /**
-       * Environment name 
-       * @example DEV
-       */
-      environmentName: string;
-      /**
-       * Topic identifier 
-       * Format: int32 
-       * @description This identifier is used in Klaw metadata store to ensure uniquenes. 
-       * @example 1010
-       */
-      topicid: number;
-      /** Advanced topic configuration entries */
-      advancedTopicConfigEntries?: ({
-          configKey?: string;
-          configValue?: string;
-        })[];
-      /** App name */
-      appname?: string;
-      requestOperationType: components["schemas"]["RequestOperationType"];
-      /** Requestor */
-      requestor: string;
-      /**
-       * Request time 
-       * Format: date-time 
-       * @example "2018-11-13T20:20:39.000Z"
-       */
-      requesttime: string;
-      /** Request time string */
-      requesttimestring: string;
-      requestStatus: components["schemas"]["RequestStatus"];
-      /**
-       * Approver 
-       * @example jon.snow@klaw-project.io
-       */
-      approver?: string;
-      /**
-       * Approving time 
-       * Format: date-time 
-       * @example "2018-11-13T20:20:39.000Z"
-       */
-      approvingtime?: string;
-      /**
-       * Sequence 
-       * @deprecated
-       */
-      sequence?: string;
-      /**
-       * Username 
-       * @description Username 
-       * @example john.doe@klaw-project.io
-       */
-      username?: string;
-      /**
-       * Total number of pages 
-       * @example 1
-       */
-      totalNoPages?: string;
-      /**
-       * Approving team details 
-       * @example Team : Stark, Users : jonsnow,sansastark,aryastark,branstark
-       */
-      approvingTeamDetails: string;
-      /**
-       * Other parameters 
-       * @description Topic configuration parameters 
-       * @example default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix
-       */
-      otherParams?: string;
-      /**
-       * Team identifier 
-       * Format: int32 
-       * @example 1010
-       */
-      teamId: number;
-      /**
-       * All page numbers 
-       * @description List of all page numbers 
-       * @example [
-       *   "1"
-       * ]
-       */
-      allPageNos?: (string)[];
-      /** Possible teams */
-      possibleTeams?: (string)[];
-      /**
-       * Current page number 
-       * @example 1
-       */
-      currentPage?: string;
-      /** Topic can be edited */
-      editable: boolean;
-      /** Topic can be deleted */
-      deletable: boolean;
+      rolePermission?: string;
+      permissionEnabled?: string;
     };
-    /** GetAuthResponse */
-    GetAuthResponse: {
-      /**
-       * Schema Notifications 
-       * @description Number of schema requests waiting for approval 
-       * @example 6
-       */
-      notificationsSchemas: string;
-      /**
-       * Connector Notifications 
-       * @description Number of connector requests waiting for approval 
-       * @example 2
-       */
-      notificationsConnectors: string;
-      /**
-       * ACL Notifications 
-       * @description Number of ACL requests waiting for approval 
-       * @example 4
-       */
-      notificationsAcls: string;
-      /**
-       * User Notifications 
-       * @description Number of user requests waiting for approval 
-       * @example 4
-       */
-      notificationsUsers: string;
-      /**
-       * Topic Notifications 
-       * @description Number of topic requests waiting for approval 
-       * @example 5
-       */
-      notifications: string;
-      /**
-       * Team name 
-       * @description Name of the team the user is currently in 
-       * @example Ospo
-       */
+    KwPropertiesModel: {
+      kwKey?: string;
+      kwValue?: string;
+      kwDesc?: string;
+    };
+    TopicInfo: {
+      /** Format: int32 */
+      topicid: number;
+      sequence: string;
+      topicName: string;
+      /** Format: int32 */
+      noOfPartitions: number;
+      description: string;
+      noOfReplcias: string;
       teamname: string;
+      cluster: string;
+      environmentsList: (string)[];
+      showEditTopic: boolean;
+      showDeleteTopic: boolean;
+      topicDeletable: boolean;
+      totalNoPages: string;
+      currentPage: string;
+      allPageNos: (string)[];
+      documentation?: string;
+      clusterId?: string;
+    };
+    KafkaConnectorModel: {
+      /** Format: int32 */
+      sequence?: number;
+      /** Format: int32 */
+      connectorId?: number;
+      connectorName?: string;
+      connectorConfig?: string;
+      environmentName?: string;
+      environmentId?: string;
+      teamName?: string;
+      possibleTeams?: (string)[];
+      allPageNos?: (string)[];
+      totalNoPages?: string;
+      currentPage?: string;
+      remarks?: string;
+      documentation?: string;
+      environmentsList?: (string)[];
+      description?: string;
+      showEditConnector?: boolean;
+      showDeleteConnector?: boolean;
+      connectorDeletable?: boolean;
     };
     RequestVerdict: {
       reason?: string;
@@ -1004,8 +661,172 @@ export type components = {
       requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
       reqIds: (string)[];
     };
-    RequestsCountOverview: {
-      requestEntityStatistics?: (components["schemas"]["RequestEntityStatusCount"])[];
+    RegisterUserInfoModel: {
+      username: string;
+      pwd?: string;
+      team?: string;
+      /** Format: int32 */
+      teamId?: number;
+      role?: string;
+      fullname: string;
+      mailid?: string;
+      status?: string;
+      /** Format: date-time */
+      registeredTime?: string;
+      approver?: string;
+      registrationId?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      tenantName?: string;
+    };
+    RegisterSaasUserInfoModel: {
+      fullname: string;
+      mailid?: string;
+      recaptchaStr?: string;
+      status?: string;
+      /** Format: date-time */
+      registeredTime?: string;
+      approver?: string;
+      registrationId?: string;
+      tenantName?: string;
+    };
+    SchemaPromotion: {
+      targetEnvironment: string;
+      sourceEnvironment: string;
+      topicName: string;
+      schemaVersion: string;
+      schemaFull: string;
+      forceRegister?: boolean;
+      appName: string;
+      remarks: string;
+    };
+    TopicCreateRequestModel: {
+      /** @enum {string} */
+      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      environment: string;
+      appname?: string;
+      remarks?: string;
+      requestor?: string;
+      username?: string;
+      topicname: string;
+      /** Format: int32 */
+      topicpartitions: number;
+      replicationfactor: string;
+      description: string;
+      advancedTopicConfigEntries?: (components["schemas"]["TopicConfigEntry"])[];
+      /** Format: int32 */
+      teamId?: number;
+      approvingTeamId?: string;
+      deleteAssociatedSchema?: boolean;
+      otherParams?: string;
+    };
+    KafkaConnectorRequestModel: {
+      /** @enum {string} */
+      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      environment: string;
+      appname?: string;
+      remarks?: string;
+      requestor?: string;
+      username?: string;
+      connectorName: string;
+      connectorConfig: string;
+      description: string;
+      /** Format: int32 */
+      teamId?: number;
+      otherParams?: string;
+    };
+    AclRequestsModel: {
+      /** @enum {string} */
+      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      environment: string;
+      appname?: string;
+      remarks?: string;
+      requestor?: string;
+      username?: string;
+      topicname: string;
+      consumergroup?: string;
+      acl_ip?: (string)[];
+      acl_ssl?: (string)[];
+      aclPatternType: string;
+      transactionalId?: string;
+      /** Format: int32 */
+      teamId?: number;
+      teamname?: string;
+      /** @enum {string} */
+      aclType: "PRODUCER" | "CONSUMER";
+      /** @enum {string} */
+      aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
+      /** Format: int32 */
+      requestingteam?: number;
+      aclResourceType?: string;
+      otherParams?: string;
+    };
+    KwTenantModel: {
+      tenantName: string;
+      tenantDesc: string;
+      /** Format: int32 */
+      tenantId?: number;
+      licenseExpiryDate?: string;
+      contactPerson?: string;
+      inTrialPhase?: boolean;
+      numberOfDays?: string;
+      numberOfHours?: string;
+      orgName?: string;
+      authorizedToDelete?: boolean;
+      emailId?: string;
+      activeTenant?: boolean;
+    };
+    EnvModel: {
+      name: string;
+      type: string;
+      /** Format: int32 */
+      clusterId: number;
+      topicprefix?: string;
+      topicsuffix?: string;
+      otherParams?: string;
+      id?: string;
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      defaultReplicationFactor?: string;
+      maxReplicationFactor?: string;
+      associatedEnv?: components["schemas"]["EnvTag"];
+      /** Format: int32 */
+      tenantId?: number;
+    };
+    EnvTag: {
+      id?: string;
+      name?: string;
+    };
+    KwClustersModel: {
+      /** Format: int32 */
+      clusterId?: number;
+      clusterName: string;
+      bootstrapServers: string;
+      /** @enum {string} */
+      protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
+      clusterType: string;
+      kafkaFlavor: string;
+      projectName?: string;
+      serviceName?: string;
+      publicKey?: string;
+      showDeleteCluster?: boolean;
+      clusterStatus?: string;
+      totalNoPages?: string;
+      allPageNos?: (string)[];
+    };
+    TeamModelResponse: {
+      teamname: string;
+      teamphone: string;
+      contactperson: string;
+      /** Format: int32 */
+      teamId: number;
+      /** Format: int32 */
+      tenantId: number;
+      showDeleteTeam: boolean;
+      tenantName: string;
+      app?: string;
+      teammail?: string;
+      envList?: (string)[];
     };
     RequestEntityStatusCount: {
       /** @enum {string} */
@@ -1019,11 +840,353 @@ export type components = {
       /** Format: int64 */
       count?: number;
     };
+    RequestsCountOverview: {
+      requestEntityStatistics?: (components["schemas"]["RequestEntityStatusCount"])[];
+    };
     RequestsOperationTypeCount: {
       /** @enum {string} */
       requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       /** Format: int64 */
       count?: number;
+    };
+    TopicTeamResponse: {
+      team?: string;
+      /** Format: int32 */
+      teamId?: number;
+      error?: string;
+      status: boolean;
+    };
+    TopicRequestsResponseModel: {
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      username?: string;
+      topicname: string;
+      /** Format: int32 */
+      topicpartitions: number;
+      replicationfactor: string;
+      description: string;
+      /** Format: int32 */
+      topicid: number;
+      deleteAssociatedSchema: boolean;
+      advancedTopicConfigEntries: (components["schemas"]["TopicConfigEntry"])[];
+      approvingTeamId?: string;
+      sequence?: string;
+      possibleTeams?: (string)[];
+      deletable?: boolean;
+      editable?: boolean;
+    };
+    ChartsJsOverview: {
+      data?: (number)[];
+      labels?: (string)[];
+      colors?: (string)[];
+      options?: components["schemas"]["Options"];
+      series?: (string)[];
+      titleForReport?: string;
+      xaxisLabel?: string;
+      yaxisLabel?: string;
+    };
+    Options: {
+      title?: components["schemas"]["Title"];
+      scales?: components["schemas"]["Scales"];
+    };
+    Scales: {
+      yaxes?: (components["schemas"]["YAx"])[];
+      xaxes?: (components["schemas"]["YAx"])[];
+    };
+    TeamOverview: {
+      producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
+      consumerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
+      aclsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+      topicsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
+      topicsPerTeamPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+      topicsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+      partitionsPerEnvOverview?: components["schemas"]["ChartsJsOverview"];
+      activityLogOverview?: components["schemas"]["ChartsJsOverview"];
+      tenantName?: string;
+    };
+    Title: {
+      display?: boolean;
+      text?: string;
+      position?: string;
+      fontColor?: string;
+      fontFamily?: string;
+      fontStyle?: string;
+    };
+    YAx: {
+      id?: string;
+      type?: string;
+      display?: boolean;
+      position?: string;
+    };
+    EnvModelResponse: {
+      id: string;
+      name: string;
+      type: string;
+      /** Format: int32 */
+      tenantId: number;
+      /** Format: int32 */
+      clusterId: number;
+      tenantName: string;
+      clusterName: string;
+      envStatus: string;
+      otherParams: string;
+      showDeleteEnv: boolean;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      associatedEnv?: components["schemas"]["EnvTag"];
+      topicprefix?: string;
+      topicsuffix?: string;
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      defaultReplicationFactor?: string;
+      maxReplicationFactor?: string;
+      /** @enum {string} */
+      clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT" | "KAFKA_REST_API";
+    };
+    AclInfo: {
+      sequence?: string;
+      req_no?: string;
+      acl_ip?: string;
+      acl_ssl?: string;
+      topicname?: string;
+      topictype?: string;
+      consumergroup?: string;
+      environment?: string;
+      environmentName?: string;
+      teamname?: string;
+      /** Format: int32 */
+      teamid?: number;
+      operation?: string;
+      permission?: string;
+      transactionalId?: string;
+      aclPatternType?: string;
+      totalNoPages?: string;
+      allPageNos?: (string)[];
+      possibleTeams?: (string)[];
+      currentPage?: string;
+      showDeleteAcl?: boolean;
+      /** @enum {string} */
+      kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
+    };
+    SchemaRequestsResponseModel: {
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      username?: string;
+      topicname: string;
+      schemafull: string;
+      /** Format: int32 */
+      req_no: number;
+      forceRegister: boolean;
+      schemaversion?: string;
+      deletable?: boolean;
+      editable?: boolean;
+    };
+    SchemaOverview: {
+      topicExists?: boolean;
+      schemaExists?: boolean;
+      prefixAclsExists?: boolean;
+      txnAclsExists?: boolean;
+      allSchemaVersions?: {
+        [key: string]: (number)[] | undefined;
+      };
+      latestVersion?: {
+        [key: string]: number | undefined;
+      };
+      schemaPromotionDetails?: {
+        [key: string]: ({
+          [key: string]: string | undefined;
+        }) | undefined;
+      };
+      schemaDetails?: ({
+          [key: string]: string | undefined;
+        })[];
+    };
+    KafkaConnectorRequestsResponseModel: {
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      username?: string;
+      connectorName: string;
+      description: string;
+      connectorConfig: string;
+      /** Format: int32 */
+      connectorId: number;
+      possibleTeams?: (string)[];
+      approvingTeamId?: string;
+      deletable?: boolean;
+      editable?: boolean;
+    };
+    ConnectorOverview: {
+      topicInfoList?: (components["schemas"]["KafkaConnectorModel"])[];
+      topicHistoryList?: (components["schemas"]["TopicHistory"])[];
+      promotionDetails?: {
+        [key: string]: string | undefined;
+      };
+      connectorExists?: boolean;
+      topicDocumentation?: string;
+      /** Format: int32 */
+      topicIdForDocumentation?: number;
+    };
+    TopicHistory: {
+      environmentName?: string;
+      teamName?: string;
+      requestedBy?: string;
+      requestedTime?: string;
+      approvedBy?: string;
+      approvedTime?: string;
+      remarks?: string;
+    };
+    JmxOverview: {
+      brokerTopMetricsOverview?: components["schemas"]["ChartsJsOverview"];
+    };
+    ServerConfigProperties: {
+      id?: string;
+      key?: string;
+      value?: string;
+    };
+    ActivityLog: {
+      /** Format: int32 */
+      req_no?: number;
+      /** Format: int32 */
+      tenantId?: number;
+      activityName?: string;
+      activityType?: string;
+      /** Format: date-time */
+      activityTime?: string;
+      activityTimeString?: string;
+      details?: string;
+      user?: string;
+      /** Format: int32 */
+      teamId?: number;
+      env?: string;
+      envName?: string;
+      team?: string;
+      totalNoPages?: string;
+      currentPage?: string;
+      allPageNos?: (string)[];
+    };
+    TopicOverview: {
+      topicExists?: boolean;
+      schemaExists?: boolean;
+      prefixAclsExists?: boolean;
+      txnAclsExists?: boolean;
+      topicInfoList?: (components["schemas"]["TopicInfo"])[];
+      aclInfoList?: (components["schemas"]["AclInfo"])[];
+      prefixedAclInfoList?: (components["schemas"]["AclInfo"])[];
+      transactionalAclInfoList?: (components["schemas"]["AclInfo"])[];
+      topicHistoryList?: (components["schemas"]["TopicHistory"])[];
+      topicPromotionDetails?: {
+        [key: string]: string | undefined;
+      };
+      topicDocumentation?: string;
+      /** Format: int32 */
+      topicIdForDocumentation?: number;
+    };
+    AclRequestsResponseModel: {
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      username?: string;
+      topicname: string;
+      aclPatternType: string;
+      /** @enum {string} */
+      aclType: "PRODUCER" | "CONSUMER";
+      /** @enum {string} */
+      aclIpPrincipleType: "IP_ADDRESS" | "PRINCIPAL" | "USERNAME";
+      /** Format: int32 */
+      req_no: number;
+      /** Format: int32 */
+      requestingteam: number;
+      requestingTeamName: string;
+      consumergroup: string;
+      acl_ip: (string)[];
+      acl_ssl: (string)[];
+      transactionalId?: string;
+      aclResourceType?: string;
+      deletable?: boolean;
+      editable?: boolean;
     };
   };
   responses: never;
@@ -1037,69 +1200,1201 @@ export type external = Record<string, never>;
 
 export type operations = {
 
-  /**
-   * Authenticate user 
-   * @description Exchange username and password to an authentication token. The token can be later used as authentication mechanism for other API endpoints.
-   */
-  userAuthentication: {
+  updateUserTeamFromSwitchTeams: {
     requestBody: {
       content: {
-        "application/json": components["schemas"]["UserAuthenticationRequest"];
-      };
-    };
-    responses: {
-      /** @description Successful authentication */
-      200: {
-        content: {
-          "application/json": components["schemas"]["UserAuthenticationResponse"];
-        };
-      };
-      /** @description Invalid credentials */
-      403: {
-        content: {
-          "application/json": components["schemas"]["CommonError"];
-        };
-      };
-    };
-  };
-  /** Get topics */
-  topicsGet: {
-    parameters: {
-      query: {
-        /**
-         * @description The value should be either an environment identifier or "ALL". 
-         * @example ALL
-         */
-        env: string;
-        /** @example 1 */
-        pageNo: string;
-        /** @example 1 */
-        currentPage?: string;
-        /** @example searchTerm */
-        topicnamesearch?: string;
-        /** @example application-X-developers */
-        teamName?: string;
-        /** @example Producer */
-        topicType?: "Producer" | "Consumer";
+        "application/json": components["schemas"]["UserInfoModel"];
       };
     };
     responses: {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["TopicsGetResponse"];
+          "*/*": components["schemas"]["ApiResponse"];
         };
       };
     };
   };
-  /** Get topic names list */
-  topicsGetOnly: {
+  uploadSchema: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SchemaRequestModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateUser: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserInfoModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createTopicsUpdateRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicUpdateRequestModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateTeam: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TeamModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateSyncTopics: {
+    requestBody: {
+      content: {
+        "application/json": (components["schemas"]["SyncTopicUpdates"])[];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateSyncTopicsBulk: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncTopicsBulk"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateSyncConnectors: {
+    requestBody: {
+      content: {
+        "application/json": (components["schemas"]["SyncConnectorUpdates"])[];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateSyncBackTopics: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncBackTopics"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateSyncBackAcls: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncBackAcls"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateSyncAcls: {
+    requestBody: {
+      content: {
+        "application/json": (components["schemas"]["SyncAclUpdates"])[];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateProfile: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserInfoModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updatePermissions: {
+    requestBody: {
+      content: {
+        "application/json": (components["schemas"]["KwRolesPermissionsModel"])[];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  updateKwCustomProperty: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KwPropertiesModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  udpateTenant: {
     parameters: {
       query: {
-        /** @description Set to true to only get the topic names for topics belonging to the team of the current user */
-        isMyTeamTopics?: components["schemas"]["TopicsGetOnlyResponse"];
-        /** @description Pass an environment ID to get only the names of the topics in that environment */
-        envSelected?: components["schemas"]["TopicsGetOnlyResponse"];
+        orgName: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  udpateTenantExtension: {
+    parameters: {
+      query: {
+        selectedTenantExtensionPeriod: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  sendMessageToAdmin: {
+    parameters: {
+      query: {
+        contactFormSubject: string;
+        contactFormMessage: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  saveTopicDocumentation: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicInfo"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  saveConnectorDocumentation: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KafkaConnectorModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  resetPassword: {
+    parameters: {
+      query: {
+        username: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  /**
+   * Delete a Request 
+   * @description Updates the Status of a request to Deleted
+   */
+  deleteRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RequestVerdict"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Multi Status */
+      207: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Bad Request */
+      405: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+    };
+  };
+  /**
+   * Decline a Request 
+   * @description Updates the Status of a request to Declined
+   */
+  declineRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RequestVerdict"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Multi Status */
+      207: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Bad Request */
+      405: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+    };
+  };
+  /**
+   * Approve a Request 
+   * @description Updates the Status of a request to Approved and provisions the request
+   */
+  approveRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RequestVerdict"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Multi Status */
+      207: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Bad Request */
+      405: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+      /** @description Internal Server Error */
+      500: {
+        content: {
+          "application/json": (components["schemas"]["ApiResponse"])[];
+        };
+      };
+    };
+  };
+  registerUser: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RegisterUserInfoModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  registerUserSaas: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["RegisterSaasUserInfoModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  promoteSchema: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SchemaPromotion"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  logout: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  approveTopicRequests: {
+    parameters: {
+      query: {
+        topicId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  declineTopicRequests: {
+    parameters: {
+      query: {
+        topicId: string;
+        reasonForDecline: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  execSchemaRequests: {
+    parameters: {
+      query: {
+        avroSchemaReqId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  execSchemaRequestsDecline: {
+    parameters: {
+      query: {
+        avroSchemaReqId: string;
+        reasonForDecline: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  declineNewUserRequests: {
+    parameters: {
+      query: {
+        username: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  approveNewUserRequests: {
+    parameters: {
+      query: {
+        username: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  approveTopicRequests_1: {
+    parameters: {
+      query: {
+        connectorId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  declineConnectorRequests: {
+    parameters: {
+      query: {
+        connectorId: string;
+        reasonForDecline: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  approveAclRequests: {
+    parameters: {
+      query: {
+        req_no: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  declineAclRequests: {
+    parameters: {
+      query: {
+        req_no: string;
+        reasonForDecline: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteUser: {
+    parameters: {
+      query: {
+        userId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteTopicRequests: {
+    parameters: {
+      query: {
+        topicId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteTenant: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteTeam: {
+    parameters: {
+      query: {
+        teamId: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteSchemaRequests: {
+    parameters: {
+      query: {
+        req_no: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteRole: {
+    parameters: {
+      query: {
+        roleId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteEnvironment: {
+    parameters: {
+      query: {
+        envId: string;
+        envType: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteConnectorRequests: {
+    parameters: {
+      query: {
+        connectorId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteCluster: {
+    parameters: {
+      query: {
+        clusterId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteAclRequests: {
+    parameters: {
+      query: {
+        req_no: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createTopicsCreateRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicCreateRequestModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createTopicDeleteRequest: {
+    parameters: {
+      query: {
+        topicName: string;
+        env: string;
+        deleteAssociatedSchema?: boolean;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  deleteAclSubscriptionRequest: {
+    parameters: {
+      query: {
+        req_no: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createConnectorRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KafkaConnectorRequestModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createConnectorDeleteRequest: {
+    parameters: {
+      query: {
+        connectorName: string;
+        env: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createClaimTopicRequest: {
+    parameters: {
+      query: {
+        topicName: string;
+        env: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createClaimConnectorRequest: {
+    parameters: {
+      query: {
+        connectorName: string;
+        env: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createAcl: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["AclRequestsModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  changePwd: {
+    parameters: {
+      query: {
+        changePwd: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  addTenantId: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KwTenantModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  addRoleId: {
+    parameters: {
+      query: {
+        roleId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  addNewUser: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["UserInfoModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  addNewTeam: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TeamModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  addNewEnv: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["EnvModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  addNewCluster: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KwClustersModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  getSwitchTeams: {
+    parameters: {
+      path: {
+        userId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["TeamModelResponse"])[];
+        };
+      };
+    };
+  };
+  testClusterApiConnection: {
+    parameters: {
+      query: {
+        clusterApiUrl: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  shutdownApp: {
+    responses: {
+      /** @description OK */
+      200: never;
+    };
+  };
+  showUsers: {
+    parameters: {
+      query: {
+        teamName?: string;
+        pageNo?: string;
+        searchUserParam?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["UserInfoModel"])[];
+        };
+      };
+    };
+  };
+  resetMemoryCache: {
+    parameters: {
+      path: {
+        tenantName: string;
+        entityType: string;
+        operationType: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  resetCache: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  /** Get counts of all request entity types for different status,operation types */
+  getRequestStatistics: {
+    parameters: {
+      query: {
+        requestMode: "TO_APPROVE" | "MY_APPROVALS" | "MY_REQUESTS";
+      };
+    };
+    responses: {
+      /** @description default response */
+      default: {
+        content: {
+          "application/json": components["schemas"]["RequestsCountOverview"];
+        };
+      };
+    };
+  };
+  getRegistrationInfoFromId: {
+    parameters: {
+      query: {
+        userRegistrationId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["RegisterUserInfoModel"];
+        };
+      };
+    };
+  };
+  getUserDetails: {
+    parameters: {
+      query: {
+        userId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserInfoModel"];
+        };
+      };
+    };
+  };
+  getUpdateEnvStatus: {
+    parameters: {
+      query: {
+        envId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getTopics: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        teamName?: string;
+        topicType?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": ((components["schemas"]["TopicInfo"])[])[];
+        };
+      };
+    };
+  };
+  getTopicsRowView: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        teamName?: string;
+        topicType?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["TopicInfo"])[];
+        };
+      };
+    };
+  };
+  getTopicsOnly: {
+    parameters: {
+      query: {
+        isMyTeamTopics?: string;
+        envSelected?: string;
       };
     };
     responses: {
@@ -1111,151 +2406,1007 @@ export type operations = {
       };
     };
   };
-  /** Get the name of the team a topic belongs to */
-  topicGetTeam: {
+  getTopicsCountPerEnv: {
     parameters: {
       query: {
-        /** @description The name of the topic */
+        sourceEnvSelected: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  /** Get team, teamId of a topic */
+  getTopicTeam: {
+    parameters: {
+      query: {
         topicName: string;
-        /** @description The pattern type of the topic */
-        patternType?: "LITERAL" | "PREFIXED";
+        patternType?: "PREFIXED" | "LITERAL";
       };
     };
     responses: {
-      /** @description OK */
-      200: {
+      /** @description default response */
+      default: {
         content: {
-          "application/json": components["schemas"]["TopicGetTeamResponse"];
+          "application/json": components["schemas"]["TopicTeamResponse"];
         };
       };
     };
   };
-  /** Create topic request */
-  topicCreate: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["topicCreateRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
-        };
-      };
-    };
-  };
-  /** Get advanced topic configuration options */
-  topicAdvancedConfigGet: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["topicAdvancedConfigGetResponse"];
-        };
-      };
-    };
-  };
-  /** Get team names */
-  teamNamesGet: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TeamNamesGetResponse"];
-        };
-      };
-    };
-  };
-  /** Get teams */
-  teamsGet: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["TeamsGetResponse"])[];
-        };
-      };
-    };
-  };
-  /** Get environments */
-  environmentsGet: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["Environment"])[];
-        };
-      };
-    };
-  };
-  /** Get environments */
-  envsBaseClusterFilteredForTeamGet: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["Environment"])[];
-        };
-      };
-    };
-  };
-  /** Get flavor of Kafka cluster (Aiven cluster or other type of cluster) */
-  clusterInfoFromEnvironmentGet: {
-    parameters: {
-      query: {
-        /**
-         * @description The environment for which to get the cluster info 
-         * @example 2
-         */
-        envSelected: string;
-        /** @description The type of  environment for which to get the cluster info */
-        envType: "kafka" | "kafkaconnect" | "schema";
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["environmentGetClusterInfoResponse"];
-        };
-      };
-    };
-  };
-  /** Get ACL requests with aclstatus: created */
-  getAclRequestsForApprover: {
+  getTopicRequests: {
     parameters: {
       query: {
         pageNo: string;
         currentPage?: string;
-        /** @example CREATED */
-        requestStatus?: components["schemas"]["RequestStatus"];
-        /** @example mytopic */
-        topic?: string;
-        /** @example 1 */
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
-        /** @example CONSUMER */
-        aclType?: "CONSUMER" | "PRODUCER";
+        isMyRequest?: boolean;
       };
     };
     responses: {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["aclRequest"])[];
+          "application/json": (components["schemas"]["TopicRequestsResponseModel"])[];
         };
       };
     };
   };
-  /** Get ACL requests with aclstatus: created */
+  getTopicRequestsForApprover: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        teamId?: number;
+        env?: string;
+        search?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["TopicRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  getTopicEvents: {
+    parameters: {
+      query: {
+        envId: string;
+        topicName: string;
+        consumerGroupId: string;
+        offsetId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getTopicDetailsPerEnv: {
+    parameters: {
+      query: {
+        envSelected: string;
+        topicname: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: unknown | undefined;
+          };
+        };
+      };
+    };
+  };
+  getTenants: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["KwTenantModel"])[];
+        };
+      };
+    };
+  };
+  getTenantsInfo: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: number | undefined;
+          };
+        };
+      };
+    };
+  };
+  getTeamsOverview: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["TeamOverview"])[];
+        };
+      };
+    };
+  };
+  getTeamDetails: {
+    parameters: {
+      query: {
+        teamId: number;
+        tenantName: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamModelResponse"];
+        };
+      };
+    };
+  };
+  getSyncTopics: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        showAllTopics?: string;
+        isBulkOption?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: unknown | undefined;
+          };
+        };
+      };
+    };
+  };
+  getSyncEnv: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": ({
+              [key: string]: string | undefined;
+            })[];
+        };
+      };
+    };
+  };
+  getSyncTopics_1: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        connectornamesearch?: string;
+        isBulkOption?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["KafkaConnectorModel"])[];
+        };
+      };
+    };
+  };
+  getSyncConnectorsEnv: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getSyncBackAcls: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        teamName?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["AclInfo"])[];
+        };
+      };
+    };
+  };
+  getSyncAcls: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        topicnamesearch?: string;
+        showAllAcls?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["AclInfo"])[];
+        };
+      };
+    };
+  };
+  getStandardEnvNames: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (string)[];
+        };
+      };
+    };
+  };
+  getSchemaRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        topic?: string;
+        env?: string;
+        isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["SchemaRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  getSchemaRequestsForApprover: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        topic?: string;
+        env?: string;
+        search?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["SchemaRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  getSchemaRegEnvs: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getSchemaOfTopic: {
+    parameters: {
+      query: {
+        topicnamesearch: string;
+        schemaVersionSearch?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SchemaOverview"];
+        };
+      };
+    };
+  };
+  getRoles: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (string)[];
+        };
+      };
+    };
+  };
+  getRolesFromDb: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (string)[];
+        };
+      };
+    };
+  };
+  getRequestTypeStatuses: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (string)[];
+        };
+      };
+    };
+  };
+  getPermissions: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: (({
+                [key: string]: boolean | undefined;
+              })[]) | undefined;
+          };
+        };
+      };
+    };
+  };
+  getPermissionDescriptions: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getNewUserRequests: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["RegisterUserInfoModel"])[];
+        };
+      };
+    };
+  };
+  getMyTenantInfo: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KwTenantModel"];
+        };
+      };
+    };
+  };
+  getMyProfileInfo: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["UserInfoModel"];
+        };
+      };
+    };
+  };
+  getKwReport: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getKwPubkey: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getSupportedKafkaProtocols: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": ({
+              [key: string]: string | undefined;
+            })[];
+        };
+      };
+    };
+  };
+  getKafkaConnectEnvs: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getExtensionPeriods: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (string)[];
+        };
+      };
+    };
+  };
+  getEnvs: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getEnvsPaginated: {
+    parameters: {
+      query: {
+        pageNo: string;
+        envId?: string;
+        searchEnvParam?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getRequestForSchemas: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getEnvsBaseCluster: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getEnvsBaseClusterFilteredForTeam: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getEnvParams: {
+    parameters: {
+      query: {
+        envSelected: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: (string)[] | undefined;
+          };
+        };
+      };
+    };
+  };
+  getEnvDetails: {
+    parameters: {
+      query: {
+        envSelected: string;
+        envType: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvModelResponse"];
+        };
+      };
+    };
+  };
+  getDbAuth: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getDashboardStats: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getConsumerOffsets: {
+    parameters: {
+      query: {
+        env: string;
+        topicName: string;
+        consumerGroupId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": ({
+              [key: string]: string | undefined;
+            })[];
+        };
+      };
+    };
+  };
+  getConnectors: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        connectornamesearch?: string;
+        teamName?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": ((components["schemas"]["KafkaConnectorModel"])[])[];
+        };
+      };
+    };
+  };
+  getConnectorRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["KafkaConnectorRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  getCreatedConnectorRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        env?: string;
+        search?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["KafkaConnectorRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  getConnectorOverview: {
+    parameters: {
+      query: {
+        connectornamesearch: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ConnectorOverview"];
+        };
+      };
+    };
+  };
+  getConnectorDetails: {
+    parameters: {
+      query: {
+        env: string;
+        connectorName: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getConnectorDetailsPerEnv: {
+    parameters: {
+      query: {
+        envSelected: string;
+        connectorName: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: unknown | undefined;
+          };
+        };
+      };
+    };
+  };
+  getClusters: {
+    parameters: {
+      query: {
+        clusterType: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["KwClustersModel"])[];
+        };
+      };
+    };
+  };
+  getClustersPaginated: {
+    parameters: {
+      query: {
+        clusterType: string;
+        pageNo: string;
+        clusterId?: string;
+        searchClusterParam?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["KwClustersModel"])[];
+        };
+      };
+    };
+  };
+  getClusterInfoFromEnv: {
+    parameters: {
+      query: {
+        envSelected: string;
+        envType: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getClusterDetails: {
+    parameters: {
+      query: {
+        clusterId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["KwClustersModel"];
+        };
+      };
+    };
+  };
+  getBrokerTopMetrics: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["JmxOverview"];
+        };
+      };
+    };
+  };
+  getBasicInfo: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: unknown | undefined;
+          };
+        };
+      };
+    };
+  };
+  getAuth: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getAllTeamsSU: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["TeamModelResponse"])[];
+        };
+      };
+    };
+  };
+  getAllTeamsSUOnly: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (string)[];
+        };
+      };
+    };
+  };
+  getAllTeamsSUFromRegisterUsers: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["TeamModelResponse"])[];
+        };
+      };
+    };
+  };
+  getAllEditableProps: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": ({
+              [key: string]: string | undefined;
+            })[];
+        };
+      };
+    };
+  };
+  getAllProperties: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["ServerConfigProperties"])[];
+        };
+      };
+    };
+  };
+  getAivenServiceAccounts: {
+    parameters: {
+      query: {
+        env: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  getAivenServiceAccountDetails: {
+    parameters: {
+      query: {
+        env: string;
+        topicName: string;
+        userName: string;
+        aclReqNo: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  getAdvancedTopicConfigs: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  showActivityLog: {
+    parameters: {
+      query: {
+        env?: string;
+        pageNo: string;
+        currentPage?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["ActivityLog"])[];
+        };
+      };
+    };
+  };
+  getActivityLogForTeamOverview: {
+    parameters: {
+      query: {
+        activityLogForTeam: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TeamOverview"];
+        };
+      };
+    };
+  };
+  getActivationInfo: {
+    parameters: {
+      query: {
+        userActivationId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
+  getAcls: {
+    parameters: {
+      query: {
+        topicnamesearch: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicOverview"];
+        };
+      };
+    };
+  };
+  getAclsCountPerEnv: {
+    parameters: {
+      query: {
+        sourceEnvSelected: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
   getAclRequests: {
     parameters: {
       query: {
         pageNo: string;
         currentPage?: string;
-        /** @example CREATED */
-        requestStatus?: components["schemas"]["RequestStatus"];
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         topic?: string;
         env?: string;
         aclType?: "PRODUCER" | "CONSUMER";
@@ -1266,247 +3417,39 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["AclRequestsModel"])[];
+          "application/json": (components["schemas"]["AclRequestsResponseModel"])[];
         };
       };
     };
   };
-  /** Approve an ACL request */
-  approveAclRequests: {
-    parameters: {
-      query: {
-        /** @example 1008 */
-        req_no: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
-        };
-      };
-    };
-  };
-  /** Decline an ACL request */
-  declineAclRequests: {
-    parameters: {
-      query: {
-        /**
-         * @description reqNo of the ACL request 
-         * @example 1008
-         */
-        req_no: string;
-        /**
-         * @description Stated reason for declining request (URL formatted string) 
-         * @example I+don%27t+know+why+you+need+access
-         */
-        reasonForDecline: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
-        };
-      };
-    };
-  };
-  createAclRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["aclRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
-        };
-      };
-    };
-  };
-  /** get schema registry environments */
-  schemaRegEnvsGet: {
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["Environment"])[];
-        };
-      };
-    };
-  };
-  /** post schema upload */
-  schemaUpload: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["SchemaRequest"];
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["GenericApiResponse"];
-        };
-      };
-    };
-  };
-  getTopicRequestsForApprover: {
-    parameters: {
-      query: {
-        /** @example 2 */
-        pageNo: string;
-        /** @example 2 */
-        currentPage?: string;
-        /** @example CREATED */
-        requestStatus?: components["schemas"]["RequestStatus"];
-        teamId?: number;
-        /** @example 1 */
-        env?: string;
-        search?: string;
-      };
-    };
-    responses: {
-      /** @description successful operation */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["TopicRequest"])[];
-        };
-      };
-    };
-  };
-  getTopicRequests: {
-    parameters: {
-      query: {
-        /** @example 2 */
-        pageNo: string;
-        /** @example 2 */
-        currentPage?: string;
-        /** @example CREATED */
-        requestStatus?: components["schemas"]["RequestStatus"];
-        /** @example CREATE */
-        requestOperationType?: components["schemas"]["RequestOperationType"];
-        /** @example 1 */
-        env?: string;
-        search?: string;
-        isMyRequest?: boolean;
-      };
-    };
-    responses: {
-      /** @description successful operation */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["TopicRequest"])[];
-        };
-      };
-    };
-  };
-  getAuth: {
-    responses: {
-      200: {
-        content: {
-          "application/json": components["schemas"]["GetAuthResponse"];
-        };
-      };
-    };
-  };
-  approveRequest: {
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["RequestVerdict"];
-      };
-    };
-    responses: {
-      /** @description successful operation */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["GenericApiResponse"])[];
-        };
-      };
-    };
-  };
-  declineRequest: {
-    requestBody?: {
-      content: {
-        "application/json": components["schemas"]["RequestVerdict"];
-      };
-    };
-    responses: {
-      /** @description successful operation */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["GenericApiResponse"])[];
-        };
-      };
-    };
-  };
-  /** Get counts of all request entity types for different status, operation types */
-  getRequestStatistics: {
-    parameters: {
-      query: {
-        requestMode: "TO_APPROVE" | "MY_REQUESTS" | "MY_APPROVALS";
-      };
-    };
-    responses: {
-      /** @description successful operation */
-      200: {
-        content: {
-          "application/json": components["schemas"]["RequestsCountOverview"];
-        };
-      };
-    };
-  };
-  getSchemaRequestsForApprover: {
-    parameters: {
-      query: {
-        /** @example 1 */
-        pageNo: string;
-        /** @example 1 */
-        currentPage?: string;
-        /** @example CREATED */
-        requestStatus?: components["schemas"]["RequestStatus"];
-        /**
-         * @description Name of a topic 
-         * @example testtopic1
-         */
-        topic?: string;
-        /**
-         * @description Environment identifier 
-         * @example 3
-         */
-        env?: string;
-        search?: string;
-      };
-    };
-    responses: {
-      /** @description successful operation */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["SchemaRequest"])[];
-        };
-      };
-    };
-  };
-  getSchemaRequests: {
+  getAclRequestsForApprover: {
     parameters: {
       query: {
         pageNo: string;
         currentPage?: string;
-        requestStatus?: components["schemas"]["RequestStatus"];
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         topic?: string;
         env?: string;
-        isMyRequest?: boolean;
+        aclType?: "PRODUCER" | "CONSUMER";
       };
     };
     responses: {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["SchemaRequest"])[];
+          "application/json": (components["schemas"]["AclRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  getAclCommand: {
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
         };
       };
     };
