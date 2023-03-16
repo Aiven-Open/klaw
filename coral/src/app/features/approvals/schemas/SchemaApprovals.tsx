@@ -216,7 +216,7 @@ function SchemaApprovals() {
             key={"environment"}
             isSchemaRegistryEnvironments
           />,
-          <StatusFilter key={"status"} />,
+          <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <TopicFilter key={"topic"} />,
         ]}
         table={table}

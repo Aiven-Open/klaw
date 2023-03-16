@@ -6,10 +6,15 @@ import {
 } from "src/app/features/approvals/utils/request-status-helper";
 import { RequestStatus } from "src/domain/requests/requests-types";
 
-function StatusFilter() {
+type StatusFilterProps = {
+  defaultStatus: RequestStatus;
+};
+
+function StatusFilter(props: StatusFilterProps) {
+  const { defaultStatus } = props;
   const [searchParams, setSearchParams] = useSearchParams();
   const status =
-    (searchParams.get("status") as RequestStatus | null) ?? "CREATED";
+    (searchParams.get("status") as RequestStatus | null) ?? defaultStatus;
 
   const handleChangeStatus = (nextStatus: RequestStatus) => {
     searchParams.set("status", nextStatus);
