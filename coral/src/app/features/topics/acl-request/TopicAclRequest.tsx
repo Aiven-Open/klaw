@@ -76,8 +76,8 @@ const TopicAclRequest = () => {
           patternType: selectedPatternType,
         }),
       onSuccess: (data) => {
-        if (data === undefined) {
-          throw new Error("Could not fetch team for current Topic");
+        if (data.error !== undefined) {
+          throw new Error(data.error);
         }
         return aclType === "PRODUCER"
           ? topicProducerForm.setValue("teamname", data.team as string)
