@@ -20,10 +20,9 @@ function TopicRequests() {
     queryKey: ["topicRequests", currentTopic, currentPage, isMyRequest],
     queryFn: () =>
       getTopicRequests({
-        pageNo: "1",
+        pageNo: String(currentPage),
         // search is not yet implemented as a param to getTopicRequests
         // search: currentTopic,
-        pageNo: String(currentPage),
         isMyRequest,
       }),
     keepPreviousData: true,

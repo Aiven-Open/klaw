@@ -9,7 +9,6 @@ function parseNumberOrUndefined(value: string | undefined): number | undefined {
 function transformEnvironmentApiResponse(
   apiResponse: KlawApiResponse<"getEnvs"> | KlawApiResponse<"getSchemaRegEnvs">
 ): Environment[] {
-  console.log(apiResponse);
   return apiResponse.map((environment) => {
     const rv: Environment = {
       name: environment.name,
