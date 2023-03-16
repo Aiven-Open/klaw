@@ -75,10 +75,11 @@ function SchemaRequestTable({ requests }: SchemaRequestTableProps) {
       headerName: "Details",
       headerInvisible: true,
       width: 30,
-      action: ({ id }) => ({
+      action: ({ id, topic }) => ({
         text: "View",
         icon: infoIcon,
         onClick: () => console.log("details!", id),
+        "aria-label": `View schema request for ${topic}`,
       }),
     },
     {
@@ -86,11 +87,12 @@ function SchemaRequestTable({ requests }: SchemaRequestTableProps) {
       headerName: "Delete",
       headerInvisible: true,
       width: 30,
-      action: ({ id, deletable }) => ({
+      action: ({ id, deletable, topic }) => ({
         text: "Delete",
         icon: deleteIcon,
         onClick: () => console.log("delete!", id),
         disabled: !deletable,
+        "aria-label": `Delete schema request for ${topic}`,
       }),
     },
   ];

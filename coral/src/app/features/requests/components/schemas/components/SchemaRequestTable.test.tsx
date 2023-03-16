@@ -70,7 +70,7 @@ describe("SchemaRequestTable", () => {
     it("shows a button to view details for every row", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
       const buttons = within(table).getAllByRole("button", {
-        name: "View",
+        name: /View schema request for/,
       });
 
       expect(buttons).toHaveLength(schemaRequests.length);
@@ -79,7 +79,7 @@ describe("SchemaRequestTable", () => {
     it("shows an enabled button for every row where request is 'deletable'", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
       const buttons = within(table).getAllByRole("button", {
-        name: "Delete",
+        name: /Delete schema request for/,
       });
 
       const disabledButtons = buttons.filter((button) => {
@@ -97,7 +97,7 @@ describe("SchemaRequestTable", () => {
     schemaRequests.forEach((request) => {
       //@TODO buttons don't have discernible names right now
       // should be fixed for accessibility
-      xit(`shows a button to show the detailed schema request for topic name ${request.topicname}`, () => {
+      it(`shows a button to show the detailed schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const button = within(table).getByRole("button", {
           name: `View schema request for ${request.topicname}`,
@@ -110,7 +110,7 @@ describe("SchemaRequestTable", () => {
     deletableRequests.forEach((request) => {
       //@TODO buttons don't have discernible names right now
       // should be fixed for accessibility
-      xit(`shows a button to delete schema request for topic name ${request.topicname}`, () => {
+      it(`shows a button to delete schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Schema requests" });
         const button = within(table).getByRole("button", {
           name: `Delete schema request for ${request.topicname}`,
