@@ -18,6 +18,7 @@ import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.response.AuthenticationInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
@@ -219,7 +220,7 @@ public class UtilControllerService {
     return countList;
   }
 
-  public Map<String, String> getAuth() {
+  public AuthenticationInfo getAuth() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String userName = getUserName();
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
@@ -264,17 +265,17 @@ public class UtilControllerService {
         outstandingUserReqs = "0";
       }
 
-      Map<String, String> dashboardData =
+      AuthenticationInfo authenticationInfo = new AuthenticationInfo();
+      Map<String, String> teamTopics =
           reqsHandle.getDashboardInfo(commonUtilsService.getTeamId(userName), tenantId);
-
-      dashboardData.put("contextPath", kwContextPath);
-      dashboardData.put("teamsize", "" + manageDatabase.getTeamsForTenant(tenantId).size());
-      dashboardData.put(
-          "schema_clusters_count", "" + manageDatabase.getSchemaRegEnvList(tenantId).size());
-      dashboardData.put(
-          "kafka_clusters_count", "" + manageDatabase.getKafkaEnvList(tenantId).size());
-      dashboardData.put(
-          "kafkaconnect_clusters_count",
+      authenticationInfo.setMyteamtopics(teamTopics.get("myteamtopics"));
+      authenticationInfo.setContextPath(kwContextPath);
+      authenticationInfo.setTeamsize("" + manageDatabase.getTeamsForTenant(tenantId).size());
+      authenticationInfo.setSchema_clusters_count(
+          "" + manageDatabase.getSchemaRegEnvList(tenantId).size());
+      authenticationInfo.setKafka_clusters_count(
+          "" + manageDatabase.getKafkaEnvList(tenantId).size());
+      authenticationInfo.setKafkaconnect_clusters_count(
           "" + manageDatabase.getKafkaConnectEnvList(tenantId).size());
 
       String canUpdatePermissions, addEditRoles;
@@ -498,11 +499,10 @@ public class UtilControllerService {
         addDeleteEditClusters = ApiResultStatus.AUTHORIZED.value;
       }
 
-      if (ACTIVE_DIRECTORY.value.equals(authenticationType) && "true".equals(adAuthRoleEnabled)) {
-        dashboardData.put("adAuthRoleEnabled", "true");
-      } else {
-        dashboardData.put("adAuthRoleEnabled", "false");
-      }
+      authenticationInfo.setAdAuthRoleEnabled(
+          ""
+              + (ACTIVE_DIRECTORY.value.equals(authenticationType)
+                  && "true".equals(adAuthRoleEnabled)));
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.VIEW_TOPICS)) {
         viewTopics = "NotAuthorized";
@@ -515,11 +515,7 @@ public class UtilControllerService {
         companyInfo = "Our Organization";
       }
 
-      if ("saas".equals(kwInstallationType)) {
-        dashboardData.put("supportlink", "https://github.com/aiven/klaw/issues");
-      } else {
-        dashboardData.put("supportlink", "https://github.com/aiven/klaw/issues");
-      }
+      authenticationInfo.setSupportlink("https://github.com/aiven/klaw/issues");
 
       // broadcast text
       String broadCastText = "";
@@ -539,62 +535,53 @@ public class UtilControllerService {
       }
 
       UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userName);
-      dashboardData.put("canSwitchTeams", "" + userInfo.isSwitchTeams());
+      authenticationInfo.setCanSwitchTeams("" + userInfo.isSwitchTeams());
 
-      dashboardData.put("broadcastText", broadCastText);
-      dashboardData.put("saasEnabled", kwInstallationType);
-      dashboardData.put(
-          "tenantActiveStatus",
-          manageDatabase.getTenantFullConfig(tenantId).getIsActive()); // true/false
-      dashboardData.put("username", userName);
-      dashboardData.put("authenticationType", authenticationType);
-      dashboardData.put("teamname", teamName);
-      dashboardData.put("teamId", "" + commonUtilsService.getTeamId(userName));
-      dashboardData.put("tenantName", getTenantNameFromUser(userName, userInfo));
-      dashboardData.put("userrole", authority);
-      dashboardData.put("companyinfo", companyInfo);
-      dashboardData.put("klawversion", klawVersion);
-
-      dashboardData.put("notifications", outstandingTopicReqs);
-      dashboardData.put("notificationsAcls", outstandingAclReqs);
-      dashboardData.put("notificationsSchemas", outstandingSchemasReqs);
-      dashboardData.put("notificationsUsers", outstandingUserReqs);
-      dashboardData.put("notificationsConnectors", outstandingConnectorReqs);
-
-      dashboardData.put("canShutdownKw", canShutdownKw);
-      dashboardData.put("canUpdatePermissions", canUpdatePermissions);
-      dashboardData.put("addEditRoles", addEditRoles);
-      dashboardData.put("viewTopics", viewTopics);
-      dashboardData.put("requestItems", requestItems);
-      dashboardData.put("viewKafkaConnect", viewKafkaConnect);
-
-      dashboardData.put("syncBackTopics", syncBackTopics);
-      dashboardData.put("syncBackAcls", syncBackAcls);
-      dashboardData.put("updateServerConfig", updateServerConfig);
-      dashboardData.put("showServerConfigEnvProperties", showServerConfigEnvProperties);
-
-      dashboardData.put("addUser", addUser);
-      dashboardData.put("addTeams", addTeams);
-
-      dashboardData.put("syncTopicsAcls", syncTopicsAcls);
-      dashboardData.put("syncConnectors", syncConnectors);
-
-      dashboardData.put("approveAtleastOneRequest", approveAtleastOneRequest);
-      dashboardData.put("approveDeclineTopics", approveDeclineTopics);
-      dashboardData.put("approveDeclineSubscriptions", approveDeclineSubscriptions);
-      dashboardData.put("approveDeclineSchemas", approveDeclineSchemas);
-      dashboardData.put("approveDeclineConnectors", approveDeclineConnectors);
-      dashboardData.put("pendingApprovalsRedirectionPage", redirectionPage);
-
-      dashboardData.put("showAddDeleteTenants", addDeleteEditTenants);
-      dashboardData.put("addDeleteEditClusters", addDeleteEditClusters);
-      dashboardData.put("addDeleteEditEnvs", addDeleteEditEnvs);
-      dashboardData.put("larit", "");
+      authenticationInfo.setBroadcastText(broadCastText);
+      authenticationInfo.setSaasEnabled(kwInstallationType);
+      authenticationInfo.setTenantActiveStatus(
+          manageDatabase.getTenantFullConfig(tenantId).getIsActive());
+      authenticationInfo.setUsername(userName);
+      authenticationInfo.setAuthenticationType(authenticationType);
+      authenticationInfo.setTeamname(teamName);
+      authenticationInfo.setTeamId("" + commonUtilsService.getTeamId(userName));
+      authenticationInfo.setTenantName(getTenantNameFromUser(userName, userInfo));
+      authenticationInfo.setUserrole(authority);
+      authenticationInfo.setCompanyinfo(companyInfo);
+      authenticationInfo.setKlawversion(klawVersion);
+      authenticationInfo.setNotifications(outstandingTopicReqs);
+      authenticationInfo.setNotificationsAcls(outstandingAclReqs);
+      authenticationInfo.setNotificationsSchemas(outstandingSchemasReqs);
+      authenticationInfo.setNotificationsUsers(outstandingUserReqs);
+      authenticationInfo.setNotificationsConnectors(outstandingConnectorReqs);
+      authenticationInfo.setCanShutdownKw(canShutdownKw);
+      authenticationInfo.setCanUpdatePermissions(canUpdatePermissions);
+      authenticationInfo.setAddEditRoles(addEditRoles);
+      authenticationInfo.setViewTopics(viewTopics);
+      authenticationInfo.setRequestItems(requestItems);
+      authenticationInfo.setViewKafkaConnect(viewKafkaConnect);
+      authenticationInfo.setSyncBackTopics(syncBackTopics);
+      authenticationInfo.setSyncBackAcls(syncBackAcls);
+      authenticationInfo.setUpdateServerConfig(updateServerConfig);
+      authenticationInfo.setShowServerConfigEnvProperties(showServerConfigEnvProperties);
+      authenticationInfo.setAddUser(addUser);
+      authenticationInfo.setAddTeams(addTeams);
+      authenticationInfo.setSyncTopicsAcls(syncTopicsAcls);
+      authenticationInfo.setSyncConnectors(syncConnectors);
+      authenticationInfo.setApproveAtleastOneRequest(approveAtleastOneRequest);
+      authenticationInfo.setApproveDeclineTopics(approveDeclineTopics);
+      authenticationInfo.setApproveDeclineSubscriptions(approveDeclineSubscriptions);
+      authenticationInfo.setApproveDeclineSchemas(approveDeclineSchemas);
+      authenticationInfo.setApproveDeclineConnectors(approveDeclineConnectors);
+      authenticationInfo.setPendingApprovalsRedirectionPage(redirectionPage);
+      authenticationInfo.setShowAddDeleteTenants(addDeleteEditTenants);
+      authenticationInfo.setAddDeleteEditClusters(addDeleteEditClusters);
+      authenticationInfo.setAddDeleteEditEnvs(addDeleteEditEnvs);
 
       // coral attributes
-      dashboardData.put("coralEnabled", Boolean.toString(coralEnabled));
+      authenticationInfo.setCoralEnabled(Boolean.toString(coralEnabled));
 
-      return dashboardData;
+      return authenticationInfo;
     } else return null;
   }
 

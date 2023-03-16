@@ -465,7 +465,7 @@ public class TopicSyncControllerServiceTest {
     topic.setTopicname(topicName);
     topic.setEnvironment(EnvId);
     topic.setNoOfPartitions(2);
-    topic.setNoOfReplcias("1");
+    topic.setNoOfReplicas("1");
     topic.setTeamId(TENANT_ID);
     return topic;
   }

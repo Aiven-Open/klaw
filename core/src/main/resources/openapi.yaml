@@ -2398,7 +2398,6 @@
     "/getTopicTeam" : {
       "get" : {
         "tags" : [ "topic-controller" ],
-        "summary" : "Get team, teamId of a topic",
         "operationId" : "getTopicTeam",
         "parameters" : [ {
           "name" : "topicName",
@@ -2418,8 +2417,8 @@
           }
         } ],
         "responses" : {
-          "default" : {
-            "description" : "default response",
+          "200" : {
+            "description" : "OK",
             "content" : {
               "application/json" : {
                 "schema" : {
@@ -4166,10 +4165,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/ClusterInfo"
                 }
               }
             }
@@ -4250,10 +4246,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/AuthenticationInfo"
                 }
               }
             }
@@ -5229,7 +5222,7 @@
           "description" : {
             "type" : "string"
           },
-          "noOfReplcias" : {
+          "noOfReplicas" : {
             "type" : "string"
           },
           "teamname" : {
@@ -5272,7 +5265,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "allPageNos", "cluster", "currentPage", "description", "environmentsList", "noOfPartitions", "noOfReplcias", "sequence", "showDeleteTopic", "showEditTopic", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
+        "required" : [ "allPageNos", "cluster", "currentPage", "description", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
       },
       "KafkaConnectorModel" : {
         "properties" : {
@@ -6632,12 +6625,171 @@
           }
         }
       },
+      "ClusterInfo" : {
+        "properties" : {
+          "aivenCluster" : {
+            "type" : "boolean"
+          }
+        }
+      },
       "JmxOverview" : {
         "properties" : {
           "brokerTopMetricsOverview" : {
             "$ref" : "#/components/schemas/ChartsJsOverview"
           }
         }
+      },
+      "AuthenticationInfo" : {
+        "properties" : {
+          "contextPath" : {
+            "type" : "string"
+          },
+          "teamsize" : {
+            "type" : "string"
+          },
+          "schema_clusters_count" : {
+            "type" : "string"
+          },
+          "kafka_clusters_count" : {
+            "type" : "string"
+          },
+          "kafkaconnect_clusters_count" : {
+            "type" : "string"
+          },
+          "canSwitchTeams" : {
+            "type" : "string"
+          },
+          "broadcastText" : {
+            "type" : "string"
+          },
+          "saasEnabled" : {
+            "type" : "string"
+          },
+          "tenantActiveStatus" : {
+            "type" : "string"
+          },
+          "username" : {
+            "type" : "string"
+          },
+          "authenticationType" : {
+            "type" : "string"
+          },
+          "teamname" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "string"
+          },
+          "tenantName" : {
+            "type" : "string"
+          },
+          "userrole" : {
+            "type" : "string"
+          },
+          "companyinfo" : {
+            "type" : "string"
+          },
+          "klawversion" : {
+            "type" : "string"
+          },
+          "notifications" : {
+            "type" : "string"
+          },
+          "notificationsAcls" : {
+            "type" : "string"
+          },
+          "notificationsSchemas" : {
+            "type" : "string"
+          },
+          "notificationsUsers" : {
+            "type" : "string"
+          },
+          "notificationsConnectors" : {
+            "type" : "string"
+          },
+          "canShutdownKw" : {
+            "type" : "string"
+          },
+          "canUpdatePermissions" : {
+            "type" : "string"
+          },
+          "addEditRoles" : {
+            "type" : "string"
+          },
+          "viewTopics" : {
+            "type" : "string"
+          },
+          "requestItems" : {
+            "type" : "string"
+          },
+          "viewKafkaConnect" : {
+            "type" : "string"
+          },
+          "syncBackTopics" : {
+            "type" : "string"
+          },
+          "syncBackAcls" : {
+            "type" : "string"
+          },
+          "updateServerConfig" : {
+            "type" : "string"
+          },
+          "showServerConfigEnvProperties" : {
+            "type" : "string"
+          },
+          "addUser" : {
+            "type" : "string"
+          },
+          "addTeams" : {
+            "type" : "string"
+          },
+          "syncTopicsAcls" : {
+            "type" : "string"
+          },
+          "syncConnectors" : {
+            "type" : "string"
+          },
+          "approveAtleastOneRequest" : {
+            "type" : "string"
+          },
+          "approveDeclineTopics" : {
+            "type" : "string"
+          },
+          "approveDeclineSubscriptions" : {
+            "type" : "string"
+          },
+          "approveDeclineSchemas" : {
+            "type" : "string"
+          },
+          "approveDeclineConnectors" : {
+            "type" : "string"
+          },
+          "pendingApprovalsRedirectionPage" : {
+            "type" : "string"
+          },
+          "showAddDeleteTenants" : {
+            "type" : "string"
+          },
+          "addDeleteEditClusters" : {
+            "type" : "string"
+          },
+          "addDeleteEditEnvs" : {
+            "type" : "string"
+          },
+          "coralEnabled" : {
+            "type" : "string"
+          },
+          "adAuthRoleEnabled" : {
+            "type" : "string"
+          },
+          "supportlink" : {
+            "type" : "string"
+          },
+          "myteamtopics" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackTopics", "syncConnectors", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
       "ServerConfigProperties" : {
         "properties" : {

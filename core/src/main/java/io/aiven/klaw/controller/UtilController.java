@@ -2,6 +2,7 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.model.RequestsCountOverview;
 import io.aiven.klaw.model.enums.RequestMode;
+import io.aiven.klaw.model.response.AuthenticationInfo;
 import io.aiven.klaw.service.RequestStatisticsService;
 import io.aiven.klaw.service.UtilControllerService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,7 +45,7 @@ public class UtilController {
       value = "/getAuth",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getAuth() {
+  public ResponseEntity<AuthenticationInfo> getAuth() {
     return new ResponseEntity<>(utilControllerService.getAuth(), HttpStatus.OK);
   }
 

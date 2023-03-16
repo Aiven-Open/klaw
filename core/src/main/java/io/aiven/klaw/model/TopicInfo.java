@@ -16,7 +16,7 @@ public class TopicInfo {
 
   @NotNull private String description;
 
-  @NotNull private String noOfReplcias;
+  @NotNull private String noOfReplicas;
 
   @NotNull private String teamname;
 
