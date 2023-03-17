@@ -1,9 +1,9 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { MyRequestFilter } from "src/app/features/components/table-filters/MyRequestFilter";
+import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-describe("MyRequestFilter", () => {
+describe("MyRequestsFilter", () => {
   afterEach(() => {
     cleanup();
     window.history.replaceState(null, "", "/");
@@ -11,7 +11,7 @@ describe("MyRequestFilter", () => {
 
   it("is checked if showOnlyMyRequests is true in the url search parameters", async () => {
     window.history.replaceState(null, "", "/?showOnlyMyRequests=true");
-    customRender(<MyRequestFilter />, {
+    customRender(<MyRequestsFilter />, {
       browserRouter: true,
     });
     await waitFor(() =>
@@ -28,7 +28,7 @@ describe("MyRequestFilter", () => {
 
   it("is unchecked if showOnlyMyRequests in the url search parameters has other value than true", async () => {
     window.history.replaceState(null, "", "/?showOnlyMyRequests=abc");
-    customRender(<MyRequestFilter />, {
+    customRender(<MyRequestsFilter />, {
       browserRouter: true,
     });
     await waitFor(() =>
@@ -45,7 +45,7 @@ describe("MyRequestFilter", () => {
 
   it("sets the showOnlyMyRequests and page search parameter when user toggles the switch", async () => {
     window.history.replaceState(null, "", "/");
-    customRender(<MyRequestFilter />, {
+    customRender(<MyRequestsFilter />, {
       browserRouter: true,
     });
     await waitFor(() => expect(window.location.search).toEqual(""));
@@ -61,7 +61,7 @@ describe("MyRequestFilter", () => {
 
   it("unsets the showOnlyMyRequests and page search parameter when user untoggles the switch", async () => {
     window.history.replaceState(null, "", "/?showOnlyMyRequests=true");
-    customRender(<MyRequestFilter />, {
+    customRender(<MyRequestsFilter />, {
       browserRouter: true,
     });
     await waitFor(() =>

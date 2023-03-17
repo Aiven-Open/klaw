@@ -1,17 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSchemaRequests } from "src/domain/schema-request";
-import { SchemaRequestTable } from "src/app/features/requests/components/schemas/components/SchemaRequestTable";
-import { TableLayout } from "src/app/features/components/layouts/TableLayout";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import { RequestStatus } from "src/domain/requests/requests-types";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { MyRequestFilter } from "src/app/features/components/table-filters/MyRequestFilter";
-import { useState } from "react";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
+import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
+import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
+import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
+import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import { SchemaRequestTable } from "src/app/features/requests/components/schemas/components/SchemaRequestTable";
+import { RequestStatus } from "src/domain/requests/requests-types";
+import { getSchemaRequests } from "src/domain/schema-request";
 
 const defaultStatus = "ALL";
 
@@ -115,7 +115,7 @@ function SchemaRequests() {
           />,
           <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
           <TopicFilter key={"topic"} />,
-          <MyRequestFilter key={"show-only-my-requests"} />,
+          <MyRequestsFilter key={"show-only-my-requests"} />,
         ]}
         table={
           <SchemaRequestTable
