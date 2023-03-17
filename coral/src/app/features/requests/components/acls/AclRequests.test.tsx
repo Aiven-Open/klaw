@@ -137,6 +137,9 @@ describe("AclRequests", () => {
       expect(mockGetAclRequests).toHaveBeenCalledWith({
         pageNo: "100",
         topic: "",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
       });
     });
 
@@ -151,6 +154,9 @@ describe("AclRequests", () => {
       expect(mockGetAclRequests).toHaveBeenCalledWith({
         pageNo: "1",
         topic: "",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
       });
     });
 
@@ -255,6 +261,9 @@ describe("AclRequests", () => {
       expect(mockGetAclRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
         topic: "",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
       });
     });
   });
@@ -274,6 +283,9 @@ describe("AclRequests", () => {
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         topic: "abc",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
       });
     });
 
@@ -292,6 +304,9 @@ describe("AclRequests", () => {
         expect(getAclRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
           topic: "abc",
+          env: "ALL",
+          aclType: "ALL",
+          requestStatus: "ALL",
         });
       });
     });
