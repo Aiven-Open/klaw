@@ -29,7 +29,12 @@ function TableLayout(props: TableLayoutProps) {
       >
         {filters.map((element) => {
           return (
-            <Box grow={1} key={element.key}>
+            <Box
+              key={element.key}
+              grow={1}
+              display={"flex"}
+              flexDirection={"column"}
+            >
               {element}
             </Box>
           );

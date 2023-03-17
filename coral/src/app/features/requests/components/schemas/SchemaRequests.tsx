@@ -8,6 +8,7 @@ import EnvironmentFilter from "src/app/features/components/table-filters/Environ
 import { RequestStatus } from "src/domain/requests/requests-types";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import { MyRequestFilter } from "src/app/features/components/table-filters/MyRequestFilter";
 
 const defaultStatus = "ALL";
 
@@ -18,10 +19,11 @@ function SchemaRequests() {
     ? Number(searchParams.get("page"))
     : 1;
   const currentTopic = searchParams.get("topic") ?? undefined;
-
   const currentEnvironment = searchParams.get("environment") ?? "ALL";
   const currentStatus =
     (searchParams.get("status") as RequestStatus) ?? defaultStatus;
+  const showOnlyMyRequests =
+    searchParams.get("showOnlyMyRequests") === "true" ? true : undefined;
 
   const {
     data: schemaRequests,
@@ -35,6 +37,7 @@ function SchemaRequests() {
       currentEnvironment,
       currentStatus,
       currentTopic,
+      showOnlyMyRequests,
     ],
     queryFn: () =>
       getSchemaRequests({
@@ -42,7 +45,9 @@ function SchemaRequests() {
         env: currentEnvironment,
         requestStatus: currentStatus,
         topic: currentTopic,
+        isMyRequest: showOnlyMyRequests,
       }),
+    keepPreviousData: true,
   });
 
   const setCurrentPage = (page: number) => {
@@ -65,6 +70,7 @@ function SchemaRequests() {
         <EnvironmentFilter key={"environments"} isSchemaRegistryEnvironments />,
         <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
         <TopicFilter key={"topic"} />,
+        <MyRequestFilter key={"show-only-my-requests"} />,
       ]}
       table={<SchemaRequestTable requests={schemaRequests?.entries || []} />}
       pagination={pagination}
