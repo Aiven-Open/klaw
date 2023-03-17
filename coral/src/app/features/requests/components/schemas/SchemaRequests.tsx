@@ -47,6 +47,7 @@ function SchemaRequests() {
         topic: currentTopic,
         isMyRequest: showOnlyMyRequests,
       }),
+    keepPreviousData: true,
   });
 
   const setCurrentPage = (page: number) => {
