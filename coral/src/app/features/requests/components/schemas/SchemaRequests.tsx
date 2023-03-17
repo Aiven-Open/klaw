@@ -34,13 +34,14 @@ function SchemaRequests() {
       currentPage,
       currentEnvironment,
       currentStatus,
+      currentTopic,
     ],
     queryFn: () =>
       getSchemaRequests({
         pageNo: String(currentPage),
         env: currentEnvironment,
         requestStatus: currentStatus,
-        topic: currentTopic
+        topic: currentTopic,
       }),
   });
 
@@ -63,8 +64,7 @@ function SchemaRequests() {
       filters={[
         <EnvironmentFilter key={"environments"} isSchemaRegistryEnvironments />,
         <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
-        <TopicFilter key={"topic"} />
-        ,
+        <TopicFilter key={"topic"} />,
       ]}
       table={<SchemaRequestTable requests={schemaRequests?.entries || []} />}
       pagination={pagination}

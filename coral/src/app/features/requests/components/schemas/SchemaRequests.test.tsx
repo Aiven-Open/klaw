@@ -2,7 +2,8 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import {
   cleanup,
   screen,
- waitFor, within,
+  waitFor,
+  within,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
