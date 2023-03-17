@@ -303,7 +303,7 @@ describe("AclRequests", () => {
       });
     });
 
-    it("applies the topic filter by typing into to the search input", async () => {
+    it("enables user to filter ACL requests by Topic name", async () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
@@ -357,7 +357,7 @@ describe("AclRequests", () => {
       });
     });
 
-    it("applies the topic filter by selecting a value", async () => {
+    it("enables user to filter ACL requests by Environment", async () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
@@ -412,7 +412,7 @@ describe("AclRequests", () => {
       });
     });
 
-    it("applies the topic filter by selecting a value", async () => {
+    it("enables user to filter ACL requests by ACL type", async () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
@@ -463,7 +463,7 @@ describe("AclRequests", () => {
       });
     });
 
-    it("applies the topic filter by selecting a value", async () => {
+    it("enables user to filter ACL requests by status", async () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
