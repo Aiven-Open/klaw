@@ -7,7 +7,7 @@ import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApp
 import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
-import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
