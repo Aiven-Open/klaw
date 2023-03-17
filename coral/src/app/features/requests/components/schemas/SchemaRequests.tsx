@@ -9,6 +9,9 @@ import { RequestStatus } from "src/domain/requests/requests-types";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { MyRequestFilter } from "src/app/features/components/table-filters/MyRequestFilter";
+import { useState } from "react";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
+import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
 
 const defaultStatus = "ALL";
 
@@ -24,6 +27,11 @@ function SchemaRequests() {
     (searchParams.get("status") as RequestStatus) ?? defaultStatus;
   const showOnlyMyRequests =
     searchParams.get("showOnlyMyRequests") === "true" ? true : undefined;
+
+  const [modals, setModals] = useState<{
+    open: "DETAILS" | "DELETE" | "NONE";
+    req_no: number | null;
+  }>({ open: "NONE", req_no: null });
 
   const {
     data: schemaRequests,
@@ -50,10 +58,14 @@ function SchemaRequests() {
     keepPreviousData: true,
   });
 
-  const setCurrentPage = (page: number) => {
+  function closeModal() {
+    setModals({ open: "NONE", req_no: null });
+  }
+
+  function setCurrentPage(page: number) {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
-  };
+  }
 
   const pagination =
     schemaRequests?.totalPages && schemaRequests.totalPages > 1 ? (
@@ -65,19 +77,58 @@ function SchemaRequests() {
     ) : undefined;
 
   return (
-    <TableLayout
-      filters={[
-        <EnvironmentFilter key={"environments"} isSchemaRegistryEnvironments />,
-        <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
-        <TopicFilter key={"topic"} />,
-        <MyRequestFilter key={"show-only-my-requests"} />,
-      ]}
-      table={<SchemaRequestTable requests={schemaRequests?.entries || []} />}
-      pagination={pagination}
-      isLoading={isLoading}
-      isErrorLoading={isError}
-      errorMessage={error}
-    />
+    <>
+      {modals.open === "DETAILS" && (
+        <RequestDetailsModal
+          onClose={closeModal}
+          actions={{
+            primary: {
+              text: "Close",
+              onClick: () => {
+                if (modals.req_no === null) {
+                  throw Error("req_no can't be null");
+                }
+                closeModal();
+              },
+            },
+            secondary: {
+              text: "Delete",
+              onClick: () => {
+                console.log("DELETE");
+              },
+            },
+          }}
+          isLoading={false}
+        >
+          <SchemaRequestDetails
+            request={schemaRequests?.entries.find(
+              (request) => request.req_no === modals.req_no
+            )}
+          />
+        </RequestDetailsModal>
+      )}
+      <TableLayout
+        filters={[
+          <EnvironmentFilter
+            key={"environments"}
+            isSchemaRegistryEnvironments
+          />,
+          <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
+          <TopicFilter key={"topic"} />,
+          <MyRequestFilter key={"show-only-my-requests"} />,
+        ]}
+        table={
+          <SchemaRequestTable
+            requests={schemaRequests?.entries || []}
+            setModals={setModals}
+          />
+        }
+        pagination={pagination}
+        isLoading={isLoading}
+        isErrorLoading={isError}
+        errorMessage={error}
+      />
+    </>
   );
 }
 
