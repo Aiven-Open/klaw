@@ -3,6 +3,7 @@ import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import {
   CreateAclRequestTopicTypeConsumer,
   CreateAclRequestTopicTypeProducer,
+  GetCreatedAclRequestForApproverParameters,
   GetCreatedAclRequestParameters,
 } from "src/domain/acl/acl-types";
 import {
@@ -24,16 +25,22 @@ const createAclRequest = (
 };
 
 const filterGetAclRequestParams = (params: GetCreatedAclRequestParameters) => {
-  return omitBy(params, (value, property) => {
-    const omitEnv = property === "env" && value === "ALL";
-    const omitAclType = property === "aclType" && value === "ALL";
-    const omitTopic = property === "topic" && value === "";
+  return omitBy(
+    { ...params, isMyRequest: String(Boolean(params.isMyRequest)) },
+    (value, property) => {
+      const omitEnv = property === "env" && value === "ALL";
+      const omitAclType = property === "aclType" && value === "ALL";
+      const omitTopic = property === "topic" && value === "";
+      const omitIsMyRequest = property === "isMyRequest" && value !== "true";
 
-    return omitEnv || omitAclType || omitTopic;
-  });
+      return omitEnv || omitAclType || omitTopic || omitIsMyRequest;
+    }
+  );
 };
 
-const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
+const getAclRequestsForApprover = (
+  params: GetCreatedAclRequestForApproverParameters
+) => {
   const filteredParams = filterGetAclRequestParams(params);
 
   return api

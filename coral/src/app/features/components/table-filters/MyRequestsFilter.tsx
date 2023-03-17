@@ -1,7 +1,7 @@
 import { Switch } from "@aivenio/aquarium";
 import { useSearchParams } from "react-router-dom";
 
-function MyRequestFilter() {
+function MyRequestsFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
   const isMyRequest = searchParams.get("showOnlyMyRequests") === "true";
 
@@ -24,4 +24,4 @@ function MyRequestFilter() {
   );
 }
 
-export { MyRequestFilter };
+export { MyRequestsFilter };

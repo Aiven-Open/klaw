@@ -5,7 +5,7 @@ import { TopicRequestsTable } from "src/app/features/requests/components/topics/
 import { useSearchParams } from "react-router-dom";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { Pagination } from "src/app/components/Pagination";
-import { MyRequestFilter } from "src/app/features/components/table-filters/MyRequestFilter";
+import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
 
 function TopicRequests() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -46,7 +46,7 @@ function TopicRequests() {
     <TableLayout
       filters={[
         <TopicFilter key={"topic"} />,
-        <MyRequestFilter key={"isMyRequest"} />,
+        <MyRequestsFilter key={"isMyRequest"} />,
       ]}
       table={
         <TopicRequestsTable
