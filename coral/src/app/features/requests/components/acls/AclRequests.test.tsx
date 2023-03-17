@@ -487,4 +487,61 @@ describe("AclRequests", () => {
       });
     });
   });
+
+  describe("user can filter ACL requests by only showing their own requests ", () => {
+    afterEach(() => {
+      cleanup();
+    });
+
+    it("renders proper state of toggle and filters correctly from the url search parameters", () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?showOnlyMyRequests=true",
+      });
+
+      const toggle = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+
+      expect(toggle).toBeChecked();
+
+      expect(getAclRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        topic: "",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
+        isMyRequest: true,
+      });
+    });
+
+    it("enables user to filter ACL requests by only showing their own requests", async () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      const toggle = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+
+      expect(toggle).not.toBeChecked();
+
+      await userEvent.click(toggle);
+
+      expect(toggle).toBeChecked();
+
+      await waitFor(() => {
+        expect(getAclRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          topic: "",
+          env: "ALL",
+          aclType: "ALL",
+          requestStatus: "ALL",
+          isMyRequest: true,
+        });
+      });
+    });
+  });
 });
