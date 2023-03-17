@@ -5,7 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
-import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import DetailsModalContent from "src/app/features/approvals/topics/components/DetailsModalContent";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
@@ -194,19 +194,30 @@ function TopicApprovals() {
       {detailsModal.isOpen && (
         <RequestDetailsModal
           onClose={() => setDetailsModal({ isOpen: false, topicId: null })}
-          onApprove={() => {
-            if (detailsModal.topicId === null) {
-              setErrorMessage("topicId is null, it should be a number");
-              return;
-            }
-            approveRequest({
-              requestEntityType: "TOPIC",
-              reqIds: [String(detailsModal.topicId)],
-            });
-          }}
-          onDecline={() => {
-            setDetailsModal({ isOpen: false, topicId: null });
-            setDeclineModal({ isOpen: true, topicId: detailsModal.topicId });
+          actions={{
+            primary: {
+              text: "Approve",
+              onClick: () => {
+                if (detailsModal.topicId === null) {
+                  setErrorMessage("topicId is null, it should be a number");
+                  return;
+                }
+                approveRequest({
+                  requestEntityType: "TOPIC",
+                  reqIds: [String(detailsModal.topicId)],
+                });
+              },
+            },
+            secondary: {
+              text: "Decline",
+              onClick: () => {
+                setDetailsModal({ isOpen: false, topicId: null });
+                setDeclineModal({
+                  isOpen: true,
+                  topicId: detailsModal.topicId,
+                });
+              },
+            },
           }}
           isLoading={approveIsLoading || declineIsLoading}
           disabledActions={
