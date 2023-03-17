@@ -98,10 +98,18 @@ const mockGetAclRequestsResponse = transformAclRequestApiResponse([
   },
 ]);
 
+const mockGetEnvironmentsResponse = [
+  createEnvironment({
+    name: "DEV",
+    id: "1",
+  }),
+];
+
 describe("AclRequests", () => {
   beforeEach(() => {
-    mockIntersectionObserver();
     mockGetAclRequests.mockResolvedValue(mockGetAclRequestsResponse);
+    mockGetEnvironments.mockResolvedValue(mockGetEnvironmentsResponse);
+    mockIntersectionObserver();
   });
 
   afterEach(() => {
@@ -324,13 +332,6 @@ describe("AclRequests", () => {
     });
 
     it("populates the filter from the url search parameters", async () => {
-      mockGetEnvironments.mockResolvedValue([
-        createEnvironment({
-          name: "DEV",
-          id: "1",
-        }),
-      ]);
-
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
@@ -357,13 +358,6 @@ describe("AclRequests", () => {
     });
 
     it("applies the topic filter by selecting a value", async () => {
-      mockGetEnvironments.mockResolvedValue([
-        createEnvironment({
-          name: "DEV",
-          id: "1",
-        }),
-      ]);
-
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
