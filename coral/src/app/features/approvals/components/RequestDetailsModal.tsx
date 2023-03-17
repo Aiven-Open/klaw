@@ -1,10 +1,20 @@
 import { ReactElement } from "react";
 import { Modal } from "src/app/components/Modal";
 
+type RequestDetailsModalActions = {
+  primary: {
+    text: string;
+    onClick: () => void;
+  };
+  secondary: {
+    text: string;
+    onClick: () => void;
+  };
+};
+
 interface RequestDetailsModalProps {
   onClose: () => void;
-  onApprove: () => void;
-  onDecline: () => void;
+  actions: RequestDetailsModalActions;
   children: ReactElement;
   isLoading: boolean;
   disabledActions?: boolean;
@@ -13,8 +23,7 @@ interface RequestDetailsModalProps {
 const RequestDetailsModal = ({
   children,
   onClose,
-  onApprove,
-  onDecline,
+  actions,
   isLoading,
   disabledActions,
 }: RequestDetailsModalProps) => {
@@ -23,14 +32,12 @@ const RequestDetailsModal = ({
       title={"Request details"}
       close={onClose}
       primaryAction={{
-        text: "Approve",
-        onClick: onApprove,
+        ...actions.primary,
         loading: isLoading,
         disabled: disabledActions,
       }}
       secondaryAction={{
-        text: "Decline",
-        onClick: onDecline,
+        ...actions.secondary,
         disabled: isLoading || disabledActions,
       }}
     >

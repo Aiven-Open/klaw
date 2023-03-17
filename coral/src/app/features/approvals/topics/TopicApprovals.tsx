@@ -194,19 +194,30 @@ function TopicApprovals() {
       {detailsModal.isOpen && (
         <RequestDetailsModal
           onClose={() => setDetailsModal({ isOpen: false, topicId: null })}
-          onApprove={() => {
-            if (detailsModal.topicId === null) {
-              setErrorMessage("topicId is null, it should be a number");
-              return;
-            }
-            approveRequest({
-              requestEntityType: "TOPIC",
-              reqIds: [String(detailsModal.topicId)],
-            });
-          }}
-          onDecline={() => {
-            setDetailsModal({ isOpen: false, topicId: null });
-            setDeclineModal({ isOpen: true, topicId: detailsModal.topicId });
+          actions={{
+            primary: {
+              text: "Approve",
+              onClick: () => {
+                if (detailsModal.topicId === null) {
+                  setErrorMessage("topicId is null, it should be a number");
+                  return;
+                }
+                approveRequest({
+                  requestEntityType: "TOPIC",
+                  reqIds: [String(detailsModal.topicId)],
+                });
+              },
+            },
+            secondary: {
+              text: "Decline",
+              onClick: () => {
+                setDetailsModal({ isOpen: false, topicId: null });
+                setDeclineModal({
+                  isOpen: true,
+                  topicId: detailsModal.topicId,
+                });
+              },
+            },
           }}
           isLoading={approveIsLoading || declineIsLoading}
           disabledActions={

@@ -176,15 +176,23 @@ function AclApprovals() {
       {detailsModal.isOpen && (
         <RequestDetailsModal
           onClose={() => setDetailsModal({ isOpen: false, reqNo: "" })}
-          onApprove={() => {
-            approveRequest({
-              requestEntityType: "ACL",
-              reqIds: [detailsModal.reqNo],
-            });
-          }}
-          onDecline={() => {
-            setDetailsModal({ isOpen: false, reqNo: "" });
-            setDeclineModal({ isOpen: true, reqNo: detailsModal.reqNo });
+          actions={{
+            primary: {
+              text: "Approve",
+              onClick: () => {
+                approveRequest({
+                  requestEntityType: "ACL",
+                  reqIds: [detailsModal.reqNo],
+                });
+              },
+            },
+            secondary: {
+              text: "Decline",
+              onClick: () => {
+                setDetailsModal({ isOpen: false, reqNo: "" });
+                setDeclineModal({ isOpen: true, reqNo: detailsModal.reqNo });
+              },
+            },
           }}
           isLoading={approveIsLoading || declineIsLoading}
           disabledActions={

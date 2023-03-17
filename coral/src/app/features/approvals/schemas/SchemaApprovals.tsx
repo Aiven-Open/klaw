@@ -170,14 +170,22 @@ function SchemaApprovals() {
       {modals.open === "DETAILS" && (
         <RequestDetailsModal
           onClose={closeModal}
-          onApprove={() => {
-            if (modals.req_no === null) {
-              throw Error("req_no can't be null");
-            }
-            approveRequest({ reqIds: [modals.req_no.toString()] });
-          }}
-          onDecline={() => {
-            setModals({ ...modals, open: "DECLINE" });
+          actions={{
+            primary: {
+              text: "Approve",
+              onClick: () => {
+                if (modals.req_no === null) {
+                  throw Error("req_no can't be null");
+                }
+                approveRequest({ reqIds: [modals.req_no.toString()] });
+              },
+            },
+            secondary: {
+              text: "Decline",
+              onClick: () => {
+                setModals({ ...modals, open: "DECLINE" });
+              },
+            },
           }}
           isLoading={declineRequestIsLoading || approveRequestIsLoading}
           disabledActions={declineRequestIsLoading || approveRequestIsLoading}
