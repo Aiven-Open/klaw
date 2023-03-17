@@ -316,7 +316,7 @@ describe("SchemaRequest", () => {
     });
   });
 
-  describe("handles filtering entries in the table", () => {
+  describe("user can filter schema requests by 'environment'", () => {
     beforeEach(async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
@@ -326,25 +326,30 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
+        customRoutePath:
+          "/?environment=TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      jest.resetAllMocks();
       cleanup();
     });
 
-    it("enables user to filter by 'environment'", async () => {
-      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
-        1,
-        defaultApiParams
-      );
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(1, {
+        ...defaultApiParams,
+        env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+    });
 
+    it("enables user to filter by 'environment'", async () => {
       const environmentFilter = screen.getByRole("combobox", {
         name: "Filter by Environment",
       });
+
       const environmentOption = screen.getByRole("option", {
         name: mockedEnvironmentResponse[0].name,
       });
@@ -355,14 +360,39 @@ describe("SchemaRequest", () => {
         env: mockedEnvironmentResponse[0].id,
       });
     });
+  });
+
+  describe("user can filter schema requests by 'status'", () => {
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
+
+      customRender(<SchemaRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath:
+          "/?status=TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(1, {
+        ...defaultApiParams,
+        requestStatus: "TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+    });
 
     it("enables user to filter by 'status'", async () => {
       const newStatus = "CREATED";
-
-      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
-        1,
-        defaultApiParams
-      );
 
       const statusFilter = screen.getByRole("combobox", {
         name: "Filter by status",
@@ -377,15 +407,42 @@ describe("SchemaRequest", () => {
         requestStatus: newStatus,
       });
     });
+  });
+
+  describe("user can filter schema requests by 'topic' they searched for", () => {
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
+
+      customRender(<SchemaRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?topic=TEST_SEARCH_VALUE",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(1, {
+        ...defaultApiParams,
+        topic: "TEST_SEARCH_VALUE",
+      });
+    });
 
     it("enables user to search for topic", async () => {
-      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
-        1,
-        defaultApiParams
-      );
-
       const search = screen.getByRole("search");
 
+      // since the search term is persisted, it's the current
+      // value of the search element.
+      await userEvent.clear(search);
       await userEvent.type(search, "myNiceTopic");
 
       await waitFor(() => {
@@ -395,23 +452,48 @@ describe("SchemaRequest", () => {
         });
       });
     });
+  });
 
-    it("enables user to show only their own requests", async () => {
-      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
-        1,
-        defaultApiParams
+  describe("user can filter schema requests by only showing their own requests", () => {
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
       );
+      mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
+      customRender(<SchemaRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?showOnlyMyRequests=true",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(1, {
+        ...defaultApiParams,
+        isMyRequest: true,
+      });
+    });
+
+    it("enables user to toggle only showing their own requests", async () => {
       const toggle = screen.getByRole("checkbox", {
         name: "Show only my requests",
       });
 
+      expect(toggle).toBeChecked();
       await userEvent.click(toggle);
 
       await waitFor(() => {
         expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
           ...defaultApiParams,
-          isMyRequest: true,
+          isMyRequest: undefined,
         });
       });
     });
