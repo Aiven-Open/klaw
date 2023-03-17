@@ -10,6 +10,7 @@ import {
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { SchemaRequest } from "src/domain/schema-request";
+import { Dispatch, SetStateAction } from "react";
 
 interface SchemaRequestTableRow {
   deletable: SchemaRequest["deletable"];
@@ -25,9 +26,15 @@ interface SchemaRequestTableRow {
 
 type SchemaRequestTableProps = {
   requests: SchemaRequest[];
+  setModals: Dispatch<
+    SetStateAction<{
+      open: "DETAILS" | "DELETE" | "NONE";
+      req_no: number | null;
+    }>
+  >;
 };
 
-function SchemaRequestTable({ requests }: SchemaRequestTableProps) {
+function SchemaRequestTable({ requests, setModals }: SchemaRequestTableProps) {
   const columns: Array<DataTableColumn<SchemaRequestTableRow>> = [
     { type: "text", field: "topic", headerName: "Topic" },
     {
@@ -78,7 +85,7 @@ function SchemaRequestTable({ requests }: SchemaRequestTableProps) {
       action: ({ id, topic }) => ({
         text: "View",
         icon: infoIcon,
-        onClick: () => console.log("details!", id),
+        onClick: () => setModals({ open: "DETAILS", req_no: id }),
         "aria-label": `View schema request for ${topic}`,
       }),
     },
@@ -90,7 +97,7 @@ function SchemaRequestTable({ requests }: SchemaRequestTableProps) {
       action: ({ id, deletable, topic }) => ({
         text: "Delete",
         icon: deleteIcon,
-        onClick: () => console.log("delete!", id),
+        onClick: () => console.log("DELETE", id),
         disabled: !deletable,
         "aria-label": `Delete schema request for ${topic}`,
       }),
