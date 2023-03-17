@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class RequestService {
 
-  @Autowired private SchemaRegstryControllerService schemaRegstryControllerService;
+  @Autowired private SchemaRegistryControllerService schemaRegistryControllerService;
 
   @Autowired private KafkaConnectControllerService kafkaConnectControllerService;
 
@@ -35,7 +35,7 @@ public class RequestService {
         case ACL:
           return aclControllerService.approveAclRequests(reqId);
         case SCHEMA:
-          return schemaRegstryControllerService.execSchemaRequests(reqId);
+          return schemaRegistryControllerService.execSchemaRequests(reqId);
         case CONNECTOR:
           return kafkaConnectControllerService.approveConnectorRequests(reqId);
         default:
@@ -70,7 +70,7 @@ public class RequestService {
         case ACL:
           return aclControllerService.deleteAclRequests(reqId);
         case SCHEMA:
-          return schemaRegstryControllerService.deleteSchemaRequests(reqId);
+          return schemaRegistryControllerService.deleteSchemaRequests(reqId);
         case CONNECTOR:
           return kafkaConnectControllerService.deleteConnectorRequests(reqId);
         default:
@@ -95,7 +95,7 @@ public class RequestService {
         case ACL:
           return aclControllerService.declineAclRequests(reqId, reason);
         case SCHEMA:
-          return schemaRegstryControllerService.execSchemaRequestsDecline(reqId, reason);
+          return schemaRegistryControllerService.execSchemaRequestsDecline(reqId, reason);
         case CONNECTOR:
           return kafkaConnectControllerService.declineConnectorRequests(reqId, reason);
         default:

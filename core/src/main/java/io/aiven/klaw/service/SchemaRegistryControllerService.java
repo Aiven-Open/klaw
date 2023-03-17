@@ -34,7 +34,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class SchemaRegstryControllerService {
+public class SchemaRegistryControllerService {
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired ClusterApiService clusterApiService;
@@ -45,7 +45,7 @@ public class SchemaRegstryControllerService {
 
   @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
 
-  public SchemaRegstryControllerService(
+  public SchemaRegistryControllerService(
       ClusterApiService clusterApiService, MailUtils mailService) {
     this.clusterApiService = clusterApiService;
     this.mailService = mailService;

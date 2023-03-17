@@ -51,7 +51,7 @@
     },
     "/uploadSchema" : {
       "post" : {
-        "tags" : [ "schema-regstry-controller" ],
+        "tags" : [ "schema-registry-controller" ],
         "operationId" : "uploadSchema",
         "requestBody" : {
           "content" : {
@@ -870,7 +870,7 @@
     },
     "/promote/schema" : {
       "post" : {
-        "tags" : [ "schema-regstry-controller" ],
+        "tags" : [ "schema-registry-controller" ],
         "operationId" : "promoteSchema",
         "requestBody" : {
           "content" : {
@@ -978,7 +978,7 @@
     },
     "/execSchemaRequests" : {
       "post" : {
-        "tags" : [ "schema-regstry-controller" ],
+        "tags" : [ "schema-registry-controller" ],
         "operationId" : "execSchemaRequests",
         "parameters" : [ {
           "name" : "avroSchemaReqId",
@@ -1004,7 +1004,7 @@
     },
     "/execSchemaRequestsDecline" : {
       "post" : {
-        "tags" : [ "schema-regstry-controller" ],
+        "tags" : [ "schema-registry-controller" ],
         "operationId" : "execSchemaRequestsDecline",
         "parameters" : [ {
           "name" : "avroSchemaReqId",
@@ -1304,7 +1304,7 @@
     },
     "/deleteSchemaRequests" : {
       "post" : {
-        "tags" : [ "schema-regstry-controller" ],
+        "tags" : [ "schema-registry-controller" ],
         "operationId" : "deleteSchemaRequests",
         "parameters" : [ {
           "name" : "req_no",
@@ -3050,7 +3050,7 @@
     },
     "/getSchemaRequests" : {
       "get" : {
-        "tags" : [ "schema-regstry-controller" ],
+        "tags" : [ "schema-registry-controller" ],
         "operationId" : "getSchemaRequests",
         "parameters" : [ {
           "name" : "pageNo",
@@ -3118,7 +3118,7 @@
     },
     "/getSchemaRequestsForApprover" : {
       "get" : {
-        "tags" : [ "schema-regstry-controller" ],
+        "tags" : [ "schema-registry-controller" ],
         "operationId" : "getSchemaRequestsForApprover",
         "parameters" : [ {
           "name" : "pageNo",
@@ -3206,7 +3206,7 @@
     },
     "/getSchemaOfTopic" : {
       "get" : {
-        "tags" : [ "schema-regstry-controller" ],
+        "tags" : [ "schema-registry-controller" ],
         "operationId" : "getSchemaOfTopic",
         "parameters" : [ {
           "name" : "topicnamesearch",
