@@ -142,6 +142,14 @@ describe("SchemaRequest", () => {
       );
     });
 
+    it("shows a toggle to only show users own requests", () => {
+      const toggle = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+
+      expect(toggle).toBeVisible();
+    });
+
     it("shows a table with all schema requests", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
       const rows = within(table).getAllByRole("row");
@@ -369,6 +377,7 @@ describe("SchemaRequest", () => {
         requestStatus: newStatus,
       });
     });
+
     it("enables user to search for topic", async () => {
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         1,
@@ -383,6 +392,26 @@ describe("SchemaRequest", () => {
         expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
           ...defaultApiParams,
           topic: "myNiceTopic",
+        });
+      });
+    });
+
+    it("enables user to show only their own requests", async () => {
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const toggle = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+
+      await userEvent.click(toggle);
+
+      await waitFor(() => {
+        expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
+          ...defaultApiParams,
+          isMyRequest: true,
         });
       });
     });
