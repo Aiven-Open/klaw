@@ -7,7 +7,7 @@ import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
-import { SchemaRequestDetails } from "src/app/features/approvals/schemas/components/SchemaRequestDetails";
+import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
 import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";

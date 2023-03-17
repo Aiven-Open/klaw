@@ -1,5 +1,5 @@
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { SchemaRequestDetails } from "src/app/features/approvals/schemas/components/SchemaRequestDetails";
+import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
 import { SchemaRequest } from "src/domain/schema-request";
 
 const testRequest: SchemaRequest = {
