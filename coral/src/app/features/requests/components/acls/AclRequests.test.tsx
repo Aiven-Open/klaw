@@ -8,13 +8,19 @@ import userEvent from "@testing-library/user-event";
 import { AclRequests } from "src/app/features/requests/components/acls/AclRequests";
 import { getAclRequests } from "src/domain/acl/acl-api";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
+import { getEnvironments } from "src/domain/environment";
+import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/acl/acl-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetAclRequests = getAclRequests as jest.MockedFunction<
   typeof getAclRequests
+>;
+const mockGetEnvironments = getEnvironments as jest.MockedFunction<
+  typeof getEnvironments
 >;
 
 const mockGetAclRequestsResponse = transformAclRequestApiResponse([
@@ -92,10 +98,18 @@ const mockGetAclRequestsResponse = transformAclRequestApiResponse([
   },
 ]);
 
+const mockGetEnvironmentsResponse = [
+  createEnvironment({
+    name: "DEV",
+    id: "1",
+  }),
+];
+
 describe("AclRequests", () => {
   beforeEach(() => {
-    mockIntersectionObserver();
     mockGetAclRequests.mockResolvedValue(mockGetAclRequestsResponse);
+    mockGetEnvironments.mockResolvedValue(mockGetEnvironmentsResponse);
+    mockIntersectionObserver();
   });
 
   afterEach(() => {
@@ -137,6 +151,9 @@ describe("AclRequests", () => {
       expect(mockGetAclRequests).toHaveBeenCalledWith({
         pageNo: "100",
         topic: "",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
       });
     });
 
@@ -151,6 +168,9 @@ describe("AclRequests", () => {
       expect(mockGetAclRequests).toHaveBeenCalledWith({
         pageNo: "1",
         topic: "",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
       });
     });
 
@@ -255,11 +275,14 @@ describe("AclRequests", () => {
       expect(mockGetAclRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
         topic: "",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
       });
     });
   });
 
-  describe("user can filter topics based on the topic name", () => {
+  describe("user can filter ACL requests based on the topic name", () => {
     afterEach(() => {
       cleanup();
       jest.resetAllMocks();
@@ -274,16 +297,19 @@ describe("AclRequests", () => {
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         topic: "abc",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
       });
     });
 
-    it("applies the topic filter by typing into to the search input", async () => {
+    it("enables user to filter ACL requests by Topic name", async () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
       });
       const search = screen.getByRole("search");
-      expect(search).toBeVisible();
+      expect(search).toBeEnabled();
       expect(search).toHaveAccessibleDescription(
         'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
       );
@@ -292,6 +318,171 @@ describe("AclRequests", () => {
         expect(getAclRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
           topic: "abc",
+          env: "ALL",
+          aclType: "ALL",
+          requestStatus: "ALL",
+        });
+      });
+    });
+  });
+
+  describe("user can filter ACL requests based on the environment", () => {
+    afterEach(() => {
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", async () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?environment=1",
+      });
+
+      await waitForElementToBeRemoved(
+        screen.getByTestId("select-environment-loading")
+      );
+
+      const envFilter = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
+
+      expect(envFilter).toHaveDisplayValue("DEV");
+
+      expect(getAclRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        topic: "",
+        env: "1",
+        aclType: "ALL",
+        requestStatus: "ALL",
+      });
+    });
+
+    it("enables user to filter ACL requests by Environment", async () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(
+        screen.getByTestId("select-environment-loading")
+      );
+
+      const envFilter = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
+      expect(envFilter).toBeEnabled();
+
+      await userEvent.selectOptions(envFilter, "DEV");
+      await waitFor(() => {
+        expect(getAclRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          topic: "",
+          env: "1",
+          aclType: "ALL",
+          requestStatus: "ALL",
+        });
+      });
+    });
+  });
+
+  describe("user can filter ACL requests based on the ACL type", () => {
+    afterEach(() => {
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?aclType=CONSUMER",
+      });
+
+      const envFilter = screen.getByRole("combobox", {
+        name: "Filter by ACL type",
+      });
+
+      expect(envFilter).toHaveDisplayValue("CONSUMER");
+
+      expect(getAclRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        topic: "",
+        env: "ALL",
+        aclType: "CONSUMER",
+        requestStatus: "ALL",
+      });
+    });
+
+    it("enables user to filter ACL requests by ACL type", async () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      const envFilter = screen.getByRole("combobox", {
+        name: "Filter by ACL type",
+      });
+      expect(envFilter).toBeEnabled();
+
+      await userEvent.selectOptions(envFilter, "CONSUMER");
+      await waitFor(() => {
+        expect(getAclRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          topic: "",
+          env: "ALL",
+          aclType: "CONSUMER",
+          requestStatus: "ALL",
+        });
+      });
+    });
+  });
+
+  describe("user can filter ACL requests based on the status", () => {
+    afterEach(() => {
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?status=APPROVED",
+      });
+
+      const envFilter = screen.getByRole("combobox", {
+        name: "Filter by status",
+      });
+
+      expect(envFilter).toHaveDisplayValue("Approved");
+
+      expect(getAclRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        topic: "",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "APPROVED",
+      });
+    });
+
+    it("enables user to filter ACL requests by status", async () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      const envFilter = screen.getByRole("combobox", {
+        name: "Filter by status",
+      });
+      expect(envFilter).toBeEnabled();
+
+      await userEvent.selectOptions(envFilter, "APPROVED");
+
+      await waitFor(() => {
+        expect(getAclRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          topic: "",
+          env: "ALL",
+          aclType: "ALL",
+          requestStatus: "APPROVED",
         });
       });
     });

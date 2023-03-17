@@ -138,6 +138,7 @@ export default function AclApprovalsTable({
           <Flexbox wrap={"wrap"} gap={"2"}>
             {acl_ssl.map((ssl, index) => (
               <StatusChip
+                dense
                 status="neutral"
                 key={`${ssl}-${index}`}
                 // We need to add a space after text value
@@ -159,6 +160,7 @@ export default function AclApprovalsTable({
           <Flexbox wrap={"wrap"} gap={"2"}>
             {acl_ip.map((ip, index) => (
               <StatusChip
+                dense
                 status="neutral"
                 key={`${ip}-${index}`}
                 // We need to add a space after text value
