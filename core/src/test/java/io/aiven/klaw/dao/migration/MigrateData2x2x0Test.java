@@ -13,6 +13,8 @@ import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.dao.test.MigrationTestData2x1x0;
+import io.aiven.klaw.dao.test.MigrationTestData2x2x0;
 import io.aiven.klaw.helpers.db.rdbms.SelectDataJdbc;
 import io.aiven.klaw.helpers.db.rdbms.UpdateDataJdbc;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -20,11 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -35,6 +36,16 @@ class MigrateData2x2x0Test {
   @Mock private SelectDataJdbc selectDataJdbc;
 
   @Mock private UpdateDataJdbc updateDataJdbc;
+
+  @Bean
+  public MigrationTestData2x1x0 MigrateTestData2x1x0() {
+    return new MigrationTestData2x1x0();
+  }
+
+  @Bean
+  public MigrationTestData2x2x0 MigrationTestData2x1x0() {
+    return new MigrationTestData2x2x0();
+  }
 
   @BeforeEach
   public void setUp() {

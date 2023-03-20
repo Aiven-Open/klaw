@@ -18,6 +18,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
@@ -34,9 +35,12 @@ public class MigrationUtility {
 
   @Autowired private DataVersionRepo versionRepo;
 
+  @Autowired private ApplicationContext context;
+
   @PostConstruct
   public void migrate()
-      throws InvocationTargetException, IllegalAccessException, KlawDataMigrationException {
+      throws InvocationTargetException, IllegalAccessException, KlawDataMigrationException,
+          NoSuchMethodException, ClassNotFoundException {
 
     // Find the latest version in DB
     String latestDataVersion = getLatestDataVersion();
@@ -113,7 +117,7 @@ public class MigrationUtility {
   }
 
   /**
-   * @param orderedMapOfMigrationInstructions The ordered list of data migration instructions
+   * @param orderedMapOfMigrationInstructions The ordered list of data migration instruction
    * @throws IllegalAccessException
    * @throws InvocationTargetException
    * @throws KlawDataMigrationException If any of the instructions fail to complete their migration
@@ -121,15 +125,22 @@ public class MigrationUtility {
    */
   private void executeMigrationInstructions(
       SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions)
-      throws IllegalAccessException, InvocationTargetException, KlawDataMigrationException {
+      throws IllegalAccessException, InvocationTargetException, KlawDataMigrationException,
+          NoSuchMethodException, ClassNotFoundException {
     for (Integer value : orderedMapOfMigrationInstructions.keySet()) {
       Class<?> runner = orderedMapOfMigrationInstructions.get(value).getRight();
       for (Method method : runner.getDeclaredMethods()) {
         // Find the correct method to invoke to execute the migration instructions.
         if (method.isAnnotationPresent(MigrationRunner.class)) {
-          Object statusObj =  method.invoke(runner);
+
+          Object bd = context.getBean(getNameFromClass(runner));
+
+          Object statusObj = method.invoke(bd);
+
           Boolean status = (Boolean) statusObj;
           // If not completed successfully do not continue
+          log.info(" bean Class name {}", bd.getClass());
+
           if (!status) {
             throw new KlawDataMigrationException(
                 "Unable to complete Migration instructions successfully from "
@@ -141,6 +152,13 @@ public class MigrationUtility {
         }
       }
     }
+  }
+
+  private static String getNameFromClass(Class<?> runner) {
+
+    String str = runner.getName() + ".class";
+    str = str.substring(runner.getPackageName().length() + 1);
+    return str;
   }
 
   /**
