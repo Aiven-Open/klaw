@@ -37,8 +37,8 @@ interface AclRequestTableRow {
 
 type AclRequestsTableProps = {
   requests: AclRequest[];
-  onDetails: (reqNo: string) => void;
-  onDelete: (reqNo: string) => void;
+  onDetails: (req_no: number) => void;
+  onDelete: (req_no: number) => void;
 };
 
 function AclRequestsTable({
@@ -145,10 +145,11 @@ function AclRequestsTable({
       headerName: "Details",
       headerInvisible: true,
       width: 30,
-      action: ({ id }) => ({
+      action: ({ id, topicname }) => ({
         text: "View",
         icon: infoIcon,
-        onClick: () => onDetails(String(id)),
+        onClick: () => onDetails(id),
+        "aria-label": `View ACL request for ${topicname}`,
       }),
     },
     {
@@ -156,11 +157,12 @@ function AclRequestsTable({
       headerName: "Delete",
       headerInvisible: true,
       width: 30,
-      action: ({ id, deletable }) => ({
+      action: ({ id, deletable, topicname }) => ({
         text: "Delete",
         icon: deleteIcon,
-        onClick: () => onDelete(String(id)),
+        onClick: () => onDelete(id),
         disabled: !deletable,
+        "aria-label": `Delete ACL request for ${topicname}`,
       }),
     },
   ];

@@ -9,6 +9,7 @@ type RequestDetailsModalActions = {
   secondary: {
     text: string;
     onClick: () => void;
+    disabled?: boolean;
   };
 };
 
@@ -38,7 +39,7 @@ const RequestDetailsModal = ({
       }}
       secondaryAction={{
         ...actions.secondary,
-        disabled: isLoading || disabledActions,
+        disabled: actions.secondary.disabled || isLoading || disabledActions,
       }}
     >
       {children}

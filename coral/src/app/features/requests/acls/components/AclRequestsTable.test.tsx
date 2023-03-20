@@ -196,13 +196,10 @@ describe("AclRequestsTable", () => {
     renderFromProps({ onDetails });
     await userEvent.click(
       within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
-        name: "View",
+        name: `View ACL request for ${mockedRequests[0].topicname}`,
       })
     );
-    expect(onDetails).toHaveBeenNthCalledWith(
-      1,
-      String(mockedRequests[0].req_no)
-    );
+    expect(onDetails).toHaveBeenNthCalledWith(1, mockedRequests[0].req_no);
   });
 
   it("has column for action to delete request", async () => {
@@ -210,13 +207,10 @@ describe("AclRequestsTable", () => {
     renderFromProps({ onDelete });
     await userEvent.click(
       within(within(getNthRow(2)).getAllByRole("cell")[9]).getByRole("button", {
-        name: "Delete",
+        name: `Delete ACL request for ${mockedRequests[1].topicname}`,
       })
     );
-    expect(onDelete).toHaveBeenNthCalledWith(
-      1,
-      String(mockedRequests[1].req_no)
-    );
+    expect(onDelete).toHaveBeenNthCalledWith(1, mockedRequests[1].req_no);
   });
 
   it("disables the delete button for a request if the request is not deletable", () => {
@@ -225,7 +219,7 @@ describe("AclRequestsTable", () => {
     renderFromProps({ requests: [nonDeletableRequest], onDelete });
     expect(
       within(within(getNthRow(1)).getAllByRole("cell")[9]).getByRole("button", {
-        name: "Delete",
+        name: `Delete ACL request for ${mockedRequests[0].topicname}`,
       })
     ).toBeDisabled();
   });
