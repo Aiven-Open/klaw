@@ -10,8 +10,16 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { TopicRequests } from "src/app/features/requests/topics/TopicRequests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
+import { getEnvironments } from "src/domain/environment";
+import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/utils/mocked-api-responses";
+import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 
+jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
+
+const mockGetTopicRequestEnvironments = getEnvironments as jest.MockedFunction<
+  typeof getEnvironments
+>;
 
 const mockGetTopicRequests = getTopicRequests as jest.MockedFunction<
   typeof getTopicRequests
@@ -54,6 +62,9 @@ const mockGetTopicRequestsResponse = transformGetTopicRequestsResponse([
 describe("TopicRequests", () => {
   beforeEach(() => {
     mockIntersectionObserver();
+    mockGetTopicRequestEnvironments.mockResolvedValue(
+      mockedEnvironmentResponse
+    );
     mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
   });
 
@@ -86,6 +97,8 @@ describe("TopicRequests", () => {
         pageNo: "1",
         // search: "abc",
         isMyRequest: undefined,
+        requestStatus: "ALL",
+        env: "ALL",
       });
     });
 
@@ -105,6 +118,8 @@ describe("TopicRequests", () => {
           pageNo: "1",
           // search: "abc",
           isMyRequest: undefined,
+          requestStatus: "ALL",
+          env: "ALL",
         });
       });
     });
@@ -126,6 +141,8 @@ describe("TopicRequests", () => {
         pageNo: "1",
         isMyRequest: true,
         search: undefined,
+        requestStatus: "ALL",
+        env: "ALL",
       });
     });
 
@@ -143,6 +160,8 @@ describe("TopicRequests", () => {
           pageNo: "1",
           isMyRequest: true,
           search: undefined,
+          requestStatus: "ALL",
+          env: "ALL",
         });
       });
     });
@@ -162,13 +181,18 @@ describe("TopicRequests", () => {
           pageNo: "1",
           isMyRequest: undefined,
           search: undefined,
+          requestStatus: "ALL",
+          env: "ALL",
         });
       });
     });
   });
 
-  describe("renders pagination dependent on response", () => {
+  describe("user can browse the requests in paged sets", () => {
     beforeEach(() => {
+      mockGetTopicRequestEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetTopicRequests.mockResolvedValue({
         totalPages: 1,
         currentPage: 1,
@@ -194,6 +218,8 @@ describe("TopicRequests", () => {
         pageNo: "100",
         search: undefined,
         isMyRequest: undefined,
+        requestStatus: "ALL",
+        env: "ALL",
       });
     });
 
@@ -209,6 +235,8 @@ describe("TopicRequests", () => {
         pageNo: "1",
         search: undefined,
         isMyRequest: undefined,
+        requestStatus: "ALL",
+        env: "ALL",
       });
     });
 
@@ -274,6 +302,9 @@ describe("TopicRequests", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
+      mockGetTopicRequestEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
       mockGetTopicRequests.mockResolvedValue({
         totalPages: 3,
         currentPage: 1,
@@ -314,6 +345,111 @@ describe("TopicRequests", () => {
         pageNo: "2",
         search: undefined,
         isMyRequest: undefined,
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+    });
+  });
+
+  describe("user can filter schema requests by 'environment'", () => {
+    beforeEach(async () => {
+      mockGetTopicRequestEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath:
+          "/?environment=TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        search: undefined,
+        isMyRequest: undefined,
+        requestStatus: "ALL",
+        env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+    });
+
+    it("enables user to filter by 'environment'", async () => {
+      const environmentFilter = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
+
+      const environmentOption = screen.getByRole("option", {
+        name: mockedEnvironmentResponse[0].name,
+      });
+      await userEvent.selectOptions(environmentFilter, environmentOption);
+
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
+        pageNo: "1",
+        search: undefined,
+        isMyRequest: undefined,
+        requestStatus: "ALL",
+        env: mockedEnvironmentResponse[0].id,
+      });
+    });
+  });
+
+  describe("user can filter schema requests by 'status'", () => {
+    beforeEach(async () => {
+      mockGetTopicRequestEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
+
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath:
+          "/?status=TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        search: undefined,
+        isMyRequest: undefined,
+        requestStatus: "TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+        env: "ALL",
+      });
+    });
+
+    it("enables user to filter by 'status'", async () => {
+      const newStatus = "CREATED";
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by status",
+      });
+      const statusOption = screen.getByRole("option", {
+        name: requestStatusNameMap[newStatus],
+      });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
+        pageNo: "1",
+        search: undefined,
+        isMyRequest: undefined,
+        requestStatus: newStatus,
+        env: "ALL",
       });
     });
   });
