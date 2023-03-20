@@ -139,7 +139,7 @@ public class MigrationUtility {
 
           Boolean status = (Boolean) statusObj;
           // If not completed successfully do not continue
-          log.info(" bean Class name {}", bd.getClass());
+          log.info("Execution of {} with status {}", bd.getClass(), status);
 
           if (!status) {
             throw new KlawDataMigrationException(
