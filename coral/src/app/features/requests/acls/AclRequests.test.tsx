@@ -544,4 +544,56 @@ describe("AclRequests", () => {
       });
     });
   });
+
+  describe("shows a detail modal for ACL request", () => {
+    beforeEach(async () => {
+      mockGetAclRequests.mockResolvedValue(mockGetAclRequestsResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentsResponse);
+
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows detail modal for first request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockGetAclRequestsResponse.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View ACL request for ${firstRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent(firstRequest.topicname);
+    });
+
+    it("shows detail modal for last request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const lastRequest =
+        mockGetAclRequestsResponse.entries[
+          mockGetAclRequestsResponse.entries.length - 1
+        ];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View ACL request for ${lastRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent(lastRequest.topicname);
+    });
+  });
 });

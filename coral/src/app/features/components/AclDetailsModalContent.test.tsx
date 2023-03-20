@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
+import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
 import { AclRequest } from "src/domain/acl/acl-types";
 
 const mockedIpsAclRequest: AclRequest = {
@@ -84,10 +84,10 @@ const findTerm = (term: string) => {
     .find((value) => value.textContent === term);
 };
 
-describe("DetailsModalContent", () => {
+describe("AclDetailsModalContent", () => {
   describe("renders correct content for ACL request (IPs, Producer, Prefixed)", () => {
     beforeAll(() => {
-      render(<DetailsModalContent aclRequest={mockedIpsAclRequest} />);
+      render(<AclDetailsModalContent request={mockedIpsAclRequest} />);
     });
     afterAll(cleanup);
 
@@ -136,7 +136,7 @@ describe("DetailsModalContent", () => {
 
   describe("renders correct content for ACL request with Principals (Principals, Consumer, Literal", () => {
     beforeAll(() => {
-      render(<DetailsModalContent aclRequest={mockedPrincipalsAclrequest} />);
+      render(<AclDetailsModalContent request={mockedPrincipalsAclrequest} />);
     });
     afterAll(cleanup);
 

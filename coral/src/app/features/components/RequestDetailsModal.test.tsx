@@ -127,6 +127,48 @@ describe("RequestDetailsModal.test", () => {
     });
   });
 
+  describe("renders a Modal with correct elements when secondary is disabled", () => {
+    beforeAll(() => {
+      const props = {
+        ...baseProps,
+        actions: {
+          ...baseProps.actions,
+          secondary: {
+            text: secondaryActionText,
+            onClick: secondaryActionOnClick,
+            disabled: true,
+          },
+        },
+      };
+      render(
+        <RequestDetailsModal {...props} isLoading={false}>
+          <div>content</div>
+        </RequestDetailsModal>
+      );
+    });
+    afterAll(cleanup);
+
+    it("renders correct heading", () => {
+      expect(screen.getByRole("heading", { name: headlineText })).toBeVisible();
+    });
+
+    it("renders enabled Close button", () => {
+      expect(screen.getByRole("button", { name: "Close modal" })).toBeEnabled();
+    });
+
+    it("renders disabled Approve button", () => {
+      expect(
+        screen.getByRole("button", { name: primaryActionText })
+      ).toBeEnabled();
+    });
+
+    it("renders disabled Decline request button", () => {
+      expect(
+        screen.getByRole("button", { name: secondaryActionText })
+      ).toBeDisabled();
+    });
+  });
+
   describe("handles user interaction", () => {
     beforeAll(() => {
       render(

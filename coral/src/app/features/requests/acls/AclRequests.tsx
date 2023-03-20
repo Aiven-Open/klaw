@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
+import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
 import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
@@ -25,6 +28,23 @@ function AclRequests() {
     (searchParams.get("status") as AclRequest["requestStatus"]) ?? "ALL";
   const showOnlyMyRequests =
     searchParams.get("showOnlyMyRequests") === "true" ? true : undefined;
+
+  const [modals, setModals] = useState<{
+    open: "DETAILS" | "DELETE" | "NONE";
+    req_no: number | null;
+  }>({ open: "NONE", req_no: null });
+
+  const closeModal = () => {
+    setModals({ open: "NONE", req_no: null });
+  };
+
+  const openDetailsModal = (req_no: number) => {
+    setModals({ open: "DETAILS", req_no });
+  };
+
+  const openDeleteModal = (req_no: number) => {
+    setModals({ open: "DELETE", req_no });
+  };
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [
@@ -62,27 +82,62 @@ function AclRequests() {
       />
     ) : undefined;
 
+  const selectedRequest = data?.entries.find(
+    (request) => request.req_no === modals.req_no
+  );
+
   return (
-    <TableLayout
-      filters={[
-        <EnvironmentFilter key="environment" />,
-        <AclTypeFilter key="aclType" />,
-        <StatusFilter key="status" defaultStatus="ALL" />,
-        <TopicFilter key="search" />,
-        <MyRequestsFilter key="myRequests" />,
-      ]}
-      table={
-        <AclRequestsTable
-          requests={data?.entries ?? []}
-          onDetails={() => null}
-          onDelete={() => null}
-        />
-      }
-      pagination={pagination}
-      isLoading={isLoading}
-      isErrorLoading={isError}
-      errorMessage={error}
-    />
+    <>
+      {modals.open === "DETAILS" && modals.req_no !== null && (
+        <RequestDetailsModal
+          onClose={closeModal}
+          actions={{
+            primary: {
+              text: "Close",
+              onClick: () => {
+                if (modals.req_no === null) {
+                  throw Error("req_no can't be null");
+                }
+                closeModal();
+              },
+            },
+            secondary: {
+              text: "Delete",
+              onClick: () => {
+                if (modals.req_no === null) {
+                  throw Error("req_no can't be null");
+                }
+                openDeleteModal(modals.req_no);
+              },
+              disabled: !selectedRequest?.deletable,
+            },
+          }}
+          isLoading={false}
+        >
+          <AclDetailsModalContent request={selectedRequest} />
+        </RequestDetailsModal>
+      )}
+      <TableLayout
+        filters={[
+          <EnvironmentFilter key="environment" />,
+          <AclTypeFilter key="aclType" />,
+          <StatusFilter key="status" defaultStatus="ALL" />,
+          <TopicFilter key="search" />,
+          <MyRequestsFilter key="myRequests" />,
+        ]}
+        table={
+          <AclRequestsTable
+            requests={data?.entries ?? []}
+            onDetails={openDetailsModal}
+            onDelete={openDeleteModal}
+          />
+        }
+        pagination={pagination}
+        isLoading={isLoading}
+        isErrorLoading={isError}
+        errorMessage={error}
+      />
+    </>
   );
 }
 
