@@ -15,7 +15,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
-import io.aiven.klaw.service.SchemaRegstryControllerService;
+import io.aiven.klaw.service.SchemaRegistryControllerService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -33,12 +33,12 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class SchemaRegstryControllerTest {
+public class SchemaRegistryControllerTest {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  @MockBean private SchemaRegstryControllerService schemaRegstryControllerService;
+  @MockBean private SchemaRegistryControllerService schemaRegistryControllerService;
 
-  private SchemaRegstryController schemaRegstryController;
+  private SchemaRegistryController schemaRegistryController;
 
   private UtilMethods utilMethods;
 
@@ -46,11 +46,13 @@ public class SchemaRegstryControllerTest {
 
   @BeforeEach
   public void setUp() {
-    schemaRegstryController = new SchemaRegstryController();
-    mvc = MockMvcBuilders.standaloneSetup(schemaRegstryController).dispatchOptions(true).build();
+    schemaRegistryController = new SchemaRegistryController();
+    mvc = MockMvcBuilders.standaloneSetup(schemaRegistryController).dispatchOptions(true).build();
     utilMethods = new UtilMethods();
     ReflectionTestUtils.setField(
-        schemaRegstryController, "schemaRegstryControllerService", schemaRegstryControllerService);
+        schemaRegistryController,
+        "schemaRegistryControllerService",
+        schemaRegistryControllerService);
   }
 
   @Test
@@ -58,7 +60,7 @@ public class SchemaRegstryControllerTest {
   public void getSchemaRequests() throws Exception {
     List<SchemaRequestsResponseModel> schRequests = utilMethods.getSchemaRequestsResponse();
 
-    when(schemaRegstryControllerService.getSchemaRequests(
+    when(schemaRegistryControllerService.getSchemaRequests(
             anyString(),
             anyString(),
             anyString(),
@@ -82,7 +84,7 @@ public class SchemaRegstryControllerTest {
   @Order(2)
   public void deleteSchemaRequests() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
-    when(schemaRegstryControllerService.deleteSchemaRequests(anyString())).thenReturn(apiResponse);
+    when(schemaRegistryControllerService.deleteSchemaRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
             MockMvcRequestBuilders.post("/deleteSchemaRequests")
@@ -97,7 +99,7 @@ public class SchemaRegstryControllerTest {
   @Order(3)
   public void execSchemaRequests() throws Exception {
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
-    when(schemaRegstryControllerService.execSchemaRequests(anyString())).thenReturn(apiResponse);
+    when(schemaRegistryControllerService.execSchemaRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
             MockMvcRequestBuilders.post("/execSchemaRequests")
@@ -114,7 +116,7 @@ public class SchemaRegstryControllerTest {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
-    when(schemaRegstryControllerService.uploadSchema(any())).thenReturn(apiResponse);
+    when(schemaRegistryControllerService.uploadSchema(any())).thenReturn(apiResponse);
 
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
@@ -131,7 +133,7 @@ public class SchemaRegstryControllerTest {
     SchemaPromotion schemaPromotion = utilMethods.getSchemaPromotion().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaPromotion);
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
-    when(schemaRegstryControllerService.promoteSchema(any())).thenReturn(apiResponse);
+    when(schemaRegistryControllerService.promoteSchema(any())).thenReturn(apiResponse);
 
     mvc.perform(
             MockMvcRequestBuilders.post("/promote/schema")
