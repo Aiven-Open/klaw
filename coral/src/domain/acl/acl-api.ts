@@ -9,6 +9,7 @@ import {
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
+  RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
 import api from "src/services/api";
 import { KlawApiRequest, KlawApiResponse } from "types/utils";
@@ -61,18 +62,36 @@ const getAclRequests = (params: GetCreatedAclRequestParameters) => {
 };
 
 type ApproveAclRequestPayload = RequestVerdictApproval<"ACL">;
-const approveAclRequest = (payload: ApproveAclRequestPayload) => {
+type ApproveRequestParams = {
+  reqIds: ApproveAclRequestPayload["reqIds"];
+};
+const approveAclRequest = ({ reqIds }: ApproveRequestParams) => {
   return api.post<KlawApiResponse<"approveRequest">, ApproveAclRequestPayload>(
     `/request/approve`,
-    payload
+    { requestEntityType: "ACL", reqIds }
   );
 };
 
 type DeclineAclRequestPayload = RequestVerdictDecline<"ACL">;
-const declineAclRequest = (payload: DeclineAclRequestPayload) => {
+type DeclineRequestParams = {
+  reqIds: DeclineAclRequestPayload["reqIds"];
+  reason: DeclineAclRequestPayload["reason"];
+};
+const declineAclRequest = ({ reqIds, reason }: DeclineRequestParams) => {
   return api.post<KlawApiResponse<"declineRequest">, DeclineAclRequestPayload>(
     `/request/decline`,
-    payload
+    { requestEntityType: "ACL", reqIds, reason }
+  );
+};
+
+type DeleteAclRequestPayload = RequestVerdictDelete<"ACL">;
+type DeleteRequestParams = {
+  reqIds: DeleteAclRequestPayload["reqIds"];
+};
+const deleteAclRequest = ({ reqIds }: DeleteRequestParams) => {
+  return api.post<KlawApiResponse<"deleteRequest">, DeleteAclRequestPayload>(
+    `/request/delete`,
+    { requestEntityType: "ACL", reqIds }
   );
 };
 
@@ -82,4 +101,5 @@ export {
   getAclRequests,
   approveAclRequest,
   declineAclRequest,
+  deleteAclRequest,
 };

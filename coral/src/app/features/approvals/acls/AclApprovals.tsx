@@ -158,7 +158,6 @@ function AclApprovals() {
 
   function handleApproveRequest(reqNo: string): void {
     approveRequest({
-      requestEntityType: "ACL",
       reqIds: [reqNo],
     });
   }
@@ -181,7 +180,6 @@ function AclApprovals() {
               text: "Approve",
               onClick: () => {
                 approveRequest({
-                  requestEntityType: "ACL",
                   reqIds: [detailsModal.reqNo],
                 });
               },
@@ -210,7 +208,6 @@ function AclApprovals() {
           onCancel={() => setDeclineModal({ isOpen: false, reqNo: "" })}
           onSubmit={(message: string) => {
             declineRequest({
-              requestEntityType: "ACL",
               reqIds: [declineModal.reqNo],
               reason: message,
             });
