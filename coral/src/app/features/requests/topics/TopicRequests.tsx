@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { getTopicRequests } from "src/domain/topic/topic-api";
-import { TopicRequestsTable } from "src/app/features/requests/components/topics/components/TopicRequestsTable";
+import { TopicRequestsTable } from "src/app/features/requests/topics/components/TopicRequestsTable";
 import { useSearchParams } from "react-router-dom";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { Pagination } from "src/app/components/Pagination";

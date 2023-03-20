@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import {
   AclRequestsTable,
   AclRequestsTableProps,
-} from "src/app/features/requests/components/acls/components/AclRequestsTable";
+} from "src/app/features/requests/acls/components/AclRequestsTable";
 import { AclRequest } from "src/domain/acl/acl-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 

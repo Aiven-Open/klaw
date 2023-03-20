@@ -7,7 +7,7 @@ import EnvironmentFilter from "src/app/features/components/table-filters/Environ
 import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { AclRequestsTable } from "src/app/features/requests/components/acls/components/AclRequestsTable";
+import { AclRequestsTable } from "src/app/features/requests/acls/components/AclRequestsTable";
 import { getAclRequests } from "src/domain/acl/acl-api";
 import { AclRequest } from "src/domain/acl/acl-types";
 
