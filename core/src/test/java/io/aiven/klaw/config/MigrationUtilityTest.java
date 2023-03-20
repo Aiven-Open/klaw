@@ -78,8 +78,10 @@ class MigrationUtilityTest {
       throws KlawDataMigrationException, InvocationTargetException, IllegalAccessException,
           NoSuchMethodException, ClassNotFoundException {
     when(versionRepo.findTopByOrderByIdDesc()).thenReturn(getDataVersion("1.0.0"));
-    when(context.getBean(eq("MigrationTestData2x1x0.class"))).thenReturn(m1);
-    when(context.getBean(eq("MigrationTestData2x2x0.class"))).thenReturn(m2);
+    when(context.getBeanNamesForAnnotation(eq(DataMigration.class)))
+        .thenReturn(new String[] {"migrationTestData2x1x0", "migrationTestData2x2x0"});
+    when(context.getBean(eq("migrationTestData2x1x0"))).thenReturn(m1);
+    when(context.getBean(eq("migrationTestData2x2x0"))).thenReturn(m2);
 
     ReflectionTestUtils.setField(m1, "success", true);
     ReflectionTestUtils.setField(m2, "success", true);
@@ -93,9 +95,10 @@ class MigrationUtilityTest {
       throws KlawDataMigrationException, InvocationTargetException, IllegalAccessException,
           NoSuchMethodException, ClassNotFoundException {
     when(versionRepo.findTopByOrderByIdDesc()).thenReturn(null);
-
-    when(context.getBean(eq("MigrationTestData2x1x0.class"))).thenReturn(m1);
-    when(context.getBean(eq("MigrationTestData2x2x0.class"))).thenReturn(m2);
+    when(context.getBeanNamesForAnnotation(eq(DataMigration.class)))
+        .thenReturn(new String[] {"migrationTestData2x1x0", "migrationTestData2x2x0"});
+    when(context.getBean(eq("migrationTestData2x1x0"))).thenReturn(m1);
+    when(context.getBean(eq("migrationTestData2x2x0"))).thenReturn(m2);
 
     ReflectionTestUtils.setField(m1, "success", true);
     ReflectionTestUtils.setField(m2, "success", true);

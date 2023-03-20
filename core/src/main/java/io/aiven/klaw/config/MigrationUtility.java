@@ -154,10 +154,25 @@ public class MigrationUtility {
     }
   }
 
-  private static String getNameFromClass(Class<?> runner) {
+  /**
+   * This class expects that the instantiated name of the class is the same as the declared name of
+   * the class if case is ignored.
+   *
+   * @param runner The name of the class including the package
+   * @return The instantiated name of the class.
+   */
+  private String getNameFromClass(Class<?> runner) {
 
-    String str = runner.getName() + ".class";
+    String str = runner.getName();
     str = str.substring(runner.getPackageName().length() + 1);
+
+    String[] instantiatedBeans = context.getBeanNamesForAnnotation(DataMigration.class);
+    // Get Instantiated Bean name of the correct type.
+    for (String beanStr : instantiatedBeans) {
+      if (str.equalsIgnoreCase(beanStr)) {
+        return beanStr;
+      }
+    }
     return str;
   }
 
