@@ -7,7 +7,10 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { getSchemaRequests } from "src/domain/schema-request";
+import {
+  deleteSchemaRequest,
+  getSchemaRequests,
+} from "src/domain/schema-request";
 import { SchemaRequests } from "src/app/features/requests/schemas/SchemaRequests";
 import {
   mockedApiResponseSchemaRequests,
@@ -27,6 +30,10 @@ const mockGetSchemaRegistryEnvironments =
 
 const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
   typeof getSchemaRequests
+>;
+
+const mockDeleteSchemaRequest = deleteSchemaRequest as jest.MockedFunction<
+  typeof deleteSchemaRequest
 >;
 
 describe("SchemaRequest", () => {
@@ -550,6 +557,148 @@ describe("SchemaRequest", () => {
 
       expect(modal).toBeVisible();
       expect(modal).toHaveTextContent(lastRequest.topicname);
+    });
+
+    it("user can delete a request by clicking a button in the modal", async () => {
+      mockDeleteSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const testRequest = mockedApiResponseSchemaRequests.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+
+      const detailsModal = within(screen.getByRole("dialog")).queryByText(
+        "Request details"
+      );
+
+      expect(detailsModal).toBeVisible();
+
+      expect(
+        within(screen.getByRole("dialog")).queryByRole("heading", {
+          name: "Delete request",
+        })
+      ).not.toBeInTheDocument();
+
+      const deleteButton = screen.getByRole("button", {
+        name: "Delete",
+      });
+      await userEvent.click(deleteButton);
+
+      expect(detailsModal).not.toBeInTheDocument();
+      expect(
+        within(screen.getByRole("dialog")).queryByRole("heading", {
+          name: "Delete request",
+        })
+      ).toBeVisible();
+    });
+  });
+
+  describe("enables user to delete a request", () => {
+    const testRequest = mockedApiResponseSchemaRequests.entries[0];
+
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
+
+      customRender(<SchemaRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a delete request api call if user deletes a schema request", async () => {
+      mockDeleteSchemaRequest.mockResolvedValue([{ result: "success" }]);
+
+      const deleteButton = screen.getByRole("button", {
+        name: `Delete schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(deleteButton);
+      const dialog = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(dialog).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeclineButton);
+
+      expect(mockDeleteSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+      });
+    });
+
+    it("updates the the data for the table if user deletes a schema request", async () => {
+      mockDeleteSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const deleteButton = screen.getByRole("button", {
+        name: `Delete schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDelete = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDelete);
+
+      expect(mockDeleteSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+    });
+
+    it("informs user about error if deleting request was not successful", async () => {
+      mockDeleteSchemaRequest.mockResolvedValue([{ result: "FAILURE" }]);
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const deleteButton = screen.getByRole("button", {
+        name: `Delete schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeleteButton = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeleteButton);
+
+      expect(mockDeleteSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetSchemaRequests).not.toHaveBeenCalledTimes(2);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
     });
   });
 });
