@@ -1,4 +1,4 @@
-import { SchemaRequests } from "src/app/features/requests/components/schemas/SchemaRequests";
+import { SchemaRequests } from "src/app/features/requests/schemas/SchemaRequests";
 
 const SchemaRequestsPage = () => {
   return <SchemaRequests />;

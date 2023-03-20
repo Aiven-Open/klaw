@@ -8,11 +8,11 @@ import {
 } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { getSchemaRequests } from "src/domain/schema-request";
-import { SchemaRequests } from "src/app/features/requests/components/schemas/SchemaRequests";
+import { SchemaRequests } from "src/app/features/requests/schemas/SchemaRequests";
 import {
   mockedApiResponseSchemaRequests,
   mockedEnvironmentResponse,
-} from "src/app/features/requests/components/schemas/utils/mocked-api-responses";
+} from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import userEvent from "@testing-library/user-event";
 import { getSchemaRegistryEnvironments } from "src/domain/environment";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";

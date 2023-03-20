@@ -1,7 +1,7 @@
 import { PageHeader } from "@aivenio/aquarium";
 import { Navigate, useMatches } from "react-router-dom";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
-import RequestsResourceTabs from "src/app/features/requests/components/RequestsResourceTabs";
+import RequestsResourceTabs from "src/app/features/requests/RequestsResourceTabs";
 import Layout from "src/app/layout/Layout";
 import {
   RequestsTabEnum,

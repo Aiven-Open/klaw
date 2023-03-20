@@ -4,7 +4,7 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import {
   TopicRequestsTable,
   type TopicRequestsTableProps,
-} from "src/app/features/requests/components/topics/components/TopicRequestsTable";
+} from "src/app/features/requests/topics/components/TopicRequestsTable";
 import userEvent from "@testing-library/user-event";
 
 const mockedRequests: TopicRequest[] = [
