@@ -416,7 +416,7 @@ class MigrateData2x2x0Test {
       request.setTenantId(101 + i);
       request.setTeamId(1 + i);
       request.setDescription(desc);
-      request.setUsername("User" + i);
+      request.setRequestor("User" + i);
       if (i < numberOfClaimRequests) {
         request.setRequestOperationType(RequestOperationType.CLAIM.value);
       } else {
@@ -437,7 +437,7 @@ class MigrateData2x2x0Test {
       request.setTenantId(101 + i);
       request.setTeamId(1 + i);
       request.setDescription(desc);
-      request.setUsername("User" + i);
+      request.setRequestor("User" + i);
       if (i < numberOfClaimRequests) {
         request.setRequestOperationType(RequestOperationType.CLAIM.value);
       } else {
