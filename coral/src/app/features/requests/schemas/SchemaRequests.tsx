@@ -62,6 +62,10 @@ function SchemaRequests() {
     setModals({ open: "NONE", req_no: null });
   }
 
+  const openDetailsModal = (req_no: number) => {
+    setModals({ open: "DETAILS", req_no });
+  };
+
   function setCurrentPage(page: number) {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
@@ -107,6 +111,7 @@ function SchemaRequests() {
           />
         </RequestDetailsModal>
       )}
+
       <TableLayout
         filters={[
           <EnvironmentFilter
@@ -120,7 +125,7 @@ function SchemaRequests() {
         table={
           <SchemaRequestTable
             requests={schemaRequests?.entries || []}
-            setModals={setModals}
+            showDetails={openDetailsModal}
           />
         }
         pagination={pagination}
