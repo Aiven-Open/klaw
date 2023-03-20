@@ -9,6 +9,7 @@ import {
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
+  RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
 import api from "src/services/api";
 import { KlawApiRequest, KlawApiResponse } from "types/utils";
@@ -76,10 +77,23 @@ const declineAclRequest = (payload: DeclineAclRequestPayload) => {
   );
 };
 
+type DeleteAclRequestPayload = RequestVerdictDelete<"ACL">;
+const deleteAclRequest = ({
+  reqIds,
+}: {
+  reqIds: DeleteAclRequestPayload["reqIds"];
+}) => {
+  return api.post<KlawApiResponse<"deleteRequest">, DeleteAclRequestPayload>(
+    `/request/delete`,
+    { requestEntityType: "ACL", reqIds }
+  );
+};
+
 export {
   createAclRequest,
   getAclRequestsForApprover,
   getAclRequests,
   approveAclRequest,
   declineAclRequest,
+  deleteAclRequest,
 };
