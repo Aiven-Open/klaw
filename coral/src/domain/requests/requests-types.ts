@@ -27,6 +27,13 @@ type RequestVerdictDecline<T extends RequestEntityType> =
       }
   >;
 
+type RequestVerdictDelete<T extends RequestEntityType> =
+  ResolveIntersectionTypes<
+    Omit<RequestVerdict, "reason"> & {
+      requestEntityType: T;
+    }
+  >;
+
 type RequestsWaitingForApproval = {
   [key in RequestEntityType]: number;
 };
@@ -37,5 +44,6 @@ export type {
   RequestEntityType,
   RequestVerdictApproval,
   RequestVerdictDecline,
+  RequestVerdictDelete,
   RequestsWaitingForApproval,
 };
