@@ -14,7 +14,7 @@ type Environment = {
   topicNameSuffix: string | undefined;
   type: KlawApiModel<"EnvModel">["type"];
 };
-// getClusterInfoFromEnv inline object, not a model
+
 type ClusterInfo = KlawApiResponse<"getClusterInfoFromEnv">;
 
 const ALL_ENVIRONMENTS_VALUE = "ALL";
