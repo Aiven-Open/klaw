@@ -6,6 +6,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
@@ -90,11 +91,20 @@ public class TopicController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "operationType", required = false)
+          RequestOperationType requestOperationType,
+      @RequestParam(value = "search", required = false) String search,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
         topicControllerService.getTopicRequests(
-            pageNo, currentPage, requestStatus.value, env, isMyRequest),
+            pageNo,
+            currentPage,
+            requestOperationType,
+            requestStatus.value,
+            env,
+            search,
+            isMyRequest),
         HttpStatus.OK);
   }
 

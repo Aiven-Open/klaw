@@ -4,6 +4,7 @@ import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,7 +52,13 @@ public interface HandleDbRequests {
   RegisterUserInfo getRegistrationDetails(String registrationId, String status);
 
   List<TopicRequest> getAllTopicRequests(
-      String requestor, String status, String env, boolean isMyRequest, int tenantId);
+      String requestor,
+      String status,
+      RequestOperationType requestoperationType,
+      String env,
+      String wildcardSearch,
+      boolean isMyRequest,
+      int tenantId);
 
   Map<String, Map<String, Long>> getTopicRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId, String requestor);

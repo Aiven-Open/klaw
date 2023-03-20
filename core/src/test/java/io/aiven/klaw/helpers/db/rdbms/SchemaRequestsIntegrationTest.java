@@ -344,12 +344,12 @@ public class SchemaRequestsIntegrationTest {
 
   @Test
   @Order(12)
-  public void givenAllReqsFalseStatusFilterOptionsIgnoreWildcardByOthersOnMyTeam() {
+  public void givenAllReqsFalseStatusFilterOptionsUseWildcardByOthersOnMyTeam() {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
             false, "James", 101, null, null, RequestStatus.ALL.value, "topic1", false);
-    assertThat(results.size()).isEqualTo(17);
+    assertThat(results.size()).isEqualTo(5);
     for (SchemaRequest req : results) {
       // All Statuses allowed
       assertThat(req.getRequestStatus())
@@ -365,12 +365,12 @@ public class SchemaRequestsIntegrationTest {
 
   @Test
   @Order(13)
-  public void givenAllReqsFalseStatusFilterOptionsIgnoreMatchingWildcardByOthersOnMyTeam() {
+  public void givenAllReqsFalseStatusFilterOptionsUseMatchingWildcardByOthersOnMyTeam() {
 
     List<SchemaRequest> results =
         selectDataJdbc.selectFilteredSchemaRequests(
             false, "James", 101, null, null, RequestStatus.ALL.value, "topic2", false);
-    assertThat(results.size()).isEqualTo(17);
+    assertThat(results.size()).isEqualTo(3);
     for (SchemaRequest req : results) {
       // All Statuses allowed
       assertThat(req.getRequestStatus())

@@ -2466,6 +2466,21 @@
             "type" : "string"
           }
         }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+          }
+        }, {
+          "name" : "search",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
           "name" : "isMyRequest",
           "in" : "query",
           "required" : false,

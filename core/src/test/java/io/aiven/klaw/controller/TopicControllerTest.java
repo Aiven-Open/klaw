@@ -117,7 +117,7 @@ public class TopicControllerTest {
   public void getTopicRequests() throws Exception {
     List<TopicRequestsResponseModel> topicRequests = utilMethods.getTopicRequestsModel();
 
-    when(topicControllerService.getTopicRequests("1", "", "all", null, false))
+    when(topicControllerService.getTopicRequests("1", "", null, "all", null, null, false))
         .thenReturn(topicRequests);
 
     mvc.perform(

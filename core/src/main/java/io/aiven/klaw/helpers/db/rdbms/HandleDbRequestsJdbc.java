@@ -5,6 +5,7 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import java.util.List;
 import java.util.Map;
@@ -105,9 +106,24 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   /*--------------------Select */
 
   public List<TopicRequest> getAllTopicRequests(
-      String requestor, String status, String env, boolean isMyRequest, int tenantId) {
+      String requestor,
+      String status,
+      RequestOperationType requestOperationType,
+      String env,
+      String wildcardSearch,
+      boolean isMyRequest,
+      int tenantId) {
     return jdbcSelectHelper.getFilteredTopicRequests(
-        false, requestor, status, false, tenantId, null, env, null, isMyRequest);
+        false,
+        requestor,
+        status,
+        false,
+        tenantId,
+        null,
+        requestOperationType,
+        env,
+        wildcardSearch,
+        isMyRequest);
   }
 
   @Override
@@ -155,6 +171,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         showRequestsOfAllTeams,
         tenantId,
         teamId,
+        null,
         env,
         wildcardSearch,
         false);
