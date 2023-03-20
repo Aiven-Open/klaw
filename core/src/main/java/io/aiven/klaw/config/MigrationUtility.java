@@ -5,7 +5,6 @@ import io.aiven.klaw.dao.migration.DataMigration;
 import io.aiven.klaw.dao.migration.MigrationRunner;
 import io.aiven.klaw.error.KlawDataMigrationException;
 import io.aiven.klaw.repository.DataVersionRepo;
-import jakarta.annotation.PostConstruct;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
@@ -16,6 +15,7 @@ import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-public class MigrationUtility {
+public class MigrationUtility implements InitializingBean {
 
   public static final int SUPPORTED_KLAW_VERSION_NUMBER_SYSTEM = 3;
 
@@ -37,16 +37,14 @@ public class MigrationUtility {
 
   @Autowired private ApplicationContext context;
 
-  @PostConstruct
-  public void migrate()
-      throws InvocationTargetException, IllegalAccessException, KlawDataMigrationException,
-          NoSuchMethodException, ClassNotFoundException {
+  @Override
+  public void afterPropertiesSet() throws Exception {
 
     // Find the latest version in DB
     String latestDataVersion = getLatestDataVersion();
     if (!isVersionGreaterThenOrEqualToCurrentVersion(latestDataVersion, currentKlawVersion)) {
       log.info(
-          "Current Data Version {} is greater then or equal to the Klaw version {}, no action needed.",
+          "Current Data Version {} is greater than or equal to the Klaw version {}, no action needed.",
           latestDataVersion,
           currentKlawVersion);
       return;

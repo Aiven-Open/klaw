@@ -12,9 +12,7 @@ import io.aiven.klaw.dao.migration.DataMigration;
 import io.aiven.klaw.dao.migration.MigrationRunner;
 import io.aiven.klaw.dao.test.MigrationTestData2x1x0;
 import io.aiven.klaw.dao.test.MigrationTestData2x2x0;
-import io.aiven.klaw.error.KlawDataMigrationException;
 import io.aiven.klaw.repository.DataVersionRepo;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -64,19 +62,15 @@ class MigrationUtilityTest {
   }
 
   @Test
-  public void VersionIsAlreadyAtLatest_NoMigration()
-      throws KlawDataMigrationException, InvocationTargetException, IllegalAccessException,
-          NoSuchMethodException, ClassNotFoundException {
+  public void VersionIsAlreadyAtLatest_NoMigration() throws Exception {
     when(versionRepo.findTopByOrderByIdDesc()).thenReturn(getDataVersion(KLAW_VERSION));
 
-    utility.migrate();
+    utility.afterPropertiesSet();
     verify(versionRepo, times(0)).save(any());
   }
 
   @Test
-  public void VersionIsNotAtLatest_MigrateData()
-      throws KlawDataMigrationException, InvocationTargetException, IllegalAccessException,
-          NoSuchMethodException, ClassNotFoundException {
+  public void VersionIsNotAtLatest_MigrateData() throws Exception {
     when(versionRepo.findTopByOrderByIdDesc()).thenReturn(getDataVersion("1.0.0"));
     when(context.getBeanNamesForAnnotation(eq(DataMigration.class)))
         .thenReturn(new String[] {"migrationTestData2x1x0", "migrationTestData2x2x0"});
@@ -86,14 +80,12 @@ class MigrationUtilityTest {
     ReflectionTestUtils.setField(m1, "success", true);
     ReflectionTestUtils.setField(m2, "success", true);
 
-    utility.migrate();
+    utility.afterPropertiesSet();
     verify(versionRepo, times(2)).save(dataVersionCaptor.capture());
   }
 
   @Test
-  public void NoExistingVersionInDatabase_MigrateData()
-      throws KlawDataMigrationException, InvocationTargetException, IllegalAccessException,
-          NoSuchMethodException, ClassNotFoundException {
+  public void NoExistingVersionInDatabase_MigrateData() throws Exception {
     when(versionRepo.findTopByOrderByIdDesc()).thenReturn(null);
     when(context.getBeanNamesForAnnotation(eq(DataMigration.class)))
         .thenReturn(new String[] {"migrationTestData2x1x0", "migrationTestData2x2x0"});
@@ -103,7 +95,7 @@ class MigrationUtilityTest {
     ReflectionTestUtils.setField(m1, "success", true);
     ReflectionTestUtils.setField(m2, "success", true);
 
-    utility.migrate();
+    utility.afterPropertiesSet();
     verify(versionRepo, times(2)).save(dataVersionCaptor.capture());
   }
 
