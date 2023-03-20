@@ -28,6 +28,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
+import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,7 +77,7 @@ public class SchemaRegistryControllerServiceTest {
 
   @Mock RolesPermissionsControllerService rolesPermissionsControllerService;
 
-  private SchemaRegstryControllerService schemaRegstryControllerService;
+  private SchemaRegistryControllerService schemaRegistryControllerService;
 
   private ObjectMapper mapper = new ObjectMapper();
 
@@ -90,14 +91,14 @@ public class SchemaRegistryControllerServiceTest {
     env.setId("1");
     env.setName("DEV");
 
-    schemaRegstryControllerService =
-        new SchemaRegstryControllerService(clusterApiService, mailService);
-    ReflectionTestUtils.setField(schemaRegstryControllerService, "manageDatabase", manageDatabase);
-    ReflectionTestUtils.setField(schemaRegstryControllerService, "mailService", mailService);
+    schemaRegistryControllerService =
+        new SchemaRegistryControllerService(clusterApiService, mailService);
+    ReflectionTestUtils.setField(schemaRegistryControllerService, "manageDatabase", manageDatabase);
+    ReflectionTestUtils.setField(schemaRegistryControllerService, "mailService", mailService);
     ReflectionTestUtils.setField(
-        schemaRegstryControllerService, "commonUtilsService", commonUtilsService);
+        schemaRegistryControllerService, "commonUtilsService", commonUtilsService);
     ReflectionTestUtils.setField(
-        schemaRegstryControllerService,
+        schemaRegistryControllerService,
         "rolesPermissionsControllerService",
         rolesPermissionsControllerService);
 
@@ -138,8 +139,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 
-    List<SchemaRequestModel> listReqs =
-        schemaRegstryControllerService.getSchemaRequests(
+    List<SchemaRequestsResponseModel> listReqs =
+        schemaRegistryControllerService.getSchemaRequests(
             "1", "", "all", true, null, null, null, false);
     assertThat(listReqs).hasSize(2);
   }
@@ -152,7 +153,7 @@ public class SchemaRegistryControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.deleteSchemaRequest(anyInt(), anyString(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
-    ApiResponse resultResp = schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
+    ApiResponse resultResp = schemaRegistryControllerService.deleteSchemaRequests("" + schemaReqId);
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
@@ -165,7 +166,7 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.deleteSchemaRequest(anyInt(), anyString(), anyInt()))
         .thenThrow(new RuntimeException("Error from Schema upload"));
     try {
-      schemaRegstryControllerService.deleteSchemaRequests("" + schemaReqId);
+      schemaRegistryControllerService.deleteSchemaRequests("" + schemaReqId);
     } catch (KlawException e) {
       assertThat(e.getMessage()).contains("Error from Schema upload");
     }
@@ -181,7 +182,7 @@ public class SchemaRegistryControllerServiceTest {
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
-    schemaRequest.setUsername("kwuserb");
+    schemaRequest.setRequestor("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
 
@@ -196,7 +197,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-    ApiResponse resultResp = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
+    ApiResponse resultResp = schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
     assertThat(resultResp.getResult()).contains(ApiResultStatus.SUCCESS.value);
   }
 
@@ -209,7 +210,7 @@ public class SchemaRegistryControllerServiceTest {
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
-    schemaRequest.setUsername("kwuserb");
+    schemaRequest.setRequestor("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
 
@@ -224,7 +225,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-    ApiResponse resultResp = schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
+    ApiResponse resultResp = schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
     assertThat(resultResp.getResult()).contains("Schema not registered");
   }
 
@@ -238,7 +239,7 @@ public class SchemaRegistryControllerServiceTest {
 
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
-    schemaRequest.setUsername("kwuserb");
+    schemaRequest.setRequestor("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
 
@@ -258,7 +259,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     try {
-      schemaRegstryControllerService.execSchemaRequests("" + schemaReqId);
+      schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
     } catch (KlawException e) {
       assertThat(e.getMessage()).contains("Error in registering");
     }
@@ -269,7 +270,7 @@ public class SchemaRegistryControllerServiceTest {
   public void uploadSchemaSuccess() throws KlawException {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setSchemafull("{}");
-    schemaRequest.setUsername("kwuserb");
+    schemaRequest.setRequestor("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
     Topic topic = createTopic();
@@ -284,7 +285,7 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
-    ApiResponse resultResp = schemaRegstryControllerService.uploadSchema(schemaRequest);
+    ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
@@ -293,7 +294,7 @@ public class SchemaRegistryControllerServiceTest {
   public void uploadSchemaFailure() {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setSchemafull("{}");
-    schemaRequest.setUsername("kwuserb");
+    schemaRequest.setRequestor("kwuserb");
     schemaRequest.setEnvironment("1");
     schemaRequest.setTopicname("topic");
     Topic topic = createTopic();
@@ -309,7 +310,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     try {
-      schemaRegstryControllerService.uploadSchema(schemaRequest);
+      schemaRegistryControllerService.uploadSchema(schemaRequest);
     } catch (KlawException e) {
       assertThat(e.getMessage()).contains("Error from schema upload");
     }
@@ -322,7 +323,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.REQUEST_CREATE_SCHEMAS)))
         .thenReturn(true);
     ApiResponse returnedValue =
-        schemaRegstryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
+        schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
     assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
@@ -333,7 +334,7 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(createTopic()));
     when(commonUtilsService.getTeamId(any())).thenReturn(101);
     ApiResponse returnedValue =
-        schemaRegstryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
+        schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
     assertThat(returnedValue.getResult())
         .isEqualTo("Unable to find or access the source Schema Registry");
   }
@@ -347,7 +348,7 @@ public class SchemaRegistryControllerServiceTest {
     mockSchemaCreation();
 
     ApiResponse returnedValue =
-        schemaRegstryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
+        schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
     assertThat(returnedValue.getResult())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
     assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -362,7 +363,7 @@ public class SchemaRegistryControllerServiceTest {
     mockSchemaCreation();
 
     ApiResponse returnedValue =
-        schemaRegstryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
+        schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
     assertThat(returnedValue.getResult())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
     assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -381,7 +382,7 @@ public class SchemaRegistryControllerServiceTest {
     mockSchemaCreation();
 
     ApiResponse returnedValue =
-        schemaRegstryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "2"));
+        schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "2"));
     assertThat(returnedValue.getResult())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
     assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -400,7 +401,7 @@ public class SchemaRegistryControllerServiceTest {
     mockSchemaCreation();
 
     ApiResponse returnedValue =
-        schemaRegstryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "3"));
+        schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "3"));
     assertThat(returnedValue.getResult())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
     assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -420,7 +421,7 @@ public class SchemaRegistryControllerServiceTest {
     mockSchemaCreation();
 
     ApiResponse returnedValue =
-        schemaRegstryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "4"));
+        schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "4"));
     assertThat(returnedValue.getResult())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
     assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);

@@ -3,7 +3,7 @@ import { KlawApiResponse } from "types/utils";
 
 // currently this file is used in code (topcis-api.msw.ts)
 // so "expect" is not defined there
-const baseTestObjectMockedTopic = () => {
+const baseTestObjectMockedTopic = (): Topic => {
   return {
     topicid: expect.any(Number),
     totalNoPages: expect.any(String),
@@ -13,11 +13,9 @@ const baseTestObjectMockedTopic = () => {
     sequence: "341",
     allPageNos: ["1"],
     description: "Topic description",
-    documentation: null,
-    noOfReplcias: "2",
+    noOfReplicas: "2",
     teamname: "DevRel",
     cluster: "1",
-    clusterId: null,
     environmentsList: expect.arrayContaining([expect.any(String)]),
     showEditTopic: false,
     showDeleteTopic: false,
@@ -47,11 +45,9 @@ function createMockTopic({
     topicName: topicName,
     noOfPartitions: 2,
     description: "Topic description",
-    documentation: null,
-    noOfReplcias: "2",
+    noOfReplicas: "2",
     teamname: "DevRel",
     cluster: "1",
-    clusterId: null,
     environmentsList,
     showEditTopic: false,
     showDeleteTopic: false,
@@ -67,8 +63,8 @@ function createMockTopicApiResponse({
   entries: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10;
   totalPages?: number;
   currentPage?: number;
-}): KlawApiResponse<"topicsGet"> {
-  const response: KlawApiResponse<"topicsGet"> = [[]];
+}): KlawApiResponse<"getTopics"> {
+  const response: KlawApiResponse<"getTopics"> = [[]];
 
   const totalPageNumber = currentPage > totalPages ? currentPage : totalPages;
   if (entries >= 4 && entries <= 6) {
@@ -141,6 +137,7 @@ const defaultTopicRequest: TopicRequest = {
   currentPage: "1",
   editable: true,
   deletable: true,
+  deleteAssociatedSchema: false,
 };
 
 function createMockTopicRequest(request?: Partial<TopicRequest>): TopicRequest {

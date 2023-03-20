@@ -3,6 +3,7 @@ import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import {
   CreateAclRequestTopicTypeConsumer,
   CreateAclRequestTopicTypeProducer,
+  GetCreatedAclRequestForApproverParameters,
   GetCreatedAclRequestParameters,
 } from "src/domain/acl/acl-types";
 import {
@@ -16,25 +17,45 @@ const createAclRequest = (
   aclParams:
     | CreateAclRequestTopicTypeProducer
     | CreateAclRequestTopicTypeConsumer
-): Promise<KlawApiResponse<"createAclRequest">> => {
-  return api.post<
-    KlawApiResponse<"createAclRequest">,
-    KlawApiRequest<"createAclRequest">
-  >("/createAcl", aclParams);
+): Promise<KlawApiResponse<"createAcl">> => {
+  return api.post<KlawApiResponse<"createAcl">, KlawApiRequest<"createAcl">>(
+    "/createAcl",
+    aclParams
+  );
 };
 
-const getAclRequestsForApprover = (params: GetCreatedAclRequestParameters) => {
-  const filteredParams = omitBy(params, (value, property) => {
-    const omitEnv = property === "env" && value === "ALL";
-    const omitAclType = property === "aclType" && value === "ALL";
-    const omitTopic = property === "topic" && value === "";
+const filterGetAclRequestParams = (params: GetCreatedAclRequestParameters) => {
+  return omitBy(
+    { ...params, isMyRequest: String(Boolean(params.isMyRequest)) },
+    (value, property) => {
+      const omitEnv = property === "env" && value === "ALL";
+      const omitAclType = property === "aclType" && value === "ALL";
+      const omitTopic = property === "topic" && value === "";
+      const omitIsMyRequest = property === "isMyRequest" && value !== "true";
 
-    return omitEnv || omitAclType || omitTopic;
-  });
+      return omitEnv || omitAclType || omitTopic || omitIsMyRequest;
+    }
+  );
+};
+
+const getAclRequestsForApprover = (
+  params: GetCreatedAclRequestForApproverParameters
+) => {
+  const filteredParams = filterGetAclRequestParams(params);
 
   return api
     .get<KlawApiResponse<"getAclRequestsForApprover">>(
       `/getAclRequestsForApprover?${new URLSearchParams(filteredParams)}`
+    )
+    .then(transformAclRequestApiResponse);
+};
+
+const getAclRequests = (params: GetCreatedAclRequestParameters) => {
+  const filteredParams = filterGetAclRequestParams(params);
+
+  return api
+    .get<KlawApiResponse<"getAclRequests">>(
+      `/getAclRequests?${new URLSearchParams(filteredParams)}`
     )
     .then(transformAclRequestApiResponse);
 };
@@ -58,6 +79,7 @@ const declineAclRequest = (payload: DeclineAclRequestPayload) => {
 export {
   createAclRequest,
   getAclRequestsForApprover,
+  getAclRequests,
   approveAclRequest,
   declineAclRequest,
 };

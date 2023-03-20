@@ -3,6 +3,8 @@ package io.aiven.klaw;
 import io.aiven.klaw.model.*;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.TeamModel;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,7 +101,7 @@ public class MockMethods {
     envModel.setName(envName);
     envModel.setTenantId(101);
     envModel.setClusterId(1);
-    envModel.setClusterType(KafkaClustersType.KAFKA);
+    envModel.setType(KafkaClustersType.KAFKA.value);
     envModel.setOtherParams(
         "default.partitions=2,max.partitions=2,replication.factor=1,topic.prefix=,topic.suffix=");
 

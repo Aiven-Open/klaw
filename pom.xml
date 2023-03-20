@@ -55,11 +55,11 @@
         <httpclient5.version>5.2.1</httpclient5.version>
         <jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
         <jjwt.version>0.11.5</jjwt.version>
-        <maven-failsafe-plugin.version>2.22.2</maven-failsafe-plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
+        <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
-        <spotless-maven-plugin.version>2.34.0</spotless-maven-plugin.version>
+        <spotless-maven-plugin.version>2.35.0</spotless-maven-plugin.version>
         <swagger-annotations.version>2.2.8</swagger-annotations.version>
     </properties>
 

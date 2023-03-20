@@ -22,6 +22,7 @@ import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -30,6 +31,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -100,7 +102,6 @@ public class TopicControllerService {
     String userName = getUserName();
 
     topicRequestReq.setRequestor(userName);
-    topicRequestReq.setUsername(userName);
     topicRequestReq.setTeamId(commonUtilsService.getTeamId(userName));
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -188,7 +189,6 @@ public class TopicControllerService {
 
     TopicRequest topicRequestReq = new TopicRequest();
     topicRequestReq.setRequestor(userName);
-    topicRequestReq.setUsername(userName);
     topicRequestReq.setTeamId(userTeamId);
     topicRequestReq.setEnvironment(envId);
     topicRequestReq.setTopicname(topicName);
@@ -217,7 +217,7 @@ public class TopicControllerService {
       }
 
       topicRequestReq.setTopicpartitions(topicOb.get().getNoOfPartitions());
-      topicRequestReq.setReplicationfactor(topicOb.get().getNoOfReplcias());
+      topicRequestReq.setReplicationfactor(topicOb.get().getNoOfReplicas());
       try {
         mailService.sendMail(
             topicRequestReq.getTopicname(),
@@ -268,7 +268,6 @@ public class TopicControllerService {
     Integer userTeamId = commonUtilsService.getTeamId(userName);
 
     topicRequestReq.setRequestor(userName);
-    topicRequestReq.setUsername(userName);
     topicRequestReq.setTeamId(userTeamId);
     topicRequestReq.setTenantId(tenantId);
     topicRequestReq.setEnvironment(envId);
@@ -306,7 +305,7 @@ public class TopicControllerService {
     }
   }
 
-  public List<TopicRequestModel> getTopicRequests(
+  public List<TopicRequestsResponseModel> getTopicRequests(
       String pageNo, String currentPage, String requestsType, String env, boolean isMyRequest) {
     log.debug("getTopicRequests page {} requestsType {}", pageNo, requestsType);
     String userName = getUserName();
@@ -328,7 +327,8 @@ public class TopicControllerService {
     return getTopicRequestModels(topicReqs, true);
   }
 
-  private TopicRequestModel setRequestorPermissions(TopicRequestModel req, String userName) {
+  private TopicRequestsResponseModel setRequestorPermissions(
+      TopicRequestsResponseModel req, String userName) {
     log.debug(
         " My Topic Status {} and userName {} and userName {}",
         req.getRequestStatus(),
@@ -379,9 +379,10 @@ public class TopicControllerService {
     return newList;
   }
 
-  public Map<String, String> getTopicTeamOnly(String topicName, AclPatternType patternType) {
+  public TopicTeamResponse getTopicTeamOnly(String topicName, AclPatternType patternType) {
     log.debug("getTopicTeamOnly {} {}", topicName, patternType);
-    Map<String, String> teamMap = new HashMap<>();
+    TopicTeamResponse topicTeamResponse = new TopicTeamResponse();
+    topicTeamResponse.setStatus(false);
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     List<Topic> topics;
@@ -404,20 +405,19 @@ public class TopicControllerService {
               });
 
       if (allTopicsStartingWithPattern.isEmpty()) {
-        teamMap.put(
-            "error", "There are no topics found with this prefix. You may synchronize metadata.");
-        return teamMap;
+        topicTeamResponse.setError(
+            "There are no topics found with this prefix. You may synchronize metadata.");
+        return topicTeamResponse;
       }
 
       Set<Integer> stringTeamsFound = new HashSet<>();
       allTopicsStartingWithPattern.forEach(top -> stringTeamsFound.add(top.getTeamId()));
 
       if (stringTeamsFound.size() > 1) {
-        teamMap.put(
-            "error", "There are atleast two topics with same prefix owned by different teams.");
+        topicTeamResponse.setError(
+            "There are atleast two topics with same prefix owned by different teams.");
       } else {
-        teamMap.put(
-            "team",
+        topicTeamResponse.setTeam(
             manageDatabase.getTeamNameFromTeamId(tenantId, stringTeamsFound.iterator().next()));
       }
     } else {
@@ -426,16 +426,18 @@ public class TopicControllerService {
       topics = commonUtilsService.getFilteredTopicsForTenant(topics);
 
       if (!topics.isEmpty()) {
-        teamMap.put(
-            "team", manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()));
+        topicTeamResponse.setTeam(
+            manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()));
+        topicTeamResponse.setTeamId(topics.get(0).getTeamId());
+        topicTeamResponse.setStatus(true);
       } else {
-        teamMap.put("error", "No team found");
+        topicTeamResponse.setError("No team found");
       }
     }
-    return teamMap;
+    return topicTeamResponse;
   }
 
-  public List<TopicRequestModel> getTopicRequestsForApprover(
+  public List<TopicRequestsResponseModel> getTopicRequestsForApprover(
       String pageNo,
       String currentPage,
       String requestsType,
@@ -477,11 +479,12 @@ public class TopicControllerService {
     return updateCreateTopicReqsList(createdTopicReqList, tenantId);
   }
 
-  private List<TopicRequestModel> updateCreateTopicReqsList(
+  private List<TopicRequestsResponseModel> updateCreateTopicReqsList(
       List<TopicRequest> topicsList, int tenantId) {
-    List<TopicRequestModel> topicRequestModelList = getTopicRequestModels(topicsList, true);
+    List<TopicRequestsResponseModel> topicRequestModelList =
+        getTopicRequestModels(topicsList, true);
 
-    for (TopicRequestModel topicInfo : topicRequestModelList) {
+    for (TopicRequestsResponseModel topicInfo : topicRequestModelList) {
       topicInfo.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicInfo.getTeamId()));
       topicInfo.setEnvironmentName(getEnvDetails(topicInfo.getEnvironment()).getName());
     }
@@ -489,10 +492,10 @@ public class TopicControllerService {
     return topicRequestModelList;
   }
 
-  private List<TopicRequestModel> getTopicRequestModels(
+  private List<TopicRequestsResponseModel> getTopicRequestModels(
       List<TopicRequest> topicsList, boolean fromSyncTopics) {
-    List<TopicRequestModel> topicRequestModelList = new ArrayList<>();
-    TopicRequestModel topicRequestModel;
+    List<TopicRequestsResponseModel> topicRequestModelList = new ArrayList<>();
+    TopicRequestsResponseModel topicRequestModel;
     String userName = getUserName();
     Integer userTeamId = commonUtilsService.getTeamId(userName);
 
@@ -503,8 +506,9 @@ public class TopicControllerService {
         manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
 
     for (TopicRequest topicReq : topicsList) {
-      topicRequestModel = new TopicRequestModel();
+      topicRequestModel = new TopicRequestsResponseModel();
       copyProperties(topicReq, topicRequestModel);
+      topicRequestModel.setUsername(topicReq.getRequestor()); // OPENAPI Remove
       topicRequestModel.setRequestStatus(RequestStatus.of(topicReq.getRequestStatus()));
       topicRequestModel.setRequestOperationType(
           RequestOperationType.of(topicReq.getRequestOperationType()));
@@ -545,7 +549,7 @@ public class TopicControllerService {
   }
 
   private void validateAndCopyTopicConfigs(
-      TopicRequest topicReq, TopicRequestModel topicRequestModel) {
+      TopicRequest topicReq, TopicRequestsResponseModel topicRequestModel) {
     try {
       if (topicReq.getJsonParams() != null) {
         List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
@@ -883,7 +887,7 @@ public class TopicControllerService {
               .findFirst();
       if (topicOptional.isPresent()) {
         topicInfo.setNoOfPartitions(topicOptional.get().getNoOfPartitions());
-        topicInfo.setNoOfReplcias(topicOptional.get().getNoOfReplcias());
+        topicInfo.setNoOfReplicas(topicOptional.get().getNoOfReplicas());
         hashMap.put("topicId", "" + topicOptional.get().getTopicid());
         topicInfo.setDescription(topicDescription);
 
@@ -1168,7 +1172,7 @@ public class TopicControllerService {
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
 
-        mp.setNoOfReplcias(topicSOT.getNoOfReplcias());
+        mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
         mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
         mp.setDescription(topicSOT.getDescription());
 

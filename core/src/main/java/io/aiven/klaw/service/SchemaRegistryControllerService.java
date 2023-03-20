@@ -21,6 +21,7 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
+import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class SchemaRegstryControllerService {
+public class SchemaRegistryControllerService {
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired ClusterApiService clusterApiService;
@@ -44,13 +45,13 @@ public class SchemaRegstryControllerService {
 
   @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
 
-  public SchemaRegstryControllerService(
+  public SchemaRegistryControllerService(
       ClusterApiService clusterApiService, MailUtils mailService) {
     this.clusterApiService = clusterApiService;
     this.mailService = mailService;
   }
 
-  public List<SchemaRequestModel> getSchemaRequests(
+  public List<SchemaRequestsResponseModel> getSchemaRequests(
       String pageNo,
       String currentPage,
       String requestStatus,
@@ -83,18 +84,19 @@ public class SchemaRegstryControllerService {
 
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
-    List<SchemaRequestModel> schemaRequestModels = new ArrayList<>();
+    List<SchemaRequestsResponseModel> schemaRequestModels = new ArrayList<>();
 
-    SchemaRequestModel schemaRequestModel;
+    SchemaRequestsResponseModel schemaRequestModel;
     if (schemaReqs != null) {
       for (SchemaRequest schemaReq : schemaReqs) {
-        schemaRequestModel = new SchemaRequestModel();
+        schemaRequestModel = new SchemaRequestsResponseModel();
         schemaReq.setEnvironmentName(
             manageDatabase
                 .getHandleDbRequests()
                 .selectEnvDetails(schemaReq.getEnvironment(), tenantId)
                 .getName());
         copyProperties(schemaReq, schemaRequestModel);
+        schemaRequestModel.setUsername(schemaReq.getRequestor()); // OPENAPI Remove
         schemaRequestModel.setRequestStatus(RequestStatus.of(schemaReq.getRequestStatus()));
         schemaRequestModel.setRequestOperationType(
             RequestOperationType.of(schemaReq.getRequestOperationType()));
@@ -106,7 +108,7 @@ public class SchemaRegstryControllerService {
                   userList,
                   manageDatabase.getTeamNameFromTeamId(tenantId, userTeamId),
                   approverRoles,
-                  schemaRequestModel.getUsername()));
+                  schemaRequestModel.getRequestor()));
         }
         schemaRequestModels.add(setRequestorPermissions(schemaRequestModel, userName));
       }
@@ -129,11 +131,12 @@ public class SchemaRegstryControllerService {
     return String.valueOf(approvingInfo);
   }
 
-  private SchemaRequestModel setRequestorPermissions(SchemaRequestModel req, String userName) {
+  private SchemaRequestsResponseModel setRequestorPermissions(
+      SchemaRequestsResponseModel req, String userName) {
 
     if (RequestStatus.CREATED == req.getRequestStatus()
         && userName != null
-        && userName.equals(req.getUsername())) {
+        && userName.equals(req.getRequestor())) {
       req.setDeletable(true);
       req.setEditable(true);
     }
@@ -141,13 +144,13 @@ public class SchemaRegstryControllerService {
     return req;
   }
 
-  private List<SchemaRequestModel> getSchemaRequestsPaged(
-      List<SchemaRequestModel> schemaRequestModelList,
+  private List<SchemaRequestsResponseModel> getSchemaRequestsPaged(
+      List<SchemaRequestsResponseModel> schemaRequestModelList,
       String pageNo,
       String currentPage,
       int tenantId) {
 
-    List<SchemaRequestModel> newList = new ArrayList<>();
+    List<SchemaRequestsResponseModel> newList = new ArrayList<>();
 
     if (schemaRequestModelList != null && schemaRequestModelList.size() > 0) {
       int totalRecs = schemaRequestModelList.size();
@@ -163,7 +166,7 @@ public class SchemaRegstryControllerService {
       commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
 
       for (int i = 0; i < totalRecs; i++) {
-        SchemaRequestModel schemaRequestModel = schemaRequestModelList.get(i);
+        SchemaRequestsResponseModel schemaRequestModel = schemaRequestModelList.get(i);
         if (i >= startVar && i < lastVar) {
           schemaRequestModel.setAllPageNos(numList);
           schemaRequestModel.setTotalNoPages("" + totalPages);
@@ -214,7 +217,7 @@ public class SchemaRegstryControllerService {
             .getHandleDbRequests()
             .selectSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
 
-    if (Objects.equals(schemaRequest.getUsername(), userDetails))
+    if (Objects.equals(schemaRequest.getRequestor(), userDetails))
       return ApiResponse.builder()
           .result("You are not allowed to approve your own schema requests.")
           .build();
@@ -237,7 +240,7 @@ public class SchemaRegstryControllerService {
             schemaRequest.getTopicname(),
             null,
             "",
-            schemaRequest.getUsername(),
+            schemaRequest.getRequestor(),
             dbHandle,
             SCHEMA_REQUEST_APPROVED,
             commonUtilsService.getLoginUrl());
@@ -279,7 +282,7 @@ public class SchemaRegstryControllerService {
           schemaRequest.getTopicname(),
           null,
           reasonForDecline,
-          schemaRequest.getUsername(),
+          schemaRequest.getRequestor(),
           dbHandle,
           SCHEMA_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());
@@ -307,8 +310,7 @@ public class SchemaRegstryControllerService {
           .build();
     }
 
-    SchemaRequestModel schemaRequest =
-        buildSchemaRequestFromPromotionRequest(schemaPromotion, teamId, tenantId);
+    SchemaRequestModel schemaRequest = buildSchemaRequestFromPromotionRequest(schemaPromotion);
 
     Optional<Env> optionalEnv = getSchemaEnvFromId(schemaPromotion.getSourceEnvironment());
 
@@ -370,10 +372,9 @@ public class SchemaRegstryControllerService {
   }
 
   private SchemaRequestModel buildSchemaRequestFromPromotionRequest(
-      SchemaPromotion schemaPromotion, int teamId, int tenantId) {
+      SchemaPromotion schemaPromotion) {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     // setup schema Request
-    schemaRequest.setAppname(schemaPromotion.getAppName());
     schemaRequest.setRemarks(schemaPromotion.getRemarks());
     schemaRequest.setEnvironment(schemaPromotion.getTargetEnvironment());
     schemaRequest.setSchemaversion(schemaPromotion.getSchemaVersion());
@@ -384,7 +385,7 @@ public class SchemaRegstryControllerService {
 
   public ApiResponse uploadSchema(SchemaRequestModel schemaRequest) throws KlawException {
     log.info("uploadSchema {}", schemaRequest);
-    String userDetails = getUserName();
+    String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
@@ -398,7 +399,8 @@ public class SchemaRegstryControllerService {
       return ApiResponse.builder().result("Failure. Invalid json").build();
     }
 
-    Integer userTeamId = commonUtilsService.getTeamId(userDetails);
+    Integer userTeamId = commonUtilsService.getTeamId(userName);
+    schemaRequest.setTeamId(userTeamId);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (!userAndTopicOwnerAreOnTheSameTeam(schemaRequest.getTopicname(), userTeamId, tenantId)) {
       return ApiResponse.builder()
@@ -409,7 +411,7 @@ public class SchemaRegstryControllerService {
     List<SchemaRequest> schemaReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getAllSchemaRequests(false, userDetails, tenantId, null, null, null, null, false);
+            .getAllSchemaRequests(false, userName, tenantId, null, null, null, null, false);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
@@ -436,7 +438,7 @@ public class SchemaRegstryControllerService {
       }
     }
 
-    schemaRequest.setUsername(userDetails);
+    schemaRequest.setRequestor(userName);
     SchemaRequest schemaRequestDao = new SchemaRequest();
     copyProperties(schemaRequest, schemaRequestDao);
     schemaRequestDao.setRequestOperationType(RequestOperationType.CREATE.value);
@@ -448,7 +450,7 @@ public class SchemaRegstryControllerService {
           schemaRequest.getTopicname(),
           null,
           "",
-          schemaRequest.getUsername(),
+          schemaRequest.getRequestor(),
           dbHandle,
           SCHEMA_REQUESTED,
           commonUtilsService.getLoginUrl());

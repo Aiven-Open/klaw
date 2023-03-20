@@ -8,7 +8,6 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
@@ -21,8 +20,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -54,8 +52,6 @@ public class TopicSyncControllerService {
 
   @Autowired private CommonUtilsService commonUtilsService;
 
-  @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
-
   private int topicCounter = 0;
 
   // default at 7 am everyday
@@ -78,11 +74,11 @@ public class TopicSyncControllerService {
         reconStr = new StringBuilder();
         try {
           @SuppressWarnings("unchecked")
-          List<TopicRequestModel> results =
-              (List<TopicRequestModel>)
+          List<TopicRequestsResponseModel> results =
+              (List<TopicRequestsResponseModel>)
                   getReconTopics(envStr, "-1", "", null, "false", false).get("resultSet");
 
-          for (TopicRequestModel topicRequestModel : results) {
+          for (TopicRequestsResponseModel topicRequestModel : results) {
             reconStr
                 .append(topicRequestModel.getTopicname())
                 .append(topicRequestModel.getEnvironmentName())
@@ -116,8 +112,8 @@ public class TopicSyncControllerService {
     Map<String, Object> syncTopicsObjectMap = new HashMap<>();
 
     @SuppressWarnings("unchecked")
-    List<TopicRequestModel> topicRequestModelList =
-        (List<TopicRequestModel>)
+    List<TopicRequestsResponseModel> topicRequestModelList =
+        (List<TopicRequestsResponseModel>)
             getSyncTopics(envId, pageNo, currentPage, topicNameSearch, showAllTopics, isBulkOption)
                 .get("resultSet");
 
@@ -134,9 +130,7 @@ public class TopicSyncControllerService {
     int allTopicsCount = topicRequestModelList.size();
 
     topicRequestModelList.forEach(
-        topicReq -> {
-          topicReq.setEnvironmentName(getEnvDetails(envId).getName());
-        });
+        topicReq -> topicReq.setEnvironmentName(getEnvDetails(envId).getName()));
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (!"-1".equals(pageNo)) { // scheduler call
@@ -177,14 +171,14 @@ public class TopicSyncControllerService {
             .sorted(new TopicControllerService.TopicNameSyncComparator())
             .collect(Collectors.toList());
 
-    List<TopicRequestModel> deletedTopicsFromClusterList = new ArrayList<>();
+    List<TopicRequestsResponseModel> deletedTopicsFromClusterList = new ArrayList<>();
     List<Integer> sizeOfTopics = new ArrayList<>();
 
     if (isReconciliation) {
       syncTopicsObjectMap.put(
           "resultSet",
           getSyncTopicListRecon(
-              topicsList, deletedTopicsFromClusterList, pageNo, env, isBulkOption, tenantId));
+              topicsList, deletedTopicsFromClusterList, env, isBulkOption, tenantId));
       syncTopicsObjectMap.put("allTopicsCount", topicsList.size());
     } else {
       syncTopicsObjectMap.put(
@@ -204,9 +198,9 @@ public class TopicSyncControllerService {
     return syncTopicsObjectMap;
   }
 
-  private List<TopicRequestModel> getSyncTopicList(
+  private List<TopicRequestsResponseModel> getSyncTopicList(
       List<Map<String, String>> topicsList,
-      List<TopicRequestModel> deletedTopicsFromClusterList,
+      List<TopicRequestsResponseModel> deletedTopicsFromClusterList,
       String pageNo,
       String currentPage,
       String env,
@@ -238,17 +232,19 @@ public class TopicSyncControllerService {
       }
     }
     // topics which exist on cluster and not in kw, with no recon option.
-    List<TopicRequestModel> topicRequestModelList =
-        getTopicRequestModels(topicsListMap, false, tenantId);
+    List<TopicRequestsResponseModel> topicRequestModelList = getTopicRequestModels(topicsListMap);
     topicRequestModelList.addAll(deletedTopicsFromClusterList);
 
     sizeOfTopics.add(topicRequestModelList.size());
     return getPagedTopicReqModels(pageNo, currentPage, topicRequestModelList, tenantId);
   }
 
-  private List<TopicRequestModel> getPagedTopicReqModels(
-      String pageNo, String currentPage, List<TopicRequestModel> topicRequestModels, int tenantId) {
-    List<TopicRequestModel> topicRequestModelList = new ArrayList<>();
+  private List<TopicRequestsResponseModel> getPagedTopicReqModels(
+      String pageNo,
+      String currentPage,
+      List<TopicRequestsResponseModel> topicRequestModels,
+      int tenantId) {
+    List<TopicRequestsResponseModel> topicRequestModelList = new ArrayList<>();
 
     int totalRecs = topicRequestModels.size();
     int recsPerPage = 20;
@@ -268,7 +264,7 @@ public class TopicSyncControllerService {
     for (int i = 0; i < totalRecs; i++) {
 
       if (i >= startVar && i < lastVar) {
-        TopicRequestModel mp = topicRequestModels.get(i);
+        TopicRequestsResponseModel mp = topicRequestModels.get(i);
 
         mp.setTotalNoPages(totalPages + "");
         mp.setAllPageNos(numList);
@@ -280,10 +276,9 @@ public class TopicSyncControllerService {
     return topicRequestModelList;
   }
 
-  private List<TopicRequestModel> getSyncTopicListRecon(
+  private List<TopicRequestsResponseModel> getSyncTopicListRecon(
       List<Map<String, String>> clusterTopicsList,
-      List<TopicRequestModel> deletedTopicsFromClusterList,
-      String pageNo,
+      List<TopicRequestsResponseModel> deletedTopicsFromClusterList,
       String env,
       boolean isBulkOption,
       int tenantId) {
@@ -316,69 +311,22 @@ public class TopicSyncControllerService {
     }
 
     // topics which exist in cluster and not in kw.
-    List<TopicRequestModel> topicRequestModelList =
-        getTopicRequestModels(topicsListMap, false, tenantId);
+    List<TopicRequestsResponseModel> topicRequestModelList = getTopicRequestModels(topicsListMap);
     topicRequestModelList.addAll(deletedTopicsFromClusterList);
 
     return topicRequestModelList;
   }
 
-  private List<TopicRequestModel> getTopicRequestModels(
-      List<TopicRequest> topicsList, boolean fromSyncTopics, int tenantId) {
-    List<TopicRequestModel> topicRequestModelList = new ArrayList<>();
-    TopicRequestModel topicRequestModel;
-    Integer userTeamId = commonUtilsService.getTeamId(getUserName());
-    List<String> approverRoles =
-        rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
-    List<UserInfo> userList =
-        manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
+  private List<TopicRequestsResponseModel> getTopicRequestModels(List<TopicRequest> topicsList) {
+    List<TopicRequestsResponseModel> topicRequestModelList = new ArrayList<>();
+    TopicRequestsResponseModel topicRequestModel;
 
     for (TopicRequest topicReq : topicsList) {
-      topicRequestModel = new TopicRequestModel();
+      topicRequestModel = new TopicRequestsResponseModel();
       copyProperties(topicReq, topicRequestModel);
-
-      if (fromSyncTopics) {
-        // show approving info only before approvals
-        if (RequestStatus.APPROVED != topicRequestModel.getRequestStatus()) {
-          if (topicRequestModel.getRequestOperationType() != null
-              && RequestOperationType.CLAIM == topicRequestModel.getRequestOperationType()) {
-            List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
-            topicRequestModel.setApprovingTeamDetails(
-                updateApproverInfo(
-                    manageDatabase
-                        .getHandleDbRequests()
-                        .selectAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
-                    manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
-                    approverRoles,
-                    topicRequestModel.getRequestor()));
-          } else {
-            topicRequestModel.setApprovingTeamDetails(
-                updateApproverInfo(
-                    userList,
-                    manageDatabase.getTeamNameFromTeamId(tenantId, userTeamId),
-                    approverRoles,
-                    topicRequestModel.getRequestor()));
-          }
-        }
-      }
-
       topicRequestModelList.add(topicRequestModel);
     }
     return topicRequestModelList;
-  }
-
-  private String updateApproverInfo(
-      List<UserInfo> userList, String teamName, List<String> approverRoles, String requestor) {
-    StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
-
-    for (UserInfo userInfo : userList) {
-      if (approverRoles.contains(userInfo.getRole())
-          && !Objects.equals(requestor, userInfo.getUsername())) {
-        approvingInfo.append(userInfo.getUsername()).append(",");
-      }
-    }
-
-    return String.valueOf(approvingInfo);
   }
 
   private boolean createTopicRequest(
@@ -433,7 +381,7 @@ public class TopicSyncControllerService {
 
   private void updateClusterDeletedTopicsList(
       List<Map<String, String>> clusterTopicsList,
-      List<TopicRequestModel> deletedTopicsFromClusterList,
+      List<TopicRequestsResponseModel> deletedTopicsFromClusterList,
       List<Topic> topicsFromSOT,
       List<String> teamList,
       int tenantId) {
@@ -442,7 +390,7 @@ public class TopicSyncControllerService {
       clusterTopicsList.forEach(
           hashMapTopicObj -> clusterTopicStringList.add(hashMapTopicObj.get("topicName")));
 
-      Map<String, TopicRequestModel> sotTopics = new HashMap<>();
+      Map<String, TopicRequestsResponseModel> sotTopics = new HashMap<>();
 
       List<String> sotTopicStringList = new ArrayList<>();
       for (Topic topicObj : topicsFromSOT) {
@@ -451,11 +399,11 @@ public class TopicSyncControllerService {
         possibleTeams.add("REMOVE FROM KLAW");
 
         sotTopicStringList.add(topicObj.getTopicname());
-        TopicRequestModel topicRequestModel = new TopicRequestModel();
+        TopicRequestsResponseModel topicRequestModel = new TopicRequestsResponseModel();
         topicRequestModel.setTopicname(topicObj.getTopicname());
         topicRequestModel.setEnvironment(topicObj.getEnvironment());
         topicRequestModel.setTopicpartitions(topicObj.getNoOfPartitions());
-        topicRequestModel.setReplicationfactor(topicObj.getNoOfReplcias());
+        topicRequestModel.setReplicationfactor(topicObj.getNoOfReplicas());
         topicRequestModel.setTeamId(topicObj.getTeamId());
         topicRequestModel.setTeamname(
             manageDatabase.getTeamNameFromTeamId(tenantId, topicObj.getTeamId()));
@@ -557,7 +505,7 @@ public class TopicSyncControllerService {
               topicFound.getTopicname(),
               RequestOperationType.CREATE.value,
               topicFound.getNoOfPartitions(),
-              topicFound.getNoOfReplcias(),
+              topicFound.getNoOfReplicas(),
               syncBackTopics.getTargetEnv(),
               null,
               tenantId,
@@ -606,9 +554,8 @@ public class TopicSyncControllerService {
       topicRequest.setTopicname(topicFound.getTopicname());
       topicRequest.setEnvironment(syncBackTopics.getTargetEnv());
       topicRequest.setTopicpartitions(topicFound.getNoOfPartitions());
-      topicRequest.setReplicationfactor(topicFound.getNoOfReplcias());
+      topicRequest.setReplicationfactor(topicFound.getNoOfReplicas());
       topicRequest.setRequestor(getUserName());
-      topicRequest.setUsername(getUserName());
       topicRequest.setTeamId(teamName);
       topicRequest.setTenantId(tenantId);
       // Create request
@@ -725,7 +672,7 @@ public class TopicSyncControllerService {
                   topic ->
                       (topic.getDocumentation() != null
                           && topic.getDocumentation().contains(topicSearchFilter)))
-              .collect(Collectors.toList());
+              .toList();
 
       topicFilteredList.addAll(searchDocList);
       topicFilteredList =
@@ -784,7 +731,7 @@ public class TopicSyncControllerService {
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
 
-        mp.setNoOfReplcias(topicSOT.getNoOfReplcias());
+        mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
         mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
         mp.setDescription(topicSOT.getDescription());
 
@@ -883,7 +830,7 @@ public class TopicSyncControllerService {
               + " "
               + updateSyncTopics(updatedSyncTopicsList).getResult());
     } catch (Exception e) {
-      logArray.add("Topic update failed :" + hashMap.get("topicName") + " " + e.toString());
+      logArray.add("Topic update failed :" + hashMap.get("topicName") + " " + e);
       log.error("Exception:", e);
     }
   }
@@ -1011,8 +958,7 @@ public class TopicSyncControllerService {
           }
         } else if (!Objects.equals(syncCluster, topicUpdate.getEnvSelected())) {
           erroredTopicsExist.append(topicUpdate.getTopicName()).append(" ");
-          if (checkInPromotionOrder(
-              topicUpdate.getTopicName(), topicUpdate.getEnvSelected(), orderOfEnvs)) {
+          if (checkInPromotionOrder(topicUpdate.getEnvSelected(), orderOfEnvs)) {
             topicsDontExistInMainCluster = true;
           }
         }
@@ -1025,7 +971,7 @@ public class TopicSyncControllerService {
           t.setTopicid(topicId);
           t.setTopicname(topicUpdate.getTopicName());
           t.setNoOfPartitions(topicUpdate.getPartitions());
-          t.setNoOfReplcias(topicUpdate.getReplicationFactor());
+          t.setNoOfReplicas(topicUpdate.getReplicationFactor());
           t.setEnvironment(topicUpdate.getEnvSelected());
           t.setTeamId(
               manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
@@ -1076,7 +1022,7 @@ public class TopicSyncControllerService {
             t.setTopicid(topicId);
             t.setTopicname(topicUpdate.getTopicName());
             t.setNoOfPartitions(topicUpdate.getPartitions());
-            t.setNoOfReplcias(topicUpdate.getReplicationFactor());
+            t.setNoOfReplicas(topicUpdate.getReplicationFactor());
             t.setEnvironment(topicUpdate.getEnvSelected());
             t.setTeamId(
                 manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
@@ -1178,7 +1124,7 @@ public class TopicSyncControllerService {
     return envFound.orElse(null);
   }
 
-  private boolean checkInPromotionOrder(String topicname, String envId, String orderOfEnvs) {
+  private boolean checkInPromotionOrder(String envId, String orderOfEnvs) {
     List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
     return orderedEnv.contains(envId);
   }

@@ -1,14 +1,29 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
+
+const primaryActionText = "Approve";
+const primaryActionOnClick = jest.fn();
+const secondaryActionText = "Decline";
+const secondaryActionOnClick = jest.fn();
 
 const baseProps = {
   onClose: jest.fn(),
-  onApprove: jest.fn(),
-  onDecline: jest.fn(),
+  actions: {
+    primary: {
+      text: primaryActionText,
+      onClick: primaryActionOnClick,
+    },
+    secondary: {
+      text: secondaryActionText,
+      onClick: secondaryActionOnClick,
+    },
+  },
 };
 
 describe("RequestDetailsModal.test", () => {
+  const headlineText = "Request details";
+
   describe("renders a Modal with correct elements when isLoading is false (before interaction)", () => {
     beforeAll(() => {
       render(
@@ -24,9 +39,7 @@ describe("RequestDetailsModal.test", () => {
     });
 
     it("renders correct heading", () => {
-      expect(
-        screen.getByRole("heading", { name: "Request details" })
-      ).toBeVisible();
+      expect(screen.getByRole("heading", { name: headlineText })).toBeVisible();
     });
 
     it("renders enabled Close button", () => {
@@ -34,11 +47,15 @@ describe("RequestDetailsModal.test", () => {
     });
 
     it("renders enabled Approve button", () => {
-      expect(screen.getByRole("button", { name: "Approve" })).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: primaryActionText })
+      ).toBeEnabled();
     });
 
     it("renders enabled Decline request button", () => {
-      expect(screen.getByRole("button", { name: "Decline" })).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: secondaryActionText })
+      ).toBeEnabled();
     });
   });
 
@@ -53,9 +70,7 @@ describe("RequestDetailsModal.test", () => {
     afterAll(cleanup);
 
     it("renders correct heading", () => {
-      expect(
-        screen.getByRole("heading", { name: "Request details" })
-      ).toBeVisible();
+      expect(screen.getByRole("heading", { name: headlineText })).toBeVisible();
     });
 
     it("renders disabled Close button", () => {
@@ -65,11 +80,15 @@ describe("RequestDetailsModal.test", () => {
     });
 
     it("renders disabled Approve button", () => {
-      expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: primaryActionText })
+      ).toBeDisabled();
     });
 
     it("renders disabled Decline request button", () => {
-      expect(screen.getByRole("button", { name: "Decline" })).toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: secondaryActionText })
+      ).toBeDisabled();
     });
   });
 
@@ -88,9 +107,7 @@ describe("RequestDetailsModal.test", () => {
     afterAll(cleanup);
 
     it("renders correct heading", () => {
-      expect(
-        screen.getByRole("heading", { name: "Request details" })
-      ).toBeVisible();
+      expect(screen.getByRole("heading", { name: headlineText })).toBeVisible();
     });
 
     it("renders enabled Close button", () => {
@@ -98,11 +115,15 @@ describe("RequestDetailsModal.test", () => {
     });
 
     it("renders disabled Approve button", () => {
-      expect(screen.getByRole("button", { name: "Approve" })).toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: primaryActionText })
+      ).toBeDisabled();
     });
 
     it("renders disabled Decline request button", () => {
-      expect(screen.getByRole("button", { name: "Decline" })).toBeDisabled();
+      expect(
+        screen.getByRole("button", { name: secondaryActionText })
+      ).toBeDisabled();
     });
   });
 
@@ -124,23 +145,22 @@ describe("RequestDetailsModal.test", () => {
       expect(onClose).toHaveBeenCalledTimes(1);
     });
 
-    it("user can approve", async () => {
-      const { onApprove } = baseProps;
-      const approveButton = screen.getByRole("button", { name: "Approve" });
+    it("triggers the primary action when user clicks the primary button", async () => {
+      const approveButton = screen.getByRole("button", {
+        name: primaryActionText,
+      });
 
       await userEvent.click(approveButton);
-      expect(onApprove).toHaveBeenCalledTimes(1);
+      expect(primaryActionOnClick).toHaveBeenCalledTimes(1);
     });
 
-    it("user can decline", async () => {
-      const { onDecline } = baseProps;
-
+    it("triggers the secondary action when user clicks the secondary button", async () => {
       const declineButton = screen.getByRole("button", {
-        name: "Decline",
+        name: secondaryActionText,
       });
 
       await userEvent.click(declineButton);
-      expect(onDecline).toHaveBeenCalledTimes(1);
+      expect(secondaryActionOnClick).toHaveBeenCalledTimes(1);
     });
   });
 });

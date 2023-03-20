@@ -8,12 +8,10 @@ import { transformEnvironmentApiResponse } from "src/domain/environment/environm
 import {
   getSchemaRequestsForApprover,
   SchemaRequest,
-} from "src/domain/schema-request";
-import {
   approveSchemaRequest,
   declineSchemaRequest,
-} from "src/domain/schema-request/schema-request-api";
-import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
+} from "src/domain/schema-request";
+import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -59,6 +57,7 @@ const mockedResponseSchemaRequests: SchemaRequest[] = [
     teamId: 1701,
     appname: "App",
     schemafull: "",
+    requestor: "jlpicard",
     username: "jlpicard",
     requesttime: "1987-09-28T13:37:00.001+00:00",
     requesttimestring: "28-Sep-1987 13:37:00",
@@ -86,6 +85,7 @@ const mockedResponseSchemaRequests: SchemaRequest[] = [
     appname: "App",
     schemafull: "",
     username: "bcrusher",
+    requestor: "bcrusher",
     requesttime: "1994-23-05T13:37:00.001+00:00",
     requesttimestring: "23-May-1994 13:37:00",
     requestStatus: "CREATED",
@@ -104,7 +104,7 @@ const mockedResponseSchemaRequests: SchemaRequest[] = [
 ];
 
 const mockedApiResponseSchemaRequests: SchemaRequestApiResponse =
-  transformGetSchemaRequestsForApproverResponse(mockedResponseSchemaRequests);
+  transformGetSchemaRequests(mockedResponseSchemaRequests);
 
 describe("SchemaApprovals", () => {
   const defaultApiParams = {
@@ -223,16 +223,27 @@ describe("SchemaApprovals", () => {
       );
     });
 
-    it("shows a table with all schema requests", () => {
+    it("shows a table with all schema requests and a header row", () => {
       const table = screen.getByRole("table", { name: "Schema requests" });
-      const rows = within(table).getAllByRole("rowgroup");
+      const rows = within(table).getAllByRole("row");
 
       expect(table).toBeVisible();
-      expect(rows).toHaveLength(mockedApiResponseSchemaRequests.entries.length);
+      expect(rows).toHaveLength(
+        mockedApiResponseSchemaRequests.entries.length + 1
+      );
     });
   });
 
   describe("renders pagination dependent on response", () => {
+    beforeEach(() => {
+      mockGetSchemaRequestsForApprover.mockResolvedValue({
+        entries: [],
+        totalPages: 1,
+        currentPage: 1,
+      });
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+    });
+
     afterEach(() => {
       cleanup();
       jest.clearAllMocks();
@@ -335,6 +346,8 @@ describe("SchemaApprovals", () => {
         currentPage: 1,
         entries: [],
       });
+
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
 
       customRender(<SchemaApprovals />, {
         queryClient: true,

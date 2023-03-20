@@ -233,7 +233,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             }
 
             // set default Aiven cluster
-            $scope.aivenCluster = 'false';
+            $scope.aivenCluster = false;
             $scope.acl_ip_ssl = 'IP';
             $scope.onChangeEnvironment = function(envName){
                 $http({
@@ -243,7 +243,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         params: {'envSelected' : envName, 'envType' : 'kafka' },
                     }).success(function(output) {
                         $scope.aivenCluster = output.aivenCluster;
-                        if($scope.aivenCluster === 'false'){
+                        if($scope.aivenCluster === false){
                             $scope.acl_ip_ssl = 'IP';
                             $scope.selectedAclType="IP_ADDRESS";
                         }
@@ -395,6 +395,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         return;
                 }
                 $scope.addAcl.team = $scope.topicteamname;
+                $scope.addAcl.teamId = output.teamId;
             }).error(
                 function(error)
                 {
@@ -433,7 +434,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                return;
             }
 
-            if($scope.aivenCluster == 'true'){
+            if($scope.aivenCluster == true){
                 $scope.addAcl.consumergroup = '-na-';
             }
 
@@ -468,7 +469,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             else
                 aclpatterntypetype = 'LITERAL';
 
-            if($scope.aivenCluster === 'false'){
+            if($scope.aivenCluster === false){
                 if($scope.acl_ip_ssl === 'IP')
                     $scope.acl_ssl = [""];
                 else if($scope.acl_ip_ssl === 'SSL')
@@ -490,7 +491,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
             if($scope.acl_ipaddress !=null){
                 for (var i = 0; i < $scope.acl_ipaddress.length; i++) {
-                    if($scope.acl_ipaddress[i].length === 0 && $scope.acl_ip_ssl === 'IP' && $scope.aivenCluster === 'false')
+                    if($scope.acl_ipaddress[i].length === 0 && $scope.acl_ip_ssl === 'IP' && $scope.aivenCluster === false)
                     {
                       $scope.alertnote = "Please fill in a valid IP address of the PRODUCER/CONSUMER client";
                       $scope.showAlertToast();
@@ -527,7 +528,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
              serviceInput['environment'] = $scope.addAcl.envName;
              serviceInput['topicname'] = $scope.addAcl.topicname;
              serviceInput['aclType'] = $scope.addAcl.topicreqtype.value;
-             serviceInput['teamname'] = $scope.addAcl.team;
+             serviceInput['teamId'] = $scope.addAcl.teamId;
              serviceInput['appname'] = "App";//$scope.addAcl.app;
              serviceInput['remarks'] = $scope.addAcl.remarks;
              serviceInput['acl_ip'] = $scope.acl_ipaddress;
@@ -536,6 +537,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
              serviceInput['aclPatternType'] = aclpatterntypetype;
              serviceInput['transactionalId'] = $scope.addAcl.transactionalId;
              serviceInput['aclIpPrincipleType'] = $scope.selectedAclType;
+             serviceInput['requestOperationType'] = 'CREATE';
 
             $http({
                 method: "POST",

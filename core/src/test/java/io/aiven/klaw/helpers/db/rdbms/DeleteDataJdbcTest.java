@@ -75,7 +75,6 @@ public class DeleteDataJdbcTest {
 
   private Optional<TopicRequest> createTopicRequest(String userName, RequestStatus status) {
     TopicRequest req = new TopicRequest();
-    req.setUsername(userName);
     req.setRequestor(userName);
     req.setRequestStatus(status.value);
     return Optional.of(req);
@@ -84,7 +83,7 @@ public class DeleteDataJdbcTest {
   @Test
   public void deleteSchemaRequest() {
     SchemaRequest req = new SchemaRequest();
-    req.setUsername("uiuser1");
+    req.setRequestor("uiuser1");
     req.setReq_no(1001);
     when(schemaRequestRepo.findById(new SchemaRequestID(1001, 1))).thenReturn(Optional.of(req));
     String result = deleteDataJdbc.deleteSchemaRequest(1001, "uiuser1", 1);
@@ -94,7 +93,7 @@ public class DeleteDataJdbcTest {
   @Test
   public void deleteAclRequest() {
     AclRequests req = new AclRequests();
-    req.setUsername("uiuser1");
+    req.setRequestor("uiuser1");
     req.setReq_no(1001);
     when(aclRequestsRepo.findById(new AclRequestID(1001, 1))).thenReturn(Optional.of(req));
     String result = deleteDataJdbc.deleteAclRequest(1001, "uiuser1", 1);

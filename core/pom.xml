@@ -33,7 +33,7 @@
         <pnpm.version>7.14.0</pnpm.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
-        <springdoc-openapi-ui.version>2.0.3</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>2.0.4</springdoc-openapi-ui.version>
     </properties>
 
     <dependencies>
@@ -282,7 +282,7 @@
                 <configuration>
                     <apiDocsUrl>http://localhost:9097/v3/api-docs</apiDocsUrl>
                     <outputFileName>openapi.yaml</outputFileName>
-                    <outputDir>${project.basedir}/src/main/resources</outputDir>
+                    <outputDir>${project.parent.basedir}</outputDir>
                     <skip>false</skip>
                     <headers>
                         <header1key>header1value</header1key>

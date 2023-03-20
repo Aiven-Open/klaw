@@ -123,7 +123,7 @@ public class SelectDataJdbcTest {
     Example<SchemaRequest> value = schemaRequestCaptor.getValue();
     assertThat(schemaRequestsActual).isEmpty();
     assertThat(value.getProbe().getForceRegister()).isNull();
-    assertThat(value.getProbe().getUsername()).isNull();
+    assertThat(value.getProbe().getRequestor()).isNull();
   }
 
   @Test
@@ -144,7 +144,7 @@ public class SelectDataJdbcTest {
     Example<SchemaRequest> value = schemaRequestCaptor.getValue();
     assertThat(schemaRequestsActual).isEmpty();
     assertThat(value.getProbe().getForceRegister()).isNull();
-    assertThat(value.getProbe().getUsername()).isEqualTo("uiuser1");
+    assertThat(value.getProbe().getRequestor()).isEqualTo("uiuser1");
   }
 
   @Test

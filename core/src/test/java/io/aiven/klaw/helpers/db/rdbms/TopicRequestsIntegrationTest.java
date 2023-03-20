@@ -583,7 +583,7 @@ public class TopicRequestsIntegrationTest {
     for (TopicRequest req : joan) {
       assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
-      assertThat(req.getUsername()).isNotEqualTo("Joan");
+      assertThat(req.getRequestor()).isNotEqualTo("Joan");
     }
   }
 
@@ -599,7 +599,7 @@ public class TopicRequestsIntegrationTest {
     for (TopicRequest req : joan) {
       assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.DELETED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
-      assertThat(req.getUsername()).isNotEqualTo("Joan");
+      assertThat(req.getRequestor()).isNotEqualTo("Joan");
     }
   }
 
@@ -614,7 +614,7 @@ public class TopicRequestsIntegrationTest {
     assertThat(resultSet.size()).isEqualTo(32);
     for (TopicRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      assertThat(req.getUsername()).isNotEqualTo("James");
+      assertThat(req.getRequestor()).isNotEqualTo("James");
       if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(103);
         assertThat(req.getApprovingTeamId()).isEqualTo("101");
@@ -635,7 +635,7 @@ public class TopicRequestsIntegrationTest {
     assertThat(resultSet.size()).isEqualTo(35);
     for (TopicRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      assertThat(req.getUsername()).isNotEqualTo("James");
+      assertThat(req.getRequestor()).isNotEqualTo("James");
       if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getApprovingTeamId()).isNotEqualTo("101");
       }
@@ -653,7 +653,7 @@ public class TopicRequestsIntegrationTest {
     assertThat(resultSet.size()).isEqualTo(35);
     for (TopicRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      assertThat(req.getUsername()).isNotEqualTo("James");
+      assertThat(req.getRequestor()).isNotEqualTo("James");
       if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getTeamId()).isEqualTo(101);
         assertThat(req.getApprovingTeamId()).isEqualTo("103");
@@ -675,7 +675,7 @@ public class TopicRequestsIntegrationTest {
     // MyTeamsRequests only
     for (TopicRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
-      assertThat(req.getUsername()).isNotEqualTo("James");
+      assertThat(req.getRequestor()).isNotEqualTo("James");
       assertThat(req.getTeamId()).isEqualTo(103);
       if (req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
         assertThat(req.getApprovingTeamId()).isNotEqualTo("103");

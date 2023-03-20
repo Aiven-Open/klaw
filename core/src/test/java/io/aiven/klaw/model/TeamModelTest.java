@@ -2,6 +2,7 @@ package io.aiven.klaw.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.aiven.klaw.model.requests.TeamModel;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

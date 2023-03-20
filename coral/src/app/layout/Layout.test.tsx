@@ -5,7 +5,10 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 describe("Layout.tsx", () => {
   const testChildren = <div data-testid={"test-children"}></div>;
   beforeAll(() => {
-    customRender(<Layout>{testChildren}</Layout>, { memoryRouter: true });
+    customRender(<Layout>{testChildren}</Layout>, {
+      memoryRouter: true,
+      queryClient: true,
+    });
   });
 
   afterAll(cleanup);

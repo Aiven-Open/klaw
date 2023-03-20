@@ -49,7 +49,7 @@ public class SchemaRequest implements Serializable {
   private String schemafull;
 
   @Column(name = "requestor")
-  private String username;
+  private String requestor;
 
   @Column(name = "requesttime")
   private Timestamp requesttime;

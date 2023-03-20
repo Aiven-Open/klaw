@@ -7,7 +7,7 @@ import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApp
 import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
-import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
@@ -176,15 +176,23 @@ function AclApprovals() {
       {detailsModal.isOpen && (
         <RequestDetailsModal
           onClose={() => setDetailsModal({ isOpen: false, reqNo: "" })}
-          onApprove={() => {
-            approveRequest({
-              requestEntityType: "ACL",
-              reqIds: [detailsModal.reqNo],
-            });
-          }}
-          onDecline={() => {
-            setDetailsModal({ isOpen: false, reqNo: "" });
-            setDeclineModal({ isOpen: true, reqNo: detailsModal.reqNo });
+          actions={{
+            primary: {
+              text: "Approve",
+              onClick: () => {
+                approveRequest({
+                  requestEntityType: "ACL",
+                  reqIds: [detailsModal.reqNo],
+                });
+              },
+            },
+            secondary: {
+              text: "Decline",
+              onClick: () => {
+                setDetailsModal({ isOpen: false, reqNo: "" });
+                setDeclineModal({ isOpen: true, reqNo: detailsModal.reqNo });
+              },
+            },
           }}
           isLoading={approveIsLoading || declineIsLoading}
           disabledActions={
@@ -219,7 +227,7 @@ function AclApprovals() {
       <TableLayout
         filters={[
           <EnvironmentFilter key={"environment"} />,
-          <StatusFilter key={"status"} />,
+          <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <AclTypeFilter key={"aclType"} />,
           <TopicFilter key={"topic"} />,
         ]}

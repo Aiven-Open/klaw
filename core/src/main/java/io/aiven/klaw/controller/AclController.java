@@ -6,6 +6,7 @@ import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
@@ -53,7 +54,7 @@ public class AclController {
       value = "/getAclRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<AclRequestsModel>> getAclRequests(
+  public ResponseEntity<List<AclRequestsResponseModel>> getAclRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
@@ -84,7 +85,7 @@ public class AclController {
       value = "/getAclRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<AclRequestsModel>> getAclRequestsForApprover(
+  public ResponseEntity<List<AclRequestsResponseModel>> getAclRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,

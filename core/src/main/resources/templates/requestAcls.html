@@ -495,7 +495,7 @@
 									</div>
 
 									<!-- Non Aiven -->
-									<div ng-show="aivenCluster=='false'" class="row">
+									<div ng-show="aivenCluster==false" class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label class="control-label">ACL Type</label>
@@ -515,7 +515,7 @@
 										</div>
 									</div>
 									<!-- Aiven -->
-									<div ng-show="aivenCluster=='true'" class="row">
+									<div ng-show="aivenCluster==true" class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label class="control-label">ACL Type</label>
@@ -528,7 +528,7 @@
 									</div>
 
 									<!-- row Non Aiven -->
-									<div ng-show="aivenCluster=='false'"  class="row">
+									<div ng-show="aivenCluster==false"  class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label class="control-label">Topic Pattern Type</label>
@@ -567,7 +567,7 @@
 									</div>
 
 									<!-- row Aiven -->
-									<div ng-show="aivenCluster=='true'"  class="row">
+									<div ng-show="aivenCluster==true"  class="row">
 										<!--/span-->
 										<div class="col-md-6">
 											<div class="form-group">
@@ -583,7 +583,7 @@
 									<!--/row-->
 
 									<!--/row Non Aiven-->
-									<div ng-show="aivenCluster=='false' && disable_consumergrp == true"  class="row">
+									<div ng-show="aivenCluster==false && disable_consumergrp == true"  class="row">
 										<div class="col-md-6">
 										</div>
 										<div class="col-md-6">
@@ -597,7 +597,7 @@
 									</div>
 
 									<!--/row Non Aiven-->
-									<div ng-show="aivenCluster=='false'" class="row">
+									<div ng-show="aivenCluster==false" class="row">
 										<div class="col-md-12">
 											<div class="form-group">
 												<label class="control-label">Acl IP or Principal Or Username based</label>
@@ -615,7 +615,7 @@
 									</div>
 
 									<!--/row Aiven-->
-									<div ng-if="aivenCluster=='true'" class="row">
+									<div ng-if="aivenCluster==true" class="row">
 										<div class="col-md-12">
 											<div class="form-group">
 												<label class="control-label">Acl Service Account based</label>
@@ -630,7 +630,7 @@
 									</div>
 
 									<!--/row Non Aiven-->
-									<div ng-if="aivenCluster=='false'"  class="row">
+									<div ng-if="aivenCluster==false"  class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>IP Address</label>
@@ -689,7 +689,7 @@
 									</div>
 
 									<!-- row Aiven-->
-									<div ng-if="aivenCluster=='true'" class="row">
+									<div ng-if="aivenCluster==true" class="row">
 										<div class="col-md-6">
 											<div class="form-group">
 												<label>Service Account</label>

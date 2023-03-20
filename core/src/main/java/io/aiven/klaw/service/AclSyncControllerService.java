@@ -184,7 +184,7 @@ public class AclSyncControllerService {
       aclReq.setEnvironment(syncBackAcls.getTargetEnv());
       aclReq.setRequestingteam(aclFound.getTeamId());
       aclReq.setRequestOperationType(RequestOperationType.CREATE.value);
-      aclReq.setUsername(userName);
+      aclReq.setRequestor(userName);
       aclReq.setTenantId(tenantId);
 
       ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclReq, tenantId);

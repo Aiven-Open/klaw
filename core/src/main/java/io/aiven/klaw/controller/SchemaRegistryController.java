@@ -6,8 +6,9 @@ import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
+import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.service.SchemaOverviewService;
-import io.aiven.klaw.service.SchemaRegstryControllerService;
+import io.aiven.klaw.service.SchemaRegistryControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -26,9 +27,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/")
 @Slf4j
-public class SchemaRegstryController {
+public class SchemaRegistryController {
 
-  @Autowired SchemaRegstryControllerService schemaRegstryControllerService;
+  @Autowired SchemaRegistryControllerService schemaRegistryControllerService;
 
   @Autowired TopicOverviewService topicOverviewService;
   @Autowired SchemaOverviewService schemaOverviewService;
@@ -44,7 +45,7 @@ public class SchemaRegstryController {
       value = "/getSchemaRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<SchemaRequestModel>> getSchemaRequests(
+  public ResponseEntity<List<SchemaRequestsResponseModel>> getSchemaRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
@@ -53,7 +54,7 @@ public class SchemaRegstryController {
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
-        schemaRegstryControllerService.getSchemaRequests(
+        schemaRegistryControllerService.getSchemaRequests(
             pageNo, currentPage, requestStatus.value, false, topic, env, null, isMyRequest),
         HttpStatus.OK);
   }
@@ -72,7 +73,7 @@ public class SchemaRegstryController {
       value = "/getSchemaRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<SchemaRequestModel>> getSchemaRequestsForApprover(
+  public ResponseEntity<List<SchemaRequestsResponseModel>> getSchemaRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
@@ -80,7 +81,7 @@ public class SchemaRegstryController {
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
-        schemaRegstryControllerService.getSchemaRequests(
+        schemaRegistryControllerService.getSchemaRequests(
             pageNo, currentPage, requestStatus.value, true, topic, env, search, false),
         HttpStatus.OK);
   }
@@ -91,7 +92,7 @@ public class SchemaRegstryController {
   public ResponseEntity<ApiResponse> deleteSchemaRequests(
       @RequestParam("req_no") String avroSchemaReqId) throws KlawException {
     return new ResponseEntity<>(
-        schemaRegstryControllerService.deleteSchemaRequests(avroSchemaReqId), HttpStatus.OK);
+        schemaRegistryControllerService.deleteSchemaRequests(avroSchemaReqId), HttpStatus.OK);
   }
 
   @PostMapping(
@@ -100,7 +101,7 @@ public class SchemaRegstryController {
   public ResponseEntity<ApiResponse> execSchemaRequests(
       @RequestParam("avroSchemaReqId") String avroSchemaReqId) throws KlawException {
     return new ResponseEntity<>(
-        schemaRegstryControllerService.execSchemaRequests(avroSchemaReqId), HttpStatus.OK);
+        schemaRegistryControllerService.execSchemaRequests(avroSchemaReqId), HttpStatus.OK);
   }
 
   @PostMapping(
@@ -111,7 +112,8 @@ public class SchemaRegstryController {
       @RequestParam("reasonForDecline") String reasonForDecline)
       throws KlawException {
     return new ResponseEntity<>(
-        schemaRegstryControllerService.execSchemaRequestsDecline(avroSchemaReqId, reasonForDecline),
+        schemaRegistryControllerService.execSchemaRequestsDecline(
+            avroSchemaReqId, reasonForDecline),
         HttpStatus.OK);
   }
 
@@ -121,7 +123,7 @@ public class SchemaRegstryController {
   public ResponseEntity<ApiResponse> uploadSchema(
       @Valid @RequestBody SchemaRequestModel addSchemaRequest) throws KlawException {
     return new ResponseEntity<>(
-        schemaRegstryControllerService.uploadSchema(addSchemaRequest), HttpStatus.OK);
+        schemaRegistryControllerService.uploadSchema(addSchemaRequest), HttpStatus.OK);
   }
 
   @PostMapping(
@@ -130,7 +132,7 @@ public class SchemaRegstryController {
   public ResponseEntity<ApiResponse> promoteSchema(@RequestBody SchemaPromotion promoteSchemaReq)
       throws Exception {
 
-    return ResponseEntity.ok(schemaRegstryControllerService.promoteSchema(promoteSchemaReq));
+    return ResponseEntity.ok(schemaRegistryControllerService.promoteSchema(promoteSchemaReq));
   }
 
   @RequestMapping(

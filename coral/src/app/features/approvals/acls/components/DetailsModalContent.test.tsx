@@ -4,7 +4,7 @@ import { AclRequest } from "src/domain/acl/acl-types";
 
 const mockedIpsAclRequest: AclRequest = {
   remarks: "hello",
-  consumergroup: undefined,
+  consumergroup: "-na",
   acl_ip: ["3.3.3.32", "3.3.3.33"],
   acl_ssl: ["User:*"],
   aclPatternType: "PREFIXED",
@@ -20,6 +20,8 @@ const mockedIpsAclRequest: AclRequest = {
   requestingTeamName: "Ospo",
   appname: "App",
   username: "amathieu",
+  requestor: "amathieu",
+  requestOperationType: "CREATE",
   requesttime: "2023-01-10T13:19:10.757+00:00",
   requesttimestring: "10-Jan-2023 13:19:10",
   requestStatus: "CREATED",
@@ -38,7 +40,7 @@ const mockedIpsAclRequest: AclRequest = {
 const mockedPrincipalsAclrequest: AclRequest = {
   remarks: undefined,
   consumergroup: "-na-",
-  acl_ip: undefined,
+  acl_ip: [],
   acl_ssl: ["mbasani", "maulbach"],
   aclPatternType: "LITERAL",
   transactionalId: undefined,
@@ -53,6 +55,8 @@ const mockedPrincipalsAclrequest: AclRequest = {
   requestingTeamName: "Ospo",
   appname: "App",
   username: "amathieu",
+  requestor: "amathieu",
+  requestOperationType: "CREATE",
   requesttime: "2023-01-06T14:50:37.912+00:00",
   requesttimestring: "06-Jan-2023 14:50:37",
   requestStatus: "CREATED",

@@ -55,7 +55,7 @@ public class AclRequests implements Serializable {
   private String consumergroup;
 
   @Column(name = "requestor")
-  private String username;
+  private String requestor;
 
   @Column(name = "requesttime")
   private Timestamp requesttime;

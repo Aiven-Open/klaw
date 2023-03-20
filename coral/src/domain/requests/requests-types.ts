@@ -1,8 +1,13 @@
 import { components } from "types/api";
 import { ResolveIntersectionTypes } from "types/utils";
 
-type RequestOperationType = components["schemas"]["RequestOperationType"];
-type RequestStatus = components["schemas"]["RequestStatus"];
+type RequestOperationType =
+  | "CREATE"
+  | "UPDATE"
+  | "PROMOTE"
+  | "CLAIM"
+  | "DELETE";
+type RequestStatus = "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
 type RequestVerdict = components["schemas"]["RequestVerdict"];
 type RequestEntityType =
   components["schemas"]["RequestVerdict"]["requestEntityType"];

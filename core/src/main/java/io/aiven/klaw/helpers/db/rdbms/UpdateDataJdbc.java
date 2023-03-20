@@ -169,7 +169,7 @@ public class UpdateDataJdbc {
     copyProperties(topicRequest, topicObj);
     topicObj.setTopicid(
         insertDataJdbcHelper.getNextTopicRequestId("TOPIC_ID", topicRequest.getTenantId()));
-    topicObj.setNoOfReplcias(topicRequest.getReplicationfactor());
+    topicObj.setNoOfReplicas(topicRequest.getReplicationfactor());
     topicObj.setNoOfPartitions(topicRequest.getTopicpartitions());
     topicObj.setExistingTopic(false);
     topicObj.setHistory(topicRequest.getHistory());

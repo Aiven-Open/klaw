@@ -13,11 +13,8 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.RequestVerdict;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestEntityType;
-import io.aiven.klaw.service.AclControllerService;
-import io.aiven.klaw.service.KafkaConnectControllerService;
-import io.aiven.klaw.service.RequestService;
-import io.aiven.klaw.service.SchemaRegstryControllerService;
-import io.aiven.klaw.service.TopicControllerService;
+import io.aiven.klaw.service.*;
+import io.aiven.klaw.service.SchemaRegistryControllerService;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +33,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class RequestControllerTest {
 
-  @Mock private SchemaRegstryControllerService schemaRegstryControllerService;
+  @Mock private SchemaRegistryControllerService schemaRegistryControllerService;
 
   @Mock private KafkaConnectControllerService kafkaConnectControllerService;
 
@@ -57,7 +54,7 @@ class RequestControllerTest {
     ReflectionTestUtils.setField(
         service, "kafkaConnectControllerService", kafkaConnectControllerService);
     ReflectionTestUtils.setField(
-        service, "schemaRegstryControllerService", schemaRegstryControllerService);
+        service, "schemaRegistryControllerService", schemaRegistryControllerService);
 
     ReflectionTestUtils.setField(controller, "service", service);
   }
@@ -130,13 +127,13 @@ class RequestControllerTest {
   @Test
   public void givenARequestToApproveMulitpleCallCorrectSCHEMAServiceAndReturnSuccessOK()
       throws KlawException {
-    when(schemaRegstryControllerService.execSchemaRequests(anyString()))
+    when(schemaRegistryControllerService.execSchemaRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
-    verify(schemaRegstryControllerService, times(2)).execSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(2)).execSchemaRequests(anyString());
   }
 
   @Order(6)
@@ -144,39 +141,39 @@ class RequestControllerTest {
   public void
       givenARequestToApproveMulitpleCallCorrectSCHEMAServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException {
-    when(schemaRegstryControllerService.execSchemaRequests(anyString()))
+    when(schemaRegistryControllerService.execSchemaRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(207));
-    verify(schemaRegstryControllerService, times(2)).execSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(2)).execSchemaRequests(anyString());
   }
 
   @Order(7)
   @Test
   public void givenARequestToApproveCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException {
-    when(schemaRegstryControllerService.execSchemaRequests(anyString()))
+    when(schemaRegistryControllerService.execSchemaRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(createRequestVerdict(RequestEntityType.SCHEMA, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
-    verify(schemaRegstryControllerService, times(1)).execSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(1)).execSchemaRequests(anyString());
   }
 
   @Order(8)
   @Test
   public void givenMultipleRequestToApproveCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException {
-    when(schemaRegstryControllerService.execSchemaRequests(anyString()))
+    when(schemaRegistryControllerService.execSchemaRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
-    verify(schemaRegstryControllerService, times(2)).execSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(2)).execSchemaRequests(anyString());
   }
 
   @Order(9)
@@ -296,7 +293,7 @@ class RequestControllerTest {
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
     verify(aclControllerService, times(0)).approveAclRequests(anyString());
     verify(kafkaConnectControllerService, times(0)).approveConnectorRequests(anyString());
-    verify(schemaRegstryControllerService, times(0)).execSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(0)).execSchemaRequests(anyString());
     verify(topicControllerService, times(0)).approveTopicRequests(anyString());
   }
 
@@ -374,13 +371,13 @@ class RequestControllerTest {
   @Test
   public void givenARequestToDeclineCMulitpleCallCorrectSCHEMAServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
-    when(schemaRegstryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
+    when(schemaRegistryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, "Schema is Invalid", "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
-    verify(schemaRegstryControllerService, times(2))
+    verify(schemaRegistryControllerService, times(2))
         .execSchemaRequestsDecline(anyString(), anyString());
   }
 
@@ -389,14 +386,14 @@ class RequestControllerTest {
   public void
       givenARequestToDeclineCMulitpleCallCorrectSCHEMAServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
-    when(schemaRegstryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
+    when(schemaRegistryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, "Schema is Invalid", "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(207));
-    verify(schemaRegstryControllerService, times(2))
+    verify(schemaRegistryControllerService, times(2))
         .execSchemaRequestsDecline(anyString(), anyString());
   }
 
@@ -404,13 +401,13 @@ class RequestControllerTest {
   @Test
   public void givenARequestToDeclineCCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
-    when(schemaRegstryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
+    when(schemaRegistryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, "Schema is Invalid", "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
-    verify(schemaRegstryControllerService, times(1))
+    verify(schemaRegistryControllerService, times(1))
         .execSchemaRequestsDecline(anyString(), anyString());
   }
 
@@ -418,13 +415,13 @@ class RequestControllerTest {
   @Test
   public void givenMultipleRequestToDeclineCCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
-    when(schemaRegstryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
+    when(schemaRegistryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, "Schema is Invalid", "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
-    verify(schemaRegstryControllerService, times(2))
+    verify(schemaRegistryControllerService, times(2))
         .execSchemaRequestsDecline(anyString(), anyString());
   }
 
@@ -552,7 +549,7 @@ class RequestControllerTest {
     verify(aclControllerService, times(0)).declineAclRequests(anyString(), anyString());
     verify(kafkaConnectControllerService, times(0))
         .declineConnectorRequests(anyString(), anyString());
-    verify(schemaRegstryControllerService, times(0))
+    verify(schemaRegistryControllerService, times(0))
         .execSchemaRequestsDecline(anyString(), anyString());
     verify(topicControllerService, times(0)).declineTopicRequests(anyString(), anyString());
   }
@@ -626,13 +623,13 @@ class RequestControllerTest {
   @Test
   public void givenARequestToDeleteMulitpleCallCorrectSCHEMAServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
-    when(schemaRegstryControllerService.deleteSchemaRequests(anyString()))
+    when(schemaRegistryControllerService.deleteSchemaRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
-    verify(schemaRegstryControllerService, times(2)).deleteSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(2)).deleteSchemaRequests(anyString());
   }
 
   @Order(42)
@@ -640,39 +637,39 @@ class RequestControllerTest {
   public void
       givenARequestToDeleteMulitpleCallCorrectSCHEMAServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
-    when(schemaRegstryControllerService.deleteSchemaRequests(anyString()))
+    when(schemaRegistryControllerService.deleteSchemaRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(207));
-    verify(schemaRegstryControllerService, times(2)).deleteSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(2)).deleteSchemaRequests(anyString());
   }
 
   @Order(43)
   @Test
   public void givenARequestToDeleteCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
-    when(schemaRegstryControllerService.deleteSchemaRequests(anyString()))
+    when(schemaRegistryControllerService.deleteSchemaRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(createRequestVerdict(RequestEntityType.SCHEMA, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
-    verify(schemaRegstryControllerService, times(1)).deleteSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(1)).deleteSchemaRequests(anyString());
   }
 
   @Order(44)
   @Test
   public void givenMultipleRequestToDeleteCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
-    when(schemaRegstryControllerService.deleteSchemaRequests(anyString()))
+    when(schemaRegistryControllerService.deleteSchemaRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
-    verify(schemaRegstryControllerService, times(2)).deleteSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(2)).deleteSchemaRequests(anyString());
   }
 
   @Order(45)
@@ -789,7 +786,7 @@ class RequestControllerTest {
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
     verify(aclControllerService, times(0)).deleteAclRequests(anyString());
     verify(kafkaConnectControllerService, times(0)).deleteConnectorRequests(anyString());
-    verify(schemaRegstryControllerService, times(0)).deleteSchemaRequests(anyString());
+    verify(schemaRegistryControllerService, times(0)).deleteSchemaRequests(anyString());
     verify(topicControllerService, times(0)).deleteTopicRequests(anyString());
   }
 

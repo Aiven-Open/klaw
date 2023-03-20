@@ -4,11 +4,12 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
-import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
+import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.service.TopicControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -84,7 +85,7 @@ public class TopicController {
       value = "/getTopicRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<TopicRequestModel>> getTopicRequests(
+  public ResponseEntity<List<TopicRequestsResponseModel>> getTopicRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
@@ -101,7 +102,7 @@ public class TopicController {
       value = "/getTopicTeam",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getTopicTeam(
+  public ResponseEntity<TopicTeamResponse> getTopicTeam(
       @RequestParam("topicName") String topicName,
       @RequestParam(value = "patternType", defaultValue = "LITERAL") AclPatternType patternType)
       throws KlawException {
@@ -123,7 +124,7 @@ public class TopicController {
       value = "/getTopicRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<TopicRequestModel>> getTopicRequestsForApprover(
+  public ResponseEntity<List<TopicRequestsResponseModel>> getTopicRequestsForApprover(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,

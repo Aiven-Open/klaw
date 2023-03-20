@@ -6,11 +6,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.model.EnvModel;
 import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.response.EnvModelResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -459,7 +460,6 @@ public class EnvsClustersTenantsControllerIT {
   @Test
   @Order(10)
   public void getEnvDetailsSuccess() throws Exception {
-
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.get("/getEnvDetails")
@@ -473,7 +473,7 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    EnvModel envModel = OBJECT_MAPPER.readValue(response, EnvModel.class);
+    EnvModelResponse envModel = OBJECT_MAPPER.readValue(response, EnvModelResponse.class);
     assertThat(envModel.getName()).isEqualTo("DEV");
   }
 

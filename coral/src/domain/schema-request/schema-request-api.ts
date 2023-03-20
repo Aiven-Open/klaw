@@ -1,48 +1,59 @@
-import { KlawApiResponse, ResolveIntersectionTypes } from "types/utils";
-import api from "src/services/api";
-import {
-  SchemaRequestApiResponse,
-  CreateSchemaRequestPayload,
-} from "src/domain/schema-request/schema-request-types";
-import { operations } from "types/api";
-import { transformGetSchemaRequestsForApproverResponse } from "src/domain/schema-request/schema-request-transformer";
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
 } from "src/domain/requests/requests-types";
+import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
+import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
+import api from "src/services/api";
+import {
+  KlawApiRequest,
+  KlawApiRequestQueryParameters,
+  KlawApiResponse,
+  ResolveIntersectionTypes,
+} from "types/utils";
+
+type CreateSchemaRequestPayload = ResolveIntersectionTypes<
+  Required<
+    Pick<
+      KlawApiRequest<"uploadSchema">,
+      "environment" | "schemafull" | "topicname"
+    >
+  > &
+    Partial<KlawApiRequest<"uploadSchema">>
+>;
 
 const createSchemaRequest = (
   params: CreateSchemaRequestPayload
-): Promise<KlawApiResponse<"schemaUpload">> => {
+): Promise<KlawApiResponse<"uploadSchema">> => {
   const payload = {
     ...params,
     schemaversion: "1.0",
     appname: "App",
   };
 
-  return api.post<KlawApiResponse<"schemaUpload">, CreateSchemaRequestPayload>(
+  return api.post<KlawApiResponse<"uploadSchema">, CreateSchemaRequestPayload>(
     `/uploadSchema`,
     payload
   );
 };
 
-type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
+type GetSchemaRequestsForApproverQueryParams = ResolveIntersectionTypes<
   Required<
     Pick<
-      operations["getSchemaRequestsForApprover"]["parameters"]["query"],
-      "pageNo" | "requestStatus"
+      KlawApiRequestQueryParameters<"getSchemaRequestsForApprover">,
+      "requestStatus"
     >
   > &
     Pick<
-      operations["getSchemaRequestsForApprover"]["parameters"]["query"],
-      "env" | "topic"
+      KlawApiRequestQueryParameters<"getSchemaRequestsForApprover">,
+      "pageNo" | "env" | "topic"
     >
 >;
 
 const getSchemaRequestsForApprover = (
-  args: GetSchemaRequestsQueryParams
+  args: GetSchemaRequestsForApproverQueryParams
 ): Promise<SchemaRequestApiResponse> => {
-  const queryObject: GetSchemaRequestsQueryParams = {
+  const queryObject: GetSchemaRequestsForApproverQueryParams = {
     pageNo: args.pageNo,
     requestStatus: args.requestStatus,
     ...(args.topic && { topic: args.topic }),
@@ -55,7 +66,34 @@ const getSchemaRequestsForApprover = (
         queryObject
       ).toString()}`
     )
-    .then(transformGetSchemaRequestsForApproverResponse);
+    .then(transformGetSchemaRequests);
+};
+
+type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
+  Pick<
+    KlawApiRequestQueryParameters<"getSchemaRequests">,
+    "pageNo" | "requestStatus" | "topic" | "env" | "isMyRequest"
+  >
+>;
+
+const getSchemaRequests = (
+  args: GetSchemaRequestsQueryParams
+): Promise<SchemaRequestApiResponse> => {
+  const queryObject: Omit<GetSchemaRequestsQueryParams, "isMyRequest"> & {
+    myRequest?: "true" | "false";
+  } = {
+    pageNo: args.pageNo,
+    ...(args.requestStatus && { requestStatus: args.requestStatus }),
+    ...(args.topic && { topic: args.topic }),
+    ...(args.env && args.env !== "ALL" && { env: args.env }),
+    ...(args.isMyRequest && { isMyRequest: String(Boolean(args.isMyRequest)) }),
+  };
+
+  return api
+    .get<KlawApiResponse<"getSchemaRequests">>(
+      `/getSchemaRequests?${new URLSearchParams(queryObject).toString()}`
+    )
+    .then(transformGetSchemaRequests);
 };
 
 const approveSchemaRequest = ({
@@ -91,4 +129,5 @@ export {
   getSchemaRequestsForApprover,
   approveSchemaRequest,
   declineSchemaRequest,
+  getSchemaRequests,
 };

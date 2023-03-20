@@ -48,7 +48,7 @@ const getTopics = async ({
   };
 
   return api
-    .get<KlawApiResponse<"topicsGet">>(
+    .get<KlawApiResponse<"getTopics">>(
       `/getTopics?${new URLSearchParams(params)}`
     )
     .then(transformTopicApiResponse);
@@ -69,7 +69,7 @@ const getTopicNames = async ({
     envSelected,
   };
 
-  return api.get<KlawApiResponse<"topicsGetOnly">>(
+  return api.get<KlawApiResponse<"getTopicsOnly">>(
     `/getTopicsOnly?${new URLSearchParams(params)}`
   );
 };
@@ -85,7 +85,7 @@ const getTopicTeam = async ({
 }: GetTopicTeamArgs) => {
   const params = { topicName, patternType };
 
-  return api.get<KlawApiResponse<"topicGetTeam">>(
+  return api.get<KlawApiResponse<"getTopicTeam">>(
     `/getTopicTeam?${new URLSearchParams(params)}`
   );
 };
@@ -94,15 +94,15 @@ const getTopicAdvancedConfigOptions = (): Promise<
   TopicAdvancedConfigurationOptions[]
 > =>
   api
-    .get<KlawApiResponse<"topicAdvancedConfigGet">>("/getAdvancedTopicConfigs")
+    .get<KlawApiResponse<"getAdvancedTopicConfigs">>("/getAdvancedTopicConfigs")
     .then(transformGetTopicAdvancedConfigOptionsResponse);
 
 const requestTopic = (
-  payload: KlawApiRequest<"topicCreate">
+  payload: KlawApiRequest<"createTopicsCreateRequest">
 ): Promise<unknown> => {
   return api.post<
-    KlawApiResponse<"topicCreate">,
-    KlawApiRequest<"topicCreate">
+    KlawApiResponse<"createTopicsCreateRequest">,
+    KlawApiRequest<"createTopicsCreateRequest">
   >("/createTopics", payload);
 };
 
@@ -134,8 +134,8 @@ const getTopicRequests = (
   const filteredParams = omitBy(
     { ...params, isMyRequest: String(Boolean(params.isMyRequest)) },
     (value, property) => {
-      const omitIsMyRequest = property === "isMyRequest" && value === "false";
-      const omitSearch = property === "search" && value === "";
+      const omitIsMyRequest = property === "isMyRequest" && value !== "true"; // Omit if anything else than true
+      const omitSearch = property === "search" && !value;
       const omitEnv =
         property === "env" && (value === "ALL" || value === undefined);
       const omitRequestOperationType =

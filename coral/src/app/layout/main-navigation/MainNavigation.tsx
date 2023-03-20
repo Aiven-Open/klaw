@@ -1,6 +1,7 @@
-import { Box, Divider } from "@aivenio/aquarium";
+import { Box, Divider, Flexbox } from "@aivenio/aquarium";
 import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import cog from "@aivenio/aquarium/dist/src/icons/cog";
+import add from "@aivenio/aquarium/dist/src/icons/add";
 import database from "@aivenio/aquarium/dist/src/icons/database";
 import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
 import list from "@aivenio/aquarium/dist/src/icons/list";
@@ -10,9 +11,26 @@ import { useLocation } from "react-router-dom";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
+import { useQuery } from "@tanstack/react-query";
+import { getUserTeamName } from "src/domain/auth-user";
 
 function MainNavigation() {
   const { pathname } = useLocation();
+
+  const { data: teamName, isLoading } = useQuery(
+    ["user-getAuth-data"],
+    getUserTeamName
+  );
+
+  const getUserTeam = () => {
+    if (isLoading) {
+      return <i className="text-grey-40">Fetching team...</i>;
+    }
+    if (!isLoading && teamName !== undefined) {
+      return teamName;
+    }
+    return <i>No team found</i>;
+  };
 
   return (
     <Box
@@ -23,6 +41,15 @@ function MainNavigation() {
       minHeight={"full"}
       paddingTop={"l2"}
     >
+      <Flexbox direction={"column"} paddingLeft={"l3"}>
+        <div className="inline-block mb-2 typography-small-strong text-grey-60">
+          Team
+        </div>
+        <div>{getUserTeam()}</div>
+      </Flexbox>
+      <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
+        <Divider direction="horizontal" size={2} />
+      </Box>
       <ul>
         <li>
           <MainNavigationLink
@@ -32,25 +59,15 @@ function MainNavigation() {
           />
         </li>
         <li>
-          <MainNavigationSubmenuList
-            expanded={true}
+          <MainNavigationLink
             icon={codeBlock}
-            text={"Topics"}
-          >
-            <MainNavigationLink
-              linkText={"All Topics"}
-              to={Routes.TOPICS}
-              active={
-                pathname.startsWith(Routes.TOPICS) ||
-                pathname.startsWith("/topic")
-              }
-            />
-            <MainNavigationLink
-              linkText={"My team's requests"}
-              to={Routes.REQUESTS}
-              active={pathname.startsWith(Routes.REQUESTS)}
-            />
-          </MainNavigationSubmenuList>
+            linkText={"All Topics"}
+            to={Routes.TOPICS}
+            active={
+              pathname.startsWith(Routes.TOPICS) ||
+              pathname.startsWith("/topic")
+            }
+          />
         </li>
         <li>
           <MainNavigationSubmenuList
@@ -80,6 +97,14 @@ function MainNavigation() {
             to={Routes.APPROVALS}
             linkText={"Approve requests"}
             active={pathname.startsWith(Routes.APPROVALS)}
+          />
+        </li>
+        <li>
+          <MainNavigationLink
+            icon={add}
+            linkText={"My team's requests"}
+            to={Routes.REQUESTS}
+            active={pathname.startsWith(Routes.REQUESTS)}
           />
         </li>
         <li>

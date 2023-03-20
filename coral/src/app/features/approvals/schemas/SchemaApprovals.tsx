@@ -5,18 +5,18 @@ import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
-import RequestDetailsModal from "src/app/features/approvals/components/RequestDetailsModal";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
-import { SchemaRequestDetails } from "src/app/features/approvals/schemas/components/SchemaRequestDetails";
+import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
 import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { RequestStatus } from "src/domain/requests/requests-types";
-import { getSchemaRequestsForApprover } from "src/domain/schema-request";
 import {
+  getSchemaRequestsForApprover,
   approveSchemaRequest,
   declineSchemaRequest,
-} from "src/domain/schema-request/schema-request-api";
+} from "src/domain/schema-request";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 function SchemaApprovals() {
@@ -170,14 +170,22 @@ function SchemaApprovals() {
       {modals.open === "DETAILS" && (
         <RequestDetailsModal
           onClose={closeModal}
-          onApprove={() => {
-            if (modals.req_no === null) {
-              throw Error("req_no can't be null");
-            }
-            approveRequest({ reqIds: [modals.req_no.toString()] });
-          }}
-          onDecline={() => {
-            setModals({ ...modals, open: "DECLINE" });
+          actions={{
+            primary: {
+              text: "Approve",
+              onClick: () => {
+                if (modals.req_no === null) {
+                  throw Error("req_no can't be null");
+                }
+                approveRequest({ reqIds: [modals.req_no.toString()] });
+              },
+            },
+            secondary: {
+              text: "Decline",
+              onClick: () => {
+                setModals({ ...modals, open: "DECLINE" });
+              },
+            },
           }}
           isLoading={declineRequestIsLoading || approveRequestIsLoading}
           disabledActions={declineRequestIsLoading || approveRequestIsLoading}
@@ -216,7 +224,7 @@ function SchemaApprovals() {
             key={"environment"}
             isSchemaRegistryEnvironments
           />,
-          <StatusFilter key={"status"} />,
+          <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <TopicFilter key={"topic"} />,
         ]}
         table={table}

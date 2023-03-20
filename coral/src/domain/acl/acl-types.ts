@@ -16,7 +16,7 @@ import {
 // - CreateAclRequestTopicTypeConsumer adds transactionalId and make relevant properties mandatory
 
 type BaseCreateAclRequest = Pick<
-  KlawApiRequest<"createAclRequest">,
+  KlawApiRequest<"createAcl">,
   | "remarks"
   | "aclPatternType"
   | "aclType"
@@ -43,22 +43,29 @@ type CreateAclRequestTopicTypeConsumer = ResolveIntersectionTypes<
   }
 >;
 
-type GetCreatedAclRequestParameters = ResolveIntersectionTypes<
+type GetCreatedAclRequestForApproverParameters = ResolveIntersectionTypes<
   Omit<KlawApiRequestQueryParameters<"getAclRequestsForApprover">, "aclType">
 > & {
   aclType?: "ALL" | "PRODUCER" | "CONSUMER";
 };
 
-type AclRequest = KlawApiModel<"aclRequest">;
+type GetCreatedAclRequestParameters = ResolveIntersectionTypes<
+  Omit<KlawApiRequestQueryParameters<"getAclRequests">, "aclType">
+> & {
+  aclType?: "ALL" | "PRODUCER" | "CONSUMER";
+};
+
+type AclRequest = KlawApiModel<"AclRequestsResponseModel">;
 
 type AclRequestsForApprover = ResolveIntersectionTypes<Paginated<AclRequest[]>>;
 
-type AclType = KlawApiModel<"aclRequest">["aclType"];
+type AclType = KlawApiModel<"AclRequestsResponseModel">["aclType"];
 
 export type {
   CreateAclRequestTopicTypeProducer,
   CreateAclRequestTopicTypeConsumer,
   GetCreatedAclRequestParameters,
+  GetCreatedAclRequestForApproverParameters,
   AclRequest,
   AclRequestsForApprover,
   AclType,

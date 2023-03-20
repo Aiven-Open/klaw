@@ -585,7 +585,10 @@ describe("TopicSchemaRequest", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockResolvedValue({ status: "200 OK" });
+      mockCreateSchemaRequest.mockResolvedValue({
+        status: "200 OK",
+        result: "success",
+      });
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(
