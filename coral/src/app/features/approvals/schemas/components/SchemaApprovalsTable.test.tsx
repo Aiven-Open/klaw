@@ -253,10 +253,6 @@ describe("SchemaApprovalsTable", () => {
               text = requestOperationTypeNameMap[field as RequestOperationType];
             }
 
-            // if (column.columnHeader === "Requested by") {
-            //   text = request["requestor"];
-            // }
-
             const cell = within(table).getByRole("cell", { name: text });
 
             expect(cell).toBeVisible();

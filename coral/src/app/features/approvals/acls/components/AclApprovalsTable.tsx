@@ -74,17 +74,17 @@ export default function AclApprovalsTable({
         requestOperationType,
       }) => ({
         id: Number(req_no),
-        acl_ssl: acl_ssl ?? [],
-        acl_ip: acl_ip ?? [],
+        acl_ssl,
+        acl_ip,
         topicname: topicname,
         prefixed: aclPatternType === "PREFIXED",
-        environmentName: environmentName ?? "-",
+        environmentName,
         teamname,
         aclType,
-        requestor: requestor ?? "-",
-        requesttimestring: requesttimestring ?? "-",
-        requestStatus: requestStatus ?? "",
-        requestOperationType: requestOperationType ?? "",
+        requestor,
+        requesttimestring,
+        requestStatus,
+        requestOperationType,
       })
     );
   };
