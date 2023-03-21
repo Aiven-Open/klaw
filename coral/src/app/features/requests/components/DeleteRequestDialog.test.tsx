@@ -59,6 +59,54 @@ describe("DeleteRequestDialog", () => {
     });
   });
 
+  describe("shows a loading animation dependent on prop", () => {
+    beforeAll(() => {
+      render(
+        <DeleteRequestDialog
+          cancel={cancelMock}
+          deleteRequest={deleteRequestMock}
+          isLoading={true}
+        />
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("disables button to cancel the deletion of the request while loading", () => {
+      const dialog = screen.getByRole("dialog");
+      const button = within(dialog).getByRole("button", { name: "Cancel" });
+
+      expect(button).toBeDisabled();
+    });
+
+    it("disables the button to confirm deletion of the request while loading", () => {
+      const dialog = screen.getByRole("dialog");
+      const button = within(dialog).getByRole("button", {
+        name: "Delete request",
+      });
+
+      expect(button).toBeDisabled();
+    });
+
+    it("user can't cancel while and close the modal while loading", async () => {
+      const dialog = screen.getByRole("dialog");
+      const button = within(dialog).getByRole("button", { name: "Cancel" });
+
+      await userEvent.click(button);
+      expect(cancelMock).not.toHaveBeenCalled();
+    });
+
+    it("user can't confirm deletion of the request while loading", async () => {
+      const dialog = screen.getByRole("dialog");
+      const button = within(dialog).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(button);
+      expect(deleteRequestMock).not.toHaveBeenCalled();
+    });
+  });
+
   describe("handles user interaction", () => {
     beforeEach(() => {
       render(

@@ -18,6 +18,7 @@ import {
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { Alert } from "@aivenio/aquarium";
+import { objectHasProperty } from "src/services/type-utils";
 
 const defaultStatus = "ALL";
 
@@ -47,6 +48,7 @@ function SchemaRequests() {
     isLoading,
     isError,
     error,
+    isFetching,
   } = useQuery({
     queryKey: [
       "getSchemaRequests",
@@ -74,22 +76,29 @@ function SchemaRequests() {
         // @TODO follow up ticket #707
         // (for all approval and request tables)
         const response = responses[0];
-        const responseIsAHiddenError = response.result !== "success";
+        const responseIsAHiddenError = response?.result !== "success";
         if (responseIsAHiddenError) {
-          //@TODO error handling
-          setErrorQuickActions(
-            response.message || response.result || "Unexpected error"
-          );
-        } else {
-          setErrorQuickActions("");
-          // We need to refetch all requests to keep Table state in sync
-          queryClient.refetchQueries(["getSchemaRequests"]);
+          throw new Error(response?.message || response?.result);
         }
+        setErrorQuickActions("");
+        // We need to refetch all requests to keep Table state in sync
+        queryClient.refetchQueries(["getSchemaRequests"]).then(() => {
+          // only close the modal when data in background is updated
+          closeModal();
+        });
       },
       onError(error: Error) {
-        setErrorQuickActions(parseErrorMsg(error));
-      },
-      onSettled() {
+        let errorMessage: string;
+        // if error comes from our api, it has a `data` property
+        // parseErrorMsg makes sure to get the right message
+        // OR set a generic error message
+        if (objectHasProperty(error, "data")) {
+          errorMessage = parseErrorMsg(error);
+        } else {
+          errorMessage = error.message;
+        }
+
+        setErrorQuickActions(errorMessage);
         closeModal();
       },
     });
@@ -164,6 +173,7 @@ function SchemaRequests() {
               deleteRequest({ reqIds: [modals.req_no.toString()] });
             }
           }}
+          isLoading={deleteRequestIsLoading || isFetching}
           cancel={closeModal}
         />
       )}
