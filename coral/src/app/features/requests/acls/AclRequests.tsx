@@ -53,6 +53,7 @@ function AclRequests() {
   const {
     data,
     isLoading: dataIsLoading,
+    isRefetching: dataIsRefetching,
     isError,
     error,
   } = useQuery({
@@ -79,11 +80,7 @@ function AclRequests() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const {
-    isLoading: deleteIsLoading,
-    mutate: deleteRequest,
-    isSuccess: deleteIsSuccess,
-  } = useMutation({
+  const { isLoading: deleteIsLoading, mutate: deleteRequest } = useMutation({
     mutationFn: deleteAclRequest,
     onSuccess: (responses) => {
       const response = responses[0];
@@ -187,10 +184,10 @@ function AclRequests() {
             requests={data?.entries ?? []}
             onDetails={openDetailsModal}
             onDelete={openDeleteModal}
-            // We want to have the Delete button disabled when the delete request is sucessful
+            // We want to have the Delete button disabled when the refetching of the data happens
             // Otherwise the Delete button will flash an enabled state
             // Between the end of the delete request and the end of the data refetch request
-            deleteDisabled={deleteIsLoading || deleteIsSuccess}
+            deleteDisabled={deleteIsLoading || dataIsRefetching}
           />
         }
         pagination={pagination}
