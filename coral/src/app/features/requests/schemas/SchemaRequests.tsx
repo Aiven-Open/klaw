@@ -74,25 +74,14 @@ function SchemaRequests() {
         // @TODO follow up ticket #707
         // (for all approval and request tables)
         const response = responses[0];
-        if (response.result !== "success") {
+        const responseIsAHiddenError = response.result !== "success";
+        if (responseIsAHiddenError) {
           //@TODO error handling
           setErrorQuickActions(
             response.message || response.result || "Unexpected error"
           );
         } else {
           setErrorQuickActions("");
-          // If declined request is last in the page, go back to previous page
-          // This avoids staying on a non-existent page of entries, which makes the table bug hard
-          // With pagination being 0 of 0, and clicking Previous button sets active page at -1
-          // We also do not need to invalidate the query, as the activePage does not exist any more
-          // And there is no need to update anything on it
-          if (
-            schemaRequests?.entries.length === 1 &&
-            schemaRequests?.currentPage > 1
-          ) {
-            return setCurrentPage(schemaRequests?.currentPage - 1);
-          }
-
           // We need to refetch all requests to keep Table state in sync
           queryClient.refetchQueries(["getSchemaRequests"]);
         }
