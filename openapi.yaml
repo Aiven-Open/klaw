@@ -3099,7 +3099,22 @@
             "type" : "string"
           }
         }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+          }
+        }, {
           "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "search",
           "in" : "query",
           "required" : false,
           "schema" : {
@@ -3900,6 +3915,29 @@
             "default" : "ALL",
             "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
           }
+        }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "ALL",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+          }
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "search",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
         } ],
         "responses" : {
           "200" : {
@@ -4655,6 +4693,14 @@
             "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
           }
         }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+          }
+        }, {
           "name" : "topic",
           "in" : "query",
           "required" : false,
@@ -4663,6 +4709,13 @@
           }
         }, {
           "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "search",
           "in" : "query",
           "required" : false,
           "schema" : {

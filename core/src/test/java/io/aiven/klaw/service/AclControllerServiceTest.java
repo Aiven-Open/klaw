@@ -292,6 +292,8 @@ public class AclControllerServiceTest {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
+            eq(null),
             eq(false),
             anyInt()))
         .thenReturn(getAclRequests("testtopic", 15));
@@ -303,12 +305,13 @@ public class AclControllerServiceTest {
     when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(userList);
 
     List<AclRequestsResponseModel> aclReqs =
-        aclControllerService.getAclRequests("1", "", "all", null, null, null, false);
+        aclControllerService.getAclRequests("1", "", "all", null, null, null, null, null, false);
     assertThat(aclReqs.size()).isEqualTo(10);
     assertThat(aclReqs.get(0).getAcl_ip().size()).isEqualTo(3);
     assertThat(aclReqs.get(0).getTeamname()).isEqualTo(teamName);
 
-    aclReqs = aclControllerService.getAclRequests("2", "", "all", null, null, null, false);
+    aclReqs =
+        aclControllerService.getAclRequests("2", "", "all", null, null, null, null, null, false);
     assertThat(aclReqs.size()).isEqualTo(5);
     assertThat(aclReqs.get(0).getApprovingTeamDetails()).contains(userList.get(0).getUsername());
     assertThat(aclReqs.get(0).getApprovingTeamDetails()).contains(userList.get(1).getUsername());

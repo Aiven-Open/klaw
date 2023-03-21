@@ -125,6 +125,7 @@ public class SchemaRegistryControllerServiceTest {
             anyInt(),
             eq(null),
             eq(null),
+            eq(null),
             eq("all"),
             eq(null),
             eq(false)))
@@ -141,7 +142,7 @@ public class SchemaRegistryControllerServiceTest {
 
     List<SchemaRequestsResponseModel> listReqs =
         schemaRegistryControllerService.getSchemaRequests(
-            "1", "", "all", true, null, null, null, false);
+            "1", "", "all", null, true, null, null, null, false);
     assertThat(listReqs).hasSize(2);
   }
 

@@ -789,12 +789,19 @@ public class KafkaConnectControllerService {
   }
 
   public List<KafkaConnectorRequestsResponseModel> getConnectorRequests(
-      String pageNo, String currentPage, String requestsType) {
+      String pageNo,
+      String currentPage,
+      String requestsType,
+      RequestOperationType requestOperationType,
+      String env,
+      String search) {
     log.debug("getConnectorRequests page {} requestsType {}", pageNo, requestsType);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<KafkaConnectorRequest> topicReqs =
-        manageDatabase.getHandleDbRequests().getAllConnectorRequests(userDetails, tenantId);
+        manageDatabase
+            .getHandleDbRequests()
+            .getAllConnectorRequests(userDetails, requestOperationType, env, search, tenantId);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userDetails);

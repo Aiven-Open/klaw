@@ -177,9 +177,21 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         false);
   }
 
-  public List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId) {
+  public List<KafkaConnectorRequest> getAllConnectorRequests(
+      String requestor,
+      RequestOperationType requestOperationType,
+      String env,
+      String wildcardSearch,
+      int tenantId) {
     return jdbcSelectHelper.getFilteredKafkaConnectorRequests(
-        false, requestor, RequestStatus.CREATED.value, false, tenantId, null, null);
+        false,
+        requestor,
+        RequestStatus.CREATED.value,
+        requestOperationType,
+        false,
+        tenantId,
+        env,
+        wildcardSearch);
   }
 
   public List<KafkaConnectorRequest> getCreatedConnectorRequests(
@@ -190,7 +202,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String env,
       String search) {
     return jdbcSelectHelper.getFilteredKafkaConnectorRequests(
-        true, requestor, status, showRequestsOfAllTeams, tenantId, env, search);
+        true, requestor, status, null, showRequestsOfAllTeams, tenantId, env, search);
   }
 
   public TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId) {
@@ -285,8 +297,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String role,
       String requestStatus,
       boolean showRequestsOfAllTeams,
+      RequestOperationType requestOperationType,
       String topic,
       String environment,
+      String wildcardSearch,
       AclType aclType,
       boolean isMyRequest,
       int tenantId) {
@@ -295,9 +309,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         requestor,
         role,
         requestStatus,
+        requestOperationType,
         showRequestsOfAllTeams,
         topic,
         environment,
+        wildcardSearch,
         aclType,
         isMyRequest,
         tenantId);
@@ -317,9 +333,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         requestor,
         "",
         requestStatus,
+        null,
         showRequestsOfAllTeams,
         topic,
         environment,
+        null,
         aclType,
         false,
         tenantId);
@@ -330,13 +348,22 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       boolean allReqs,
       String requestor,
       int tenantId,
+      RequestOperationType requestOperationType,
       String topic,
       String env,
       String status,
       String search,
       boolean isMyRequest) {
     return jdbcSelectHelper.selectFilteredSchemaRequests(
-        allReqs, requestor, tenantId, topic, env, status, search, isMyRequest);
+        allReqs,
+        requestor,
+        tenantId,
+        requestOperationType,
+        topic,
+        env,
+        status,
+        search,
+        isMyRequest);
   }
 
   @Override

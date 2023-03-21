@@ -64,6 +64,7 @@ public class SchemaRegistryControllerTest {
             anyString(),
             anyString(),
             anyString(),
+            eq(null),
             anyBoolean(),
             eq(null),
             eq(null),

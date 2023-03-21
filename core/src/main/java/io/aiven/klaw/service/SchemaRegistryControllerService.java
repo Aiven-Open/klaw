@@ -55,6 +55,7 @@ public class SchemaRegistryControllerService {
       String pageNo,
       String currentPage,
       String requestStatus,
+      RequestOperationType requestOperationType,
       boolean isApproval,
       String topic,
       String env,
@@ -67,7 +68,15 @@ public class SchemaRegistryControllerService {
         manageDatabase
             .getHandleDbRequests()
             .getAllSchemaRequests(
-                isApproval, userName, tenantId, topic, env, requestStatus, search, isMyRequest);
+                isApproval,
+                userName,
+                tenantId,
+                requestOperationType,
+                topic,
+                env,
+                requestStatus,
+                search,
+                isMyRequest);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
@@ -411,7 +420,7 @@ public class SchemaRegistryControllerService {
     List<SchemaRequest> schemaReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getAllSchemaRequests(false, userName, tenantId, null, null, null, null, false);
+            .getAllSchemaRequests(false, userName, tenantId, null, null, null, null, null, false);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());

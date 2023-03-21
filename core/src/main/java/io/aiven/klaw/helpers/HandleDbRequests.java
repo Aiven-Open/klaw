@@ -75,7 +75,12 @@ public interface HandleDbRequests {
   List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
 
-  List<KafkaConnectorRequest> getAllConnectorRequests(String requestor, int tenantId);
+  List<KafkaConnectorRequest> getAllConnectorRequests(
+      String requestor,
+      RequestOperationType requestOperationType,
+      String env,
+      String wildcardSearch,
+      int tenantId);
 
   List<KafkaConnectorRequest> getCreatedConnectorRequests(
       String requestor,
@@ -127,8 +132,10 @@ public interface HandleDbRequests {
       String role,
       String requestStatus,
       boolean showRequestsOfAllTeams,
+      RequestOperationType requestOperationType,
       String topic,
       String environment,
+      String wildcardSearch,
       AclType aclType,
       boolean isMyRequest,
       int tenantId);
@@ -146,6 +153,7 @@ public interface HandleDbRequests {
       boolean allReqs,
       String requestor,
       int tenantId,
+      RequestOperationType requestOperationType,
       String topic,
       String env,
       String status,
