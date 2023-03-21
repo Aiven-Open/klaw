@@ -530,20 +530,18 @@ public class SelectDataJdbc {
                   status,
                   tenantId,
                   String.valueOf(teamSelected),
-                  isMyRequest ? requestor : null,
-                  requestOperationType));
+                  isMyRequest ? requestor : null));
 
       topicRequestListSub =
           Lists.newArrayList(
               findTopicRequestsByExample(
-                  null,
+                  requestOperationType != null ? requestOperationType.value : null,
                   teamId,
                   env,
                   status,
                   tenantId,
                   null,
-                  isMyRequest ? requestor : null,
-                  requestOperationType));
+                  isMyRequest ? requestor : null));
 
       // Only execute just before adding the separate claim list as this will make sure only the
       // claim topics this team is able to approve will be returned.
@@ -567,27 +565,25 @@ public class SelectDataJdbc {
         topicRequestListSub =
             Lists.newArrayList(
                 findTopicRequestsByExample(
-                    null,
+                    requestOperationType != null ? requestOperationType.value : null,
                     null,
                     env,
                     status,
                     tenantId,
                     null,
-                    isMyRequest ? requestor : null,
-                    requestOperationType));
+                    isMyRequest ? requestor : null));
       } else {
 
         topicRequestListSub =
             Lists.newArrayList(
                 findTopicRequestsByExample(
-                    null,
+                    requestOperationType != null ? requestOperationType.value : null,
                     teamSelected,
                     env,
                     status,
                     tenantId,
                     null,
-                    isMyRequest ? requestor : null,
-                    requestOperationType));
+                    isMyRequest ? requestor : null));
       }
     }
 
@@ -638,8 +634,7 @@ public class SelectDataJdbc {
       String status,
       int tenantId,
       String approvingTeam,
-      String userName,
-      RequestOperationType requestOperationType) {
+      String userName) {
 
     TopicRequest request = new TopicRequest();
     request.setTenantId(tenantId);
@@ -666,9 +661,6 @@ public class SelectDataJdbc {
       request.setRequestor(userName);
     }
 
-    if (requestOperationType != null) {
-      request.setRequestOperationType(requestOperationType.value);
-    }
     // check if debug is enabled so the logger doesn't waste resources converting object request to
     // a
     // string
@@ -706,19 +698,17 @@ public class SelectDataJdbc {
                   env,
                   status,
                   tenantId,
-                  String.valueOf(teamSelected),
-                  requestOperationType));
+                  String.valueOf(teamSelected)));
 
       topicRequestListSub =
           Lists.newArrayList(
               findKafkaConnectorRequestsByExample(
-                  null,
+                  requestOperationType != null ? requestOperationType.value : null,
                   showRequestsOfAllTeams ? null : teamSelected,
                   env,
                   status,
                   tenantId,
-                  null,
-                  requestOperationType));
+                  null));
 
       // Only execute just before adding the separate claim list as this will make sure only the
       // claim topics this team is able to approve will be returned.
@@ -736,26 +726,20 @@ public class SelectDataJdbc {
           topicRequestListSub.stream()
               .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
               .collect(Collectors.toList());
-      if (search != null && !search.isEmpty()) {
-        topicRequestListSub =
-            topicRequestListSub.stream()
-                .filter(topicRequest -> topicRequest.getConnectorName().contains(search))
-                .collect(Collectors.toList());
-      }
-
     } else {
       // show my teams requests
       topicRequestListSub =
           Lists.newArrayList(
               findKafkaConnectorRequestsByExample(
-                  null,
+                  requestOperationType != null ? requestOperationType.value : null,
                   showRequestsOfAllTeams ? null : teamSelected,
                   null,
                   null,
                   tenantId,
-                  null,
-                  requestOperationType));
+                  null));
     }
+
+    boolean wildcardSearch = search != null && !search.isEmpty();
 
     for (KafkaConnectorRequest row : topicRequestListSub) {
       try {
@@ -764,8 +748,8 @@ public class SelectDataJdbc {
                 .format((row.getRequesttime()).getTime()));
       } catch (Exception ignored) {
       }
-
-      topicRequestList.add(row); // no team filter
+      if (!wildcardSearch || row.getConnectorName().toLowerCase().contains(search))
+        topicRequestList.add(row); // no team filter
     }
 
     return topicRequestList;
@@ -789,8 +773,7 @@ public class SelectDataJdbc {
       String environment,
       String status,
       int tenantId,
-      String approvingTeam,
-      RequestOperationType requestOperationType) {
+      String approvingTeam) {
 
     KafkaConnectorRequest request = new KafkaConnectorRequest();
     request.setTenantId(tenantId);
@@ -813,9 +796,6 @@ public class SelectDataJdbc {
       request.setRequestStatus(status);
     }
 
-    if (requestOperationType != null) {
-      request.setRequestOperationType(requestOperationType.value);
-    }
     // check if debug is enabled so the logger doesn't waste resources converting object request to
     // a
     // string

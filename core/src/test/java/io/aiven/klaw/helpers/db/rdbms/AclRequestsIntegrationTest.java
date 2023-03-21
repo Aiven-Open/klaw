@@ -20,6 +20,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -607,6 +609,80 @@ public class AclRequestsIntegrationTest {
     assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
     assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(20L);
     assertThat(operationTypeCount.get(RequestOperationType.DELETE.value)).isEqualTo(0L);
+  }
+
+  @Order(24)
+  @ParameterizedTest
+  @CsvSource({
+    "FIRSTTOPIC1,firsttopic1",
+    "TOPIC1,firsttopic1",
+    "FirstTopic1,firsttopic1",
+    "firSToPic1,firsttopic1"
+  })
+  public void getAclRequestsForTeamViewFilteredbySearchTerm(
+      String searchCriteria, String expectedTopicName) {
+
+    List<AclRequests> john =
+        selectDataJdbc.selectAclRequests(
+            false, "John", null, null, null, false, null, null, searchCriteria, null, false, 101);
+
+    for (AclRequests req : john) {
+      assertThat(req.getTopicname()).isEqualTo(expectedTopicName);
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+  }
+
+  @Order(25)
+  @ParameterizedTest
+  @CsvSource({
+    "Claim,Claim,0",
+    "Delete,Delete,0",
+    "Update,Update,0",
+    "Promote,Promote,0",
+    "Create,Create,30"
+  })
+  public void getAclRequestsForTeamViewFilteredbyRequestOperationType(
+      String requestOperationType, String expectedTopicName, String number) {
+
+    List<AclRequests> james =
+        selectDataJdbc.selectAclRequests(
+            false,
+            "James",
+            null,
+            null,
+            RequestOperationType.of(requestOperationType),
+            false,
+            null,
+            null,
+            null,
+            null,
+            false,
+            101);
+
+    for (AclRequests req : james) {
+      assertThat(req.getRequestOperationType()).isEqualTo(expectedTopicName);
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(26)
+  @ParameterizedTest
+  @CsvSource({"created,21", "deleted,0", "declined,10", "approved,0"})
+  public void getAclRequestsForTeamViewFilteredbyRequestStatus(
+      String requestStatus, String number) {
+
+    List<AclRequests> james =
+        selectDataJdbc.selectAclRequests(
+            false, "James", null, requestStatus, null, true, null, null, null, null, false, 101);
+
+    for (AclRequests req : james) {
+      assertThat(req.getRequestStatus()).isEqualTo(requestStatus);
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(number));
   }
 
   private void generateData(

@@ -21,6 +21,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -795,6 +797,78 @@ public class TopicRequestsIntegrationTest {
     assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(0L);
     assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
     assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(0L);
+  }
+
+  @Order(31)
+  @ParameterizedTest
+  @CsvSource({
+    "FIRSTTOPIC1,firsttopic1",
+    "TOPIC1,firsttopic1",
+    "FirstTopic1,firsttopic1",
+    "firSToPic1,firsttopic1"
+  })
+  public void getTopicRequestsForTeamViewFilteredbySearchTerm(
+      String searchCriteria, String expectedTopicName) {
+
+    List<TopicRequest> john =
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "John", "all", false, 101, null, null, null, searchCriteria, false);
+
+    for (TopicRequest req : john) {
+      assertThat(req.getTopicname()).isEqualTo(expectedTopicName);
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+  }
+
+  @Order(32)
+  @ParameterizedTest
+  @CsvSource({
+    "Claim,Claim,7",
+    "Delete,Delete,10",
+    "Update,Update,2",
+    "Promote,Promote,8",
+    "Create,Create,8"
+  })
+  public void getTopicRequestsForTeamViewFilteredbyRequestOperationType(
+      String requestOperationType, String expectedTopicName, String number) {
+
+    List<TopicRequest> james =
+        selectDataJdbc.getFilteredTopicRequests(
+            false,
+            "James",
+            "all",
+            false,
+            101,
+            null,
+            RequestOperationType.of(requestOperationType),
+            null,
+            null,
+            false);
+
+    for (TopicRequest req : james) {
+      assertThat(req.getRequestOperationType()).isEqualTo(expectedTopicName);
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(32)
+  @ParameterizedTest
+  @CsvSource({"created,13", "deleted,2", "declined,17", "approved,3"})
+  public void getTopicRequestsForTeamViewFilteredbyRequestStatus(
+      String requestStatus, String number) {
+
+    List<TopicRequest> james =
+        selectDataJdbc.getFilteredTopicRequests(
+            false, "James", requestStatus, false, 101, null, null, null, null, false);
+
+    for (TopicRequest req : james) {
+      assertThat(req.getRequestStatus()).isEqualTo(requestStatus);
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(number));
   }
 
   private void generateData(
