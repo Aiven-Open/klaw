@@ -92,4 +92,39 @@ describe("DeleteRequestDialog", () => {
       expect(deleteRequestMock).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe("render disabled buttons in loading state", () => {
+    beforeEach(() => {
+      render(
+        <DeleteRequestDialog
+          cancel={cancelMock}
+          deleteRequest={deleteRequestMock}
+          isLoading={true}
+        />
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("Cancel button should be disabled", async () => {
+      const dialog = screen.getByRole("dialog");
+      const button = within(dialog).getByRole("button", { name: "Cancel" });
+
+      await userEvent.click(button);
+      expect(button).toBeDisabled();
+    });
+
+    it("Delete button should be disabled", async () => {
+      const dialog = screen.getByRole("dialog");
+      const button = within(dialog).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(button);
+      expect(button).toBeDisabled();
+    });
+  });
 });
