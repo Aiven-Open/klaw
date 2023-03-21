@@ -129,9 +129,9 @@ const deleteSchemaRequest = ({
   reqIds,
 }: Omit<RequestVerdictDelete<"SCHEMA">, "requestEntityType">) => {
   return api.post<
-    KlawApiResponse<"declineRequest">,
+    KlawApiResponse<"deleteRequest">,
     RequestVerdictDelete<"SCHEMA">
-  >(`/request/decline`, {
+  >(`/request/delete`, {
     reqIds,
     requestEntityType: "SCHEMA",
   });
