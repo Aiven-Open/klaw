@@ -7,7 +7,7 @@ type CreatedSchemaRequests = ResolveIntersectionTypes<
       | "req_no"
       | "topicname"
       | "environmentName"
-      | "username"
+      | "requestor"
       | "requesttimestring"
     >
   >

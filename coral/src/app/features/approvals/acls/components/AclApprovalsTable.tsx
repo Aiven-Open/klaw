@@ -34,7 +34,7 @@ interface AclRequestTableRow {
   environmentName: string;
   teamname: AclRequest["teamname"];
   aclType: AclRequest["aclType"];
-  username: string;
+  requestor: string;
   requesttimestring: string;
   // `requestStatus` is always defined from backend
   // but api definition says it can be undefined
@@ -68,7 +68,7 @@ export default function AclApprovalsTable({
         environmentName,
         teamname,
         aclType,
-        username,
+        requestor,
         requesttimestring,
         requestStatus,
         requestOperationType,
@@ -81,7 +81,7 @@ export default function AclApprovalsTable({
         environmentName: environmentName ?? "-",
         teamname,
         aclType,
-        username: username ?? "-",
+        requestor: requestor ?? "-",
         requesttimestring: requesttimestring ?? "-",
         requestStatus: requestStatus ?? "",
         requestOperationType: requestOperationType ?? "",
@@ -206,7 +206,7 @@ export default function AclApprovalsTable({
     },
     {
       type: "text",
-      field: "username",
+      field: "requestor",
       headerName: "Requested by",
     },
     {

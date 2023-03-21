@@ -23,7 +23,7 @@ describe("SchemaRequestTable", () => {
     { columnHeader: "Environment", relatedField: "environmentName" },
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Type", relatedField: "requestOperationType" },
-    { columnHeader: "Requested by", relatedField: "username" },
+    { columnHeader: "Requested by", relatedField: "requestor" },
     { columnHeader: "Requested on", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },
     { columnHeader: "Delete", relatedField: null },

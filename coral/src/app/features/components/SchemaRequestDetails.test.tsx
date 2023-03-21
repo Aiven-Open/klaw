@@ -12,7 +12,6 @@ const testRequest: SchemaRequest = {
   teamId: 1701,
   appname: "App",
   schemafull: "",
-  username: "jlpicard",
   requestor: "jlpicard",
   requesttime: "1987-09-28T13:37:00.001+00:00",
   requesttimestring: "28-Sep-1987 13:37:00",

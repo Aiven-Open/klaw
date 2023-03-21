@@ -29,7 +29,7 @@ const topicname = z.string().min(1, { message: "Please enter a prefix." });
 const environment = z
   .string()
   .min(1, { message: "Please select an environment" });
-const teamname = z.string();
+const teamId = z.number();
 
 export {
   remarks,
@@ -39,5 +39,5 @@ export {
   aclPatternType,
   topicname,
   environment,
-  teamname,
+  teamId,
 };

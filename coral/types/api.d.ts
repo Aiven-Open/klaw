@@ -503,7 +503,6 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
-      username?: string;
       topicname: string;
       schemafull: string;
       schemaversion?: string;
@@ -522,7 +521,6 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
-      username?: string;
       topicname: string;
       /** Format: int32 */
       topicpartitions: number;
@@ -706,7 +704,6 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
-      username?: string;
       topicname: string;
       /** Format: int32 */
       topicpartitions: number;
@@ -726,7 +723,6 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
-      username?: string;
       connectorName: string;
       connectorConfig: string;
       description: string;
@@ -741,7 +737,6 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
-      username?: string;
       topicname: string;
       consumergroup?: string;
       acl_ip?: (string)[];
@@ -749,8 +744,7 @@ export type components = {
       aclPatternType: string;
       transactionalId?: string;
       /** Format: int32 */
-      teamId?: number;
-      teamname?: string;
+      teamId: number;
       /** @enum {string} */
       aclType: "PRODUCER" | "CONSUMER";
       /** @enum {string} */
@@ -879,7 +873,6 @@ export type components = {
       remarks?: string;
       appname?: string;
       otherParams?: string;
-      username?: string;
       topicname: string;
       /** Format: int32 */
       topicpartitions: number;
@@ -1012,7 +1005,6 @@ export type components = {
       remarks?: string;
       appname?: string;
       otherParams?: string;
-      username?: string;
       topicname: string;
       schemafull: string;
       /** Format: int32 */
@@ -1066,7 +1058,6 @@ export type components = {
       remarks?: string;
       appname?: string;
       otherParams?: string;
-      username?: string;
       connectorName: string;
       description: string;
       connectorConfig: string;
@@ -1221,7 +1212,6 @@ export type components = {
       remarks?: string;
       appname?: string;
       otherParams?: string;
-      username?: string;
       topicname: string;
       aclPatternType: string;
       /** @enum {string} */
