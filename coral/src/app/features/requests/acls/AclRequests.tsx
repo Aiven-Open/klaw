@@ -16,6 +16,7 @@ import { DeleteRequestDialog } from "src/app/features/requests/components/Delete
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
 import { AclRequest } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { objectHasProperty } from "src/services/type-utils";
 
 function AclRequests() {
   const queryClient = useQueryClient();
@@ -82,23 +83,29 @@ function AclRequests() {
 
   const { isLoading: deleteIsLoading, mutate: deleteRequest } = useMutation({
     mutationFn: deleteAclRequest,
-    onSuccess: (responses) => {
+    onSuccess: async (responses) => {
       const response = responses[0];
 
       if (response.result !== "success") {
-        return setErrorMessage(
-          response.message || response.result || "Unexpected error"
-        );
+        closeModal();
+        throw Error(response.message || response.result || "Unexpected error");
       }
 
       setErrorMessage("");
-      setModals({ open: "DETAILS", req_no: null });
 
       // We need to refetch all aclrequests queries to keep Table state in sync
-      queryClient.refetchQueries(["aclRequests"]);
+      // We await it to only close modal after refetch is done
+      await queryClient.refetchQueries(["aclRequests"]);
+
+      closeModal();
     },
     onError: (error: Error) => {
-      setErrorMessage(parseErrorMsg(error));
+      // Case when error is from the server
+      if (objectHasProperty(error, "data")) {
+        return setErrorMessage(parseErrorMsg(error));
+      }
+      // Case when the error is thrown from onSuccess
+      setErrorMessage(error.message);
     },
   });
 
@@ -163,7 +170,7 @@ function AclRequests() {
         <DeleteRequestDialog
           cancel={closeModal}
           deleteRequest={() => handleDelete(modals.req_no)}
-          isLoading={deleteIsLoading}
+          isLoading={deleteIsLoading || dataIsRefetching}
         />
       )}
       {errorMessage !== "" && (
@@ -184,10 +191,6 @@ function AclRequests() {
             requests={data?.entries ?? []}
             onDetails={openDetailsModal}
             onDelete={openDeleteModal}
-            // We want to have the Delete button disabled when the refetching of the data happens
-            // Otherwise the Delete button will flash an enabled state
-            // Between the end of the delete request and the end of the data refetch request
-            deleteDisabled={deleteIsLoading || dataIsRefetching}
           />
         }
         pagination={pagination}

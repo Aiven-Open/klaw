@@ -39,14 +39,12 @@ type AclRequestsTableProps = {
   requests: AclRequest[];
   onDetails: (req_no: number) => void;
   onDelete: (req_no: number) => void;
-  deleteDisabled?: boolean;
 };
 
 function AclRequestsTable({
   requests,
   onDetails,
   onDelete,
-  deleteDisabled,
 }: AclRequestsTableProps) {
   const columns: Array<DataTableColumn<AclRequestTableRow>> = [
     { type: "text", field: "topicname", headerName: "Topic" },
@@ -163,7 +161,7 @@ function AclRequestsTable({
         text: "Delete",
         icon: deleteIcon,
         onClick: () => onDelete(id),
-        disabled: !deletable || deleteDisabled,
+        disabled: !deletable,
         "aria-label": `Delete ACL request for ${topicname}`,
       }),
     },
