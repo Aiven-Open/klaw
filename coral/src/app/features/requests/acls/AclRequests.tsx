@@ -86,14 +86,14 @@ function AclRequests() {
   } = useMutation({
     mutationFn: deleteAclRequest,
     onSuccess: (responses) => {
-      queryClient.refetchQueries(["aclRequests"]);
-
       const response = responses[0];
+
       if (response.result !== "success") {
         return setErrorMessage(
           response.message || response.result || "Unexpected error"
         );
       }
+
       setErrorMessage("");
       setModals({ open: "DETAILS", req_no: null });
 
