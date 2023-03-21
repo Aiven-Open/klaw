@@ -22,6 +22,4 @@ public class BaseRequestModel implements Serializable {
   private String remarks;
 
   private String requestor;
-
-  private String username; // OPENAPI Remove
 }
