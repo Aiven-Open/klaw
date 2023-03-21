@@ -43,10 +43,12 @@ public class AclController {
   /**
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
-   * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or 'DELETED'
+   * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or
+   *     'DELETED' @Param operationType The RequestOperationType Create/Update/Promote/Claim/Delete
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1' or '4'
-   * @param aclType The Type of acl Consumer/Producer
+   * @param aclType The Type of acl Consumer/Producer @Param search A wildcard search on the topic
+   *     name allowing
    * @param isMyRequest filter requests to ony return your own requests
    * @return An array of AclRequests that met the criteria of the inputted values.
    */

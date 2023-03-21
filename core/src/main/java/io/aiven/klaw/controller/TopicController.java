@@ -78,7 +78,9 @@ public class TopicController {
    * @param pageNo Which page would you like returned e.g. 1
    * @param currentPage Which Page are you currently on e.g. 1
    * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or 'DELETED'
-   * @param env The name of the environment you would like returned e.g. '1' or '4'
+   * @param env The name of the environment you would like returned e.g. '1' or '4' @Param
+   *     operationType The RequestOperationType Create/Update/Promote/Claim/Delete
+   * @param search A wildcard search on the topic name allowing
    * @param isMyRequest Only return requests created by the user calling the API
    * @return A List of Topic Requests filtered by the provided parameters.
    */

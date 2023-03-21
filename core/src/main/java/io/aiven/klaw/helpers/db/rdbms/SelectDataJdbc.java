@@ -89,7 +89,7 @@ public class SelectDataJdbc {
   private ProductDetailsRepo productDetailsRepo;
 
   public List<AclRequests> selectAclRequests(
-      boolean allReqs,
+      boolean isApproval,
       String requestor,
       String role,
       String requestStatus,
@@ -115,7 +115,7 @@ public class SelectDataJdbc {
                 isMyRequest ? requestor : null,
                 tenantId,
                 requestOperationType));
-    if (allReqs) {
+    if (isApproval) {
       // Only filter when returning to approvers view.
       // in the acl request the username is mapped to the requestor column in the database.
       aclListSub =
@@ -135,7 +135,7 @@ public class SelectDataJdbc {
     for (AclRequests row : aclListSub) {
       Integer teamId;
       String rowRequestOperationType = row.getRequestOperationType();
-      if (allReqs) {
+      if (isApproval) {
         if ("requestor_subscriptions".equals(role)) {
           teamId = row.getRequestingteam();
         } else {
@@ -219,7 +219,7 @@ public class SelectDataJdbc {
   }
 
   public List<SchemaRequest> selectFilteredSchemaRequests(
-      boolean allReqs,
+      boolean isApproval,
       String requestor,
       int tenantId,
       RequestOperationType requestOperationType,
@@ -230,8 +230,8 @@ public class SelectDataJdbc {
       boolean isMyRequest) {
     if (log.isDebugEnabled()) {
       log.debug(
-          "selectSchemaRequests allReqs {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}, isMyRequest: {}",
-          allReqs,
+          "selectSchemaRequests isApproval {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}, isMyRequest: {}",
+          isApproval,
           requestor,
           tenantId,
           topic,
@@ -243,7 +243,7 @@ public class SelectDataJdbc {
     List<SchemaRequest> schemaList = new ArrayList<>();
     List<SchemaRequest> schemaListSub;
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
-    if (allReqs) {
+    if (isApproval) {
       schemaListSub =
           Lists.newArrayList(
               findSchemaRequestsByExample(
@@ -477,7 +477,7 @@ public class SelectDataJdbc {
   }
 
   /**
-   * @param allReqs boolean should all requests be returned (true if requesting for an approvers
+   * @param isApproval boolean should all requests be returned (true if requesting for an approvers
    *     view)
    * @param requestor The UserName of the person who is requesting the list of topics
    * @param status Filter the response by the status of the requests e.g.
@@ -494,7 +494,7 @@ public class SelectDataJdbc {
    *     true
    */
   public List<TopicRequest> getFilteredTopicRequests(
-      boolean allReqs,
+      boolean isApproval,
       String requestor,
       String status,
       boolean showRequestsOfAllTeams,
@@ -518,7 +518,7 @@ public class SelectDataJdbc {
     List<TopicRequest> topicRequests = new ArrayList<>();
     List<TopicRequest> topicRequestListSub;
 
-    if (allReqs) { // approvers
+    if (isApproval) { // approvers
       // Team Name is null here as it is the team who created the requested
       // Approving Team includes the teamId as that is how Claim topics know who is the owning team.
       List<TopicRequest> claimTopicReqs =
@@ -672,7 +672,7 @@ public class SelectDataJdbc {
   }
 
   public List<KafkaConnectorRequest> getFilteredKafkaConnectorRequests(
-      boolean allReqs,
+      boolean isApproval,
       String requestor,
       String status,
       RequestOperationType requestOperationType,
@@ -686,7 +686,7 @@ public class SelectDataJdbc {
     List<KafkaConnectorRequest> topicRequestListSub;
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
 
-    if (allReqs) { // approvers
+    if (isApproval) { // approvers
 
       // Team Name is null here as it is the team who created the requested
       // Approving Team includes the teamId as that is how Claim topics know who is the owning team.
