@@ -36,12 +36,8 @@ interface AclRequestTableRow {
   aclType: AclRequest["aclType"];
   requestor: string;
   requesttimestring: string;
-  // `requestStatus` is always defined from backend
-  // but api definition says it can be undefined
-  // the empty string is used to make ts compiler
-  // happy :D
-  requestStatus: RequestStatus | "";
-  requestOperationType: RequestOperationType | "";
+  requestStatus: RequestStatus;
+  requestOperationType: RequestOperationType;
 }
 
 export default function AclApprovalsTable({
@@ -117,12 +113,6 @@ export default function AclApprovalsTable({
       field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
-        if (requestStatus === "") {
-          return {
-            status: "neutral",
-            text: "-",
-          };
-        }
         return {
           status: requestStatusChipStatusMap[requestStatus],
           text: requestStatusNameMap[requestStatus],
@@ -192,12 +182,6 @@ export default function AclApprovalsTable({
       field: "requestOperationType",
       headerName: "Request type",
       status: ({ requestOperationType }) => {
-        if (requestOperationType === "") {
-          return {
-            status: "neutral",
-            text: "-",
-          };
-        }
         return {
           status: requestOperationTypeChipStatusMap[requestOperationType],
           text: requestOperationTypeNameMap[requestOperationType],
