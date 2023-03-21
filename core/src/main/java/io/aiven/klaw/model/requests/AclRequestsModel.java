@@ -40,9 +40,7 @@ public class AclRequestsModel extends BaseRequestModel implements Serializable {
   private String transactionalId;
 
   // topic owner team id
-  private Integer teamId; // OPENAPI add notnull
-
-  private String teamname; // OPENAPI Remove
+  @NotNull private Integer teamId;
 
   // Producer/Consumer
   @NotNull private AclType aclType;

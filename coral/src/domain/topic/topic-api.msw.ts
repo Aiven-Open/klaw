@@ -206,10 +206,12 @@ function mockGetTopicTeam({
 const mockedResponseTopicTeamLiteral: KlawApiModel<"TopicTeamResponse"> = {
   status: true,
   team: "Ospo",
+  teamId: 1,
 };
 const mockedResponseTopicTeamPrefixed: KlawApiModel<"TopicTeamResponse"> = {
   status: true,
   team: "prefixed-Ospo",
+  teamId: 2,
 };
 
 function mockGetTopicRequestsForApprover({

@@ -75,19 +75,19 @@ const TopicAclRequest = () => {
           topicName: selectedTopicName,
           patternType: selectedPatternType,
         }),
-      onSuccess: ({ error, team }) => {
+      onSuccess: ({ error, teamId }) => {
         // If error is not undefined, the other properties will be undefined
         // Then it means that the topic and pattern type the user has chosen are incompatible
         // And therefore no single team can be returned
         // Example: pattern type is PREFIXED, but different topics with the prefix have different teams
         // We therefore need to error
         // @TODO this should be an error notification, not a runtime error
-        if (error !== undefined || team === undefined) {
+        if (error !== undefined || teamId === undefined) {
           throw new Error(error);
         }
         return aclType === "PRODUCER"
-          ? topicProducerForm.setValue("teamname", team)
-          : topicConsumerForm.setValue("teamname", team);
+          ? topicProducerForm.setValue("teamId", teamId)
+          : topicConsumerForm.setValue("teamId", teamId);
       },
       enabled: selectedTopicName !== undefined,
       keepPreviousData: true,

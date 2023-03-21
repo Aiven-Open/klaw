@@ -66,7 +66,7 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
 
       <Flexbox direction={"column"}>
         <Label>Requested by</Label>
-        <dd>{request.username}</dd>
+        <dd>{request.requestor}</dd>
       </Flexbox>
       <Flexbox direction={"column"}>
         <Label>Requested on</Label>

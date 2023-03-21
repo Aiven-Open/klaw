@@ -25,7 +25,7 @@ const DetailsModalContent = ({ request }: DetailsModalContentProps) => {
     consumergroup = "Consumer group not found",
     remarks,
     requesttimestring = "Request time not found",
-    username = "User not found",
+    requestor = "User not found",
     requestingTeamName = "Team name not found",
   } = request;
 
@@ -111,7 +111,7 @@ const DetailsModalContent = ({ request }: DetailsModalContentProps) => {
 
       <Flexbox direction={"column"}>
         <Label>Requested by</Label>
-        <dd>{username}</dd>
+        <dd>{requestor}</dd>
       </Flexbox>
       <Flexbox direction={"column"}>
         <Label>Requested on</Label>

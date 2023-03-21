@@ -19,7 +19,6 @@ const mockedIpsAclRequest: AclRequest = {
   requestingteam: 1003,
   requestingTeamName: "Ospo",
   appname: "App",
-  username: "amathieu",
   requestor: "amathieu",
   requestOperationType: "CREATE",
   requesttime: "2023-01-10T13:19:10.757+00:00",
@@ -54,7 +53,6 @@ const mockedPrincipalsAclrequest: AclRequest = {
   requestingteam: 1003,
   requestingTeamName: "Ospo",
   appname: "App",
-  username: "amathieu",
   requestor: "amathieu",
   requestOperationType: "CREATE",
   requesttime: "2023-01-06T14:50:37.912+00:00",
@@ -124,7 +122,7 @@ describe("AclDetailsModalContent", () => {
     });
     it("renders Requested by", () => {
       expect(findTerm("Requested by")).toBeVisible();
-      expect(findDefinition(mockedIpsAclRequest.username)).toBeVisible();
+      expect(findDefinition(mockedIpsAclRequest.requestor)).toBeVisible();
     });
     it("renders Requested on", () => {
       expect(findTerm("Requested on")).toBeVisible();
@@ -176,7 +174,9 @@ describe("AclDetailsModalContent", () => {
     });
     it("renders Requested by", () => {
       expect(findTerm("Requested by")).toBeVisible();
-      expect(findDefinition(mockedPrincipalsAclrequest.username)).toBeVisible();
+      expect(
+        findDefinition(mockedPrincipalsAclrequest.requestor)
+      ).toBeVisible();
     });
     it("renders Requested on", () => {
       expect(findTerm("Requested on")).toBeVisible();

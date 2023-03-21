@@ -21,7 +21,6 @@ const mockedRequests: SchemaRequest[] = [
     teamId: 1701,
     appname: "App",
     schemafull: "",
-    username: "jlpicard",
     requestor: "jlpicard",
     requesttime: "1987-09-28T13:37:00.001+00:00",
     requesttimestring: "28-Sep-1987 13:37:00",
@@ -45,10 +44,9 @@ const mockedRequests: SchemaRequest[] = [
     environmentName: "SEC",
     schemaversion: "1.0",
     teamname: "NCC1701D",
-    teamId: 1701,
+    teamId: 1702,
     appname: "App",
     schemafull: "",
-    username: "bcrusher",
     requestor: "bcrusher",
     requesttime: "1994-23-05T13:37:00.001+00:00",
     requesttimestring: "23-May-1994 13:37:00",
@@ -82,7 +80,7 @@ describe("SchemaApprovalsTable", () => {
     { columnHeader: "Environment", relatedField: "environmentName" },
     { columnHeader: "Status", relatedField: "requestStatus" },
     { columnHeader: "Request type", relatedField: "requestOperationType" },
-    { columnHeader: "Requested by", relatedField: "username" },
+    { columnHeader: "Requested by", relatedField: "requestor" },
     { columnHeader: "Requested on", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },
     { columnHeader: "Approve", relatedField: null },
@@ -254,6 +252,7 @@ describe("SchemaApprovalsTable", () => {
             if (column.columnHeader === "Request type") {
               text = requestOperationTypeNameMap[field as RequestOperationType];
             }
+
             const cell = within(table).getByRole("cell", { name: text });
 
             expect(cell).toBeVisible();

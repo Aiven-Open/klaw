@@ -24,7 +24,7 @@ interface SchemaRequestTableData {
   id: SchemaRequest["req_no"];
   topicname: SchemaRequest["topicname"];
   environmentName: SchemaRequest["environmentName"];
-  username: SchemaRequest["username"];
+  requestor: SchemaRequest["requestor"];
   requesttimestring: SchemaRequest["requesttimestring"];
   requestStatus: SchemaRequest["requestStatus"];
   requestOperationType: SchemaRequest["requestOperationType"];
@@ -79,7 +79,7 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
         };
       },
     },
-    { type: "text", field: "username", headerName: "Requested by" },
+    { type: "text", field: "requestor", headerName: "Requested by" },
     {
       type: "text",
       field: "requesttimestring",
@@ -163,7 +163,7 @@ function SchemaApprovalsTable(props: SchemaApprovalsTableProps) {
         id: request.req_no,
         topicname: request.topicname,
         environmentName: request.environmentName,
-        username: request.username,
+        requestor: request.requestor,
         requesttimestring: request.requesttimestring,
         requestStatus: request.requestStatus,
         requestOperationType: request.requestOperationType,

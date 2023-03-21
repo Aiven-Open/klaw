@@ -984,7 +984,7 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           aclType: "PRODUCER",
-          teamname: "Ospo",
+          teamId: 1,
         });
 
         const alert = await screen.findByRole("alert");
@@ -1054,7 +1054,7 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           aclType: "PRODUCER",
-          teamname: "Ospo",
+          teamId: 1,
         });
 
         // @TODO use when Klaw migration is completed and redirect is handling with react-router
@@ -1279,7 +1279,7 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           aclType: "CONSUMER",
-          teamname: "Ospo",
+          teamId: 1,
           consumergroup: "group",
         });
 
@@ -1366,7 +1366,7 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           aclType: "CONSUMER",
-          teamname: "Ospo",
+          teamId: 1,
           consumergroup: "group",
         });
 

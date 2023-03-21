@@ -22,7 +22,7 @@ type BaseCreateAclRequest = Pick<
   | "aclType"
   | "topicname"
   | "environment"
-  | "teamname"
+  | "teamId"
   | "aclIpPrincipleType"
   | "acl_ssl"
   | "acl_ip"

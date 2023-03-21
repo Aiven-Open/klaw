@@ -34,14 +34,10 @@ interface AclRequestTableRow {
   environmentName: string;
   teamname: AclRequest["teamname"];
   aclType: AclRequest["aclType"];
-  username: string;
+  requestor: string;
   requesttimestring: string;
-  // `requestStatus` is always defined from backend
-  // but api definition says it can be undefined
-  // the empty string is used to make ts compiler
-  // happy :D
-  requestStatus: RequestStatus | "";
-  requestOperationType: RequestOperationType | "";
+  requestStatus: RequestStatus;
+  requestOperationType: RequestOperationType;
 }
 
 export default function AclApprovalsTable({
@@ -68,23 +64,23 @@ export default function AclApprovalsTable({
         environmentName,
         teamname,
         aclType,
-        username,
+        requestor,
         requesttimestring,
         requestStatus,
         requestOperationType,
       }) => ({
         id: Number(req_no),
-        acl_ssl: acl_ssl ?? [],
-        acl_ip: acl_ip ?? [],
+        acl_ssl,
+        acl_ip,
         topicname: topicname,
         prefixed: aclPatternType === "PREFIXED",
-        environmentName: environmentName ?? "-",
+        environmentName,
         teamname,
         aclType,
-        username: username ?? "-",
-        requesttimestring: requesttimestring ?? "-",
-        requestStatus: requestStatus ?? "",
-        requestOperationType: requestOperationType ?? "",
+        requestor,
+        requesttimestring,
+        requestStatus,
+        requestOperationType,
       })
     );
   };
@@ -117,12 +113,6 @@ export default function AclApprovalsTable({
       field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
-        if (requestStatus === "") {
-          return {
-            status: "neutral",
-            text: "-",
-          };
-        }
         return {
           status: requestStatusChipStatusMap[requestStatus],
           text: requestStatusNameMap[requestStatus],
@@ -192,12 +182,6 @@ export default function AclApprovalsTable({
       field: "requestOperationType",
       headerName: "Request type",
       status: ({ requestOperationType }) => {
-        if (requestOperationType === "") {
-          return {
-            status: "neutral",
-            text: "-",
-          };
-        }
         return {
           status: requestOperationTypeChipStatusMap[requestOperationType],
           text: requestOperationTypeNameMap[requestOperationType],
@@ -206,7 +190,7 @@ export default function AclApprovalsTable({
     },
     {
       type: "text",
-      field: "username",
+      field: "requestor",
       headerName: "Requested by",
     },
     {

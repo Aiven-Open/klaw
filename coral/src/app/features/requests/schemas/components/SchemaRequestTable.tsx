@@ -18,7 +18,7 @@ interface SchemaRequestTableRow {
   id: SchemaRequest["req_no"];
   requestStatus: SchemaRequest["requestStatus"];
   requestType: SchemaRequest["requestOperationType"];
-  requestedBy: SchemaRequest["username"];
+  requestedBy: SchemaRequest["requestor"];
   requestedOn: SchemaRequest["requesttimestring"];
   schemaversion: SchemaRequest["schemaversion"];
   topic: SchemaRequest["topicname"];
@@ -112,7 +112,7 @@ function SchemaRequestTable({ requests, setModals }: SchemaRequestTableProps) {
         id: request.req_no,
         requestStatus: request.requestStatus,
         requestType: request.requestOperationType,
-        requestedBy: request.username,
+        requestedBy: request.requestor,
         requestedOn: request.requesttimestring,
         schemaversion: request.schemaversion,
         topic: request.topicname,

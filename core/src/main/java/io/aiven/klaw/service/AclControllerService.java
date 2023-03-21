@@ -73,11 +73,6 @@ public class AclControllerService {
     aclRequestsModel.setRequestor(currentUserName);
     int tenantId = commonUtilsService.getTenantId(currentUserName);
 
-    if (aclRequestsModel.getTeamname() != null) {
-      aclRequestsModel.setTeamId(
-          manageDatabase.getTeamIdFromTeamName(
-              tenantId, aclRequestsModel.getTeamname())); // OPENAPI Remove
-    }
     aclRequestsModel.setRequestingteam(commonUtilsService.getTeamId(currentUserName));
 
     if (commonUtilsService.isNotAuthorizedUser(
@@ -249,7 +244,6 @@ public class AclControllerService {
       for (AclRequests aclRequests : aclReqs) {
         aclRequestsModel = new AclRequestsResponseModel();
         copyProperties(aclRequests, aclRequestsModel);
-        aclRequestsModel.setUsername(aclRequests.getRequestor()); // OPENAPI Remove
         aclRequestsModel.setRequestOperationType(
             RequestOperationType.of(aclRequests.getRequestOperationType()));
         aclRequestsModel.setAclType(AclType.of(aclRequests.getAclType()));
