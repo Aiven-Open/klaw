@@ -1,4 +1,4 @@
-import { AclRequests } from "src/app/features/requests/components/acls/AclRequests";
+import { AclRequests } from "src/app/features/requests/acls/AclRequests";
 
 const AclRequestsPage = () => {
   return <AclRequests />;

@@ -3,10 +3,11 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AclRequests } from "src/app/features/requests/components/acls/AclRequests";
-import { getAclRequests } from "src/domain/acl/acl-api";
+import { AclRequests } from "src/app/features/requests/acls/AclRequests";
+import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import { getEnvironments } from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
@@ -18,6 +19,9 @@ jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetAclRequests = getAclRequests as jest.MockedFunction<
   typeof getAclRequests
+>;
+const mockDeleteAclRequests = deleteAclRequest as jest.MockedFunction<
+  typeof deleteAclRequest
 >;
 const mockGetEnvironments = getEnvironments as jest.MockedFunction<
   typeof getEnvironments
@@ -540,6 +544,168 @@ describe("AclRequests", () => {
           aclType: "ALL",
           requestStatus: "ALL",
           isMyRequest: true,
+        });
+      });
+    });
+  });
+
+  describe("shows a detail modal for ACL request", () => {
+    beforeEach(async () => {
+      mockGetAclRequests.mockResolvedValue(mockGetAclRequestsResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentsResponse);
+
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows detail modal for first request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockGetAclRequestsResponse.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View ACL request for ${firstRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent(firstRequest.topicname);
+    });
+
+    it("shows detail modal for last request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const lastRequest =
+        mockGetAclRequestsResponse.entries[
+          mockGetAclRequestsResponse.entries.length - 1
+        ];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View ACL request for ${lastRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent(lastRequest.topicname);
+    });
+
+    it("shows delete modal for last request returned from the api if clicking the Delete button", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const lastRequest =
+        mockGetAclRequestsResponse.entries[
+          mockGetAclRequestsResponse.entries.length - 1
+        ];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View ACL request for ${lastRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+
+      const detailsModal = screen.getByRole("dialog");
+
+      const detailsDeleteButton = within(detailsModal).getByRole("button", {
+        name: "Delete",
+      });
+
+      await userEvent.click(detailsDeleteButton);
+
+      const deleteModal = screen.getByRole("dialog");
+
+      expect(deleteModal).toHaveTextContent(
+        "Are you sure you want to delete the request?"
+      );
+    });
+  });
+
+  describe("shows a delete modal for ACL request", () => {
+    beforeEach(async () => {
+      mockGetAclRequests.mockResolvedValue(mockGetAclRequestsResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentsResponse);
+
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("does not shows delete modal for first request returned from the api (deletable: false)", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockGetAclRequestsResponse.entries[0];
+      const deleteRequestButton = screen.getByRole("button", {
+        name: `Delete ACL request for ${firstRequest.topicname}`,
+      });
+
+      expect(deleteRequestButton).toBeDisabled();
+    });
+
+    it("shows delete modal for last request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const lastRequest =
+        mockGetAclRequestsResponse.entries[
+          mockGetAclRequestsResponse.entries.length - 1
+        ];
+      const deleteRequestButton = screen.getByRole("button", {
+        name: `Delete ACL request for ${lastRequest.topicname}`,
+      });
+
+      await userEvent.click(deleteRequestButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent(
+        "Are you sure you want to delete the request?"
+      );
+    });
+
+    it("deletes correct request modal for last request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const lastRequest =
+        mockGetAclRequestsResponse.entries[
+          mockGetAclRequestsResponse.entries.length - 1
+        ];
+      const deleteRequestButton = screen.getByRole("button", {
+        name: `Delete ACL request for ${lastRequest.topicname}`,
+      });
+
+      await userEvent.click(deleteRequestButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent(
+        "Are you sure you want to delete the request?"
+      );
+
+      const deleteButton = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(deleteButton);
+
+      await waitFor(() => {
+        expect(mockDeleteAclRequests).toHaveBeenLastCalledWith({
+          reqIds: ["1217"],
         });
       });
     });

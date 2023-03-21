@@ -2,7 +2,7 @@ import { Flexbox, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
 import { AclRequest } from "src/domain/acl/acl-types";
 
 interface DetailsModalContentProps {
-  aclRequest?: AclRequest;
+  request?: AclRequest;
 }
 
 const Label = ({ children }: { children: React.ReactNode }) => (
@@ -11,8 +11,8 @@ const Label = ({ children }: { children: React.ReactNode }) => (
   </dt>
 );
 
-const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
-  if (aclRequest === undefined) {
+const DetailsModalContent = ({ request }: DetailsModalContentProps) => {
+  if (request === undefined) {
     return <div>Request not found.</div>;
   }
 
@@ -27,7 +27,7 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
     requesttimestring = "Request time not found",
     username = "User not found",
     requestingTeamName = "Team name not found",
-  } = aclRequest;
+  } = request;
 
   return (
     <Grid htmlTag={"dl"} cols={"2"} rows={"6"} rowGap={"6"}>
@@ -88,7 +88,16 @@ const DetailsModalContent = ({ aclRequest }: DetailsModalContentProps) => {
         <Flexbox direction={"column"}>
           <Label>Consumer group</Label>
           <dd>
-            {aclType === "CONSUMER" ? consumergroup : <i>Not applicable</i>}
+            {
+              // If consumergroup is "-na-", it means the request was made for an Aiven cluster
+              // Which does not user consumergroup
+              // So we return Not applicable
+              aclType === "CONSUMER" || consumergroup == "-na-" ? (
+                consumergroup
+              ) : (
+                <i>Not applicable</i>
+              )
+            }
           </dd>
         </Flexbox>
       </GridItem>

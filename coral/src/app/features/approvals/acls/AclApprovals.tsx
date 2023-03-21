@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApprovalsTable";
-import DetailsModalContent from "src/app/features/approvals/acls/components/DetailsModalContent";
+import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
@@ -158,7 +158,6 @@ function AclApprovals() {
 
   function handleApproveRequest(reqNo: string): void {
     approveRequest({
-      requestEntityType: "ACL",
       reqIds: [reqNo],
     });
   }
@@ -181,7 +180,6 @@ function AclApprovals() {
               text: "Approve",
               onClick: () => {
                 approveRequest({
-                  requestEntityType: "ACL",
                   reqIds: [detailsModal.reqNo],
                 });
               },
@@ -201,7 +199,7 @@ function AclApprovals() {
             declineIsLoading
           }
         >
-          <DetailsModalContent aclRequest={selectedRequest} />
+          <AclDetailsModalContent request={selectedRequest} />
         </RequestDetailsModal>
       )}
       {declineModal.isOpen && (
@@ -210,7 +208,6 @@ function AclApprovals() {
           onCancel={() => setDeclineModal({ isOpen: false, reqNo: "" })}
           onSubmit={(message: string) => {
             declineRequest({
-              requestEntityType: "ACL",
               reqIds: [declineModal.reqNo],
               reason: message,
             });

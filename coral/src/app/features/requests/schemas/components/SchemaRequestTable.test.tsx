@@ -1,13 +1,13 @@
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { cleanup, render, screen, within } from "@testing-library/react";
-import { SchemaRequestTable } from "src/app/features/requests/components/schemas/components/SchemaRequestTable";
+import { SchemaRequestTable } from "src/app/features/requests/schemas/components/SchemaRequestTable";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import {
   RequestOperationType,
   RequestStatus,
 } from "src/domain/requests/requests-types";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
-import { mockedApiResponses } from "src/app/features/requests/components/schemas/utils/mocked-api-responses";
+import { mockedApiResponses } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import userEvent from "@testing-library/user-event";
 
 const schemaRequests = [...mockedApiResponses];

@@ -134,6 +134,16 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
+  public TopicRequest updateTopicRequest(TopicRequest topicRequest) {
+    log.debug("updateTopicRequest {}", topicRequest.getTopicname());
+    return topicRequestsRepo.save(topicRequest);
+  }
+
+  public KafkaConnectorRequest updateConnectorRequest(KafkaConnectorRequest kcRequest) {
+    log.debug("updateKafkaConnectorRequest {}", kcRequest.getConnectorName());
+    return kafkaConnectorRequestsRepo.save(kcRequest);
+  }
+
   public String updateConnectorRequestStatus(
       KafkaConnectorRequest connectorRequest, String approver) {
     log.debug("updateConnectorRequestStatus {} {}", connectorRequest.getConnectorName(), approver);

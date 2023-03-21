@@ -111,7 +111,7 @@ public class KafkaConnectController {
    *     'DELETED' @Param operationType The RequestOperationType Create/Update/Promote/Claim/Delete
    * @param env The name of the environment you would like returned e.g. '1' or '4' @Param search A
    *     wildcard search on the topic name allowing
-   * @return
+   * @return A list of Kafka Connector requests
    */
   @RequestMapping(
       value = "/getConnectorRequests",

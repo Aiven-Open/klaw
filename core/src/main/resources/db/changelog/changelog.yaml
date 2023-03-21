@@ -987,3 +987,29 @@ databaseChangeLog:
                     name: deleteassociatedschema
                     type: BOOLEAN
                     defaultValue: false
+    - changeSet:
+        id: 13-03-2023 Data Migration Table for allowing automatic data migration
+        author: aindriu-aiven
+        changes:
+          - createTable:
+              columns:
+                - column:
+                    autoIncrement: true
+                    constraints:
+                      nullable: false
+                      primaryKey: true
+                      primaryKeyName: VERSION_ID
+                    name: id
+                    type: INT
+                - column:
+                    name: version
+                    type: VARCHAR(10)
+                - column:
+                    name: executedat
+                    type: TIMESTAMP
+                - column:
+                    constraints:
+                      nullable: false
+                    name: complete
+                    type: boolean
+              tableName: kwdatamigration

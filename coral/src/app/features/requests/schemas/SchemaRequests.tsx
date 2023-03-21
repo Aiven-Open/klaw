@@ -9,7 +9,7 @@ import EnvironmentFilter from "src/app/features/components/table-filters/Environ
 import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { SchemaRequestTable } from "src/app/features/requests/components/schemas/components/SchemaRequestTable";
+import { SchemaRequestTable } from "src/app/features/requests/schemas/components/SchemaRequestTable";
 import { RequestStatus } from "src/domain/requests/requests-types";
 import { getSchemaRequests } from "src/domain/schema-request";
 
