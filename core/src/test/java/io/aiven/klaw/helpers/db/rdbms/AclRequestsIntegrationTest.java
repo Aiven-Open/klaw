@@ -134,7 +134,7 @@ public class AclRequestsIntegrationTest {
     List<AclRequests> aclListSub = Lists.newArrayList(repo.findAllByTenantId(101));
 
     List<AclRequests> results =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true, "James", "USER", "ALL", null, true, null, null, null, null, false, 101);
 
     assertThat(aclListSub.size()).isEqualTo(results.size());
@@ -146,10 +146,10 @@ public class AclRequestsIntegrationTest {
   public void getAllRequestsFilteredByTenantId() {
 
     List<AclRequests> james =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true, "James", "USER", "ALL", null, true, null, null, null, null, false, 101);
     List<AclRequests> john =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true, "John", "USER", "ALL", null, true, null, null, null, null, false, 103);
 
     assertThat(james.size()).isEqualTo(31);
@@ -167,7 +167,7 @@ public class AclRequestsIntegrationTest {
   public void getAllRequestsFilteredByEnvironment() {
 
     List<AclRequests> james =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true,
             "James",
             "USER",
@@ -181,7 +181,7 @@ public class AclRequestsIntegrationTest {
             false,
             101);
     List<AclRequests> john =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true,
             "John",
             "USER",
@@ -209,7 +209,7 @@ public class AclRequestsIntegrationTest {
   public void getAllRequestsFilteredByAclType() {
 
     List<AclRequests> james =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true,
             "James",
             "USER",
@@ -223,7 +223,7 @@ public class AclRequestsIntegrationTest {
             false,
             101);
     List<AclRequests> james2 =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true,
             "James",
             "USER",
@@ -237,7 +237,7 @@ public class AclRequestsIntegrationTest {
             false,
             101);
     List<AclRequests> john =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true,
             "John",
             "USER",
@@ -269,7 +269,7 @@ public class AclRequestsIntegrationTest {
   public void getAllRequestsFilteredByTopic() {
 
     List<AclRequests> james =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true, "James", "USER", "ALL", null, true, "firsttopic", null, null, null, false, 101);
 
     assertThat(james.size()).isEqualTo(10);
@@ -283,7 +283,7 @@ public class AclRequestsIntegrationTest {
   public void getAllRequestsFilteredByTopicbyEnvironment() {
 
     List<AclRequests> james =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true,
             "James",
             "USER",
@@ -308,7 +308,7 @@ public class AclRequestsIntegrationTest {
   public void getAllRequestsFilteredByTopicbyEnvironmentByAclType() {
 
     List<AclRequests> james =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true,
             "James",
             "USER",
@@ -333,7 +333,7 @@ public class AclRequestsIntegrationTest {
   public void getAllRequestsFilteredByMisSpeltTopicbyEnvironmentByAclType_ReturnNothing() {
     // topic name is case sensitive.
     List<AclRequests> james =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true,
             "James",
             "USER",
@@ -353,7 +353,7 @@ public class AclRequestsIntegrationTest {
   @Order(9)
   public void getAllRequestsDontReturnOwnRequestsForApproval() {
     List<AclRequests> jackie =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             true, "Jackie", "USER", "ALL", null, true, null, null, null, null, false, 101);
     assertThat(jackie.size()).isEqualTo(0);
   }
@@ -362,7 +362,7 @@ public class AclRequestsIntegrationTest {
   @Order(10)
   public void getAllRequestsAndReturnOwnRequests() {
     List<AclRequests> jackie =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false, "Jackie", "USER", "ALL", null, true, null, null, null, null, false, 101);
     assertThat(jackie.size()).isEqualTo(31);
   }
@@ -465,7 +465,7 @@ public class AclRequestsIntegrationTest {
   @Order(16)
   public void getAllRequestsOnlyReturnMyRequests() {
     List<AclRequests> jackie =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false, "Jackie", "USER", "ALL", null, true, null, null, null, null, true, 101);
     assertThat(jackie.size()).isEqualTo(31);
     for (AclRequests req : jackie) {
@@ -477,7 +477,7 @@ public class AclRequestsIntegrationTest {
   @Order(17)
   public void getAllRequestsOnlyReturnMyRequestsFromDevEnv() {
     List<AclRequests> jackie =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false, "Jackie", "USER", "ALL", null, true, null, "dev", null, null, true, 101);
     assertThat(jackie.size()).isEqualTo(20);
     for (AclRequests req : jackie) {
@@ -490,7 +490,7 @@ public class AclRequestsIntegrationTest {
   @Order(18)
   public void getAllRequestsOnlyReturnMyRequestsOfProducerAclType() {
     List<AclRequests> jackie =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false,
             "Jackie",
             "USER",
@@ -514,7 +514,7 @@ public class AclRequestsIntegrationTest {
   @Order(19)
   public void getAllRequestsOnlyReturnMyRequestsOfTopicFirstTopic() {
     List<AclRequests> jackie =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false, "Jackie", "USER", "ALL", null, true, "firsttopic", null, null, null, true, 101);
     assertThat(jackie.size()).isEqualTo(10);
     for (AclRequests req : jackie) {
@@ -527,7 +527,7 @@ public class AclRequestsIntegrationTest {
   @Order(20)
   public void getAllRequestsOnlyReturnWhereEnvisTestMyRequestsOfTopicFirstTopic() {
     List<AclRequests> jackie =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false, "Jackie", "USER", "ALL", null, true, null, "test", null, null, true, 101);
     assertThat(jackie.size()).isEqualTo(11);
     for (AclRequests req : jackie) {
@@ -542,7 +542,7 @@ public class AclRequestsIntegrationTest {
   public void
       getAllRequestsOnlyReturnWhereEnvisTestAndAclTypeConsumerMyRequestsOfTopicFirstTopic() {
     List<AclRequests> jackie =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false,
             "Jackie",
             "USER",
@@ -568,7 +568,7 @@ public class AclRequestsIntegrationTest {
   @Order(21)
   public void getAllRequestsReturnAllRequests() {
     List<AclRequests> jackie =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false, "Jackie", "USER", "ALL", null, true, null, null, null, null, false, 101);
     assertThat(jackie.size()).isEqualTo(31);
   }
@@ -623,7 +623,7 @@ public class AclRequestsIntegrationTest {
       String searchCriteria, String expectedTopicName) {
 
     List<AclRequests> john =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false, "John", null, null, null, false, null, null, searchCriteria, null, false, 101);
 
     for (AclRequests req : john) {
@@ -645,7 +645,7 @@ public class AclRequestsIntegrationTest {
       String requestOperationType, String expectedTopicName, String number) {
 
     List<AclRequests> james =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false,
             "James",
             null,
@@ -674,7 +674,7 @@ public class AclRequestsIntegrationTest {
       String requestStatus, String number) {
 
     List<AclRequests> james =
-        selectDataJdbc.selectAclRequests(
+        selectDataJdbc.selectFilteredAclRequests(
             false, "James", null, requestStatus, null, true, null, null, null, null, false, 101);
 
     for (AclRequests req : james) {

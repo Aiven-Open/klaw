@@ -88,11 +88,11 @@ public class SelectDataJdbc {
   @Autowired(required = false)
   private ProductDetailsRepo productDetailsRepo;
 
-  public List<AclRequests> selectAclRequests(
+  public List<AclRequests> selectFilteredAclRequests(
       boolean isApproval,
       String requestor,
       String role,
-      String requestStatus,
+      String status,
       RequestOperationType requestOperationType,
       boolean showRequestsOfAllTeams,
       String topic,
@@ -111,7 +111,7 @@ public class SelectDataJdbc {
                 topic,
                 environment,
                 aclType,
-                requestStatus,
+                status,
                 isMyRequest ? requestor : null,
                 tenantId,
                 requestOperationType));
@@ -493,7 +493,7 @@ public class SelectDataJdbc {
    * @return A list of TopicRequests that meet the filtered criteria. Applied only when allReqs is
    *     true
    */
-  public List<TopicRequest> getFilteredTopicRequests(
+  public List<TopicRequest> selectFilteredTopicRequests(
       boolean isApproval,
       String requestor,
       String status,
@@ -671,7 +671,7 @@ public class SelectDataJdbc {
     return topicRequestsRepo.findAll(Example.of(request));
   }
 
-  public List<KafkaConnectorRequest> getFilteredKafkaConnectorRequests(
+  public List<KafkaConnectorRequest> selectFilteredKafkaConnectorRequests(
       boolean isApproval,
       String requestor,
       String status,

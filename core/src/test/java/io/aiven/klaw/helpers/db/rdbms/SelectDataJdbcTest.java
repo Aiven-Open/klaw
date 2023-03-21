@@ -100,7 +100,7 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<AclRequests> aclRequestsActual =
-        selectData.selectAclRequests(
+        selectData.selectFilteredAclRequests(
             false, requestor, "", "all", null, false, null, null, null, null, false, 1);
     assertThat(aclRequestsActual).isEmpty();
   }
@@ -209,7 +209,7 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<TopicRequest> topicRequestsActual =
-        selectData.getFilteredTopicRequests(
+        selectData.selectFilteredTopicRequests(
             false, requestor, "created", true, 1, null, null, null, null, false);
 
     assertThat(topicRequestsActual).hasSize(1);
