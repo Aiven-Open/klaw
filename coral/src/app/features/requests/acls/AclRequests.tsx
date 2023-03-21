@@ -97,15 +97,6 @@ function AclRequests() {
       setErrorMessage("");
       setModals({ open: "DETAILS", req_no: null });
 
-      // If approved request is last in the page, go back to previous page
-      // This avoids staying on a non-existent page of entries, which makes the table bug hard
-      // With pagination being 0 of 0, and clicking Previous button sets active page at -1
-      // We also do not need to invalidate the query, as the activePage does not exist any more
-      // And there is no need to update anything on it
-      if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return handleChangePage(currentPage - 1);
-      }
-
       // We need to refetch all aclrequests queries to keep Table state in sync
       queryClient.refetchQueries(["aclRequests"]);
     },
