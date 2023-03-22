@@ -86,8 +86,6 @@ function TopicApprovals() {
   const { isLoading: approveIsLoading, mutate: approveRequest } = useMutation({
     mutationFn: approveTopicRequest,
     onSuccess: (responses) => {
-      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
-
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
 
@@ -96,8 +94,12 @@ function TopicApprovals() {
           response.message || response.result || "Unexpected error"
         );
       }
+
       setErrorMessage("");
       setDetailsModal({ isOpen: false, topicId: null });
+
+      // Refetch to update the tag number in the tabs
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
 
       // If approved request is last in the page, go back to previous page
       // This avoids staying on a non-existent page of entries, which makes the table bug hard
@@ -126,8 +128,6 @@ function TopicApprovals() {
   const { isLoading: declineIsLoading, mutate: declineRequest } = useMutation({
     mutationFn: declineTopicRequest,
     onSuccess: (responses) => {
-      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
-
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
 
@@ -138,6 +138,9 @@ function TopicApprovals() {
       }
       setErrorMessage("");
       setDeclineModal({ isOpen: false, topicId: null });
+
+      // Refetch to update the tag number in the tabs
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
 
       // If approved request is last in the page, go back to previous page
       // This avoids staying on a non-existent page of entries, which makes the table bug hard

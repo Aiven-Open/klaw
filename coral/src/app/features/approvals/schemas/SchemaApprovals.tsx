@@ -3,19 +3,19 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
-import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
-import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/SchemaApprovalsTable";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
 import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { RequestStatus } from "src/domain/requests/requests-types";
 import {
-  getSchemaRequestsForApprover,
   approveSchemaRequest,
   declineSchemaRequest,
+  getSchemaRequestsForApprover,
 } from "src/domain/schema-request";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
@@ -66,32 +66,35 @@ function SchemaApprovals() {
   const { mutate: declineRequest, isLoading: declineRequestIsLoading } =
     useMutation(declineSchemaRequest, {
       onSuccess: (responses) => {
-        queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
-
         // @TODO follow up ticket #707
         // (for all approval tables)
         const response = responses[0];
         if (response.result !== "success") {
-          setErrorQuickActions(
+          return setErrorQuickActions(
             response.message || response.result || "Unexpected error"
           );
-        } else {
-          setErrorQuickActions("");
-          // If declined request is last in the page, go back to previous page
-          // This avoids staying on a non-existent page of entries, which makes the table bug hard
-          // With pagination being 0 of 0, and clicking Previous button sets active page at -1
-          // We also do not need to invalidate the query, as the activePage does not exist any more
-          // And there is no need to update anything on it
-          if (
-            schemaRequests?.entries.length === 1 &&
-            schemaRequests?.currentPage > 1
-          ) {
-            return setCurrentPage(schemaRequests?.currentPage - 1);
-          }
-
-          // We need to refetch all aclrequests queries to keep Table state in sync
-          queryClient.refetchQueries(["schemaRequestsForApprover"]);
         }
+
+        setErrorQuickActions("");
+        setModals({ open: "NONE", req_no: null });
+
+        // Refetch to update the tag number in the tabs
+        queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+
+        // If declined request is last in the page, go back to previous page
+        // This avoids staying on a non-existent page of entries, which makes the table bug hard
+        // With pagination being 0 of 0, and clicking Previous button sets active page at -1
+        // We also do not need to invalidate the query, as the activePage does not exist any more
+        // And there is no need to update anything on it
+        if (
+          schemaRequests?.entries.length === 1 &&
+          schemaRequests?.currentPage > 1
+        ) {
+          return setCurrentPage(schemaRequests?.currentPage - 1);
+        }
+
+        // We need to refetch all aclrequests queries to keep Table state in sync
+        queryClient.refetchQueries(["schemaRequestsForApprover"]);
       },
       onError(error: Error) {
         setErrorQuickActions(parseErrorMsg(error));
@@ -108,26 +111,31 @@ function SchemaApprovals() {
         // (for all approval tables)
         const response = responses[0];
         if (response.result !== "success") {
-          setErrorQuickActions(
+          return setErrorQuickActions(
             response.message || response.result || "Unexpected error"
           );
-        } else {
-          setErrorQuickActions("");
-          // If declined request is last in the page, go back to previous page
-          // This avoids staying on a non-existent page of entries, which makes the table bug hard
-          // With pagination being 0 of 0, and clicking Previous button sets active page at -1
-          // We also do not need to invalidate the query, as the activePage does not exist any more
-          // And there is no need to update anything on it
-          if (
-            schemaRequests?.entries.length === 1 &&
-            schemaRequests?.currentPage > 1
-          ) {
-            return setCurrentPage(schemaRequests?.currentPage - 1);
-          }
-
-          // We need to refetch all aclrequests queries to keep Table state in sync
-          queryClient.refetchQueries(["schemaRequestsForApprover"]);
         }
+
+        setErrorQuickActions("");
+        setModals({ open: "NONE", req_no: null });
+
+        // Refetch to update the tag number in the tabs
+        queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+
+        // If declined request is last in the page, go back to previous page
+        // This avoids staying on a non-existent page of entries, which makes the table bug hard
+        // With pagination being 0 of 0, and clicking Previous button sets active page at -1
+        // We also do not need to invalidate the query, as the activePage does not exist any more
+        // And there is no need to update anything on it
+        if (
+          schemaRequests?.entries.length === 1 &&
+          schemaRequests?.currentPage > 1
+        ) {
+          return setCurrentPage(schemaRequests?.currentPage - 1);
+        }
+
+        // We need to refetch all aclrequests queries to keep Table state in sync
+        queryClient.refetchQueries(["schemaRequestsForApprover"]);
       },
       onError(error: Error) {
         setErrorQuickActions(parseErrorMsg(error));

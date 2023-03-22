@@ -82,8 +82,6 @@ function AclApprovals() {
   } = useMutation({
     mutationFn: approveAclRequest,
     onSuccess: (responses) => {
-      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
-
       const response = responses[0];
       if (response.result !== "success") {
         return setErrorMessage(
@@ -92,6 +90,9 @@ function AclApprovals() {
       }
       setErrorMessage("");
       setDetailsModal({ isOpen: false, reqNo: "" });
+
+      // Refetch to update the tag number in the tabs
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
 
       // If approved request is last in the page, go back to previous page
       // This avoids staying on a non-existent page of entries, which makes the table bug hard
@@ -102,7 +103,7 @@ function AclApprovals() {
         return handleChangePage(currentPage - 1);
       }
 
-      // We need to refetch all aclrequests queries to keep Table state in sync
+      // Refetch to keep Table state in sync
       queryClient.refetchQueries(["aclRequests"]);
     },
     onError: (error: Error) => {
@@ -121,6 +122,9 @@ function AclApprovals() {
       }
       setErrorMessage("");
       setDeclineModal({ isOpen: false, reqNo: "" });
+
+      // Refetch to update the tag number in the tabs
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
 
       // If approved request is last in the page, go back to previous page
       // This avoids staying on a non-existent page of entries, which makes the table bug hard
