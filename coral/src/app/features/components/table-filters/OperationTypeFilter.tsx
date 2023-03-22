@@ -23,12 +23,12 @@ function OperationTypeFilter() {
     if (nextOperationType === "ALL") {
       searchParams.delete("operationType");
       searchParams.set("page", "1");
-      setSearchParams(searchParams);
     } else {
       searchParams.set("operationType", nextOperationType);
       searchParams.set("page", "1");
-      setSearchParams(searchParams);
     }
+
+    setSearchParams(searchParams);
   };
 
   return (
