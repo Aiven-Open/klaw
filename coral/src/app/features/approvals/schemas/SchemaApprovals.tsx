@@ -33,10 +33,20 @@ function SchemaApprovals() {
     (searchParams.get("status") as RequestStatus) ?? "CREATED";
   const currentTopic = searchParams.get("topic") ?? "";
 
-  const [modals, setModals] = useState<{
-    open: "DETAILS" | "DECLINE" | "NONE";
-    req_no: number | null;
-  }>({ open: "NONE", req_no: null });
+  const [detailsModal, setDetailsModal] = useState<{
+    isOpen: boolean;
+    reqNo: number | null;
+  }>({
+    isOpen: false,
+    reqNo: null,
+  });
+  const [declineModal, setDeclineModal] = useState<{
+    isOpen: boolean;
+    reqNo: number | null;
+  }>({
+    isOpen: false,
+    reqNo: null,
+  });
 
   const [errorQuickActions, setErrorQuickActions] = useState("");
 
@@ -63,87 +73,95 @@ function SchemaApprovals() {
     keepPreviousData: true,
   });
 
-  const { mutate: declineRequest, isLoading: declineRequestIsLoading } =
-    useMutation(declineSchemaRequest, {
-      onSuccess: (responses) => {
-        // @TODO follow up ticket #707
-        // (for all approval tables)
-        const response = responses[0];
-        if (response.result !== "success") {
-          return setErrorQuickActions(
-            response.message || response.result || "Unexpected error"
-          );
-        }
+  const {
+    mutate: declineRequest,
+    isLoading: declineIsLoading,
+    variables: declineVariables,
+  } = useMutation(declineSchemaRequest, {
+    onSuccess: (responses) => {
+      // @TODO follow up ticket #707
+      // (for all approval tables)
+      const response = responses[0];
+      if (response.result !== "success") {
+        return setErrorQuickActions(
+          response.message || response.result || "Unexpected error"
+        );
+      }
 
-        setErrorQuickActions("");
-        setModals({ open: "NONE", req_no: null });
+      setErrorQuickActions("");
+      setDetailsModal({ isOpen: false, reqNo: null });
+      setDeclineModal({ isOpen: false, reqNo: null });
 
-        // Refetch to update the tag number in the tabs
-        queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+      // Refetch to update the tag number in the tabs
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
 
-        // If declined request is last in the page, go back to previous page
-        // This avoids staying on a non-existent page of entries, which makes the table bug hard
-        // With pagination being 0 of 0, and clicking Previous button sets active page at -1
-        // We also do not need to invalidate the query, as the activePage does not exist any more
-        // And there is no need to update anything on it
-        if (
-          schemaRequests?.entries.length === 1 &&
-          schemaRequests?.currentPage > 1
-        ) {
-          return setCurrentPage(schemaRequests?.currentPage - 1);
-        }
+      // If declined request is last in the page, go back to previous page
+      // This avoids staying on a non-existent page of entries, which makes the table bug hard
+      // With pagination being 0 of 0, and clicking Previous button sets active page at -1
+      // We also do not need to invalidate the query, as the activePage does not exist any more
+      // And there is no need to update anything on it
+      if (
+        schemaRequests?.entries.length === 1 &&
+        schemaRequests?.currentPage > 1
+      ) {
+        return setCurrentPage(schemaRequests?.currentPage - 1);
+      }
 
-        // We need to refetch all aclrequests queries to keep Table state in sync
-        queryClient.refetchQueries(["schemaRequestsForApprover"]);
-      },
-      onError(error: Error) {
-        setErrorQuickActions(parseErrorMsg(error));
-      },
-      onSettled() {
-        closeModal();
-      },
-    });
+      // We need to refetch all aclrequests queries to keep Table state in sync
+      queryClient.refetchQueries(["schemaRequestsForApprover"]);
+    },
+    onError(error: Error) {
+      setErrorQuickActions(parseErrorMsg(error));
+    },
+    onSettled() {
+      closeModal();
+    },
+  });
 
-  const { mutate: approveRequest, isLoading: approveRequestIsLoading } =
-    useMutation(approveSchemaRequest, {
-      onSuccess: (responses) => {
-        // @TODO follow up ticket #707
-        // (for all approval tables)
-        const response = responses[0];
-        if (response.result !== "success") {
-          return setErrorQuickActions(
-            response.message || response.result || "Unexpected error"
-          );
-        }
+  const {
+    mutate: approveRequest,
+    isLoading: approveIsLoading,
+    variables: approveVariables,
+  } = useMutation(approveSchemaRequest, {
+    onSuccess: (responses) => {
+      // @TODO follow up ticket #707
+      // (for all approval tables)
+      const response = responses[0];
+      if (response.result !== "success") {
+        return setErrorQuickActions(
+          response.message || response.result || "Unexpected error"
+        );
+      }
 
-        setErrorQuickActions("");
-        setModals({ open: "NONE", req_no: null });
+      setErrorQuickActions("");
+      setDetailsModal({ isOpen: false, reqNo: null });
+      setDeclineModal({ isOpen: false, reqNo: null });
 
-        // Refetch to update the tag number in the tabs
-        queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
+      // Refetch to update the tag number in the tabs
+      queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
 
-        // If declined request is last in the page, go back to previous page
-        // This avoids staying on a non-existent page of entries, which makes the table bug hard
-        // With pagination being 0 of 0, and clicking Previous button sets active page at -1
-        // We also do not need to invalidate the query, as the activePage does not exist any more
-        // And there is no need to update anything on it
-        if (
-          schemaRequests?.entries.length === 1 &&
-          schemaRequests?.currentPage > 1
-        ) {
-          return setCurrentPage(schemaRequests?.currentPage - 1);
-        }
+      // If declined request is last in the page, go back to previous page
+      // This avoids staying on a non-existent page of entries, which makes the table bug hard
+      // With pagination being 0 of 0, and clicking Previous button sets active page at -1
+      // We also do not need to invalidate the query, as the activePage does not exist any more
+      // And there is no need to update anything on it
+      if (
+        schemaRequests?.entries.length === 1 &&
+        schemaRequests?.currentPage > 1
+      ) {
+        return setCurrentPage(schemaRequests?.currentPage - 1);
+      }
 
-        // We need to refetch all aclrequests queries to keep Table state in sync
-        queryClient.refetchQueries(["schemaRequestsForApprover"]);
-      },
-      onError(error: Error) {
-        setErrorQuickActions(parseErrorMsg(error));
-      },
-      onSettled() {
-        closeModal();
-      },
-    });
+      // We need to refetch all aclrequests queries to keep Table state in sync
+      queryClient.refetchQueries(["schemaRequestsForApprover"]);
+    },
+    onError(error: Error) {
+      setErrorQuickActions(parseErrorMsg(error));
+    },
+    onSettled() {
+      closeModal();
+    },
+  });
 
   const setCurrentPage = (page: number) => {
     searchParams.set("page", page.toString());
@@ -151,17 +169,47 @@ function SchemaApprovals() {
   };
 
   function closeModal() {
-    setModals({ open: "NONE", req_no: null });
+    setDetailsModal({ isOpen: false, reqNo: null });
+    setDeclineModal({ isOpen: false, reqNo: null });
+  }
+
+  function handleViewRequest(reqNo: number): void {
+    setDetailsModal({ isOpen: true, reqNo });
+  }
+
+  function handleApproveRequest(reqNo: number): void {
+    approveRequest({
+      reqIds: [String(reqNo)],
+    });
+  }
+
+  function handleDeclineRequest(reqNo: number): void {
+    setDeclineModal({ isOpen: true, reqNo });
+  }
+
+  function handleIsBeingApproved(reqNo: number): boolean {
+    return (
+      Boolean(approveVariables?.reqIds?.includes(String(reqNo))) &&
+      approveIsLoading
+    );
+  }
+
+  function handleIsBeingDeclined(reqNo: number): boolean {
+    return (
+      Boolean(declineVariables?.reqIds?.includes(String(reqNo))) &&
+      declineIsLoading
+    );
   }
 
   const table = (
     <SchemaApprovalsTable
       requests={schemaRequests?.entries || []}
-      setModals={setModals}
-      quickActionLoading={approveRequestIsLoading || declineRequestIsLoading}
-      onApprove={(req_no) => {
-        approveRequest({ reqIds: [req_no.toString()] });
-      }}
+      actionsDisabled={approveIsLoading || declineIsLoading}
+      onDetails={handleViewRequest}
+      onApprove={handleApproveRequest}
+      onDecline={handleDeclineRequest}
+      isBeingDeclined={handleIsBeingDeclined}
+      isBeingApproved={handleIsBeingApproved}
     />
   );
   const pagination =
@@ -175,50 +223,54 @@ function SchemaApprovals() {
 
   return (
     <>
-      {modals.open === "DETAILS" && (
+      {detailsModal.isOpen && (
         <RequestDetailsModal
           onClose={closeModal}
           actions={{
             primary: {
               text: "Approve",
               onClick: () => {
-                if (modals.req_no === null) {
+                if (detailsModal.reqNo === null) {
                   throw Error("req_no can't be null");
                 }
-                approveRequest({ reqIds: [modals.req_no.toString()] });
+                approveRequest({ reqIds: [String(detailsModal.reqNo)] });
               },
             },
             secondary: {
               text: "Decline",
               onClick: () => {
-                setModals({ ...modals, open: "DECLINE" });
+                setDetailsModal({ isOpen: false, reqNo: null });
+                setDeclineModal({
+                  isOpen: true,
+                  reqNo: detailsModal.reqNo,
+                });
               },
             },
           }}
-          isLoading={declineRequestIsLoading || approveRequestIsLoading}
-          disabledActions={declineRequestIsLoading || approveRequestIsLoading}
+          isLoading={declineIsLoading || approveIsLoading}
+          disabledActions={declineIsLoading || approveIsLoading}
         >
           <SchemaRequestDetails
             request={schemaRequests?.entries.find(
-              (request) => request.req_no === modals.req_no
+              (request) => request.req_no === detailsModal.reqNo
             )}
           />
         </RequestDetailsModal>
       )}
-      {modals.open === "DECLINE" && (
+      {declineModal.isOpen && (
         <RequestDeclineModal
           onClose={() => closeModal()}
           onCancel={() => closeModal()}
           onSubmit={(message: string) => {
-            if (modals.req_no === null) {
+            if (declineModal.reqNo === null) {
               throw Error("req_no can't be null");
             }
             declineRequest({
               reason: message,
-              reqIds: [modals.req_no.toString()],
+              reqIds: [String(declineModal.reqNo)],
             });
           }}
-          isLoading={declineRequestIsLoading || approveRequestIsLoading}
+          isLoading={declineIsLoading || approveIsLoading}
         />
       )}
       {errorQuickActions && (

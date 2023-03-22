@@ -36,13 +36,19 @@ function AclApprovals() {
     (searchParams.get("status") as RequestStatus) ?? "CREATED";
   const currentTopic = searchParams.get("topic") ?? "";
 
-  const [detailsModal, setDetailsModal] = useState({
+  const [detailsModal, setDetailsModal] = useState<{
+    isOpen: boolean;
+    reqNo: number | null;
+  }>({
     isOpen: false,
-    reqNo: "",
+    reqNo: null,
   });
-  const [declineModal, setDeclineModal] = useState({
+  const [declineModal, setDeclineModal] = useState<{
+    isOpen: boolean;
+    reqNo: number | null;
+  }>({
     isOpen: false,
-    reqNo: "",
+    reqNo: null,
   });
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -89,7 +95,7 @@ function AclApprovals() {
         );
       }
       setErrorMessage("");
-      setDetailsModal({ isOpen: false, reqNo: "" });
+      setDetailsModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
@@ -111,7 +117,11 @@ function AclApprovals() {
     },
   });
 
-  const { isLoading: declineIsLoading, mutate: declineRequest } = useMutation({
+  const {
+    isLoading: declineIsLoading,
+    mutate: declineRequest,
+    variables: declineVariables,
+  } = useMutation({
     mutationFn: declineAclRequest,
     onSuccess: (responses) => {
       const response = responses[0];
@@ -121,7 +131,7 @@ function AclApprovals() {
         );
       }
       setErrorMessage("");
-      setDeclineModal({ isOpen: false, reqNo: "" });
+      setDeclineModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
@@ -156,42 +166,52 @@ function AclApprovals() {
     (request) => request.req_no === Number(detailsModal.reqNo)
   );
 
-  function handleViewRequest(reqNo: string): void {
+  function handleViewRequest(reqNo: number): void {
     setDetailsModal({ isOpen: true, reqNo });
   }
 
-  function handleApproveRequest(reqNo: string): void {
+  function handleApproveRequest(reqNo: number): void {
     approveRequest({
-      reqIds: [reqNo],
+      reqIds: [String(reqNo)],
     });
   }
 
-  function handleDeclineRequest(reqNo: string): void {
+  function handleDeclineRequest(reqNo: number): void {
     setDeclineModal({ isOpen: true, reqNo });
   }
 
-  function handleIsBeingApproved(reqNo: string): boolean {
-    return Boolean(approveVariables?.reqIds?.includes(reqNo));
+  function handleIsBeingApproved(reqNo: number): boolean {
+    return (
+      Boolean(approveVariables?.reqIds?.includes(String(reqNo))) &&
+      approveIsLoading
+    );
+  }
+
+  function handleIsBeingDeclined(reqNo: number): boolean {
+    return (
+      Boolean(declineVariables?.reqIds?.includes(String(reqNo))) &&
+      declineIsLoading
+    );
   }
 
   return (
     <>
       {detailsModal.isOpen && (
         <RequestDetailsModal
-          onClose={() => setDetailsModal({ isOpen: false, reqNo: "" })}
+          onClose={() => setDetailsModal({ isOpen: false, reqNo: null })}
           actions={{
             primary: {
               text: "Approve",
               onClick: () => {
                 approveRequest({
-                  reqIds: [detailsModal.reqNo],
+                  reqIds: [String(detailsModal.reqNo)],
                 });
               },
             },
             secondary: {
               text: "Decline",
               onClick: () => {
-                setDetailsModal({ isOpen: false, reqNo: "" });
+                setDetailsModal({ isOpen: false, reqNo: null });
                 setDeclineModal({ isOpen: true, reqNo: detailsModal.reqNo });
               },
             },
@@ -208,11 +228,11 @@ function AclApprovals() {
       )}
       {declineModal.isOpen && (
         <RequestDeclineModal
-          onClose={() => setDeclineModal({ isOpen: false, reqNo: "" })}
-          onCancel={() => setDeclineModal({ isOpen: false, reqNo: "" })}
+          onClose={() => setDeclineModal({ isOpen: false, reqNo: null })}
+          onCancel={() => setDeclineModal({ isOpen: false, reqNo: null })}
           onSubmit={(message: string) => {
             declineRequest({
-              reqIds: [declineModal.reqNo],
+              reqIds: [String(declineModal.reqNo)],
               reason: message,
             });
           }}
@@ -238,10 +258,11 @@ function AclApprovals() {
             activePage={data?.currentPage ?? 1}
             totalPages={data?.totalPages ?? 1}
             actionsDisabled={approveIsLoading || declineIsLoading}
-            isBeingApproved={handleIsBeingApproved}
             onDetails={handleViewRequest}
             onApprove={handleApproveRequest}
             onDecline={handleDeclineRequest}
+            isBeingDeclined={handleIsBeingDeclined}
+            isBeingApproved={handleIsBeingApproved}
           />
         }
         pagination={pagination}

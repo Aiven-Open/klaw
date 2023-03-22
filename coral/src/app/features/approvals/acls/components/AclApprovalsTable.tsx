@@ -1,6 +1,4 @@
 import {
-  GhostButton,
-  Icon,
   StatusChip,
   Flexbox,
   DataTable,
@@ -44,11 +42,12 @@ export default function AclApprovalsTable({
   aclRequests,
   activePage,
   totalPages,
-  actionsDisabled,
-  isBeingApproved,
+  actionsDisabled = false,
   onDetails,
   onApprove,
   onDecline,
+  isBeingApproved,
+  isBeingDeclined,
 }: Props) {
   const getRows = (entries: AclRequest[]): AclRequestTableRow[] => {
     if (entries === undefined) {
@@ -204,67 +203,57 @@ export default function AclApprovalsTable({
     {
       headerName: "Details",
       headerInvisible: true,
-      type: "custom",
-      UNSAFE_render: ({ id, topicname }: AclRequestTableRow) => {
-        return (
-          <GhostButton
-            icon={infoSign}
-            aria-label={`View acl request for ${topicname}`}
-            onClick={() => onDetails(String(id))}
-            dense
-          >
-            <span aria-hidden={"true"}>View details</span>
-            <span className={"visually-hidden"}>
-              View topic request for {topicname}
-            </span>
-          </GhostButton>
-        );
-      },
+      type: "action",
+      action: (request: AclRequestTableRow) => ({
+        onClick: () => onDetails(request.id),
+        text: "View",
+        "aria-label": `View acl request for ${request.topicname}`,
+        icon: infoSign,
+      }),
     },
     {
       width: 30,
       headerName: "Approve",
       headerInvisible: true,
-      type: "custom",
-      UNSAFE_render: ({ id, requestStatus, topicname }: AclRequestTableRow) => {
-        if (requestStatus === "CREATED") {
-          return (
-            <GhostButton
-              onClick={() => {
-                onApprove(String(id));
-              }}
-              title={"Approve acl request"}
-              aria-label={`Approve acl request for ${topicname}`}
-              disabled={actionsDisabled}
-            >
-              {isBeingApproved(String(id)) ? (
-                <Icon color="grey-70" icon={loadingIcon} />
-              ) : (
-                <Icon color="grey-70" icon={tickCircle} />
-              )}
-            </GhostButton>
-          );
-        }
+      type: "action",
+      action: (request: AclRequestTableRow) => {
+        const approveInProgress = isBeingApproved(request.id);
+        const declineInProgress = isBeingDeclined(request.id);
+        return {
+          onClick: () => onApprove(request.id),
+          text: "Approve",
+          "aria-label": `Approve acl request for ${request.topicname}`,
+          disabled:
+            approveInProgress ||
+            declineInProgress ||
+            actionsDisabled ||
+            request.requestStatus !== "CREATED",
+          icon: approveInProgress ? loadingIcon : tickCircle,
+          loading: approveInProgress,
+        };
       },
     },
     {
       width: 30,
       headerName: "Decline",
       headerInvisible: true,
-      type: "custom",
-      UNSAFE_render: ({ id, requestStatus, topicname }: AclRequestTableRow) => {
-        if (requestStatus === "CREATED") {
-          return (
-            <GhostButton
-              onClick={() => onDecline(String(id))}
-              title={`Decline acl request`}
-              aria-label={`Decline acl request for ${topicname}`}
-              disabled={actionsDisabled}
-            >
-              <Icon color="grey-70" icon={deleteIcon} />
-            </GhostButton>
-          );
-        }
+      type: "action",
+      action: (request: AclRequestTableRow) => {
+        const approveInProgress = isBeingApproved(request.id);
+        const declineInProgress = isBeingDeclined(request.id);
+        return {
+          onClick: () => onDecline(request.id),
+          text: "Decline",
+          "aria-label": `Decline acl request for ${request.topicname}`,
+          disabled:
+            approveInProgress ||
+            declineInProgress ||
+            actionsDisabled ||
+            request.requestStatus !== "CREATED",
+          tooltip: `Decline acl request for topic ${request.topicname}`,
+          icon: declineInProgress ? loadingIcon : deleteIcon,
+          loading: declineInProgress,
+        };
       },
     },
   ];
@@ -294,8 +283,9 @@ export type Props = {
   activePage: number;
   totalPages: number;
   actionsDisabled?: boolean;
-  isBeingApproved: (reqNo: string) => boolean;
-  onDetails: (reqNo: string) => void;
-  onApprove: (reqNo: string) => void;
-  onDecline: (reqNo: string) => void;
+  onDetails: (reqNo: number) => void;
+  onApprove: (reqNo: number) => void;
+  onDecline: (reqNo: number) => void;
+  isBeingApproved: (reqNo: number) => boolean;
+  isBeingDeclined: (reqNo: number) => boolean;
 };
