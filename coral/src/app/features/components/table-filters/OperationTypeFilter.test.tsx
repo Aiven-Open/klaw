@@ -10,16 +10,11 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 const filterLabel = "Filter by operation type";
 
 describe("OperationTypeFilter.tsx", () => {
-  const testDefaultOperationType = "CREATE";
-
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      customRender(
-        <OperationTypeFilter defaultOperationType={testDefaultOperationType} />,
-        {
-          memoryRouter: true,
-        }
-      );
+      customRender(<OperationTypeFilter />, {
+        memoryRouter: true,
+      });
     });
 
     afterAll(cleanup);
@@ -33,6 +28,11 @@ describe("OperationTypeFilter.tsx", () => {
     });
 
     it("renders a list of options for operation types", () => {
+      const allOption = screen.getByRole("option", {
+        name: "All operation types",
+      });
+      expect(allOption).toBeEnabled();
+
       operationTypeList.forEach((type) => {
         const option = screen.getByRole("option", {
           name: requestOperationTypeNameMap[type],
@@ -41,37 +41,20 @@ describe("OperationTypeFilter.tsx", () => {
         expect(option).toBeEnabled();
       });
     });
-
-    it("shows a status name as the default active option based on prop", () => {
-      const select = screen.getByRole("combobox", {
-        name: filterLabel,
-      });
-      const option = within(select).getByRole("option", {
-        selected: true,
-      });
-
-      expect(select).toHaveValue(testDefaultOperationType);
-      expect(option).toHaveAccessibleName(
-        requestOperationTypeNameMap[testDefaultOperationType]
-      );
-    });
   });
 
-  describe("sets the active status based on a query param", () => {
+  describe("sets the active operation type based on a query param", () => {
     const deleteOperation = "DELETE";
     const deleteName = requestOperationTypeNameMap[deleteOperation];
 
     beforeEach(async () => {
-      const routePath = `/?status=${deleteName}`;
+      const routePath = `/?operationType=${deleteOperation}`;
 
-      customRender(
-        <OperationTypeFilter defaultOperationType={deleteOperation} />,
-        {
-          memoryRouter: true,
-          queryClient: true,
-          customRoutePath: routePath,
-        }
-      );
+      customRender(<OperationTypeFilter />, {
+        memoryRouter: true,
+        queryClient: true,
+        customRoutePath: routePath,
+      });
     });
 
     afterEach(() => {
@@ -92,18 +75,14 @@ describe("OperationTypeFilter.tsx", () => {
   });
 
   describe("handles user selecting a environment", () => {
-    const defaultOperationType = "DELETE";
     const createOperation = "CREATE";
     const approvedName = requestOperationTypeNameMap[createOperation];
 
     beforeEach(async () => {
-      customRender(
-        <OperationTypeFilter defaultOperationType={defaultOperationType} />,
-        {
-          queryClient: true,
-          memoryRouter: true,
-        }
-      );
+      customRender(<OperationTypeFilter />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
     });
 
     afterEach(() => {
@@ -115,7 +94,7 @@ describe("OperationTypeFilter.tsx", () => {
         name: filterLabel,
       });
 
-      expect(select).toHaveValue(defaultOperationType);
+      expect(select).toHaveValue("ALL");
 
       const option = screen.getByRole("option", {
         name: approvedName,
@@ -132,7 +111,7 @@ describe("OperationTypeFilter.tsx", () => {
     const deleteName = requestOperationTypeNameMap[defaultOperationType];
 
     beforeEach(async () => {
-      customRender(<OperationTypeFilter defaultOperationType={"CREATE"} />, {
+      customRender(<OperationTypeFilter />, {
         queryClient: true,
         browserRouter: true,
       });
@@ -148,7 +127,7 @@ describe("OperationTypeFilter.tsx", () => {
       expect(window.location.search).toEqual("");
     });
 
-    it(`sets "?status=${defaultOperationType}&page=1" as search param when user selected it`, async () => {
+    it(`sets "?operationType=${defaultOperationType}&page=1" as search param when user selected it`, async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -163,6 +142,22 @@ describe("OperationTypeFilter.tsx", () => {
         expect(window.location.search).toEqual(
           `?operationType=${defaultOperationType}&page=1`
         );
+      });
+    });
+
+    it(`unsets "?operationType" as search param when user selects All operation types`, async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterLabel,
+      });
+
+      const allOption = screen.getByRole("option", {
+        name: "All operation types",
+      });
+
+      await userEvent.selectOptions(select, allOption);
+
+      await waitFor(() => {
+        expect(window.location.search).toEqual(`?page=1`);
       });
     });
   });

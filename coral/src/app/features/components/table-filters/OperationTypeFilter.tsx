@@ -5,24 +5,30 @@ import {
   operationTypeList,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { RequestOperationType } from "src/domain/requests/requests-types";
+import { ResolveIntersectionTypes } from "types/utils";
 
-type operationTypeFilterProps = {
-  defaultOperationType: RequestOperationType;
-};
+type RequestOperationTypeOptions = ResolveIntersectionTypes<
+  RequestOperationType | "ALL"
+>;
 
-function OperationTypeFilter(props: operationTypeFilterProps) {
-  const { defaultOperationType } = props;
+function OperationTypeFilter() {
   const [searchParams, setSearchParams] = useSearchParams();
   const operationType =
-    (searchParams.get("operationType") as RequestOperationType | null) ??
-    defaultOperationType;
+    (searchParams.get("operationType") as RequestOperationTypeOptions | null) ??
+    "ALL";
 
   const handleChangeOperationType = (
-    nextOperationType: RequestOperationType
+    nextOperationType: RequestOperationTypeOptions
   ) => {
-    searchParams.set("operationType", nextOperationType);
-    searchParams.set("page", "1");
-    setSearchParams(searchParams);
+    if (nextOperationType === "ALL") {
+      searchParams.delete("operationType");
+      searchParams.set("page", "1");
+      setSearchParams(searchParams);
+    } else {
+      searchParams.set("operationType", nextOperationType);
+      searchParams.set("page", "1");
+      setSearchParams(searchParams);
+    }
   };
 
   return (
@@ -31,10 +37,13 @@ function OperationTypeFilter(props: operationTypeFilterProps) {
       key={"filter-operationType"}
       defaultValue={operationType}
       onChange={(e) => {
-        const operationType = e.target.value as RequestOperationType;
+        const operationType = e.target.value as RequestOperationTypeOptions;
         return handleChangeOperationType(operationType);
       }}
     >
+      <option key={"ALL"} value={"ALL"}>
+        All operation types
+      </option>
       {operationTypeList.map((operationType) => {
         return (
           <option key={operationType} value={operationType}>
