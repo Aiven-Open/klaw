@@ -87,7 +87,6 @@ function AclRequests() {
       const response = responses[0];
 
       if (response.result !== "success") {
-        closeModal();
         throw Error(response.message || response.result || "Unexpected error");
       }
 
@@ -100,6 +99,8 @@ function AclRequests() {
       closeModal();
     },
     onError: (error: Error) => {
+      closeModal();
+
       // Case when error is from the server
       if (objectHasProperty(error, "data")) {
         return setErrorMessage(parseErrorMsg(error));
