@@ -776,22 +776,6 @@ describe("<TopicRequest />", () => {
       });
     });
     describe("when API request is successful", () => {
-      const locationAssignSpy = jest.fn();
-      let originalLocation: Location;
-
-      beforeAll(() => {
-        originalLocation = window.location;
-        Object.defineProperty(global.window, "location", {
-          writable: true,
-          value: {
-            assign: locationAssignSpy,
-          },
-        });
-      });
-
-      afterAll(() => {
-        global.window.location = originalLocation;
-      });
       beforeEach(async () => {
         mockRequestTopic({
           mswInstance: server,
@@ -824,9 +808,9 @@ describe("<TopicRequest />", () => {
         });
 
         await waitFor(() => {
-          expect(locationAssignSpy).toHaveBeenCalledTimes(1);
-          expect(locationAssignSpy).toHaveBeenCalledWith(
-            "/myTopicRequests?reqsType=CREATED&topicCreated=true"
+          expect(mockedUsedNavigate).toHaveBeenCalledTimes(1);
+          expect(mockedUsedNavigate).toHaveBeenCalledWith(
+            "/requests/topics?status=CREATED"
           );
         });
       });

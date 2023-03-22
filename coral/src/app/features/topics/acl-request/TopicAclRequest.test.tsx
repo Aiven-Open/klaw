@@ -1057,10 +1057,9 @@ describe("<TopicAclRequest />", () => {
           teamId: 1,
         });
 
-        // @TODO use when Klaw migration is completed and redirect is handling with react-router
         await waitFor(() => {
-          expect(locationAssignSpy).toHaveBeenLastCalledWith(
-            "/myAclRequests?reqsType=CREATED&aclCreated=true"
+          expect(mockedNavigate).toHaveBeenLastCalledWith(
+            "/requests/acls?status=CREATED"
           );
         });
       });
@@ -1068,23 +1067,6 @@ describe("<TopicAclRequest />", () => {
   });
 
   describe("Form submission (TopicConsumerForm)", () => {
-    const locationAssignSpy = jest.fn();
-    let originalLocation: Location;
-
-    beforeAll(() => {
-      originalLocation = window.location;
-      Object.defineProperty(global.window, "location", {
-        writable: true,
-        value: {
-          assign: locationAssignSpy,
-        },
-      });
-    });
-
-    afterAll(() => {
-      global.window.location = originalLocation;
-    });
-
     beforeEach(async () => {
       dataSetup({ isAivenCluster: false });
 
@@ -1370,10 +1352,9 @@ describe("<TopicAclRequest />", () => {
           consumergroup: "group",
         });
 
-        // @TODO use when Klaw migration is completed and redirect is handling with react-router
         await waitFor(() => {
-          expect(locationAssignSpy).toHaveBeenLastCalledWith(
-            "/myAclRequests?reqsType=CREATED&aclCreated=true"
+          expect(mockedNavigate).toHaveBeenLastCalledWith(
+            "/requests/acls?status=CREATED"
           );
         });
       });

@@ -64,8 +64,7 @@ const TopicConsumerForm = ({
 
   const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: createAclRequest,
-    onSuccess: () =>
-      window.location.assign("/myAclRequests?reqsType=CREATED&aclCreated=true"),
+    onSuccess: () => navigate("/requests/acls?status=CREATED"),
   });
 
   const onSubmitTopicConsumer: SubmitHandler<TopicConsumerFormSchema> = (
