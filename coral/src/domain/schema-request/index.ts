@@ -4,6 +4,7 @@ import {
   declineSchemaRequest,
   getSchemaRequests,
   getSchemaRequestsForApprover,
+  deleteSchemaRequest,
 } from "src/domain/schema-request/schema-request-api";
 import {
   CreatedSchemaRequests,
@@ -17,4 +18,5 @@ export {
   getSchemaRequests,
   approveSchemaRequest,
   declineSchemaRequest,
+  deleteSchemaRequest,
 };

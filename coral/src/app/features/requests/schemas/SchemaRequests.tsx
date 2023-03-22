@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
@@ -11,11 +11,19 @@ import StatusFilter from "src/app/features/components/table-filters/StatusFilter
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { SchemaRequestTable } from "src/app/features/requests/schemas/components/SchemaRequestTable";
 import { RequestStatus } from "src/domain/requests/requests-types";
-import { getSchemaRequests } from "src/domain/schema-request";
+import {
+  getSchemaRequests,
+  deleteSchemaRequest,
+} from "src/domain/schema-request";
+import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
+import { parseErrorMsg } from "src/services/mutation-utils";
+import { Alert } from "@aivenio/aquarium";
+import { objectHasProperty } from "src/services/type-utils";
 
 const defaultStatus = "ALL";
 
 function SchemaRequests() {
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const currentPage = searchParams.get("page")
@@ -33,14 +41,17 @@ function SchemaRequests() {
     req_no: number | null;
   }>({ open: "NONE", req_no: null });
 
+  const [errorQuickActions, setErrorQuickActions] = useState("");
+
   const {
     data: schemaRequests,
     isLoading,
     isError,
     error,
+    isFetching,
   } = useQuery({
     queryKey: [
-      "schemaRequests",
+      "getSchemaRequests",
       currentPage,
       currentEnvironment,
       currentStatus,
@@ -58,9 +69,51 @@ function SchemaRequests() {
     keepPreviousData: true,
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { mutate: deleteRequest, isLoading: deleteRequestIsLoading } =
+    useMutation(deleteSchemaRequest, {
+      onSuccess: (responses) => {
+        // @TODO follow up ticket #707
+        // (for all approval and request tables)
+        const response = responses[0];
+        const responseIsAHiddenError = response?.result !== "success";
+        if (responseIsAHiddenError) {
+          throw new Error(response?.message || response?.result);
+        }
+        setErrorQuickActions("");
+        // We need to refetch all requests to keep Table state in sync
+        queryClient.refetchQueries(["getSchemaRequests"]).then(() => {
+          // only close the modal when data in background is updated
+          closeModal();
+        });
+      },
+      onError(error: Error) {
+        let errorMessage: string;
+        // if error comes from our api, it has a `data` property
+        // parseErrorMsg makes sure to get the right message
+        // OR set a generic error message
+        if (objectHasProperty(error, "data")) {
+          errorMessage = parseErrorMsg(error);
+        } else {
+          errorMessage = error.message;
+        }
+
+        setErrorQuickActions(errorMessage);
+        closeModal();
+      },
+    });
+
   function closeModal() {
     setModals({ open: "NONE", req_no: null });
   }
+
+  const openDetailsModal = (req_no: number) => {
+    setModals({ open: "DETAILS", req_no });
+  };
+
+  const openDeleteModal = (req_no: number) => {
+    setModals({ open: "DELETE", req_no });
+  };
 
   function setCurrentPage(page: number) {
     searchParams.set("page", page.toString());
@@ -94,7 +147,10 @@ function SchemaRequests() {
             secondary: {
               text: "Delete",
               onClick: () => {
-                console.log("DELETE");
+                if (modals.req_no === null) {
+                  throw Error("req_no can't be null");
+                }
+                openDeleteModal(modals.req_no);
               },
             },
           }}
@@ -106,6 +162,25 @@ function SchemaRequests() {
             )}
           />
         </RequestDetailsModal>
+      )}
+
+      {modals.open === "DELETE" && (
+        <DeleteRequestDialog
+          deleteRequest={() => {
+            if (modals.req_no === null) {
+              throw Error("req_no can't be null");
+            } else {
+              deleteRequest({ reqIds: [modals.req_no.toString()] });
+            }
+          }}
+          isLoading={deleteRequestIsLoading || isFetching}
+          cancel={closeModal}
+        />
+      )}
+      {errorQuickActions && (
+        <div role="alert">
+          <Alert type="error">{errorQuickActions}</Alert>
+        </div>
       )}
       <TableLayout
         filters={[
@@ -120,7 +195,8 @@ function SchemaRequests() {
         table={
           <SchemaRequestTable
             requests={schemaRequests?.entries || []}
-            setModals={setModals}
+            showDetails={openDetailsModal}
+            showDeleteDialog={openDeleteModal}
           />
         }
         pagination={pagination}

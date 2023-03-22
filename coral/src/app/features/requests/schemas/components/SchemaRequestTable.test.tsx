@@ -13,7 +13,8 @@ import userEvent from "@testing-library/user-event";
 const schemaRequests = [...mockedApiResponses];
 const deletableRequests = schemaRequests.filter((entry) => entry.deletable);
 
-const mockSetModals = jest.fn();
+const showDetailsMock = jest.fn();
+const showDeleteDialogMock = jest.fn();
 
 describe("SchemaRequestTable", () => {
   beforeAll(mockIntersectionObserver);
@@ -31,7 +32,13 @@ describe("SchemaRequestTable", () => {
 
   describe("shows information that table is empty when requests are empty", () => {
     beforeAll(() => {
-      render(<SchemaRequestTable requests={[]} setModals={mockSetModals} />);
+      render(
+        <SchemaRequestTable
+          requests={[]}
+          showDetails={showDetailsMock}
+          showDeleteDialog={showDeleteDialogMock}
+        />
+      );
     });
 
     afterAll(cleanup);
@@ -48,7 +55,8 @@ describe("SchemaRequestTable", () => {
       render(
         <SchemaRequestTable
           requests={schemaRequests}
-          setModals={mockSetModals}
+          showDetails={showDetailsMock}
+          showDeleteDialog={showDeleteDialogMock}
         />
       );
     });
@@ -134,7 +142,8 @@ describe("SchemaRequestTable", () => {
       render(
         <SchemaRequestTable
           requests={schemaRequests}
-          setModals={mockSetModals}
+          showDetails={showDetailsMock}
+          showDeleteDialog={showDeleteDialogMock}
         />
       );
     });
@@ -201,7 +210,8 @@ describe("SchemaRequestTable", () => {
       render(
         <SchemaRequestTable
           requests={schemaRequests}
-          setModals={mockSetModals}
+          showDetails={showDetailsMock}
+          showDeleteDialog={showDeleteDialogMock}
         />
       );
     });
@@ -217,10 +227,7 @@ describe("SchemaRequestTable", () => {
 
       await userEvent.click(button);
 
-      expect(mockSetModals).toHaveBeenCalledWith({
-        open: "DETAILS",
-        req_no: schemaRequests[0].req_no,
-      });
+      expect(showDetailsMock).toHaveBeenCalledWith(schemaRequests[0].req_no);
     });
 
     it("triggers opening a modal with details for the last given schema request", async () => {
@@ -232,10 +239,52 @@ describe("SchemaRequestTable", () => {
 
       await userEvent.click(button);
 
-      expect(mockSetModals).toHaveBeenCalledWith({
-        open: "DETAILS",
-        req_no: schemaRequests[schemaRequests.length - 1].req_no,
+      expect(showDetailsMock).toHaveBeenCalledWith(
+        schemaRequests[schemaRequests.length - 1].req_no
+      );
+    });
+  });
+
+  describe("triggers opening of a Dialog confirming the deletion when users clicks 'Delete'", () => {
+    beforeEach(() => {
+      render(
+        <SchemaRequestTable
+          requests={schemaRequests}
+          showDetails={showDetailsMock}
+          showDeleteDialog={showDeleteDialogMock}
+        />
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("triggers opening a dialog asking for confirmation to delete a schema request", async () => {
+      const requestUserCanDelete = schemaRequests[0];
+      const button = screen.getByRole("button", {
+        name: `Delete schema request for ${requestUserCanDelete.topicname}`,
       });
+
+      await userEvent.click(button);
+
+      expect(showDeleteDialogMock).toHaveBeenCalledWith(
+        requestUserCanDelete.req_no
+      );
+    });
+
+    it("prevents user deleting a request if they are not authorized to do so", async () => {
+      const requestUserCanNotDelete = schemaRequests[schemaRequests.length - 1];
+
+      const button = screen.getByRole("button", {
+        name: `Delete schema request for ${requestUserCanNotDelete.topicname}`,
+      });
+
+      await userEvent.click(button);
+
+      expect(button).toBeDisabled();
+      expect(showDeleteDialogMock).not.toHaveBeenCalled;
     });
   });
 });

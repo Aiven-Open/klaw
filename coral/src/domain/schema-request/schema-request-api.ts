@@ -1,6 +1,7 @@
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
+  RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
 import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
@@ -124,10 +125,23 @@ const declineSchemaRequest = ({
   });
 };
 
+const deleteSchemaRequest = ({
+  reqIds,
+}: Omit<RequestVerdictDelete<"SCHEMA">, "requestEntityType">) => {
+  return api.post<
+    KlawApiResponse<"deleteRequest">,
+    RequestVerdictDelete<"SCHEMA">
+  >(`/request/delete`, {
+    reqIds,
+    requestEntityType: "SCHEMA",
+  });
+};
+
 export {
   createSchemaRequest,
   getSchemaRequestsForApprover,
   approveSchemaRequest,
   declineSchemaRequest,
   getSchemaRequests,
+  deleteSchemaRequest,
 };
