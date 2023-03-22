@@ -105,7 +105,7 @@ __1. Every PR has to be releasable__
 
 - Every PR that is merged on `main` should be treated like we release it into production right away.
 - The `main` branch should always be in a state where it can be deployed and used right away.
-- If API changes were made, ensure the `openapi.yaml` spec was generated, and that the frontend types have been generated with `pnpm extract-api-types`.
+- If API changes were made, ensure the `openapi.yaml` spec was generated and added to the commit, and that the frontend types have been generated with `pnpm extract-api-types`. [Read about why here](./docs/openapi.md).
 - All GitHub actions checks must be green.
 
 __2. A clear goal with a small scope__
