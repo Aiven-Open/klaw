@@ -4,7 +4,7 @@ import {
   operationTypeList,
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
-import OperationTypeFilter from "src/app/features/components/table-filters/OperationTypeFilter";
+import { OperationTypeFilter } from "src/app/features/components/table-filters/OperationTypeFilter";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const filterLabel = "Filter by operation type";

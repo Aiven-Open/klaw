@@ -55,4 +55,4 @@ function OperationTypeFilter() {
   );
 }
 
-export default OperationTypeFilter;
+export { OperationTypeFilter };
