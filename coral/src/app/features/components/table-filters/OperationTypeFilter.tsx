@@ -1,4 +1,5 @@
 import { NativeSelect } from "@aivenio/aquarium";
+import { ChangeEvent } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   requestOperationTypeNameMap,
@@ -17,9 +18,9 @@ function OperationTypeFilter() {
     (searchParams.get("operationType") as RequestOperationTypeOptions | null) ??
     "ALL";
 
-  const handleChangeOperationType = (
-    nextOperationType: RequestOperationTypeOptions
-  ) => {
+  const handleChangeOperationType = (e: ChangeEvent<HTMLSelectElement>) => {
+    const nextOperationType = e.target.value as RequestOperationTypeOptions;
+
     if (nextOperationType === "ALL") {
       searchParams.delete("operationType");
       searchParams.set("page", "1");
@@ -36,10 +37,7 @@ function OperationTypeFilter() {
       labelText={"Filter by operation type"}
       key={"filter-operationType"}
       defaultValue={operationType}
-      onChange={(e) => {
-        const operationType = e.target.value as RequestOperationTypeOptions;
-        return handleChangeOperationType(operationType);
-      }}
+      onChange={handleChangeOperationType}
     >
       <option key={"ALL"} value={"ALL"}>
         All operation types
