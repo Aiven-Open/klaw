@@ -38,17 +38,17 @@ function TopicApprovals() {
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
-    topicId: number | null;
+    reqNo: number | null;
   }>({
     isOpen: false,
-    topicId: null,
+    reqNo: null,
   });
   const [declineModal, setDeclineModal] = useState<{
     isOpen: boolean;
-    topicId: number | null;
+    reqNo: number | null;
   }>({
     isOpen: false,
-    topicId: null,
+    reqNo: null,
   });
 
   const [errorMessage, setErrorMessage] = useState("");
@@ -83,7 +83,11 @@ function TopicApprovals() {
     keepPreviousData: true,
   });
 
-  const { isLoading: approveIsLoading, mutate: approveRequest } = useMutation({
+  const {
+    isLoading: approveIsLoading,
+    mutate: approveRequest,
+    variables: approveVariables,
+  } = useMutation({
     mutationFn: approveTopicRequest,
     onSuccess: (responses) => {
       // This mutation is used on a single request, so we always want the first response in the array
@@ -96,7 +100,7 @@ function TopicApprovals() {
       }
 
       setErrorMessage("");
-      setDetailsModal({ isOpen: false, topicId: null });
+      setDetailsModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
@@ -125,7 +129,11 @@ function TopicApprovals() {
     },
   });
 
-  const { isLoading: declineIsLoading, mutate: declineRequest } = useMutation({
+  const {
+    isLoading: declineIsLoading,
+    mutate: declineRequest,
+    variables: declineVariables,
+  } = useMutation({
     mutationFn: declineTopicRequest,
     onSuccess: (responses) => {
       // This mutation is used on a single request, so we always want the first response in the array
@@ -137,7 +145,7 @@ function TopicApprovals() {
         );
       }
       setErrorMessage("");
-      setDeclineModal({ isOpen: false, topicId: null });
+      setDeclineModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
@@ -171,13 +179,44 @@ function TopicApprovals() {
     setSearchParams(searchParams);
   };
 
+  function handleViewRequest(reqNo: number): void {
+    setDetailsModal({ isOpen: true, reqNo });
+  }
+
+  function handleApproveRequest(reqNo: number): void {
+    approveRequest({
+      requestEntityType: "TOPIC",
+      reqIds: [String(reqNo)],
+    });
+  }
+
+  function handleDeclineRequest(reqNo: number): void {
+    setDeclineModal({ isOpen: true, reqNo });
+  }
+
+  function handleIsBeingApproved(reqNo: number): boolean {
+    return (
+      Boolean(approveVariables?.reqIds?.includes(String(reqNo))) &&
+      approveIsLoading
+    );
+  }
+
+  function handleIsBeingDeclined(reqNo: number): boolean {
+    return (
+      Boolean(declineVariables?.reqIds?.includes(String(reqNo))) &&
+      declineIsLoading
+    );
+  }
+
   const table = (
     <TopicApprovalsTable
       requests={topicRequests?.entries || []}
-      setDetailsModal={setDetailsModal}
-      setDeclineModal={setDeclineModal}
-      approveRequest={approveRequest}
-      quickActionLoading={approveIsLoading || declineIsLoading}
+      actionsDisabled={approveIsLoading || declineIsLoading}
+      onDetails={handleViewRequest}
+      onApprove={handleApproveRequest}
+      onDecline={handleDeclineRequest}
+      isBeingDeclined={handleIsBeingDeclined}
+      isBeingApproved={handleIsBeingApproved}
     />
   );
   const pagination =
@@ -190,34 +229,34 @@ function TopicApprovals() {
     ) : undefined;
 
   const selectedTopicRequest = topicRequests?.entries.find(
-    (request) => request.topicid === Number(detailsModal.topicId)
+    (request) => request.topicid === Number(detailsModal.reqNo)
   );
   return (
     <>
       {detailsModal.isOpen && (
         <RequestDetailsModal
-          onClose={() => setDetailsModal({ isOpen: false, topicId: null })}
+          onClose={() => setDetailsModal({ isOpen: false, reqNo: null })}
           actions={{
             primary: {
               text: "Approve",
               onClick: () => {
-                if (detailsModal.topicId === null) {
-                  setErrorMessage("topicId is null, it should be a number");
+                if (detailsModal.reqNo === null) {
+                  setErrorMessage("reqNo is null, it should be a number");
                   return;
                 }
                 approveRequest({
                   requestEntityType: "TOPIC",
-                  reqIds: [String(detailsModal.topicId)],
+                  reqIds: [String(detailsModal.reqNo)],
                 });
               },
             },
             secondary: {
               text: "Decline",
               onClick: () => {
-                setDetailsModal({ isOpen: false, topicId: null });
+                setDetailsModal({ isOpen: false, reqNo: null });
                 setDeclineModal({
                   isOpen: true,
-                  topicId: detailsModal.topicId,
+                  reqNo: detailsModal.reqNo,
                 });
               },
             },
@@ -234,16 +273,16 @@ function TopicApprovals() {
       )}
       {declineModal.isOpen && (
         <RequestDeclineModal
-          onClose={() => setDeclineModal({ isOpen: false, topicId: null })}
-          onCancel={() => setDeclineModal({ isOpen: false, topicId: null })}
+          onClose={() => setDeclineModal({ isOpen: false, reqNo: null })}
+          onCancel={() => setDeclineModal({ isOpen: false, reqNo: null })}
           onSubmit={(message: string) => {
-            if (declineModal.topicId === null) {
-              setErrorMessage("topicId is null, it should be a number");
+            if (declineModal.reqNo === null) {
+              setErrorMessage("reqNo is null, it should be a number");
               return;
             }
             declineRequest({
               requestEntityType: "TOPIC",
-              reqIds: [String(declineModal.topicId)],
+              reqIds: [String(declineModal.reqNo)],
               reason: message,
             });
           }}
