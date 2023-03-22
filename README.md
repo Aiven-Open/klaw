@@ -101,6 +101,8 @@ For the versions available, see the [tags on this repository](https://github.com
 
 - Documentation : https://klaw-project.io/docs
 
+- Project documentation for contributors: [`./docs`](./docs)
+
 ## Install
 
 ### Manual
