@@ -74,7 +74,7 @@ describe("OperationTypeFilter.tsx", () => {
     });
   });
 
-  describe("handles user selecting a environment", () => {
+  describe("handles user selecting an operation type", () => {
     const createOperation = "CREATE";
     const approvedName = requestOperationTypeNameMap[createOperation];
 
@@ -89,7 +89,7 @@ describe("OperationTypeFilter.tsx", () => {
       cleanup();
     });
 
-    it("sets the environment the user choose as active option", async () => {
+    it("sets the operation type the user choose as active option", async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -106,7 +106,7 @@ describe("OperationTypeFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve environment in url", () => {
+  describe("updates the search param to preserve operation type in url", () => {
     const defaultOperationType = "DELETE";
     const deleteName = requestOperationTypeNameMap[defaultOperationType];
 

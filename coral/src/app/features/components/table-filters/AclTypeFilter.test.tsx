@@ -17,7 +17,7 @@ describe("AclTypeFilter.tsx", () => {
 
     afterAll(cleanup);
 
-    it("shows a select element for status", () => {
+    it("shows a select element for ACL type", () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -25,7 +25,7 @@ describe("AclTypeFilter.tsx", () => {
       expect(select).toBeEnabled();
     });
 
-    it("renders a list of options for statuse", () => {
+    it("renders a list of options for ACL type", () => {
       aclTypesForFilter.forEach((acl) => {
         if (acl === "ALL") {
           const option = screen.getByRole("option", {
@@ -50,7 +50,7 @@ describe("AclTypeFilter.tsx", () => {
     });
   });
 
-  describe("sets the active environment based on a query param", () => {
+  describe("sets the active ACL type based on a query param", () => {
     const consumerAcl = "CONSUMER";
 
     beforeEach(async () => {
@@ -77,7 +77,7 @@ describe("AclTypeFilter.tsx", () => {
     });
   });
 
-  describe("handles user selecting a environment", () => {
+  describe("handles user selecting a ACL type", () => {
     const producerAcl = "PRODUCER";
 
     beforeEach(async () => {
@@ -91,7 +91,7 @@ describe("AclTypeFilter.tsx", () => {
       cleanup();
     });
 
-    it("sets the environment the user choose as active option", async () => {
+    it("sets the ACL type the user choose as active option", async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -105,7 +105,7 @@ describe("AclTypeFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve environment in url", () => {
+  describe("updates the search param to preserve ACL type in url", () => {
     const consumerAcl = "CONSUMER";
 
     beforeEach(async () => {
