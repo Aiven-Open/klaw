@@ -163,4 +163,13 @@ public class SchemaRegistryController {
         schemaOverviewService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch),
         HttpStatus.OK);
   }
+
+  @PostMapping(
+      value = "/validate/schema",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> validateSchema(@RequestBody SchemaRequestModel schemaRequest)
+      throws Exception {
+
+    return ResponseEntity.ok(schemaRegistryControllerService.validateSchema(schemaRequest));
+  }
 }

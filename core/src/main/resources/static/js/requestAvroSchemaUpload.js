@@ -96,7 +96,7 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                 {
                     $scope.topicSelectedFromUrl = sParameterName[1];
                     $scope.addSchema.topicname = $scope.topicSelectedFromUrl;
-
+                    $scope.validatedSchema=false;
                     $scope.getAllTopics();
                 }
             }
@@ -146,86 +146,162 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
 
         $scope.addSchema = function() {
 
-            if(!$scope.addSchema.envName)
-            {
-                $scope.alertnote = "Please select an environment";
-                $scope.showAlertToast();
-                return;
-            }
-
-            if($scope.addSchema.topicname == null || $scope.addSchema.topicname.length==0)
-            {
-                $scope.alertnote = "Please fill in topic name.";
-                $scope.showAlertToast();
-                return;
-            }else
-            {
-                $scope.addSchema.topicname = $scope.addSchema.topicname.trim();
-                if($scope.addSchema.topicname.length==0){
-                    $scope.alertnote = "Please fill in topic name.";
-                    $scope.showAlertToast();
-                    return;
-                }
-            }
-
-            if(!$scope.addSchema.schemafull)
-            {
-                $scope.alertnote = "Please select a valid Avro schema file";
-                $scope.showAlertToast();
-                return;
-            }
-
-            var serviceInput = {};
-            $scope.alert = null;
-             $scope.alertnote = null;
-
-            serviceInput['environment'] = $scope.addSchema.envName;
-            serviceInput['topicname'] = $scope.addSchema.topicname;
-            serviceInput['appname'] = "App";
-            serviceInput['remarks'] = $scope.addSchema.remarks;
-            serviceInput['schemafull'] = $scope.addSchema.schemafull;
-            serviceInput['schemaversion'] = "1.0";
-            serviceInput['requestOperationType'] = 'CREATE';
-
-            $http({
-                method: "POST",
-                url: "uploadSchema",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'addSchemaRequest' : serviceInput },
-                data: serviceInput
-            }).success(function(output) {
-                $scope.alert = "Schema Upload Request : "+output.result;
-                $scope.addSchema.topicname = "";
-                if(output.result == 'success'){
-                    swal({
-                             title: "Awesome !",
-                             text: "Schema Request : " + output.result,
-                             showConfirmButton: true
-                         }).then(function(isConfirm){
-                                $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +"/mySchemaRequests?reqsType=CREATED&schemaCreated=true";
-                         });
-                 }else
-                 {
-                    $scope.alert = "Schema Request : " + output.result;
-                    $scope.showSubmitFailed('','');
-                 }
-
-            }).error(
-                function(error)
-                {
-                    if(!error){
-                        error = "Schema could not be uploaded. Please check schema.";
-                         $scope.alert = error;
-                         $scope.alertnote = error;
-                         $scope.showAlertToast();
+                    if(!$scope.addSchema.envName)
+                    {
+                        $scope.alertnote = "Please select an environment";
+                        $scope.showAlertToast();
+                        return;
                     }
-                    else{
-                            $scope.handleValidationErrors(error);
-                     }
-                }
-            );
 
-        };
+                    if($scope.addSchema.topicname == null || $scope.addSchema.topicname.length==0)
+                    {
+                        $scope.alertnote = "Please fill in topic name.";
+                        $scope.showAlertToast();
+                        return;
+                    }else
+                    {
+                        $scope.addSchema.topicname = $scope.addSchema.topicname.trim();
+                        if($scope.addSchema.topicname.length==0){
+                            $scope.alertnote = "Please fill in topic name.";
+                            $scope.showAlertToast();
+                            return;
+                        }
+                    }
+
+                    if(!$scope.addSchema.schemafull)
+                    {
+                        $scope.alertnote = "Please select a valid Avro schema file";
+                        $scope.showAlertToast();
+                        return;
+                    }
+
+                    var serviceInput = {};
+                    $scope.alert = null;
+                     $scope.alertnote = null;
+
+                    serviceInput['environment'] = $scope.addSchema.envName;
+                    serviceInput['topicname'] = $scope.addSchema.topicname;
+                    serviceInput['appname'] = "App";
+                    serviceInput['remarks'] = $scope.addSchema.remarks;
+                    serviceInput['schemafull'] = $scope.addSchema.schemafull;
+                    serviceInput['schemaversion'] = "1.0";
+                    serviceInput['requestOperationType'] = 'CREATE';
+
+                    $http({
+                        method: "POST",
+                        url: "uploadSchema",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'addSchemaRequest' : serviceInput },
+                        data: serviceInput
+                    }).success(function(output) {
+                        $scope.alert = "Schema Upload Request : "+output.result;
+                        $scope.addSchema.topicname = "";
+                        if(output.result == 'success'){
+                            swal({
+                                     title: "Awesome !",
+                                     text: "Schema Request : " + output.result,
+                                     showConfirmButton: true
+                                 }).then(function(isConfirm){
+                                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +"/mySchemaRequests?reqsType=CREATED&schemaCreated=true";
+                                 });
+                         }else
+                         {
+                            $scope.alert = "Schema Request : " + output.result;
+                            $scope.showSubmitFailed('','');
+                         }
+
+                    }).error(
+                        function(error)
+                        {
+                            if(!error){
+                                error = "Schema could not be uploaded. Please check schema.";
+                                 $scope.alert = error;
+                                 $scope.alertnote = error;
+                                 $scope.showAlertToast();
+                            }
+                            else{
+                                    $scope.handleValidationErrors(error);
+                             }
+                        }
+                    );
+
+                };
+
+
+                $scope.validateSchema = function() {
+
+                            if(!$scope.addSchema.envName)
+                            {
+                                $scope.alertnote = "Please select an environment";
+                                $scope.showAlertToast();
+                                return;
+                            }
+
+                            if($scope.addSchema.topicname == null || $scope.addSchema.topicname.length==0)
+                            {
+                                $scope.alertnote = "Please fill in topic name.";
+                                $scope.showAlertToast();
+                                return;
+                            }else
+                            {
+                                $scope.addSchema.topicname = $scope.addSchema.topicname.trim();
+                                if($scope.addSchema.topicname.length==0){
+                                    $scope.alertnote = "Please fill in topic name.";
+                                    $scope.showAlertToast();
+                                    return;
+                                }
+                            }
+
+                            if(!$scope.addSchema.schemafull)
+                            {
+                                $scope.alertnote = "Please select a valid Avro schema file";
+                                $scope.showAlertToast();
+                                return;
+                            }
+
+                            var serviceInput = {};
+                            $scope.alert = null;
+                             $scope.alertnote = null;
+
+                            serviceInput['environment'] = $scope.addSchema.envName;
+                            serviceInput['topicname'] = $scope.addSchema.topicname;
+                            serviceInput['appname'] = "App";
+                            serviceInput['remarks'] = $scope.addSchema.remarks;
+                            serviceInput['schemafull'] = $scope.addSchema.schemafull;
+                            serviceInput['schemaversion'] = "1.0";
+                            serviceInput['requestOperationType'] = 'CREATE';
+
+                            $http({
+                                method: "POST",
+                                url: "validate/schema",
+                                headers : { 'Content-Type' : 'application/json' },
+                                data: serviceInput
+                            }).success(function(output) {
+                                $scope.alert = "Schema Validation Request : "+output.result;
+                                $scope.addSchema.topicname = "";
+                                if(output.result.includes('SUCCESS')){
+                                    $scope.validatedSchema = true;
+                                 }else
+                                 {
+                                    $scope.validatedSchema = false;
+                                 }
+
+                            }).error(
+                                function(error)
+                                {
+                                    if(!error){
+                                        error = "Schema could not be Validated. Please check schema.";
+                                         $scope.alert = error;
+                                         $scope.alertnote = error;
+                                         $scope.showAlertToast();
+                                    }
+                                    else{
+                                            $scope.handleValidationErrors(error);
+                                     }
+                                }
+                            );
+
+                        };
 
 
         $scope.refreshPage = function(){

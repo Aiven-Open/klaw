@@ -400,6 +400,13 @@ public class SchemaRegistryControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
+    //check if Schema is valid
+    ApiResponse isValid = validateSchema(schemaRequest);
+
+    if(isValid.getResult().toLowerCase().contains(ApiResultStatus.FAILURE.value)) {
+      return isValid;
+    }
+
     try {
       new ObjectMapper().readValue(schemaRequest.getSchemafull(), Object.class);
     } catch (IOException e) {
@@ -464,6 +471,24 @@ public class SchemaRegistryControllerService {
           commonUtilsService.getLoginUrl());
 
       return ApiResponse.builder().result(responseDb).build();
+    } catch (Exception e) {
+      log.error("Exception:", e);
+      throw new KlawException(e.getMessage());
+    }
+  }
+
+  public ApiResponse validateSchema(SchemaRequestModel schemaRequest) throws KlawException {
+    log.info("validateSchema {}", schemaRequest);
+    String userDetails = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userDetails);
+    try {
+      return clusterApiService
+          .validateSchema(
+              schemaRequest.getSchemafull(),
+              schemaRequest.getEnvironment(),
+              schemaRequest.getTopicname(),
+              tenantId)
+          .getBody();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
