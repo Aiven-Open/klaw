@@ -70,10 +70,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   });
 
   const schemaRequestMutation = useMutation(createSchemaRequest, {
-    onSuccess: () =>
-      window.location.assign(
-        "/mySchemaRequests?reqsType=CREATED&schemaCreated=true"
-      ),
+    onSuccess: () => navigate("/requests/schemas?status=CREATED"),
   });
 
   function onSubmitForm(userInput: TopicRequestFormSchema) {
