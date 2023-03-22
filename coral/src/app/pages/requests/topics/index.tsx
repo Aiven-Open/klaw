@@ -1,7 +1,13 @@
 import { TopicRequests } from "src/app/features/requests/topics/TopicRequests";
+import PreviewBanner from "src/app/components/PreviewBanner";
 
 const TopicRequestsPage = () => {
-  return <TopicRequests />;
+  return (
+    <>
+      <PreviewBanner linkTarget={"/myTopicRequests"} />
+      <TopicRequests />
+    </>
+  );
 };
 
 export default TopicRequestsPage;
