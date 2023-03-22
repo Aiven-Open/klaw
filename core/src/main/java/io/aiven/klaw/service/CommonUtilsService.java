@@ -1,10 +1,13 @@
 package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.KwMetadataUpdates;
+import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.Options;
 import io.aiven.klaw.model.charts.Title;
@@ -463,5 +466,81 @@ public class CommonUtilsService {
           tmpTopicList.add(t);
         });
     return tmpTopicList;
+  }
+
+  public String getEnvProperty(Integer tenantId, String envPropertyType) {
+    try {
+      KwTenantConfigModel tenantModel = manageDatabase.getTenantConfig().get(tenantId);
+      if (tenantModel == null) {
+        return "";
+      }
+      List<Integer> intOrderEnvsList = new ArrayList<>();
+
+      switch (envPropertyType) {
+        case "ORDER_OF_ENVS" -> {
+          List<String> orderOfTopicPromotionEnvsList =
+              tenantModel.getOrderOfTopicPromotionEnvsList();
+          if (null != orderOfTopicPromotionEnvsList && !orderOfTopicPromotionEnvsList.isEmpty()) {
+            orderOfTopicPromotionEnvsList.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
+        }
+        case "REQUEST_TOPICS_OF_ENVS" -> {
+          List<String> requestTopics = tenantModel.getRequestTopicsEnvironmentsList();
+          if (requestTopics != null && !requestTopics.isEmpty()) {
+            requestTopics.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
+        }
+        case "ORDER_OF_KAFKA_CONNECT_ENVS" -> {
+          List<String> orderOfConn = tenantModel.getOrderOfConnectorsPromotionEnvsList();
+          if (orderOfConn != null && !orderOfConn.isEmpty()) {
+            orderOfConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
+        }
+        case "REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS" -> {
+          List<String> requestConn = tenantModel.getRequestConnectorsEnvironmentsList();
+          if (requestConn != null && !requestConn.isEmpty()) {
+            requestConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
+        }
+        case "REQUEST_SCHEMA_OF_ENVS" -> {
+          List<String> requestSchema = tenantModel.getRequestSchemaEnvironmentsList();
+          if (requestSchema != null && !requestSchema.isEmpty()) {
+            requestSchema.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
+          }
+        }
+      }
+
+      return intOrderEnvsList.stream().map(String::valueOf).collect(Collectors.joining(","));
+    } catch (Exception e) {
+      log.error("Exception:", e);
+      return "";
+    }
+  }
+
+  String getSchemaPromotionEnvsFromKafkaEnvs(int tenantId) {
+    String kafkaEnvs = getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String[] kafkaEnvsList = kafkaEnvs.split(",");
+
+    List<Env> schemaEnvs = new ArrayList<>();
+    if (kafkaEnvsList.length > 0) {
+      for (String kafkaEnv : kafkaEnvsList) {
+        Env kafkaEnvObj = manageDatabase.getHandleDbRequests().selectEnvDetails(kafkaEnv, tenantId);
+        EnvTag associatedSchemaEnv = kafkaEnvObj.getAssociatedEnv();
+        if (associatedSchemaEnv != null) {
+          Env schemaEnv =
+              manageDatabase
+                  .getHandleDbRequests()
+                  .selectEnvDetails(associatedSchemaEnv.getId(), tenantId);
+          schemaEnvs.add(schemaEnv);
+        }
+      }
+    }
+    StringBuilder orderOfSchemaEnvs = new StringBuilder();
+
+    for (Env schemaEnv : schemaEnvs) {
+      orderOfSchemaEnvs.append(schemaEnv.getId()).append(",");
+    }
+
+    return orderOfSchemaEnvs.toString();
   }
 }

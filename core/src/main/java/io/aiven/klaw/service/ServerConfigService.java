@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
@@ -150,6 +151,7 @@ public class ServerConfigService {
       if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey)) {
         TenantConfig dynamicObj;
         try {
+          OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
           dynamicObj = OBJECT_MAPPER.readValue(kwVal, TenantConfig.class);
           updateEnvNameValues(dynamicObj, tenantId);
           kwVal = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
@@ -289,23 +291,6 @@ public class ServerConfigService {
                 });
         tenant.setOrderOfConnectorsPromotionEnvsList(tmpOrderList1);
       }
-      // The Schema Entry is saved in the DB IN ORDER as provided by the user with the Schema ID
-      // Here we must translate the Schema ID back to the Schema Name for human readablity while
-      // also maintaining the provided order.
-      // The schema promotion list is processed if it is not null and cycled through matching
-      // individual schema IDs against a list of Schema Envs retrieved from the DB.
-      if (tenant.getOrderOfSchemaPromotionEnvsList() != null) {
-        List<String> tmpSchemaOrderList1 = new ArrayList<>();
-        tenant
-            .getOrderOfSchemaPromotionEnvsList()
-            .forEach(
-                a -> {
-                  if (getSchemaEnvDetails(a, tenantId) != null) {
-                    tmpSchemaOrderList1.add(getSchemaEnvDetails(a, tenantId).getName());
-                  }
-                });
-        tenant.setOrderOfSchemaPromotionEnvsList(tmpSchemaOrderList1);
-      }
 
       // kafka
       if (tenant.getRequestTopicsEnvironmentsList() != null) {
@@ -333,23 +318,6 @@ public class ServerConfigService {
                   }
                 });
         tenant.setRequestConnectorsEnvironmentsList(tmpReqTopicList1);
-      }
-
-      // The Schema Entry is saved in the DB with the Schema ID
-      // Here we must translate the Schema ID back to the Schema Name for human readablity.
-      // The schema Request list is processed if it is not null and cycled through matching
-      // individual schema IDs against a list of Schema Envs retrieved from the DB.
-      if (tenant.getRequestSchemaEnvironmentsList() != null) {
-        List<String> tmpSchemaRequest = new ArrayList<>();
-        tenant
-            .getRequestSchemaEnvironmentsList()
-            .forEach(
-                a -> {
-                  if (getSchemaEnvDetails(a, tenantId) != null) {
-                    tmpSchemaRequest.add(getSchemaEnvDetails(a, tenantId).getName());
-                  }
-                });
-        tenant.setRequestSchemaEnvironmentsList(tmpSchemaRequest);
       }
     }
   }
@@ -403,24 +371,6 @@ public class ServerConfigService {
         tenantModel.setOrderOfConnectorsPromotionEnvsList(tmpOrderList1);
       }
 
-      // The Tenant Model is updated where the Schema Name is changed to the Schema ID when saved in
-      // the DB.
-      // Here we check the list is not null and cycle through each name mapping them to the correct
-      // Schema ENV ID so it can be stored correctly.
-      // In this case the order is maintained as it is provided by the user for promotion purposes.
-      if (tenantModel.getOrderOfSchemaPromotionEnvsList() != null) {
-        List<String> tmpSchemaOrderList = new ArrayList<>();
-        tenantModel
-            .getOrderOfSchemaPromotionEnvsList()
-            .forEach(
-                a ->
-                    tmpSchemaOrderList.add(
-                        getSchemaEnvDetailsFromName(
-                                a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
-        tenantModel.setOrderOfSchemaPromotionEnvsList(tmpSchemaOrderList);
-      }
-
       // kafka
       if (tenantModel.getRequestTopicsEnvironmentsList() != null) {
         List<String> tmpReqTopicList = new ArrayList<>();
@@ -446,24 +396,6 @@ public class ServerConfigService {
                                 a, getTenantIdFromName(tenantModel.getTenantName()))
                             .getId()));
         tenantModel.setRequestConnectorsEnvironmentsList(tmpReqTopicList1);
-      }
-
-      // Schema Registry
-      // The Tenant Model is updated where the Schema Name is changed to the Schema ID when saved in
-      // the DB.
-      // Here we check the list is not null and cycle through each name mapping them to the correct
-      // Schema ENV ID so it can be stored correctly.
-      if (tenantModel.getRequestSchemaEnvironmentsList() != null) {
-        List<String> tmpReqSchemaList = new ArrayList<>();
-        tenantModel
-            .getRequestSchemaEnvironmentsList()
-            .forEach(
-                a ->
-                    tmpReqSchemaList.add(
-                        getSchemaEnvDetailsFromName(
-                                a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
-        tenantModel.setRequestSchemaEnvironmentsList(tmpReqSchemaList);
       }
     }
   }
@@ -498,17 +430,11 @@ public class ServerConfigService {
         // check that all Kafka Connectors in the ordered list already exist as resources.
         isResourceAlreadyCreated(
             tenantModel.getOrderOfConnectorsPromotionEnvsList(), envListKafkaConnectStr);
-        // Check that all schema registries exist that have been defined in the config.
-        isResourceAlreadyCreated(
-            tenantModel.getOrderOfSchemaPromotionEnvsList(), envListSchemaRegistryStr);
         // requestTopic Check
         isResourceAlreadyCreated(tenantModel.getRequestTopicsEnvironmentsList(), envListStr);
         // requestConnectors check
         isResourceAlreadyCreated(
             tenantModel.getRequestConnectorsEnvironmentsList(), envListKafkaConnectStr);
-        // Schema Check
-        isResourceAlreadyCreated(
-            tenantModel.getRequestSchemaEnvironmentsList(), envListSchemaRegistryStr);
       }
     } catch (Exception e) {
       log.error(dynamicObj + "", e);

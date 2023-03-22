@@ -665,12 +665,21 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
         $scope.displayedSchemaVersion = null;
         $scope.ShowSpinnerStatusSchemas = true;
+
+        const kafkaEnvIdsList = [];
+        if($scope.topicOverview){
+            for(let i=0; i<$scope.topicOverview.length; i++){
+                kafkaEnvIdsList.push($scope.topicOverview[i].envId);
+            }
+        }
+
             $http({
                 method: "GET",
                 url: "getSchemaOfTopic",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'topicnamesearch' : $scope.topicSelectedParam,
                     'schemaVersionSearch' : $scope.newSchemaVersion,
+                    'kafkaEnvIds' : kafkaEnvIdsList
                 }
             }).success(function(output) {
                 $scope.ShowSpinnerStatusSchemas = false;

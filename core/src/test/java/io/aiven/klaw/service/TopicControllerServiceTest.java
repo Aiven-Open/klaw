@@ -135,7 +135,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsCreateRequest(getTopicWithAdvancedConfigs());
@@ -157,7 +157,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsCreateRequest(getTopicWithDefaultConfigs());
@@ -181,7 +181,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(getFailureTopic1());
     assertThat(apiResponse.getResult()).contains("failure");
@@ -200,7 +200,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvListsIncorrect1());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(getFailureTopic1());
     assertThat(apiResponse.getResult()).isEqualTo(null);
@@ -870,7 +870,7 @@ public class TopicControllerServiceTest {
             KwConstants.INFRATEAM,
             KwConstants.INFRATEAM,
             KwConstants.INFRATEAM);
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
 
     List<List<TopicInfo>> topicsList =
@@ -899,7 +899,7 @@ public class TopicControllerServiceTest {
             KwConstants.INFRATEAM);
     when(handleDbRequests.selectAllTopicsByTopictypeAndTeamname(anyString(), anyInt(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
@@ -933,7 +933,7 @@ public class TopicControllerServiceTest {
     syncTopics.get(0).setTopicname("testtopic");
     when(handleDbRequests.selectAllTopicsByTopictypeAndTeamname(anyString(), anyInt(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
     List<Topic> topicList = utilMethods.getTopics();
     topicList.get(0).setTopicname("testtopic" + "--" + AclPatternType.PREFIXED + "--");
@@ -1064,7 +1064,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsUpdateRequest(getTopicWithAdvancedConfigs());
@@ -1086,7 +1086,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsUpdateRequest(getTopicWithDefaultConfigs());
@@ -1110,7 +1110,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse = topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
     assertThat(apiResponse.getResult()).contains("failure");
@@ -1129,7 +1129,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvListsIncorrect1());
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse = topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
     assertThat(apiResponse.getResult()).isEqualTo(null);

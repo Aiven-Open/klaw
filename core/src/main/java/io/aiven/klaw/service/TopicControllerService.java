@@ -1009,7 +1009,7 @@ public class TopicControllerService {
 
     // tenant filtering
     List<Env> listAllEnvs = manageDatabase.getKafkaEnvList(tenantId);
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
 
     topicsFromSOT = commonUtilsService.groupTopicsByEnv(topicsFromSOT);
     List<Topic> filterProducerConsumerList = new ArrayList<>();
@@ -1050,7 +1050,7 @@ public class TopicControllerService {
                               .getDocumentation()
                               .toLowerCase()
                               .contains(topicSearchFilter.toLowerCase())))
-              .collect(Collectors.toList());
+              .toList();
 
       topicFilteredList.addAll(searchDocList);
       topicFilteredList =
@@ -1178,7 +1178,7 @@ public class TopicControllerService {
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
         mp.setTopicid(topicSOT.getTopicid());
-        mp.setCluster(topicSOT.getEnvironment());
+        mp.setEnvName(topicSOT.getEnvironment());
         mp.setEnvironmentsList(getConvertedEnvs(listAllEnvs, envList));
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));

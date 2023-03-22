@@ -9,17 +9,14 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -107,7 +104,7 @@ public class UiConfigControllerServiceTest {
   public void getEnvs1() {
 
     stubUserInfo();
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(getAllEnvs());
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getTenantMap()).thenReturn(tenantMap);
@@ -139,8 +136,8 @@ public class UiConfigControllerServiceTest {
   public void getRequestSchemaEnvs_IsEmpty() {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST");
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("");
     when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     List<EnvModelResponse> envsList =
@@ -155,8 +152,9 @@ public class UiConfigControllerServiceTest {
 
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST");
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("DEV");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
+        .thenReturn("DEV");
     when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
@@ -174,8 +172,9 @@ public class UiConfigControllerServiceTest {
     // sTT is a misspelt env one tht does not exist and so should not be returned.
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST");
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("DEV,sTT");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
+        .thenReturn("DEV,sTT");
     when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
@@ -193,8 +192,9 @@ public class UiConfigControllerServiceTest {
     // DEV and TSTS are both spelt correctly and configured so both should be returned.
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST");
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("DEV,TST");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
+        .thenReturn("DEV,TST");
     when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
@@ -213,8 +213,8 @@ public class UiConfigControllerServiceTest {
     // only two kWclusters are configured DEV and TST so UAT should not return.
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("DEV,TST,UAT");
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
+    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST,UAT");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
         .thenReturn("DEV,TST,UAT");
     when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
@@ -234,65 +234,6 @@ public class UiConfigControllerServiceTest {
     map.put(1, util.getKwClusters());
     map.put(4, util.getKwClusters());
     return map;
-  }
-
-  private List<ActivityLog> getAcitivityList(int size) {
-    List<ActivityLog> actList = new ArrayList<>();
-
-    if (size > 0) {
-
-      ActivityLog actLog1 = new ActivityLog();
-      actLog1.setEnv("DEV");
-      actLog1.setActivityTime(new Timestamp(System.currentTimeMillis()));
-      actList.add(actLog1);
-
-      ActivityLog actLog2 = new ActivityLog();
-      actLog2.setEnv("DEV");
-      actLog2.setActivityTime(new Timestamp(System.currentTimeMillis()));
-      actList.add(actLog2);
-    }
-    return actList;
-  }
-
-  private List<UserInfo> getUsernfoList() {
-    List<UserInfo> listUsersInfo = new ArrayList<>();
-
-    UserInfo userInfo = new UserInfo();
-    userInfo.setUsername("user1");
-
-    listUsersInfo.add(userInfo);
-
-    return listUsersInfo;
-  }
-
-  private List<Team> getAvailableTeams() {
-
-    Team team1 = new Team();
-    team1.setTeamname("Team1");
-
-    List<Team> teamList = new ArrayList<>();
-    teamList.add(team1);
-
-    return teamList;
-  }
-
-  private List<Team> getAvailableTeamsSU() {
-
-    Team team1 = new Team();
-    team1.setTeamname("Team1");
-
-    Team team2 = new Team();
-    team2.setTeamname("Team2");
-
-    Team team3 = new Team();
-    team3.setTeamname("Team3");
-
-    List<Team> teamList = new ArrayList<>();
-    teamList.add(team1);
-    teamList.add(team2);
-    teamList.add(team3);
-
-    return teamList;
   }
 
   private List<Env> getAllSchemaEnvs() {

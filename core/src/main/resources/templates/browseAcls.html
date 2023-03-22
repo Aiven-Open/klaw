@@ -482,17 +482,17 @@
 									</thead>
 									<tbody>
 									<tr ng-repeat="resultB in topicOverview">
-										<td ng-show="resultB.cluster == 'DEV'" align="left" width="25%">
-											<span class="badge badge-success">{{ resultB.cluster}}</span>
+										<td ng-show="resultB.envName == 'DEV'" align="left" width="25%">
+											<span class="badge badge-success">{{ resultB.envName}}</span>
 										</td>
-										<td ng-show="resultB.cluster == 'TST'" align="left" width="25%">
-											<span class="badge badge-warning">{{ resultB.cluster}}</span>
+										<td ng-show="resultB.envName == 'TST'" align="left" width="25%">
+											<span class="badge badge-warning">{{ resultB.envName}}</span>
 										</td>
-										<td ng-show="resultB.cluster == 'PRD'" align="left" width="25%">
-											<span class="badge badge-danger">{{ resultB.cluster}}</span>
+										<td ng-show="resultB.envName == 'PRD'" align="left" width="25%">
+											<span class="badge badge-danger">{{ resultB.envName}}</span>
 										</td>
-										<td ng-show="resultB.cluster != 'DEV' && resultB.cluster != 'TST' && resultB.cluster != 'PRD'" align="left" width="25%">
-											<span class="badge badge-primary">{{ resultB.cluster}}</span>
+										<td ng-show="resultB.envName != 'DEV' && resultB.envName != 'TST' && resultB.envName != 'PRD'" align="left" width="25%">
+											<span class="badge badge-primary">{{ resultB.envName}}</span>
 										</td>
 
 										<td align="left" width="25%">
@@ -504,7 +504,7 @@
 										<td width="5%"></td>
 										<td align="right" width="10%">
 											<div class="p-2" style="width:5%">
-												<a href="requestTopics?topicname={{topicSelectedParam}}&env={{resultB.clusterId}}&requestType=edit">
+												<a href="requestTopics?topicname={{topicSelectedParam}}&env={{resultB.envId}}&requestType=edit">
 													<button ng-show="resultB.showEditTopic == true"
 															type="button" class="btn btn-sm btn-outline-secondary btn-circle"><i class="fas fa-edit"></i>
 													</button>
@@ -514,7 +514,7 @@
 										<td align="right" width="10%" style="padding-right:5%">
 											<div class="p-2" style="width:5%">
 												<button ng-show="resultB.showDeleteTopic == true"
-														ng-click="onDeleteTopic(resultB.clusterId, resultB.topicDeletable)" type="button" class="btn btn-sm btn-outline-danger btn-circle"><i class="fas fa-times"></i>
+														ng-click="onDeleteTopic(resultB.envId, resultB.topicDeletable)" type="button" class="btn btn-sm btn-outline-danger btn-circle"><i class="fas fa-times"></i>
 												</button>
 											</div>
 										</td>

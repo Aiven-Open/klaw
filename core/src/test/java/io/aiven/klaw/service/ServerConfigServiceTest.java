@@ -111,9 +111,6 @@ public class ServerConfigServiceTest {
             "TST",
             "UAT");
     prop =
-        addSchemaRegInformation(
-            prop, Arrays.asList("DEV_SCH", "TST_SCH", "UAT_SCH"), "DEV_SCH", "TST_SCH", "UAT_SCH");
-    prop =
         addKafkaConnInformation(
             prop,
             Arrays.asList("DEV_CONN", "TST_CONN", "UAT_CONN"),
@@ -143,12 +140,6 @@ public class ServerConfigServiceTest {
         .isEqualTo("2");
     assertThat(tenantConfig.getTenantModel().getOrderOfTopicPromotionEnvsList().get(2))
         .isEqualTo("3");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(0))
-        .isEqualTo("7");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(1))
-        .isEqualTo("8");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(2))
-        .isEqualTo("9");
   }
 
   @Test
@@ -191,42 +182,6 @@ public class ServerConfigServiceTest {
 
   @Test
   @Order(5)
-  public void givenValidTenantModelSchemaOnly_returnSuccess()
-      throws KlawException, JsonProcessingException {
-    stubValidateTests();
-    // Create Test Object
-    KwTenantConfigModel prop =
-        addSchemaRegInformation(
-            new KwTenantConfigModel(),
-            Arrays.asList("DEV_SCH", "TST_SCH", "UAT_SCH"),
-            "DEV_SCH",
-            "TST_SCH",
-            "UAT_SCH");
-    prop.setTenantName("default");
-    TenantConfig config = new TenantConfig();
-    config.setTenantModel(prop);
-    KwPropertiesModel request =
-        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
-    // Execute
-    ApiResponse response = serverConfigService.updateKwCustomProperty(request);
-
-    // verify
-    assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
-    verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
-    KwProperties property = propertyCaptor.getValue();
-    assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
-    TenantConfig tenantConfig = mapper.readValue(property.getKwValue(), TenantConfig.class);
-
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(0))
-        .isEqualTo("7");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(1))
-        .isEqualTo("8");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(2))
-        .isEqualTo("9");
-  }
-
-  @Test
-  @Order(6)
   public void givenKafkaTopicThatDoesNotExist_returnFailure()
       throws KlawException, JsonProcessingException {
     stubValidateTests();
@@ -239,9 +194,6 @@ public class ServerConfigServiceTest {
             "DEV",
             "TST",
             "UAT");
-    prop =
-        addSchemaRegInformation(
-            prop, Arrays.asList("DEV_SCH", "TST_SCH", "UAT_SCH"), "DEV_SCH", "TST_SCH", "UAT_SCH");
     prop =
         addKafkaConnInformation(
             prop,
@@ -264,7 +216,7 @@ public class ServerConfigServiceTest {
   }
 
   @Test
-  @Order(7)
+  @Order(6)
   public void givenSchemaThatDoesNotExist_returnFailure()
       throws KlawException, JsonProcessingException {
     stubValidateTests();
@@ -277,9 +229,7 @@ public class ServerConfigServiceTest {
             "DEV",
             "TST",
             "UAT");
-    prop =
-        addSchemaRegInformation(
-            prop, Arrays.asList("DEV_SCH", "TST_SCH", "UAT_SCH"), "DEV_SCH", "TST_SCH", "UAT_SCH");
+
     prop =
         addKafkaConnInformation(
             prop,
@@ -303,7 +253,7 @@ public class ServerConfigServiceTest {
   }
 
   @Test
-  @Order(8)
+  @Order(7)
   public void givenInvalidJson_returnFailure() throws KlawException {
     stubValidateTests();
     KwPropertiesModel request = createKwPropertiesModel(KLAW_TENANT_CONFIG, "{}");
@@ -317,7 +267,7 @@ public class ServerConfigServiceTest {
   }
 
   @Test
-  @Order(9)
+  @Order(8)
   public void givenValidTenantModelKafkaConnectOnly_returnSuccess()
       throws KlawException, JsonProcessingException {
     stubValidateTests();
@@ -344,79 +294,7 @@ public class ServerConfigServiceTest {
   }
 
   @Test
-  @Order(10)
-  public void givenValidTenantModelSchemaOnlyMaintainOrder_returnSuccess()
-      throws KlawException, JsonProcessingException {
-    stubValidateTests();
-    // Create Test Object
-    KwTenantConfigModel prop =
-        addSchemaRegInformation(
-            new KwTenantConfigModel(),
-            Arrays.asList("DEV_SCH", "TST_SCH", "UAT_SCH"),
-            "UAT_SCH",
-            "DEV_SCH",
-            "TST_SCH");
-    prop.setTenantName("default");
-    TenantConfig config = new TenantConfig();
-    config.setTenantModel(prop);
-    KwPropertiesModel request =
-        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
-    // Execute
-    ApiResponse response = serverConfigService.updateKwCustomProperty(request);
-
-    // verify
-    assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
-    verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
-    KwProperties property = propertyCaptor.getValue();
-    assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
-    TenantConfig tenantConfig = mapper.readValue(property.getKwValue(), TenantConfig.class);
-
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(0))
-        .isEqualTo("9");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(1))
-        .isEqualTo("7");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(2))
-        .isEqualTo("8");
-  }
-
-  @Test
-  @Order(11)
-  public void givenValidTenantModelSchemaOnlyMaintainOrderT2_returnSuccess()
-      throws KlawException, JsonProcessingException {
-    stubValidateTests();
-    // Create Test Object
-    KwTenantConfigModel prop =
-        addSchemaRegInformation(
-            new KwTenantConfigModel(),
-            Arrays.asList("DEV_SCH", "TST_SCH", "UAT_SCH"),
-            "TST_SCH",
-            "UAT_SCH",
-            "DEV_SCH");
-    prop.setTenantName("default");
-    TenantConfig config = new TenantConfig();
-    config.setTenantModel(prop);
-    KwPropertiesModel request =
-        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
-    // Execute
-    ApiResponse response = serverConfigService.updateKwCustomProperty(request);
-
-    // verify
-    assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
-    verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
-    KwProperties property = propertyCaptor.getValue();
-    assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
-    TenantConfig tenantConfig = mapper.readValue(property.getKwValue(), TenantConfig.class);
-
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(2))
-        .isEqualTo("7");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(0))
-        .isEqualTo("8");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(1))
-        .isEqualTo("9");
-  }
-
-  @Test
-  @Order(12)
+  @Order(9)
   public void givenRequestForConfig_returnCorrectConfig()
       throws KlawException, JsonProcessingException {
     stubValidateTests();
@@ -437,12 +315,6 @@ public class ServerConfigServiceTest {
         .isEqualTo("UAT");
     assertThat(tenantConfig.getTenantModel().getOrderOfTopicPromotionEnvsList().get(2))
         .isEqualTo("TST");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(0))
-        .isEqualTo("DEV_SCH");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(1))
-        .isEqualTo("TST_SCH");
-    assertThat(tenantConfig.getTenantModel().getOrderOfSchemaPromotionEnvsList().get(2))
-        .isEqualTo("UAT_SCH");
 
     assertThat(tenantConfig.getTenantModel().getOrderOfConnectorsPromotionEnvsList().get(0))
         .isEqualTo("UAT_CONN");
@@ -454,14 +326,12 @@ public class ServerConfigServiceTest {
     // ensure all parts are correctly being formatted back from the codes.
     assertThat(tenantConfig.getTenantModel().getRequestConnectorsEnvironmentsList().get(0))
         .isEqualTo("TST_CONN");
-    assertThat(tenantConfig.getTenantModel().getRequestSchemaEnvironmentsList().get(0))
-        .isEqualTo("DEV_SCH");
     assertThat(tenantConfig.getTenantModel().getRequestTopicsEnvironmentsList().get(0))
         .isEqualTo("DEV");
   }
 
   @Test
-  @Order(13)
+  @Order(10)
   public void givenRequestForConfigWithNoneSet_returnCorrectConfig()
       throws KlawException, JsonProcessingException {
     stubValidateTests();
@@ -492,7 +362,6 @@ public class ServerConfigServiceTest {
     KwTenantConfigModel prop =
         addKafkaTopicInformation(
             new KwTenantConfigModel(), "1", Arrays.asList("1", "2", "3"), "1", "3", "2");
-    prop = addSchemaRegInformation(prop, Arrays.asList("7", "8", "9"), "7", "8", "9");
     prop = addKafkaConnInformation(prop, Arrays.asList("5", "6", "4"), "6", "5", "4");
 
     prop.setTenantName("default");
@@ -573,13 +442,6 @@ public class ServerConfigServiceTest {
     tenantModel.setBaseSyncEnvironment(baseSync);
     tenantModel.setOrderOfTopicPromotionEnvsList(List.of(topicsInOrder));
     tenantModel.setRequestTopicsEnvironmentsList(topics);
-    return tenantModel;
-  }
-
-  private KwTenantConfigModel addSchemaRegInformation(
-      KwTenantConfigModel tenantModel, List<String> schemas, String... schemasInOrder) {
-    tenantModel.setOrderOfSchemaPromotionEnvsList(List.of(schemasInOrder));
-    tenantModel.setRequestSchemaEnvironmentsList(schemas);
     return tenantModel;
   }
 

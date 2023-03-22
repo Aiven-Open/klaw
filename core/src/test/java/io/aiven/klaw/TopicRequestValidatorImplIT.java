@@ -178,7 +178,7 @@ public class TopicRequestValidatorImplIT {
     when(topicControllerService.getTopicFromName(anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
     when(topicControllerService.getSyncCluster(anyInt())).thenReturn("1");
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1,2");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1,2");
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
 
     Set<ConstraintViolation<TopicCreateRequestModel>> violations =

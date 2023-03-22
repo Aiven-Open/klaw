@@ -141,7 +141,7 @@ public class KafkaConnectControllerService {
       log.error("Tenant Configuration not found. " + tenantId, e);
       throw new KlawException(e.getMessage());
     }
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
 
     List<KwKafkaConnector> kafkaConnectorList =
         getConnectorsFromName(connectorRequestModel.getConnectorName(), tenantId);
@@ -307,7 +307,7 @@ public class KafkaConnectControllerService {
     List<Env> listAllEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
     // tenant filtering
 
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
     topicsFromSOT = groupConnectorsByEnv(topicsFromSOT);
 
     List<KwKafkaConnector> topicFilteredList = topicsFromSOT;
@@ -939,7 +939,7 @@ public class KafkaConnectControllerService {
 
     try {
       String requestTopicsEnvs =
-          mailService.getEnvProperty(tenantId, "REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS");
+          commonUtilsService.getEnvProperty(tenantId, "REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS");
       reqTopicsEnvs = requestTopicsEnvs.split(",");
       reqTopicsEnvsList = new ArrayList<>(Arrays.asList(reqTopicsEnvs));
     } catch (Exception e) {
@@ -1102,7 +1102,8 @@ public class KafkaConnectControllerService {
         kafkaConnectors.forEach(topic -> envList.add(topic.getEnvironment()));
 
         // tenant filtering
-        String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
+        String orderOfEnvs =
+            commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
 
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
