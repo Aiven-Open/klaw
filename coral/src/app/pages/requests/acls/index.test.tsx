@@ -1,31 +1,30 @@
-import { getSchemaRequests } from "src/domain/schema-request";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import SchemaRequestsPage from "src/app/pages/requests/schemas/index";
 import { cleanup, screen, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { getEnvironments } from "src/domain/environment";
+import AclRequestsPage from "src/app/pages/requests/acls/index";
+import { getAclRequests } from "src/domain/acl/acl-api";
 
 jest.mock("src/domain/environment/environment-api.ts");
-jest.mock("src/domain/schema-request/schema-request-api.ts");
+jest.mock("src/domain/acl/acl-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getSchemaRegistryEnvironments as jest.MockedFunction<
-    typeof getSchemaRegistryEnvironments
-  >;
-const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
-  typeof getSchemaRequests
+const mockGetEnvironments = getEnvironments as jest.MockedFunction<
+  typeof getEnvironments
+>;
+const mockGetAclRequests = getAclRequests as jest.MockedFunction<
+  typeof getAclRequests
 >;
 
-describe("SchemaRequestPage", () => {
+describe("AclRequestsPage", () => {
   beforeAll(async () => {
-    mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
-    mockGetSchemaRequests.mockResolvedValue({
+    mockGetEnvironments.mockResolvedValue([]);
+    mockGetAclRequests.mockResolvedValue({
       entries: [],
       totalPages: 1,
       currentPage: 1,
     });
 
-    customRender(<SchemaRequestsPage />, {
+    customRender(<AclRequestsPage />, {
       queryClient: true,
       memoryRouter: true,
     });
@@ -50,12 +49,12 @@ describe("SchemaRequestPage", () => {
     });
 
     expect(link).toBeVisible();
-    expect(link).toHaveAttribute("href", "/mySchemaRequests");
+    expect(link).toHaveAttribute("href", "/myAclRequests");
   });
 
-  it("renders the schema request view", () => {
+  it("renders the Acl request view", () => {
     const emptyRequests = screen.getByText(
-      "No Schema request matched your criteria."
+      "No ACL request matched your criteria."
     );
 
     expect(emptyRequests).toBeVisible();

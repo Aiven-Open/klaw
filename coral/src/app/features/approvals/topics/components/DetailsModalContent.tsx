@@ -55,8 +55,7 @@ const DetailsModalContent = ({ topicRequest }: DetailsModalContentProps) => {
   } = topicRequest;
 
   const hasAdvancedConfig =
-    advancedTopicConfigEntries.length > 0 &&
-    advancedTopicConfigEntries !== null &&
+    advancedTopicConfigEntries?.length > 0 &&
     !isEmpty(advancedTopicConfigEntries);
 
   return (

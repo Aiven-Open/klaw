@@ -3949,7 +3949,6 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "ALL",
             "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
           }
         }, {

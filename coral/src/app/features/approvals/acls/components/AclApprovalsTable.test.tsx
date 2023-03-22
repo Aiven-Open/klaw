@@ -83,6 +83,7 @@ describe("AclApprovalsTable", () => {
         activePage={1}
         totalPages={10}
         isBeingApproved={jest.fn()}
+        isBeingDeclined={jest.fn()}
         onApprove={jest.fn()}
         onDecline={jest.fn()}
         onDetails={jest.fn()}
@@ -223,7 +224,7 @@ describe("AclApprovalsTable", () => {
         }
       )
     );
-    expect(onDetails).toHaveBeenNthCalledWith(1, String(aclRequests[0].req_no));
+    expect(onDetails).toHaveBeenNthCalledWith(1, aclRequests[0].req_no);
   });
 
   it("has column for action to approve request", async () => {
@@ -237,7 +238,7 @@ describe("AclApprovalsTable", () => {
         }
       )
     );
-    expect(onApprove).toHaveBeenNthCalledWith(1, String(aclRequests[0].req_no));
+    expect(onApprove).toHaveBeenNthCalledWith(1, aclRequests[0].req_no);
   });
 
   it("has column for action to decline request", async () => {
@@ -251,7 +252,7 @@ describe("AclApprovalsTable", () => {
         }
       )
     );
-    expect(onDecline).toHaveBeenNthCalledWith(1, String(aclRequests[0].req_no));
+    expect(onDecline).toHaveBeenNthCalledWith(1, aclRequests[0].req_no);
   });
 
   it("shows one header row and two data rows", () => {
@@ -285,26 +286,15 @@ describe("AclApprovalsTable", () => {
     ).toHaveLength(1);
   });
 
-  it("render action buttons when status is CREATED", () => {
-    renderFromProps();
-    const createdRow = screen.getAllByRole("row")[1];
-    expect(createdRow).toContainElement(
-      screen.getByRole("button", { name: /Approve/ })
-    );
-    expect(createdRow).toContainElement(
-      screen.getByRole("button", { name: /Decline/ })
-    );
-  });
-
-  it("does not render action buttons when status is not CREATED", () => {
+  it("disables action buttons when status is not CREATED", () => {
     renderFromProps();
     const approvedRow = screen.getAllByRole("row")[2];
-    expect(approvedRow).not.toContainElement(
-      screen.getByRole("button", { name: /Approve/ })
-    );
-    expect(approvedRow).not.toContainElement(
-      screen.getByRole("button", { name: /Decline/ })
-    );
+    expect(
+      within(approvedRow).getByRole("button", { name: /Approve/ })
+    ).toBeDisabled();
+    expect(
+      within(approvedRow).getByRole("button", { name: /Decline/ })
+    ).toBeDisabled();
   });
 
   it("disables approve and decline buttons when actions are disabled", () => {
@@ -325,5 +315,77 @@ describe("AclApprovalsTable", () => {
         }
       )
     ).toBeDisabled();
+  });
+
+  describe("user is unable to approve and decline non pending requests", () => {
+    beforeEach(() => {
+      renderFromProps({ aclRequests });
+    });
+    afterEach(cleanup);
+    it("disables approve action if request is not in created state", async () => {
+      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const rows = within(table).getAllByRole("row");
+      const approvedRequestRow = rows[2];
+      const approve = within(approvedRequestRow).getByRole("button", {
+        name: "Approve acl request for newaudittopic",
+      });
+      expect(approve).toBeDisabled();
+    });
+    it("disables decline action if request is not in created state", async () => {
+      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const rows = within(table).getAllByRole("row");
+      const approvedRequestRow = rows[2];
+      const decline = within(approvedRequestRow).getByRole("button", {
+        name: "Decline acl request for newaudittopic",
+      });
+      expect(decline).toBeDisabled();
+    });
+  });
+
+  describe("user is unable to trigger action if some action is already in progress", () => {
+    const isBeingApproved = jest.fn(() => true);
+    const isBeingDeclined = jest.fn(() => true);
+    beforeEach(() => {
+      renderFromProps({ aclRequests, isBeingApproved, isBeingDeclined });
+    });
+    afterEach(cleanup);
+    it("disables approve action if request is already in progress", async () => {
+      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const rows = within(table).getAllByRole("row");
+      const createdRequestRow = rows[1];
+      const approve = within(createdRequestRow).getByRole("button", {
+        name: "Approve acl request for aivtopic1",
+      });
+      expect(approve).toBeDisabled();
+    });
+    it("disables decline action if request is already in progress", async () => {
+      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const rows = within(table).getAllByRole("row");
+      const createdRequestRow = rows[1];
+      const decline = within(createdRequestRow).getByRole("button", {
+        name: "Decline acl request for aivtopic1",
+      });
+      expect(decline).toBeDisabled();
+    });
+  });
+
+  describe("user is able to view request details", () => {
+    const onDetails = jest.fn();
+    beforeEach(() => {
+      renderFromProps({ aclRequests, onDetails });
+    });
+    afterAll(cleanup);
+    it("triggers details action for the corresponding request when clicked", async () => {
+      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const rows = within(table).getAllByRole("row");
+      const createdRequestRow = rows[1];
+      await userEvent.click(
+        within(createdRequestRow).getByRole("button", {
+          name: "View acl request for aivtopic1",
+        })
+      );
+      expect(onDetails).toHaveBeenCalledTimes(1);
+      expect(onDetails).toHaveBeenCalledWith(1014);
+    });
   });
 });

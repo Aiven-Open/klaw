@@ -59,10 +59,7 @@ function TopicRequest() {
   });
 
   const { mutate, isLoading, isError, error } = useMutation(requestTopic, {
-    onSuccess: () =>
-      window.location.assign(
-        "/myTopicRequests?reqsType=CREATED&topicCreated=true"
-      ),
+    onSuccess: () => navigate("/requests/topics?status=CREATED"),
   });
 
   const onSubmit: SubmitHandler<Schema> = (data) =>

@@ -121,7 +121,7 @@ public class KafkaConnectController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
-      @RequestParam(value = "operationType", defaultValue = "ALL")
+      @RequestParam(value = "operationType", required = false)
           RequestOperationType requestOperationType,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search) {

@@ -2489,6 +2489,8 @@ export type operations = {
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        search?: string;
         isMyRequest?: boolean;
       };
     };
@@ -2725,7 +2727,9 @@ export type operations = {
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         topic?: string;
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         env?: string;
+        search?: string;
         isMyRequest?: boolean;
       };
     };
@@ -3084,6 +3088,9 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+        env?: string;
+        search?: string;
       };
     };
     responses: {
@@ -3445,8 +3452,10 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         topic?: string;
         env?: string;
+        search?: string;
         aclType?: "PRODUCER" | "CONSUMER";
         isMyRequest?: boolean;
       };

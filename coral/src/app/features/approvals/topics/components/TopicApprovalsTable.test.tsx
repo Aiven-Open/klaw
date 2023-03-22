@@ -10,8 +10,6 @@ import {
 } from "src/domain/requests/requests-types";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
-const mockedSetDetailsModal = jest.fn();
-const mockedSetDeclineModal = jest.fn();
 const mockedApproveRequest = jest.fn();
 
 const mockedRequests: TopicRequest[] = [
@@ -94,18 +92,27 @@ describe("TopicApprovalsTable", () => {
     { columnHeader: "", relatedField: null },
   ];
 
-  it("shows a message to user in case there are no requests that match the search criteria", () => {
-    render(
-      <TopicApprovalsTable
-        setDetailsModal={mockedSetDetailsModal}
-        requests={[]}
-        quickActionLoading={false}
-        setDeclineModal={mockedSetDeclineModal}
-        approveRequest={mockedApproveRequest}
-      />
-    );
-    screen.getByText("No Topic requests");
-    screen.getByText("No Topic request matched your criteria.");
+  describe("empty state is handled", () => {
+    beforeEach(() => {
+      mockIntersectionObserver();
+    });
+
+    afterEach(cleanup);
+
+    it("shows a message to user in case there are no requests that match the search criteria", () => {
+      render(
+        <TopicApprovalsTable
+          requests={[]}
+          onDetails={jest.fn()}
+          onApprove={mockedApproveRequest}
+          onDecline={jest.fn()}
+          isBeingApproved={jest.fn()}
+          isBeingDeclined={jest.fn()}
+        />
+      );
+      screen.getByText("No Topic requests");
+      screen.getByText("No Topic request matched your criteria.");
+    });
   });
 
   describe("renders all necessary elements", () => {
@@ -113,11 +120,12 @@ describe("TopicApprovalsTable", () => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
-          setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
-          quickActionLoading={false}
-          setDeclineModal={mockedSetDeclineModal}
-          approveRequest={mockedApproveRequest}
+          onDetails={jest.fn()}
+          onApprove={mockedApproveRequest}
+          onDecline={jest.fn()}
+          isBeingApproved={jest.fn()}
+          isBeingDeclined={jest.fn()}
         />
       );
     });
@@ -143,7 +151,7 @@ describe("TopicApprovalsTable", () => {
       expect(row).toHaveLength(mockedRequests.length + 1);
     });
 
-    it("shows a Show details button for every row", () => {
+    it("shows an detail button for every row", () => {
       const table = screen.getByRole("table", { name: "Topic requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /View topic request for /,
@@ -152,28 +160,22 @@ describe("TopicApprovalsTable", () => {
       expect(buttons).toHaveLength(mockedRequests.length);
     });
 
-    it("shows an approve button for every row with status CREATED", () => {
+    it("shows an approve button for every row", () => {
       const table = screen.getByRole("table", { name: "Topic requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /Approve topic request for /,
       });
-      const createdRequests = mockedRequests.filter(
-        ({ requestStatus }) => requestStatus === "CREATED"
-      );
 
-      expect(buttons).toHaveLength(createdRequests.length);
+      expect(buttons).toHaveLength(mockedRequests.length);
     });
 
-    it("shows an decline button for every row with status CREATED", () => {
+    it("shows an decline button for every row", () => {
       const table = screen.getByRole("table", { name: "Topic requests" });
       const buttons = within(table).getAllByRole("button", {
         name: /Decline topic request for /,
       });
-      const createdRequests = mockedRequests.filter(
-        ({ requestStatus }) => requestStatus === "CREATED"
-      );
 
-      expect(buttons).toHaveLength(createdRequests.length);
+      expect(buttons).toHaveLength(mockedRequests.length);
     });
   });
 
@@ -182,11 +184,12 @@ describe("TopicApprovalsTable", () => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
-          setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
-          quickActionLoading={false}
-          setDeclineModal={mockedSetDeclineModal}
-          approveRequest={mockedApproveRequest}
+          onDetails={jest.fn()}
+          onApprove={mockedApproveRequest}
+          onDecline={jest.fn()}
+          isBeingApproved={jest.fn()}
+          isBeingDeclined={jest.fn()}
         />
       );
     });
@@ -256,41 +259,16 @@ describe("TopicApprovalsTable", () => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
-          setDetailsModal={mockedSetDetailsModal}
           requests={mockedRequests}
-          quickActionLoading={false}
-          setDeclineModal={mockedSetDeclineModal}
-          approveRequest={mockedApproveRequest}
+          onDetails={jest.fn()}
+          onApprove={mockedApproveRequest}
+          onDecline={jest.fn()}
+          isBeingApproved={jest.fn()}
+          isBeingDeclined={jest.fn()}
         />
       );
     });
     afterAll(cleanup);
-
-    it("shows a Modal when clicking Show details", async () => {
-      const showDetails = screen.getByRole("button", {
-        name: "View topic request for test-topic-1",
-      });
-
-      await userEvent.click(showDetails);
-
-      expect(mockedSetDetailsModal).toHaveBeenCalledWith({
-        isOpen: true,
-        topicId: 1000,
-      });
-    });
-
-    it("shows a Modal when clicking Decline button", async () => {
-      const showDetails = screen.getByRole("button", {
-        name: "Decline topic request for test-topic-1",
-      });
-
-      await userEvent.click(showDetails);
-
-      expect(mockedSetDeclineModal).toHaveBeenCalledWith({
-        isOpen: true,
-        topicId: 1000,
-      });
-    });
 
     it("approves request when clicking Approve button", async () => {
       const showDetails = screen.getByRole("button", {
@@ -299,10 +277,7 @@ describe("TopicApprovalsTable", () => {
 
       await userEvent.click(showDetails);
 
-      expect(mockedApproveRequest).toHaveBeenCalledWith({
-        requestEntityType: "TOPIC",
-        reqIds: ["1000"],
-      });
+      expect(mockedApproveRequest).toHaveBeenCalledWith(1000);
     });
   });
 
@@ -316,18 +291,20 @@ describe("TopicApprovalsTable", () => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
-          setDetailsModal={mockedSetDetailsModal}
           requests={requestsWithStatusCreated}
-          quickActionLoading={true}
-          setDeclineModal={mockedSetDeclineModal}
-          approveRequest={mockedApproveRequest}
+          actionsDisabled
+          onDetails={jest.fn()}
+          onApprove={mockedApproveRequest}
+          onDecline={jest.fn()}
+          isBeingApproved={jest.fn()}
+          isBeingDeclined={jest.fn()}
         />
       );
     });
     afterAll(cleanup);
 
     requestsWithStatusCreated.forEach((request) => {
-      it(`disables button to approve schema request for topic name ${request.topicname}`, () => {
+      it(`disables button to approve topic request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Topic requests" });
         const button = within(table).getByRole("button", {
           name: `Approve topic request for ${request.topicname}`,
@@ -336,7 +313,7 @@ describe("TopicApprovalsTable", () => {
         expect(button).toBeDisabled();
       });
 
-      it(`disables  button to decline schema request for topic name ${request.topicname}`, () => {
+      it(`disables  button to decline topic request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Topic requests" });
         const button = within(table).getByRole("button", {
           name: `Decline topic request for ${request.topicname}`,
@@ -345,7 +322,7 @@ describe("TopicApprovalsTable", () => {
         expect(button).toBeDisabled();
       });
 
-      it(`does not disables details for schema request for topic name ${request.topicname}`, () => {
+      it(`does not disables details for topic request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", { name: "Topic requests" });
         const detailsButton = within(table).getByRole("button", {
           name: `View topic request for ${request.topicname}`,
@@ -353,6 +330,105 @@ describe("TopicApprovalsTable", () => {
 
         expect(detailsButton).toBeEnabled();
       });
+    });
+  });
+
+  describe("user is unable to approve and decline non pending requests", () => {
+    beforeEach(() => {
+      render(
+        <TopicApprovalsTable
+          requests={mockedRequests}
+          onDetails={jest.fn()}
+          onApprove={jest.fn()}
+          onDecline={jest.fn()}
+          isBeingApproved={jest.fn()}
+          isBeingDeclined={jest.fn()}
+        />
+      );
+    });
+    afterEach(cleanup);
+    it("disables approve action if request is not in created state", async () => {
+      const table = screen.getByRole("table", { name: "Topic requests" });
+      const rows = within(table).getAllByRole("row");
+      const approvedRequestRow = rows[2];
+      const approve = within(approvedRequestRow).getByRole("button", {
+        name: "Approve topic request for test-topic-2",
+      });
+      expect(approve).toBeDisabled();
+    });
+    it("disables decline action if request is not in created state", async () => {
+      const table = screen.getByRole("table", { name: "Topic requests" });
+      const rows = within(table).getAllByRole("row");
+      const approvedRequestRow = rows[2];
+      const decline = within(approvedRequestRow).getByRole("button", {
+        name: "Decline topic request for test-topic-2",
+      });
+      expect(decline).toBeDisabled();
+    });
+  });
+
+  describe("user is unable to trigger action if some action is already in progress", () => {
+    const isBeingApproved = jest.fn(() => true);
+    const isBeingDeclined = jest.fn(() => true);
+    beforeEach(() => {
+      render(
+        <TopicApprovalsTable
+          requests={mockedRequests}
+          onDetails={jest.fn()}
+          onApprove={jest.fn()}
+          onDecline={jest.fn()}
+          isBeingApproved={isBeingApproved}
+          isBeingDeclined={isBeingDeclined}
+        />
+      );
+    });
+    afterEach(cleanup);
+    it("disables approve action if request is already in progress", async () => {
+      const table = screen.getByRole("table", { name: "Topic requests" });
+      const rows = within(table).getAllByRole("row");
+      const createdRequestRow = rows[1];
+      const approve = within(createdRequestRow).getByRole("button", {
+        name: "Approve topic request for test-topic-1",
+      });
+      expect(approve).toBeDisabled();
+    });
+    it("disables decline action if request is already in progress", async () => {
+      const table = screen.getByRole("table", { name: "Topic requests" });
+      const rows = within(table).getAllByRole("row");
+      const createdRequestRow = rows[1];
+      const decline = within(createdRequestRow).getByRole("button", {
+        name: "Decline topic request for test-topic-1",
+      });
+      expect(decline).toBeDisabled();
+    });
+  });
+
+  describe("user is able to view request details", () => {
+    const onDetails = jest.fn();
+    beforeEach(() => {
+      render(
+        <TopicApprovalsTable
+          requests={mockedRequests}
+          onDetails={onDetails}
+          onApprove={jest.fn()}
+          onDecline={jest.fn()}
+          isBeingApproved={jest.fn()}
+          isBeingDeclined={jest.fn()}
+        />
+      );
+    });
+    afterAll(cleanup);
+    it("triggers details action for the corresponding request when clicked", async () => {
+      const table = screen.getByRole("table", { name: "Topic requests" });
+      const rows = within(table).getAllByRole("row");
+      const createdRequestRow = rows[1];
+      await userEvent.click(
+        within(createdRequestRow).getByRole("button", {
+          name: "View topic request for test-topic-1",
+        })
+      );
+      expect(onDetails).toHaveBeenCalledTimes(1);
+      expect(onDetails).toHaveBeenCalledWith(1000);
     });
   });
 });
