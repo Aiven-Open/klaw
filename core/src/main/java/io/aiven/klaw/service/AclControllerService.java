@@ -195,8 +195,10 @@ public class AclControllerService {
       String pageNo,
       String currentPage,
       String requestStatus,
+      RequestOperationType requestOperationType,
       String topic,
       String env,
+      String search,
       AclType aclType,
       boolean isMyRequest) {
 
@@ -205,7 +207,18 @@ public class AclControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     List<AclRequests> aclReqs =
         dbHandle.getAllAclRequests(
-            false, userName, "", requestStatus, false, topic, env, aclType, isMyRequest, tenantId);
+            false,
+            userName,
+            "",
+            requestStatus,
+            false,
+            requestOperationType,
+            topic,
+            env,
+            search,
+            aclType,
+            isMyRequest,
+            tenantId);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);

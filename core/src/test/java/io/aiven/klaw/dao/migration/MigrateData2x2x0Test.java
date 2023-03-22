@@ -63,7 +63,7 @@ class MigrateData2x2x0Test {
     // No other calls made
     verify(selectDataJdbc, times(0)).selectAllTeams(anyInt());
     verify(selectDataJdbc, times(0))
-        .getFilteredTopicRequests(
+        .selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -72,10 +72,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false));
     verify(selectDataJdbc, times(0))
-        .getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null));
+        .selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null));
     assertThat(success).isTrue();
   }
 
@@ -84,7 +92,7 @@ class MigrateData2x2x0Test {
     // Setup
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
-    when(selectDataJdbc.getFilteredTopicRequests(
+    when(selectDataJdbc.selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -93,10 +101,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false)))
         .thenReturn(getListOfTopicRequests(0, 0, "0"));
-    when(selectDataJdbc.getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null)))
+    when(selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null)))
         .thenReturn(getListOfConnectorRequests(0, 0, "0"));
 
     // Execute
@@ -105,7 +121,7 @@ class MigrateData2x2x0Test {
     // Verify
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(1))
-        .getFilteredTopicRequests(
+        .selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -114,10 +130,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false));
     verify(selectDataJdbc, times(1))
-        .getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null));
+        .selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     verify(updateDataJdbc, times(0)).updateConnectorRequest(any());
@@ -129,7 +153,7 @@ class MigrateData2x2x0Test {
     // Setup
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
-    when(selectDataJdbc.getFilteredTopicRequests(
+    when(selectDataJdbc.selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -138,10 +162,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false)))
         .thenReturn(getListOfTopicRequests(8, 0, "0"));
-    when(selectDataJdbc.getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null)))
+    when(selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null)))
         .thenReturn(getListOfConnectorRequests(8, 0, "0"));
 
     // Execute
@@ -150,7 +182,7 @@ class MigrateData2x2x0Test {
     // Verify
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(1))
-        .getFilteredTopicRequests(
+        .selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -159,10 +191,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false));
     verify(selectDataJdbc, times(1))
-        .getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null));
+        .selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     verify(updateDataJdbc, times(0)).updateConnectorRequest(any());
@@ -174,7 +214,7 @@ class MigrateData2x2x0Test {
     // Setup
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
-    when(selectDataJdbc.getFilteredTopicRequests(
+    when(selectDataJdbc.selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -183,10 +223,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false)))
         .thenReturn(getListOfTopicRequests(8, 0, "0"));
-    when(selectDataJdbc.getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null)))
+    when(selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null)))
         .thenReturn(getListOfConnectorRequests(8, 1, "1"));
 
     // Execute
@@ -195,7 +243,7 @@ class MigrateData2x2x0Test {
     // Verify
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(1))
-        .getFilteredTopicRequests(
+        .selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -204,10 +252,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false));
     verify(selectDataJdbc, times(1))
-        .getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null));
+        .selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     // One Claim requests ensure it is saved back.
@@ -221,7 +277,7 @@ class MigrateData2x2x0Test {
     // Setup
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
-    when(selectDataJdbc.getFilteredTopicRequests(
+    when(selectDataJdbc.selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -230,10 +286,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false)))
         .thenReturn(getListOfTopicRequests(8, 0, "0"));
-    when(selectDataJdbc.getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null)))
+    when(selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null)))
         .thenReturn(getListOfConnectorRequests(8, 1, "A description"));
 
     // Execute
@@ -242,7 +306,7 @@ class MigrateData2x2x0Test {
     // Verify
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(1))
-        .getFilteredTopicRequests(
+        .selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -251,10 +315,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false));
     verify(selectDataJdbc, times(1))
-        .getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null));
+        .selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     // One Claim requests but description is text not number so it wont update.
@@ -267,7 +339,7 @@ class MigrateData2x2x0Test {
     // Setup
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
-    when(selectDataJdbc.getFilteredTopicRequests(
+    when(selectDataJdbc.selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -276,10 +348,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false)))
         .thenReturn(setTopicApprovingTeamId(getListOfTopicRequests(33, 3, "2")));
-    when(selectDataJdbc.getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null)))
+    when(selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null)))
         .thenReturn(setConnectorApprovingTeamId(getListOfConnectorRequests(18, 8, "1")));
 
     // Execute
@@ -288,7 +368,7 @@ class MigrateData2x2x0Test {
     // Verify
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(1))
-        .getFilteredTopicRequests(
+        .selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -297,10 +377,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false));
     verify(selectDataJdbc, times(1))
-        .getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null));
+        .selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     // One Claim requests but description is text not number so it wont update.
@@ -314,7 +402,7 @@ class MigrateData2x2x0Test {
     // Setup
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
-    when(selectDataJdbc.getFilteredTopicRequests(
+    when(selectDataJdbc.selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -323,10 +411,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false)))
         .thenReturn(getListOfTopicRequests(33, 3, "2"));
-    when(selectDataJdbc.getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null)))
+    when(selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null)))
         .thenReturn(getListOfConnectorRequests(18, 8, "1"));
 
     // Execute
@@ -335,7 +431,7 @@ class MigrateData2x2x0Test {
     // Verify
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(1))
-        .getFilteredTopicRequests(
+        .selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -344,10 +440,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false));
     verify(selectDataJdbc, times(1))
-        .getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null));
+        .selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(3)).updateTopicRequest(any());
     // One Claim requests but description is text not number so it wont update.
@@ -361,7 +465,7 @@ class MigrateData2x2x0Test {
     // Setup
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(3));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
-    when(selectDataJdbc.getFilteredTopicRequests(
+    when(selectDataJdbc.selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -370,12 +474,20 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false)))
         .thenReturn(getListOfTopicRequests(33, 3, "2"))
         .thenReturn(setTopicApprovingTeamId(getListOfTopicRequests(33, 30, "2")))
         .thenReturn(getListOfTopicRequests(13, 8, "2"));
-    when(selectDataJdbc.getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null)))
+    when(selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null)))
         .thenReturn(getListOfConnectorRequests(18, 8, "1"))
         .thenReturn(setConnectorApprovingTeamId(getListOfConnectorRequests(18, 8, "1")))
         .thenReturn(getListOfConnectorRequests(43, 13, "2"));
@@ -386,7 +498,7 @@ class MigrateData2x2x0Test {
     // Verify
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(3))
-        .getFilteredTopicRequests(
+        .selectFilteredTopicRequests(
             anyBoolean(),
             eq("superadmin"),
             eq(null),
@@ -395,10 +507,18 @@ class MigrateData2x2x0Test {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             eq(false));
     verify(selectDataJdbc, times(3))
-        .getFilteredKafkaConnectorRequests(
-            anyBoolean(), eq("superadmin"), eq(null), eq(true), anyInt(), eq(null), eq(null));
+        .selectFilteredKafkaConnectorRequests(
+            anyBoolean(),
+            eq("superadmin"),
+            eq(null),
+            eq(null),
+            eq(true),
+            anyInt(),
+            eq(null),
+            eq(null));
 
     // Topic Requests & Connector Requests have a mix of allready updated and non updated claims.
     // So we expect 11 topic reqs and 21 connector requests

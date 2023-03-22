@@ -306,14 +306,26 @@ public class TopicControllerService {
   }
 
   public List<TopicRequestsResponseModel> getTopicRequests(
-      String pageNo, String currentPage, String requestsType, String env, boolean isMyRequest) {
+      String pageNo,
+      String currentPage,
+      RequestOperationType requestOperationType,
+      String requestsType,
+      String env,
+      String wildcardSearch,
+      boolean isMyRequest) {
     log.debug("getTopicRequests page {} requestsType {}", pageNo, requestsType);
     String userName = getUserName();
     List<TopicRequest> topicReqs =
         manageDatabase
             .getHandleDbRequests()
             .getAllTopicRequests(
-                userName, requestsType, env, isMyRequest, commonUtilsService.getTenantId(userName));
+                userName,
+                requestsType,
+                requestOperationType,
+                env,
+                wildcardSearch,
+                isMyRequest,
+                commonUtilsService.getTenantId(userName));
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);

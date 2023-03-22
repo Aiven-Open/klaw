@@ -409,13 +409,13 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAllTopicRequests(
-            anyString(), anyString(), eq(null), eq(false), anyInt()))
+            anyString(), anyString(), eq(null), eq(null), eq(null), eq(false), anyInt()))
         .thenReturn(getListTopicRequests());
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
     List<TopicRequestsResponseModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", "all", null, false);
+        topicControllerService.getTopicRequests("1", "", null, "all", null, null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -429,7 +429,7 @@ public class TopicControllerServiceTest {
     List<TopicRequest> topicRequests = getListTopicRequests();
     topicRequests.get(0).setRequestOperationType(RequestOperationType.CLAIM.value);
     when(handleDbRequests.getAllTopicRequests(
-            anyString(), anyString(), eq(null), eq(false), anyInt()))
+            anyString(), anyString(), eq(null), eq(null), eq(null), eq(false), anyInt()))
         .thenReturn(topicRequests);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
@@ -437,7 +437,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", "all", null, false);
+        topicControllerService.getTopicRequests("1", "", null, "all", null, null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -451,7 +451,7 @@ public class TopicControllerServiceTest {
     List<TopicRequest> topicRequests = getListTopicRequests();
     topicRequests.get(0).setRequestOperationType(RequestOperationType.CLAIM.value);
     when(handleDbRequests.getAllTopicRequests(
-            anyString(), anyString(), eq(null), eq(false), anyInt()))
+            anyString(), anyString(), eq(null), eq(null), eq(null), eq(false), anyInt()))
         .thenReturn(topicRequests);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
@@ -459,7 +459,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", "created", null, false);
+        topicControllerService.getTopicRequests("1", "", null, "created", null, null, false);
     assertThat(listTopicRqs).hasSize(2);
   }
 

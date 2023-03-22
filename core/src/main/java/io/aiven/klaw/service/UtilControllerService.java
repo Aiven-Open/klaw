@@ -123,7 +123,8 @@ public class UtilControllerService {
       roleToSet = "requestor_subscriptions";
     }
     List<SchemaRequest> allSchemaReqs =
-        reqsHandle.getAllSchemaRequests(true, requestor, tenantId, null, null, null, null, false);
+        reqsHandle.getAllSchemaRequests(
+            true, requestor, tenantId, null, null, null, null, null, false);
 
     List<AclRequests> allAclReqs;
     List<TopicRequest> allTopicReqs;
@@ -138,6 +139,8 @@ public class UtilControllerService {
               roleToSet,
               RequestStatus.CREATED.value,
               false,
+              null,
+              null,
               null,
               null,
               null,
@@ -157,6 +160,8 @@ public class UtilControllerService {
               roleToSet,
               RequestStatus.CREATED.value,
               true,
+              null,
+              null,
               null,
               null,
               null,

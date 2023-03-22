@@ -51,8 +51,8 @@ public class MigrateData2x2x0 {
   private void migrateConnectors(List<Integer> teams, Integer tenantId) {
     int numberOfRequests = 0, numberOfRequestsUpdated = 0;
     List<KafkaConnectorRequest> kcRequests =
-        selectDataJdbc.getFilteredKafkaConnectorRequests(
-            false, "superadmin", null, true, Integer.valueOf(tenantId), null, null);
+        selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            false, "superadmin", null, null, true, Integer.valueOf(tenantId), null, null);
 
     kcRequests =
         kcRequests.stream()
@@ -84,8 +84,17 @@ public class MigrateData2x2x0 {
   private void migrateTopics(List<Integer> teams, Integer tenantId) {
     int numberOfRequests = 0, numberOfRequestsUpdated = 0;
     List<TopicRequest> topicRequests =
-        selectDataJdbc.getFilteredTopicRequests(
-            false, "superadmin", null, true, Integer.valueOf(tenantId), null, null, null, false);
+        selectDataJdbc.selectFilteredTopicRequests(
+            false,
+            "superadmin",
+            null,
+            true,
+            Integer.valueOf(tenantId),
+            null,
+            null,
+            null,
+            null,
+            false);
 
     topicRequests =
         topicRequests.stream()

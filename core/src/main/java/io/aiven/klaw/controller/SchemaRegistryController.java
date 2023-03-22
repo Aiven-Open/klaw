@@ -3,6 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaOverview;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
@@ -39,6 +40,11 @@ public class SchemaRegistryController {
    * @param currentPage Which Page are you currently on e.g. 1
    * @param requestStatus What type of requests are you looking for e.g. 'all' 'created' or
    *     'deleted'
+   * @param topic The name of the topic you would like returned @Param operationType The
+   *     RequestOperationType Create/Update/Promote/Claim/Delete
+   * @param env The name of the environment you would like returned e.g. '1'
+   * @param search A wildcard search on the topic name allowing @Param isMyRequest return only
+   *     requests I have made
    * @return A list of filtered Schema Requests for My (Teams) Requests page
    */
   @RequestMapping(
@@ -50,12 +56,23 @@ public class SchemaRegistryController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
       @RequestParam(value = "topic", required = false) String topic,
+      @RequestParam(value = "operationType", required = false)
+          RequestOperationType requestOperationType,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "search", required = false) String search,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
         schemaRegistryControllerService.getSchemaRequests(
-            pageNo, currentPage, requestStatus.value, false, topic, env, null, isMyRequest),
+            pageNo,
+            currentPage,
+            requestStatus.value,
+            requestOperationType,
+            false,
+            topic,
+            env,
+            search,
+            isMyRequest),
         HttpStatus.OK);
   }
 
@@ -82,7 +99,7 @@ public class SchemaRegistryController {
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         schemaRegistryControllerService.getSchemaRequests(
-            pageNo, currentPage, requestStatus.value, true, topic, env, search, false),
+            pageNo, currentPage, requestStatus.value, null, true, topic, env, search, false),
         HttpStatus.OK);
   }
 

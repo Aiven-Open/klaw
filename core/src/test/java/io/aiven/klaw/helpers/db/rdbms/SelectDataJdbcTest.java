@@ -100,8 +100,8 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<AclRequests> aclRequestsActual =
-        selectData.selectAclRequests(
-            false, requestor, "", "all", false, null, null, null, false, 1);
+        selectData.selectFilteredAclRequests(
+            false, requestor, "", "all", null, false, null, null, null, null, false, 1);
     assertThat(aclRequestsActual).isEmpty();
   }
 
@@ -118,7 +118,8 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<SchemaRequest> schemaRequestsActual =
-        selectData.selectFilteredSchemaRequests(false, requestor, 1, null, null, null, null, false);
+        selectData.selectFilteredSchemaRequests(
+            false, requestor, 1, null, null, null, null, null, false);
     verify(schemaRequestRepo, times(1)).findAll(schemaRequestCaptor.capture());
     Example<SchemaRequest> value = schemaRequestCaptor.getValue();
     assertThat(schemaRequestsActual).isEmpty();
@@ -139,7 +140,8 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<SchemaRequest> schemaRequestsActual =
-        selectData.selectFilteredSchemaRequests(false, requestor, 1, null, null, null, null, true);
+        selectData.selectFilteredSchemaRequests(
+            false, requestor, 1, null, null, null, null, null, true);
     verify(schemaRequestRepo, times(1)).findAll(schemaRequestCaptor.capture());
     Example<SchemaRequest> value = schemaRequestCaptor.getValue();
     assertThat(schemaRequestsActual).isEmpty();
@@ -207,8 +209,8 @@ public class SelectDataJdbcTest {
         .thenReturn(java.util.Optional.of(userInfo));
 
     List<TopicRequest> topicRequestsActual =
-        selectData.getFilteredTopicRequests(
-            false, requestor, "created", true, 1, null, null, null, false);
+        selectData.selectFilteredTopicRequests(
+            false, requestor, "created", true, 1, null, null, null, null, false);
 
     assertThat(topicRequestsActual).hasSize(1);
   }
