@@ -610,7 +610,9 @@ describe("SchemaRequest", () => {
   describe("enables user to delete a request", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
+    const originalConsoleError = console.error;
     beforeEach(async () => {
+      console.error = jest.fn();
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -625,6 +627,7 @@ describe("SchemaRequest", () => {
     });
 
     afterEach(() => {
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -648,6 +651,7 @@ describe("SchemaRequest", () => {
       expect(mockDeleteSchemaRequest).toHaveBeenCalledWith({
         reqIds: [testRequest.req_no.toString()],
       });
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user deletes a schema request", async () => {
@@ -679,10 +683,11 @@ describe("SchemaRequest", () => {
         2,
         defaultApiParams
       );
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if deleting request was not successful", async () => {
-      mockDeleteSchemaRequest.mockResolvedValue([{ result: "FAILURE" }]);
+      mockDeleteSchemaRequest.mockRejectedValue({ message: "OH NO" });
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         1,
         defaultApiParams
@@ -710,6 +715,43 @@ describe("SchemaRequest", () => {
 
       const error = screen.getByRole("alert");
       expect(error).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith({ message: "OH NO" });
+    });
+
+    it("informs user about error if deleting request was not successful and error is hidden in success", async () => {
+      mockDeleteSchemaRequest.mockResolvedValue([
+        { result: "FAILURE", message: "OH NO" },
+      ]);
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const deleteButton = screen.getByRole("button", {
+        name: `Delete schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeleteButton = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeleteButton);
+
+      expect(mockDeleteSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetSchemaRequests).not.toHaveBeenCalledTimes(2);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
+
+      const expectedError = new Error("OH NO");
+      expect(console.error).toHaveBeenCalledWith(expectedError);
     });
   });
 });
