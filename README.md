@@ -99,9 +99,12 @@ For the versions available, see the [tags on this repository](https://github.com
 
 - Help Wizard to setup Klaw
 
-- Documentation : https://klaw-project.io/docs
+## Documentation
 
-- Project documentation for contributors: [`./docs`](./docs)
+- User documentation : https://klaw-project.io/docs
+- Technical documentation for contributors:
+  - general documentation: [`./docs`](./docs)
+  - specific documentation for the React app `coral`: [`./coral/docs`](./coral/docs)
 
 ## Install
 
