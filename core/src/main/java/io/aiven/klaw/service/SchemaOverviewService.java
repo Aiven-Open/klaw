@@ -185,15 +185,17 @@ public class SchemaOverviewService extends BaseOverviewService {
         schemaOverview.getSchemaPromotionDetails();
     existingPromoDetails.put(schemaEnv.getName(), promotionDetails);
     // verify if topic exists in target env
-    if (verifyIfTopicExistsInTargetSchemaEnv(kafkaEnvIds, promotionDetails, tenantId)) {
-      schemaOverview.setSchemaPromotionDetails(existingPromoDetails);
-    } else {
-      schemaOverview.setSchemaPromotionDetails(new HashMap<>());
+    if (!verifyIfTopicExistsInTargetSchemaEnv(kafkaEnvIds, promotionDetails, tenantId)) {
+      promotionDetails.put("status", "NO_PROMOTION");
     }
+    schemaOverview.setSchemaPromotionDetails(existingPromoDetails);
   }
 
   private boolean verifyIfTopicExistsInTargetSchemaEnv(
       List<String> kafkaEnvIds, Map<String, String> promotionDetails, int tenantId) {
+    if (!promotionDetails.containsKey("targetEnvId")) {
+      return false;
+    }
     // get kafka env of target schema env
     String kafkaEnvId =
         manageDatabase

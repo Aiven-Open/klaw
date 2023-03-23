@@ -152,6 +152,13 @@ public class SchemaRegistryController {
     return ResponseEntity.ok(schemaRegistryControllerService.promoteSchema(promoteSchemaReq));
   }
 
+  /**
+   * @param topicNameSearch Get schema of this topic
+   * @param schemaVersionSearch Version of the schema if applicable
+   * @param kafkaEnvIds env ids of the topic where it exists
+   * @return SchemaOverview which contains schema and list of versions, compatibility, and promotion
+   *     details
+   */
   @RequestMapping(
       value = "/getSchemaOfTopic",
       method = RequestMethod.GET,

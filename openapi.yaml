@@ -3253,6 +3253,16 @@
             "type" : "string",
             "default" : ""
           }
+        }, {
+          "name" : "kafkaEnvIds",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
         } ],
         "responses" : {
           "200" : {
@@ -5290,7 +5300,7 @@
           "teamname" : {
             "type" : "string"
           },
-          "cluster" : {
+          "envName" : {
             "type" : "string"
           },
           "environmentsList" : {
@@ -5323,11 +5333,11 @@
           "documentation" : {
             "type" : "string"
           },
-          "clusterId" : {
+          "envId" : {
             "type" : "string"
           }
         },
-        "required" : [ "allPageNos", "cluster", "currentPage", "description", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
+        "required" : [ "allPageNos", "currentPage", "description", "envName", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
       },
       "KafkaConnectorModel" : {
         "properties" : {

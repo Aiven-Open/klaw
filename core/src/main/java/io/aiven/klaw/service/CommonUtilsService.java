@@ -2,7 +2,6 @@ package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.UtilMethods;
@@ -517,28 +516,20 @@ public class CommonUtilsService {
     }
   }
 
-  String getSchemaPromotionEnvsFromKafkaEnvs(int tenantId) {
+  protected String getSchemaPromotionEnvsFromKafkaEnvs(int tenantId) {
     String kafkaEnvs = getEnvProperty(tenantId, "ORDER_OF_ENVS");
-    String[] kafkaEnvsList = kafkaEnvs.split(",");
-
-    List<Env> schemaEnvs = new ArrayList<>();
-    if (kafkaEnvsList.length > 0) {
-      for (String kafkaEnv : kafkaEnvsList) {
-        Env kafkaEnvObj = manageDatabase.getHandleDbRequests().selectEnvDetails(kafkaEnv, tenantId);
-        EnvTag associatedSchemaEnv = kafkaEnvObj.getAssociatedEnv();
-        if (associatedSchemaEnv != null) {
-          Env schemaEnv =
-              manageDatabase
-                  .getHandleDbRequests()
-                  .selectEnvDetails(associatedSchemaEnv.getId(), tenantId);
-          schemaEnvs.add(schemaEnv);
-        }
-      }
-    }
+    String[] kafkaEnvIdsList = kafkaEnvs.split(",");
     StringBuilder orderOfSchemaEnvs = new StringBuilder();
 
-    for (Env schemaEnv : schemaEnvs) {
-      orderOfSchemaEnvs.append(schemaEnv.getId()).append(",");
+    List<Env> kafkaEnvsList = manageDatabase.getKafkaEnvList(tenantId);
+
+    if (kafkaEnvIdsList.length > 0) {
+      for (String kafkaEnvId : kafkaEnvIdsList) {
+        kafkaEnvsList.stream()
+            .filter(env -> env.getId().equals(kafkaEnvId))
+            .findFirst()
+            .ifPresent(env -> orderOfSchemaEnvs.append(env.getAssociatedEnv().getId()).append(","));
+      }
     }
 
     return orderOfSchemaEnvs.toString();
