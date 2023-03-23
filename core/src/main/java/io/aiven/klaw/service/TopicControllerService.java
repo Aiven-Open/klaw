@@ -1178,7 +1178,7 @@ public class TopicControllerService {
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
         mp.setTopicid(topicSOT.getTopicid());
-        mp.setEnvName(topicSOT.getEnvironment());
+        mp.setEnvId(topicSOT.getEnvironment());
         mp.setEnvironmentsList(getConvertedEnvs(listAllEnvs, envList));
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));

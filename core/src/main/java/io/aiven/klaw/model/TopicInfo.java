@@ -20,7 +20,7 @@ public class TopicInfo {
 
   @NotNull private String teamname;
 
-  @NotNull private String envName;
+  @NotNull private String envId;
 
   @NotNull private List<String> environmentsList;
 
@@ -38,5 +38,5 @@ public class TopicInfo {
 
   private String documentation;
 
-  private String envId;
+  private String envName;
 }
