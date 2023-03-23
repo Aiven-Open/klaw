@@ -143,7 +143,7 @@ describe("AclRequestsTable", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[3]
-    ).toHaveTextContent("Type");
+    ).toHaveTextContent("Request type");
     expect(within(getNthRow(1)).getAllByRole("cell")[3]).toHaveTextContent(
       "Create"
     );
