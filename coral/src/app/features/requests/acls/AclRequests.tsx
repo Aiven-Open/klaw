@@ -9,6 +9,7 @@ import RequestDetailsModal from "src/app/features/components/RequestDetailsModal
 import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
 import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
+import { OperationTypeFilter } from "src/app/features/components/table-filters/OperationTypeFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { AclRequestsTable } from "src/app/features/requests/acls/components/AclRequestsTable";
@@ -31,6 +32,9 @@ function AclRequests() {
     (searchParams.get("aclType") as AclRequest["aclType"]) ?? "ALL";
   const currentStatus =
     (searchParams.get("status") as AclRequest["requestStatus"]) ?? "ALL";
+  const currentOperationType =
+    (searchParams.get("operationType") as AclRequest["requestOperationType"]) ??
+    "ALL";
   const showOnlyMyRequests =
     searchParams.get("showOnlyMyRequests") === "true" ? true : undefined;
 
@@ -65,6 +69,7 @@ function AclRequests() {
       currentEnvironment,
       currentAclType,
       currentStatus,
+      currentOperationType,
       showOnlyMyRequests,
     ],
     queryFn: () =>
@@ -74,6 +79,7 @@ function AclRequests() {
         env: currentEnvironment,
         aclType: currentAclType,
         requestStatus: currentStatus,
+        operationType: currentOperationType,
         isMyRequest: showOnlyMyRequests,
       }),
     keepPreviousData: true,
@@ -182,8 +188,9 @@ function AclRequests() {
       <TableLayout
         filters={[
           <EnvironmentFilter key="environment" />,
-          <AclTypeFilter key="aclType" />,
           <StatusFilter key="status" defaultStatus="ALL" />,
+          <OperationTypeFilter key="operationType" />,
+          <AclTypeFilter key="aclType" />,
           <TopicFilter key="search" />,
           <MyRequestsFilter key="myRequests" />,
         ]}
