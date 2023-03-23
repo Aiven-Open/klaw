@@ -10,7 +10,10 @@ import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRe
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
 import { SchemaRequestTable } from "src/app/features/requests/schemas/components/SchemaRequestTable";
-import { RequestStatus } from "src/domain/requests/requests-types";
+import {
+  RequestOperationType,
+  RequestStatus,
+} from "src/domain/requests/requests-types";
 import {
   getSchemaRequests,
   deleteSchemaRequest,
@@ -22,6 +25,7 @@ import { objectHasProperty } from "src/services/type-utils";
 import { OperationTypeFilter } from "src/app/features/components/table-filters/OperationTypeFilter";
 
 const defaultStatus = "ALL";
+const defaultType = "ALL";
 
 function SchemaRequests() {
   const queryClient = useQueryClient();
@@ -32,6 +36,9 @@ function SchemaRequests() {
     : 1;
   const currentTopic = searchParams.get("topic") ?? undefined;
   const currentEnvironment = searchParams.get("environment") ?? "ALL";
+  const currentType =
+    (searchParams.get("operationType") as RequestOperationType | "ALL") ??
+    defaultType;
   const currentStatus =
     (searchParams.get("status") as RequestStatus) ?? defaultStatus;
   const showOnlyMyRequests =
@@ -58,14 +65,17 @@ function SchemaRequests() {
       currentStatus,
       currentTopic,
       showOnlyMyRequests,
+      currentType,
     ],
     queryFn: () =>
       getSchemaRequests({
         pageNo: String(currentPage),
         env: currentEnvironment,
-        requestStatus: currentStatus,
+        requestStatus:
+          currentStatus !== defaultStatus ? currentStatus : undefined,
         topic: currentTopic,
         isMyRequest: showOnlyMyRequests,
+        operationType: currentType !== defaultType ? currentType : undefined,
       }),
     keepPreviousData: true,
   });

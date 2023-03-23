@@ -19,6 +19,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { getSchemaRegistryEnvironments } from "src/domain/environment";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
+import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/schema-request/schema-request-api.ts");
@@ -40,7 +41,8 @@ describe("SchemaRequest", () => {
   const defaultApiParams = {
     env: "ALL",
     pageNo: "1",
-    requestStatus: "ALL",
+    operationType: undefined,
+    requestStatus: undefined,
     topic: undefined,
   };
 
@@ -376,6 +378,53 @@ describe("SchemaRequest", () => {
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
         ...defaultApiParams,
         env: mockedEnvironmentResponse[0].id,
+      });
+    });
+  });
+
+  describe("user can filter schema requests by 'Request type'", () => {
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
+
+      customRender(<SchemaRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath:
+          "/?operationType=TEST_TYPE_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(1, {
+        ...defaultApiParams,
+        operationType: "TEST_TYPE_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+    });
+
+    it("enables user to filter by 'Request type'", async () => {
+      const newType = "PROMOTE";
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by operation type",
+      });
+      const statusOption = screen.getByRole("option", {
+        name: requestOperationTypeNameMap[newType],
+      });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        operationType: newType,
       });
     });
   });
