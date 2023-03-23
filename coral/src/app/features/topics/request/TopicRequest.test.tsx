@@ -736,7 +736,7 @@ describe("<TopicRequest />", () => {
       jest.clearAllMocks();
     });
 
-    describe("when API returns an error", () => {
+    describe("handles an error from the api", () => {
       beforeEach(async () => {
         mockRequestTopic({
           mswInstance: server,
@@ -775,7 +775,8 @@ describe("<TopicRequest />", () => {
         expect(alert).toHaveTextContent("Topic with such name already exists!");
       });
     });
-    describe("when API request is successful", () => {
+
+    describe("enables user to create a new topic request", () => {
       beforeEach(async () => {
         mockRequestTopic({
           mswInstance: server,
@@ -783,7 +784,7 @@ describe("<TopicRequest />", () => {
         });
       });
 
-      it("redirects user to previous page", async () => {
+      it("creates a new topic request when input was valid", async () => {
         const spyPost = jest.spyOn(api, "post");
 
         await user.click(
@@ -806,13 +807,51 @@ describe("<TopicRequest />", () => {
           remarks: "",
           requestOperationType: "CREATE",
         });
+      });
+
+      it("shows a dialog informing user that request was successful", async () => {
+        const spyPost = jest.spyOn(api, "post");
+
+        await user.click(
+          screen.getByRole("button", { name: "Submit request" })
+        );
 
         await waitFor(() => {
-          expect(mockedUsedNavigate).toHaveBeenCalledTimes(1);
-          expect(mockedUsedNavigate).toHaveBeenCalledWith(
-            "/requests/topics?status=CREATED"
-          );
+          const btn = screen.getByRole("button", { name: "Submit request" });
+          expect(btn).toBeDisabled();
         });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+
+        const successModal = await screen.findByRole("dialog");
+
+        expect(successModal).toBeVisible();
+      });
+
+      it("user can continue to the next page without waiting for redirect in the dialog", async () => {
+        const spyPost = jest.spyOn(api, "post");
+
+        await user.click(
+          screen.getByRole("button", { name: "Submit request" })
+        );
+
+        await waitFor(() => {
+          const btn = screen.getByRole("button", { name: "Submit request" });
+          expect(btn).toBeDisabled();
+        });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+
+        const successModal = await screen.findByRole("dialog");
+        const button = within(successModal).getByRole("button", {
+          name: "Continue",
+        });
+
+        await userEvent.click(button);
+
+        expect(mockedUsedNavigate).toHaveBeenCalledWith(
+          "/requests/topics?status=CREATED"
+        );
       });
     });
   });
