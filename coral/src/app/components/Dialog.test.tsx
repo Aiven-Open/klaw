@@ -3,6 +3,7 @@ import { Dialog } from "src/app/components/Dialog";
 import confirm from "@aivenio/aquarium/dist/src/icons/confirm";
 import warningSign from "@aivenio/aquarium/dist/src/icons/warningSign";
 import error from "@aivenio/aquarium/dist/src/icons/error";
+import userEvent from "@testing-library/user-event";
 
 describe("Dialog.tsx", () => {
   const testTitle = "Dialog title";
@@ -11,14 +12,10 @@ describe("Dialog.tsx", () => {
     text: "Primary action 1",
     onClick: jest.fn(),
   };
-  const mockSecondary = {
-    text: "Secondary action 1",
-    onClick: jest.fn(),
-  };
 
   afterEach(jest.clearAllMocks);
 
-  describe("renders all necessary elements", () => {
+  describe("shows a default modal with headline, text and one button", () => {
     beforeAll(() => {
       render(
         <>
@@ -27,7 +24,6 @@ describe("Dialog.tsx", () => {
             type="confirmation"
             title={testTitle}
             primaryAction={mockPrimary}
-            secondaryAction={mockSecondary}
           >
             {textContent}
           </Dialog>
@@ -61,6 +57,31 @@ describe("Dialog.tsx", () => {
 
       expect(button).toBeEnabled();
     });
+  });
+
+  describe("shows a second button dependent on a prop", () => {
+    const mockSecondary = {
+      text: "Secondary action 1",
+      onClick: jest.fn(),
+    };
+
+    beforeAll(() => {
+      render(
+        <>
+          <div id={"root"}></div>
+          <Dialog
+            type="confirmation"
+            title={testTitle}
+            primaryAction={mockPrimary}
+            secondaryAction={mockSecondary}
+          >
+            {textContent}
+          </Dialog>
+        </>
+      );
+    });
+
+    afterAll(cleanup);
 
     it("shows a button with a given secondary action", () => {
       const button = screen.getByRole("button", { name: mockPrimary.text });
@@ -77,7 +98,7 @@ describe("Dialog.tsx", () => {
     });
   });
 
-  describe("renders header icon and color dependent on type prop", () => {
+  describe("shows different header icons and colors dependent on type prop", () => {
     afterEach(cleanup);
 
     it("shows a confirmation header", () => {
@@ -88,7 +109,6 @@ describe("Dialog.tsx", () => {
             type="confirmation"
             title={testTitle}
             primaryAction={mockPrimary}
-            secondaryAction={mockSecondary}
           >
             {textContent}
           </Dialog>
@@ -106,12 +126,7 @@ describe("Dialog.tsx", () => {
       render(
         <>
           <div id={"root"}></div>
-          <Dialog
-            type="warning"
-            title={testTitle}
-            primaryAction={mockPrimary}
-            secondaryAction={mockSecondary}
-          >
+          <Dialog type="warning" title={testTitle} primaryAction={mockPrimary}>
             {textContent}
           </Dialog>
         </>
@@ -128,12 +143,7 @@ describe("Dialog.tsx", () => {
       render(
         <>
           <div id={"root"}></div>
-          <Dialog
-            type="danger"
-            title={testTitle}
-            primaryAction={mockPrimary}
-            secondaryAction={mockSecondary}
-          >
+          <Dialog type="danger" title={testTitle} primaryAction={mockPrimary}>
             {textContent}
           </Dialog>
         </>
@@ -144,6 +154,50 @@ describe("Dialog.tsx", () => {
 
       expect(headline).toHaveClass("text-error-70");
       expect(icon).toHaveAttribute("data-icon", error.body);
+    });
+  });
+
+  describe("enables user to use buttons", () => {
+    const mockSecondary = {
+      text: "Secondary action 1",
+      onClick: jest.fn(),
+    };
+
+    beforeEach(() => {
+      render(
+        <>
+          <div id={"root"}></div>
+          <Dialog
+            type="confirmation"
+            title={testTitle}
+            primaryAction={mockPrimary}
+            secondaryAction={mockSecondary}
+          >
+            {textContent}
+          </Dialog>
+        </>
+      );
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("user can click the button for the primary action", async () => {
+      const button = screen.getByRole("button", { name: mockPrimary.text });
+
+      await userEvent.click(button);
+
+      expect(mockPrimary.onClick).toHaveBeenCalled();
+    });
+
+    it("user can click the button for the secondary action", async () => {
+      const button = screen.getByRole("button", { name: mockSecondary.text });
+
+      await userEvent.click(button);
+
+      expect(mockSecondary.onClick).toHaveBeenCalled();
     });
   });
 });
