@@ -164,7 +164,7 @@ public class TopicRequestValidatorImpl
       TopicRequestModel topicRequestModel,
       String syncCluster,
       ConstraintValidatorContext constraintValidatorContext) {
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
     boolean promotionOrderCheck = false;
     if (null != orderOfEnvs) {
       promotionOrderCheck = checkInPromotionOrder(topicRequestModel.getEnvironment(), orderOfEnvs);

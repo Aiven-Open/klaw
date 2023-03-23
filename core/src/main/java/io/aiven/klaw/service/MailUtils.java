@@ -6,15 +6,12 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.UtilMethods;
-import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.MailType;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -360,61 +357,6 @@ public class MailUtils {
             log.error("Email id not found. Notification not sent !! ", e);
           }
         });
-  }
-
-  public String getEnvProperty(Integer tenantId, String envPropertyType) {
-    try {
-      KwTenantConfigModel tenantModel = manageDatabase.getTenantConfig().get(tenantId);
-      if (tenantModel == null) {
-        return "";
-      }
-      List<Integer> intOrderEnvsList = new ArrayList<>();
-
-      switch (envPropertyType) {
-        case "ORDER_OF_ENVS":
-          List<String> orderOfTopicPromotionEnvsList =
-              tenantModel.getOrderOfTopicPromotionEnvsList();
-          if (null != orderOfTopicPromotionEnvsList && !orderOfTopicPromotionEnvsList.isEmpty()) {
-            orderOfTopicPromotionEnvsList.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
-          }
-          break;
-        case "REQUEST_TOPICS_OF_ENVS":
-          List<String> requestTopics = tenantModel.getRequestTopicsEnvironmentsList();
-          if (requestTopics != null && !requestTopics.isEmpty()) {
-            requestTopics.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
-          }
-          break;
-        case "ORDER_OF_KAFKA_CONNECT_ENVS":
-          List<String> orderOfConn = tenantModel.getOrderOfConnectorsPromotionEnvsList();
-          if (orderOfConn != null && !orderOfConn.isEmpty()) {
-            orderOfConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
-          }
-          break;
-        case "REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS":
-          List<String> requestConn = tenantModel.getRequestConnectorsEnvironmentsList();
-          if (requestConn != null && !requestConn.isEmpty()) {
-            requestConn.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
-          }
-          break;
-        case "ORDER_OF_SCHEMA_ENVS":
-          List<String> orderOfSchema = tenantModel.getOrderOfSchemaPromotionEnvsList();
-          if (orderOfSchema != null && !orderOfSchema.isEmpty()) {
-            orderOfSchema.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
-          }
-          break;
-        case "REQUEST_SCHEMA_OF_ENVS":
-          List<String> requestSchema = tenantModel.getRequestSchemaEnvironmentsList();
-          if (requestSchema != null && !requestSchema.isEmpty()) {
-            requestSchema.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
-          }
-          break;
-      }
-
-      return intOrderEnvsList.stream().map(String::valueOf).collect(Collectors.joining(","));
-    } catch (Exception e) {
-      log.error("Exception:", e);
-      return "";
-    }
   }
 
   public String sendMailToSaasAdmin(int tenantId, String userName, String period, String loginUrl) {

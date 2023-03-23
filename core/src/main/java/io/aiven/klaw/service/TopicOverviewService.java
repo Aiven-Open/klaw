@@ -72,7 +72,8 @@ public class TopicOverviewService extends BaseOverviewService {
     }
 
     try {
-      String requestTopicsEnvs = mailService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
+      String requestTopicsEnvs =
+          commonUtilsService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
       reqTopicsEnvs = requestTopicsEnvs.split(",");
       reqTopicsEnvsList = new HashSet<>(Arrays.asList(reqTopicsEnvs));
     } catch (Exception exception) {
@@ -133,8 +134,7 @@ public class TopicOverviewService extends BaseOverviewService {
     List<AclInfo> tmpAclPrefixed;
     List<AclInfo> tmpAcl;
     for (TopicInfo topicInfo : topicInfoList) {
-      aclsFromSOT.addAll(
-          getAclsFromSOT(topicInfo.getClusterId(), topicNameSearch, false, tenantId));
+      aclsFromSOT.addAll(getAclsFromSOT(topicInfo.getEnvId(), topicNameSearch, false, tenantId));
 
       tmpAcl =
           applyFiltersAclsForSOT(loggedInUserTeam, aclsFromSOT, tenantId).stream()
@@ -145,7 +145,7 @@ public class TopicOverviewService extends BaseOverviewService {
         aclInfo.addAll(tmpAcl);
       }
 
-      allPrefixedAcls = handleDb.getPrefixedAclsSOT(topicInfo.getClusterId(), tenantId);
+      allPrefixedAcls = handleDb.getPrefixedAclsSOT(topicInfo.getEnvId(), tenantId);
       if (allPrefixedAcls != null && allPrefixedAcls.size() > 0) {
         for (Acl allPrefixedAcl : allPrefixedAcls) {
           if (topicNameSearch.startsWith(allPrefixedAcl.getTopicname())) {
@@ -173,8 +173,8 @@ public class TopicOverviewService extends BaseOverviewService {
     ArrayList<TopicHistory> topicHistoryFromTopic;
     for (Topic topic : topics) {
       TopicInfo topicInfo = new TopicInfo();
-      topicInfo.setCluster(getEnvDetails(topic.getEnvironment(), tenantId).getName());
-      topicInfo.setClusterId(topic.getEnvironment());
+      topicInfo.setEnvName(getEnvDetails(topic.getEnvironment(), tenantId).getName());
+      topicInfo.setEnvId(topic.getEnvironment());
       topicInfo.setNoOfPartitions(topic.getNoOfPartitions());
       topicInfo.setNoOfReplicas(topic.getNoOfReplicas());
       topicInfo.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topic.getTeamId()));
@@ -222,7 +222,7 @@ public class TopicOverviewService extends BaseOverviewService {
           lastItem.setTopicDeletable(
               aclInfo.stream()
                   .noneMatch(
-                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getCluster())));
+                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getEnvName())));
           lastItem.setShowDeleteTopic(true);
         }
       } else {
@@ -251,7 +251,10 @@ public class TopicOverviewService extends BaseOverviewService {
         List<String> envList =
             topics.stream().map(Topic::getEnvironment).collect(Collectors.toList());
         generatePromotionDetails(
-            tenantId, hashMap, envList, mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS"));
+            tenantId,
+            hashMap,
+            envList,
+            commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS"));
         return hashMap;
       }
     } catch (Exception e) {

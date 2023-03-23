@@ -12,6 +12,7 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
@@ -60,9 +61,6 @@ public class SchemaOverviewServiceTest {
 
   @Mock private ClusterApiService clusterApiService;
 
-  @Mock private Map<Integer, KwClusters> kwClustersHashMap;
-  @Mock private KwClusters kwClusters;
-
   private SchemaOverviewService schemaOverviewService;
 
   private ObjectMapper mapper = new ObjectMapper();
@@ -72,9 +70,6 @@ public class SchemaOverviewServiceTest {
     utilMethods = new UtilMethods();
     this.schemaOverviewService = new SchemaOverviewService(mailService);
 
-    Env env = new Env();
-    env.setName("DEV");
-    env.setId("1");
     ReflectionTestUtils.setField(schemaOverviewService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(schemaOverviewService, "commonUtilsService", commonUtilsService);
     ReflectionTestUtils.setField(schemaOverviewService, "clusterApiService", clusterApiService);
@@ -97,14 +92,14 @@ public class SchemaOverviewServiceTest {
 
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 1);
 
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3");
 
-    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
+    SchemaOverview returnedValue =
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", Collections.singletonList("1"));
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").containsKey("status"))
-        .isTrue();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("status"))
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").containsKey("status")).isTrue();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").get("status"))
         .isEqualTo("NO_PROMOTION");
   }
 
@@ -113,22 +108,21 @@ public class SchemaOverviewServiceTest {
   public void getGivenASchemaWithManySchemaEnv_ReturnNextInPromotion() throws Exception {
     stubUserInfo();
 
-    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 15);
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
 
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS")))
-        .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
 
-    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1");
+    SchemaOverview returnedValue =
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", Collections.singletonList("1"));
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").containsKey("status"))
-        .isTrue();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("status"))
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").containsKey("status")).isTrue();
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").get("status"))
         .isEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("sourceEnv"))
-        .isEqualTo("1");
-    assertThat(returnedValue.getSchemaPromotionDetails().get("test-1").get("targetEnv"))
-        .isEqualTo("test-2");
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").get("sourceEnv"))
+        .isEqualTo("3");
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").get("targetEnv"))
+        .isEqualTo("test-4");
   }
 
   @Test
@@ -137,9 +131,10 @@ public class SchemaOverviewServiceTest {
     stubUserInfo();
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
 
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_SCHEMA_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("1");
 
-    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "3");
+    SchemaOverview returnedValue =
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "3", Collections.singletonList("1"));
     assertThat(returnedValue.getSchemaPromotionDetails()).isNullOrEmpty();
     assertThat(returnedValue.isSchemaExists()).isFalse();
   }
@@ -194,16 +189,48 @@ public class SchemaOverviewServiceTest {
 
   private void stubSchemaPromotionInfo(
       String testtopic, KafkaClustersType clusterType, int numberOfEnvs) throws Exception {
-    when(manageDatabase.getAllEnvList(101))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs));
+    List<Env> listOfEnvs = createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs);
+    when(manageDatabase.getAllEnvList(101)).thenReturn(listOfEnvs);
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(handleDbRequests.selectAllSchemaRegEnvs(101))
-        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs));
-    when(manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY, 101))
+    when(handleDbRequests.selectAllSchemaRegEnvs(101)).thenReturn(listOfEnvs);
+    when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(createClusterMap(numberOfEnvs));
     when(clusterApiService.getAvroSchema(any(), any(), any(), eq(testtopic), eq(101)))
         .thenReturn(createSchemaList())
         .thenReturn(null);
+
+    Env kafkaEnv1 = new Env();
+    kafkaEnv1.setName("DEV");
+    kafkaEnv1.setId("1");
+    kafkaEnv1.setClusterId(1);
+    EnvTag envTag = new EnvTag();
+    envTag.setId("3");
+    envTag.setName("DEV");
+    kafkaEnv1.setAssociatedEnv(envTag);
+
+    Env kafkaEnv2 = new Env();
+    kafkaEnv2.setName("TST");
+    kafkaEnv2.setId("2");
+    kafkaEnv2.setClusterId(2);
+    EnvTag envTag2 = new EnvTag();
+    envTag2.setId("4");
+    envTag2.setName("TST");
+    kafkaEnv2.setAssociatedEnv(envTag2);
+
+    Env schemaEnv1 = new Env();
+    schemaEnv1.setId("3");
+    schemaEnv1.setName("DEV");
+    schemaEnv1.setClusterId(1);
+
+    Env schemaEnv2 = new Env();
+    schemaEnv2.setId("4");
+    schemaEnv2.setName("TST");
+    schemaEnv2.setClusterId(1);
+
+    when(handleDbRequests.selectEnvDetails("1", 101)).thenReturn(kafkaEnv1);
+    when(handleDbRequests.selectEnvDetails("2", 101)).thenReturn(kafkaEnv2);
+    when(handleDbRequests.selectEnvDetails("3", 101)).thenReturn(schemaEnv1);
+    when(handleDbRequests.selectEnvDetails("4", 101)).thenReturn(schemaEnv2);
   }
 
   private void stubKafkaPromotion(String testtopic, int numberOfEnvs) throws Exception {

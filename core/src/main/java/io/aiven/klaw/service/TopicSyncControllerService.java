@@ -626,7 +626,7 @@ public class TopicSyncControllerService {
 
     // tenant filtering
     List<Env> listAllEnvs = manageDatabase.getKafkaEnvList(tenantId);
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
 
     topicsFromSOT = commonUtilsService.groupTopicsByEnv(topicsFromSOT);
     List<Topic> filterProducerConsumerList = new ArrayList<>();
@@ -726,7 +726,7 @@ public class TopicSyncControllerService {
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
         mp.setTopicid(topicSOT.getTopicid());
-        mp.setCluster(topicSOT.getEnvironment());
+        mp.setEnvName(topicSOT.getEnvironment());
         mp.setEnvironmentsList(getConvertedEnvs(listAllEnvs, envList));
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
@@ -908,7 +908,7 @@ public class TopicSyncControllerService {
     // tenant filtering
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
 
     List<Topic> existingTopics;
     List<Topic> listTopics = new ArrayList<>();

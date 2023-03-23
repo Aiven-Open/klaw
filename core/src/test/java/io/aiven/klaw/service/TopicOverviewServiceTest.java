@@ -120,7 +120,7 @@ public class TopicOverviewServiceTest {
 
     when(manageDatabase.getAllEnvList(anyInt()))
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     mockTenantConfig();
     List<AclInfo> aclList = topicOverviewService.getTopicOverview(TESTTOPIC).getAclInfoList();
 
@@ -157,7 +157,7 @@ public class TopicOverviewServiceTest {
 
     when(manageDatabase.getAllEnvList(anyInt()))
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     mockTenantConfig();
 
     List<AclInfo> aclList = topicOverviewService.getTopicOverview(topicNameSearch).getAclInfoList();
@@ -177,8 +177,8 @@ public class TopicOverviewServiceTest {
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
     when(handleDbRequests.getTopics(TESTTOPIC, 101))
         .thenReturn(Arrays.asList(createTopic(TESTTOPIC)));
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
     TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
@@ -194,9 +194,9 @@ public class TopicOverviewServiceTest {
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
     when(handleDbRequests.getTopics(TESTTOPIC, 101))
         .thenReturn(Arrays.asList(createTopic(TESTTOPIC)));
-    when(mailService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS")))
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS")))
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS")))
+    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS")))
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
 
     TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
@@ -215,7 +215,7 @@ public class TopicOverviewServiceTest {
     stubKafkaPromotion(TESTTOPIC, 1);
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
 
-    when(mailService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
     TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
     assertThat(returnedValue.getTopicPromotionDetails()).isNullOrEmpty();

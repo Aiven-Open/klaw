@@ -152,15 +152,23 @@ public class SchemaRegistryController {
     return ResponseEntity.ok(schemaRegistryControllerService.promoteSchema(promoteSchemaReq));
   }
 
+  /**
+   * @param topicNameSearch Get schema of this topic
+   * @param schemaVersionSearch Version of the schema if applicable
+   * @param kafkaEnvIds env ids of the topic where it exists
+   * @return SchemaOverview which contains schema and list of versions, compatibility, and promotion
+   *     details
+   */
   @RequestMapping(
       value = "/getSchemaOfTopic",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<SchemaOverview> getSchemaOfTopic(
       @RequestParam(value = "topicnamesearch") String topicNameSearch,
-      @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch) {
+      @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch,
+      @RequestParam(value = "kafkaEnvIds") List<String> kafkaEnvIds) {
     return new ResponseEntity<>(
-        schemaOverviewService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch),
+        schemaOverviewService.getSchemaOfTopic(topicNameSearch, schemaVersionSearch, kafkaEnvIds),
         HttpStatus.OK);
   }
 }

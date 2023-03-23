@@ -1,12 +1,13 @@
 package io.aiven.klaw.service;
 
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,21 +25,28 @@ public class SchemaOverviewService extends BaseOverviewService {
     super(mailService);
   }
 
-  public SchemaOverview getSchemaOfTopic(String topicNameSearch, String schemaVersionSearch) {
-    HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
+  public SchemaOverview getSchemaOfTopic(
+      String topicNameSearch, String schemaVersionSearch, List<String> kafkaEnvIds) {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     SchemaOverview schemaOverview = new SchemaOverview();
     schemaOverview.setTopicExists(true);
     boolean retrieveSchemas = true;
     updateAvroSchema(
-        topicNameSearch, schemaVersionSearch, handleDb, retrieveSchemas, schemaOverview, tenantId);
+        topicNameSearch,
+        schemaVersionSearch,
+        manageDatabase.getHandleDbRequests(),
+        kafkaEnvIds,
+        retrieveSchemas,
+        schemaOverview,
+        tenantId);
     return schemaOverview;
   }
 
   private void updateAvroSchema(
       String topicNameSearch,
       String schemaVersionSearch,
-      HandleDbRequests handleDb,
+      HandleDbRequests handleDbRequests,
+      List<String> kafkaEnvIds,
       boolean retrieveSchemas,
       SchemaOverview schemaOverview,
       int tenantId) {
@@ -48,7 +56,20 @@ public class SchemaOverviewService extends BaseOverviewService {
       Map<String, List<Integer>> schemaVersions = new HashMap<>();
       schemaOverview.setAllSchemaVersions(schemaVersions);
       schemaOverview.setLatestVersion(new HashMap<>());
-      List<Env> schemaEnvs = handleDb.selectAllSchemaRegEnvs(tenantId);
+
+      List<Env> schemaEnvs = new ArrayList<>();
+      // Get first base kafka env
+      Env kafkaEnv =
+          manageDatabase.getHandleDbRequests().selectEnvDetails(kafkaEnvIds.get(0), tenantId);
+      EnvTag associatedSchemaEnv = kafkaEnv.getAssociatedEnv();
+      if (associatedSchemaEnv != null) {
+        Env schemaEnv =
+            manageDatabase
+                .getHandleDbRequests()
+                .selectEnvDetails(associatedSchemaEnv.getId(), tenantId);
+        schemaEnvs.add(schemaEnv);
+      }
+
       Object dynamicObj;
       Map<String, Object> hashMapSchemaObj;
       String schemaOfObj;
@@ -132,7 +153,7 @@ public class SchemaOverviewService extends BaseOverviewService {
             schemaDetails.add(schemaMap);
             schemaOverview.setSchemaExists(true);
             // Set Promotion Details
-            processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv);
+            processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv, kafkaEnvIds);
             log.info("Getting schema details for: " + topicNameSearch);
           }
         } catch (Exception e) {
@@ -148,14 +169,14 @@ public class SchemaOverviewService extends BaseOverviewService {
   }
 
   private void processSchemaPromotionDetails(
-      SchemaOverview schemaOverview, int tenantId, Env schemaEnv) {
+      SchemaOverview schemaOverview, int tenantId, Env schemaEnv, List<String> kafkaEnvIds) {
     log.info("SchemaEnv Id {}", schemaEnv.getId());
     Map<String, String> promotionDetails = new HashMap<>();
     generatePromotionDetails(
         tenantId,
         promotionDetails,
-        Arrays.asList(schemaEnv.getId()),
-        mailService.getEnvProperty(tenantId, "ORDER_OF_SCHEMA_ENVS"));
+        Collections.singletonList(schemaEnv.getId()),
+        commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(tenantId));
     if (schemaOverview.getSchemaPromotionDetails() == null) {
       Map<String, Map<String, String>> searchOverviewPromotionDetails = new HashMap<>();
       schemaOverview.setSchemaPromotionDetails(searchOverviewPromotionDetails);
@@ -163,6 +184,25 @@ public class SchemaOverviewService extends BaseOverviewService {
     Map<String, Map<String, String>> existingPromoDetails =
         schemaOverview.getSchemaPromotionDetails();
     existingPromoDetails.put(schemaEnv.getName(), promotionDetails);
+    // verify if topic exists in target env
+    if (!verifyIfTopicExistsInTargetSchemaEnv(kafkaEnvIds, promotionDetails, tenantId)) {
+      promotionDetails.put("status", "NO_PROMOTION");
+    }
     schemaOverview.setSchemaPromotionDetails(existingPromoDetails);
+  }
+
+  private boolean verifyIfTopicExistsInTargetSchemaEnv(
+      List<String> kafkaEnvIds, Map<String, String> promotionDetails, int tenantId) {
+    if (!promotionDetails.containsKey("targetEnvId")) {
+      return false;
+    }
+    // get kafka env of target schema env
+    String kafkaEnvId =
+        manageDatabase
+            .getHandleDbRequests()
+            .selectEnvDetails(promotionDetails.get("targetEnvId"), tenantId)
+            .getAssociatedEnv()
+            .getId();
+    return kafkaEnvIds.contains(kafkaEnvId);
   }
 }

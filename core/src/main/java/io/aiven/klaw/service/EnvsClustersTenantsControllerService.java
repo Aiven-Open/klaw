@@ -335,11 +335,12 @@ public class EnvsClustersTenantsControllerService {
   public List<EnvModelResponse> getEnvsForRequestTopicsCluster() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
 
-    String requestTopicsEnvs = mailService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
+    String requestTopicsEnvs =
+        commonUtilsService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
     if (requestTopicsEnvs == null) {
       return new ArrayList<>();
     }
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
     String[] reqTopicsEnvs = requestTopicsEnvs.split(",");
     List<Env> listEnvs = manageDatabase.getKafkaEnvList(tenantId);
     List<EnvModelResponse> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA, tenantId);
@@ -358,7 +359,7 @@ public class EnvsClustersTenantsControllerService {
 
   public List<EnvModelResponse> getKafkaEnvs() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
     List<Env> listEnvs = manageDatabase.getKafkaEnvList(tenantId);
     List<EnvModelResponse> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA, tenantId);
     envModelList.forEach(
@@ -384,7 +385,7 @@ public class EnvsClustersTenantsControllerService {
 
   public List<EnvModelResponse> getConnectorEnvs() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
     List<Env> listEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
     List<EnvModelResponse> envModelList =
         getEnvModels(listEnvs, KafkaClustersType.KAFKA_CONNECT, tenantId);
@@ -558,11 +559,12 @@ public class EnvsClustersTenantsControllerService {
   public List<EnvModelResponse> getEnvsForSchemaRequests() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
 
-    String requestSchemasEnvs = mailService.getEnvProperty(tenantId, "REQUEST_SCHEMA_OF_ENVS");
+    String requestSchemasEnvs =
+        commonUtilsService.getEnvProperty(tenantId, "REQUEST_SCHEMA_OF_ENVS");
     if (requestSchemasEnvs == null) {
       return new ArrayList<>();
     }
-    String orderOfEnvs = mailService.getEnvProperty(tenantId, "ORDER_OF_SCHEMA_ENVS");
+    String orderOfEnvs = commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(tenantId);
     String[] reqSchemaEnvs = requestSchemasEnvs.split(",");
     List<Env> listEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
     List<EnvModelResponse> envModelList =

@@ -619,7 +619,7 @@ export type components = {
       description: string;
       noOfReplicas: string;
       teamname: string;
-      cluster: string;
+      envId: string;
       environmentsList: (string)[];
       showEditTopic: boolean;
       showDeleteTopic: boolean;
@@ -628,7 +628,7 @@ export type components = {
       currentPage: string;
       allPageNos: (string)[];
       documentation?: string;
-      clusterId?: string;
+      envName?: string;
     };
     KafkaConnectorModel: {
       /** Format: int32 */
@@ -2777,6 +2777,7 @@ export type operations = {
       query: {
         topicnamesearch: string;
         schemaVersionSearch?: string;
+        kafkaEnvIds: (string)[];
       };
     };
     responses: {

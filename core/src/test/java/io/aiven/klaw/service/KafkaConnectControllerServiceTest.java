@@ -115,7 +115,7 @@ public class KafkaConnectControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
-    when(mailService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     when(handleDbRequests.getConnectorsFromName(anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
     when(handleDbRequests.requestForConnector(any())).thenReturn(resultMap);

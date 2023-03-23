@@ -25,7 +25,5 @@ public class KwTenantConfigModel implements Serializable {
 
   private List<String> requestConnectorsEnvironmentsList;
 
-  private List<String> orderOfSchemaPromotionEnvsList;
-
   private List<String> requestSchemaEnvironmentsList;
 }

@@ -686,8 +686,8 @@ public class UtilMethods {
     topicInfo.setTeamname("testteam");
     topicInfo.setTopicName("testtopic");
     topicInfo.setTopicid(1);
-    topicInfo.setCluster("DEV");
-    topicInfo.setClusterId("1");
+    topicInfo.setEnvName("DEV");
+    topicInfo.setEnvId("1");
     topicInfo.setDocumentation("this is content for documentation");
 
     return topicInfo;
