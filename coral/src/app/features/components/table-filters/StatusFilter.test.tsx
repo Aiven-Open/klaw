@@ -85,7 +85,7 @@ describe("StatusFilter.tsx", () => {
     });
   });
 
-  describe("handles user selecting a environment", () => {
+  describe("handles user selecting a status", () => {
     const defaultStatus = "DECLINED";
     const approvedStatus = "APPROVED";
     const approvedName = requestStatusNameMap[approvedStatus];
@@ -101,7 +101,7 @@ describe("StatusFilter.tsx", () => {
       cleanup();
     });
 
-    it("sets the environment the user choose as active option", async () => {
+    it("sets the status the user choose as active option", async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -118,7 +118,7 @@ describe("StatusFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve environment in url", () => {
+  describe("updates the search param to preserve status in url", () => {
     const deletedStatus = "DELETED";
     const deletedName = requestStatusNameMap["DELETED"];
 
