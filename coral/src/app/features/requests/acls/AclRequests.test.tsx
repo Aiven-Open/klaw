@@ -560,6 +560,61 @@ describe("AclRequests", () => {
     });
   });
 
+  describe("user can filter ACL requests by request operation type ", () => {
+    afterEach(() => {
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?operationType=DELETE",
+      });
+
+      const envFilter = screen.getByRole("combobox", {
+        name: "Filter by operation type",
+      });
+
+      expect(envFilter).toHaveDisplayValue("Delete");
+
+      expect(getAclRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        topic: "",
+        env: "ALL",
+        aclType: "ALL",
+        requestStatus: "ALL",
+        operationType: "DELETE",
+      });
+    });
+
+    it("enables user to filter ACL requests by request operation type", async () => {
+      customRender(<AclRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      const operationTypeFilter = screen.getByRole("combobox", {
+        name: "Filter by operation type",
+      });
+
+      expect(operationTypeFilter).toBeEnabled();
+
+      await userEvent.selectOptions(operationTypeFilter, "CREATE");
+
+      await waitFor(() => {
+        expect(getAclRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          topic: "",
+          env: "ALL",
+          aclType: "ALL",
+          requestStatus: "ALL",
+          operationType: "CREATE",
+        });
+      });
+    });
+  });
+
   describe("shows a detail modal for ACL request", () => {
     beforeEach(async () => {
       mockGetAclRequests.mockResolvedValue(mockGetAclRequestsResponse);
