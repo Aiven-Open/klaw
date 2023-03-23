@@ -127,14 +127,25 @@ describe("SchemaRequest", () => {
     });
 
     it("shows a select to filter by environment with default", () => {
-      const select = screen.getByLabelText("Filter by Environment");
+      const select = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
 
       expect(select).toBeVisible();
       expect(select).toHaveDisplayValue("All Environments");
     });
 
+    it("shows a select to filter by request type with default", () => {
+      const select = screen.getByRole("combobox", {
+        name: "Filter by operation type",
+      });
+
+      expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("All operation types");
+    });
+
     it("shows a select to filter by request status with default", () => {
-      const select = screen.getByLabelText("Filter by status");
+      const select = screen.getByRole("combobox", { name: "Filter by status" });
 
       expect(select).toBeVisible();
       expect(select).toHaveDisplayValue("All statuses");

@@ -19,6 +19,7 @@ import { DeleteRequestDialog } from "src/app/features/requests/components/Delete
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { Alert } from "@aivenio/aquarium";
 import { objectHasProperty } from "src/services/type-utils";
+import { OperationTypeFilter } from "src/app/features/components/table-filters/OperationTypeFilter";
 
 const defaultStatus = "ALL";
 
@@ -188,6 +189,7 @@ function SchemaRequests() {
             key={"environments"}
             isSchemaRegistryEnvironments
           />,
+          <OperationTypeFilter key={"request-type"} />,
           <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
           <TopicFilter key={"topic"} />,
           <MyRequestsFilter key={"show-only-my-requests"} />,
