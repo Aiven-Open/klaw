@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,6 +36,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class SchemaRegistryControllerService {
+  @Value("${klaw.schema.validate.compatibility.onSave:true}")
+  private Boolean validateCompatiblityOnSave;
+
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired ClusterApiService clusterApiService;
@@ -400,11 +404,15 @@ public class SchemaRegistryControllerService {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    //check if Schema is valid
-    ApiResponse isValid = validateSchema(schemaRequest);
-
-    if(isValid.getResult().toLowerCase().contains(ApiResultStatus.FAILURE.value)) {
-      return isValid;
+    // If force register is not set validate the schema
+    if (validateCompatiblityOnSave
+        && (schemaRequest.getForceRegister() == null || !schemaRequest.getForceRegister())) {
+      // check if Schema is valid
+      ApiResponse isValid = validateSchema(schemaRequest);
+      if (isValid.getResult().contains(ApiResultStatus.FAILURE.value)) {
+        // Return on Failure response
+        return isValid;
+      }
     }
 
     try {

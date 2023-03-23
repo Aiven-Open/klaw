@@ -470,17 +470,17 @@ public class SchemaService {
           && compatibility.hasBody()
           && compatibility.getBody().isCompatible()) {
         return ApiResponse.builder()
-            .result(ApiResultStatus.SUCCESS + " Schema is compatible.")
+            .result(ApiResultStatus.SUCCESS.value + " Schema is compatible.")
             .build();
       } else {
         return ApiResponse.builder()
-            .result(ApiResultStatus.FAILURE + "  Schema is not compatible.")
+            .result(ApiResultStatus.FAILURE.value + "  Schema is not compatible.")
             .build();
       }
     } catch (Exception ex) {
       log.error("Error on Validating Schema: ", ex);
       return ApiResponse.builder()
-          .result(ApiResultStatus.FAILURE + " Unable to validate Schema Compatibility.")
+          .result(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.")
           .build();
     }
   }
