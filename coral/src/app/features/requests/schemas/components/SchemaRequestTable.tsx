@@ -47,23 +47,23 @@ function SchemaRequestTable({
     },
     {
       type: "status",
+      field: "requestType",
+      headerName: "Request type",
+      status: ({ requestType }) => {
+        return {
+          status: requestOperationTypeChipStatusMap[requestType],
+          text: requestOperationTypeNameMap[requestType],
+        };
+      },
+    },
+    {
+      type: "status",
       field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
         return {
           status: requestStatusChipStatusMap[requestStatus],
           text: requestStatusNameMap[requestStatus],
-        };
-      },
-    },
-    {
-      type: "status",
-      field: "requestType",
-      headerName: "Type",
-      status: ({ requestType }) => {
-        return {
-          status: requestOperationTypeChipStatusMap[requestType],
-          text: requestOperationTypeNameMap[requestType],
         };
       },
     },
