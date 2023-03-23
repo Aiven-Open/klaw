@@ -55,7 +55,7 @@ describe("TopicFilter.tsx", () => {
       cleanup();
     });
 
-    it("sets the team the user choose as active option", async () => {
+    it("sets the topic the user choose as active option", async () => {
       const searchInput = screen.getByRole("search");
 
       await userEvent.type(searchInput, "testing");
@@ -64,7 +64,7 @@ describe("TopicFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve team in url", () => {
+  describe("updates the search param to preserve topic in url", () => {
     beforeEach(async () => {
       customRender(<TopicFilter />, {
         browserRouter: true,
