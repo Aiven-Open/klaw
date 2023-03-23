@@ -22,6 +22,7 @@ function TableLayout(props: TableLayoutProps) {
       <Box
         display={"flex"}
         flexDirection={"row"}
+        flexWrap={"wrap"}
         alignItems={"center"}
         justifyContent={"stretch"}
         colGap={"l1"}
