@@ -73,7 +73,12 @@ const getSchemaRequestsForApprover = (
 type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
   Pick<
     KlawApiRequestQueryParameters<"getSchemaRequests">,
-    "pageNo" | "requestStatus" | "topic" | "env" | "isMyRequest"
+    | "pageNo"
+    | "requestStatus"
+    | "topic"
+    | "env"
+    | "isMyRequest"
+    | "operationType"
   >
 >;
 
@@ -84,6 +89,7 @@ const getSchemaRequests = (
     myRequest?: "true" | "false";
   } = {
     pageNo: args.pageNo,
+    ...(args.operationType && { operationType: args.operationType }),
     ...(args.requestStatus && { requestStatus: args.requestStatus }),
     ...(args.topic && { topic: args.topic }),
     ...(args.env && args.env !== "ALL" && { env: args.env }),

@@ -19,6 +19,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import { getSchemaRegistryEnvironments } from "src/domain/environment";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
+import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/schema-request/schema-request-api.ts");
@@ -40,7 +41,8 @@ describe("SchemaRequest", () => {
   const defaultApiParams = {
     env: "ALL",
     pageNo: "1",
-    requestStatus: "ALL",
+    operationType: undefined,
+    requestStatus: undefined,
     topic: undefined,
   };
 
@@ -127,14 +129,25 @@ describe("SchemaRequest", () => {
     });
 
     it("shows a select to filter by environment with default", () => {
-      const select = screen.getByLabelText("Filter by Environment");
+      const select = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
 
       expect(select).toBeVisible();
       expect(select).toHaveDisplayValue("All Environments");
     });
 
+    it("shows a select to filter by request type with default", () => {
+      const select = screen.getByRole("combobox", {
+        name: "Filter by operation type",
+      });
+
+      expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("All operation types");
+    });
+
     it("shows a select to filter by request status with default", () => {
-      const select = screen.getByLabelText("Filter by status");
+      const select = screen.getByRole("combobox", { name: "Filter by status" });
 
       expect(select).toBeVisible();
       expect(select).toHaveDisplayValue("All statuses");
@@ -369,6 +382,53 @@ describe("SchemaRequest", () => {
     });
   });
 
+  describe("user can filter schema requests by 'Request type'", () => {
+    beforeEach(async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
+
+      customRender(<SchemaRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath:
+          "/?operationType=TEST_TYPE_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(1, {
+        ...defaultApiParams,
+        operationType: "TEST_TYPE_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+    });
+
+    it("enables user to filter by 'Request type'", async () => {
+      const newType = "PROMOTE";
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by operation type",
+      });
+      const statusOption = screen.getByRole("option", {
+        name: requestOperationTypeNameMap[newType],
+      });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        operationType: newType,
+      });
+    });
+  });
+
   describe("user can filter schema requests by 'status'", () => {
     beforeEach(async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
@@ -599,7 +659,9 @@ describe("SchemaRequest", () => {
   describe("enables user to delete a request", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
+    const originalConsoleError = console.error;
     beforeEach(async () => {
+      console.error = jest.fn();
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -614,6 +676,7 @@ describe("SchemaRequest", () => {
     });
 
     afterEach(() => {
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -637,6 +700,7 @@ describe("SchemaRequest", () => {
       expect(mockDeleteSchemaRequest).toHaveBeenCalledWith({
         reqIds: [testRequest.req_no.toString()],
       });
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user deletes a schema request", async () => {
@@ -668,10 +732,11 @@ describe("SchemaRequest", () => {
         2,
         defaultApiParams
       );
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if deleting request was not successful", async () => {
-      mockDeleteSchemaRequest.mockResolvedValue([{ result: "FAILURE" }]);
+      mockDeleteSchemaRequest.mockRejectedValue({ message: "OH NO" });
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         1,
         defaultApiParams
@@ -699,6 +764,43 @@ describe("SchemaRequest", () => {
 
       const error = screen.getByRole("alert");
       expect(error).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith({ message: "OH NO" });
+    });
+
+    it("informs user about error if deleting request was not successful and error is hidden in success", async () => {
+      mockDeleteSchemaRequest.mockResolvedValue([
+        { result: "FAILURE", message: "OH NO" },
+      ]);
+      expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const deleteButton = screen.getByRole("button", {
+        name: `Delete schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeleteButton = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeleteButton);
+
+      expect(mockDeleteSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.req_no.toString()],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetSchemaRequests).not.toHaveBeenCalledTimes(2);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
+
+      const expectedError = new Error("OH NO");
+      expect(console.error).toHaveBeenCalledWith(expectedError);
     });
   });
 });

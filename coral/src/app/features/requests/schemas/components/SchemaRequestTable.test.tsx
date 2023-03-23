@@ -22,8 +22,8 @@ describe("SchemaRequestTable", () => {
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
     { columnHeader: "Environment", relatedField: "environmentName" },
+    { columnHeader: "Request type", relatedField: "requestOperationType" },
     { columnHeader: "Status", relatedField: "requestStatus" },
-    { columnHeader: "Type", relatedField: "requestOperationType" },
     { columnHeader: "Requested by", relatedField: "requestor" },
     { columnHeader: "Requested on", relatedField: "requesttimestring" },
     { columnHeader: "Details", relatedField: null },
@@ -193,7 +193,7 @@ describe("SchemaRequestTable", () => {
               text = requestStatusNameMap[field as RequestStatus];
             }
 
-            if (column.columnHeader === "Type") {
+            if (column.columnHeader === "Request type") {
               text = requestOperationTypeNameMap[field as RequestOperationType];
             }
             const cell = within(table).getByRole("cell", { name: text });
