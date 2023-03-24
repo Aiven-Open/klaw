@@ -6,12 +6,12 @@ import { Pagination } from "src/app/components/Pagination";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
-import { OperationTypeFilter } from "src/app/features/components/table-filters/OperationTypeFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { useTableFiltersValues } from "src/app/features/components/table-filters/useTableFiltersValues";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
+import { OperationTypeFilter } from "src/app/features/components/filters/OperationTypeFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { SchemaRequestTable } from "src/app/features/requests/schemas/components/SchemaRequestTable";
 import {
@@ -33,7 +33,7 @@ function SchemaRequests() {
     : 1;
 
   const { topic, environment, status, showOnlyMyRequests, operationType } =
-    useTableFiltersValues();
+    useFiltersValues();
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";

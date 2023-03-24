@@ -2,11 +2,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { useTableFiltersValues } from "src/app/features/components/table-filters/useTableFiltersValues";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { TopicRequestsTable } from "src/app/features/requests/topics/components/TopicRequestsTable";
 import { getTopicRequests } from "src/domain/topic/topic-api";
 
@@ -19,8 +19,7 @@ function TopicRequests() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { topic, environment, status, showOnlyMyRequests } =
-    useTableFiltersValues();
+  const { topic, environment, status, showOnlyMyRequests } = useFiltersValues();
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [

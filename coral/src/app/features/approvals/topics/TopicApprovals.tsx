@@ -8,11 +8,11 @@ import DetailsModalContent from "src/app/features/approvals/topics/components/De
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TeamFilter from "src/app/features/components/table-filters/TeamFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { useTableFiltersValues } from "src/app/features/components/table-filters/useTableFiltersValues";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TeamFilter from "src/app/features/components/filters/TeamFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import {
   approveTopicRequest,
   declineTopicRequest,
@@ -29,7 +29,7 @@ function TopicApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, topic, team } = useTableFiltersValues({
+  const { environment, status, topic, team } = useFiltersValues({
     defaultStatus: "CREATED",
   });
 

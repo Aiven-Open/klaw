@@ -5,7 +5,7 @@ import {
   RequestOperationType,
 } from "src/domain/requests/requests-types";
 
-type UseTableFiltersValuesParams =
+type UseFiltersValuesParams =
   | {
       defaultTopic?: string;
       defaultEnvironment?: string;
@@ -16,9 +16,7 @@ type UseTableFiltersValuesParams =
     }
   | undefined;
 
-const useTableFiltersValues = (
-  defaultValues: UseTableFiltersValuesParams = {}
-) => {
+const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
   const [searchParams] = useSearchParams();
   const {
     defaultTopic = "",
@@ -52,4 +50,4 @@ const useTableFiltersValues = (
   };
 };
 
-export { useTableFiltersValues };
+export { useFiltersValues };

@@ -1,7 +1,7 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { Environment, mockGetEnvironments } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";

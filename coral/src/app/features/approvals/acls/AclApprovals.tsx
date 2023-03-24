@@ -8,11 +8,11 @@ import RequestDeclineModal from "src/app/features/approvals/components/RequestDe
 import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
-import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { useTableFiltersValues } from "src/app/features/components/table-filters/useTableFiltersValues";
+import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import {
   approveAclRequest,
   declineAclRequest,
@@ -29,7 +29,7 @@ function AclApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { aclType, environment, status, topic } = useTableFiltersValues({
+  const { aclType, environment, status, topic } = useFiltersValues({
     defaultStatus: "CREATED",
   });
 

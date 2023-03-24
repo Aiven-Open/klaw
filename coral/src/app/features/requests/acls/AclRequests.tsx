@@ -6,13 +6,13 @@ import { Pagination } from "src/app/components/Pagination";
 import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
-import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
-import { OperationTypeFilter } from "src/app/features/components/table-filters/OperationTypeFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { useTableFiltersValues } from "src/app/features/components/table-filters/useTableFiltersValues";
+import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
+import { OperationTypeFilter } from "src/app/features/components/filters/OperationTypeFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { AclRequestsTable } from "src/app/features/requests/acls/components/AclRequestsTable";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
@@ -34,7 +34,7 @@ function AclRequests() {
     status,
     showOnlyMyRequests,
     operationType,
-  } = useTableFiltersValues();
+  } = useFiltersValues();
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";

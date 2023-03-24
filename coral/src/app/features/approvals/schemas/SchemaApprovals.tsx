@@ -8,10 +8,10 @@ import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { useTableFiltersValues } from "src/app/features/components/table-filters/useTableFiltersValues";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import {
   approveSchemaRequest,
   declineSchemaRequest,
@@ -27,7 +27,7 @@ function SchemaApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, topic } = useTableFiltersValues({
+  const { environment, status, topic } = useFiltersValues({
     defaultStatus: "CREATED",
   });
 
