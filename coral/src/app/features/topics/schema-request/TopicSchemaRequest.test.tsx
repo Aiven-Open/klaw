@@ -686,7 +686,7 @@ describe("TopicSchemaRequest", () => {
       });
     });
 
-    it("redirects user to '/mySchemaRequests after schema request was successful", async () => {
+    it("shows a dialog informing user that schema request was successful", async () => {
       const form = getForm();
 
       const select = within(form).getByRole("combobox", {
@@ -708,12 +708,47 @@ describe("TopicSchemaRequest", () => {
       await userEvent.upload(fileInput, testFile);
       await userEvent.click(button);
 
-      await waitFor(() => {
-        expect(mockedUsedNavigate).toHaveBeenCalledTimes(1);
-        expect(mockedUsedNavigate).toHaveBeenCalledWith(
-          "/requests/schemas?status=CREATED"
-        );
+      expect(mockCreateSchemaRequest).toHaveBeenCalled();
+
+      const successModal = await screen.findByRole("dialog");
+      expect(successModal).toBeVisible();
+      expect(successModal).toHaveTextContent("Schema request successful!");
+    });
+
+    it("user can continue to the next page without waiting for redirect in the dialog", async () => {
+      const form = getForm();
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
       });
+      const option = within(select).getByRole("option", {
+        name: mockedEnvironments[0].name,
+      });
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const submitButton = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(submitButton).toBeDisabled();
+
+      await userEvent.selectOptions(select, option);
+      await userEvent.tab();
+      await userEvent.upload(fileInput, testFile);
+      await userEvent.click(submitButton);
+
+      expect(mockCreateSchemaRequest).toHaveBeenCalled();
+
+      const successModal = await screen.findByRole("dialog");
+      const button = within(successModal).getByRole("button", {
+        name: "Continue",
+      });
+
+      await userEvent.click(button);
+
+      expect(mockedUsedNavigate).toHaveBeenCalledWith(
+        "/requests/schemas?status=CREATED"
+      );
     });
   });
 });

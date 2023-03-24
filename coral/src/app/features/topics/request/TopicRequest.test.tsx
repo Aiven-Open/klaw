@@ -826,6 +826,7 @@ describe("<TopicRequest />", () => {
         const successModal = await screen.findByRole("dialog");
 
         expect(successModal).toBeVisible();
+        expect(successModal).toHaveTextContent("Topic request successful!");
       });
 
       it("user can continue to the next page without waiting for redirect in the dialog", async () => {
