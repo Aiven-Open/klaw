@@ -13,6 +13,7 @@ type UseFiltersValuesParams =
       defaultStatus?: RequestStatus;
       defaultTeam?: string;
       defaultOperationType?: RequestOperationType | "ALL";
+      defaultShowOnlyMyRequests?: boolean;
     }
   | undefined;
 
@@ -25,6 +26,7 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
     defaultStatus = "ALL",
     defaultTeam = "ALL",
     defaultOperationType = "ALL",
+    defaultShowOnlyMyRequests = false,
   } = defaultValues;
 
   const topic = searchParams.get("topic") ?? defaultTopic;
@@ -34,7 +36,9 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
   const status = (searchParams.get("status") as RequestStatus) ?? defaultStatus;
   const team = searchParams.get("team") ?? defaultTeam;
   const showOnlyMyRequests =
-    searchParams.get("showOnlyMyRequests") === "true" ?? true;
+    searchParams.get("showOnlyMyRequests") === "true"
+      ? true
+      : defaultShowOnlyMyRequests;
   const operationType =
     (searchParams.get("operationType") as RequestOperationType | "ALL") ??
     defaultOperationType;
