@@ -207,28 +207,22 @@ const checkStatus = (response: Response): Promise<Response> => {
 function isGenericApiResponse(
   response: unknown | unknown[]
 ): response is GenericApiResponse {
-  return (
-    objectHasProperty(response, "timestamp") &&
-    objectHasProperty(response, "data") &&
-    objectHasProperty(response, "debugMessage") &&
-    objectHasProperty(response, "message") &&
-    objectHasProperty(response, "result") &&
-    objectHasProperty(response, "status")
-  );
+  return objectHasProperty(response, "result");
 }
 
 // Klaw currently does not return ERRORs from the API but always a 200
 // An error is always following this patter:
 // {
-//   status: null,
-//   timestamp: null,
-//   message: null,
-//   debugMessage: null,
-//   result: "Failure. <SOME MORE TEXT>",
-//   data: null,
+// status?: "100 CONTINUE" ...(etc._
+// timestamp?: string;
+// message?: string;
+// debugMessage?: string;
+// result: string;
+// data?: Record<string, never>;
 // };
 // to provide error messages for the user, we added this
 // temp fix. It can be removed once the API is updated
+
 async function checkForFailureHiddenAsSuccess<TResponse extends SomeObject>(
   response: TResponse
 ): Promise<TResponse> {

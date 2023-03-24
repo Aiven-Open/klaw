@@ -27,22 +27,16 @@ type HTTPScenario = {
 // Klaw currently does not return ERRORs from the API but always a 200
 // An error is always following this patter:
 // {
-//   status: null,
-//   timestamp: null,
-//   message: null,
-//   debugMessage: null,
-//   result: "Failure. <SOME MORE TEXT>",
-//   data: null,
+// status?: "100 CONTINUE" ...(etc._
+// timestamp?: string;
+// message?: string;
+// debugMessage?: string;
+// result: string;
+// data?: Record<string, never>;
 // };
-// to provide error messages for the user, we added a temp fix
-// see `checkForFailureHiddenAsSuccess` in api.ts
-// the HTTPScenario "fakeOk" is responsible for testing the fix
-// until it's removed
+// to provide error messages for the user, we added this
+// temp fix. It can be removed once the API is updated
 const klawResponseResultWithHiddenError: GenericApiResponse = {
-  data: {},
-  timestamp: "",
-  debugMessage: "",
-  message: "",
   result: "Failure. A request already exists for this topic.",
   status: "200 OK",
 };
