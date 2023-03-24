@@ -1,13 +1,12 @@
 import { cleanup, renderHook } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 
 describe("useFiltersValues.tsx", () => {
-  afterEach(() => {
-    cleanup();
-  });
-
   describe("should get correct filter values from search paramns", () => {
+    afterEach(() => {
+      cleanup();
+    });
     it("gets the correct topic filter value", () => {
       const {
         result: { current },
@@ -99,6 +98,9 @@ describe("useFiltersValues.tsx", () => {
     });
 
     describe("should get correct filter values when default value is passed", () => {
+      afterEach(() => {
+        cleanup();
+      });
       it("gets the correct topic filter value", () => {
         const {
           result: { current },
@@ -171,6 +173,110 @@ describe("useFiltersValues.tsx", () => {
 
         expect(current.operationType).toBe("CREATE");
       });
+    });
+  });
+  describe("should set correct filter values when using setFilterValue", () => {
+    afterEach(() => {
+      window.history.pushState({}, "", "/");
+      cleanup();
+    });
+    it("sets the correct topic filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+
+      current.setFilterValue({
+        name: "topic",
+        value: "hellotopic",
+      });
+
+      expect(window.location.search).toBe("?topic=hellotopic&page=1");
+    });
+    it("sets the correct environment filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+
+      current.setFilterValue({
+        name: "environment",
+        value: "1",
+      });
+
+      expect(window.location.search).toBe("?environment=1&page=1");
+    });
+    it("sets the correct aclType filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+
+      current.setFilterValue({
+        name: "aclType",
+        value: "PRODUCER",
+      });
+
+      expect(window.location.search).toBe("?aclType=PRODUCER&page=1");
+    });
+    it("sets the correct status filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+
+      current.setFilterValue({
+        name: "status",
+        value: "CREATED",
+      });
+
+      expect(window.location.search).toBe("?status=CREATED&page=1");
+    });
+    it("sets the correct team filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+
+      current.setFilterValue({
+        name: "team",
+        value: "2",
+      });
+
+      expect(window.location.search).toBe("?team=2&page=1");
+    });
+    it("sets the correct showOnlyMyRequests filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+
+      current.setFilterValue({
+        name: "showOnlyMyRequests",
+        value: "true",
+      });
+
+      expect(window.location.search).toBe("?showOnlyMyRequests=true&page=1");
+    });
+    it("sets the correct operationType filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+
+      current.setFilterValue({
+        name: "operationType",
+        value: "CREATE",
+      });
+
+      expect(window.location.search).toBe("?operationType=CREATE&page=1");
     });
   });
 });
