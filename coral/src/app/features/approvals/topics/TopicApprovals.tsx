@@ -92,8 +92,9 @@ function TopicApprovals() {
     onSuccess: (responses) => {
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
-
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorMessage(
           response.message || response.result || "Unexpected error"
         );
@@ -138,8 +139,9 @@ function TopicApprovals() {
     onSuccess: (responses) => {
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
-
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorMessage(
           response.message || response.result || "Unexpected error"
         );

@@ -89,7 +89,9 @@ function AclApprovals() {
     mutationFn: approveAclRequest,
     onSuccess: (responses) => {
       const response = responses[0];
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorMessage(
           response.message || response.result || "Unexpected error"
         );
@@ -125,7 +127,9 @@ function AclApprovals() {
     mutationFn: declineAclRequest,
     onSuccess: (responses) => {
       const response = responses[0];
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorMessage(
           response.message || response.result || "Unexpected error"
         );
