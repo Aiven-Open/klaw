@@ -1,6 +1,6 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import {
   Environment,
   getEnvironments,
@@ -15,9 +15,7 @@ interface EnvironmentFilterProps {
 function EnvironmentFilter({
   isSchemaRegistryEnvironments = false,
 }: EnvironmentFilterProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const environment = searchParams.get("environment") ?? "ALL";
+  const { environment, setFilterValue } = useFiltersValues();
 
   const { data: environments } = useQuery<Environment[], HTTPError>(
     ["topic-environments"],
@@ -27,18 +25,6 @@ function EnvironmentFilter({
         : getEnvironments,
     }
   );
-
-  function handleChangeEnv(newEnvironment: string) {
-    const isAllEnvironments = newEnvironment === "ALL";
-    if (isAllEnvironments) {
-      searchParams.delete("environment");
-      searchParams.set("page", "1");
-    } else {
-      searchParams.set("environment", newEnvironment);
-      searchParams.set("page", "1");
-    }
-    setSearchParams(searchParams);
-  }
 
   if (!environments) {
     return (
@@ -51,7 +37,9 @@ function EnvironmentFilter({
       <NativeSelect
         labelText="Filter by Environment"
         value={environment}
-        onChange={(event) => handleChangeEnv(event.target.value)}
+        onChange={(event) =>
+          setFilterValue({ name: "environment", value: event.target.value })
+        }
       >
         <Option key={"ALL"} value={"ALL"}>
           All Environments

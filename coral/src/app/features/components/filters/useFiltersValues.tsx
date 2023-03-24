@@ -1,9 +1,18 @@
 import { useSearchParams } from "react-router-dom";
 import { AclType } from "src/domain/acl/acl-types";
 import {
-  RequestStatus,
   RequestOperationType,
+  RequestStatus,
 } from "src/domain/requests/requests-types";
+
+type SetFiltersParams =
+  | { name: "topic"; value: string }
+  | { name: "environment"; value: string }
+  | { name: "aclType"; value: AclType | "ALL" }
+  | { name: "status"; value: RequestStatus }
+  | { name: "team"; value: string }
+  | { name: "showOnlyMyRequests"; value: "true" | "false" }
+  | { name: "operationType"; value: RequestOperationType | "ALL" };
 
 type UseFiltersValuesParams =
   | {
@@ -18,7 +27,7 @@ type UseFiltersValuesParams =
   | undefined;
 
 const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     defaultTopic = "",
     defaultEnvironment = "ALL",
@@ -43,6 +52,22 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
     (searchParams.get("operationType") as RequestOperationType | "ALL") ??
     defaultOperationType;
 
+  const setFilterValue = ({ name, value }: SetFiltersParams) => {
+    if (
+      (value === "ALL" && name !== "status") ||
+      value === "" ||
+      value === "false"
+    ) {
+      searchParams.delete(name);
+      searchParams.set("page", "1");
+      setSearchParams(searchParams);
+    } else {
+      searchParams.set(name, value);
+      searchParams.set("page", "1");
+      setSearchParams(searchParams);
+    }
+  };
+
   return {
     topic,
     environment,
@@ -51,6 +76,7 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
     team,
     showOnlyMyRequests,
     operationType,
+    setFilterValue,
   };
 };
 

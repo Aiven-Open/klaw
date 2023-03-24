@@ -1,24 +1,21 @@
 import { Switch } from "@aivenio/aquarium";
-import { useSearchParams } from "react-router-dom";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 
 function MyRequestsFilter() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const isMyRequest = searchParams.get("showOnlyMyRequests") === "true";
+  const { showOnlyMyRequests, setFilterValue } = useFiltersValues();
 
   const handleChangeIsMyRequest = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     if (event.target.checked) {
-      searchParams.set("showOnlyMyRequests", "true");
+      setFilterValue({ name: "showOnlyMyRequests", value: "true" });
     } else {
-      searchParams.delete("showOnlyMyRequests");
+      setFilterValue({ name: "showOnlyMyRequests", value: "false" });
     }
-    searchParams.set("page", "1");
-    setSearchParams(searchParams);
   };
 
   return (
-    <Switch checked={isMyRequest} onChange={handleChangeIsMyRequest}>
+    <Switch checked={showOnlyMyRequests} onChange={handleChangeIsMyRequest}>
       Show only my requests
     </Switch>
   );

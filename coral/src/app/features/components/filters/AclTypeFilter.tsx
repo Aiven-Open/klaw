@@ -1,20 +1,12 @@
 import { NativeSelect } from "@aivenio/aquarium";
-import { useSearchParams } from "react-router-dom";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { AclType } from "src/domain/acl";
 
 type AclTypeForFilter = AclType | "ALL";
 const aclTypesForFilter: AclTypeForFilter[] = ["ALL", "CONSUMER", "PRODUCER"];
 
 function AclTypeFilter() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const aclType = searchParams.get("aclType") ?? ("ALL" as AclType);
-
-  const handleChangeAclType = (nextAclType: AclTypeForFilter) => {
-    searchParams.set("aclType", nextAclType);
-    searchParams.set("page", "1");
-
-    setSearchParams(searchParams);
-  };
+  const { aclType, setFilterValue } = useFiltersValues();
 
   return (
     <NativeSelect
@@ -23,7 +15,7 @@ function AclTypeFilter() {
       defaultValue={aclType}
       onChange={(e) => {
         const selectedType = e.target.value as AclTypeForFilter;
-        return handleChangeAclType(selectedType);
+        return setFilterValue({ name: "aclType", value: selectedType });
       }}
     >
       {aclTypesForFilter.map((type) => {

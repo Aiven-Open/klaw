@@ -1,9 +1,9 @@
 import { NativeSelect } from "@aivenio/aquarium";
-import { useSearchParams } from "react-router-dom";
 import {
   requestStatusNameMap,
   statusList,
 } from "src/app/features/approvals/utils/request-status-helper";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { RequestStatus } from "src/domain/requests/requests-types";
 
 type StatusFilterProps = {
@@ -12,15 +12,8 @@ type StatusFilterProps = {
 
 function StatusFilter(props: StatusFilterProps) {
   const { defaultStatus } = props;
-  const [searchParams, setSearchParams] = useSearchParams();
-  const status =
-    (searchParams.get("status") as RequestStatus | null) ?? defaultStatus;
 
-  const handleChangeStatus = (nextStatus: RequestStatus) => {
-    searchParams.set("status", nextStatus);
-    searchParams.set("page", "1");
-    setSearchParams(searchParams);
-  };
+  const { status, setFilterValue } = useFiltersValues({ defaultStatus });
 
   return (
     <NativeSelect
@@ -29,7 +22,7 @@ function StatusFilter(props: StatusFilterProps) {
       defaultValue={status}
       onChange={(e) => {
         const status = e.target.value as RequestStatus;
-        return handleChangeStatus(status);
+        return setFilterValue({ name: "status", value: status });
       }}
     >
       {statusList.map((status) => {
