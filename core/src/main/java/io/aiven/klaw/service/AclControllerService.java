@@ -13,6 +13,8 @@ import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.ServiceAccounts;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
@@ -22,9 +24,11 @@ import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.MailType;
+import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -34,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -51,6 +56,8 @@ import org.springframework.stereotype.Service;
 public class AclControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String SEPARATOR_ACL = "<ACL>";
+
+  private static final int ALLOWED_SERVICE_ACCOUNTS_PER_TEAM = 25;
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired private final MailUtils mailService;
@@ -87,17 +94,18 @@ public class AclControllerService {
           .build();
     }
 
+    String kafkaFlavor =
+        manageDatabase
+            .getClusters(KafkaClustersType.KAFKA, tenantId)
+            .get(getEnvDetails(aclRequestsModel.getEnvironment(), tenantId).getClusterId())
+            .getKafkaFlavor();
+
     if (AclType.CONSUMER == aclRequestsModel.getAclType()) {
       if (AclPatternType.PREFIXED.value.equals(aclRequestsModel.getAclPatternType())) {
         result = "Failure : Please change the pattern to LITERAL for topic type.";
         return ApiResponse.builder().result(result).build();
       }
 
-      String kafkaFlavor =
-          manageDatabase
-              .getClusters(KafkaClustersType.KAFKA, tenantId)
-              .get(getEnvDetails(aclRequestsModel.getEnvironment(), tenantId).getClusterId())
-              .getKafkaFlavor();
       // ignore consumer group check for Aiven kafka flavors
       if (!kafkaFlavor.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
         if (validateTeamConsumerGroup(
@@ -109,6 +117,13 @@ public class AclControllerService {
           return ApiResponse.builder().result(result).build();
         }
       }
+    }
+
+    if (kafkaFlavor.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
+      if (verifyServiceAccountsOfTeam(aclRequestsModel, tenantId))
+        return ApiResponse.builder()
+            .result("Failure : Mentioned Service account used by another team.")
+            .build();
     }
 
     String transactionalId = aclRequestsModel.getTransactionalId();
@@ -124,6 +139,38 @@ public class AclControllerService {
 
     aclRequestsDao.setTenantId(tenantId);
     return executeAclRequestModel(currentUserName, aclRequestsDao, ACL_REQUESTED);
+  }
+
+  public boolean verifyServiceAccountsOfTeam(AclRequestsModel aclRequestsModel, int tenantId) {
+    // check if service account is from the same team or other team
+    boolean isNewServiceAccount = false;
+
+    Optional<Team> optionalTeam =
+        manageDatabase.getTeamObjForTenant(tenantId).stream()
+            .filter(team -> Objects.equals(team.getTeamId(), aclRequestsModel.getRequestingteam()))
+            .findFirst();
+
+    if (optionalTeam.isPresent()) {
+      ServiceAccounts serviceAccounts = optionalTeam.get().getServiceAccounts();
+
+      for (String serviceAccountSsl : aclRequestsModel.getAcl_ssl()) {
+        if (serviceAccounts != null && serviceAccounts.getServiceAccountsList() != null) {
+          if (!serviceAccounts.getServiceAccountsList().contains(serviceAccountSsl)) {
+            isNewServiceAccount = true;
+          }
+        } else {
+          if (manageDatabase.getAllServiceAccounts(tenantId).contains(serviceAccountSsl)) {
+            return true;
+          }
+        }
+        // service account check if exists in another team
+        if (isNewServiceAccount
+            && manageDatabase.getAllServiceAccounts(tenantId).contains(serviceAccountSsl)) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   void handleIpAddressAndCNString(AclRequestsModel aclRequestsModel, AclRequests aclRequestsDao) {
@@ -535,7 +582,8 @@ public class AclControllerService {
     aclReq.setAcl_ip(allIps);
     aclReq.setAcl_ssl(allSsl);
     String updateAclReqStatus;
-    updateAclReqStatus = handleClusterApiResponse(userDetails, dbHandle, aclReq, response);
+    updateAclReqStatus =
+        handleAclRequestClusterApiResponse(userDetails, dbHandle, aclReq, response, tenantId);
 
     MailType notifyUserType = ACL_REQUEST_APPROVED;
     if (!updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
@@ -576,11 +624,12 @@ public class AclControllerService {
     return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
   }
 
-  private static String handleClusterApiResponse(
+  private String handleAclRequestClusterApiResponse(
       String userDetails,
       HandleDbRequests dbHandle,
       AclRequests aclReq,
-      ResponseEntity<ApiResponse> response) {
+      ResponseEntity<ApiResponse> response,
+      int tenantId) {
     String updateAclReqStatus;
     try {
       ApiResponse responseBody = Objects.requireNonNull(response).getBody();
@@ -588,10 +637,12 @@ public class AclControllerService {
           .getResult()
           .contains(ApiResultStatus.SUCCESS.value)) {
         String jsonParams = "", aivenAclIdKey = "aivenaclid";
-        if (responseBody.getData() instanceof Map) {
-          Map<String, String> dataMap = (Map<String, String>) responseBody.getData();
+        Object responseData = responseBody.getData();
+        if (responseData instanceof Map) {
+          Map<String, String> dataMap = (Map<String, String>) responseData;
           if (dataMap.containsKey(aivenAclIdKey)) {
             jsonParams = "{\"" + aivenAclIdKey + "\":\"" + dataMap.get(aivenAclIdKey) + "\"}";
+            updateServiceAccountsForTeam(aclReq, tenantId);
           }
         }
         updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
@@ -605,25 +656,47 @@ public class AclControllerService {
     return updateAclReqStatus;
   }
 
+  private void updateServiceAccountsForTeam(AclRequests aclRequest, int tenantId) {
+    Optional<Team> optionalTeam =
+        manageDatabase.getTeamObjForTenant(tenantId).stream()
+            .filter(team -> Objects.equals(team.getTeamId(), aclRequest.getRequestingteam()))
+            .findFirst();
+    if (optionalTeam.isPresent()) {
+      ServiceAccounts serviceAccounts = optionalTeam.get().getServiceAccounts();
+      if (serviceAccounts != null && serviceAccounts.getServiceAccountsList() != null) {
+        serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
+      } else {
+        serviceAccounts = new ServiceAccounts();
+        serviceAccounts.setNumberOfAllowedAccounts(ALLOWED_SERVICE_ACCOUNTS_PER_TEAM);
+        serviceAccounts.setServiceAccountsList(new HashSet<>());
+        serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
+        optionalTeam.get().setServiceAccounts(serviceAccounts);
+      }
+      // Update team with service account
+      manageDatabase.getHandleDbRequests().updateTeam(optionalTeam.get());
+      commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.UPDATE);
+    }
+  }
+
   private ResponseEntity<ApiResponse> invokeClusterApiAclRequest(int tenantId, AclRequests aclReq)
       throws KlawException {
     ResponseEntity<ApiResponse> response = null;
     AclIPPrincipleType aclIPPrincipleType = aclReq.getAclIpPrincipleType();
     switch (aclIPPrincipleType) {
-      case IP_ADDRESS:
+      case IP_ADDRESS -> {
         String[] aclListIp = aclReq.getAcl_ip().split(SEPARATOR_ACL);
         for (String s : aclListIp) {
           aclReq.setAcl_ip(s);
           response = clusterApiService.approveAclRequests(aclReq, tenantId);
         }
-        break;
-      case PRINCIPAL:
+      }
+      case PRINCIPAL -> {
         String[] aclListSsl = aclReq.getAcl_ssl().split(SEPARATOR_ACL);
         for (String s : aclListSsl) {
           aclReq.setAcl_ssl(s);
           response = clusterApiService.approveAclRequests(aclReq, tenantId);
         }
-        break;
+      }
     }
 
     return response;
@@ -764,13 +837,20 @@ public class AclControllerService {
     int tenantId = commonUtilsService.getTenantId(loggedInUser);
     log.info("Retrieving service accounts for environment {}", envId);
     try {
-      // Get details from Cluster Api
-      KwClusters kwClusters =
-          manageDatabase
-              .getClusters(KafkaClustersType.KAFKA, tenantId)
-              .get(getEnvDetails(envId, tenantId).getClusterId());
-      return clusterApiService.getAivenServiceAccounts(
-          kwClusters.getProjectName(), kwClusters.getServiceName(), tenantId);
+      Set<String> serviceAccountsOfTeam = new HashSet<>();
+      Optional<Team> optionalTeam =
+          manageDatabase.getTeamObjForTenant(tenantId).stream()
+              .filter(
+                  team ->
+                      Objects.equals(team.getTeamId(), commonUtilsService.getTeamId(loggedInUser)))
+              .findFirst();
+      if (optionalTeam.isPresent() && optionalTeam.get().getServiceAccounts() != null) {
+        serviceAccountsOfTeam = optionalTeam.get().getServiceAccounts().getServiceAccountsList();
+      }
+      return ApiResponse.builder()
+          .result(ApiResultStatus.SUCCESS.value)
+          .data(serviceAccountsOfTeam)
+          .build();
     } catch (Exception e) {
       log.error("Ignoring error while retrieving service accounts {} ", e.toString());
     }

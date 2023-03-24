@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -55,6 +56,8 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   private static Map<Integer, Map<String, Map<String, String>>> kwPropertiesMapPerTenant;
 
   private static Map<Integer, List<Team>> teamsPerTenant;
+
+  private static Set<String> serviceAccounts;
 
   // key is tenant id, value is list of envs
   private static Map<Integer, List<String>> envsOfTenantsMap;
@@ -348,6 +351,27 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return teamsAndAllowedEnvsPerTenant.get(tenantId).keySet();
   }
 
+  // return teams
+  public List<Team> getTeamObjForTenant(int tenantId) {
+    return teamsPerTenant.get(tenantId);
+  }
+
+  public Set<String> getAllServiceAccounts(int tenantId) {
+    return serviceAccounts;
+  }
+
+  private void updateAllServiceAccounts(int tenantId) {
+    serviceAccounts = new HashSet<>();
+    getTeamObjForTenant(tenantId)
+        .forEach(
+            a -> {
+              if (a.getServiceAccounts() != null
+                  && a.getServiceAccounts().getServiceAccountsList() != null) {
+                serviceAccounts.addAll(a.getServiceAccounts().getServiceAccountsList());
+              }
+            });
+  }
+
   public Set<String> getTeamNamesForTenant(int tenantId) {
     return teamsPerTenant.get(tenantId).stream().map(Team::getTeamname).collect(Collectors.toSet());
   }
@@ -457,9 +481,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     Map<Integer, String> teamsAndNames = new HashMap<>();
 
     List<Team> teamList =
-        allTeams.stream()
-            .filter(team -> Objects.equals(team.getTenantId(), tenantId))
-            .collect(Collectors.toList());
+        allTeams.stream().filter(team -> Objects.equals(team.getTenantId(), tenantId)).toList();
 
     for (Team team : teamList) {
       teamsAndAllowedEnvs.put(team.getTeamId(), envsOfTenantsMap.get(tenantId));
@@ -469,6 +491,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
     teamsAndAllowedEnvsPerTenant.put(tenantId, teamsAndAllowedEnvs);
     teamIdAndNamePerTenant.put(tenantId, teamsAndNames);
+    updateAllServiceAccounts(tenantId);
   }
 
   public Map<Integer, KwTenantConfigModel> getTenantConfig() {

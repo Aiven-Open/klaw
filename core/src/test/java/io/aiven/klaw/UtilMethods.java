@@ -7,6 +7,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.ServiceAccounts;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
@@ -303,7 +304,15 @@ public class UtilMethods {
     team.setTeamphone("3142342343242");
     team.setTeammail("test@test.com");
 
+    ServiceAccounts serviceAccounts = new ServiceAccounts();
+    Set<String> serviceAccountsList = new HashSet<>();
+    serviceAccountsList.add("user1");
+    serviceAccountsList.add("user2");
+    serviceAccounts.setNumberOfAllowedAccounts(25);
+    serviceAccounts.setServiceAccountsList(serviceAccountsList);
+    team.setServiceAccounts(serviceAccounts);
     allTopicReqs.add(team);
+
     return allTopicReqs;
   }
 
