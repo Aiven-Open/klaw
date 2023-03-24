@@ -22,6 +22,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -49,6 +50,9 @@ public class SchemaService {
 
   public static final String TOPIC_COMPATIBILITY_URI_TEMPLATE =
       "/compatibility/subjects/{topic_name}-value/versions/latest";
+
+  public static final String TOPIC_GET_VERSIONS_URI_TEMPLATE =
+      "/subjects/{topic_name}-value/versions";
 
   @Value("${klaw.schemaregistry.compatibility.default:BACKWARD}")
   private String defaultSchemaCompatibility;
@@ -454,14 +458,20 @@ public class SchemaService {
       KafkaSupportedProtocol schemaProtocol,
       String schemaEnv,
       String clusterIdentification) {
-
-    Pair<String, RestTemplate> reqDetails =
-        clusterApiUtils.getRequestDetails(
-            schemaEnv + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", topicName),
-            schemaProtocol);
-
-    HttpEntity<Map<String, String>> request = buildSchemaEntity(schema, clusterIdentification);
     try {
+      log.info("Check Schema Compatibility for TopicName: {}", topicName);
+      if (isFirstSchema(topicName, schemaProtocol, schemaEnv, clusterIdentification)) {
+        return ApiResponse.builder()
+            .result(ApiResultStatus.SUCCESS.value + " No Existing Schemas")
+            .build();
+      }
+
+      Pair<String, RestTemplate> reqDetails =
+          clusterApiUtils.getRequestDetails(
+              schemaEnv + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", topicName),
+              schemaProtocol);
+
+      HttpEntity<Map<String, String>> request = buildSchemaEntity(schema, clusterIdentification);
       ResponseEntity<SchemaCompatibilityCheckResponse> compatibility =
           reqDetails
               .getRight()
@@ -478,11 +488,44 @@ public class SchemaService {
             .build();
       }
     } catch (Exception ex) {
-      log.error("Error on Validating Schema: ", ex);
+      log.error("Exception on validating: ", ex);
       return ApiResponse.builder()
           .result(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.")
           .build();
     }
+  }
+
+  public boolean isFirstSchema(
+      String topicName,
+      KafkaSupportedProtocol schemaProtocol,
+      String schemaEnv,
+      String clusterIdentification) {
+
+    Pair<String, RestTemplate> reqDetails =
+        clusterApiUtils.getRequestDetails(
+            schemaEnv + TOPIC_GET_VERSIONS_URI_TEMPLATE.replace("{topic_name}", topicName),
+            schemaProtocol);
+    try {
+
+      reqDetails
+          .getRight()
+          .exchange(
+              reqDetails.getLeft(),
+              HttpMethod.GET,
+              new HttpEntity(
+                  clusterApiUtils.createHeaders(
+                      clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY)),
+              Integer[].class);
+
+    } catch (HttpClientErrorException ex) {
+      if (ex.getStatusCode().equals(HttpStatusCode.valueOf(404))) {
+        log.info("No existing Schema Found for Topic: {}", topicName);
+        return true;
+      } else {
+        throw ex;
+      }
+    }
+    return false;
   }
 
   private HttpEntity<Map<String, String>> buildSchemaEntity(
