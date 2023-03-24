@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withResourceNotFound;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -11,11 +12,15 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
+import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.util.Lists;
@@ -24,13 +29,20 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 @RestClientTest(SchemaService.class)
 class SchemaServiceTest {
+  public static final String TOPIC_COMPATIBILITY_URI_TEMPLATE =
+      "/compatibility/subjects/{topic_name}-value/versions/latest";
 
+  public static final String TOPIC_GET_VERSIONS_URI_TEMPLATE =
+      "/subjects/{topic_name}-value/versions";
+
+  private ObjectMapper mapper = new ObjectMapper();
   @Autowired SchemaService schemaService;
 
   RestTemplate restTemplate;
@@ -157,6 +169,121 @@ class SchemaServiceTest {
     ApiResponse apiResponse = schemaService.deleteSchema(clusterTopicRequest);
     assertThat(apiResponse.getResult())
         .isEqualTo("Schema deletion " + ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void checkSchemaCompatibility_ReturnSuccess() throws JsonProcessingException {
+    String topicName = "Octopus";
+    String dev = "Dev";
+    mockVersionsofSchema(topicName, dev, false);
+    String validationUrl =
+        dev + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", topicName);
+    when(getAdminClient.getRequestDetails(eq(validationUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(validationUrl, restTemplate));
+
+    when(getAdminClient.createHeaders(eq("18"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
+        .thenReturn(new HttpHeaders());
+    SchemaCompatibilityCheckResponse check = new SchemaCompatibilityCheckResponse();
+    check.setCompatible(true);
+    this.mockRestServiceServer
+        .expect(requestTo("/" + validationUrl))
+        .andRespond(withSuccess(mapper.writeValueAsString(check), MediaType.APPLICATION_JSON));
+
+    ApiResponse apiResponse =
+        schemaService.checkSchemaCompatibility(
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+    assertThat(apiResponse.getResult()).startsWith(ApiResultStatus.SUCCESS.value);
+
+    mockRestServiceServer.verify();
+  }
+
+  @Test
+  public void checkSchemaCompatibility_IsNotCompatibleReturnFailure()
+      throws JsonProcessingException {
+    String topicName = "Octopus";
+    String dev = "Dev";
+
+    mockVersionsofSchema(topicName, dev, false);
+
+    String validationUrl =
+        dev + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", topicName);
+    when(getAdminClient.getRequestDetails(eq(validationUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(validationUrl, restTemplate));
+    when(getAdminClient.createHeaders(eq("18"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
+        .thenReturn(new HttpHeaders());
+    SchemaCompatibilityCheckResponse check = new SchemaCompatibilityCheckResponse();
+    check.setCompatible(false);
+    this.mockRestServiceServer
+        .expect(requestTo("/" + validationUrl))
+        .andRespond(withSuccess(mapper.writeValueAsString(check), MediaType.APPLICATION_JSON));
+
+    ApiResponse apiResponse =
+        schemaService.checkSchemaCompatibility(
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+    assertThat(apiResponse.getResult()).startsWith(ApiResultStatus.FAILURE.value);
+
+    mockRestServiceServer.verify();
+  }
+
+  @Test
+  public void checkSchemaCompatibility_NoExistingSchema() throws JsonProcessingException {
+    String topicName = "Octopus";
+    String dev = "Dev";
+    String validationUrl =
+        dev + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", topicName);
+    mockVersionsofSchema(topicName, dev, true);
+    when(getAdminClient.getRequestDetails(eq(validationUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(validationUrl, restTemplate));
+
+    ApiResponse apiResponse =
+        schemaService.checkSchemaCompatibility(
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+    assertThat(apiResponse.getResult()).startsWith(ApiResultStatus.SUCCESS.value);
+
+    mockRestServiceServer.verify();
+  }
+
+  private void mockVersionsofSchema(String topicName, String dev, boolean isNotFound)
+      throws JsonProcessingException {
+    String versionUrl = dev + TOPIC_GET_VERSIONS_URI_TEMPLATE.replace("{topic_name}", topicName);
+    when(getAdminClient.getRequestDetails(eq(versionUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(versionUrl, restTemplate));
+    if (isNotFound) {
+      this.mockRestServiceServer
+          .expect(requestTo("/" + versionUrl))
+          .andRespond(withResourceNotFound());
+    } else {
+      this.mockRestServiceServer
+          .expect(requestTo("/" + versionUrl))
+          .andRespond(
+              withSuccess(
+                  mapper.writeValueAsString(isNotFound ? new ArrayList<>() : List.of(1)),
+                  MediaType.APPLICATION_JSON));
+    }
+  }
+
+  @Test
+  public void checkSchemaCompatibility_UnExpectedExceptionFailure() throws JsonProcessingException {
+    String topicName = "Octopus";
+    String dev = "Dev";
+
+    mockVersionsofSchema(topicName, dev, false);
+    // creating a different url so that the reqDetails is not created properly and causes an
+    // exception
+    String validationUrl =
+        dev + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", "notTheCorrectTopicName");
+    when(getAdminClient.getRequestDetails(eq(validationUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(validationUrl, restTemplate));
+    when(getAdminClient.createHeaders(eq("18"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
+        .thenReturn(new HttpHeaders());
+    SchemaCompatibilityCheckResponse check = new SchemaCompatibilityCheckResponse();
+    check.setCompatible(true);
+
+    ApiResponse apiResponse =
+        schemaService.checkSchemaCompatibility(
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+    assertThat(apiResponse.getResult())
+        .isEqualTo(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.");
   }
 
   private static ClusterTopicRequest deleteTopicRequest(String topicName) {

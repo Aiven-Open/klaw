@@ -347,6 +347,23 @@ public class ClusterApiController {
     }
   }
 
+  @PostMapping(value = "/schema/validate/compatibility")
+  public ResponseEntity<ApiResponse> schemaCompatibilityValidation(
+      @RequestBody @Valid ClusterSchemaRequest clusterSchemaRequest) {
+    try {
+      return new ResponseEntity<>(
+          schemaService.checkSchemaCompatibility(
+              clusterSchemaRequest.getFullSchema(),
+              clusterSchemaRequest.getTopicName(),
+              clusterSchemaRequest.getProtocol(),
+              clusterSchemaRequest.getEnv(),
+              clusterSchemaRequest.getClusterIdentification()),
+          HttpStatus.OK);
+    } catch (Exception e) {
+      return handleException(e);
+    }
+  }
+
   private static ResponseEntity<ApiResponse> handleException(Exception e) {
     log.error("Exception:", e);
     return new ResponseEntity<>(

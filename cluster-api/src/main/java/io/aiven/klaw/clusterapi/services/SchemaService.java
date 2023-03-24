@@ -3,6 +3,7 @@ package io.aiven.klaw.clusterapi.services;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
@@ -21,6 +22,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -45,6 +47,12 @@ public class SchemaService {
   public static final String SCHEMA_VALUE_URI = "-value";
 
   public static final String SCHEMA_SUBJECTS_URI = "subjects";
+
+  public static final String TOPIC_COMPATIBILITY_URI_TEMPLATE =
+      "/compatibility/subjects/{topic_name}-value/versions/latest";
+
+  public static final String TOPIC_GET_VERSIONS_URI_TEMPLATE =
+      "/subjects/{topic_name}-value/versions";
 
   @Value("${klaw.schemaregistry.compatibility.default:BACKWARD}")
   private String defaultSchemaCompatibility;
@@ -99,14 +107,10 @@ public class SchemaService {
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, clusterSchemaRequest.getProtocol());
 
-      Map<String, String> params = new HashMap<>();
-      params.put("schema", clusterSchemaRequest.getFullSchema());
-
-      HttpHeaders headers =
-          clusterApiUtils.createHeaders(
-              clusterSchemaRequest.getClusterIdentification(), KafkaClustersType.SCHEMA_REGISTRY);
-      headers.set("Content-Type", SCHEMA_REGISTRY_CONTENT_TYPE);
-      HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
+      HttpEntity<Map<String, String>> request =
+          buildSchemaEntity(
+              clusterSchemaRequest.getFullSchema(),
+              clusterSchemaRequest.getClusterIdentification());
       ResponseEntity<String> responseNew =
           reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
 
@@ -169,14 +173,9 @@ public class SchemaService {
     Pair<String, RestTemplate> reqDetails =
         clusterApiUtils.getRequestDetails(suffixUrl, clusterSchemaRequest.getProtocol());
 
-    Map<String, String> params = new HashMap<>();
-    params.put("schema", clusterSchemaRequest.getFullSchema());
-
-    HttpHeaders headers =
-        clusterApiUtils.createHeaders(
-            clusterSchemaRequest.getClusterIdentification(), KafkaClustersType.SCHEMA_REGISTRY);
-    headers.set("Content-Type", SCHEMA_REGISTRY_CONTENT_TYPE);
-    HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
+    HttpEntity<Map<String, String>> request =
+        buildSchemaEntity(
+            clusterSchemaRequest.getFullSchema(), clusterSchemaRequest.getClusterIdentification());
     ResponseEntity<String> responseNew =
         reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
 
@@ -451,5 +450,92 @@ public class SchemaService {
       log.error("Exception:", e);
       return ApiResponse.builder().result("Schema deletion failure " + e.getMessage()).build();
     }
+  }
+
+  public ApiResponse checkSchemaCompatibility(
+      String schema,
+      String topicName,
+      KafkaSupportedProtocol schemaProtocol,
+      String schemaEnv,
+      String clusterIdentification) {
+    try {
+      log.info("Check Schema Compatibility for TopicName: {}", topicName);
+      if (isFirstSchema(topicName, schemaProtocol, schemaEnv, clusterIdentification)) {
+        return ApiResponse.builder()
+            .result(ApiResultStatus.SUCCESS.value + " No Existing Schemas")
+            .build();
+      }
+
+      Pair<String, RestTemplate> reqDetails =
+          clusterApiUtils.getRequestDetails(
+              schemaEnv + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", topicName),
+              schemaProtocol);
+
+      HttpEntity<Map<String, String>> request = buildSchemaEntity(schema, clusterIdentification);
+      ResponseEntity<SchemaCompatibilityCheckResponse> compatibility =
+          reqDetails
+              .getRight()
+              .postForEntity(reqDetails.getLeft(), request, SchemaCompatibilityCheckResponse.class);
+      if (compatibility != null
+          && compatibility.hasBody()
+          && compatibility.getBody().isCompatible()) {
+        return ApiResponse.builder()
+            .result(ApiResultStatus.SUCCESS.value + " Schema is compatible.")
+            .build();
+      } else {
+        return ApiResponse.builder()
+            .result(ApiResultStatus.FAILURE.value + "  Schema is not compatible.")
+            .build();
+      }
+    } catch (Exception ex) {
+      log.error("Exception on validating: ", ex);
+      return ApiResponse.builder()
+          .result(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.")
+          .build();
+    }
+  }
+
+  public boolean isFirstSchema(
+      String topicName,
+      KafkaSupportedProtocol schemaProtocol,
+      String schemaEnv,
+      String clusterIdentification) {
+
+    Pair<String, RestTemplate> reqDetails =
+        clusterApiUtils.getRequestDetails(
+            schemaEnv + TOPIC_GET_VERSIONS_URI_TEMPLATE.replace("{topic_name}", topicName),
+            schemaProtocol);
+    try {
+
+      reqDetails
+          .getRight()
+          .exchange(
+              reqDetails.getLeft(),
+              HttpMethod.GET,
+              new HttpEntity(
+                  clusterApiUtils.createHeaders(
+                      clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY)),
+              Integer[].class);
+
+    } catch (HttpClientErrorException ex) {
+      if (ex.getStatusCode().equals(HttpStatusCode.valueOf(404))) {
+        log.info("No existing Schema Found for Topic: {}", topicName);
+        return true;
+      } else {
+        throw ex;
+      }
+    }
+    return false;
+  }
+
+  private HttpEntity<Map<String, String>> buildSchemaEntity(
+      String schema, String clusterIdentification) {
+    Map<String, String> params = new HashMap<>();
+    params.put("schema", schema);
+    HttpHeaders headers =
+        clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
+    headers.set("Content-Type", SCHEMA_REGISTRY_CONTENT_TYPE);
+    HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
+    return request;
   }
 }

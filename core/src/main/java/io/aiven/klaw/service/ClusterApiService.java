@@ -711,6 +711,40 @@ public class ClusterApiService {
     return response;
   }
 
+  ResponseEntity<ApiResponse> validateSchema(
+      String fullSchema, String env, String topicName, int tenantId) throws KlawException {
+    log.info("postSchema {} {}", topicName, env);
+    getClusterApiProperties(tenantId);
+    try {
+
+      String uri = clusterConnUrl + URI_VALIDATE_SCHEMA;
+
+      Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
+
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+              .get(envSelected.getClusterId());
+      ClusterSchemaRequest clusterSchemaRequest =
+          ClusterSchemaRequest.builder()
+              .protocol(kwClusters.getProtocol())
+              .env(kwClusters.getBootstrapServers())
+              .topicName(topicName)
+              .fullSchema(fullSchema)
+              .clusterIdentification(kwClusters.getClusterName() + kwClusters.getClusterId())
+              .build();
+
+      HttpHeaders headers = createHeaders(clusterApiUser);
+      headers.setContentType(MediaType.APPLICATION_JSON);
+
+      HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
+      return getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+    } catch (Exception e) {
+      log.error("Error from Validating Schema. ", e);
+      throw new KlawException("Could not validate schema. Please contact Administrator.");
+    }
+  }
+
   public TreeMap<Integer, Map<String, Object>> getAvroSchema(
       String schemaRegistryHost,
       KafkaSupportedProtocol protocol,

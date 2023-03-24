@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -61,6 +62,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class SchemaRegistryControllerServiceTest {
 
   public static final String TESTTOPIC = "topic-1";
+  public static final String VALIDATION_FAILURE_MSG =
+      ApiResultStatus.FAILURE.value + "  Schema is not compatible.";
+  public static final String VALIDATION_SUCCESS_MSG =
+      ApiResultStatus.SUCCESS.value + " Schema is compatible.";
   @Mock private UserDetails userDetails;
 
   @Mock private HandleDbRequestsJdbc handleDbRequests;
@@ -104,6 +109,9 @@ public class SchemaRegistryControllerServiceTest {
 
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     loginMock();
+    Boolean validateOnSave = true;
+    ReflectionTestUtils.setField(
+        schemaRegistryControllerService, "validateCompatiblityOnSave", validateOnSave);
   }
 
   private void loginMock() {
@@ -269,13 +277,10 @@ public class SchemaRegistryControllerServiceTest {
   @Test
   @Order(7)
   public void uploadSchemaSuccess() throws KlawException {
-    SchemaRequestModel schemaRequest = new SchemaRequestModel();
-    schemaRequest.setSchemafull("{}");
-    schemaRequest.setRequestor("kwuserb");
-    schemaRequest.setEnvironment("1");
-    schemaRequest.setTopicname("topic");
+    SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
-
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -292,12 +297,8 @@ public class SchemaRegistryControllerServiceTest {
 
   @Test
   @Order(8)
-  public void uploadSchemaFailure() {
-    SchemaRequestModel schemaRequest = new SchemaRequestModel();
-    schemaRequest.setSchemafull("{}");
-    schemaRequest.setRequestor("kwuserb");
-    schemaRequest.setEnvironment("1");
-    schemaRequest.setTopicname("topic");
+  public void uploadSchemaFailure() throws KlawException {
+    SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
     Topic topic = createTopic();
 
     stubUserInfo();
@@ -309,6 +310,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenThrow(new RuntimeException("Error from schema upload"));
     when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
 
     try {
       schemaRegistryControllerService.uploadSchema(schemaRequest);
@@ -346,6 +349,8 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
 
     ApiResponse returnedValue =
@@ -361,6 +366,8 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
 
     ApiResponse returnedValue =
@@ -380,6 +387,8 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
 
     ApiResponse returnedValue =
@@ -399,6 +408,8 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
 
     ApiResponse returnedValue =
@@ -419,6 +430,8 @@ public class SchemaRegistryControllerServiceTest {
     mockGetEnvironment();
     mockSchema();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
     mockSchemaCreation();
 
     ApiResponse returnedValue =
@@ -432,6 +445,185 @@ public class SchemaRegistryControllerServiceTest {
     assertThat(json.get("name").asText()).isEqualTo("klawTestAvroV4");
   }
 
+  @Test
+  @Order(17)
+  public void promoteSchemaWithInCompaitbleSchemaReturnFailure() throws Exception {
+    mockGetEnvironment();
+    mockSchema();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(false));
+    mockSchemaCreation();
+
+    ApiResponse returnedValue =
+        schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "4"));
+    assertThat(returnedValue.getResult())
+        .isNotEqualTo("Unable to find or access the source Schema Registry");
+    assertThat(returnedValue.getResult()).isEqualTo(VALIDATION_FAILURE_MSG);
+    verify(clusterApiService, times(1))
+        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+  }
+
+  @Test
+  @Order(18)
+  public void uploadSchemaIncompatibleSchemaError() throws KlawException {
+    SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
+    Topic topic = createTopic();
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(false));
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+
+    ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
+    assertThat(resultResp.getResult()).isEqualTo(VALIDATION_FAILURE_MSG);
+    verify(clusterApiService, times(1))
+        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+  }
+
+  @Test
+  @Order(19)
+  public void validateSchemaReturnSchemaError() throws KlawException {
+    SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
+    Topic topic = createTopic();
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(false));
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+
+    ApiResponse resultResp = schemaRegistryControllerService.validateSchema(schemaRequest);
+    assertThat(resultResp.getResult()).isEqualTo(VALIDATION_FAILURE_MSG);
+    verify(clusterApiService, times(1))
+        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+  }
+
+  @Test
+  @Order(19)
+  public void validateSchemaReturnSchemaCompatible() throws KlawException {
+    SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
+    Topic topic = createTopic();
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+
+    ApiResponse resultResp = schemaRegistryControllerService.validateSchema(schemaRequest);
+    assertThat(resultResp.getResult()).isEqualTo(VALIDATION_SUCCESS_MSG);
+    verify(clusterApiService, times(1))
+        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+  }
+
+  @Test
+  @Order(19)
+  public void validateSchemaThrowError() throws KlawException {
+    SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
+    Topic topic = createTopic();
+    String exceptionMsg = "Unable to contact the schema registry";
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenThrow(new KlawException(exceptionMsg));
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+
+    KlawException ex =
+        assertThrows(
+            KlawException.class,
+            () -> schemaRegistryControllerService.validateSchema(schemaRequest));
+    assertThat(ex.getMessage()).isEqualTo(exceptionMsg);
+    verify(clusterApiService, times(1))
+        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+  }
+
+  @Test
+  @Order(20)
+  public void validateSchema_NoValidationOnSaveIgnored_ReturnSuccess() throws KlawException {
+    Object validateOnSave = false;
+    ReflectionTestUtils.setField(
+        schemaRegistryControllerService, "validateCompatiblityOnSave", validateOnSave);
+    SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
+    Topic topic = createTopic();
+    String exceptionMsg = "Unable to contact the schema registry";
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
+
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+
+    ApiResponse resultResp = schemaRegistryControllerService.validateSchema(schemaRequest);
+    assertThat(resultResp.getResult()).isEqualTo(VALIDATION_SUCCESS_MSG);
+
+    verify(clusterApiService, times(1))
+        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+  }
+
+  @Test
+  @Order(21)
+  public void uploadSchema_NoValidationOnSave() throws KlawException {
+    Object validateOnSave = false;
+    ReflectionTestUtils.setField(
+        schemaRegistryControllerService, "validateCompatiblityOnSave", validateOnSave);
+    SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
+    Topic topic = createTopic();
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
+
+    ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
+    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+
+    verify(clusterApiService, times(0))
+        .validateSchema(anyString(), anyString(), anyString(), anyInt());
+  }
+
+  @Test
+  @Order(22)
+  public void uploadSchema_ValidationPropertyNotSet() throws KlawException {
+
+    ReflectionTestUtils.setField(
+        schemaRegistryControllerService, "validateCompatiblityOnSave", null);
+    SchemaRequestModel schemaRequest = createDefaultSchemaRequestModel();
+    Topic topic = createTopic();
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(buildValidationResponse(true));
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+
+    NullPointerException ex =
+        assertThrows(
+            NullPointerException.class,
+            () -> schemaRegistryControllerService.uploadSchema(schemaRequest));
+    assertThat(ex.getMessage())
+        .isEqualTo(
+            "Cannot invoke \"java.lang.Boolean.booleanValue()\" because \"this.validateCompatiblityOnSave\" is null");
+  }
+
+  private static SchemaRequestModel createDefaultSchemaRequestModel() {
+    SchemaRequestModel schemaRequest = new SchemaRequestModel();
+    schemaRequest.setSchemafull("{}");
+    schemaRequest.setRequestor("kwuserb");
+    schemaRequest.setEnvironment("1");
+    schemaRequest.setTopicname("topic");
+    return schemaRequest;
+  }
+
   private void mockSchemaCreation() {
     Topic topic = createTopic();
 
@@ -443,6 +635,14 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+  }
+
+  private static ResponseEntity<ApiResponse> buildValidationResponse(boolean isSuccess) {
+    if (isSuccess) {
+      return ResponseEntity.ok(ApiResponse.builder().result(VALIDATION_SUCCESS_MSG).build());
+    } else {
+      return ResponseEntity.ok(ApiResponse.builder().result(VALIDATION_FAILURE_MSG).build());
+    }
   }
 
   private static Topic createTopic() {

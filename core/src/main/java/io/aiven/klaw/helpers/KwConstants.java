@@ -103,6 +103,8 @@ public class KwConstants {
   public static final String URI_POST_SCHEMA = "/topics/postSchema";
   public static final String URI_GET_SCHEMA = "/topics/getSchema/";
   public static final String URI_GET_METRICS = "/metrics/getMetrics";
+
+  public static final String URI_VALIDATE_SCHEMA = "/topics/schema/validate/compatibility";
   public static final String URI_AIVEN_SERVICE_ACCOUNT_DETAIL =
       "/topics/serviceAccountDetails/project/projectName/service/serviceName/user/userName";
   public static final String URI_AIVEN_SERVICE_ACCOUNTS =
