@@ -34,6 +34,8 @@
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
         <springdoc-openapi-ui.version>2.0.4</springdoc-openapi-ui.version>
+        <!-- If the Integration Tests are timing out because the server is slow increase the number below. 120 attempts is equal to 60s each attempt gets a 500ms backoff -->
+        <spring.integration.test.timeout>120</spring.integration.test.timeout>
     </properties>
 
     <dependencies>
@@ -264,7 +266,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true</jvmArguments>
+                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true </jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
@@ -272,6 +274,9 @@
                             <goal>start</goal>
                             <goal>stop</goal>
                         </goals>
+                        <configuration>
+                            <maxAttempts>${spring.integration.test.timeout}</maxAttempts>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
