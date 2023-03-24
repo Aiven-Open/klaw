@@ -12,10 +12,10 @@ import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRe
 import { OperationTypeFilter } from "src/app/features/components/table-filters/OperationTypeFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import { useTableFiltersValues } from "src/app/features/components/table-filters/useTableFiltersValues";
 import { AclRequestsTable } from "src/app/features/requests/acls/components/AclRequestsTable";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
-import { AclRequest } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { objectHasProperty } from "src/services/type-utils";
 
@@ -26,17 +26,15 @@ function AclRequests() {
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
-  const currentTopic = searchParams.get("topic") ?? "";
-  const currentEnvironment = searchParams.get("environment") ?? "ALL";
-  const currentAclType =
-    (searchParams.get("aclType") as AclRequest["aclType"]) ?? "ALL";
-  const currentStatus =
-    (searchParams.get("status") as AclRequest["requestStatus"]) ?? "ALL";
-  const currentOperationType =
-    (searchParams.get("operationType") as AclRequest["requestOperationType"]) ??
-    "ALL";
-  const showOnlyMyRequests =
-    searchParams.get("showOnlyMyRequests") === "true" ? true : undefined;
+
+  const {
+    topic,
+    environment,
+    aclType,
+    status,
+    showOnlyMyRequests,
+    operationType,
+  } = useTableFiltersValues();
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";
@@ -65,21 +63,21 @@ function AclRequests() {
     queryKey: [
       "aclRequests",
       currentPage,
-      currentTopic,
-      currentEnvironment,
-      currentAclType,
-      currentStatus,
-      currentOperationType,
+      topic,
+      environment,
+      aclType,
+      status,
+      operationType,
       showOnlyMyRequests,
     ],
     queryFn: () =>
       getAclRequests({
         pageNo: String(currentPage),
-        topic: currentTopic,
-        env: currentEnvironment,
-        aclType: currentAclType,
-        requestStatus: currentStatus,
-        operationType: currentOperationType,
+        topic,
+        env: environment,
+        aclType,
+        requestStatus: status,
+        operationType: operationType === "ALL" ? undefined : operationType,
         isMyRequest: showOnlyMyRequests,
       }),
     keepPreviousData: true,

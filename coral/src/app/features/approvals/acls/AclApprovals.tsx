@@ -4,21 +4,21 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApprovalsTable";
+import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
-import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
 import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import { useTableFiltersValues } from "src/app/features/components/table-filters/useTableFiltersValues";
 import {
   approveAclRequest,
   declineAclRequest,
   getAclRequestsForApprover,
 } from "src/domain/acl/acl-api";
-import { AclRequestsForApprover, AclType } from "src/domain/acl/acl-types";
-import { RequestStatus } from "src/domain/requests/requests-types";
+import { AclRequestsForApprover } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 function AclApprovals() {
@@ -29,12 +29,9 @@ function AclApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  // This logic is what should be extracted in a useFilters hook?
-  const currentAclType = (searchParams.get("aclType") as AclType) ?? "ALL";
-  const currentEnv = searchParams.get("environment") ?? "ALL";
-  const currentStatus =
-    (searchParams.get("status") as RequestStatus) ?? "CREATED";
-  const currentTopic = searchParams.get("topic") ?? "";
+  const { aclType, environment, status, topic } = useTableFiltersValues({
+    defaultStatus: "CREATED",
+  });
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -62,21 +59,14 @@ function AclApprovals() {
     AclRequestsForApprover,
     Error
   >({
-    queryKey: [
-      "aclRequests",
-      currentPage,
-      currentAclType,
-      currentEnv,
-      currentStatus,
-      currentTopic,
-    ],
+    queryKey: ["aclRequests", currentPage, aclType, environment, status, topic],
     queryFn: () =>
       getAclRequestsForApprover({
         pageNo: String(currentPage),
-        env: currentEnv,
-        requestStatus: currentStatus,
-        aclType: currentAclType,
-        topic: currentTopic,
+        env: environment,
+        requestStatus: status,
+        aclType,
+        topic,
       }),
     keepPreviousData: true,
   });
