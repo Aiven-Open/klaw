@@ -1014,7 +1014,7 @@ describe("<TopicAclRequest />", () => {
         });
       });
 
-      it("creates a new topic request when input was valid", async () => {
+      it("creates a new acl request when input was valid", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
@@ -1362,7 +1362,7 @@ describe("<TopicAclRequest />", () => {
       });
     });
 
-    describe("when API request is successful", () => {
+    describe("enables user to create a new acl request", () => {
       beforeEach(async () => {
         mockCreateAclRequest({
           mswInstance: server,
@@ -1370,7 +1370,7 @@ describe("<TopicAclRequest />", () => {
         });
       });
 
-      it("redirects user to previous page", async () => {
+      it("creates a new acl request when input was valid", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
 
@@ -1408,7 +1408,7 @@ describe("<TopicAclRequest />", () => {
         });
 
         await userEvent.type(consumerGroupField, "group");
-        userEvent.tab();
+        await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
@@ -1429,12 +1429,120 @@ describe("<TopicAclRequest />", () => {
           teamId: 1,
           consumergroup: "group",
         });
+      });
+
+      it("shows a dialog informing user that request was successful", async () => {
+        const spyPost = jest.spyOn(api, "post");
+        await assertSkeleton();
+
+        const aclConsumerTypeInput = screen.getByRole("radio", {
+          name: "Consumer",
+        });
+        await userEvent.click(aclConsumerTypeInput);
+
+        const submitButton = screen.getByRole("button", {
+          name: "Submit request",
+        });
+
+        // Fill form with valid data
+        await selectTestEnvironment();
+
+        expect(
+          screen.getByRole("radio", { name: "Principal" })
+        ).toBeInTheDocument();
+
+        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+        expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked();
+
+        const principalsField = await screen.findByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        });
+
+        expect(principalsField).toBeVisible();
+        expect(principalsField).toBeEnabled();
+
+        await userEvent.type(principalsField, "Alice");
+        await userEvent.tab();
+
+        const consumerGroupField = await screen.findByRole("textbox", {
+          name: "Consumer group *",
+        });
+
+        await userEvent.type(consumerGroupField, "group");
+        await userEvent.tab();
+
+        await waitFor(() => expect(submitButton).toBeEnabled());
+        await userEvent.click(submitButton);
 
         await waitFor(() => {
-          expect(mockedNavigate).toHaveBeenLastCalledWith(
-            "/requests/acls?status=CREATED"
-          );
+          expect(submitButton).toBeDisabled();
         });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+        const successModal = await screen.findByRole("dialog");
+
+        expect(successModal).toBeVisible();
+        expect(successModal).toHaveTextContent("Acl request successful!");
+      });
+
+      it("user can continue to the next page without waiting for redirect in the dialog", async () => {
+        const spyPost = jest.spyOn(api, "post");
+        await assertSkeleton();
+
+        const aclConsumerTypeInput = screen.getByRole("radio", {
+          name: "Consumer",
+        });
+        await userEvent.click(aclConsumerTypeInput);
+
+        const submitButton = screen.getByRole("button", {
+          name: "Submit request",
+        });
+
+        // Fill form with valid data
+        await selectTestEnvironment();
+
+        expect(
+          screen.getByRole("radio", { name: "Principal" })
+        ).toBeInTheDocument();
+
+        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+        expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked();
+
+        const principalsField = await screen.findByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        });
+
+        expect(principalsField).toBeVisible();
+        expect(principalsField).toBeEnabled();
+
+        await userEvent.type(principalsField, "Alice");
+        await userEvent.tab();
+
+        const consumerGroupField = await screen.findByRole("textbox", {
+          name: "Consumer group *",
+        });
+
+        await userEvent.type(consumerGroupField, "group");
+        await userEvent.tab();
+
+        await waitFor(() => expect(submitButton).toBeEnabled());
+        await userEvent.click(submitButton);
+
+        await waitFor(() => {
+          expect(submitButton).toBeDisabled();
+        });
+
+        expect(spyPost).toHaveBeenCalledTimes(1);
+        const successModal = await screen.findByRole("dialog");
+        const button = within(successModal).getByRole("button", {
+          name: "Continue",
+        });
+
+        await userEvent.click(button);
+
+        expect(mockedNavigate).toHaveBeenLastCalledWith(
+          "/requests/acls?status=CREATED"
+        );
       });
     });
   });
