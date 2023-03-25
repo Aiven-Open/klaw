@@ -1,5 +1,6 @@
 package io.aiven.klaw.model.response;
 
+import io.aiven.klaw.dao.ServiceAccounts;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
@@ -25,6 +26,8 @@ public class TeamModelResponse implements Serializable {
   @NotNull private boolean showDeleteTeam;
 
   @NotNull private String tenantName;
+
+  private ServiceAccounts serviceAccounts;
 
   private String app;
 

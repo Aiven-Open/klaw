@@ -595,6 +595,25 @@ public class UtilMethods {
     return aclRequest;
   }
 
+  public AclRequestsModel getAivenAclRequestModel(String topic) {
+    AclRequestsModel aclRequest = new AclRequestsModel();
+    aclRequest.setTeamId(1001);
+    aclRequest.setEnvironment("2");
+    aclRequest.setTopicname(topic);
+    aclRequest.setRequestor("kwusera");
+    aclRequest.setAclType(AclType.CONSUMER);
+    ArrayList<String> sslList = new ArrayList<>();
+    sslList.add("user1");
+    aclRequest.setAcl_ip(null);
+    aclRequest.setAcl_ssl(sslList);
+    aclRequest.setAclPatternType(AclPatternType.LITERAL.value);
+    aclRequest.setRequestingteam(1);
+    aclRequest.setAclIpPrincipleType(AclIPPrincipleType.PRINCIPAL);
+    aclRequest.setRequestOperationType(RequestOperationType.CREATE);
+
+    return aclRequest;
+  }
+
   public List<Map<String, String>> getClusterApiTopics(String topicPrefix, int size) {
     List<Map<String, String>> listTopics = new ArrayList<>();
     HashMap<String, String> hashMap;
