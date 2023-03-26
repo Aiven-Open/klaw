@@ -89,8 +89,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   // key tenantId, sub key clusterid Pertenant
   private static Map<Integer, Map<Integer, KwClusters>> kwKafkaConnectClustersPertenant;
 
-  private static Map<Integer, Map<Integer, KwClusters>> kwKafkaRestApiClustersPertenant;
-
   private static Map<Integer, List<Env>> kafkaEnvListPerTenant = new HashMap<>();
   private static Map<Integer, List<Env>> schemaRegEnvListPerTenant = new HashMap<>();
   private static Map<Integer, List<Env>> kafkaConnectEnvListPerTenant = new HashMap<>();
@@ -386,7 +384,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       case SCHEMA_REGISTRY -> kwSchemaRegClustersPertenant.get(tenantId);
       case KAFKA_CONNECT -> kwKafkaConnectClustersPertenant.get(tenantId);
       case KAFKA -> kwKafkaClustersPertenant.get(tenantId);
-      case KAFKA_REST_API -> kwKafkaRestApiClustersPertenant.get(tenantId);
       default -> kwAllClustersPertenant.get(tenantId);
     };
   }
@@ -414,20 +411,19 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     List<Env> kafkaEnvList =
         handleDbRequests.selectAllKafkaEnvs(tenantId).stream()
             .filter(env -> "true".equals(env.getEnvExists()))
-            .collect(Collectors.toList());
+            .toList();
     List<Env> schemaEnvList =
         handleDbRequests.selectAllSchemaRegEnvs(tenantId).stream()
             .filter(env -> "true".equals(env.getEnvExists()))
-            .collect(Collectors.toList());
+            .toList();
     List<Env> kafkaConnectEnvList =
         handleDbRequests.selectAllKafkaConnectEnvs(tenantId).stream()
             .filter(env -> "true".equals(env.getEnvExists()))
-            .collect(Collectors.toList());
+            .toList();
 
     List<String> envList1 = kafkaEnvList.stream().map(Env::getId).collect(Collectors.toList());
-    List<String> envList2 = schemaEnvList.stream().map(Env::getId).collect(Collectors.toList());
-    List<String> envList3 =
-        kafkaConnectEnvList.stream().map(Env::getId).collect(Collectors.toList());
+    List<String> envList2 = schemaEnvList.stream().map(Env::getId).toList();
+    List<String> envList3 = kafkaConnectEnvList.stream().map(Env::getId).toList();
     envList1.addAll(envList2);
     envList1.addAll(envList3);
 
@@ -530,12 +526,10 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     List<KwClusters> kafkaClusters;
     List<KwClusters> schemaRegistryClusters;
     List<KwClusters> kafkaConnectClusters;
-    List<KwClusters> kafkaRestApiClusters;
 
     kwKafkaClustersPertenant = new HashMap<>();
     kwSchemaRegClustersPertenant = new HashMap<>();
     kwKafkaConnectClustersPertenant = new HashMap<>();
-    kwKafkaRestApiClustersPertenant = new HashMap<>();
     kwAllClustersPertenant = new HashMap<>();
 
     for (Integer tenantId : tenantMap.keySet()) {
@@ -544,15 +538,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
           handleDbRequests.getAllClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId);
       kafkaConnectClusters =
           handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT, tenantId);
-      kafkaRestApiClusters =
-          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_REST_API, tenantId);
 
       loadClustersForOneTenant(
-          kafkaClusters,
-          schemaRegistryClusters,
-          kafkaConnectClusters,
-          kafkaRestApiClusters,
-          tenantId);
+          kafkaClusters, schemaRegistryClusters, kafkaConnectClusters, tenantId);
     }
   }
 
@@ -560,7 +548,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       List<KwClusters> kafkaClusters,
       List<KwClusters> schemaRegistryClusters,
       List<KwClusters> kafkaConnectClusters,
-      List<KwClusters> kafkaRestApiClusters,
       Integer tenantId) {
     if (kafkaClusters == null) {
       kafkaClusters = handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, tenantId);
@@ -573,15 +560,10 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       kafkaConnectClusters =
           handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_CONNECT, tenantId);
     }
-    if (kafkaRestApiClusters == null) {
-      kafkaRestApiClusters =
-          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA_REST_API, tenantId);
-    }
 
     Map<Integer, KwClusters> kwKafkaClusters = new HashMap<>();
     Map<Integer, KwClusters> kwSchemaRegClusters = new HashMap<>();
     Map<Integer, KwClusters> kwKafkaConnectClusters = new HashMap<>();
-    Map<Integer, KwClusters> kwKafkaRestApiClusters = new HashMap<>();
     Map<Integer, KwClusters> kwAllClusters = new HashMap<>();
 
     kafkaClusters.forEach(
@@ -605,13 +587,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
         });
     kwKafkaConnectClustersPertenant.put(tenantId, kwKafkaConnectClusters);
 
-    kafkaRestApiClusters.forEach(
-        cluster -> {
-          kwKafkaRestApiClusters.put(cluster.getClusterId(), cluster);
-          kwAllClusters.put(cluster.getClusterId(), cluster);
-        });
-    kwKafkaRestApiClustersPertenant.put(tenantId, kwKafkaRestApiClusters);
-
     kwAllClustersPertenant.put(tenantId, kwAllClusters);
   }
 
@@ -619,7 +594,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     loadOneTenant(tenantId);
     loadKwPropsPerOneTenant(null, tenantId);
     loadRolesPermissionsOneTenant(null, tenantId);
-    loadClustersForOneTenant(null, null, null, null, tenantId);
+    loadClustersForOneTenant(null, null, null, tenantId);
     loadEnvMapForOneTenant(tenantId);
     loadEnvsForOneTenant(tenantId);
     loadTenantTeamsForOneTenant(null, tenantId);
@@ -809,7 +784,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   public void deleteCluster(int tenantId) {
-    loadClustersForOneTenant(null, null, null, null, tenantId);
+    loadClustersForOneTenant(null, null, null, tenantId);
     loadEnvMapForOneTenant(tenantId);
     loadEnvsForOneTenant(tenantId);
   }
@@ -831,7 +806,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     kwKafkaClustersPertenant.remove(tenantId);
     kwSchemaRegClustersPertenant.remove(tenantId);
     kwKafkaConnectClustersPertenant.remove(tenantId);
-    kwKafkaRestApiClustersPertenant.remove(tenantId);
     kwAllClustersPertenant.remove(tenantId);
     return ApiResultStatus.SUCCESS.value;
   }

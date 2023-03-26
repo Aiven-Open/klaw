@@ -483,16 +483,24 @@
 									<tbody>
 									<tr ng-repeat="resultB in topicOverview">
 										<td ng-show="resultB.envName == 'DEV'" align="left" width="25%">
-											<span class="badge badge-success">{{ resultB.envName}}</span>
+											<a href="envs?envId={{resultB.envId}}">
+												<span class="badge badge-success">{{ resultB.envName}}</span>
+											</a>
 										</td>
 										<td ng-show="resultB.envName == 'TST'" align="left" width="25%">
-											<span class="badge badge-warning">{{ resultB.envName}}</span>
+											<a href="envs?envId={{resultB.envId}}">
+												<span class="badge badge-warning">{{ resultB.envName}}</span>
+											</a>
 										</td>
 										<td ng-show="resultB.envName == 'PRD'" align="left" width="25%">
-											<span class="badge badge-danger">{{ resultB.envName}}</span>
+											<a href="envs?envId={{resultB.envId}}">
+												<span class="badge badge-danger">{{ resultB.envName}}</span>
+											</a>
 										</td>
 										<td ng-show="resultB.envName != 'DEV' && resultB.envName != 'TST' && resultB.envName != 'PRD'" align="left" width="25%">
-											<span class="badge badge-primary">{{ resultB.envName}}</span>
+											<a href="envs?envId={{resultB.envId}}">
+												<span class="badge badge-primary">{{ resultB.envName}}</span>
+											</a>
 										</td>
 
 										<td align="left" width="25%">

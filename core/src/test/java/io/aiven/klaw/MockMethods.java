@@ -80,17 +80,7 @@ public class MockMethods {
     kwClustersModel.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
     kwClustersModel.setClusterType(KafkaClustersType.KAFKA.value);
     kwClustersModel.setKafkaFlavor("Apache Kafka");
-
-    return kwClustersModel;
-  }
-
-  public KwClustersModel getKafkaRestClusterModel(String dev_cluster) {
-    KwClustersModel kwClustersModel = new KwClustersModel();
-    kwClustersModel.setClusterName(dev_cluster);
-    kwClustersModel.setBootstrapServers("https://localhost:12695");
-    kwClustersModel.setProtocol(KafkaSupportedProtocol.SSL);
-    kwClustersModel.setClusterType(KafkaClustersType.KAFKA_REST_API.value);
-    kwClustersModel.setKafkaFlavor("Apache Kafka");
+    kwClustersModel.setAssociatedServers("https://localhost:12695");
 
     return kwClustersModel;
   }

@@ -5875,6 +5875,9 @@
           "kafkaFlavor" : {
             "type" : "string"
           },
+          "associatedServers" : {
+            "type" : "string"
+          },
           "projectName" : {
             "type" : "string"
           },
@@ -6330,7 +6333,7 @@
           },
           "clusterType" : {
             "type" : "string",
-            "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT", "KAFKA_REST_API" ],
+            "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT" ],
             "writeOnly" : true
           }
         },

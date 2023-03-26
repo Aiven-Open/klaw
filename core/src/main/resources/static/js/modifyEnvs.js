@@ -280,14 +280,14 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
 
                     $scope.clusterDetails.type = 'kafka';
 
-                    if($scope.clusterDetails.bootstrapServers == undefined)
+                    if($scope.clusterDetails.bootstrapServers === undefined)
                         {
                             $scope.alertnote = "Please fill in host";
                             $scope.showAlertToast();
                             return;
                         }
 
-                    if($scope.clusterDetails.clusterName == undefined)
+                    if($scope.clusterDetails.clusterName === undefined)
                     {
                         $scope.alertnote = "Please fill in a name for cluster";
                         $scope.showAlertToast();
@@ -311,6 +311,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     serviceInput['projectName'] = $scope.clusterDetails.projectName;
                     serviceInput['serviceName'] = $scope.clusterDetails.serviceName;
                     serviceInput['kafkaFlavor'] = $scope.clusterDetails.kafkaFlavor;
+                    serviceInput['associatedServers'] = $scope.clusterDetails.associatedServers;
 
                     $http({
                         method: "POST",
@@ -400,68 +401,6 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 );
 
             };
-
-        $scope.editKafkaRestApiCluster = function() {
-
-            $scope.clusterDetails.type = 'kafkarestapi';
-
-            if($scope.clusterDetails.bootstrapServers === undefined)
-            {
-                $scope.alertnote = "Please fill in Rest Api server";
-                $scope.showAlertToast();
-                return;
-            }
-
-            if($scope.clusterDetails.clusterName === undefined)
-            {
-                $scope.alertnote = "Please fill in a name for cluster";
-                $scope.showAlertToast();
-                return;
-            }
-
-            if($scope.clusterDetails.clusterName.length > 15)
-            {
-                $scope.alertnote = "Cluster name cannot be more than 15 characters.";
-                $scope.showAlertToast();
-                return;
-            }
-
-            var serviceInput = {};
-            serviceInput['clusterId'] = $scope.clusterToEdit;
-            serviceInput['clusterName'] = $scope.clusterDetails.clusterName;
-            serviceInput['bootstrapServers'] = $scope.clusterDetails.bootstrapServers;
-            serviceInput['protocol'] = $scope.clusterDetails.protocol;
-            serviceInput['clusterType'] = $scope.clusterDetails.type;
-            serviceInput['kafkaFlavor'] = $scope.clusterDetails.kafkaFlavor;
-
-            serviceInput['otherParams'] = "default.partitions=na,max.partitions=na,replication.factor=na";
-
-            $http({
-                method: "POST",
-                url: "addNewCluster",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'addNewEnv' : serviceInput },
-                data: serviceInput
-            }).success(function(output) {
-                $scope.alert = "Rest Api cluster updated: "+output.result;
-                if(output.result === 'success'){
-                    swal({
-                        title: "",
-                        text: "Rest Api cluster updated : "+output.result,
-                        timer: 2000,
-                        showConfirmButton: true
-                    }).then(function(isConfirm){
-                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/clusters";
-                    });
-                }else $scope.showSubmitFailed('','');
-            }).error(
-                function(error)
-                {
-                    $scope.handleValidationErrors(error);
-                }
-            );
-
-        };
 
        $scope.editKafkaConnectCluster = function() {
 

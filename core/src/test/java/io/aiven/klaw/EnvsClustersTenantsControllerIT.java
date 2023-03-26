@@ -141,6 +141,11 @@ public class EnvsClustersTenantsControllerIT {
 
     List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModel).hasSize(1);
+    assertThat(teamModel.get(0).getBootstrapServers())
+        .isEqualTo(kwClustersModel.getBootstrapServers());
+    assertThat(teamModel.get(0).getKafkaFlavor()).isEqualTo(kwClustersModel.getKafkaFlavor());
+    assertThat(teamModel.get(0).getAssociatedServers())
+        .isEqualTo(kwClustersModel.getAssociatedServers());
   }
 
   // modify cluster success
@@ -167,6 +172,7 @@ public class EnvsClustersTenantsControllerIT {
     KwClustersModel kwClustersModel = mockMethods.getKafkaClusterModel("DEV_CLUSTER");
     kwClustersModel.setClusterId((Integer) hashMap.get("clusterId"));
     kwClustersModel.setBootstrapServers("localhost:9093");
+    kwClustersModel.setAssociatedServers("localhost:12698");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
     response =
         mvc.perform(
@@ -181,6 +187,26 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getClusters")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("clusterType", KafkaClustersType.KAFKA.value)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(teamModel).hasSize(1);
+    assertThat(teamModel.get(0).getBootstrapServers())
+        .isEqualTo(kwClustersModel.getBootstrapServers());
+    assertThat(teamModel.get(0).getKafkaFlavor()).isEqualTo(kwClustersModel.getKafkaFlavor());
+    assertThat(teamModel.get(0).getAssociatedServers())
+        .isEqualTo(kwClustersModel.getAssociatedServers());
   }
 
   // getclusterdetails success
@@ -571,42 +597,5 @@ public class EnvsClustersTenantsControllerIT {
 
     List<String> clusterModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(clusterModels.get(0)).isEqualTo("ACC");
-  }
-
-  // add kafka rest cluster success
-  @Test
-  @Order(14)
-  public void addKafkaRestApiClusterSuccess() throws Exception {
-    KwClustersModel kwClustersModel = mockMethods.getKafkaRestClusterModel("DEV_CLUSTER");
-    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
-
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/addNewCluster")
-                    .with(user(superAdmin).password(superAdminPwd))
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
-    response =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getClusters")
-                    .with(user(superAdmin).password(superAdminPwd))
-                    .param("clusterType", KafkaClustersType.KAFKA_REST_API.value)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    List<KwClustersModel> kwClustersModels =
-        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    assertThat(kwClustersModels).hasSize(1);
   }
 }
