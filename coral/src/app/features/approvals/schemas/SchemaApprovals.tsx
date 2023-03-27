@@ -76,23 +76,9 @@ function SchemaApprovals() {
     isLoading: declineIsLoading,
     variables: declineVariables,
   } = useMutation(declineSchemaRequest, {
-    onSuccess: (responses) => {
-      // @TODO follow up ticket #707
-      // (for all approval tables)
-      const response = responses[0];
-      const responseIsAHiddenError =
-        response?.result.toLowerCase() !== "success";
-      if (responseIsAHiddenError) {
-        return setErrorQuickActions(
-          response.message || response.result || "Unexpected error"
-        );
-      }
-
+    onSuccess: () => {
       setErrorQuickActions("");
-      setDetailsModal({ isOpen: false, reqNo: null });
-      setDeclineModal({ isOpen: false, reqNo: null });
-
-      // Refetch to update the tag number in the tabs
+      // Re-fetch to update the tag number in the tabs
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
 
       // If declined request is last in the page, go back to previous page
@@ -104,11 +90,12 @@ function SchemaApprovals() {
         schemaRequests?.entries.length === 1 &&
         schemaRequests?.currentPage > 1
       ) {
-        return setCurrentPage(schemaRequests?.currentPage - 1);
+        // setting the current page will the api call to re-fetch the schema requests
+        setCurrentPage(schemaRequests?.currentPage - 1);
+      } else {
+        // We need to refetch the schema requests to keep Table state in sync
+        queryClient.refetchQueries(["schemaRequestsForApprover"]);
       }
-
-      // We need to refetch all aclrequests queries to keep Table state in sync
-      queryClient.refetchQueries(["schemaRequestsForApprover"]);
     },
     onError(error: Error) {
       setErrorQuickActions(parseErrorMsg(error));
@@ -123,18 +110,7 @@ function SchemaApprovals() {
     isLoading: approveIsLoading,
     variables: approveVariables,
   } = useMutation(approveSchemaRequest, {
-    onSuccess: (responses) => {
-      // @TODO follow up ticket #707
-      // (for all approval tables)
-      const response = responses[0];
-      const responseIsAHiddenError =
-        response?.result.toLowerCase() !== "success";
-      if (responseIsAHiddenError) {
-        return setErrorQuickActions(
-          response.message || response.result || "Unexpected error"
-        );
-      }
-
+    onSuccess: () => {
       setErrorQuickActions("");
       setDetailsModal({ isOpen: false, reqNo: null });
       setDeclineModal({ isOpen: false, reqNo: null });

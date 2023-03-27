@@ -584,7 +584,9 @@ describe("SchemaApprovals", () => {
   describe("enables user to decline a request", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
+    const originalConsoleError = console.error;
     beforeEach(async () => {
+      console.error = jest.fn();
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -601,6 +603,7 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
+      console.error = originalConsoleError;
       jest.clearAllMocks();
       cleanup();
     });
@@ -630,6 +633,7 @@ describe("SchemaApprovals", () => {
       await userEvent.tab();
 
       expect(confirmDeclineButton).toBeEnabled();
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("send a decline request api call if user declines a schema request", async () => {
@@ -658,6 +662,7 @@ describe("SchemaApprovals", () => {
         reqIds: [testRequest.req_no.toString()],
         reason: "This is my message",
       });
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user declined a schema request", async () => {
@@ -696,10 +701,11 @@ describe("SchemaApprovals", () => {
         2,
         defaultApiParams
       );
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if declining request was not successful", async () => {
-      mockDeclineSchemaRequest.mockResolvedValue([{ result: "FAILURE" }]);
+      mockDeclineSchemaRequest.mockRejectedValue("OH NO");
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,
         defaultApiParams
@@ -734,13 +740,18 @@ describe("SchemaApprovals", () => {
 
       const error = screen.getByRole("alert");
       expect(error).toBeVisible();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
     });
   });
 
   describe("enables user to approve a request", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
+    const orignalConsoleError = console.error;
     beforeEach(async () => {
+      console.error = jest.fn();
+
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -757,6 +768,7 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
+      console.error = orignalConsoleError;
       jest.clearAllMocks();
       cleanup();
     });
@@ -773,6 +785,7 @@ describe("SchemaApprovals", () => {
       expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
         reqIds: [testRequest.req_no.toString()],
       });
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("updates the the data for the table if user approves a schema request", async () => {
@@ -796,10 +809,11 @@ describe("SchemaApprovals", () => {
         2,
         defaultApiParams
       );
+      expect(console.error).not.toHaveBeenCalled();
     });
 
     it("informs user about error if declining request was not successful", async () => {
-      mockApproveSchemaRequest.mockResolvedValue([{ result: "FAILURE" }]);
+      mockApproveSchemaRequest.mockRejectedValue("OH NO");
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,
         defaultApiParams
@@ -819,6 +833,8 @@ describe("SchemaApprovals", () => {
 
       const error = await screen.findByRole("alert");
       expect(error).toBeVisible();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
     });
   });
 });
