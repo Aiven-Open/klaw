@@ -87,33 +87,16 @@ function AclRequests() {
 
   const { isLoading: deleteIsLoading, mutate: deleteRequest } = useMutation({
     mutationFn: deleteAclRequest,
-    onSuccess: async (responses) => {
-      const response = responses[0];
-
-      const responseIsAHiddenError =
-        response?.result.toLowerCase() !== "success";
-      if (responseIsAHiddenError) {
-        throw Error(response.message || response.result || "Unexpected error");
-      }
-
+    onSuccess: async () => {
       setErrorMessage("");
-
       // We need to refetch all aclrequests queries to keep Table state in sync
       // We await it to only close modal after refetch is done
       await queryClient.refetchQueries(["aclRequests"]);
-
-      closeModal();
     },
     onError: (error: Error) => {
-      closeModal();
-
-      // Case when error is from the server
-      if (objectHasProperty(error, "data")) {
-        return setErrorMessage(parseErrorMsg(error));
-      }
-      // Case when the error is thrown from onSuccess
-      setErrorMessage(error.message);
+      setErrorMessage(parseErrorMsg(error));
     },
+    onSettled: closeModal,
   });
 
   const handleChangePage = (page: number) => {
