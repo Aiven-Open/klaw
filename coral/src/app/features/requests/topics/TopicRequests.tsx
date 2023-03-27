@@ -7,11 +7,6 @@ import {
 import { TopicRequestsTable } from "src/app/features/requests/topics/components/TopicRequestsTable";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
-import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
-import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
-import StatusFilter from "src/app/features/components/filters/StatusFilter";
-import TopicFilter from "src/app/features/components/filters/TopicFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { useState } from "react";
 import { Alert } from "@aivenio/aquarium";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
@@ -19,18 +14,25 @@ import { objectHasProperty } from "src/services/type-utils";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import TopicDetailsModalContent from "src/app/features/components/TopicDetailsModalContent";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import { OperationTypeFilter } from "src/app/features/components/filters/OperationTypeFilter";
 
 const defaultStatus = "ALL";
+const defaultType = "ALL";
 
 function TopicRequests() {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
-
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { topic, environment, status, showOnlyMyRequests } = useFiltersValues();
+  const { topic, environment, status, showOnlyMyRequests, operationType } =
+    useFiltersValues();
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";
@@ -46,6 +48,7 @@ function TopicRequests() {
       status,
       topic,
       showOnlyMyRequests,
+      operationType,
     ],
     queryFn: () =>
       getTopicRequests({
@@ -55,6 +58,8 @@ function TopicRequests() {
         env: environment,
         requestStatus: status,
         isMyRequest: showOnlyMyRequests,
+        operationType:
+          operationType !== defaultType ? operationType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -173,6 +178,7 @@ function TopicRequests() {
       <TableLayout
         filters={[
           <EnvironmentFilter key="environments" />,
+          <OperationTypeFilter key={"request-type"} />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
           <TopicFilter key={"topic"} />,
           <MyRequestsFilter key={"isMyRequest"} />,
