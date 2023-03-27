@@ -7,11 +7,7 @@ function MyRequestsFilter() {
   const handleChangeIsMyRequest = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    if (event.target.checked) {
-      setFilterValue({ name: "showOnlyMyRequests", value: "true" });
-    } else {
-      setFilterValue({ name: "showOnlyMyRequests", value: "false" });
-    }
+    setFilterValue({ name: "showOnlyMyRequests", value: event.target.checked });
   };
 
   return (

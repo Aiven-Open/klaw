@@ -259,7 +259,7 @@ describe("useFiltersValues.tsx", () => {
 
       current.setFilterValue({
         name: "showOnlyMyRequests",
-        value: "true",
+        value: true,
       });
 
       expect(window.location.search).toBe("?showOnlyMyRequests=true&page=1");

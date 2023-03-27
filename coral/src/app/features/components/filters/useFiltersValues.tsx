@@ -11,7 +11,7 @@ type SetFiltersParams =
   | { name: "aclType"; value: AclType | "ALL" }
   | { name: "status"; value: RequestStatus }
   | { name: "team"; value: string }
-  | { name: "showOnlyMyRequests"; value: "true" | "false" }
+  | { name: "showOnlyMyRequests"; value: boolean }
   | { name: "operationType"; value: RequestOperationType | "ALL" };
 
 type UseFiltersValuesParams =
@@ -56,13 +56,14 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
     if (
       (value === "ALL" && name !== "status") ||
       value === "" ||
-      value === "false"
+      value === false
     ) {
       searchParams.delete(name);
       searchParams.set("page", "1");
       setSearchParams(searchParams);
     } else {
-      searchParams.set(name, value);
+      const parsedValue = typeof value === "boolean" ? String(value) : value;
+      searchParams.set(name, parsedValue);
       searchParams.set("page", "1");
       setSearchParams(searchParams);
     }
