@@ -17,7 +17,6 @@ import { AclRequestsTable } from "src/app/features/requests/acls/components/AclR
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { objectHasProperty } from "src/services/type-utils";
 
 function AclRequests() {
   const queryClient = useQueryClient();
