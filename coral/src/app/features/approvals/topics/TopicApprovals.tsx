@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
-import DetailsModalContent from "src/app/features/approvals/topics/components/DetailsModalContent";
+import TopicDetailsModalContent from "src/app/features/components/TopicDetailsModalContent";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
@@ -265,7 +265,7 @@ function TopicApprovals() {
             declineIsLoading
           }
         >
-          <DetailsModalContent topicRequest={selectedTopicRequest} />
+          <TopicDetailsModalContent topicRequest={selectedTopicRequest} />
         </RequestDetailsModal>
       )}
       {declineModal.isOpen && (

@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import DetailsModalContent from "src/app/features/approvals/topics/components/DetailsModalContent";
+import TopicDetailsModalContent from "src/app/features/components/TopicDetailsModalContent";
 import { TopicRequest } from "src/domain/topic/topic-types";
 
 const noAdvancedConfigRequest: TopicRequest = {
@@ -76,10 +76,12 @@ const findTerm = (term: string) => {
     .find((value) => value.textContent === term);
 };
 
-describe("DetailsModalContent", () => {
+describe("TopicDetailsModalContent", () => {
   describe("renders correct content for Topic request (description, remarks, no config)", () => {
     beforeAll(() => {
-      render(<DetailsModalContent topicRequest={noAdvancedConfigRequest} />);
+      render(
+        <TopicDetailsModalContent topicRequest={noAdvancedConfigRequest} />
+      );
     });
     afterAll(cleanup);
 
@@ -131,7 +133,9 @@ describe("DetailsModalContent", () => {
 
   describe("renders correct content for Topic request (no description,  no remarks, with config)", () => {
     beforeAll(() => {
-      render(<DetailsModalContent topicRequest={withAdvancedConfigRequest} />);
+      render(
+        <TopicDetailsModalContent topicRequest={withAdvancedConfigRequest} />
+      );
     });
     afterAll(cleanup);
 

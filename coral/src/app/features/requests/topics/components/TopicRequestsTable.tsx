@@ -82,9 +82,10 @@ function TopicRequestsTable({
       headerName: "Details",
       headerInvisible: true,
       width: 30,
-      action: ({ id }) => ({
+      action: ({ id, topicname }) => ({
         text: "View",
         icon: infoIcon,
+        "aria-label": `View topic request for ${topicname}`,
         onClick: () => onDetails(id),
       }),
     },

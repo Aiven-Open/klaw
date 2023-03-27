@@ -17,6 +17,8 @@ import { Alert } from "@aivenio/aquarium";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { objectHasProperty } from "src/services/type-utils";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
+import TopicDetailsModalContent from "src/app/features/components/TopicDetailsModalContent";
 
 const defaultStatus = "ALL";
 
@@ -94,6 +96,10 @@ function TopicRequests() {
     setModals({ open: "NONE", req_no: null });
   }
 
+  const handleDetails = (topicId: number) => {
+    setModals({ open: "DETAILS", req_no: topicId });
+  };
+
   const handleDeleteRequest = (topicId: number) => {
     setModals({ open: "DELETE", req_no: topicId });
   };
@@ -112,8 +118,40 @@ function TopicRequests() {
       />
     ) : undefined;
 
+  const selectedRequest = data?.entries.find(
+    (request) => request.topicid === modals.req_no
+  );
+
   return (
     <>
+      {modals.open === "DETAILS" && (
+        <RequestDetailsModal
+          onClose={closeModal}
+          actions={{
+            primary: {
+              text: "Close",
+              onClick: () => {
+                if (modals.req_no === null) {
+                  throw Error("req_no can't be null");
+                }
+                closeModal();
+              },
+            },
+            secondary: {
+              text: "Delete",
+              onClick: () => {
+                if (modals.req_no === null) {
+                  throw Error("req_no can't be null");
+                }
+                handleDeleteRequest(modals.req_no);
+              },
+            },
+          }}
+          isLoading={false}
+        >
+          <TopicDetailsModalContent topicRequest={selectedRequest} />
+        </RequestDetailsModal>
+      )}
       {modals.open === "DELETE" && (
         <DeleteRequestDialog
           deleteRequest={() => {
@@ -142,7 +180,7 @@ function TopicRequests() {
         table={
           <TopicRequestsTable
             requests={data?.entries ?? []}
-            onDetails={() => null}
+            onDetails={handleDetails}
             onDelete={handleDeleteRequest}
           />
         }
