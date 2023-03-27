@@ -22,4 +22,36 @@ function mockGetTeams({
 }
 
 const mockedTeamResponse = ["TEST_TEAM_01", "TEST_TEAM_02", "TEST_TEAM_03"];
-export { mockGetTeams, mockedTeamResponse };
+const mockedAllTeamsResponse = [
+  {
+    teamname: "TEST_TEAM_01",
+    teamphone: "000",
+    contactperson: "000",
+    teamId: 1,
+    tenantId: 1,
+    showDeleteTeam: true,
+    tenantName: "tenant",
+    envList: ["ALL"],
+  },
+  {
+    teamname: "TEST_TEAM_02",
+    teamphone: "000",
+    contactperson: "000",
+    teamId: 2,
+    tenantId: 1,
+    showDeleteTeam: true,
+    tenantName: "tenant",
+    envList: ["ALL"],
+  },
+  {
+    teamname: "TEST_TEAM_02",
+    teamphone: "000",
+    contactperson: "000",
+    teamId: 3,
+    tenantId: 1,
+    showDeleteTeam: true,
+    tenantName: "tenant",
+    envList: ["ALL"],
+  },
+];
+export { mockGetTeams, mockedTeamResponse, mockedAllTeamsResponse };
