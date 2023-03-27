@@ -3,6 +3,7 @@ import isPlainObject from "lodash/isPlainObject";
 import { components } from "types/api";
 import { objectHasProperty } from "src/services/type-utils";
 import { ResolveIntersectionTypes } from "types/utils";
+import isArray from "lodash/isArray";
 
 type GenericApiResponse = components["schemas"]["ApiResponse"];
 
@@ -259,8 +260,9 @@ function parseResponseBody<T extends SomeObject>(
 function handleHTTPError(errorOrResponse: Error | Response): Promise<never> {
   if (errorOrResponse instanceof Response) {
     return parseResponseBody(errorOrResponse).then((body) => {
+      const bodyToReturn = isArray(body) ? body[0] : body;
       const httpError: HTTPError = {
-        data: body,
+        data: bodyToReturn,
         status: errorOrResponse.status,
         statusText: errorOrResponse.statusText,
         headers: errorOrResponse.headers,
