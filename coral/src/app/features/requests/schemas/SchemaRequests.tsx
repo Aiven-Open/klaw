@@ -87,7 +87,8 @@ function SchemaRequests() {
         // @TODO follow up ticket #707
         // (for all approval and request tables)
         const response = responses[0];
-        const responseIsAHiddenError = response?.result !== "success";
+        const responseIsAHiddenError =
+          response?.result.toLowerCase() !== "success";
         if (responseIsAHiddenError) {
           throw new Error(response?.message || response?.result);
         }

@@ -82,7 +82,9 @@ function SchemaApprovals() {
       // @TODO follow up ticket #707
       // (for all approval tables)
       const response = responses[0];
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorQuickActions(
           response.message || response.result || "Unexpected error"
         );
@@ -127,7 +129,9 @@ function SchemaApprovals() {
       // @TODO follow up ticket #707
       // (for all approval tables)
       const response = responses[0];
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorQuickActions(
           response.message || response.result || "Unexpected error"
         );

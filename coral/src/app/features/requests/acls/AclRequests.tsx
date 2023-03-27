@@ -92,7 +92,9 @@ function AclRequests() {
     onSuccess: async (responses) => {
       const response = responses[0];
 
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         throw Error(response.message || response.result || "Unexpected error");
       }
 
