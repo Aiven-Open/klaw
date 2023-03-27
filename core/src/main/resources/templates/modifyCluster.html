@@ -549,6 +549,19 @@
 										</div>
 									</div>
 
+									<div class="row">
+
+										<!--/span-->
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>RestApi servers</label>
+												<input type="text" class="form-control" required ng-model="clusterDetails.associatedServers" minlength="3" placeholder="https://server:12695">
+												<small class="form-control-feedback">Ex : https://server:12695</small>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
+
 
 								</div>
 								<div id="successbar">{{ alert }}</div>
@@ -716,71 +729,7 @@
 							</form>
 						</div>
 					</div>
-					<div ng-if="clusterTypeToEdit=='kafkarestapi'" class="card card-outline-success">
-						<div class="card-body">
-							<form id="form1">
-								<div class="form-body">
 
-									<table class="table color-table success-table" width="100%"><tr>
-										<td align="left"><h3 class="card-title">Update Kafka Rest Api Cluster</h3>
-										</td>
-										<td align="right">
-											<a href="clusters">
-												<i class="fas fa-arrow-alt-circle-left"></i>
-												<button type="button"
-														class="btn waves-effect waves-light btn-rounded btn-outline-info">Back to Clusters</button>
-											</a>
-										</td></tr>
-									</table>
-
-									<hr size="1" color="black">
-
-									<!--/row-->
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group">
-												<label class="control-label">Cluster Name</label>
-												<input type="text" class="form-control" maxlength="20" minlength="3" required ng-model="clusterDetails.clusterName" placeholder="DEV_SCH"/>
-
-											</div>
-										</div>
-										<!--/span-->
-										<div class="col-md-6">
-											<div class="form-group">
-												<label>Rest Proxy Server</label>
-												<input type="text" class="form-control" minlength="3" required ng-model="clusterDetails.bootstrapServers" placeholder="devams.cmp.net"/>
-											</div>
-										</div>
-										<!--/span-->
-									</div>
-
-									<div class="row">
-										<div class="col-md-6">
-											<div class="form-group">
-												<label>Protocol</label>
-												<select required class="form-control custom-select" ng-change="onChangeProtocol(clusterDetails.protocol)" ng-model="clusterDetails.protocol">
-													<option value="PLAINTEXT">PLAINTEXT</option>
-													<option value="SSL">SSL</option>
-												</select>
-											</div>
-										</div>
-										<!--/span-->
-										<div class="col-md-6">
-										</div>
-										<!--/span-->
-									</div>
-
-								</div>
-								<div id="successbar">{{ alert }}</div>
-								<div id="alertbar">{{ alertnote }}</div>
-								<div class="form-actions">
-									<button ng-click="editKafkaRestApiCluster();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
-										Save</button>
-									<button type="button" ng-click="cancelClusterRequest();" class="btn btn-outline-inverse">Cancel</button>
-								</div>
-							</form>
-						</div>
-					</div>
 				</div>
 			</div>
 			<!-- Row -->

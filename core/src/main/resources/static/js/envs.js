@@ -536,6 +536,17 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             $scope.getEnvsPaginated(1);
         }
 
+        $scope.getAllTypesEnvs = function(){
+            if($scope.envIdFromUrl){
+                // do nothing
+                $scope.getEnvsPaginated(1);
+            }else{
+                $scope.getEnvsPaginated(1);
+                $scope.getSchemaRegEnvs();
+                $scope.getKafkaConnectEnvs();
+            }
+        }
+
         $scope.getEnvsPaginated = function(pageNo) {
 
             $http({
@@ -678,19 +689,9 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                         $scope.addNewCluster.type = $scope.addNewCluster.clusterType;
 
-                        if($scope.addNewCluster.type === 'kafkarestapi'){
-                            $scope.kafkaFlavor = 'Apache Kafka'; // this is independent of any kafka flavor type
-                        }
-
-                        if($scope.addNewCluster.host === undefined  && $scope.addNewCluster.type !== 'kafkarestapi')
+                        if($scope.addNewCluster.host === undefined)
                         {
                             $scope.alertnote = "Please fill in bootstrap servers";
-                            $scope.showAlertToast();
-                            return;
-                        }
-                        else if($scope.addNewCluster.host === undefined  && $scope.addNewCluster.type === 'kafkarestapi')
-                        {
-                            $scope.alertnote = "Please fill in Rest Api server";
                             $scope.showAlertToast();
                             return;
                         }
@@ -753,6 +754,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                         serviceInput['projectName'] = $scope.addNewCluster.projectName;
                         serviceInput['serviceName'] = $scope.addNewCluster.serviceName;
                         serviceInput['kafkaFlavor'] = $scope.kafkaFlavor;
+                        serviceInput['associatedServers'] = $scope.addNewCluster.associatedServers;
 
                         $http({
                             method: "POST",

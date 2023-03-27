@@ -34,6 +34,8 @@ public class KwClustersModel implements Serializable {
 
   @NotNull private String kafkaFlavor;
 
+  private String associatedServers;
+
   private String projectName;
 
   private String serviceName;

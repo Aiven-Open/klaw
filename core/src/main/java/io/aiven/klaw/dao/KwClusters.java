@@ -59,4 +59,7 @@ public class KwClusters implements Serializable {
 
   @Column(name = "kafkaflavor")
   private String kafkaFlavor;
+
+  @Column(name = "associatedservers")
+  private String associatedServers;
 }

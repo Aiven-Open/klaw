@@ -1023,3 +1023,14 @@ databaseChangeLog:
                 - column:
                     name: serviceaccounts
                     type: CLOB
+    - changeSet:
+        id: 27-03-2023 New Column - to store rest api url
+        author: muralibasani
+        changes:
+          - addColumn:
+              tableName: kwclusters
+              columns:
+                - column:
+                    name: associatedservers
+                    type: VARCHAR(250)
+
