@@ -462,6 +462,91 @@ describe("TopicRequests", () => {
     });
   });
 
+  describe("shows a detail modal for topic request", () => {
+    beforeEach(async () => {
+      mockGetTopicRequestEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
+
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows detail modal for first request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const firstRequest = mockGetTopicRequestsResponse.entries[0];
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View topic request for ${firstRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent(firstRequest.topicname);
+    });
+
+    it("shows detail modal for last request returned from the api", async () => {
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: "View topic request for test-topic-1",
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+      expect(modal).toHaveTextContent("test-topic-1");
+    });
+
+    it("user can delete a request by clicking a button in the modal", async () => {
+      mockDeleteTopicRequest.mockResolvedValue([{ result: "success" }]);
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View topic request for test-topic-1`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+
+      const detailsModal = within(screen.getByRole("dialog")).queryByText(
+        "Request details"
+      );
+
+      expect(detailsModal).toBeVisible();
+
+      expect(
+        within(screen.getByRole("dialog")).queryByRole("heading", {
+          name: "Delete request",
+        })
+      ).not.toBeInTheDocument();
+
+      const deleteButton = screen.getByRole("button", {
+        name: "Delete",
+      });
+      await userEvent.click(deleteButton);
+
+      expect(detailsModal).not.toBeInTheDocument();
+      expect(
+        within(screen.getByRole("dialog")).queryByRole("heading", {
+          name: "Delete request",
+        })
+      ).toBeVisible();
+    });
+  });
+
   describe("enables user to delete a request", () => {
     const originalConsoleError = console.error;
     beforeEach(async () => {

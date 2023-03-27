@@ -176,7 +176,7 @@ describe("TopicRequestsTable", () => {
     renderFromProps({ onDetails });
     await userEvent.click(
       within(within(getNthRow(1)).getAllByRole("cell")[7]).getByRole("button", {
-        name: "View",
+        name: "View topic request for test-topic-1",
       })
     );
     expect(onDetails).toHaveBeenNthCalledWith(1, mockedRequests[0].topicid);
