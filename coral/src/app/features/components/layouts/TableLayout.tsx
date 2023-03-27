@@ -15,8 +15,6 @@ type TableLayoutProps = {
 function TableLayout(props: TableLayoutProps) {
   const { filters, table, pagination, isLoading, isErrorLoading } = props;
 
-  const errorMessage = parseErrorMsg(props.errorMessage);
-
   return (
     <>
       <Box
@@ -44,7 +42,9 @@ function TableLayout(props: TableLayoutProps) {
       {isLoading && <SkeletonTable />}
       {isErrorLoading && (
         <div role={"alert"}>
-          <Alert type={"error"}>{errorMessage}. Please try again later!</Alert>
+          <Alert type={"error"}>
+            {parseErrorMsg(props.errorMessage)}. Please try again later!
+          </Alert>
         </div>
       )}
       {!isLoading && !isErrorLoading && (
