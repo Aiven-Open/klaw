@@ -1,5 +1,5 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
+import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 

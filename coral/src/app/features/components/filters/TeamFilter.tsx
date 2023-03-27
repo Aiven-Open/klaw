@@ -1,27 +1,14 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "react-router-dom";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { getTeams } from "src/domain/team/team-api";
 
 function TeamFilter() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const team = searchParams.get("team") ?? "ALL";
-
   const { data: topicTeams } = useQuery(["topic-get-teams"], {
     queryFn: () => getTeams(),
   });
 
-  const handleChangeTeam = (nextTeamId: string) => {
-    const isAllTeams = nextTeamId === "ALL";
-    if (isAllTeams) {
-      searchParams.delete("team");
-      searchParams.set("page", "1");
-    } else {
-      searchParams.set("team", nextTeamId);
-      searchParams.set("page", "1");
-    }
-    setSearchParams(searchParams);
-  };
+  const { team, setFilterValue } = useFiltersValues();
 
   if (!topicTeams) {
     return (
@@ -34,7 +21,9 @@ function TeamFilter() {
       <NativeSelect
         labelText="Filter by team"
         value={team}
-        onChange={(event) => handleChangeTeam(event.target.value)}
+        onChange={(event) =>
+          setFilterValue({ name: "team", value: event.target.value })
+        }
       >
         <Option key={"ALL"} value={"ALL"}>
           All teams

@@ -96,7 +96,7 @@ describe("TopicRequests", () => {
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         // search: "abc",
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
       });
@@ -117,7 +117,7 @@ describe("TopicRequests", () => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
           // search: "abc",
-          isMyRequest: undefined,
+          isMyRequest: false,
           requestStatus: "ALL",
           env: "ALL",
         });
@@ -179,7 +179,7 @@ describe("TopicRequests", () => {
       await waitFor(() => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          isMyRequest: undefined,
+          isMyRequest: false,
           search: undefined,
           requestStatus: "ALL",
           env: "ALL",
@@ -217,7 +217,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenCalledWith({
         pageNo: "100",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
       });
@@ -234,7 +234,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenCalledWith({
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
       });
@@ -344,7 +344,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
       });
@@ -375,7 +375,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
@@ -394,7 +394,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: mockedEnvironmentResponse[0].id,
       });
@@ -427,7 +427,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
         env: "ALL",
       });
@@ -447,7 +447,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: newStatus,
         env: "ALL",
       });

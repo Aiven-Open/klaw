@@ -6,16 +6,16 @@ import { Pagination } from "src/app/components/Pagination";
 import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
-import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
-import { OperationTypeFilter } from "src/app/features/components/table-filters/OperationTypeFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
+import { OperationTypeFilter } from "src/app/features/components/filters/OperationTypeFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { AclRequestsTable } from "src/app/features/requests/acls/components/AclRequestsTable";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
-import { AclRequest } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { objectHasProperty } from "src/services/type-utils";
 
@@ -26,17 +26,15 @@ function AclRequests() {
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
-  const currentTopic = searchParams.get("topic") ?? "";
-  const currentEnvironment = searchParams.get("environment") ?? "ALL";
-  const currentAclType =
-    (searchParams.get("aclType") as AclRequest["aclType"]) ?? "ALL";
-  const currentStatus =
-    (searchParams.get("status") as AclRequest["requestStatus"]) ?? "ALL";
-  const currentOperationType =
-    (searchParams.get("operationType") as AclRequest["requestOperationType"]) ??
-    "ALL";
-  const showOnlyMyRequests =
-    searchParams.get("showOnlyMyRequests") === "true" ? true : undefined;
+
+  const {
+    topic,
+    environment,
+    aclType,
+    status,
+    showOnlyMyRequests,
+    operationType,
+  } = useFiltersValues();
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";
@@ -65,21 +63,21 @@ function AclRequests() {
     queryKey: [
       "aclRequests",
       currentPage,
-      currentTopic,
-      currentEnvironment,
-      currentAclType,
-      currentStatus,
-      currentOperationType,
+      topic,
+      environment,
+      aclType,
+      status,
+      operationType,
       showOnlyMyRequests,
     ],
     queryFn: () =>
       getAclRequests({
         pageNo: String(currentPage),
-        topic: currentTopic,
-        env: currentEnvironment,
-        aclType: currentAclType,
-        requestStatus: currentStatus,
-        operationType: currentOperationType,
+        topic,
+        env: environment,
+        aclType,
+        requestStatus: status,
+        operationType: operationType === "ALL" ? undefined : operationType,
         isMyRequest: showOnlyMyRequests,
       }),
     keepPreviousData: true,

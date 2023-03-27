@@ -33,7 +33,8 @@ const filterGetAclRequestParams = (params: GetCreatedAclRequestParameters) => {
       const omitAclType = property === "aclType" && value === "ALL";
       const omitTopic = property === "topic" && value === "";
       const omitIsMyRequest = property === "isMyRequest" && value !== "true";
-      const omitOperationType = property === "operationType" && value === "ALL";
+      const omitOperationType =
+        property === "operationType" && value === undefined;
 
       return (
         omitEnv ||

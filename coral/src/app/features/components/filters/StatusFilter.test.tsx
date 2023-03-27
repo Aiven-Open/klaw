@@ -4,7 +4,7 @@ import {
   requestStatusNameMap,
   statusList,
 } from "src/app/features/approvals/utils/request-status-helper";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const filterLabel = "Filter by status";
