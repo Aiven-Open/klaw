@@ -1,4 +1,4 @@
-package io.aiven.klaw.converter;
+package io.aiven.klaw.helpers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

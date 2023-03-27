@@ -1013,3 +1013,13 @@ databaseChangeLog:
                     name: complete
                     type: boolean
               tableName: kwdatamigration
+    - changeSet:
+        id: 24-03-2023 New Column - to store service accounts of a team
+        author: muralibasani
+        changes:
+          - addColumn:
+              tableName: kwteams
+              columns:
+                - column:
+                    name: serviceaccounts
+                    type: CLOB

@@ -29,6 +29,8 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.service.ClusterApiService;
 import java.util.ArrayList;
@@ -76,7 +78,7 @@ public class TopicAclControllerIT {
   private static final String superAdminPwd = "kwsuperadmin123$$";
   private static final String user1 = "tkwusera", user2 = "tkwuserb", user3 = "tkwuserc";
   private static final String topicName = "testtopic";
-  private static final int topicId1 = 1001, topicId3 = 1004;
+  private static final int topicId1 = 1001, topicId3 = 1004, topicId4 = 1006;
 
   @BeforeAll
   public static void setup() {
@@ -179,12 +181,49 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, List.class);
+    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModel).hasSize(1);
   }
 
   @Test
   @Order(3)
+  public void addNewAivenCluster() throws Exception {
+    KwClustersModel kwClustersModel = mockMethods.getAivenKafkaClusterModel("DEV_AIVEN_CLUSTER");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewCluster")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getClusters")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("clusterType", KafkaClustersType.KAFKA.value)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<KwClustersModel> kwClustersModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(kwClustersModels).hasSize(2);
+  }
+
+  @Test
+  @Order(4)
   public void createEnv() throws Exception {
     EnvModel envModel = mockMethods.getEnvModel("DEV");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
@@ -220,20 +259,58 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(4)
+  @Order(5)
+  public void createAivenKafkaEnv() throws Exception {
+    EnvModel envModel = mockMethods.getEnvModel("DEV_AIVEN");
+    envModel.setClusterId(2);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewEnv")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getEnvs")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<Map<String, Object>> clusterModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(clusterModels).hasSize(2);
+  }
+
+  @Test
+  @Order(6)
   public void updateTenantConfig() throws Exception {
     KwPropertiesModel kwPropertiesModel = new KwPropertiesModel();
     kwPropertiesModel.setKwKey(TENANT_CONFIG_PROPERTY);
     kwPropertiesModel.setKwValue(
-        "{\n"
-            + "  \"tenantModel\":\n"
-            + "    {\n"
-            + "      \"tenantName\": \"default\",\n"
-            + "      \"baseSyncEnvironment\": \"DEV\",\n"
-            + "      \"orderOfTopicPromotionEnvsList\": [\"DEV\"],\n"
-            + "      \"requestTopicsEnvironmentsList\": [\"DEV\"]\n"
-            + "    }\n"
-            + "}");
+        """
+                    {
+                      "tenantModel":
+                        {
+                          "tenantName": "default",
+                          "baseSyncEnvironment": "DEV",
+                          "orderOfTopicPromotionEnvsList": ["DEV"],
+                          "requestTopicsEnvironmentsList": ["DEV"]
+                        }
+                    }""");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(kwPropertiesModel);
 
     String response =
@@ -253,7 +330,7 @@ public class TopicAclControllerIT {
 
   // Create topic requests
   @Test
-  @Order(5)
+  @Order(7)
   public void createTopicRequest() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId1);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
@@ -274,7 +351,7 @@ public class TopicAclControllerIT {
 
   // Query topic requests in created state
   @Test
-  @Order(6)
+  @Order(8)
   public void queryTopicRequest() throws Exception {
     String res =
         mvc.perform(
@@ -295,7 +372,7 @@ public class TopicAclControllerIT {
 
   // Query topic requests in created and approved state
   @Test
-  @Order(7)
+  @Order(9)
   public void queryTopicRequestInCreatedApprovedState() throws Exception {
     String res =
         mvc.perform(
@@ -315,7 +392,7 @@ public class TopicAclControllerIT {
   }
 
   // approve topic - creates topic in cluster
-  @Order(8)
+  @Order(10)
   @Test
   public void approveTopic() throws Exception {
     String topicName = TopicAclControllerIT.topicName + topicId1;
@@ -343,7 +420,7 @@ public class TopicAclControllerIT {
   }
 
   // decline topic - topic in cluster
-  @Order(9)
+  @Order(11)
   @Test
   public void declineTopicRequest() throws Exception {
     int topicIdLocal = 1002;
@@ -380,7 +457,7 @@ public class TopicAclControllerIT {
   }
 
   // get team of topic
-  @Order(10)
+  @Order(12)
   @Test
   public void getTeamOfTopic() throws Exception {
     String res =
@@ -399,7 +476,7 @@ public class TopicAclControllerIT {
   }
 
   // delete a topic request of his own
-  @Order(11)
+  @Order(13)
   @Test
   public void deleteTopicRequest() throws Exception {
 
@@ -435,7 +512,7 @@ public class TopicAclControllerIT {
   }
 
   // get topics from cluster
-  @Order(12)
+  @Order(14)
   @Test
   public void getTopicsFromCluster() throws Exception {
     when(clusterApiService.getAllTopics(
@@ -462,7 +539,7 @@ public class TopicAclControllerIT {
   }
 
   // get only topic names
-  @Order(13)
+  @Order(15)
   @Test
   public void getOnlyTopicNames() throws Exception {
     when(clusterApiService.getAllTopics(
@@ -481,13 +558,13 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<String> response = OBJECT_MAPPER.readValue(res, List.class);
+    List<String> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response).hasSize(1);
     assertThat(response.get(0)).isEqualTo("testtopic1001");
   }
 
   // Get Acl requests before creating one
-  @Order(14)
+  @Order(16)
   @Test
   public void getAclRequests() throws Exception {
 
@@ -503,12 +580,12 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<AclRequests> response = OBJECT_MAPPER.readValue(res, List.class);
+    List<AclRequests> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response).isEmpty();
   }
 
   // Get Created Acl requests before creating one
-  @Order(15)
+  @Order(17)
   @Test
   public void getCreatedAclReqs() throws Exception {
     String res =
@@ -528,7 +605,7 @@ public class TopicAclControllerIT {
   }
 
   // Request for a acl
-  @Order(16)
+  @Order(18)
   @Test
   public void aclRequest() throws Exception {
     AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId1);
@@ -550,7 +627,7 @@ public class TopicAclControllerIT {
   }
 
   // Get created acl requests again
-  @Order(17)
+  @Order(19)
   @Test
   public void getCreatedAclRequest() throws Exception {
 
@@ -566,12 +643,13 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<List<AclRequests>> response = OBJECT_MAPPER.readValue(res, List.class);
+    List<AclRequestsResponseModel> response =
+        OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     assertThat(response).hasSize(1);
   }
 
   // Get acl requests again, and approve that request
-  @Order(18)
+  @Order(20)
   @Test
   public void getAclResAgainAndApprove() throws Exception {
     String res =
@@ -589,7 +667,17 @@ public class TopicAclControllerIT {
     List<Map<String, Object>> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
     Map<String, Object> hMap = response.get(0);
 
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    Map<String, String> dataObj = new HashMap<>();
+    ApiResponse apiResponse;
+    if (hMap.get("environment").equals("2")) { // Aiven env
+      String aivenAclIdKey = "aivenaclid";
+      dataObj.put(aivenAclIdKey, "abcdef"); // any test key
+      apiResponse =
+          ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(dataObj).build();
+    } else {
+      apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    }
+
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     Integer reqNo = (Integer) hMap.get("req_no");
@@ -610,7 +698,7 @@ public class TopicAclControllerIT {
   }
 
   // Request for a acl
-  @Order(19)
+  @Order(21)
   @Test
   public void requestAnAcl() throws Exception {
     AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId1);
@@ -632,7 +720,7 @@ public class TopicAclControllerIT {
   }
 
   // Decline acl request
-  @Order(20)
+  @Order(22)
   @Test
   public void declineAclReq() throws Exception {
     String res =
@@ -668,7 +756,7 @@ public class TopicAclControllerIT {
   }
 
   // delete acl requests
-  @Order(21)
+  @Order(23)
   @Test
   public void deleteAclReq() throws Exception {
     String res =
@@ -702,7 +790,7 @@ public class TopicAclControllerIT {
   }
 
   // getacls with topic search filter
-  @Order(22)
+  @Order(24)
   @Test
   public void getAclsWithSearch() throws Exception {
     List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
@@ -727,7 +815,7 @@ public class TopicAclControllerIT {
   }
 
   // get acls to be synced - retrieve from Source of truth
-  @Order(23)
+  @Order(25)
   @Test
   public void getAclsToBeSynced() throws Exception {
     List<Map<String, String>> aclInfo = utilMethods.getClusterAcls();
@@ -754,7 +842,7 @@ public class TopicAclControllerIT {
   }
 
   // delete acl requests
-  @Order(24)
+  @Order(26)
   @Test
   public void deleteAclReqDifferentUseFailsToDeleteRequest() throws Exception {
     String res =
@@ -788,9 +876,9 @@ public class TopicAclControllerIT {
   }
 
   @Test
-  @Order(25)
+  @Order(27)
   public void createDeleteTopicRequest() throws Exception {
-    String topicName = createAndApproveTopic();
+    String topicName = createAndApproveTopic(topicId3, false);
 
     // create topic delete request
     String response =
@@ -831,9 +919,54 @@ public class TopicAclControllerIT {
     assertThat(deleteTopicRequestModel.getDeleteAssociatedSchema()).isTrue();
   }
 
-  private String createAndApproveTopic() throws Exception {
+  @Test
+  @Order(28)
+  public void createAivenAclRequest() throws Exception {
+    String topicName = createAndApproveTopic(topicId4, true);
+
+    AclRequestsModel addAclRequest = utilMethods.getAivenAclRequestModel(topicName);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/createAcl")
+                    .with(user(user1).password(PASSWORD))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    getAclResAgainAndApprove(); // approve acl request
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getTeamDetails")
+                    .with(user(superAdmin).password(superAdmin))
+                    .param("teamId", "1001")
+                    .param("tenantName", "default")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    TeamModelResponse teamModel = OBJECT_MAPPER.readValue(response, TeamModelResponse.class);
+    assertThat(teamModel.getServiceAccounts()).isNotNull();
+    assertThat(teamModel.getServiceAccounts().getServiceAccountsList())
+        .contains(addAclRequest.getAcl_ssl().get(0));
+  }
+
+  private String createAndApproveTopic(int topicID, boolean aivenEnv) throws Exception {
     // Create a topic
-    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId3);
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicID);
+    if (aivenEnv) {
+      addTopicRequest.setEnvironment("2");
+    }
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     mvc.perform(
             MockMvcRequestBuilders.post("/createTopics")
@@ -847,19 +980,26 @@ public class TopicAclControllerIT {
         .getContentAsString();
 
     // approve the topic
-    String topicName = TopicAclControllerIT.topicName + topicId3;
+    String topicName = TopicAclControllerIT.topicName + topicID;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
         .thenReturn("ONLINE");
     ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
 
     when(clusterApiService.approveTopicRequests(
-            topicName, RequestOperationType.CREATE.value, 2, "1", "1", new HashMap<>(), 101, null))
+            topicName,
+            RequestOperationType.CREATE.value,
+            2,
+            "1",
+            addTopicRequest.getEnvironment(),
+            new HashMap<>(),
+            101,
+            null))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
 
     mvc.perform(
             MockMvcRequestBuilders.post("/execTopicRequests")
                 .with(user(user3).password(PASSWORD))
-                .param("topicId", topicId3 + "")
+                .param("topicId", topicID + "")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
