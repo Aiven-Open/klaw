@@ -4,7 +4,8 @@
     "title" : "Klaw - OpenAPI",
     "description" : "This specification is still a work in progress and is not yet implemented in any API. The purpose of this specification is to facilitate developers discussions.",
     "contact" : {
-      "email" : "info@klaw-project.io"
+      "email" : "info@klaw-project.io",
+      "name": "hello testname"
     },
     "license" : {
       "name" : "Apache 2.0",

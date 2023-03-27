@@ -1,0 +1,74 @@
+name: Auto-generate TypeScript api file
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+#    paths:
+#      - openapi.yaml
+
+env:
+  NODE_VERSION: 18
+  PNPM_VERSION: 7.29.1
+
+jobs:
+  autogenerate-types:
+    name: Auto-generate TypeScript api file
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+
+      - name: Setup node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        working-directory: ./coral
+        run: pnpm install
+
+      - name: Generate files
+        working-directory: ./coral
+        run: pnpm extract-api-types
+
+      - name: Run TypeScript compiler
+        working-directory: ./coral
+        run: pnpm tsc
+
+      - name: Run Frontend tests
+        working-directory: ./coral
+        run: pnpm test
+
+      - name: Add changed file
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"    
+          git add .
+          git commit -m "🤖 Auto-update API types for TypeScript usage"
+          git push
