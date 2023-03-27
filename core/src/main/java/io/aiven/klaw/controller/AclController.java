@@ -46,8 +46,10 @@ public class AclController {
    * @param currentPage Which Page are you currently on e.g. 1
    * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or
    *     'DELETED' @Param operationType The RequestOperationType Create/Update/Promote/Claim/Delete
+   * @param requestOperationType is a filter to only return requests of a certain operation type e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1' or '4'
+   * @param search is a wildcard search that will patial match against the topic name
    * @param aclType The Type of acl Consumer/Producer @Param search A wildcard search on the topic
    *     name allowing
    * @param order allows the requestor to specify what order the pagination should be returned in

@@ -41,13 +41,14 @@ public class SchemaRegistryController {
    * @param currentPage Which Page are you currently on e.g. 1
    * @param requestStatus What type of requests are you looking for e.g. 'all' 'created' or
    *     'deleted'
-   * @param topic The name of the topic you would like returned @Param operationType The
+   * @param topic The name of the topic you would like returned
+   * @Param operationType The
    *     RequestOperationType Create/Update/Promote/Claim/Delete
    * @param env The name of the environment you would like returned e.g. '1'
-   * @param order allows the requestor to specify what order the pagination should be returned in
-   *     OLDEST_FIRST/NEWEST_FIRST
    * @param search A wildcard search on the topic name allowing @Param isMyRequest return only
    *     requests I have made
+   * @param order allows the requestor to specify what order the pagination should be returned in
+   *     OLDEST_FIRST/NEWEST_FIRST
    * @return A list of filtered Schema Requests for My (Teams) Requests page
    */
   @RequestMapping(
