@@ -3,6 +3,7 @@ import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
+  RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
 import { Team } from "src/domain/team";
 import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
@@ -155,20 +156,44 @@ const getTopicRequests = (
     .then(transformGetTopicRequestsResponse);
 };
 
-type ApproveTopicRequestPayload = RequestVerdictApproval<"TOPIC">;
-const approveTopicRequest = (payload: ApproveTopicRequestPayload) => {
+const approveTopicRequest = ({
+  reqIds,
+}: {
+  reqIds: RequestVerdictApproval<"SCHEMA">["reqIds"];
+}) => {
   return api.post<
     KlawApiResponse<"approveRequest">,
-    ApproveTopicRequestPayload
-  >(`/request/approve`, payload);
+    RequestVerdictApproval<"TOPIC">
+  >(`/request/approve`, {
+    reqIds,
+    requestEntityType: "TOPIC",
+  });
 };
 
-type DeclineTopicRequestPayload = RequestVerdictDecline<"TOPIC">;
-const declineTopicRequest = (payload: DeclineTopicRequestPayload) => {
+const declineTopicRequest = ({
+  reqIds,
+  reason,
+}: Omit<RequestVerdictDecline<"TOPIC">, "requestEntityType">) => {
   return api.post<
     KlawApiResponse<"declineRequest">,
-    DeclineTopicRequestPayload
-  >(`/request/decline`, payload);
+    RequestVerdictDecline<"TOPIC">
+  >(`/request/decline`, {
+    reqIds,
+    reason,
+    requestEntityType: "TOPIC",
+  });
+};
+
+const deleteTopicRequest = ({
+  reqIds,
+}: Omit<RequestVerdictDelete<"TOPIC">, "requestEntityType">) => {
+  return api.post<
+    KlawApiResponse<"deleteRequest">,
+    RequestVerdictDelete<"TOPIC">
+  >(`/request/delete`, {
+    reqIds,
+    requestEntityType: "TOPIC",
+  });
 };
 
 export {
@@ -181,4 +206,5 @@ export {
   getTopicRequests,
   approveTopicRequest,
   declineTopicRequest,
+  deleteTopicRequest,
 };
