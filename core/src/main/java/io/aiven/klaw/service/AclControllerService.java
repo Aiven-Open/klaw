@@ -57,8 +57,10 @@ import org.springframework.stereotype.Service;
 public class AclControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String SEPARATOR_ACL = "<ACL>";
+
   @Value("${klaw.service.accounts.perteam:25}")
   private int allowedServiceAccountsPerTeam;
+
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired private final MailUtils mailService;
