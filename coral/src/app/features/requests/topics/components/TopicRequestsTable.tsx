@@ -25,8 +25,8 @@ interface TopicRequestTableRow {
 
 type TopicRequestsTableProps = {
   requests: TopicRequest[];
-  onDetails: (topicId: string) => void;
-  onDelete: (topicId: string) => void;
+  onDetails: (topicId: number) => void;
+  onDelete: (topicId: number) => void;
 };
 
 function TopicRequestsTable({
@@ -85,7 +85,7 @@ function TopicRequestsTable({
       action: ({ id }) => ({
         text: "View",
         icon: infoIcon,
-        onClick: () => onDetails(String(id)),
+        onClick: () => onDetails(id),
       }),
     },
     {
@@ -93,10 +93,11 @@ function TopicRequestsTable({
       headerName: "Delete",
       headerInvisible: true,
       width: 30,
-      action: ({ id, deletable }) => ({
+      action: ({ id, deletable, topicname }) => ({
         text: "Delete",
         icon: deleteIcon,
-        onClick: () => onDelete(String(id)),
+        onClick: () => onDelete(id),
+        "aria-label": `Delete topic request for ${topicname}`,
         disabled: !deletable,
       }),
     },

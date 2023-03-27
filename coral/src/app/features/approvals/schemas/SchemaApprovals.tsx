@@ -8,10 +8,10 @@ import SchemaApprovalsTable from "src/app/features/approvals/schemas/components/
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { RequestStatus } from "src/domain/requests/requests-types";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import {
   approveSchemaRequest,
   declineSchemaRequest,
@@ -27,11 +27,9 @@ function SchemaApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  // This logic is what should be extracted in a useFilters hook?
-  const currentEnv = searchParams.get("environment") ?? "ALL";
-  const currentStatus =
-    (searchParams.get("status") as RequestStatus) ?? "CREATED";
-  const currentTopic = searchParams.get("topic") ?? "";
+  const { environment, status, topic } = useFiltersValues({
+    defaultStatus: "CREATED",
+  });
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -59,16 +57,16 @@ function SchemaApprovals() {
     queryKey: [
       "schemaRequestsForApprover",
       currentPage,
-      currentStatus,
-      currentEnv,
-      currentTopic,
+      status,
+      environment,
+      topic,
     ],
     queryFn: () =>
       getSchemaRequestsForApprover({
-        requestStatus: currentStatus,
+        requestStatus: status,
         pageNo: currentPage.toString(),
-        env: currentEnv,
-        topic: currentTopic,
+        env: environment,
+        topic,
       }),
     keepPreviousData: true,
   });
@@ -82,7 +80,9 @@ function SchemaApprovals() {
       // @TODO follow up ticket #707
       // (for all approval tables)
       const response = responses[0];
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorQuickActions(
           response.message || response.result || "Unexpected error"
         );
@@ -127,7 +127,9 @@ function SchemaApprovals() {
       // @TODO follow up ticket #707
       // (for all approval tables)
       const response = responses[0];
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorQuickActions(
           response.message || response.result || "Unexpected error"
         );

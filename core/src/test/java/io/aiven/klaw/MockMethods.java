@@ -3,6 +3,7 @@ package io.aiven.klaw;
 import io.aiven.klaw.model.*;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import java.util.HashSet;
@@ -81,6 +82,18 @@ public class MockMethods {
     kwClustersModel.setClusterType(KafkaClustersType.KAFKA.value);
     kwClustersModel.setKafkaFlavor("Apache Kafka");
     kwClustersModel.setAssociatedServers("https://localhost:12695");
+    kwClustersModel.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+
+    return kwClustersModel;
+  }
+
+  public KwClustersModel getAivenKafkaClusterModel(String dev_cluster) {
+    KwClustersModel kwClustersModel = new KwClustersModel();
+    kwClustersModel.setClusterName(dev_cluster);
+    kwClustersModel.setBootstrapServers("localhost:9092");
+    kwClustersModel.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
+    kwClustersModel.setClusterType(KafkaClustersType.KAFKA.value);
+    kwClustersModel.setKafkaFlavor(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value);
 
     return kwClustersModel;
   }

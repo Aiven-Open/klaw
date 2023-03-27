@@ -160,7 +160,7 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.9</version>
+            <version>0.10.2</version>
         </dependency>
     </dependencies>
 
@@ -266,7 +266,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true </jvmArguments>
+                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true -Dserver.port=8097</jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
@@ -275,6 +275,7 @@
                             <goal>stop</goal>
                         </goals>
                         <configuration>
+
                             <maxAttempts>${spring.integration.test.timeout}</maxAttempts>
                         </configuration>
                     </execution>
@@ -285,7 +286,7 @@
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
                 <version>${springdoc-openapi-maven-plugin.version}</version>
                 <configuration>
-                    <apiDocsUrl>http://localhost:9097/v3/api-docs</apiDocsUrl>
+                    <apiDocsUrl>http://localhost:8097/v3/api-docs</apiDocsUrl>
                     <outputFileName>openapi.yaml</outputFileName>
                     <outputDir>${project.parent.basedir}</outputDir>
                     <skip>false</skip>

@@ -1,6 +1,6 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("TopicFilter.tsx", () => {

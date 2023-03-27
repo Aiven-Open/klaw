@@ -43,7 +43,8 @@ describe("SchemaRequest", () => {
     pageNo: "1",
     operationType: undefined,
     requestStatus: undefined,
-    topic: undefined,
+    topic: "",
+    isMyRequest: false,
   };
 
   beforeAll(() => {
@@ -560,7 +561,7 @@ describe("SchemaRequest", () => {
       await waitFor(() => {
         expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
           ...defaultApiParams,
-          isMyRequest: undefined,
+          isMyRequest: false,
         });
       });
     });

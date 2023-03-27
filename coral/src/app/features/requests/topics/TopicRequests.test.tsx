@@ -3,8 +3,12 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
-import { getTopicRequests } from "src/domain/topic/topic-api";
+import {
+  deleteTopicRequest,
+  getTopicRequests,
+} from "src/domain/topic/topic-api";
 import { transformGetTopicRequestsResponse } from "src/domain/topic/topic-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { TopicRequests } from "src/app/features/requests/topics/TopicRequests";
@@ -23,6 +27,10 @@ const mockGetTopicRequestEnvironments = getEnvironments as jest.MockedFunction<
 
 const mockGetTopicRequests = getTopicRequests as jest.MockedFunction<
   typeof getTopicRequests
+>;
+
+const mockDeleteTopicRequest = deleteTopicRequest as jest.MockedFunction<
+  typeof deleteTopicRequest
 >;
 
 const mockGetTopicRequestsResponse = transformGetTopicRequestsResponse([
@@ -96,7 +104,7 @@ describe("TopicRequests", () => {
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         // search: "abc",
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
       });
@@ -117,7 +125,7 @@ describe("TopicRequests", () => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
           // search: "abc",
-          isMyRequest: undefined,
+          isMyRequest: false,
           requestStatus: "ALL",
           env: "ALL",
         });
@@ -179,7 +187,7 @@ describe("TopicRequests", () => {
       await waitFor(() => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          isMyRequest: undefined,
+          isMyRequest: false,
           search: undefined,
           requestStatus: "ALL",
           env: "ALL",
@@ -217,7 +225,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenCalledWith({
         pageNo: "100",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
       });
@@ -234,7 +242,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenCalledWith({
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
       });
@@ -344,14 +352,14 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
       });
     });
   });
 
-  describe("user can filter schema requests by 'environment'", () => {
+  describe("user can filter topic requests by 'environment'", () => {
     beforeEach(async () => {
       mockGetTopicRequestEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
@@ -375,7 +383,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
@@ -394,14 +402,14 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "ALL",
         env: mockedEnvironmentResponse[0].id,
       });
     });
   });
 
-  describe("user can filter schema requests by 'status'", () => {
+  describe("user can filter topic requests by 'status'", () => {
     beforeEach(async () => {
       mockGetTopicRequestEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
@@ -427,7 +435,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: "TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
         env: "ALL",
       });
@@ -447,10 +455,168 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         search: undefined,
-        isMyRequest: undefined,
+        isMyRequest: false,
         requestStatus: newStatus,
         env: "ALL",
       });
+    });
+  });
+
+  describe("enables user to delete a request", () => {
+    const originalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetTopicRequestEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
+
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a delete request api call if user deletes a topic request", async () => {
+      mockDeleteTopicRequest.mockResolvedValue([{ result: "success" }]);
+
+      const deleteButton = screen.getByRole("button", {
+        name: "Delete topic request for test-topic-1",
+      });
+
+      await userEvent.click(deleteButton);
+      const dialog = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(dialog).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeclineButton);
+
+      expect(mockDeleteTopicRequest).toHaveBeenCalledWith({
+        reqIds: ["1000"],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("updates the the data for the table if user deletes a topic request", async () => {
+      mockDeleteTopicRequest.mockResolvedValue([{ result: "success" }]);
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        // search: "abc",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+
+      const deleteButton = screen.getByRole("button", {
+        name: "Delete topic request for test-topic-1",
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDelete = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDelete);
+
+      expect(mockDeleteTopicRequest).toHaveBeenCalledWith({
+        reqIds: ["1000"],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
+        pageNo: "1",
+        // search: "abc",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if deleting request was not successful", async () => {
+      mockDeleteTopicRequest.mockRejectedValue({ message: "OH NO" });
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        // search: "abc",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+
+      const deleteButton = screen.getByRole("button", {
+        name: `Delete topic request for test-topic-1`,
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeleteButton = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeleteButton);
+
+      expect(mockDeleteTopicRequest).toHaveBeenCalledWith({
+        reqIds: ["1000"],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetTopicRequests).not.toHaveBeenCalledTimes(2);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith({ message: "OH NO" });
+    });
+
+    it("informs user about error if deleting request was not successful and error is hidden in success", async () => {
+      mockDeleteTopicRequest.mockResolvedValue([
+        { result: "FAILURE", message: "OH NO" },
+      ]);
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        // search: "abc",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+
+      const deleteButton = screen.getByRole("button", {
+        name: `Delete topic request for test-topic-1`,
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeleteButton = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeleteButton);
+
+      expect(mockDeleteTopicRequest).toHaveBeenCalledWith({
+        reqIds: ["1000"],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetTopicRequests).not.toHaveBeenCalledTimes(2);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
+
+      const expectedError = new Error("OH NO");
+      expect(console.error).toHaveBeenCalledWith(expectedError);
     });
   });
 });

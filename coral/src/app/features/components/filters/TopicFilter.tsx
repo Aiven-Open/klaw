@@ -1,22 +1,9 @@
 import { SearchInput } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
-import { useSearchParams } from "react-router-dom";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 
 function TopicFilter() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const topic = searchParams.get("topic") ?? undefined;
-
-  const handleChangeTopic = (nextTopic: string) => {
-    if (nextTopic === "") {
-      searchParams.delete("topic");
-      searchParams.set("page", "1");
-      setSearchParams(searchParams);
-    } else {
-      searchParams.set("topic", nextTopic);
-      searchParams.set("page", "1");
-      setSearchParams(searchParams);
-    }
-  };
+  const { topic, setFilterValue } = useFiltersValues();
 
   return (
     <div key={"search"}>
@@ -28,7 +15,7 @@ function TopicFilter() {
         defaultValue={topic}
         onChange={debounce((e) => {
           const parsedTopic = String(e.target.value).trim();
-          return handleChangeTopic(parsedTopic);
+          return setFilterValue({ name: "topic", value: parsedTopic });
         }, 500)}
       />
       <div id={"search-field-description"} className={"visually-hidden"}>

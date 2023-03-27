@@ -179,10 +179,7 @@ describe("TopicRequestsTable", () => {
         name: "View",
       })
     );
-    expect(onDetails).toHaveBeenNthCalledWith(
-      1,
-      String(mockedRequests[0].topicid)
-    );
+    expect(onDetails).toHaveBeenNthCalledWith(1, mockedRequests[0].topicid);
   });
 
   it("has column for action to delete request", async () => {
@@ -190,13 +187,10 @@ describe("TopicRequestsTable", () => {
     renderFromProps({ onDelete });
     await userEvent.click(
       within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
-        name: "Delete",
+        name: "Delete topic request for test-topic-1",
       })
     );
-    expect(onDelete).toHaveBeenNthCalledWith(
-      1,
-      String(mockedRequests[0].topicid)
-    );
+    expect(onDelete).toHaveBeenNthCalledWith(1, mockedRequests[0].topicid);
   });
 
   it("disables the delete button for a request if the request is not deletable", () => {
@@ -205,7 +199,7 @@ describe("TopicRequestsTable", () => {
     renderFromProps({ requests: [nonDeletableRequest], onDelete });
     expect(
       within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
-        name: "Delete",
+        name: "Delete topic request for test-topic-1",
       })
     ).toBeDisabled();
   });

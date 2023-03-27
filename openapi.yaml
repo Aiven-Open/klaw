@@ -17,7 +17,7 @@
     "url" : "https://www.klaw-project.io/docs"
   },
   "servers" : [ {
-    "url" : "http://localhost:9097",
+    "url" : "http://localhost:8097",
     "description" : "Generated server url"
   } ],
   "paths" : {

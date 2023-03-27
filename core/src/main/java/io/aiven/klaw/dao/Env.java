@@ -1,6 +1,6 @@
 package io.aiven.klaw.dao;
 
-import io.aiven.klaw.converter.EnvTagConverter;
+import io.aiven.klaw.helpers.EnvTagConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
