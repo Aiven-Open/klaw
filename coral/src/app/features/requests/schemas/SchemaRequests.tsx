@@ -1,3 +1,4 @@
+import { Alert } from "@aivenio/aquarium";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -5,24 +6,20 @@ import { Pagination } from "src/app/components/Pagination";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import { MyRequestsFilter } from "src/app/features/components/table-filters/MyRequestsFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
+import { OperationTypeFilter } from "src/app/features/components/filters/OperationTypeFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { SchemaRequestTable } from "src/app/features/requests/schemas/components/SchemaRequestTable";
 import {
-  RequestOperationType,
-  RequestStatus,
-} from "src/domain/requests/requests-types";
-import {
-  getSchemaRequests,
   deleteSchemaRequest,
+  getSchemaRequests,
 } from "src/domain/schema-request";
-import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { Alert } from "@aivenio/aquarium";
 import { objectHasProperty } from "src/services/type-utils";
-import { OperationTypeFilter } from "src/app/features/components/table-filters/OperationTypeFilter";
 
 const defaultStatus = "ALL";
 const defaultType = "ALL";
@@ -34,15 +31,9 @@ function SchemaRequests() {
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
-  const currentTopic = searchParams.get("topic") ?? undefined;
-  const currentEnvironment = searchParams.get("environment") ?? "ALL";
-  const currentType =
-    (searchParams.get("operationType") as RequestOperationType | "ALL") ??
-    defaultType;
-  const currentStatus =
-    (searchParams.get("status") as RequestStatus) ?? defaultStatus;
-  const showOnlyMyRequests =
-    searchParams.get("showOnlyMyRequests") === "true" ? true : undefined;
+
+  const { topic, environment, status, showOnlyMyRequests, operationType } =
+    useFiltersValues();
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";
@@ -61,21 +52,21 @@ function SchemaRequests() {
     queryKey: [
       "getSchemaRequests",
       currentPage,
-      currentEnvironment,
-      currentStatus,
-      currentTopic,
+      environment,
+      status,
+      topic,
       showOnlyMyRequests,
-      currentType,
+      operationType,
     ],
     queryFn: () =>
       getSchemaRequests({
         pageNo: String(currentPage),
-        env: currentEnvironment,
-        requestStatus:
-          currentStatus !== defaultStatus ? currentStatus : undefined,
-        topic: currentTopic,
+        env: environment,
+        requestStatus: status !== defaultStatus ? status : undefined,
+        topic,
         isMyRequest: showOnlyMyRequests,
-        operationType: currentType !== defaultType ? currentType : undefined,
+        operationType:
+          operationType !== defaultType ? operationType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -87,7 +78,8 @@ function SchemaRequests() {
         // @TODO follow up ticket #707
         // (for all approval and request tables)
         const response = responses[0];
-        const responseIsAHiddenError = response?.result !== "success";
+        const responseIsAHiddenError =
+          response?.result.toLowerCase() !== "success";
         if (responseIsAHiddenError) {
           throw new Error(response?.message || response?.result);
         }

@@ -1014,6 +1014,16 @@ databaseChangeLog:
                     type: boolean
               tableName: kwdatamigration
     - changeSet:
+        id: 24-03-2023 New Column - to store service accounts of a team
+        author: muralibasani
+        changes:
+          - addColumn:
+              tableName: kwteams
+              columns:
+                - column:
+                    name: serviceaccounts
+                    type: CLOB
+    - changeSet:
         id: 27-03-2023 New Column - to store rest api url
         author: muralibasani
         changes:
@@ -1023,3 +1033,4 @@ databaseChangeLog:
                 - column:
                     name: associatedservers
                     type: VARCHAR(250)
+

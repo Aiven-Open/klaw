@@ -1,10 +1,10 @@
 import { NativeSelect } from "@aivenio/aquarium";
 import { ChangeEvent } from "react";
-import { useSearchParams } from "react-router-dom";
 import {
-  requestOperationTypeNameMap,
   operationTypeList,
+  requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { RequestOperationType } from "src/domain/requests/requests-types";
 import { ResolveIntersectionTypes } from "types/utils";
 
@@ -13,23 +13,12 @@ type RequestOperationTypeOptions = ResolveIntersectionTypes<
 >;
 
 function OperationTypeFilter() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const operationType =
-    (searchParams.get("operationType") as RequestOperationTypeOptions | null) ??
-    "ALL";
+  const { operationType, setFilterValue } = useFiltersValues();
 
   const handleChangeOperationType = (e: ChangeEvent<HTMLSelectElement>) => {
     const nextOperationType = e.target.value as RequestOperationTypeOptions;
 
-    if (nextOperationType === "ALL") {
-      searchParams.delete("operationType");
-      searchParams.set("page", "1");
-    } else {
-      searchParams.set("operationType", nextOperationType);
-      searchParams.set("page", "1");
-    }
-
-    setSearchParams(searchParams);
+    setFilterValue({ name: "operationType", value: nextOperationType });
   };
 
   return (

@@ -1,6 +1,8 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.helpers.ServiceAccountsConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
@@ -46,6 +48,10 @@ public class Team implements Serializable {
 
   @Column(name = "restrictionsobj")
   private String restrictionsObj;
+
+  @Convert(converter = ServiceAccountsConverter.class)
+  @Column(name = "serviceaccounts")
+  private ServiceAccounts serviceAccounts;
 
   @Column(name = "otherparams")
   private String otherParams;

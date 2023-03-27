@@ -15,6 +15,7 @@ import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
@@ -100,6 +101,18 @@ public class AclControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
   }
 
+  private void mockKafkaFlavorAiven() {
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    KwClusters kwClusters = new KwClusters();
+    kwClusters.setKafkaFlavor(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value);
+    kwClusters.setProjectName("project");
+    kwClusters.setServiceName("service");
+    kwClusters.setClusterId(1);
+    kwClustersMap.put(1, kwClusters);
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+  }
+
   private void loginMock() {
     Authentication authentication = Mockito.mock(Authentication.class);
     SecurityContext securityContext = Mockito.mock(SecurityContext.class);
@@ -120,6 +133,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
     stubUserInfo();
+    mockKafkaFlavor();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -200,6 +214,7 @@ public class AclControllerServiceTest {
     copyProperties(aclRequestsModel, aclRequestsDao);
     when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
     stubUserInfo();
+    mockKafkaFlavor();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequestsModel);
     assertThat(resultResp.getResult())
@@ -243,6 +258,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
     stubUserInfo();
+    mockKafkaFlavor();
 
     aclControllerService.createAcl(aclRequestsModel);
     assertThat(aclRequestsModel.getTransactionalId()).isEqualTo("");
@@ -659,8 +675,7 @@ public class AclControllerServiceTest {
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
-    when(commonUtilsService.getEnvsFromUserId(anyString()))
-        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(utilMethods.getTeams());
 
     when(clusterApiService.getAivenServiceAccounts(anyString(), anyString(), anyInt()))
         .thenReturn(apiResponse);
@@ -698,6 +713,94 @@ public class AclControllerServiceTest {
 
     assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
     assertThat(resultObj).hasSize(0);
+  }
+
+  @Test
+  @Order(30)
+  public void verifyServiceAccountsOfTeam() {
+    AclRequestsModel aclRequestsModel = getAclRequestProducer();
+    aclRequestsModel.setRequestingteam(101);
+    aclRequestsModel.setAcl_ssl(new ArrayList<>(List.of("user1", "user2")));
+    Set<String> serviceAccountInfoSet = new HashSet<>();
+    serviceAccountInfoSet.add("user1");
+
+    stubUserInfo();
+    mockKafkaFlavorAiven();
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(utilMethods.getTeams());
+    when(manageDatabase.getAllServiceAccounts(101)).thenReturn(serviceAccountInfoSet);
+
+    boolean serviceAccountsCheck =
+        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, 101);
+    assertThat(serviceAccountsCheck).isFalse();
+  }
+
+  @Test
+  @Order(31)
+  public void verifyServiceAccountsOfTeamOtherTeamOwnsAccount() {
+    AclRequestsModel aclRequestsModel = getAclRequestProducer();
+    aclRequestsModel.setRequestingteam(101);
+    aclRequestsModel.setAcl_ssl(new ArrayList<>(List.of("user1", "user2")));
+    Set<String> serviceAccountInfoSet = new HashSet<>();
+    serviceAccountInfoSet.add("user1");
+
+    stubUserInfo();
+    mockKafkaFlavorAiven();
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    List<Team> teamList = utilMethods.getTeams();
+    teamList.get(0).setServiceAccounts(null);
+    when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(teamList);
+    when(manageDatabase.getAllServiceAccounts(101)).thenReturn(serviceAccountInfoSet);
+
+    boolean serviceAccountsCheck =
+        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, 101);
+    assertThat(serviceAccountsCheck).isTrue();
+  }
+
+  @Test
+  @Order(32)
+  public void verifyServiceAccountsOfTeamNewAccount() {
+    AclRequestsModel aclRequestsModel = getAclRequestProducer();
+    aclRequestsModel.setRequestingteam(101);
+    aclRequestsModel.setAcl_ssl(new ArrayList<>(List.of("user3", "user4")));
+    Set<String> serviceAccountInfoSet = new HashSet<>();
+    serviceAccountInfoSet.add("user1");
+
+    stubUserInfo();
+    mockKafkaFlavorAiven();
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    List<Team> teamList = utilMethods.getTeams();
+    when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(teamList);
+    when(manageDatabase.getAllServiceAccounts(101)).thenReturn(serviceAccountInfoSet);
+
+    boolean serviceAccountsCheck =
+        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, 101);
+    assertThat(serviceAccountsCheck).isFalse();
+  }
+
+  @Test
+  @Order(33)
+  public void verifyServiceAccountsOfTeamNewAccountOtherTeamOwnsAccount() {
+    AclRequestsModel aclRequestsModel = getAclRequestProducer();
+    aclRequestsModel.setRequestingteam(101);
+    aclRequestsModel.setAcl_ssl(new ArrayList<>(List.of("user3")));
+    Set<String> serviceAccountInfoSet = new HashSet<>();
+    serviceAccountInfoSet.add("user3");
+
+    stubUserInfo();
+    mockKafkaFlavorAiven();
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    List<Team> teamList = utilMethods.getTeams();
+    when(manageDatabase.getTeamObjForTenant(anyInt())).thenReturn(teamList);
+    when(manageDatabase.getAllServiceAccounts(101)).thenReturn(serviceAccountInfoSet);
+
+    boolean serviceAccountsCheck =
+        aclControllerService.verifyServiceAccountsOfTeam(aclRequestsModel, 101);
+    assertThat(serviceAccountsCheck).isTrue();
   }
 
   private AclRequestsModel getAclRequestProducer() {

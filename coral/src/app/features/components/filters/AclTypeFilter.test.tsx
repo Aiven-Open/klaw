@@ -1,7 +1,7 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import AclTypeFilter from "src/app/features/components/table-filters/AclTypeFilter";
+import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const aclTypesForFilter = ["ALL", "CONSUMER", "PRODUCER"];

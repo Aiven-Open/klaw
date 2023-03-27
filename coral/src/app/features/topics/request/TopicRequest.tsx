@@ -36,6 +36,8 @@ function TopicRequest() {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const navigate = useNavigate();
 
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
+
   const { data: environments } = useQuery<Environment[], Error>(
     ["environments-for-team"],
     getEnvironmentsForTeam
@@ -59,8 +61,16 @@ function TopicRequest() {
   });
 
   const { mutate, isLoading, isError, error } = useMutation(requestTopic, {
-    onSuccess: () => navigate("/requests/topics?status=CREATED"),
+    onSuccess: () => {
+      setSuccessModalOpen(true);
+      setTimeout(() => {
+        redirectToMyRequests();
+      }, 5 * 1000);
+    },
   });
+
+  const redirectToMyRequests = () =>
+    navigate("/requests/topics?status=CREATED");
 
   const onSubmit: SubmitHandler<Schema> = (data) =>
     mutate(createTopicRequestPayload(data));
@@ -77,6 +87,19 @@ function TopicRequest() {
 
   return (
     <>
+      {successModalOpen && (
+        <Dialog
+          title={"Topic request successful!"}
+          primaryAction={{
+            text: "Continue",
+            onClick: redirectToMyRequests,
+          }}
+          type={"confirmation"}
+        >
+          Redirecting to My team&apos;s request page shortly. Select
+          &quot;Continue&quot; for an immediate redirect.
+        </Dialog>
+      )}
       <Box maxWidth={"7xl"}>
         {isError && (
           <Box marginBottom={"l1"} role="alert">

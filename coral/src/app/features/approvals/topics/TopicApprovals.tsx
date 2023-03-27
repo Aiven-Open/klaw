@@ -3,16 +3,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
-import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
-import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import DetailsModalContent from "src/app/features/approvals/topics/components/DetailsModalContent";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
-import EnvironmentFilter from "src/app/features/components/table-filters/EnvironmentFilter";
-import StatusFilter from "src/app/features/components/table-filters/StatusFilter";
-import TeamFilter from "src/app/features/components/table-filters/TeamFilter";
-import TopicFilter from "src/app/features/components/table-filters/TopicFilter";
-import { RequestStatus } from "src/domain/requests/requests-types";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import TeamFilter from "src/app/features/components/filters/TeamFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import {
   approveTopicRequest,
   declineTopicRequest,
@@ -29,12 +29,9 @@ function TopicApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  // This logic is what should be extracted in a useFilters hook?
-  const currentTeam = searchParams.get("team") ?? "ALL";
-  const currentEnv = searchParams.get("environment") ?? "ALL";
-  const currentStatus =
-    (searchParams.get("status") as RequestStatus) ?? "CREATED";
-  const currentTopic = searchParams.get("topic") ?? "";
+  const { environment, status, topic, team } = useFiltersValues({
+    defaultStatus: "CREATED",
+  });
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -67,18 +64,18 @@ function TopicApprovals() {
     queryKey: [
       "topicRequestsForApprover",
       currentPage,
-      currentEnv,
-      currentStatus,
-      currentTeam,
-      currentTopic,
+      environment,
+      status,
+      team,
+      topic,
     ],
     queryFn: () =>
       getTopicRequestsForApprover({
         pageNo: String(currentPage),
-        env: currentEnv,
-        requestStatus: currentStatus,
-        teamId: currentTeam === "ALL" ? undefined : Number(currentTeam),
-        search: currentTopic,
+        env: environment,
+        requestStatus: status,
+        teamId: team === "ALL" ? undefined : Number(team),
+        search: topic,
       }),
     keepPreviousData: true,
   });
@@ -92,8 +89,9 @@ function TopicApprovals() {
     onSuccess: (responses) => {
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
-
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorMessage(
           response.message || response.result || "Unexpected error"
         );
@@ -138,8 +136,9 @@ function TopicApprovals() {
     onSuccess: (responses) => {
       // This mutation is used on a single request, so we always want the first response in the array
       const response = responses[0];
-
-      if (response.result !== "success") {
+      const responseIsAHiddenError =
+        response?.result.toLowerCase() !== "success";
+      if (responseIsAHiddenError) {
         return setErrorMessage(
           response.message || response.result || "Unexpected error"
         );

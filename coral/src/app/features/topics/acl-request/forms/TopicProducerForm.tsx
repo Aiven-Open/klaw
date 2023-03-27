@@ -46,6 +46,7 @@ const TopicProducerForm = ({
   isAivenCluster,
 }: TopicProducerFormProps) => {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
+  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const navigate = useNavigate();
   const { aclIpPrincipleType, aclPatternType, topicname } =
@@ -81,8 +82,17 @@ const TopicProducerForm = ({
 
   const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: createAclRequest,
-    onSuccess: () => navigate("/requests/acls?status=CREATED"),
+    onSuccess: () => {
+      setSuccessModalOpen(true);
+      setTimeout(() => {
+        redirectToMyRequests();
+      }, 5 * 1000);
+    },
   });
+
+  function redirectToMyRequests() {
+    navigate("/requests/acls?status=CREATED");
+  }
 
   const onSubmitTopicProducer: SubmitHandler<TopicProducerFormSchema> = (
     formData
@@ -105,6 +115,19 @@ const TopicProducerForm = ({
         <Box marginBottom={"l1"} role="alert">
           <Alert type="error">{parseErrorMsg(error)}</Alert>
         </Box>
+      )}
+      {successModalOpen && (
+        <Dialog
+          title={"Acl request successful!"}
+          primaryAction={{
+            text: "Continue",
+            onClick: redirectToMyRequests,
+          }}
+          type={"confirmation"}
+        >
+          Redirecting to My team&apos;s request page shortly. Select
+          &quot;Continue&quot; for an immediate redirect.
+        </Dialog>
       )}
       <Form
         {...topicProducerForm}
