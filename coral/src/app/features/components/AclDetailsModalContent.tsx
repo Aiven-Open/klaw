@@ -11,7 +11,7 @@ const Label = ({ children }: { children: React.ReactNode }) => (
   </dt>
 );
 
-const DetailsModalContent = ({ request }: DetailsModalContentProps) => {
+const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
   if (request === undefined) {
     return <div>Request not found.</div>;
   }
@@ -121,4 +121,4 @@ const DetailsModalContent = ({ request }: DetailsModalContentProps) => {
   );
 };
 
-export default DetailsModalContent;
+export default TopicDetailsModalContent;
