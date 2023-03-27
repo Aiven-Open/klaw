@@ -47,6 +47,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -56,8 +57,8 @@ import org.springframework.stereotype.Service;
 public class AclControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String SEPARATOR_ACL = "<ACL>";
-
-  private static final int ALLOWED_SERVICE_ACCOUNTS_PER_TEAM = 25;
+  @Value("${klaw.service.accounts.perteam:25}")
+  private int allowedServiceAccountsPerTeam;
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired private final MailUtils mailService;
@@ -667,7 +668,7 @@ public class AclControllerService {
         serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
       } else {
         serviceAccounts = new ServiceAccounts();
-        serviceAccounts.setNumberOfAllowedAccounts(ALLOWED_SERVICE_ACCOUNTS_PER_TEAM);
+        serviceAccounts.setNumberOfAllowedAccounts(allowedServiceAccountsPerTeam);
         serviceAccounts.setServiceAccountsList(new HashSet<>());
         serviceAccounts.getServiceAccountsList().add(aclRequest.getAcl_ssl());
         optionalTeam.get().setServiceAccounts(serviceAccounts);
