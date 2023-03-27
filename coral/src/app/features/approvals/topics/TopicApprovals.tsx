@@ -184,7 +184,6 @@ function TopicApprovals() {
 
   function handleApproveRequest(reqNo: number): void {
     approveRequest({
-      requestEntityType: "TOPIC",
       reqIds: [String(reqNo)],
     });
   }
@@ -244,7 +243,6 @@ function TopicApprovals() {
                   return;
                 }
                 approveRequest({
-                  requestEntityType: "TOPIC",
                   reqIds: [String(detailsModal.reqNo)],
                 });
               },
@@ -280,7 +278,6 @@ function TopicApprovals() {
               return;
             }
             declineRequest({
-              requestEntityType: "TOPIC",
               reqIds: [String(declineModal.reqNo)],
               reason: message,
             });
