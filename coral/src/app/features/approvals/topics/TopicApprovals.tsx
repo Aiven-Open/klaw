@@ -86,17 +86,7 @@ function TopicApprovals() {
     variables: approveVariables,
   } = useMutation({
     mutationFn: approveTopicRequest,
-    onSuccess: (responses) => {
-      // This mutation is used on a single request, so we always want the first response in the array
-      const response = responses[0];
-      const responseIsAHiddenError =
-        response?.result.toLowerCase() !== "success";
-      if (responseIsAHiddenError) {
-        return setErrorMessage(
-          response.message || response.result || "Unexpected error"
-        );
-      }
-
+    onSuccess: () => {
       setErrorMessage("");
       setDetailsModal({ isOpen: false, reqNo: null });
 
@@ -112,7 +102,8 @@ function TopicApprovals() {
         topicRequests?.entries.length === 1 &&
         topicRequests?.currentPage > 1
       ) {
-        return handleChangePage(currentPage - 1);
+        handleChangePage(currentPage - 1);
+        return;
       }
 
       // We need to refetch all aclrequests queries to keep Table state in sync
@@ -133,16 +124,7 @@ function TopicApprovals() {
     variables: declineVariables,
   } = useMutation({
     mutationFn: declineTopicRequest,
-    onSuccess: (responses) => {
-      // This mutation is used on a single request, so we always want the first response in the array
-      const response = responses[0];
-      const responseIsAHiddenError =
-        response?.result.toLowerCase() !== "success";
-      if (responseIsAHiddenError) {
-        return setErrorMessage(
-          response.message || response.result || "Unexpected error"
-        );
-      }
+    onSuccess: () => {
       setErrorMessage("");
       setDeclineModal({ isOpen: false, reqNo: null });
 
@@ -158,7 +140,8 @@ function TopicApprovals() {
         topicRequests?.entries.length === 1 &&
         topicRequests?.currentPage > 1
       ) {
-        return handleChangePage(currentPage - 1);
+        handleChangePage(currentPage - 1);
+        return;
       }
 
       // We need to refetch all aclrequests queries to keep Table state in sync
