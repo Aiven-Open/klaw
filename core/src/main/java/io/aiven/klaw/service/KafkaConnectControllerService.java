@@ -29,6 +29,7 @@ import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.connectorconfig.ConnectorConfig;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -455,7 +456,12 @@ public class KafkaConnectControllerService {
   }
 
   public List<KafkaConnectorRequestsResponseModel> getCreatedConnectorRequests(
-      String pageNo, String currentPage, String requestsType, String env, String search) {
+      String pageNo,
+      String currentPage,
+      String requestsType,
+      String env,
+      Order order,
+      String search) {
     log.debug("getCreatedTopicRequests {} {}", pageNo, requestsType);
     String userDetails = getUserName();
     List<KafkaConnectorRequest> createdTopicReqList;
@@ -474,7 +480,7 @@ public class KafkaConnectControllerService {
               .getHandleDbRequests()
               .getCreatedConnectorRequests(userDetails, requestsType, true, tenantId, env, search);
 
-    createdTopicReqList = getConnectorRequestsFilteredForTenant(createdTopicReqList);
+    createdTopicReqList = filterByTenantAndOrder(userDetails, createdTopicReqList, order);
 
     createdTopicReqList = getConnectorRequestsPaged(createdTopicReqList, pageNo, currentPage);
 
@@ -794,6 +800,7 @@ public class KafkaConnectControllerService {
       String requestsType,
       RequestOperationType requestOperationType,
       String env,
+      Order order,
       String search) {
     log.debug("getConnectorRequests page {} requestsType {}", pageNo, requestsType);
     String userDetails = getUserName();
@@ -803,16 +810,8 @@ public class KafkaConnectControllerService {
             .getHandleDbRequests()
             .getAllConnectorRequests(userDetails, requestOperationType, env, search, tenantId);
 
-    // tenant filtering
-    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userDetails);
-    topicReqs =
-        topicReqs.stream()
-            .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
-            .sorted(
-                Collections.reverseOrder(
-                    Comparator.comparing(KafkaConnectorRequest::getRequesttime)))
-            .collect(Collectors.toList());
-
+    topicReqs = filterByTenantAndOrder(userDetails, topicReqs, order);
+    // TODO is this really needed?
     if (!"all".equals(requestsType)
         && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType))
       topicReqs =
@@ -823,6 +822,23 @@ public class KafkaConnectControllerService {
     topicReqs = getConnectorRequestsPaged(topicReqs, pageNo, currentPage);
 
     return getConnectorRequestModels(topicReqs, true);
+  }
+
+  private List<KafkaConnectorRequest> filterByTenantAndOrder(
+      String userDetails, List<KafkaConnectorRequest> connectorReqs, Order order) {
+    // tenant filtering
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userDetails);
+    try {
+      connectorReqs =
+          connectorReqs.stream()
+              .filter(request -> allowedEnvIdSet.contains(request.getEnvironment()))
+              .sorted(getPreferredOrder(order))
+              .collect(Collectors.toList());
+    } catch (Exception e) {
+      log.error("No environments/clusters found.", e);
+      return new ArrayList<>();
+    }
+    return connectorReqs;
   }
 
   public ApiResponse createClaimConnectorRequest(String connectorName, String envId)
@@ -1288,22 +1304,12 @@ public class KafkaConnectControllerService {
     return connectors;
   }
 
-  private List<KafkaConnectorRequest> getConnectorRequestsFilteredForTenant(
-      List<KafkaConnectorRequest> createdTopicReqList) {
-    // tenant filtering
-    try {
-      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
-      if (createdTopicReqList != null) {
-        createdTopicReqList =
-            createdTopicReqList.stream()
-                .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
-                .collect(Collectors.toList());
-      }
-    } catch (Exception e) {
-      log.error("No environments/clusters found.", e);
-      return new ArrayList<>();
-    }
-    return createdTopicReqList;
+  private static Comparator<KafkaConnectorRequest> getPreferredOrder(Order order) {
+    return switch (order) {
+      case OLDEST_FIRST -> Collections.reverseOrder(
+          Comparator.comparing(KafkaConnectorRequest::getRequesttime));
+      case NEWEST_FIRST -> Comparator.comparing(KafkaConnectorRequest::getRequesttime);
+    };
   }
 
   private List<KwKafkaConnector> getFilteredConnectorsForTenant(

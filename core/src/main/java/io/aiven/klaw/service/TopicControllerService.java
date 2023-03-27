@@ -1,6 +1,8 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.model.enums.MailType.*;
+import static io.aiven.klaw.model.enums.Order.NEWEST_FIRST;
+import static io.aiven.klaw.model.enums.Order.OLDEST_FIRST;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -27,6 +29,7 @@ import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -312,6 +315,7 @@ public class TopicControllerService {
       String requestsType,
       String env,
       String wildcardSearch,
+      Order order,
       boolean isMyRequest) {
     log.debug("getTopicRequests page {} requestsType {}", pageNo, requestsType);
     String userName = getUserName();
@@ -328,15 +332,37 @@ public class TopicControllerService {
                 commonUtilsService.getTenantId(userName));
 
     // tenant filtering
-    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
-    topicReqs =
-        topicReqs.stream()
-            .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
-            .sorted(Collections.reverseOrder(Comparator.comparing(TopicRequest::getRequesttime)))
-            .collect(Collectors.toList());
+    topicReqs = filterByTenantAndSort(order, userName, topicReqs);
 
     topicReqs = getTopicRequestsPaged(topicReqs, pageNo, currentPage);
     return getTopicRequestModels(topicReqs, true);
+  }
+
+  private List<TopicRequest> filterByTenantAndSort(
+      Order order, String userName, List<TopicRequest> topicReqs) {
+    try {
+      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
+      topicReqs =
+          topicReqs.stream()
+              .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
+              .sorted(getPreferredOrdering(order))
+              .collect(Collectors.toList());
+    } catch (Exception e) {
+      log.error("No environments/clusters found.", e);
+      return new ArrayList<>();
+    }
+    return topicReqs;
+  }
+
+  private Comparator<TopicRequest> getPreferredOrdering(Order order) {
+    return switch (order) {
+      case NEWEST_FIRST -> compareByTime();
+      case OLDEST_FIRST -> Collections.reverseOrder(compareByTime());
+    };
+  }
+
+  private static Comparator<TopicRequest> compareByTime() {
+    return Comparator.comparing(TopicRequest::getRequesttime);
   }
 
   private TopicRequestsResponseModel setRequestorPermissions(
@@ -455,7 +481,8 @@ public class TopicControllerService {
       String requestsType,
       Integer teamId,
       String env,
-      String wildcardSearch) {
+      String wildcardSearch,
+      Order order) {
     if (log.isDebugEnabled()) {
       log.debug(
           "getCreatedTopicRequests {} {} {} {} {}",
@@ -485,7 +512,7 @@ public class TopicControllerService {
                   userName, requestsType, true, tenantId, teamId, env, wildcardSearch);
     }
 
-    createdTopicReqList = getTopicRequestsFilteredForTenant(createdTopicReqList);
+    createdTopicReqList = filterByTenantAndSort(order, userName, createdTopicReqList);
     createdTopicReqList = getTopicRequestsPaged(createdTopicReqList, pageNo, currentPage);
 
     return updateCreateTopicReqsList(createdTopicReqList, tenantId);
@@ -1215,24 +1242,6 @@ public class TopicControllerService {
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
-  }
-
-  private List<TopicRequest> getTopicRequestsFilteredForTenant(
-      List<TopicRequest> createdTopicReqList) {
-    // tenant filtering
-    try {
-      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
-      if (createdTopicReqList != null) {
-        createdTopicReqList =
-            createdTopicReqList.stream()
-                .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
-                .collect(Collectors.toList());
-      }
-    } catch (Exception e) {
-      log.error("No environments/clusters found.", e);
-      return new ArrayList<>();
-    }
-    return createdTopicReqList;
   }
 
   public Map<String, String> getTopicEvents(

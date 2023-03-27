@@ -415,7 +415,8 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
     List<TopicRequestsResponseModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", null, "all", null, null, false);
+        topicControllerService.getTopicRequests(
+            "1", "", null, "all", null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST, false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -437,7 +438,8 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", null, "all", null, null, false);
+        topicControllerService.getTopicRequests(
+            "1", "", null, "all", null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST, false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -459,7 +461,15 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", null, "created", null, null, false);
+        topicControllerService.getTopicRequests(
+            "1",
+            "",
+            null,
+            "created",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -545,7 +555,8 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestsResponseModel> topicList =
-        topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
+        topicControllerService.getTopicRequestsForApprover(
+            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST);
 
     assertThat(topicList).hasSize(2);
   }
@@ -571,7 +582,8 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestsResponseModel> topicList =
-        topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
+        topicControllerService.getTopicRequestsForApprover(
+            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST);
 
     assertThat(topicList).hasSize(5);
     assertThat(topicList.get(0).getTopicpartitions()).isEqualTo(2);

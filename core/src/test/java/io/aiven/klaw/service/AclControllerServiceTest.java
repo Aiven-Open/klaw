@@ -321,13 +321,33 @@ public class AclControllerServiceTest {
     when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(userList);
 
     List<AclRequestsResponseModel> aclReqs =
-        aclControllerService.getAclRequests("1", "", "all", null, null, null, null, null, false);
+        aclControllerService.getAclRequests(
+            "1",
+            "",
+            "all",
+            null,
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            false);
     assertThat(aclReqs.size()).isEqualTo(10);
     assertThat(aclReqs.get(0).getAcl_ip().size()).isEqualTo(3);
     assertThat(aclReqs.get(0).getTeamname()).isEqualTo(teamName);
 
     aclReqs =
-        aclControllerService.getAclRequests("2", "", "all", null, null, null, null, null, false);
+        aclControllerService.getAclRequests(
+            "2",
+            "",
+            "all",
+            null,
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            false);
     assertThat(aclReqs.size()).isEqualTo(5);
     assertThat(aclReqs.get(0).getApprovingTeamDetails()).contains(userList.get(0).getUsername());
     assertThat(aclReqs.get(0).getApprovingTeamDetails()).contains(userList.get(1).getUsername());
@@ -349,7 +369,8 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
     List<AclRequestsResponseModel> listReqs =
-        aclControllerService.getAclRequestsForApprover("", "", "", null, null, null);
+        aclControllerService.getAclRequestsForApprover(
+            "", "", "", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 
@@ -370,7 +391,8 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
     List<AclRequestsResponseModel> listReqs =
-        aclControllerService.getAclRequestsForApprover("", "", "", null, null, null);
+        aclControllerService.getAclRequestsForApprover(
+            "", "", "", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 

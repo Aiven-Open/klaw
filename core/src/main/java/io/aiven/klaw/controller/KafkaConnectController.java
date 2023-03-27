@@ -4,6 +4,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorOverview;
 import io.aiven.klaw.model.KafkaConnectorModel;
+import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
@@ -44,6 +45,8 @@ public class KafkaConnectController {
    * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or 'DELETED'
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param search A wildcard search term that searches topicNames.
+   * @param order allows the requestor to specify what order the pagination should be returned in *
+   *     OLDEST_FIRST/NEWEST_FIRST
    * @return A List of Kafka Connector Requests filtered by the provided parameters.
    */
   @RequestMapping(
@@ -55,10 +58,11 @@ public class KafkaConnectController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getCreatedConnectorRequests(
-            pageNo, currentPage, requestStatus.value, env, search),
+            pageNo, currentPage, requestStatus.value, env, order, search),
         HttpStatus.OK);
   }
 
@@ -111,6 +115,9 @@ public class KafkaConnectController {
    *     'DELETED' @Param operationType The RequestOperationType Create/Update/Promote/Claim/Delete
    * @param env The name of the environment you would like returned e.g. '1' or '4' @Param search A
    *     wildcard search on the topic name allowing
+   * @param order allows the requestor to specify what order the pagination should be returned in
+   *     OLDEST_FIRST/NEWEST_FIRST @Param search A wildcard search that filters by a partial case
+   *     insensitive match
    * @return A list of Kafka Connector requests
    */
   @RequestMapping(
@@ -124,10 +131,11 @@ public class KafkaConnectController {
       @RequestParam(value = "operationType", required = false)
           RequestOperationType requestOperationType,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorRequests(
-            pageNo, currentPage, requestStatus.value, requestOperationType, env, search),
+            pageNo, currentPage, requestStatus.value, requestOperationType, env, order, search),
         HttpStatus.OK);
   }
 

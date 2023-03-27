@@ -117,7 +117,8 @@ public class TopicControllerTest {
   public void getTopicRequests() throws Exception {
     List<TopicRequestsResponseModel> topicRequests = utilMethods.getTopicRequestsModel();
 
-    when(topicControllerService.getTopicRequests("1", "", null, "all", null, null, false))
+    when(topicControllerService.getTopicRequests(
+            "1", "", null, "all", null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST, false))
         .thenReturn(topicRequests);
 
     mvc.perform(
@@ -158,7 +159,8 @@ public class TopicControllerTest {
   @Order(5)
   public void getCreatedTopicRequests() throws Exception {
     List<TopicRequestsResponseModel> topicReqs = utilMethods.getTopicRequestsList();
-    when(topicControllerService.getTopicRequestsForApprover("1", "", "created", null, null, null))
+    when(topicControllerService.getTopicRequestsForApprover(
+            "1", "", "created", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST))
         .thenReturn(topicReqs);
 
     mvc.perform(

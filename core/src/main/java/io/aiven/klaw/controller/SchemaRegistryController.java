@@ -3,6 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaOverview;
+import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
@@ -43,6 +44,8 @@ public class SchemaRegistryController {
    * @param topic The name of the topic you would like returned @Param operationType The
    *     RequestOperationType Create/Update/Promote/Claim/Delete
    * @param env The name of the environment you would like returned e.g. '1'
+   * @param order allows the requestor to specify what order the pagination should be returned in
+   *     OLDEST_FIRST/NEWEST_FIRST
    * @param search A wildcard search on the topic name allowing @Param isMyRequest return only
    *     requests I have made
    * @return A list of filtered Schema Requests for My (Teams) Requests page
@@ -60,6 +63,7 @@ public class SchemaRegistryController {
           RequestOperationType requestOperationType,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search,
+      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
@@ -72,6 +76,7 @@ public class SchemaRegistryController {
             topic,
             env,
             search,
+            order,
             isMyRequest),
         HttpStatus.OK);
   }
@@ -84,6 +89,8 @@ public class SchemaRegistryController {
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1'
    * @param search A wildcard seearch on the topic name allowing
+   * @param order allows the requestor to specify what order the pagination should be returned in
+   *     OLDEST_FIRST/NEWEST_FIRST
    * @return A list of filtered Schema Requests for approval
    */
   @RequestMapping(
@@ -96,10 +103,11 @@ public class SchemaRegistryController {
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
-      @RequestParam(value = "search", required = false) String search) {
+      @RequestParam(value = "search", required = false) String search,
+      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order) {
     return new ResponseEntity<>(
         schemaRegistryControllerService.getSchemaRequests(
-            pageNo, currentPage, requestStatus.value, null, true, topic, env, search, false),
+            pageNo, currentPage, requestStatus.value, null, true, topic, env, search, order, false),
         HttpStatus.OK);
   }
 

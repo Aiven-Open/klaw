@@ -150,7 +150,16 @@ public class SchemaRegistryControllerServiceTest {
 
     List<SchemaRequestsResponseModel> listReqs =
         schemaRegistryControllerService.getSchemaRequests(
-            "1", "", "all", null, true, null, null, null, false);
+            "1",
+            "",
+            "all",
+            null,
+            true,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            false);
     assertThat(listReqs).hasSize(2);
   }
 
