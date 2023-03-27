@@ -113,7 +113,8 @@ public class KafkaConnectController {
    * @param currentPage Which Page are you currently on e.g. 1
    * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or
    *     'DELETED' @Param operationType The RequestOperationType Create/Update/Promote/Claim/Delete
-   * @param requestOperationType is a filter to only return requests of a certain operation type e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
+   * @param requestOperationType is a filter to only return requests of a certain operation type
+   *     e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param env The name of the environment you would like returned e.g. '1' or '4' @Param search A
    *     wildcard search on the topic name allowing
    * @param order allows the requestor to specify what order the pagination should be returned in
