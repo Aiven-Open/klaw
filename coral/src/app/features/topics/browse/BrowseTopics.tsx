@@ -51,7 +51,7 @@ function BrowseTopics() {
   return (
     <TableLayout
       filters={[
-        <TeamFilter key="team" />,
+        <TeamFilter key="team" filterByName />,
         <EnvironmentFilter key="environment" />,
         <TopicFilter key="search" />,
       ]}
