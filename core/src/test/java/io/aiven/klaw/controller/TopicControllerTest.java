@@ -118,7 +118,7 @@ public class TopicControllerTest {
     List<TopicRequestsResponseModel> topicRequests = utilMethods.getTopicRequestsModel();
 
     when(topicControllerService.getTopicRequests(
-            "1", "", null, "all", null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST, false))
+            "1", "", null, "all", null, null, io.aiven.klaw.model.enums.Order.NEWEST_FIRST, false))
         .thenReturn(topicRequests);
 
     mvc.perform(

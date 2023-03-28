@@ -134,7 +134,7 @@ public class KafkaConnectController {
       @RequestParam(value = "operationType", required = false)
           RequestOperationType requestOperationType,
       @RequestParam(value = "env", required = false) String env,
-      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order,
+      @RequestParam(value = "order", required = false, defaultValue = "NEWEST_FIRST") Order order,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorRequests(

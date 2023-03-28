@@ -113,7 +113,7 @@ public class AclControllerTest {
             null,
             null,
             null,
-            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            io.aiven.klaw.model.enums.Order.NEWEST_FIRST,
             false))
         .thenReturn(aclRequests);
 

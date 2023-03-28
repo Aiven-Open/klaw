@@ -69,7 +69,7 @@ public class SchemaRegistryControllerTest {
             eq(null),
             eq(null),
             eq(null),
-            eq(io.aiven.klaw.model.enums.Order.OLDEST_FIRST),
+            eq(io.aiven.klaw.model.enums.Order.NEWEST_FIRST),
             anyBoolean()))
         .thenReturn(schRequests);
 

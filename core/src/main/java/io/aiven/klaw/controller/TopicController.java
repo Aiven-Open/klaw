@@ -101,7 +101,7 @@ public class TopicController {
       @RequestParam(value = "operationType", required = false)
           RequestOperationType requestOperationType,
       @RequestParam(value = "search", required = false) String search,
-      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order,
+      @RequestParam(value = "order", required = false, defaultValue = "NEWEST_FIRST") Order order,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(

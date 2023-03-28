@@ -72,7 +72,7 @@ public class AclController {
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search,
       @RequestParam(value = "aclType", required = false) AclType aclType,
-      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order,
+      @RequestParam(value = "order", required = false, defaultValue = "NEWEST_FIRST") Order order,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
