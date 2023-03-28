@@ -129,32 +129,12 @@ describe("AclRequestsTable", () => {
     );
   });
 
-  it("has column to decsribe the status", () => {
-    renderFromProps();
-    expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[2]
-    ).toHaveTextContent("Status");
-    expect(within(getNthRow(1)).getAllByRole("cell")[2]).toHaveTextContent(
-      "Awaiting approval"
-    );
-  });
-
-  it("has column to decsribe the request type", () => {
-    renderFromProps();
-    expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[3]
-    ).toHaveTextContent("Request type");
-    expect(within(getNthRow(1)).getAllByRole("cell")[3]).toHaveTextContent(
-      "Create"
-    );
-  });
-
   it("has column to describe the Principals/Usernames", () => {
     renderFromProps();
     expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[4]
+      within(getNthRow(0)).getAllByRole("columnheader")[2]
     ).toHaveTextContent("Principals/Usernames");
-    expect(within(getNthRow(1)).getAllByRole("cell")[4]).toHaveTextContent(
+    expect(within(getNthRow(1)).getAllByRole("cell")[2]).toHaveTextContent(
       "josepprat"
     );
   });
@@ -162,9 +142,9 @@ describe("AclRequestsTable", () => {
   it("has column to describe the IP addresses", () => {
     renderFromProps();
     expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[5]
+      within(getNthRow(0)).getAllByRole("columnheader")[3]
     ).toHaveTextContent("IP addresses");
-    expect(within(getNthRow(2)).getAllByRole("cell")[5]).toHaveTextContent(
+    expect(within(getNthRow(2)).getAllByRole("cell")[3]).toHaveTextContent(
       "1.1.1.1 2.2.2.2"
     );
   });
@@ -172,20 +152,30 @@ describe("AclRequestsTable", () => {
   it("has column to describe the ACL type", () => {
     renderFromProps();
     expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[6]
+      within(getNthRow(0)).getAllByRole("columnheader")[4]
     ).toHaveTextContent("ACL type");
-    expect(within(getNthRow(1)).getAllByRole("cell")[6]).toHaveTextContent(
+    expect(within(getNthRow(1)).getAllByRole("cell")[4]).toHaveTextContent(
       "PRODUCER"
     );
   });
 
-  it("has column to describe the ACL Type", () => {
+  it("has column to describe the status", () => {
     renderFromProps();
     expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[7]
-    ).toHaveTextContent("Requested on");
-    expect(within(getNthRow(1)).getAllByRole("cell")[7]).toHaveTextContent(
-      "10-Mar-2023 12:08:46 UTC"
+      within(getNthRow(0)).getAllByRole("columnheader")[5]
+    ).toHaveTextContent("Status");
+    expect(within(getNthRow(1)).getAllByRole("cell")[5]).toHaveTextContent(
+      "Awaiting approval"
+    );
+  });
+
+  it("has column to describe the request type", () => {
+    renderFromProps();
+    expect(
+      within(getNthRow(0)).getAllByRole("columnheader")[6]
+    ).toHaveTextContent("Request type");
+    expect(within(getNthRow(1)).getAllByRole("cell")[6]).toHaveTextContent(
+      "Create"
     );
   });
 

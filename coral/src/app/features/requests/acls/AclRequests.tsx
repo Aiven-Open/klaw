@@ -188,9 +188,9 @@ function AclRequests() {
       <TableLayout
         filters={[
           <EnvironmentFilter key="environment" />,
+          <AclTypeFilter key="aclType" />,
           <StatusFilter key="status" defaultStatus="ALL" />,
           <RequestTypeFilter key="operationType" />,
-          <AclTypeFilter key="aclType" />,
           <TopicFilter key="search" />,
           <MyRequestsFilter key="myRequests" />,
         ]}
