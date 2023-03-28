@@ -190,8 +190,8 @@ function SchemaRequests() {
             key={"environments"}
             isSchemaRegistryEnvironments
           />,
-          <RequestTypeFilter key={"request-type"} />,
           <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
+          <RequestTypeFilter key={"request-type"} />,
           <TopicFilter key={"topic"} />,
           <MyRequestsFilter key={"show-only-my-requests"} />,
         ]}
