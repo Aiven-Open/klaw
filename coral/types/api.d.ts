@@ -802,6 +802,7 @@ export type components = {
       protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
       clusterType: string;
       kafkaFlavor: string;
+      associatedServers?: string;
       projectName?: string;
       serviceName?: string;
       publicKey?: string;
@@ -957,7 +958,7 @@ export type components = {
       defaultReplicationFactor?: string;
       maxReplicationFactor?: string;
       /** @enum {string} */
-      clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT" | "KAFKA_REST_API";
+      clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
     };
     AclInfo: {
       sequence?: string;
