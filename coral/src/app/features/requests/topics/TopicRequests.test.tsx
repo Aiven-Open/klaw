@@ -717,7 +717,7 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
-        customRoutePath: "/?operationType=123",
+        customRoutePath: "/?requestType=DELETE",
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -733,7 +733,7 @@ describe("TopicRequests", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         isMyRequest: false,
-        operationType: "123",
+        operationType: "DELETE",
         requestStatus: "ALL",
         env: "ALL",
       });
@@ -743,7 +743,7 @@ describe("TopicRequests", () => {
       const newType = "PROMOTE";
 
       const statusFilter = screen.getByRole("combobox", {
-        name: "Filter by operation type",
+        name: "Filter by request type",
       });
       const statusOption = screen.getByRole("option", {
         name: requestOperationTypeNameMap[newType],

@@ -88,13 +88,13 @@ describe("useFiltersValues.tsx", () => {
         result: { current },
       } = renderHook(() => useFiltersValues(), {
         wrapper: ({ children }) => (
-          <MemoryRouter initialEntries={["/?operationType=CLAIM"]}>
+          <MemoryRouter initialEntries={["/?requestType=CLAIM"]}>
             {children}
           </MemoryRouter>
         ),
       });
 
-      expect(current.operationType).toBe("CLAIM");
+      expect(current.requestType).toBe("CLAIM");
     });
 
     describe("should get correct filter values when default value is passed", () => {
@@ -165,13 +165,13 @@ describe("useFiltersValues.tsx", () => {
         const {
           result: { current },
         } = renderHook(
-          () => useFiltersValues({ defaultOperationType: "CREATE" }),
+          () => useFiltersValues({ defaultRequestType: "CREATE" }),
           {
             wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
           }
         );
 
-        expect(current.operationType).toBe("CREATE");
+        expect(current.requestType).toBe("CREATE");
       });
     });
   });
@@ -272,11 +272,11 @@ describe("useFiltersValues.tsx", () => {
       });
 
       current.setFilterValue({
-        name: "operationType",
+        name: "requestType",
         value: "CREATE",
       });
 
-      expect(window.location.search).toBe("?operationType=CREATE&page=1");
+      expect(window.location.search).toBe("?requestType=CREATE&page=1");
     });
   });
 });

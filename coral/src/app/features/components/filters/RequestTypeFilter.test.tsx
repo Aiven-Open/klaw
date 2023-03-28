@@ -1,25 +1,25 @@
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
-  operationTypeList,
+  requestOperationTypeList,
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
-import { OperationTypeFilter } from "src/app/features/components/filters/OperationTypeFilter";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-const filterLabel = "Filter by operation type";
+const filterLabel = "Filter by request type";
 
-describe("OperationTypeFilter.tsx", () => {
+describe("RequestTypeFilter.tsx", () => {
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      customRender(<OperationTypeFilter />, {
+      customRender(<RequestTypeFilter />, {
         memoryRouter: true,
       });
     });
 
     afterAll(cleanup);
 
-    it("shows a select element for operation type", () => {
+    it("shows a select element for request type", () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -27,13 +27,13 @@ describe("OperationTypeFilter.tsx", () => {
       expect(select).toBeEnabled();
     });
 
-    it("renders a list of options for operation types", () => {
+    it("renders a list of options for request types", () => {
       const allOption = screen.getByRole("option", {
-        name: "All operation types",
+        name: "All request types",
       });
       expect(allOption).toBeEnabled();
 
-      operationTypeList.forEach((type) => {
+      requestOperationTypeList.forEach((type) => {
         const option = screen.getByRole("option", {
           name: requestOperationTypeNameMap[type],
         });
@@ -43,14 +43,14 @@ describe("OperationTypeFilter.tsx", () => {
     });
   });
 
-  describe("sets the active operation type based on a query param", () => {
-    const deleteOperation = "DELETE";
-    const deleteName = requestOperationTypeNameMap[deleteOperation];
+  describe("sets the active request type based on a query param", () => {
+    const requestTypeDelete = "DELETE";
+    const deleteName = requestOperationTypeNameMap[requestTypeDelete];
 
     beforeEach(async () => {
-      const routePath = `/?operationType=${deleteOperation}`;
+      const routePath = `/?requestType=${requestTypeDelete}`;
 
-      customRender(<OperationTypeFilter />, {
+      customRender(<RequestTypeFilter />, {
         memoryRouter: true,
         queryClient: true,
         customRoutePath: routePath,
@@ -68,18 +68,18 @@ describe("OperationTypeFilter.tsx", () => {
         selected: true,
       });
 
-      expect(select).toHaveValue(deleteOperation);
+      expect(select).toHaveValue(requestTypeDelete);
       expect(option).toBeVisible();
-      expect(option).toHaveValue(deleteOperation);
+      expect(option).toHaveValue(requestTypeDelete);
     });
   });
 
-  describe("handles user selecting an operation type", () => {
-    const createOperation = "CREATE";
-    const approvedName = requestOperationTypeNameMap[createOperation];
+  describe("handles user selecting an request type", () => {
+    const requestTypeCreate = "CREATE";
+    const approvedName = requestOperationTypeNameMap[requestTypeCreate];
 
     beforeEach(async () => {
-      customRender(<OperationTypeFilter />, {
+      customRender(<RequestTypeFilter />, {
         queryClient: true,
         memoryRouter: true,
       });
@@ -89,7 +89,7 @@ describe("OperationTypeFilter.tsx", () => {
       cleanup();
     });
 
-    it("sets the operation type the user choose as active option", async () => {
+    it("sets the request type the user choose as active option", async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -102,16 +102,16 @@ describe("OperationTypeFilter.tsx", () => {
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveValue(createOperation);
+      expect(select).toHaveValue(requestTypeCreate);
     });
   });
 
-  describe("updates the search param to preserve operation type in url", () => {
-    const defaultOperationType = "DELETE";
-    const deleteName = requestOperationTypeNameMap[defaultOperationType];
+  describe("updates the search param to preserve request type in url", () => {
+    const defaultRequestType = "DELETE";
+    const deleteName = requestOperationTypeNameMap[defaultRequestType];
 
     beforeEach(async () => {
-      customRender(<OperationTypeFilter />, {
+      customRender(<RequestTypeFilter />, {
         queryClient: true,
         browserRouter: true,
       });
@@ -127,7 +127,7 @@ describe("OperationTypeFilter.tsx", () => {
       expect(window.location.search).toEqual("");
     });
 
-    it(`sets "?operationType=${defaultOperationType}&page=1" as search param when user selected it`, async () => {
+    it(`sets "?requestType=${defaultRequestType}&page=1" as search param when user selected it`, async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
@@ -140,18 +140,18 @@ describe("OperationTypeFilter.tsx", () => {
 
       await waitFor(() => {
         expect(window.location.search).toEqual(
-          `?operationType=${defaultOperationType}&page=1`
+          `?requestType=${defaultRequestType}&page=1`
         );
       });
     });
 
-    it(`unsets "?operationType" as search param when user selects All operation types`, async () => {
+    it(`unsets "?requestType" as search param when user selects All request types`, async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
 
       const allOption = screen.getByRole("option", {
-        name: "All operation types",
+        name: "All request types",
       });
 
       await userEvent.selectOptions(select, allOption);

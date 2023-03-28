@@ -131,11 +131,11 @@ describe("TopicRequestsTable", () => {
     );
   });
 
-  it("has column to decsribe the request type", () => {
+  it("has column to describe the request type", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[3]
-    ).toHaveTextContent("Type");
+    ).toHaveTextContent("Request type");
     expect(within(getNthRow(1)).getAllByRole("cell")[3]).toHaveTextContent(
       "Create"
     );

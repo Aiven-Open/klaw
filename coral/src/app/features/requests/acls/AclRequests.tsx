@@ -9,7 +9,7 @@ import RequestDetailsModal from "src/app/features/components/RequestDetailsModal
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
-import { OperationTypeFilter } from "src/app/features/components/filters/OperationTypeFilter";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import TopicFilter from "src/app/features/components/filters/TopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
@@ -33,7 +33,7 @@ function AclRequests() {
     aclType,
     status,
     showOnlyMyRequests,
-    operationType,
+    requestType,
   } = useFiltersValues();
 
   const [modals, setModals] = useState<{
@@ -67,7 +67,7 @@ function AclRequests() {
       environment,
       aclType,
       status,
-      operationType,
+      requestType,
       showOnlyMyRequests,
     ],
     queryFn: () =>
@@ -77,7 +77,7 @@ function AclRequests() {
         env: environment,
         aclType,
         requestStatus: status,
-        operationType: operationType === "ALL" ? undefined : operationType,
+        operationType: requestType === "ALL" ? undefined : requestType,
         isMyRequest: showOnlyMyRequests,
       }),
     keepPreviousData: true,
@@ -189,7 +189,7 @@ function AclRequests() {
         filters={[
           <EnvironmentFilter key="environment" />,
           <StatusFilter key="status" defaultStatus="ALL" />,
-          <OperationTypeFilter key="operationType" />,
+          <RequestTypeFilter key="operationType" />,
           <AclTypeFilter key="aclType" />,
           <TopicFilter key="search" />,
           <MyRequestsFilter key="myRequests" />,

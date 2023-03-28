@@ -140,11 +140,11 @@ describe("SchemaRequest", () => {
 
     it("shows a select to filter by request type with default", () => {
       const select = screen.getByRole("combobox", {
-        name: "Filter by operation type",
+        name: "Filter by request type",
       });
 
       expect(select).toBeVisible();
-      expect(select).toHaveDisplayValue("All operation types");
+      expect(select).toHaveDisplayValue("All request types");
     });
 
     it("shows a select to filter by request status with default", () => {
@@ -394,7 +394,7 @@ describe("SchemaRequest", () => {
         queryClient: true,
         memoryRouter: true,
         customRoutePath:
-          "/?operationType=TEST_TYPE_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+          "/?requestType=TEST_TYPE_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -416,7 +416,7 @@ describe("SchemaRequest", () => {
       const newType = "PROMOTE";
 
       const statusFilter = screen.getByRole("combobox", {
-        name: "Filter by operation type",
+        name: "Filter by request type",
       });
       const statusOption = screen.getByRole("option", {
         name: requestOperationTypeNameMap[newType],

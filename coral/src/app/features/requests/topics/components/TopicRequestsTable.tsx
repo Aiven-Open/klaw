@@ -59,7 +59,7 @@ function TopicRequestsTable({
     {
       type: "status",
       field: "requestOperationType",
-      headerName: "Type",
+      headerName: "Request type",
       status: ({ requestOperationType }) => {
         return {
           status: requestOperationTypeChipStatusMap[requestOperationType],
