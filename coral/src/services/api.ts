@@ -261,6 +261,17 @@ function handleHTTPError(errorOrResponse: Error | Response): Promise<never> {
   if (errorOrResponse instanceof Response) {
     return parseResponseBody(errorOrResponse).then((body) => {
       const bodyToReturn = isArray(body) ? body[0] : body;
+      // We have api endpoints that return ApiResponse[]
+      // these endpoints are all meant for enabling "batch" processing,
+      // for example to delete multiple requests
+      // this is currently not implemented as a feature.
+      // If this endpoints contain an error, it will be contained
+      // in the first (and only) entry of the ApiResponse[]
+      // which is why we return that entry as body in case the
+      // body is an array. This enables us to show the correct
+      // error message to users.
+      // see more details: https://github.com/aiven/klaw/pull/921#issue-1641959704
+
       const httpError: HTTPError = {
         data: bodyToReturn,
         status: errorOrResponse.status,
