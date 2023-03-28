@@ -50,7 +50,7 @@ describe("Topics", () => {
         response: { status: 200, data: mockedResponseSinglePage },
       });
       customRender(<Topics />, { memoryRouter: true, queryClient: true });
-      await waitForElementToBeRemoved(screen.getByText("Loading..."));
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
     afterAll(() => {
@@ -97,22 +97,6 @@ describe("Topics", () => {
       expect(mockedNavigator).toHaveBeenCalledWith("/topics/request");
     });
 
-    it("renders a select element to filter topics by Kafka Environment", async () => {
-      const select = screen.getByRole("combobox", {
-        name: "Filter by Environment",
-      });
-
-      expect(select).toBeEnabled();
-    });
-
-    it("renders a select element to filter topics by team", async () => {
-      const select = screen.getByRole("combobox", {
-        name: "Filter by team",
-      });
-
-      expect(select).toBeEnabled();
-    });
-
     it("shows a table with topics", async () => {
       const table = screen.getByRole("table", { name: /Topics overview/ });
 
@@ -121,9 +105,10 @@ describe("Topics", () => {
 
     it("shows a table row for each topic", () => {
       const table = screen.getByRole("table", { name: /Topics overview/ });
-      const row = within(table).getAllByRole("rowheader");
+      const row = within(table).getAllByRole("row");
 
-      expect(row).toHaveLength(mockedResponseTransformed.entries.length);
+      // Adding one row for the table headers
+      expect(row).toHaveLength(mockedResponseTransformed.entries.length + 1);
     });
   });
 });
