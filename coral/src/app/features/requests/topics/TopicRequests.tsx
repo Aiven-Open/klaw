@@ -177,8 +177,8 @@ function TopicRequests() {
       <TableLayout
         filters={[
           <EnvironmentFilter key="environments" />,
-          <RequestTypeFilter key={"request-type"} />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
+          <RequestTypeFilter key={"request-type"} />,
           <TopicFilter key={"topic"} />,
           <MyRequestsFilter key={"isMyRequest"} />,
         ]}
