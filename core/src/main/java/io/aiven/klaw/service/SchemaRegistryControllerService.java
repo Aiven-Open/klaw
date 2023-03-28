@@ -136,8 +136,8 @@ public class SchemaRegistryControllerService {
 
   private Comparator<SchemaRequestsResponseModel> getPreferredOrder(Order order) {
     return switch (order) {
-      case NEWEST_FIRST -> Comparator.comparing(BaseRequestsResponseModel::getRequesttime);
-      case OLDEST_FIRST -> Collections.reverseOrder(
+      case OLDEST_FIRST -> Comparator.comparing(BaseRequestsResponseModel::getRequesttime);
+      case NEWEST_FIRST -> Collections.reverseOrder(
           Comparator.comparing(BaseRequestsResponseModel::getRequesttime));
     };
   }

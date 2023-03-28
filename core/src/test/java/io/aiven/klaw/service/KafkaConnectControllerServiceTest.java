@@ -22,6 +22,9 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -208,6 +211,87 @@ public class KafkaConnectControllerServiceTest {
         .isEqualTo("Failure. A request already exists for this connector.");
   }
 
+  @Test
+  @Order(7)
+  public void getRequests_OrderBy_NEWEST_FIRST() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+
+    when(handleDbRequests.getAllConnectorRequests(
+            anyString(), eq(null), eq(null), eq(null), eq(101)))
+        .thenReturn(generateKafkaConnectorRequests(50));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    List<KafkaConnectorRequestsResponseModel> ordered_response =
+        kafkaConnectControllerService.getConnectorRequests(
+            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.NEWEST_FIRST, null);
+
+    assertThat(ordered_response).hasSize(10);
+
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (KafkaConnectorRequestsResponseModel req : ordered_response) {
+
+      // assert That each new Request time is older than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) >= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
+  @Test
+  @Order(8)
+  public void getRequests_OrderBy_OLDEST_FIRST() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+
+    when(handleDbRequests.getAllConnectorRequests(
+            anyString(), eq(null), eq(null), eq(null), eq(101)))
+        .thenReturn(generateKafkaConnectorRequests(50));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    List<KafkaConnectorRequestsResponseModel> ordered_response =
+        kafkaConnectControllerService.getConnectorRequests(
+            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST, null);
+
+    assertThat(ordered_response).hasSize(10);
+
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (KafkaConnectorRequestsResponseModel req : ordered_response) {
+
+      // assert That each new Request time is newer than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) <= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
+  private static List<KafkaConnectorRequest> generateKafkaConnectorRequests(int number) {
+    List<KafkaConnectorRequest> reqs = new ArrayList<>();
+    for (int i = 0; i < number; i++) {
+      KafkaConnectorRequest req = new KafkaConnectorRequest();
+      req.setConnectorId(i);
+      req.setConnectorName("Conn" + i);
+      req.setRequesttime(new Timestamp(System.currentTimeMillis() - (3600000 * i)));
+      req.setRequestOperationType(RequestOperationType.DELETE.value);
+      req.setEnvironment("1");
+      req.setEnvironmentName("DEV");
+      reqs.add(req);
+      req.setTeamId(8);
+      req.setTenantId(101);
+    }
+    return reqs;
+  }
+
   private KafkaConnectorRequestModel getConnectRequestModel() {
     KafkaConnectorRequestModel kafkaConnectorRequestModel = new KafkaConnectorRequestModel();
     kafkaConnectorRequestModel.setConnectorConfig(getValidConnConfig());
@@ -263,5 +347,10 @@ public class KafkaConnectControllerServiceTest {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(userInfo.getTeamId()).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn("kwusera");
+    Env e = new Env();
+    e.setId("1");
+    e.setName("DEV");
+    when(manageDatabase.getKafkaConnectEnvList(anyInt())).thenReturn(List.of(e));
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("Octo");
   }
 }

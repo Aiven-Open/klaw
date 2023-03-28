@@ -356,8 +356,8 @@ public class TopicControllerService {
 
   private Comparator<TopicRequest> getPreferredOrdering(Order order) {
     return switch (order) {
-      case NEWEST_FIRST -> compareByTime();
-      case OLDEST_FIRST -> Collections.reverseOrder(compareByTime());
+      case OLDEST_FIRST -> compareByTime();
+      case NEWEST_FIRST -> Collections.reverseOrder(compareByTime());
     };
   }
 

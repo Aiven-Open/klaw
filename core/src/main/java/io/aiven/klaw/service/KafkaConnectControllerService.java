@@ -813,11 +813,12 @@ public class KafkaConnectControllerService {
     topicReqs = filterByTenantAndOrder(userDetails, topicReqs, order);
     // TODO is this really needed?
     if (!"all".equals(requestsType)
-        && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType))
+        && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType)) {
       topicReqs =
           topicReqs.stream()
               .filter(topicRequest -> Objects.equals(topicRequest.getRequestStatus(), requestsType))
               .collect(Collectors.toList());
+    }
 
     topicReqs = getConnectorRequestsPaged(topicReqs, pageNo, currentPage);
 
@@ -1306,9 +1307,9 @@ public class KafkaConnectControllerService {
 
   private static Comparator<KafkaConnectorRequest> getPreferredOrder(Order order) {
     return switch (order) {
-      case OLDEST_FIRST -> Collections.reverseOrder(
+      case NEWEST_FIRST -> Collections.reverseOrder(
           Comparator.comparing(KafkaConnectorRequest::getRequesttime));
-      case NEWEST_FIRST -> Comparator.comparing(KafkaConnectorRequest::getRequesttime);
+      case OLDEST_FIRST -> Comparator.comparing(KafkaConnectorRequest::getRequesttime);
     };
   }
 

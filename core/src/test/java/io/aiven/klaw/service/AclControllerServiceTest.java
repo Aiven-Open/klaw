@@ -825,6 +825,103 @@ public class AclControllerServiceTest {
     assertThat(serviceAccountsCheck).isTrue();
   }
 
+  @Test
+  @Order(34)
+  public void getAclRequests_OrderBy_NEWEST_FIRST() {
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(handleDbRequests.getAllAclRequests(
+            anyBoolean(),
+            anyString(),
+            anyString(),
+            eq(null),
+            anyBoolean(),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(false),
+            anyInt()))
+        .thenReturn(getAclRequests("", 30));
+
+    List<AclRequestsResponseModel> ordered_response =
+        aclControllerService.getAclRequests(
+            "1",
+            "1",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.NEWEST_FIRST,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (AclRequestsResponseModel req : ordered_response) {
+
+      // assert That each new Request time is older than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) >= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
+  @Test
+  @Order(35)
+  public void getAclRequests_OrderBy_OLDEST_FIRST() {
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(handleDbRequests.getAllAclRequests(
+            anyBoolean(),
+            anyString(),
+            anyString(),
+            eq(null),
+            anyBoolean(),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(false),
+            anyInt()))
+        .thenReturn(getAclRequests("", 30));
+
+    List<AclRequestsResponseModel> ordered_response =
+        aclControllerService.getAclRequests(
+            "1",
+            "1",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (AclRequestsResponseModel req : ordered_response) {
+      // assert That each new Request time is newer than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) <= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
   private AclRequestsModel getAclRequestProducer() {
     AclRequestsModel aclReq = new AclRequestsModel();
     aclReq.setTopicname("testtopic");
@@ -875,7 +972,7 @@ public class AclControllerServiceTest {
       aclReq.setTeamId(1);
       aclReq.setAcl_ip("1.2.3.4<ACL>3.2.4.5<ACL>11.22.33.44");
       aclReq.setReq_no(100 + i);
-      aclReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
+      aclReq.setRequesttime(new Timestamp(System.currentTimeMillis() - (3600000 * i)));
       aclReq.setRequestor("testuser");
       listReqs.add(aclReq);
     }
