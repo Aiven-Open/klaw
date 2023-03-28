@@ -29,7 +29,7 @@ const mockGetEnvironments = getEnvironments as jest.MockedFunction<
 >;
 
 const filterByEnvironmentLabel = "Filter by Environment";
-// const filterByTeamLabel = "Filter by team";
+const filterByTeamLabel = "Filter by team";
 
 // @TODO find better location / handling for mocks
 // depends on how we proceed
@@ -72,13 +72,13 @@ describe("BrowseTopics.tsx", () => {
       expect(select).toBeEnabled();
     });
 
-    // it("renders a select element to filter topics by team", () => {
-    //   const select = screen.getByRole("combobox", {
-    //     name: filterByTeamLabel,
-    //   });
+    it("renders a select element to filter topics by team", () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByTeamLabel,
+      });
 
-    //   expect(select).toBeEnabled();
-    // });
+      expect(select).toBeEnabled();
+    });
 
     it("renders the topic table with information about the pages", async () => {
       const table = screen.getByRole("table", {
@@ -168,7 +168,6 @@ describe("BrowseTopics.tsx", () => {
         currentPage: 3,
         environment: "ALL",
         searchTerm: "",
-        // @TODO fix payload when API accept teamID and not teamName
         teamName: "ALL",
       });
     });
@@ -226,90 +225,72 @@ describe("BrowseTopics.tsx", () => {
         currentPage: 1,
         environment: "1",
         searchTerm: "",
-        // @TODO fix payload when API accept teamID and not teamName
         teamName: "ALL",
       });
     });
   });
 
-  // @TODO: wait until API accepts teamId instead of teamname as param
-  // describe("handles user filtering topics by team", () => {
-  //   beforeEach(async () => {
-  //     mockGetTeams.mockResolvedValue(mockGetTeamsResponse);
-  //     mockGetEnvironments.mockResolvedValue([]);
-  //     mockGetTopics.mockResolvedValue(mockedResponseTransformed);
+  describe("handles user filtering topics by team", () => {
+    beforeEach(async () => {
+      mockGetTeams.mockResolvedValue(mockGetTeamsResponse);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue(mockedResponseTransformed);
 
-  //     customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
-  //     await waitForElementToBeRemoved(screen.getByText("Loading..."));
-  //   });
+      customRender(<BrowseTopics />, { memoryRouter: true, queryClient: true });
 
-  //   afterEach(() => {
-  //     jest.clearAllMocks();
-  //     cleanup();
-  //   });
+      await waitForElementToBeRemoved(
+        screen.getByTestId("select-team-loading")
+      );
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
 
-  //   it("shows a select element for team with `All teams` preselected", () => {
-  //     const select = screen.getByRole("combobox", {
-  //       name: filterByTeamLabel,
-  //     });
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
 
-  //     expect(select).toHaveValue("f5ed03b4-c0da-4b18-a534-c7e9a13d1342");
-  //   });
+    it("shows a select element for team with `All teams` preselected", () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByTeamLabel,
+      });
 
-  //   it("changes active selected option when user selects `TEST_TEAM_02`", async () => {
-  //     const select = screen.getByRole("combobox", {
-  //       name: filterByTeamLabel,
-  //     });
+      expect(select).toHaveValue("ALL");
+    });
 
-  //     const option = await screen.findByRole("option", {
-  //       name: "TEST_TEAM_02",
-  //     });
+    it("changes active selected option when user selects `TEST_TEAM_02`", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByTeamLabel,
+      });
 
-  //     expect(select).toHaveValue("f5ed03b4-c0da-4b18-a534-c7e9a13d1342");
+      const option = await screen.findByRole("option", {
+        name: "TEST_TEAM_02",
+      });
 
-  //     await userEvent.selectOptions(select, option);
+      expect(select).toHaveValue("ALL");
 
-  //     expect(select).toHaveValue("TEST_TEAM_02");
-  //   });
+      await userEvent.selectOptions(select, option);
 
-  //   it("shows an information that the list is updated after user selected a team", async () => {
-  //     const select = screen.getByRole("combobox", {
-  //       name: filterByTeamLabel,
-  //     });
-  //     const option = within(select).getByRole("option", {
-  //       name: "TEST_TEAM_02",
-  //     });
-  //     expect(select).toHaveValue("f5ed03b4-c0da-4b18-a534-c7e9a13d1342");
+      expect(select).toHaveValue("TEST_TEAM_02");
+    });
 
-  //     // I'm not happy with that, but it' s the only way I found
-  //     // to make sure there's a information about the list being
-  //     // updated rendered for the user. awaiting for the userEvent
-  //     // will end in a state where the new data has already
-  //     // arrived and is rendered, to the updating info will be gone
-  //     userEvent.selectOptions(select, option);
+    it("fetches new data when user selects `TEST_TEAM_02`", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByTeamLabel,
+      });
+      const option = within(select).getByRole("option", {
+        name: "TEST_TEAM_02",
+      });
 
-  //     const updatingList = await screen.findByText("Filtering list...");
-  //     expect(updatingList).toBeVisible();
-  //   });
+      await userEvent.selectOptions(select, option);
 
-  //   it("fetches new data when user selects `TEST_TEAM_02`", async () => {
-  //     const select = screen.getByRole("combobox", {
-  //       name: filterByTeamLabel,
-  //     });
-  //     const option = within(select).getByRole("option", {
-  //       name: "TEST_TEAM_02",
-  //     });
-
-  //     await userEvent.selectOptions(select, option);
-
-  //     expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
-  //       currentPage: 1,
-  //       environment: "ALL",
-  //       searchTerm: undefined,
-  //       teamName: "TEST_TEAM_02",
-  //     });
-  //   });
-  // });
+      expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
+        currentPage: 1,
+        environment: "ALL",
+        searchTerm: "",
+        teamName: "TEST_TEAM_02",
+      });
+    });
+  });
 
   describe("handles user searching by topic name with search input", () => {
     const testSearchInput = "Searched for topic";
@@ -339,7 +320,6 @@ describe("BrowseTopics.tsx", () => {
           currentPage: 1,
           environment: "ALL",
           searchTerm: "Searched for topic",
-          // @TODO fix payload when API accept teamID and not teamName
           teamName: "ALL",
         })
       );

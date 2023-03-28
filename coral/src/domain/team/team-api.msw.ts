@@ -44,7 +44,7 @@ const mockedAllTeamsResponse = [
     envList: ["ALL"],
   },
   {
-    teamname: "TEST_TEAM_02",
+    teamname: "TEST_TEAM_03",
     teamphone: "000",
     contactperson: "000",
     teamId: 3,
