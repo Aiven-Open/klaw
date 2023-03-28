@@ -140,7 +140,7 @@ const getTopicRequests = (
       const omitEnv =
         property === "env" && (value === "ALL" || value === undefined);
       const omitRequestOperationType =
-        property === "requestOperationType" &&
+        property === "operationType" &&
         (value === "ALL" || value === undefined);
 
       return (

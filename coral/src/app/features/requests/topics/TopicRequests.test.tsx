@@ -17,6 +17,7 @@ import userEvent from "@testing-library/user-event";
 import { getEnvironments } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
+import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
@@ -702,6 +703,60 @@ describe("TopicRequests", () => {
 
       const expectedError = new Error("OH NO");
       expect(console.error).toHaveBeenCalledWith(expectedError);
+    });
+  });
+
+  describe("user can filter topic requests by operation type", () => {
+    const originalConsoleError = console.error;
+    beforeEach(async () => {
+      mockGetTopicRequestEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
+
+      customRender(<TopicRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?operationType=123",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        isMyRequest: false,
+        operationType: "123",
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+    });
+
+    it("enables user to filter by 'status'", async () => {
+      const newType = "PROMOTE";
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by operation type",
+      });
+      const statusOption = screen.getByRole("option", {
+        name: requestOperationTypeNameMap[newType],
+      });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
+        pageNo: "1",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        operationType: newType,
+        env: "ALL",
+      });
     });
   });
 });
