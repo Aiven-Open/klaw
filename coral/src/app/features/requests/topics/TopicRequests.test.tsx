@@ -667,9 +667,7 @@ describe("TopicRequests", () => {
     });
 
     it("informs user about error if deleting request was not successful and error is hidden in success", async () => {
-      mockDeleteTopicRequest.mockResolvedValue([
-        { result: "FAILURE", message: "OH NO" },
-      ]);
+      mockDeleteTopicRequest.mockRejectedValue("OH NO");
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         // search: "abc",
@@ -701,8 +699,7 @@ describe("TopicRequests", () => {
       const error = screen.getByRole("alert");
       expect(error).toBeVisible();
 
-      const expectedError = new Error("OH NO");
-      expect(console.error).toHaveBeenCalledWith(expectedError);
+      expect(console.error).toHaveBeenCalledWith("OH NO");
     });
   });
 

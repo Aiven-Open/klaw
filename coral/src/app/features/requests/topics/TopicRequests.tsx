@@ -10,7 +10,6 @@ import { Pagination } from "src/app/components/Pagination";
 import { useState } from "react";
 import { Alert } from "@aivenio/aquarium";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
-import { objectHasProperty } from "src/services/type-utils";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import TopicDetailsModalContent from "src/app/features/components/TopicDetailsModalContent";
@@ -66,35 +65,15 @@ function TopicRequests() {
 
   const { mutate: deleteRequest, isLoading: deleteRequestIsLoading } =
     useMutation(deleteTopicRequest, {
-      onSuccess: (responses) => {
-        // @TODO follow up ticket #707
-        // (for all approval and request tables)
-        const response = responses[0];
-        const responseIsAHiddenError = response?.result !== "success";
-        if (responseIsAHiddenError) {
-          throw new Error(response?.message || response?.result);
-        }
+      onSuccess: async () => {
         setErrorQuickActions("");
         // We need to refetch all requests to keep Table state in sync
-        queryClient.refetchQueries(["topicRequests"]).then(() => {
-          // only close the modal when data in background is updated
-          closeModal();
-        });
+        await queryClient.refetchQueries(["topicRequests"]);
       },
       onError(error: Error) {
-        let errorMessage: string;
-        // if error comes from our api, it has a `data` property
-        // parseErrorMsg makes sure to get the right message
-        // OR set a generic error message
-        if (objectHasProperty(error, "data")) {
-          errorMessage = parseErrorMsg(error);
-        } else {
-          errorMessage = error.message;
-        }
-
-        setErrorQuickActions(errorMessage);
-        closeModal();
+        setErrorQuickActions(parseErrorMsg(error));
       },
+      onSettled: closeModal,
     });
 
   function closeModal() {

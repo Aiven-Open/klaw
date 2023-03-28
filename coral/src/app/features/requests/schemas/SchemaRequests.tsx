@@ -19,7 +19,6 @@ import {
   getSchemaRequests,
 } from "src/domain/schema-request";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { objectHasProperty } from "src/services/type-utils";
 
 const defaultStatus = "ALL";
 const defaultType = "ALL";
@@ -74,36 +73,15 @@ function SchemaRequests() {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { mutate: deleteRequest, isLoading: deleteRequestIsLoading } =
     useMutation(deleteSchemaRequest, {
-      onSuccess: (responses) => {
-        // @TODO follow up ticket #707
-        // (for all approval and request tables)
-        const response = responses[0];
-        const responseIsAHiddenError =
-          response?.result.toLowerCase() !== "success";
-        if (responseIsAHiddenError) {
-          throw new Error(response?.message || response?.result);
-        }
+      onSuccess: async () => {
         setErrorQuickActions("");
         // We need to refetch all requests to keep Table state in sync
-        queryClient.refetchQueries(["getSchemaRequests"]).then(() => {
-          // only close the modal when data in background is updated
-          closeModal();
-        });
+        await queryClient.refetchQueries(["getSchemaRequests"]);
       },
       onError(error: Error) {
-        let errorMessage: string;
-        // if error comes from our api, it has a `data` property
-        // parseErrorMsg makes sure to get the right message
-        // OR set a generic error message
-        if (objectHasProperty(error, "data")) {
-          errorMessage = parseErrorMsg(error);
-        } else {
-          errorMessage = error.message;
-        }
-
-        setErrorQuickActions(errorMessage);
-        closeModal();
+        setErrorQuickActions(parseErrorMsg(error));
       },
+      onSettled: closeModal,
     });
 
   function closeModal() {

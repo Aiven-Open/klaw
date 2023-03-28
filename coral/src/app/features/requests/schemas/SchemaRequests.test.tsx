@@ -769,9 +769,7 @@ describe("SchemaRequest", () => {
     });
 
     it("informs user about error if deleting request was not successful and error is hidden in success", async () => {
-      mockDeleteSchemaRequest.mockResolvedValue([
-        { result: "FAILURE", message: "OH NO" },
-      ]);
+      mockDeleteSchemaRequest.mockRejectedValue("OH NO");
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         1,
         defaultApiParams
@@ -800,8 +798,7 @@ describe("SchemaRequest", () => {
       const error = screen.getByRole("alert");
       expect(error).toBeVisible();
 
-      const expectedError = new Error("OH NO");
-      expect(console.error).toHaveBeenCalledWith(expectedError);
+      expect(console.error).toHaveBeenCalledWith("OH NO");
     });
   });
 });
