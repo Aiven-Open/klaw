@@ -30,6 +30,7 @@ import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -183,7 +184,11 @@ public class SelectDataJdbcTest {
   @Test
   public void selectSyncTopics() {
     String env = "DEV";
-    when(topicRepo.findAllByEnvironmentAndTenantId(env, 1)).thenReturn(utilMethods.getTopics());
+    List<String> stringList =
+        Collections.singletonList(utilMethods.getTopics().get(0).getTopicname());
+    when(topicRepo.findAllTopicNamesForEnv(env, 1)).thenReturn(stringList);
+    when(topicRepo.findAllByTenantIdAndTopicnameIn(1, stringList))
+        .thenReturn(utilMethods.getTopics());
     List<Topic> topicList = selectData.selectSyncTopics(env, null, 1);
     assertThat(topicList).hasSize(1);
   }
