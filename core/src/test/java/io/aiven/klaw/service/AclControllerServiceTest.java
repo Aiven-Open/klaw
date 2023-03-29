@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -45,6 +47,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.http.HttpStatus;
@@ -949,6 +953,53 @@ public class AclControllerServiceTest {
       assertThat(origReqTime.compareTo(req.getRequesttime()) <= 0).isTrue();
       origReqTime = req.getRequesttime();
     }
+  }
+
+  @ParameterizedTest
+  @CsvSource(value = {"CREATE", "DELETE", "PROMOTE", "UPDATE"})
+  @Order(35)
+  public void getAclRequestsForApprover_RequestOperationType(RequestOperationType operationType) {
+    String teamName = "teamname";
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(handleDbRequests.getCreatedAclRequestsByStatus(
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            eq(operationType),
+            eq(null),
+            eq(null),
+            eq(null),
+            anyInt()))
+        .thenReturn(getAclRequests("testtopic", 16));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
+
+    List<AclRequestsResponseModel> listReqs =
+        aclControllerService.getAclRequestsForApprover(
+            "",
+            "",
+            "",
+            null,
+            null,
+            operationType,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
+    assertThat(listReqs.size()).isEqualTo(10);
+    verify(handleDbRequests, times(1))
+        .getCreatedAclRequestsByStatus(
+            anyString(),
+            eq(""),
+            eq(true),
+            eq(operationType),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(101));
   }
 
   private AclRequestsModel getAclRequestProducer() {
