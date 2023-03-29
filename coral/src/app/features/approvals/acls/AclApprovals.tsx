@@ -20,6 +20,9 @@ import {
 } from "src/domain/acl/acl-api";
 import { AclRequestsForApprover } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
+
+const defaultType = "ALL";
 
 function AclApprovals() {
   const queryClient = useQueryClient();
@@ -29,9 +32,11 @@ function AclApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { aclType, environment, status, topic } = useFiltersValues({
-    defaultStatus: "CREATED",
-  });
+  const { aclType, environment, status, topic, requestType } = useFiltersValues(
+    {
+      defaultStatus: "CREATED",
+    }
+  );
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -59,7 +64,15 @@ function AclApprovals() {
     AclRequestsForApprover,
     Error
   >({
-    queryKey: ["aclRequests", currentPage, aclType, environment, status, topic],
+    queryKey: [
+      "aclRequests",
+      currentPage,
+      aclType,
+      environment,
+      status,
+      topic,
+      requestType,
+    ],
     queryFn: () =>
       getAclRequestsForApprover({
         pageNo: String(currentPage),
@@ -67,6 +80,7 @@ function AclApprovals() {
         requestStatus: status,
         aclType,
         topic,
+        operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -243,6 +257,7 @@ function AclApprovals() {
         filters={[
           <EnvironmentFilter key={"environment"} />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
+          <RequestTypeFilter key={"operationType"} />,
           <AclTypeFilter key={"aclType"} />,
           <TopicFilter key={"topic"} />,
         ]}
