@@ -2509,6 +2509,15 @@
             "type" : "string"
           }
         }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
+          }
+        }, {
           "name" : "isMyRequest",
           "in" : "query",
           "required" : false,
@@ -2583,6 +2592,15 @@
           "required" : false,
           "schema" : {
             "type" : "string"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "ASC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         } ],
         "responses" : {
@@ -3149,6 +3167,15 @@
             "type" : "string"
           }
         }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
+          }
+        }, {
           "name" : "isMyRequest",
           "in" : "query",
           "required" : false,
@@ -3222,6 +3249,15 @@
           "required" : false,
           "schema" : {
             "type" : "string"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "ASC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         } ],
         "responses" : {
@@ -3969,6 +4005,15 @@
             "type" : "string"
           }
         }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
+          }
+        }, {
           "name" : "search",
           "in" : "query",
           "required" : false,
@@ -4027,6 +4072,15 @@
           "required" : false,
           "schema" : {
             "type" : "string"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         }, {
           "name" : "search",
@@ -4767,6 +4821,15 @@
             "enum" : [ "PRODUCER", "CONSUMER" ]
           }
         }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
+          }
+        }, {
           "name" : "isMyRequest",
           "in" : "query",
           "required" : false,
@@ -4841,6 +4904,15 @@
           "schema" : {
             "type" : "string",
             "enum" : [ "PRODUCER", "CONSUMER" ]
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "ASC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         } ],
         "responses" : {
@@ -5905,6 +5977,21 @@
         },
         "required" : [ "bootstrapServers", "clusterName", "clusterType", "kafkaFlavor", "protocol" ]
       },
+      "ServiceAccounts" : {
+        "properties" : {
+          "numberOfAllowedAccounts" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "serviceAccountsList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          }
+        }
+      },
       "TeamModelResponse" : {
         "properties" : {
           "teamname" : {
@@ -5929,6 +6016,9 @@
           },
           "tenantName" : {
             "type" : "string"
+          },
+          "serviceAccounts" : {
+            "$ref" : "#/components/schemas/ServiceAccounts"
           },
           "app" : {
             "type" : "string"

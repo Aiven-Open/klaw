@@ -29,6 +29,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
+import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -250,6 +251,7 @@ public class AclControllerService {
       String env,
       String search,
       AclType aclType,
+      Order order,
       boolean isMyRequest) {
 
     String userName = getCurrentUserName();
@@ -270,17 +272,34 @@ public class AclControllerService {
             isMyRequest,
             tenantId);
 
+    aclReqs = filterAclRequestsByTenantAndOrder(userName, aclReqs, order);
+
+    aclReqs = getAclRequestsPaged(aclReqs, pageNo, currentPage, tenantId);
+
+    return getAclRequestsModels(aclReqs, tenantId, userName);
+  }
+
+  private List<AclRequests> filterAclRequestsByTenantAndOrder(
+      String userName, List<AclRequests> aclReqs, Order order) {
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     aclReqs =
         aclReqs.stream()
             .filter(aclRequest -> allowedEnvIdSet.contains(aclRequest.getEnvironment()))
-            .sorted(Collections.reverseOrder(Comparator.comparing(AclRequests::getRequesttime)))
+            .sorted(getPreferredOrder(order))
             .collect(Collectors.toList());
+    return aclReqs;
+  }
 
-    aclReqs = getAclRequestsPaged(aclReqs, pageNo, currentPage, tenantId);
+  private static Comparator<AclRequests> getPreferredOrder(Order order) {
+    return switch (order) {
+      case ASC_REQUESTED_TIME -> compareByTime();
+      case DESC_REQUESTED_TIME -> Collections.reverseOrder(compareByTime());
+    };
+  }
 
-    return getAclRequestsModels(aclReqs, tenantId, userName);
+  private static Comparator<AclRequests> compareByTime() {
+    return Comparator.comparing(AclRequests::getRequesttime);
   }
 
   private AclRequestsResponseModel setRequestorPermissions(
@@ -457,7 +476,8 @@ public class AclControllerService {
       String requestStatus,
       String topic,
       String environment,
-      AclType aclType) {
+      AclType aclType,
+      Order order) {
     log.debug("getCreatedAclRequests {} {}", pageNo, requestStatus);
     String userDetails = getCurrentUserName();
     List<AclRequests> createdAclReqs;
@@ -479,12 +499,7 @@ public class AclControllerService {
                   userDetails, requestStatus, true, topic, environment, aclType, tenantId);
     }
 
-    // tenant filtering
-    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userDetails);
-    createdAclReqs =
-        createdAclReqs.stream()
-            .filter(aclRequest -> allowedEnvIdSet.contains(aclRequest.getEnvironment()))
-            .collect(Collectors.toList());
+    createdAclReqs = filterAclRequestsByTenantAndOrder(getCurrentUserName(), createdAclReqs, order);
 
     return getAclRequestModelPaged(
         updateCreatAclReqsList(createdAclReqs, tenantId, userDetails),

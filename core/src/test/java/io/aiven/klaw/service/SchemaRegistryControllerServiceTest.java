@@ -150,7 +150,16 @@ public class SchemaRegistryControllerServiceTest {
 
     List<SchemaRequestsResponseModel> listReqs =
         schemaRegistryControllerService.getSchemaRequests(
-            "1", "", "all", null, true, null, null, null, false);
+            "1",
+            "",
+            "all",
+            null,
+            true,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            false);
     assertThat(listReqs).hasSize(2);
   }
 
@@ -615,6 +624,102 @@ public class SchemaRegistryControllerServiceTest {
             "Cannot invoke \"java.lang.Boolean.booleanValue()\" because \"this.validateCompatiblityOnSave\" is null");
   }
 
+  @Test
+  public void getListofSchemaRequestsIn_NEWEST_FIRST_ORDER() {
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(handleDbRequests.getAllSchemaRequests(
+            anyBoolean(),
+            anyString(),
+            anyInt(),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(false)))
+        .thenReturn(getSchemasReqs(40));
+    when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
+        .thenReturn(List.of(""));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt()))
+        .thenReturn(List.of(userInfo));
+    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
+
+    List<SchemaRequestsResponseModel> ordered_response =
+        schemaRegistryControllerService.getSchemaRequests(
+            "1",
+            "1",
+            null,
+            null,
+            true,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+    for (SchemaRequestsResponseModel req : ordered_response) {
+
+      // assert That each new Request time is older than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) >= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
+  @Test
+  public void getListofSchemaRequestsIn_OLDEST_FIRST_ORDER() {
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(handleDbRequests.getAllSchemaRequests(
+            anyBoolean(),
+            anyString(),
+            anyInt(),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(false)))
+        .thenReturn(getSchemasReqs(40));
+    when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
+        .thenReturn(List.of(""));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt()))
+        .thenReturn(List.of(userInfo));
+    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
+
+    List<SchemaRequestsResponseModel> ordered_response =
+        schemaRegistryControllerService.getSchemaRequests(
+            "1",
+            "1",
+            null,
+            null,
+            true,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+    for (SchemaRequestsResponseModel req : ordered_response) {
+
+      // assert That each new Request time is newer than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) <= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
   private static SchemaRequestModel createDefaultSchemaRequestModel() {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     schemaRequest.setSchemafull("{}");
@@ -750,6 +855,20 @@ public class SchemaRegistryControllerServiceTest {
     schReq.setRequesttime(new Timestamp(System.currentTimeMillis()));
     schList.add(schReq);
 
+    return schList;
+  }
+
+  private List<SchemaRequest> getSchemasReqs(int number) {
+    List<SchemaRequest> schList = new ArrayList<>();
+    for (int i = 0; i < number; i++) {
+      SchemaRequest schReq = new SchemaRequest();
+      schReq.setSchemafull("<Schema>");
+      schReq.setEnvironment("1");
+      schReq.setRequestStatus(RequestStatus.CREATED.value);
+      schReq.setTeamId(101);
+      schReq.setRequesttime(new Timestamp(System.currentTimeMillis() - (3600000 * i)));
+      schList.add(schReq);
+    }
     return schList;
   }
 

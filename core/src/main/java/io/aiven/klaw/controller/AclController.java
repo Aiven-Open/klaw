@@ -4,6 +4,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
@@ -45,10 +46,15 @@ public class AclController {
    * @param currentPage Which Page are you currently on e.g. 1
    * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or
    *     'DELETED' @Param operationType The RequestOperationType Create/Update/Promote/Claim/Delete
+   * @param requestOperationType is a filter to only return requests of a certain operation type
+   *     e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1' or '4'
+   * @param search is a wildcard search that will patial match against the topic name
    * @param aclType The Type of acl Consumer/Producer @Param search A wildcard search on the topic
    *     name allowing
+   * @param order allows the requestor to specify what order the pagination should be returned in
+   *     OLDEST_FIRST/NEWEST_FIRST
    * @param isMyRequest filter requests to ony return your own requests
    * @return An array of AclRequests that met the criteria of the inputted values.
    */
@@ -66,6 +72,8 @@ public class AclController {
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search,
       @RequestParam(value = "aclType", required = false) AclType aclType,
+      @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
+          Order order,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
@@ -78,6 +86,7 @@ public class AclController {
             env,
             search,
             aclType,
+            order,
             isMyRequest),
         HttpStatus.OK);
   }
@@ -89,6 +98,8 @@ public class AclController {
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param aclType The Type of acl Consumer/Producer
+   * @param order allows the requestor to specify what order the pagination should be returned in
+   *     OLDEST_FIRST/NEWEST_FIRST
    * @return An array of AclRequests that met the criteria of the inputted values.
    */
   /*
@@ -104,10 +115,12 @@ public class AclController {
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
-      @RequestParam(value = "aclType", required = false) AclType aclType) {
+      @RequestParam(value = "aclType", required = false) AclType aclType,
+      @RequestParam(value = "order", required = false, defaultValue = "ASC_REQUESTED_TIME")
+          Order order) {
     return new ResponseEntity<>(
         aclControllerService.getAclRequestsForApprover(
-            pageNo, currentPage, requestStatus.value, topic, env, aclType),
+            pageNo, currentPage, requestStatus.value, topic, env, aclType, order),
         HttpStatus.OK);
   }
 

@@ -16,11 +16,13 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
+import io.aiven.klaw.model.response.BaseRequestsResponseModel;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import java.io.IOException;
 import java.util.*;
@@ -64,6 +66,7 @@ public class SchemaRegistryControllerService {
       String topic,
       String env,
       String search,
+      Order order,
       boolean isMyRequest) {
     log.debug("getSchemaRequests page {} requestsType {}", pageNo, requestStatus);
     String userName = getUserName();
@@ -126,7 +129,17 @@ public class SchemaRegistryControllerService {
       }
     }
 
+    schemaRequestModels = schemaRequestModels.stream().sorted(getPreferredOrder(order)).toList();
+
     return getSchemaRequestsPaged(schemaRequestModels, pageNo, currentPage, tenantId);
+  }
+
+  private Comparator<SchemaRequestsResponseModel> getPreferredOrder(Order order) {
+    return switch (order) {
+      case ASC_REQUESTED_TIME -> Comparator.comparing(BaseRequestsResponseModel::getRequesttime);
+      case DESC_REQUESTED_TIME -> Collections.reverseOrder(
+          Comparator.comparing(BaseRequestsResponseModel::getRequesttime));
+    };
   }
 
   private String updateApproverInfo(

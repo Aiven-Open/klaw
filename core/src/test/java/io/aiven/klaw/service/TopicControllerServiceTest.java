@@ -415,7 +415,15 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
     List<TopicRequestsResponseModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", null, "all", null, null, false);
+        topicControllerService.getTopicRequests(
+            "1",
+            "",
+            null,
+            "all",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -437,7 +445,15 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", null, "all", null, null, false);
+        topicControllerService.getTopicRequests(
+            "1",
+            "",
+            null,
+            "all",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -459,7 +475,15 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
-        topicControllerService.getTopicRequests("1", "", null, "created", null, null, false);
+        topicControllerService.getTopicRequests(
+            "1",
+            "",
+            null,
+            "created",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -545,7 +569,8 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestsResponseModel> topicList =
-        topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
+        topicControllerService.getTopicRequestsForApprover(
+            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
 
     assertThat(topicList).hasSize(2);
   }
@@ -571,7 +596,8 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestsResponseModel> topicList =
-        topicControllerService.getTopicRequestsForApprover("1", "", "all", null, null, null);
+        topicControllerService.getTopicRequestsForApprover(
+            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
 
     assertThat(topicList).hasSize(5);
     assertThat(topicList.get(0).getTopicpartitions()).isEqualTo(2);
@@ -1176,6 +1202,93 @@ public class TopicControllerServiceTest {
     TopicRequest req = topicRequestCaptor.getValue();
     assertThat(req.getDescription()).isNull();
     assertThat(req.getApprovingTeamId()).isEqualTo("1");
+  }
+
+  @Test
+  @Order(50)
+  public void getTopicRequests_ORDERBy_NEWEST_FIRST() {
+    stubUserInfo();
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(handleDbRequests.getAllTopicRequests(
+            anyString(), eq(null), eq(null), eq(null), eq(null), eq(false), anyInt()))
+        .thenReturn(generateRequests(50));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
+
+    List<TopicRequestsResponseModel> ordered_response =
+        topicControllerService.getTopicRequests(
+            "1",
+            "1",
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (TopicRequestsResponseModel req : ordered_response) {
+
+      // assert That each new Request time is older than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) >= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
+  @Test
+  @Order(51)
+  public void getTopicRequests_ORDERBy_OLDEST_FIRST() {
+    stubUserInfo();
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(handleDbRequests.getAllTopicRequests(
+            anyString(), eq(null), eq(null), eq(null), eq(null), eq(false), anyInt()))
+        .thenReturn(generateRequests(50));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
+    when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
+
+    List<TopicRequestsResponseModel> ordered_response =
+        topicControllerService.getTopicRequests(
+            "1",
+            "1",
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (TopicRequestsResponseModel req : ordered_response) {
+
+      // assert That each new Request time is newer than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) <= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
+  private List<TopicRequest> generateRequests(int number) {
+    ArrayList<TopicRequest> topicList = new ArrayList<>();
+    for (int i = 0; i < number; i++) {
+      TopicRequest topicRequest = new TopicRequest();
+      topicRequest.setEnvironment(env.getId());
+      topicRequest.setTopicpartitions(2);
+      topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis() - (3600000 * i)));
+      topicRequest.setTeamId(101);
+      topicRequest.setRequestor("Jackie");
+      topicRequest.setRequestStatus(RequestStatus.CREATED.value);
+      topicList.add(topicRequest);
+    }
+    return topicList;
   }
 
   private TopicRequestModel getTopicWithAdvancedConfigs() {

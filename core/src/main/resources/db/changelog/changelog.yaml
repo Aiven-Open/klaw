@@ -1033,4 +1033,3 @@ databaseChangeLog:
                 - column:
                     name: associatedservers
                     type: VARCHAR(250)
-

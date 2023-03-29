@@ -69,6 +69,7 @@ public class SchemaRegistryControllerTest {
             eq(null),
             eq(null),
             eq(null),
+            eq(io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME),
             anyBoolean()))
         .thenReturn(schRequests);
 
