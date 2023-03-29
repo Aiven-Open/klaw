@@ -121,37 +121,37 @@ describe("TopicRequestsTable", () => {
     );
   });
 
-  it("has column to decsribe the status", () => {
-    renderFromProps();
-    expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[2]
-    ).toHaveTextContent("Status");
-    expect(within(getNthRow(1)).getAllByRole("cell")[2]).toHaveTextContent(
-      "Awaiting approval"
-    );
-  });
-
-  it("has column to decsribe the request type", () => {
-    renderFromProps();
-    expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[3]
-    ).toHaveTextContent("Type");
-    expect(within(getNthRow(1)).getAllByRole("cell")[3]).toHaveTextContent(
-      "Create"
-    );
-  });
-
   it("has column to describe the owner", () => {
     renderFromProps();
     expect(
-      within(getNthRow(0)).getAllByRole("columnheader")[4]
+      within(getNthRow(0)).getAllByRole("columnheader")[2]
     ).toHaveTextContent("Owned by");
-    expect(within(getNthRow(1)).getAllByRole("cell")[4]).toHaveTextContent(
+    expect(within(getNthRow(1)).getAllByRole("cell")[2]).toHaveTextContent(
       "NCC1701D"
     );
   });
 
-  it("has column to decsribe the author of the request", () => {
+  it("has column to describe the status", () => {
+    renderFromProps();
+    expect(
+      within(getNthRow(0)).getAllByRole("columnheader")[3]
+    ).toHaveTextContent("Status");
+    expect(within(getNthRow(1)).getAllByRole("cell")[3]).toHaveTextContent(
+      "Awaiting approval"
+    );
+  });
+
+  it("has column to describe the request type", () => {
+    renderFromProps();
+    expect(
+      within(getNthRow(0)).getAllByRole("columnheader")[4]
+    ).toHaveTextContent("Request type");
+    expect(within(getNthRow(1)).getAllByRole("cell")[4]).toHaveTextContent(
+      "Create"
+    );
+  });
+
+  it("has column to describe the author of the request", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[5]
@@ -161,7 +161,7 @@ describe("TopicRequestsTable", () => {
     );
   });
 
-  it("has column to decsribe the timestamp when the request was made", () => {
+  it("has column to describe the timestamp when the request was made", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[6]

@@ -571,7 +571,7 @@ describe("AclRequests", () => {
     });
   });
 
-  describe("user can filter ACL requests by request operation type ", () => {
+  describe("user can filter ACL requests by request type ", () => {
     afterEach(() => {
       cleanup();
     });
@@ -580,11 +580,11 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
-        customRoutePath: "/?operationType=DELETE",
+        customRoutePath: "/?requestType=DELETE",
       });
 
       const envFilter = screen.getByRole("combobox", {
-        name: "Filter by operation type",
+        name: "Filter by request type",
       });
 
       expect(envFilter).toHaveDisplayValue("Delete");
@@ -600,19 +600,19 @@ describe("AclRequests", () => {
       });
     });
 
-    it("enables user to filter ACL requests by request operation type", async () => {
+    it("enables user to filter ACL requests by request type", async () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
       });
 
-      const operationTypeFilter = screen.getByRole("combobox", {
-        name: "Filter by operation type",
+      const requestTypeFilter = screen.getByRole("combobox", {
+        name: "Filter by request type",
       });
 
-      expect(operationTypeFilter).toBeEnabled();
+      expect(requestTypeFilter).toBeEnabled();
 
-      await userEvent.selectOptions(operationTypeFilter, "CREATE");
+      await userEvent.selectOptions(requestTypeFilter, "CREATE");
 
       await waitFor(() => {
         expect(getAclRequests).toHaveBeenLastCalledWith({

@@ -5,7 +5,7 @@ import { ChipStatus } from "@aivenio/aquarium";
 // have a more typesafe / exhaustive list
 // here TS won't complain if a possible
 // value is missing from the array.
-const operationTypeList: RequestOperationType[] = [
+const requestOperationTypeList: RequestOperationType[] = [
   "CLAIM",
   "CREATE",
   "DELETE",
@@ -34,7 +34,7 @@ const requestOperationTypeNameMap: {
 };
 
 export {
-  operationTypeList,
+  requestOperationTypeList,
   requestOperationTypeChipStatusMap,
   requestOperationTypeNameMap,
 };

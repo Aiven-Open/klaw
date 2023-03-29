@@ -58,28 +58,6 @@ function AclRequestsTable({
       }),
     },
     {
-      type: "status",
-      field: "requestStatus",
-      headerName: "Status",
-      status: ({ requestStatus }) => {
-        return {
-          status: requestStatusChipStatusMap[requestStatus],
-          text: requestStatusNameMap[requestStatus],
-        };
-      },
-    },
-    {
-      type: "status",
-      field: "requestOperationType",
-      headerName: "Request type",
-      status: ({ requestOperationType }) => {
-        return {
-          status: requestOperationTypeChipStatusMap[requestOperationType],
-          text: requestOperationTypeNameMap[requestOperationType],
-        };
-      },
-    },
-    {
       type: "custom",
       field: "acl_ssl",
       headerName: "Principals/Usernames",
@@ -131,6 +109,28 @@ function AclRequestsTable({
         status: aclType === "CONSUMER" ? "success" : "info",
         text: aclType,
       }),
+    },
+    {
+      type: "status",
+      field: "requestStatus",
+      headerName: "Status",
+      status: ({ requestStatus }) => {
+        return {
+          status: requestStatusChipStatusMap[requestStatus],
+          text: requestStatusNameMap[requestStatus],
+        };
+      },
+    },
+    {
+      type: "status",
+      field: "requestOperationType",
+      headerName: "Request type",
+      status: ({ requestOperationType }) => {
+        return {
+          status: requestOperationTypeChipStatusMap[requestOperationType],
+          text: requestOperationTypeNameMap[requestOperationType],
+        };
+      },
     },
     {
       type: "text",

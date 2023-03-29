@@ -8,7 +8,7 @@ import RequestDetailsModal from "src/app/features/components/RequestDetailsModal
 import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
-import { OperationTypeFilter } from "src/app/features/components/filters/OperationTypeFilter";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import TopicFilter from "src/app/features/components/filters/TopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
@@ -31,7 +31,7 @@ function SchemaRequests() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { topic, environment, status, showOnlyMyRequests, operationType } =
+  const { topic, environment, status, showOnlyMyRequests, requestType } =
     useFiltersValues();
 
   const [modals, setModals] = useState<{
@@ -55,7 +55,7 @@ function SchemaRequests() {
       status,
       topic,
       showOnlyMyRequests,
-      operationType,
+      requestType,
     ],
     queryFn: () =>
       getSchemaRequests({
@@ -64,8 +64,7 @@ function SchemaRequests() {
         requestStatus: status !== defaultStatus ? status : undefined,
         topic,
         isMyRequest: showOnlyMyRequests,
-        operationType:
-          operationType !== defaultType ? operationType : undefined,
+        operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -169,8 +168,8 @@ function SchemaRequests() {
             key={"environments"}
             isSchemaRegistryEnvironments
           />,
-          <OperationTypeFilter key={"request-type"} />,
           <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
+          <RequestTypeFilter key={"request-type"} />,
           <TopicFilter key={"topic"} />,
           <MyRequestsFilter key={"show-only-my-requests"} />,
         ]}

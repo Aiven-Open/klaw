@@ -1,7 +1,7 @@
 import { NativeSelect } from "@aivenio/aquarium";
 import { ChangeEvent } from "react";
 import {
-  operationTypeList,
+  requestOperationTypeList,
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
@@ -12,26 +12,26 @@ type RequestOperationTypeOptions = ResolveIntersectionTypes<
   RequestOperationType | "ALL"
 >;
 
-function OperationTypeFilter() {
-  const { operationType, setFilterValue } = useFiltersValues();
+function RequestTypeFilter() {
+  const { requestType, setFilterValue } = useFiltersValues();
 
-  const handleChangeOperationType = (e: ChangeEvent<HTMLSelectElement>) => {
+  const handleChangeRequestType = (e: ChangeEvent<HTMLSelectElement>) => {
     const nextOperationType = e.target.value as RequestOperationTypeOptions;
 
-    setFilterValue({ name: "operationType", value: nextOperationType });
+    setFilterValue({ name: "requestType", value: nextOperationType });
   };
 
   return (
     <NativeSelect
-      labelText={"Filter by operation type"}
-      key={"filter-operationType"}
-      defaultValue={operationType}
-      onChange={handleChangeOperationType}
+      labelText={"Filter by request type"}
+      key={"filter-request-type"}
+      defaultValue={requestType}
+      onChange={handleChangeRequestType}
     >
       <option key={"ALL"} value={"ALL"}>
-        All operation types
+        All request types
       </option>
-      {operationTypeList.map((operationType) => {
+      {requestOperationTypeList.map((operationType) => {
         return (
           <option key={operationType} value={operationType}>
             {requestOperationTypeNameMap[operationType]}
@@ -42,4 +42,4 @@ function OperationTypeFilter() {
   );
 }
 
-export { OperationTypeFilter };
+export { RequestTypeFilter };

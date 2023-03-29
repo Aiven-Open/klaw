@@ -45,6 +45,7 @@ function TopicRequestsTable({
         text: environmentName,
       }),
     },
+    { type: "text", field: "teamname", headerName: "Owned by" },
     {
       type: "status",
       field: "requestStatus",
@@ -59,7 +60,7 @@ function TopicRequestsTable({
     {
       type: "status",
       field: "requestOperationType",
-      headerName: "Type",
+      headerName: "Request type",
       status: ({ requestOperationType }) => {
         return {
           status: requestOperationTypeChipStatusMap[requestOperationType],
@@ -67,7 +68,6 @@ function TopicRequestsTable({
         };
       },
     },
-    { type: "text", field: "teamname", headerName: "Owned by" },
     { type: "text", field: "requestor", headerName: "Requested by" },
     {
       type: "text",

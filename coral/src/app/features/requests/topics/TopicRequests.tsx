@@ -18,7 +18,7 @@ import { useFiltersValues } from "src/app/features/components/filters/useFilters
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
-import { OperationTypeFilter } from "src/app/features/components/filters/OperationTypeFilter";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 
 const defaultStatus = "ALL";
 const defaultType = "ALL";
@@ -30,7 +30,7 @@ function TopicRequests() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { topic, environment, status, showOnlyMyRequests, operationType } =
+  const { topic, environment, status, showOnlyMyRequests, requestType } =
     useFiltersValues();
 
   const [modals, setModals] = useState<{
@@ -47,7 +47,7 @@ function TopicRequests() {
       status,
       topic,
       showOnlyMyRequests,
-      operationType,
+      requestType,
     ],
     queryFn: () =>
       getTopicRequests({
@@ -57,8 +57,7 @@ function TopicRequests() {
         env: environment,
         requestStatus: status,
         isMyRequest: showOnlyMyRequests,
-        operationType:
-          operationType !== defaultType ? operationType : undefined,
+        operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -157,8 +156,8 @@ function TopicRequests() {
       <TableLayout
         filters={[
           <EnvironmentFilter key="environments" />,
-          <OperationTypeFilter key={"request-type"} />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
+          <RequestTypeFilter key={"request-type"} />,
           <TopicFilter key={"topic"} />,
           <MyRequestsFilter key={"isMyRequest"} />,
         ]}
