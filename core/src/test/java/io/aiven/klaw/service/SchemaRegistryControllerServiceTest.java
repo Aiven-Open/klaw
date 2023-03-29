@@ -158,7 +158,7 @@ public class SchemaRegistryControllerServiceTest {
             null,
             null,
             null,
-            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
             false);
     assertThat(listReqs).hasSize(2);
   }
@@ -659,7 +659,7 @@ public class SchemaRegistryControllerServiceTest {
             null,
             null,
             null,
-            io.aiven.klaw.model.enums.Order.NEWEST_FIRST,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
             false);
 
     assertThat(ordered_response).hasSize(10);
@@ -707,7 +707,7 @@ public class SchemaRegistryControllerServiceTest {
             null,
             null,
             null,
-            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
             false);
 
     assertThat(ordered_response).hasSize(10);

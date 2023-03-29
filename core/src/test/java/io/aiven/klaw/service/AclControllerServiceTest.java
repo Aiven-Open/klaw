@@ -330,7 +330,7 @@ public class AclControllerServiceTest {
             null,
             null,
             null,
-            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
             false);
     assertThat(aclReqs.size()).isEqualTo(10);
     assertThat(aclReqs.get(0).getAcl_ip().size()).isEqualTo(3);
@@ -346,7 +346,7 @@ public class AclControllerServiceTest {
             null,
             null,
             null,
-            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
             false);
     assertThat(aclReqs.size()).isEqualTo(5);
     assertThat(aclReqs.get(0).getApprovingTeamDetails()).contains(userList.get(0).getUsername());
@@ -370,7 +370,7 @@ public class AclControllerServiceTest {
 
     List<AclRequestsResponseModel> listReqs =
         aclControllerService.getAclRequestsForApprover(
-            "", "", "", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST);
+            "", "", "", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 
@@ -392,7 +392,7 @@ public class AclControllerServiceTest {
 
     List<AclRequestsResponseModel> listReqs =
         aclControllerService.getAclRequestsForApprover(
-            "", "", "", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST);
+            "", "", "", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 
@@ -860,7 +860,7 @@ public class AclControllerServiceTest {
             null,
             null,
             null,
-            io.aiven.klaw.model.enums.Order.NEWEST_FIRST,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
             false);
 
     assertThat(ordered_response).hasSize(10);
@@ -909,7 +909,7 @@ public class AclControllerServiceTest {
             null,
             null,
             null,
-            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
             false);
 
     assertThat(ordered_response).hasSize(10);

@@ -2516,7 +2516,7 @@ export type operations = {
         env?: string;
         operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         search?: string;
-        order?: "OLDEST_FIRST" | "NEWEST_FIRST";
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
       };
     };
@@ -2538,7 +2538,7 @@ export type operations = {
         teamId?: number;
         env?: string;
         search?: string;
-        order?: "OLDEST_FIRST" | "NEWEST_FIRST";
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
     responses: {
@@ -2757,7 +2757,7 @@ export type operations = {
         operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         env?: string;
         search?: string;
-        order?: "OLDEST_FIRST" | "NEWEST_FIRST";
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
       };
     };
@@ -2779,7 +2779,7 @@ export type operations = {
         topic?: string;
         env?: string;
         search?: string;
-        order?: "OLDEST_FIRST" | "NEWEST_FIRST";
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
     responses: {
@@ -3120,7 +3120,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         env?: string;
-        order?: "OLDEST_FIRST" | "NEWEST_FIRST";
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         search?: string;
       };
     };
@@ -3140,7 +3140,7 @@ export type operations = {
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
-        order?: "OLDEST_FIRST" | "NEWEST_FIRST";
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         search?: string;
       };
     };
@@ -3489,7 +3489,7 @@ export type operations = {
         env?: string;
         search?: string;
         aclType?: "PRODUCER" | "CONSUMER";
-        order?: "OLDEST_FIRST" | "NEWEST_FIRST";
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
       };
     };
@@ -3511,7 +3511,7 @@ export type operations = {
         topic?: string;
         env?: string;
         aclType?: "PRODUCER" | "CONSUMER";
-        order?: "OLDEST_FIRST" | "NEWEST_FIRST";
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
     responses: {

@@ -2514,8 +2514,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "NEWEST_FIRST",
-            "enum" : [ "OLDEST_FIRST", "NEWEST_FIRST" ]
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         }, {
           "name" : "isMyRequest",
@@ -2599,8 +2599,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "OLDEST_FIRST",
-            "enum" : [ "OLDEST_FIRST", "NEWEST_FIRST" ]
+            "default" : "ASC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         } ],
         "responses" : {
@@ -3172,8 +3172,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "NEWEST_FIRST",
-            "enum" : [ "OLDEST_FIRST", "NEWEST_FIRST" ]
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         }, {
           "name" : "isMyRequest",
@@ -3256,8 +3256,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "OLDEST_FIRST",
-            "enum" : [ "OLDEST_FIRST", "NEWEST_FIRST" ]
+            "default" : "ASC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         } ],
         "responses" : {
@@ -4010,8 +4010,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "NEWEST_FIRST",
-            "enum" : [ "OLDEST_FIRST", "NEWEST_FIRST" ]
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         }, {
           "name" : "search",
@@ -4079,8 +4079,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "OLDEST_FIRST",
-            "enum" : [ "OLDEST_FIRST", "NEWEST_FIRST" ]
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         }, {
           "name" : "search",
@@ -4826,8 +4826,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "NEWEST_FIRST",
-            "enum" : [ "OLDEST_FIRST", "NEWEST_FIRST" ]
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         }, {
           "name" : "isMyRequest",
@@ -4911,8 +4911,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "OLDEST_FIRST",
-            "enum" : [ "OLDEST_FIRST", "NEWEST_FIRST" ]
+            "default" : "ASC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
           }
         } ],
         "responses" : {

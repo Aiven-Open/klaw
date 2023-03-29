@@ -229,7 +229,7 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
-            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.NEWEST_FIRST, null);
+            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME, null);
 
     assertThat(ordered_response).hasSize(10);
 
@@ -261,7 +261,7 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
-            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST, null);
+            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME, null);
 
     assertThat(ordered_response).hasSize(10);
 

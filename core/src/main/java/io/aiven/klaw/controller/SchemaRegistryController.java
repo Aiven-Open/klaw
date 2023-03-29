@@ -63,7 +63,8 @@ public class SchemaRegistryController {
           RequestOperationType requestOperationType,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search,
-      @RequestParam(value = "order", required = false, defaultValue = "NEWEST_FIRST") Order order,
+      @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
+          Order order,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
@@ -104,7 +105,8 @@ public class SchemaRegistryController {
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search,
-      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order) {
+      @RequestParam(value = "order", required = false, defaultValue = "ASC_REQUESTED_TIME")
+          Order order) {
     return new ResponseEntity<>(
         schemaRegistryControllerService.getSchemaRequests(
             pageNo, currentPage, requestStatus.value, null, true, topic, env, search, order, false),

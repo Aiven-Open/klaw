@@ -58,7 +58,8 @@ public class KafkaConnectController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "env", required = false) String env,
-      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order,
+      @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
+          Order order,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getCreatedConnectorRequests(
@@ -134,7 +135,8 @@ public class KafkaConnectController {
       @RequestParam(value = "operationType", required = false)
           RequestOperationType requestOperationType,
       @RequestParam(value = "env", required = false) String env,
-      @RequestParam(value = "order", required = false, defaultValue = "NEWEST_FIRST") Order order,
+      @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
+          Order order,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorRequests(

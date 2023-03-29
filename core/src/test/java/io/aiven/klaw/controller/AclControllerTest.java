@@ -113,7 +113,7 @@ public class AclControllerTest {
             null,
             null,
             null,
-            io.aiven.klaw.model.enums.Order.NEWEST_FIRST,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
             false))
         .thenReturn(aclRequests);
 
@@ -133,7 +133,13 @@ public class AclControllerTest {
     List<AclRequestsResponseModel> aclRequests = utilMethods.getAclRequestsList();
 
     when(aclControllerService.getAclRequestsForApprover(
-            "1", "", "created", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST))
+            "1",
+            "",
+            "created",
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME))
         .thenReturn(aclRequests);
 
     mvcAcls

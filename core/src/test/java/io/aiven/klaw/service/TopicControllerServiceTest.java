@@ -416,7 +416,14 @@ public class TopicControllerServiceTest {
 
     List<TopicRequestsResponseModel> listTopicRqs =
         topicControllerService.getTopicRequests(
-            "1", "", null, "all", null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST, false);
+            "1",
+            "",
+            null,
+            "all",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -439,7 +446,14 @@ public class TopicControllerServiceTest {
 
     List<TopicRequestsResponseModel> listTopicRqs =
         topicControllerService.getTopicRequests(
-            "1", "", null, "all", null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST, false);
+            "1",
+            "",
+            null,
+            "all",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            false);
     assertThat(listTopicRqs).hasSize(2);
   }
 
@@ -468,7 +482,7 @@ public class TopicControllerServiceTest {
             "created",
             null,
             null,
-            io.aiven.klaw.model.enums.Order.OLDEST_FIRST,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
             false);
     assertThat(listTopicRqs).hasSize(2);
   }
@@ -556,7 +570,7 @@ public class TopicControllerServiceTest {
 
     List<TopicRequestsResponseModel> topicList =
         topicControllerService.getTopicRequestsForApprover(
-            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST);
+            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
 
     assertThat(topicList).hasSize(2);
   }
@@ -583,7 +597,7 @@ public class TopicControllerServiceTest {
 
     List<TopicRequestsResponseModel> topicList =
         topicControllerService.getTopicRequestsForApprover(
-            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST);
+            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
 
     assertThat(topicList).hasSize(5);
     assertThat(topicList.get(0).getTopicpartitions()).isEqualTo(2);
@@ -1206,7 +1220,14 @@ public class TopicControllerServiceTest {
 
     List<TopicRequestsResponseModel> ordered_response =
         topicControllerService.getTopicRequests(
-            "1", "1", null, null, null, null, io.aiven.klaw.model.enums.Order.NEWEST_FIRST, false);
+            "1",
+            "1",
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
+            false);
 
     assertThat(ordered_response).hasSize(10);
     Timestamp origReqTime = ordered_response.get(0).getRequesttime();
@@ -1235,7 +1256,14 @@ public class TopicControllerServiceTest {
 
     List<TopicRequestsResponseModel> ordered_response =
         topicControllerService.getTopicRequests(
-            "1", "1", null, null, null, null, io.aiven.klaw.model.enums.Order.OLDEST_FIRST, false);
+            "1",
+            "1",
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            false);
 
     assertThat(ordered_response).hasSize(10);
     Timestamp origReqTime = ordered_response.get(0).getRequesttime();

@@ -101,7 +101,8 @@ public class TopicController {
       @RequestParam(value = "operationType", required = false)
           RequestOperationType requestOperationType,
       @RequestParam(value = "search", required = false) String search,
-      @RequestParam(value = "order", required = false, defaultValue = "NEWEST_FIRST") Order order,
+      @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
+          Order order,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
@@ -152,7 +153,8 @@ public class TopicController {
       @RequestParam(value = "teamId", required = false) Integer teamId,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "search", required = false) String search,
-      @RequestParam(value = "order", required = false, defaultValue = "OLDEST_FIRST") Order order) {
+      @RequestParam(value = "order", required = false, defaultValue = "ASC_REQUESTED_TIME")
+          Order order) {
     return new ResponseEntity<>(
         topicControllerService.getTopicRequestsForApprover(
             pageNo, currentPage, requestStatus.value, teamId, env, search, order),

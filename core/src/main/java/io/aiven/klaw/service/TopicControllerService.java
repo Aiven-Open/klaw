@@ -1,8 +1,6 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.model.enums.MailType.*;
-import static io.aiven.klaw.model.enums.Order.NEWEST_FIRST;
-import static io.aiven.klaw.model.enums.Order.OLDEST_FIRST;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -356,8 +354,8 @@ public class TopicControllerService {
 
   private Comparator<TopicRequest> getPreferredOrdering(Order order) {
     return switch (order) {
-      case OLDEST_FIRST -> compareByTime();
-      case NEWEST_FIRST -> Collections.reverseOrder(compareByTime());
+      case ASC_REQUESTED_TIME -> compareByTime();
+      case DESC_REQUESTED_TIME -> Collections.reverseOrder(compareByTime());
     };
   }
 

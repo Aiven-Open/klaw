@@ -1307,9 +1307,9 @@ public class KafkaConnectControllerService {
 
   private static Comparator<KafkaConnectorRequest> getPreferredOrder(Order order) {
     return switch (order) {
-      case NEWEST_FIRST -> Collections.reverseOrder(
+      case DESC_REQUESTED_TIME -> Collections.reverseOrder(
           Comparator.comparing(KafkaConnectorRequest::getRequesttime));
-      case OLDEST_FIRST -> Comparator.comparing(KafkaConnectorRequest::getRequesttime);
+      case ASC_REQUESTED_TIME -> Comparator.comparing(KafkaConnectorRequest::getRequesttime);
     };
   }
 

@@ -293,8 +293,8 @@ public class AclControllerService {
 
   private static Comparator<AclRequests> getPreferredOrder(Order order) {
     return switch (order) {
-      case OLDEST_FIRST -> compareByTime();
-      case NEWEST_FIRST -> Collections.reverseOrder(compareByTime());
+      case ASC_REQUESTED_TIME -> compareByTime();
+      case DESC_REQUESTED_TIME -> Collections.reverseOrder(compareByTime());
     };
   }
 
