@@ -77,15 +77,7 @@ function AclApprovals() {
     variables: approveVariables,
   } = useMutation({
     mutationFn: approveAclRequest,
-    onSuccess: (responses) => {
-      const response = responses[0];
-      const responseIsAHiddenError =
-        response?.result.toLowerCase() !== "success";
-      if (responseIsAHiddenError) {
-        return setErrorMessage(
-          response.message || response.result || "Unexpected error"
-        );
-      }
+    onSuccess: () => {
       setErrorMessage("");
       setDetailsModal({ isOpen: false, reqNo: null });
 
@@ -98,9 +90,9 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return handleChangePage(currentPage - 1);
+        handleChangePage(currentPage - 1);
+        return;
       }
-
       // Refetch to keep Table state in sync
       queryClient.refetchQueries(["aclRequests"]);
     },
@@ -115,15 +107,7 @@ function AclApprovals() {
     variables: declineVariables,
   } = useMutation({
     mutationFn: declineAclRequest,
-    onSuccess: (responses) => {
-      const response = responses[0];
-      const responseIsAHiddenError =
-        response?.result.toLowerCase() !== "success";
-      if (responseIsAHiddenError) {
-        return setErrorMessage(
-          response.message || response.result || "Unexpected error"
-        );
-      }
+    onSuccess: () => {
       setErrorMessage("");
       setDeclineModal({ isOpen: false, reqNo: null });
 
@@ -136,7 +120,8 @@ function AclApprovals() {
       // We also do not need to invalidate the query, as the activePage does not exist any more
       // And there is no need to update anything on it
       if (data?.entries.length === 1 && data?.currentPage > 1) {
-        return handleChangePage(currentPage - 1);
+        handleChangePage(currentPage - 1);
+        return;
       }
 
       // We need to refetch all aclrequests queries to keep Table state in sync

@@ -1,6 +1,6 @@
 import { cleanup, screen, render, within } from "@testing-library/react";
 import { createMockTopic } from "src/domain/topic/topic-test-helper";
-import TopicTable from "src/app/features/topics/browse/components/topic-table/TopicTable";
+import TopicTable from "src/app/features/topics/browse/components/TopicTable";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 
@@ -12,19 +12,26 @@ const mockedTopics = mockedTopicNames.map((name, index) =>
 const tableRowHeader = ["Topic", "Environments", "Team"];
 
 describe("TopicTable.tsx", () => {
+  describe("shows empty state correctly", () => {
+    afterAll(cleanup);
+
+    it("show empty state when there is no data", () => {
+      render(<TopicTable topics={[]} />);
+      expect(screen.getByRole("heading", { name: "No Topics" })).toBeVisible();
+    });
+  });
+
   describe("shows all topics as a table", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(
-        <TopicTable topics={mockedTopics} activePage={1} totalPages={2} />
-      );
+      render(<TopicTable topics={mockedTopics} />);
     });
 
     afterAll(cleanup);
 
     it("renders a topic table with information about pages", async () => {
       const table = screen.getByRole("table", {
-        name: "Topics overview, page 1 of 2",
+        name: "Topics overview",
       });
 
       expect(table).toBeVisible();
@@ -33,7 +40,7 @@ describe("TopicTable.tsx", () => {
     tableRowHeader.forEach((header) => {
       it(`renders a column header for ${header}`, () => {
         const table = screen.getByRole("table", {
-          name: "Topics overview, page 1 of 2",
+          name: "Topics overview",
         });
         const colHeader = within(table).getByRole("columnheader", {
           name: header,
@@ -46,12 +53,12 @@ describe("TopicTable.tsx", () => {
     mockedTopics.forEach((topic) => {
       it(`renders the topic name "${topic.topicName}" as a link to the detail view as row header`, () => {
         const table = screen.getByRole("table", {
-          name: "Topics overview, page 1 of 2",
+          name: "Topics overview",
         });
-        const rowHeader = within(table).getByRole("rowheader", {
+        const rowHeader = within(table).getByRole("cell", {
           name: topic.topicName,
         });
-        const link = within(table).getByRole("link", {
+        const link = within(rowHeader).getByRole("link", {
           name: topic.topicName,
         });
 
@@ -59,13 +66,13 @@ describe("TopicTable.tsx", () => {
         expect(link).toBeVisible();
         expect(link).toHaveAttribute(
           "href",
-          `/topicOverview?topicname=${topic.topicName}`
+          `http://localhost/topicOverview?topicname=${topic.topicName}`
         );
       });
 
       it(`renders the team for ${topic.topicName} `, () => {
         const table = screen.getByRole("table", {
-          name: "Topics overview, page 1 of 2",
+          name: "Topics overview",
         });
         const row = within(table).getByRole("row", {
           name: new RegExp(`${topic.topicName}`, "i"),
@@ -77,33 +84,31 @@ describe("TopicTable.tsx", () => {
 
       it(`renders a list of Environments for topic ${topic}`, () => {
         const table = screen.getByRole("table", {
-          name: "Topics overview, page 1 of 2",
+          name: "Topics overview",
         });
         const row = within(table).getByRole("row", {
           name: new RegExp(`${topic.topicName}`, "i"),
         });
-        const environmentList = within(row).getByRole("list");
-        const environments = within(environmentList).getAllByRole("listitem");
+        const environmentList = within(row).getByRole("cell", {
+          name: topic.environmentsList.join(" "),
+        });
 
         expect(environmentList).toBeVisible();
-        expect(environments).toHaveLength(topic.environmentsList.length);
       });
 
       topic.environmentsList.forEach((env) => {
         it(`renders Environment ${env} for topic ${topic}`, () => {
           const table = screen.getByRole("table", {
-            name: "Topics overview, page 1 of 2",
+            name: "Topics overview",
           });
           const row = within(table).getByRole("row", {
             name: new RegExp(`${topic.topicName}`, "i"),
           });
-          const environmentList = within(row).getByRole("list");
+          const environmentList = within(row).getByRole("cell", {
+            name: topic.environmentsList.join(" "),
+          });
 
-          const environment = within(environmentList)
-            .getAllByRole("listitem")
-            .find((listitem) => listitem.textContent === env);
-
-          expect(environment).toBeVisible();
+          expect(environmentList).toBeVisible();
         });
       });
     });
@@ -112,11 +117,9 @@ describe("TopicTable.tsx", () => {
   describe("enables user to keyboard navigate from topic name to topic name", () => {
     beforeEach(() => {
       mockIntersectionObserver();
-      render(
-        <TopicTable topics={mockedTopics} activePage={1} totalPages={2} />
-      );
+      render(<TopicTable topics={mockedTopics} />);
       const table = screen.getByRole("table", {
-        name: "Topics overview, page 1 of 2",
+        name: "Topics overview",
       });
       table.focus();
     });

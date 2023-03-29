@@ -1,111 +1,67 @@
-import { useGetTopics } from "src/app/features/topics/browse/hooks/topic-list/useGetTopics";
-import { Pagination } from "src/app/components/Pagination";
-import SelectTeamName from "src/app/features/topics/browse/components/select-team-name/SelectTeamName";
-import TopicTable from "src/app/features/topics/browse/components/topic-table/TopicTable";
-import { useState } from "react";
-import { Box } from "@aivenio/aquarium";
+import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import SelectEnvironment from "src/app/features/topics/browse/components/select-environment/SelectEnvironment";
-import { SearchTopics } from "src/app/features/topics/browse/components/search/SearchTopics";
-import { Team, TEAM_NOT_INITIALIZED } from "src/domain/team";
-import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
+import { Pagination } from "src/app/components/Pagination";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import TeamFilter from "src/app/features/components/filters/TeamFilter";
+import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
+import TopicTable from "src/app/features/topics/browse/components/TopicTable";
+import { getTopics } from "src/domain/topic";
 
 function BrowseTopics() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [teamName, setTeamName] = useState<Team>(TEAM_NOT_INITIALIZED);
-  const [environment, setEnvironment] = useState(ENVIRONMENT_NOT_INITIALIZED);
 
-  const initialPage = searchParams.get("page");
-  const initialSearchTerm = searchParams.get("search");
-  const [page, setPage] = useState(Number(initialPage) || 1);
-  const [searchTerm, setSearchTerm] = useState<string>(initialSearchTerm || "");
+  const currentPage = searchParams.get("page")
+    ? Number(searchParams.get("page"))
+    : 1;
+
+  const { topic, environment, team } = useFiltersValues();
 
   const {
     data: topics,
     isLoading,
     isError,
-    isPreviousData,
-  } = useGetTopics({
-    currentPage: page,
-    environment,
-    teamName,
-    ...(searchTerm && { searchTerm: searchTerm }),
+    error,
+  } = useQuery({
+    queryKey: ["browseTopics", currentPage, topic, environment, team],
+    queryFn: () =>
+      getTopics({
+        currentPage,
+        environment,
+        teamName: team,
+        searchTerm: topic,
+      }),
+    keepPreviousData: true,
   });
 
-  const hasTopics = topics && topics.entries.length > 0;
-  const hasMultiplePages = topics && topics.totalPages > 1;
+  function handleChangePage(page: number) {
+    searchParams.set("page", page.toString());
+    setSearchParams(searchParams);
+  }
+  const pagination =
+    topics && topics.totalPages > 1 ? (
+      <Pagination
+        activePage={topics.currentPage}
+        totalPages={topics.totalPages}
+        setActivePage={handleChangePage}
+      />
+    ) : undefined;
 
   return (
-    <>
-      <Box display={"flex"} flexDirection={"column"} gap={"l1"}>
-        <Box
-          display={"flex"}
-          justifyContent={"end"}
-          colGap={"l1"}
-          maxWidth={"7xl"}
-        >
-          <SearchTopics onChange={searchTopics} value={searchTerm} />
-        </Box>
-        <Box
-          display={"flex"}
-          flexDirection={"row"}
-          colGap={"l1"}
-          maxWidth={"7xl"}
-        >
-          <Box grow={1}>
-            <SelectTeamName onChange={setTeamName} />
-          </Box>
-          <Box grow={1}>
-            <SelectEnvironment onChange={setEnvironment} />
-          </Box>
-        </Box>
-        <Box
-          display={"flex"}
-          flexDirection={"column"}
-          alignItems={"center"}
-          rowGap={"l4"}
-        >
-          {isPreviousData && <div>Filtering list...</div>}
-          {isLoading && <div>Loading...</div>}
-          {isError && <div>Something went wrong 😔</div>}
-
-          {!isLoading && !hasTopics && <div>No topics found</div>}
-          {hasTopics && (
-            <TopicTable
-              topics={topics.entries}
-              activePage={topics.currentPage}
-              totalPages={topics.totalPages}
-            />
-          )}
-
-          {hasMultiplePages && (
-            <Pagination
-              activePage={topics.currentPage}
-              totalPages={topics.totalPages}
-              setActivePage={changePage}
-            />
-          )}
-        </Box>
-      </Box>
-    </>
+    <TableLayout
+      filters={[
+        <TeamFilter key="team" filterByName />,
+        <EnvironmentFilter key="environment" />,
+        <TopicFilter key="search" />,
+      ]}
+      table={<TopicTable topics={topics?.entries ?? []} />}
+      pagination={pagination}
+      isLoading={isLoading}
+      isErrorLoading={isError}
+      errorMessage={error}
+    />
   );
-
-  function searchTopics(newSearchTerm: string) {
-    setSearchTerm(newSearchTerm);
-    if (newSearchTerm.length === 0) {
-      searchParams.delete("search");
-    } else {
-      searchParams.set("search", newSearchTerm);
-    }
-
-    setSearchParams(searchParams);
-  }
-
-  function changePage(activePage: number) {
-    setPage(activePage);
-    searchParams.set("page", activePage.toString());
-    setSearchParams(searchParams);
-  }
 }
 
 export default BrowseTopics;

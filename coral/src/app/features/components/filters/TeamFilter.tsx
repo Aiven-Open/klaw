@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { getTeams } from "src/domain/team/team-api";
 
-function TeamFilter() {
+function TeamFilter({ filterByName = false }: { filterByName?: boolean }) {
   const { data: topicTeams } = useQuery(["topic-get-teams"], {
     queryFn: () => getTeams(),
   });
@@ -29,7 +29,10 @@ function TeamFilter() {
           All teams
         </Option>
         {topicTeams.map((team) => (
-          <Option key={team.teamId} value={team.teamId}>
+          <Option
+            key={team.teamId}
+            value={filterByName ? team.teamname : team.teamId}
+          >
             {team.teamname}
           </Option>
         ))}
