@@ -101,7 +101,6 @@ a:focus-visible {
 :root label span {
   /*represents body-small*/
   font-size: 12px !important;
-  font-weight: 600 !important;
 }
 
 /*Applies color only to label text that is not in error state*/
@@ -132,5 +131,4 @@ a:focus-visible {
 /* from table cells font */
 :root thead > tr > th {
   color: black !important;
-  font-weight: 600;
 }
