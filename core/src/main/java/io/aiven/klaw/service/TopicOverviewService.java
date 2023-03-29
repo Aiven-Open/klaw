@@ -133,6 +133,7 @@ public class TopicOverviewService extends BaseOverviewService {
     List<Acl> allPrefixedAcls;
     List<AclInfo> tmpAclPrefixed;
     List<AclInfo> tmpAcl;
+    boolean ownsTopic = topicOwnerTeamId == loggedInUserTeam;
     for (TopicInfo topicInfo : topicInfoList) {
       aclsFromSOT.addAll(getAclsFromSOT(topicInfo.getEnvId(), topicNameSearch, false, tenantId));
 
