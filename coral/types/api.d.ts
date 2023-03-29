@@ -802,6 +802,7 @@ export type components = {
       protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
       clusterType: string;
       kafkaFlavor: string;
+      associatedServers?: string;
       projectName?: string;
       serviceName?: string;
       publicKey?: string;
@@ -809,6 +810,11 @@ export type components = {
       clusterStatus?: string;
       totalNoPages?: string;
       allPageNos?: (string)[];
+    };
+    ServiceAccounts: {
+      /** Format: int32 */
+      numberOfAllowedAccounts?: number;
+      serviceAccountsList?: (string)[];
     };
     TeamModelResponse: {
       teamname: string;
@@ -820,6 +826,7 @@ export type components = {
       tenantId: number;
       showDeleteTeam: boolean;
       tenantName: string;
+      serviceAccounts?: components["schemas"]["ServiceAccounts"];
       app?: string;
       teammail?: string;
       envList?: (string)[];
@@ -957,7 +964,7 @@ export type components = {
       defaultReplicationFactor?: string;
       maxReplicationFactor?: string;
       /** @enum {string} */
-      clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT" | "KAFKA_REST_API";
+      clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
     };
     AclInfo: {
       sequence?: string;
@@ -3496,6 +3503,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         topic?: string;
         env?: string;
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         aclType?: "PRODUCER" | "CONSUMER";
       };
     };
