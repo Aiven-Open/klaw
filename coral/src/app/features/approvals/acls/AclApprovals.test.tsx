@@ -376,6 +376,31 @@ describe("AclApprovals", () => {
       );
     });
 
+    it("filters by Request type", async () => {
+      const select = screen.getByLabelText("Filter by request type");
+
+      const option = within(select).getByRole("option", {
+        name: "Create",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("Create");
+
+      await waitFor(() =>
+        expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          aclType: "ALL",
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          topic: "",
+          operationType: "CREATE",
+        })
+      );
+    });
+
     it("filters by several fields", async () => {
       const select = screen.getByLabelText("Filter by ACL type");
       const option = within(select).getByRole("option", {
