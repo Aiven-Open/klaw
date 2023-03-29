@@ -26,6 +26,7 @@ import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
@@ -360,7 +361,14 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedAclRequestsByStatus(
-            anyString(), anyString(), anyBoolean(), any(), any(), any(), anyInt()))
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            eq(RequestOperationType.CREATE),
+            any(),
+            any(),
+            any(),
+            anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -370,7 +378,14 @@ public class AclControllerServiceTest {
 
     List<AclRequestsResponseModel> listReqs =
         aclControllerService.getAclRequestsForApprover(
-            "", "", "", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
+            "",
+            "",
+            "",
+            null,
+            null,
+            RequestOperationType.CREATE,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 
@@ -381,7 +396,14 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedAclRequestsByStatus(
-            anyString(), anyString(), anyBoolean(), any(), any(), any(), anyInt()))
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            eq(RequestOperationType.CREATE),
+            any(),
+            any(),
+            any(),
+            anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -392,7 +414,14 @@ public class AclControllerServiceTest {
 
     List<AclRequestsResponseModel> listReqs =
         aclControllerService.getAclRequestsForApprover(
-            "", "", "", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
+            "",
+            "",
+            "",
+            null,
+            null,
+            RequestOperationType.CREATE,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
     assertThat(listReqs.size()).isEqualTo(10);
   }
 

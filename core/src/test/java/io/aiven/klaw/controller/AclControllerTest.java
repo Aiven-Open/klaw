@@ -14,6 +14,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.service.AclControllerService;
@@ -138,6 +139,7 @@ public class AclControllerTest {
             "created",
             null,
             null,
+            RequestOperationType.CREATE,
             null,
             io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME))
         .thenReturn(aclRequests);
@@ -146,6 +148,7 @@ public class AclControllerTest {
         .perform(
             MockMvcRequestBuilders.get("/getAclRequestsForApprover")
                 .param("pageNo", "1")
+                .param("operationType", "CREATE")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
