@@ -97,12 +97,6 @@ a:focus-visible {
   outline-offset: 0 !important;
 }
 
-/*Applies styles to all label text*/
-:root label span {
-  /*represents body-small*/
-  font-size: 12px !important;
-}
-
 /*Applies color only to label text that is not in error state*/
 :root label span:not([class*="error"]) {
   /*represents grey-70 */
