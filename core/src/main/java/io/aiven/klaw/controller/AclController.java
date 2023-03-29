@@ -100,6 +100,8 @@ public class AclController {
    * @param aclType The Type of acl Consumer/Producer
    * @param order allows the requestor to specify what order the pagination should be returned in
    *     OLDEST_FIRST/NEWEST_FIRST
+   * @param requestOperationType The type of the request operation
+   *     Create/Update/Promote/Claim/Delete
    * @return An array of AclRequests that met the criteria of the inputted values.
    */
   /*
@@ -116,11 +118,20 @@ public class AclController {
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "aclType", required = false) AclType aclType,
+      @RequestParam(value = "operationType", required = false)
+          RequestOperationType requestOperationType,
       @RequestParam(value = "order", required = false, defaultValue = "ASC_REQUESTED_TIME")
           Order order) {
     return new ResponseEntity<>(
         aclControllerService.getAclRequestsForApprover(
-            pageNo, currentPage, requestStatus.value, topic, env, aclType, order),
+            pageNo,
+            currentPage,
+            requestStatus.value,
+            topic,
+            env,
+            requestOperationType,
+            aclType,
+            order),
         HttpStatus.OK);
   }
 

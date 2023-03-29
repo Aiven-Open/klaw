@@ -144,6 +144,7 @@ public interface HandleDbRequests {
       String requestor,
       String status,
       boolean showRequestsOfAllTeams,
+      RequestOperationType requestOperationType,
       String topic,
       String environment,
       AclType aclType,
