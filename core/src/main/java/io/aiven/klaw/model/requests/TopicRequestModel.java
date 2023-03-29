@@ -27,9 +27,7 @@ public class TopicRequestModel extends BaseRequestModel implements Serializable 
   @Min(value = 1, message = "Replication factor must be greater than zero")
   private String replicationfactor;
 
-  @NotNull
-  @Pattern(message = "Invalid description", regexp = "^[a-zA-Z 0-9_.,-]{3,}$")
-  private String description;
+  @NotNull private String description;
 
   private List<TopicConfigEntry> advancedTopicConfigEntries;
 

@@ -13,11 +13,11 @@ public interface TopicRepo extends CrudRepository<Topic, TopicID> {
 
   List<Topic> findAllByTenantId(int tenantId);
 
+  List<Topic> findAllByTenantIdAndTopicnameIn(int tenantId, List<String> topicsNamesList);
+
   List<Topic> findAllByEnvironmentAndTenantId(String env, int tenantId);
 
   List<Topic> findAllByTeamIdAndTenantId(Integer teamId, int tenantId);
-
-  List<Topic> findAllByEnvironmentAndTeamIdAndTenantId(String env, Integer teamId, int tenantId);
 
   List<Topic> findAllByTopicnameAndTenantId(String topicName, int tenantId);
 
@@ -87,4 +87,19 @@ public interface TopicRepo extends CrudRepository<Topic, TopicID> {
 
   @Query(value = "select max(topicid) from kwtopics where tenantid = :tenantId", nativeQuery = true)
   Integer getNextTopicRequestId(@Param("tenantId") Integer tenantId);
+
+  @Query(
+      value = "select topicname from kwtopics where env = :envId and tenantid = :tenantId",
+      nativeQuery = true)
+  List<String> findAllTopicNamesForEnv(
+      @Param("envId") String envId, @Param("tenantId") Integer tenantId);
+
+  @Query(
+      value =
+          "select topicname from kwtopics where env = :envId and teamid = :teamId and tenantid = :tenantId",
+      nativeQuery = true)
+  List<String> findAllTopicNamesForEnvAndTeam(
+      @Param("envId") String envId,
+      @Param("teamId") Integer teamId,
+      @Param("tenantId") Integer tenantId);
 }

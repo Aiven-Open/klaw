@@ -5128,8 +5128,7 @@
             "type" : "string"
           },
           "description" : {
-            "type" : "string",
-            "pattern" : "^[a-zA-Z 0-9_.,-]{3,}$"
+            "type" : "string"
           },
           "advancedTopicConfigEntries" : {
             "type" : "array",
@@ -5678,8 +5677,7 @@
             "type" : "string"
           },
           "description" : {
-            "type" : "string",
-            "pattern" : "^[a-zA-Z 0-9_.,-]{3,}$"
+            "type" : "string"
           },
           "advancedTopicConfigEntries" : {
             "type" : "array",

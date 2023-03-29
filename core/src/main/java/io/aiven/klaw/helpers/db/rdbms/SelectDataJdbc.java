@@ -372,13 +372,15 @@ public class SelectDataJdbc {
       if (env == null || env.equals("ALL")) {
         return topicRepo.findAllByTenantId(tenantId);
       } else {
-        return topicRepo.findAllByEnvironmentAndTenantId(env, tenantId);
+        List<String> topics = topicRepo.findAllTopicNamesForEnv(env, tenantId);
+        return topicRepo.findAllByTenantIdAndTopicnameIn(tenantId, topics);
       }
     } else {
       if ("ALL".equals(env)) {
         return topicRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
       } else {
-        return topicRepo.findAllByEnvironmentAndTeamIdAndTenantId(env, teamId, tenantId);
+        List<String> topics = topicRepo.findAllTopicNamesForEnvAndTeam(env, teamId, tenantId);
+        return topicRepo.findAllByTenantIdAndTopicnameIn(tenantId, topics);
       }
     }
   }
