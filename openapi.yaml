@@ -4835,6 +4835,14 @@
             "type" : "string"
           }
         }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+          }
+        }, {
           "name" : "aclType",
           "in" : "query",
           "required" : false,
@@ -5905,6 +5913,21 @@
         },
         "required" : [ "bootstrapServers", "clusterName", "clusterType", "kafkaFlavor", "protocol" ]
       },
+      "ServiceAccounts" : {
+        "properties" : {
+          "numberOfAllowedAccounts" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "serviceAccountsList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          }
+        }
+      },
       "TeamModelResponse" : {
         "properties" : {
           "teamname" : {
@@ -5929,6 +5952,9 @@
           },
           "tenantName" : {
             "type" : "string"
+          },
+          "serviceAccounts" : {
+            "$ref" : "#/components/schemas/ServiceAccounts"
           },
           "app" : {
             "type" : "string"

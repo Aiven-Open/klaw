@@ -89,6 +89,8 @@ public class AclController {
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param aclType The Type of acl Consumer/Producer
+   * @param requestOperationType The type of the request operation
+   *     Create/Update/Promote/Claim/Delete
    * @return An array of AclRequests that met the criteria of the inputted values.
    */
   /*
@@ -104,10 +106,12 @@ public class AclController {
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "operationType", required = false)
+          RequestOperationType requestOperationType,
       @RequestParam(value = "aclType", required = false) AclType aclType) {
     return new ResponseEntity<>(
         aclControllerService.getAclRequestsForApprover(
-            pageNo, currentPage, requestStatus.value, topic, env, aclType),
+            pageNo, currentPage, requestStatus.value, topic, env, requestOperationType, aclType),
         HttpStatus.OK);
   }
 

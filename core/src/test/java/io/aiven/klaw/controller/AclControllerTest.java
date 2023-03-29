@@ -14,6 +14,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.service.AclControllerService;
@@ -122,13 +123,15 @@ public class AclControllerTest {
 
     List<AclRequestsResponseModel> aclRequests = utilMethods.getAclRequestsList();
 
-    when(aclControllerService.getAclRequestsForApprover("1", "", "created", null, null, null))
+    when(aclControllerService.getAclRequestsForApprover(
+            "1", "", "created", null, null, RequestOperationType.CREATE, null))
         .thenReturn(aclRequests);
 
     mvcAcls
         .perform(
             MockMvcRequestBuilders.get("/getAclRequestsForApprover")
                 .param("pageNo", "1")
+                .param("operationType", "CREATE")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
