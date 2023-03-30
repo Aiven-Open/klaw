@@ -642,7 +642,8 @@ public class UtilControllerService {
         .forEach(
             k -> {
               String providerName = k.substring(0, k.indexOf("."));
-              ssoProviders.put(providerName, registration.get(providerName + IMAGE_URI));
+              String imageUri = registration.get(providerName + IMAGE_URI);
+              ssoProviders.put(providerName, imageUri == null ? "" : imageUri);
             });
 
     return ssoProviders;
