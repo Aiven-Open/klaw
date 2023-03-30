@@ -240,7 +240,7 @@ describe("TopicApprovals", () => {
 
       expect(search).toBeVisible();
       expect(search).toHaveAccessibleDescription(
-        'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
       );
     });
 
