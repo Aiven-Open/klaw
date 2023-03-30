@@ -36,9 +36,6 @@ public class SecurityConfigSSO {
   @Value("${klaw.coral.enabled:false}")
   private boolean coralEnabled;
 
-  @Value("${klaw.sso.provider.keycloak.legacy:false}")
-  private boolean keycloakLegacy;
-
   @Autowired KwAuthenticationSuccessHandler kwAuthenticationSuccessHandler;
 
   @Autowired KwAuthenticationFailureHandler kwAuthenticationFailureHandler;
