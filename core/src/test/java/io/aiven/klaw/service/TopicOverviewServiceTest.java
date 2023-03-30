@@ -259,8 +259,8 @@ public class TopicOverviewServiceTest {
     assertThat(aclList.get(0).getTopicname()).isEqualTo(TESTTOPIC);
     assertThat(aclList.get(0).getConsumergroup()).isEqualTo("mygrp1");
     // MASKED DATA
-    assertThat(aclList.get(0).getAcl_ip()).isEqualTo("Available to Owning Team Only");
-    assertThat(aclList.get(0).getAcl_ssl()).isEqualTo("Available to Owning Team Only");
+    assertThat(aclList.get(0).getAcl_ip()).isEqualTo("Not Authorized to see this.");
+    assertThat(aclList.get(0).getAcl_ssl()).isEqualTo("Not Authorized to see this.");
   }
 
   private Topic createTopic(String topicName) {

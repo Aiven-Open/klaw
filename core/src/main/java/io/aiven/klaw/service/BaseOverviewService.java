@@ -35,7 +35,7 @@ public abstract class BaseOverviewService {
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
-  public static final String MASKED_FOR_SECURITY = "Available to Owning Team Only";
+  public static final String MASKED_FOR_SECURITY = "Not Authorized to see this.";
   @Autowired protected ManageDatabase manageDatabase;
   @Autowired protected ClusterApiService clusterApiService;
   @Autowired protected CommonUtilsService commonUtilsService;
