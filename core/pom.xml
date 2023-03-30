@@ -266,7 +266,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true -Dserver.port=8097</jvmArguments>
+                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true </jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
