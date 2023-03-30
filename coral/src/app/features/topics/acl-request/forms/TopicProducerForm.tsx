@@ -149,7 +149,6 @@ const TopicProducerForm = ({
               name="aclPatternType"
               labelText="Topic pattern type"
               disabled={topicNames.length === 0 || isAivenCluster}
-              required
             >
               <BaseRadioButton value="LITERAL">Literal</BaseRadioButton>
               <BaseRadioButton value="PREFIXED">Prefixed</BaseRadioButton>
