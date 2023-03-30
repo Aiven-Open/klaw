@@ -55,11 +55,13 @@ class CustomJwtDecoder implements JwtDecoder {
       Map<String, Object> claims;
       if (parsedJwt instanceof SignedJWT) {
         claims = getJWTClaimsSet(parsedJwt).getClaims();
-      } else claims = parsedJwt.getJWTClaimsSet().getClaims();
+      } else {
+        claims = parsedJwt.getJWTClaimsSet().getClaims();
+      }
 
       for (String key : claims.keySet()) {
         Object value = claims.get(key);
-        if (key.equals("exp") || key.equals("iat")) {
+        if ((key.equals("exp") || key.equals("iat")) && (value instanceof Date)) {
           value = ((Date) value).toInstant();
         }
         claimsMap.put(key, value);
@@ -80,9 +82,7 @@ class CustomJwtDecoder implements JwtDecoder {
 
   public JWTClaimsSet getJWTClaimsSet(JWT parsedJwt) throws ParseException {
     Payload payload = new Payload(parsedJwt.getParsedParts()[1]);
-    log.info("Payload before : {}", payload);
     Map<String, Object> json = toJSONObject(payload);
-    log.info("Payload after : {}", json);
     if (json == null) {
       log.error("Payload of JWS object is not a valid JSON object");
       throw new ParseException("Payload of JWS object is not a valid JSON object", 0);
