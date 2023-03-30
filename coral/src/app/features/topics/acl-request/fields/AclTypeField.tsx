@@ -14,7 +14,6 @@ const AclTypeField = ({ handleChange, aclType }: AclTypeFieldProps) => (
     labelText="ACL type"
     name="aclType"
     onChange={(value) => handleChange(value as AclType)}
-    required
   >
     <BaseRadioButton value={"PRODUCER"} checked={aclType === "PRODUCER"}>
       Producer
