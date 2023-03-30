@@ -1,0 +1,126 @@
+# ℹ️
+# This workflow runs for pull_requests that are base on main
+# if there is a change in the file `openapi.yaml`
+# but only when opening a PR with changes to the file
+# of if a commit is added to a PR with changes to the file
+#
+#    - 1. it runs the coral setup
+#    - 2. auto generates the file `coral/types/api.t.ds` from the `openapi.yaml`
+#    - 3. checks if the file file `coral/types/api.t.ds` was changed
+#       - if not: ends the workflow ✅
+#       - if yes:
+#         - 3.1 runs the typescript compiler in 'coral/'
+#         - 3.2 runs the frontend tests in 'coral/'
+#           - if 3.1. and 3.2. are successful
+#              -> adds the file `coral/types/api.t.ds` as new commit  ✅
+#           - if 3.1. or 3.2. fail
+#             -> fails the workflow ⛔️
+
+
+# This workflow ensures that our type definition for APIs are always in
+# sync and that API changes don't break things in coral.
+
+name: Auto-generate TypeScript api file
+
+on:
+  pull_request:
+    paths:
+      - 'openapi.yaml'
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  check-for-changes-openapi:
+    runs-on: ubuntu-latest
+    outputs:
+      change_detected: ${{ steps.detect-openapi-changes.outputs.change_detected }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - id: detect-openapi-changes
+        name: Check for changes to "openapi.yaml"
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q 'openapi.yaml'; then
+            echo "OpenAPI changes detected. Will generate new TypeScript types now 🤖"
+            echo "change_detected=true" >> $GITHUB_OUTPUT
+          else
+            echo "No new changes to OpenAPI detected, will end workflow."     
+          fi
+
+  detect-ts-changes:
+    runs-on: ubuntu-latest
+    needs: check-for-changes-openapi
+    if: needs.check-for-changes-openapi.outputs.change_detected == 'true'
+    outputs:
+      types_changed: ${{ steps.detect-ts-changes.outputs.types_changed }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup coral
+        uses: ./.github/actions/setup-coral
+
+      - name: Generate files
+        working-directory: ./coral
+        run: pnpm extract-api-types
+
+      - id: detect-ts-changes
+        name: Check for changes to "coral/types/api.d.ts"
+        run: |
+          git add .
+          if git diff --name-only --cached | grep -q 'coral/types/api.d.ts'; then
+            echo "TS changes detected. Will run checks and if successful commit changes 🤖"
+            echo "types_changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No new changes to TS types detected, will end workflow."     
+          fi
+
+  check-and-commit-typescript-changes:
+    runs-on: ubuntu-latest
+    needs: detect-ts-changes
+    if: needs.detect-ts-changes.outputs.types_changed == 'true'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup coral
+        uses: ./.github/actions/setup-coral
+
+      - name: Generate files
+        working-directory: ./coral
+        run: pnpm extract-api-types
+
+      - name: Run TypeScript compiler
+        working-directory: ./coral
+        run: pnpm tsc
+
+      - name: Run Frontend tests
+        working-directory: ./coral
+        run: pnpm test
+
+      - name: Add changed file
+        run: |
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"    
+          git add .
+          git commit -m "🤖 Auto-update API types for TypeScript usage"
+          git push

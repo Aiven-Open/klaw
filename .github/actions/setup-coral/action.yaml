@@ -1,6 +1,8 @@
 name: Coral setup and install dependencies
-description: This action installs node and pnpm in the correct version. It installs all needed dependencies and 
-  handles the pnpm store for caching. Node version and pnpm version should not be changed.
+description:
+  This action installs node and pnpm in the correct version. 
+  It installs all needed dependencies and handles the pnpm store for caching. 
+  Node version and pnpm version should not be changed.
 
 inputs:
   NODE_VERSION:
