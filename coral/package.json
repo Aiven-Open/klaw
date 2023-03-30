@@ -6,6 +6,8 @@
   "main": "",
   "license": "Apache-2.0",
   "engines": {
+    "node": "18",
+    "pnpm": "7",
     "yarn": "❗Please use pnpm to assure a consistent package management.",
     "npm": "❗Please use pnpm to assure a consistent package management."
   },
