@@ -43,7 +43,7 @@ describe("SchemaRequest", () => {
     pageNo: "1",
     operationType: undefined,
     requestStatus: undefined,
-    topic: "",
+    search: "",
     isMyRequest: false,
   };
 
@@ -503,7 +503,7 @@ describe("SchemaRequest", () => {
     it("populates the filter from the url search parameters", () => {
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(1, {
         ...defaultApiParams,
-        topic: "TEST_SEARCH_VALUE",
+        search: "TEST_SEARCH_VALUE",
       });
     });
 
@@ -518,7 +518,7 @@ describe("SchemaRequest", () => {
       await waitFor(() => {
         expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
           ...defaultApiParams,
-          topic: "myNiceTopic",
+          search: "myNiceTopic",
         });
       });
     });

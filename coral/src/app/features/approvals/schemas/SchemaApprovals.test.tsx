@@ -109,7 +109,7 @@ describe("SchemaApprovals", () => {
     pageNo: "1",
     requestStatus: "CREATED",
     env: "ALL",
-    topic: "",
+    search: "",
   };
   beforeAll(() => {
     mockIntersectionObserver();
@@ -577,7 +577,7 @@ describe("SchemaApprovals", () => {
       await waitFor(() => {
         expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
           ...defaultApiParams,
-          topic: "myTopic",
+          search: "myTopic",
         });
       });
     });

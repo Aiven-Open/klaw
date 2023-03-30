@@ -66,7 +66,7 @@ function SchemaApprovals() {
         requestStatus: status,
         pageNo: currentPage.toString(),
         env: environment,
-        topic,
+        search: topic,
       }),
     keepPreviousData: true,
   });

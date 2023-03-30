@@ -52,8 +52,7 @@ function TopicRequests() {
     queryFn: () =>
       getTopicRequests({
         pageNo: String(currentPage),
-        // search is not yet implemented as a param to getTopicRequests
-        // search: topic,
+        search: topic,
         env: environment,
         requestStatus: status,
         isMyRequest: showOnlyMyRequests,

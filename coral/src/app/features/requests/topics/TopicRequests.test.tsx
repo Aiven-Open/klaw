@@ -100,11 +100,11 @@ describe("TopicRequests", () => {
       customRender(<TopicRequests />, {
         queryClient: true,
         memoryRouter: true,
-        customRoutePath: "/?topic=abc",
+        customRoutePath: "/?topic=",
       });
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        // search: "abc",
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
@@ -125,7 +125,7 @@ describe("TopicRequests", () => {
       await waitFor(() => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          // search: "abc",
+          search: "abc",
           isMyRequest: false,
           requestStatus: "ALL",
           env: "ALL",
@@ -149,7 +149,7 @@ describe("TopicRequests", () => {
       expect(getTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         isMyRequest: true,
-        search: undefined,
+        search: "",
         requestStatus: "ALL",
         env: "ALL",
       });
@@ -168,7 +168,7 @@ describe("TopicRequests", () => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
           isMyRequest: true,
-          search: undefined,
+          search: "",
           requestStatus: "ALL",
           env: "ALL",
         });
@@ -189,7 +189,7 @@ describe("TopicRequests", () => {
         expect(getTopicRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
           isMyRequest: false,
-          search: undefined,
+          search: "",
           requestStatus: "ALL",
           env: "ALL",
         });
@@ -225,7 +225,7 @@ describe("TopicRequests", () => {
 
       expect(mockGetTopicRequests).toHaveBeenCalledWith({
         pageNo: "100",
-        search: undefined,
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
@@ -242,7 +242,7 @@ describe("TopicRequests", () => {
 
       expect(mockGetTopicRequests).toHaveBeenCalledWith({
         pageNo: "1",
-        search: undefined,
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
@@ -352,7 +352,7 @@ describe("TopicRequests", () => {
 
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
-        search: undefined,
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
@@ -383,7 +383,7 @@ describe("TopicRequests", () => {
     it("populates the filter from the url search parameters", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        search: undefined,
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
@@ -402,7 +402,7 @@ describe("TopicRequests", () => {
 
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
-        search: undefined,
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: mockedEnvironmentResponse[0].id,
@@ -435,7 +435,7 @@ describe("TopicRequests", () => {
     it("populates the filter from the url search parameters", () => {
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        search: undefined,
+        search: "",
         isMyRequest: false,
         requestStatus: "TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
         env: "ALL",
@@ -455,7 +455,7 @@ describe("TopicRequests", () => {
 
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
-        search: undefined,
+        search: "",
         isMyRequest: false,
         requestStatus: newStatus,
         env: "ALL",
@@ -597,7 +597,7 @@ describe("TopicRequests", () => {
       mockDeleteTopicRequest.mockResolvedValue([{ result: "success" }]);
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        // search: "abc",
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
@@ -623,7 +623,7 @@ describe("TopicRequests", () => {
       await waitForElementToBeRemoved(modal);
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
-        // search: "abc",
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
@@ -635,7 +635,7 @@ describe("TopicRequests", () => {
       mockDeleteTopicRequest.mockRejectedValue({ message: "OH NO" });
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        // search: "abc",
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
@@ -670,7 +670,7 @@ describe("TopicRequests", () => {
       mockDeleteTopicRequest.mockRejectedValue("OH NO");
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        // search: "abc",
+        search: "",
         isMyRequest: false,
         requestStatus: "ALL",
         env: "ALL",
@@ -733,6 +733,7 @@ describe("TopicRequests", () => {
         operationType: "DELETE",
         requestStatus: "ALL",
         env: "ALL",
+        search: "",
       });
     });
 
@@ -753,6 +754,7 @@ describe("TopicRequests", () => {
         requestStatus: "ALL",
         operationType: newType,
         env: "ALL",
+        search: "",
       });
     });
   });
