@@ -198,6 +198,9 @@ function TopicApprovals() {
       onDecline={handleDeclineRequest}
       isBeingDeclined={handleIsBeingDeclined}
       isBeingApproved={handleIsBeingApproved}
+      ariaLabel={`Topic approval requests, page ${
+        topicRequests?.currentPage ?? 0
+      } of ${topicRequests?.totalPages ?? 0}`}
     />
   );
   const pagination =

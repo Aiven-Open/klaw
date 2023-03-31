@@ -234,14 +234,15 @@ function AclApprovals() {
         table={
           <AclApprovalsTable
             aclRequests={data?.entries ?? []}
-            activePage={data?.currentPage ?? 1}
-            totalPages={data?.totalPages ?? 1}
             actionsDisabled={approveIsLoading || declineIsLoading}
             onDetails={handleViewRequest}
             onApprove={handleApproveRequest}
             onDecline={handleDeclineRequest}
             isBeingDeclined={handleIsBeingDeclined}
             isBeingApproved={handleIsBeingApproved}
+            ariaLabel={`ACL approval requests, page ${
+              data?.currentPage ?? 0
+            } of ${data?.totalPages ?? 0}`}
           />
         }
         pagination={pagination}

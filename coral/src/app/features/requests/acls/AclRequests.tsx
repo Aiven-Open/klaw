@@ -181,6 +181,9 @@ function AclRequests() {
             requests={data?.entries ?? []}
             onDetails={openDetailsModal}
             onDelete={openDeleteModal}
+            ariaLabel={`ACL requests, page ${data?.currentPage ?? 0} of ${
+              data?.totalPages ?? 0
+            }`}
           />
         }
         pagination={pagination}

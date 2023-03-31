@@ -166,6 +166,9 @@ function TopicRequests() {
             requests={data?.entries ?? []}
             onDetails={handleDetails}
             onDelete={handleDeleteRequest}
+            ariaLabel={`Topic requests, page ${data?.currentPage ?? 0} of ${
+              data?.totalPages ?? 0
+            }`}
           />
         }
         pagination={pagination}

@@ -82,7 +82,7 @@ describe("BrowseTopics.tsx", () => {
 
     it("renders the topic table with information about the pages", async () => {
       const table = screen.getByRole("table", {
-        name: `Topics overview`,
+        name: "Topics overview, page 1 of 1",
       });
 
       expect(table).toBeVisible();
@@ -90,7 +90,7 @@ describe("BrowseTopics.tsx", () => {
 
     it("shows topic names row headers", () => {
       const table = screen.getByRole("table", {
-        name: "Topics overview",
+        name: "Topics overview, page 1 of 1",
       });
 
       const rowHeader = within(table).getByRole("cell", {

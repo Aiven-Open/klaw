@@ -27,12 +27,14 @@ type TopicRequestsTableProps = {
   requests: TopicRequest[];
   onDetails: (topicId: number) => void;
   onDelete: (topicId: number) => void;
+  ariaLabel: string;
 };
 
 function TopicRequestsTable({
   requests,
   onDetails,
   onDelete,
+  ariaLabel,
 }: TopicRequestsTableProps) {
   const columns: Array<DataTableColumn<TopicRequestTableRow>> = [
     { type: "text", field: "topicname", headerName: "Topic" },
@@ -128,7 +130,7 @@ function TopicRequestsTable({
 
   return (
     <DataTable
-      ariaLabel={"Topic requests"}
+      ariaLabel={ariaLabel}
       columns={columns}
       rows={rows}
       noWrap={false}
