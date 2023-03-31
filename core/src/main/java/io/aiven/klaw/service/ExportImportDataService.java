@@ -8,7 +8,6 @@ import io.aiven.klaw.dao.metadata.KwAdminConfig;
 import io.aiven.klaw.dao.metadata.KwData;
 import io.aiven.klaw.dao.metadata.KwRequests;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -83,7 +82,7 @@ public class ExportImportDataService {
   }
 
   // tenants, clusters, environments, roles, permissions, teams, users, properties
-  private KwAdminConfig getAdminConfig(HandleDbRequests handleDbRequests) {
+  public KwAdminConfig getAdminConfig(HandleDbRequests handleDbRequests) {
     log.info(
         "Selecting Kw Admin Config (tenants, clusters, environments, roles, permissions, teams, users, properties) --- STARTED");
     List<UserInfo> userList = getUpdatedUserList(handleDbRequests.selectAllUsersAllTenants());
@@ -114,7 +113,7 @@ public class ExportImportDataService {
   }
 
   // Get core configuration of topics, acls, schemas, connectors
-  private KwData getKwData(HandleDbRequests handleDbRequests) {
+  public KwData getKwData(HandleDbRequests handleDbRequests) {
     log.info("Selecting Kw Data (topics, acls, schemas, connectors) --- STARTED");
     KwData kwMetadata =
         KwData.builder()
@@ -128,7 +127,7 @@ public class ExportImportDataService {
   }
 
   // Get requests data and activity log
-  private KwRequests getRequestsData(HandleDbRequests handleDbRequests) {
+  public KwRequests getRequestsData(HandleDbRequests handleDbRequests) {
     log.info(
         "Selecting Kw Requests Data (topic, subscription, schema and connector requests, activity log)--- STARTED");
     KwRequests kwMetadata =

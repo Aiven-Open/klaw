@@ -163,6 +163,27 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
+  public List<Topic> getMultipleTopics(String topicPrefix, int size) {
+    List<Topic> listTopics = new ArrayList<>();
+    Topic t;
+
+    for (int i = 0; i < size; i++) {
+      t = new Topic();
+
+      if (i % 2 == 0) t.setTeamId(1);
+      else t.setTeamId(2);
+
+      t.setTopicname(topicPrefix + i);
+      t.setTopicid(i);
+      t.setEnvironment("1");
+      t.setTeamId(101);
+      t.setEnvironmentsList(new ArrayList<>());
+
+      listTopics.add(t);
+    }
+    return listTopics;
+  }
+
   public List<Acl> getAcls() {
     List<Acl> allTopicReqs = new ArrayList<>();
     Acl topicRequest = new Acl();
