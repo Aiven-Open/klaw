@@ -277,6 +277,14 @@ describe("AclApprovals", () => {
       expect(select).toHaveDisplayValue("All ACL types");
     });
 
+    it("renders a select to filter by request type with default", () => {
+      const select = screen.getByRole("combobox", {
+        name: "Filter by request type",
+      });
+      expect(select).toBeVisible();
+      expect(select).toHaveDisplayValue("All request types");
+    });
+
     it("renders a select to filter by environment with default", () => {
       const search = screen.getByRole("search");
 
@@ -376,6 +384,31 @@ describe("AclApprovals", () => {
       );
     });
 
+    it("filters by Request type", async () => {
+      const select = screen.getByLabelText("Filter by request type");
+
+      const option = within(select).getByRole("option", {
+        name: "Create",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("Create");
+
+      await waitFor(() =>
+        expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          aclType: "ALL",
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          topic: "",
+          operationType: "CREATE",
+        })
+      );
+    });
+
     it("filters by several fields", async () => {
       const select = screen.getByLabelText("Filter by ACL type");
       const option = within(select).getByRole("option", {
@@ -397,6 +430,45 @@ describe("AclApprovals", () => {
           pageNo: "1",
           requestStatus: "CREATED",
           topic: "topicname",
+        })
+      );
+    });
+  });
+
+  describe("handles default filtering from URL search params", () => {
+    beforeEach(async () => {
+      mockGetAclRequestsForApprover.mockResolvedValue(
+        mockGetAclRequestsForApproverResponse
+      );
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+
+      customRender(<AclApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?requestType=DELETE",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("filters from value in URL search params", async () => {
+      const select = screen.getByLabelText("Filter by request type");
+
+      expect(select).toHaveValue("DELETE");
+
+      await waitFor(() =>
+        expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          aclType: "ALL",
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          topic: "",
+          operationType: "DELETE",
         })
       );
     });

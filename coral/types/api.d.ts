@@ -3511,6 +3511,7 @@ export type operations = {
         topic?: string;
         env?: string;
         aclType?: "PRODUCER" | "CONSUMER";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
