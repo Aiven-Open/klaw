@@ -940,8 +940,8 @@ public class EnvsClustersTenantsControllerService {
       throws KlawValidationException {
     // only assignable on a schema registry
     if (KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
-      //      EnvTag existingTag = getKafkaAssociation(null, id, tenantId);
-      if (envTag != null) {
+      log.info("Env Tag supplied = ", envTag);
+      if (envTag != null && !envTag.getId().isEmpty()) {
 
         associateWithKafkaEnv(envTag, envId, envName, tenantId);
         // remove existing association if it exists
