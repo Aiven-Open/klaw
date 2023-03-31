@@ -527,7 +527,12 @@ public class CommonUtilsService {
         kafkaEnvsList.stream()
             .filter(env -> env.getId().equals(kafkaEnvId))
             .findFirst()
-            .ifPresent(env -> orderOfSchemaEnvs.append(env.getAssociatedEnv().getId()).append(","));
+            .ifPresent(
+                env -> {
+                  if (env.getAssociatedEnv() != null) {
+                    orderOfSchemaEnvs.append(env.getAssociatedEnv().getId()).append(",");
+                  }
+                });
       }
     }
 
