@@ -27,12 +27,14 @@ type SchemaRequestTableProps = {
   requests: SchemaRequest[];
   showDetails: (req_no: number) => void;
   showDeleteDialog: (req_no: number) => void;
+  ariaLabel: string;
 };
 
 function SchemaRequestTable({
   requests,
   showDetails,
   showDeleteDialog,
+  ariaLabel,
 }: SchemaRequestTableProps) {
   const columns: Array<DataTableColumn<SchemaRequestTableRow>> = [
     { type: "text", field: "topic", headerName: "Topic" },
@@ -129,7 +131,7 @@ function SchemaRequestTable({
 
   return (
     <DataTable
-      ariaLabel={"Schema requests"}
+      ariaLabel={ariaLabel}
       columns={columns}
       rows={rows}
       noWrap={false}

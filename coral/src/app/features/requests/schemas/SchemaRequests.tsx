@@ -178,6 +178,9 @@ function SchemaRequests() {
             requests={schemaRequests?.entries || []}
             showDetails={openDetailsModal}
             showDeleteDialog={openDeleteModal}
+            ariaLabel={`Schema requests, page ${
+              schemaRequests?.currentPage ?? 0
+            } of ${schemaRequests?.totalPages ?? 0}`}
           />
         }
         pagination={pagination}

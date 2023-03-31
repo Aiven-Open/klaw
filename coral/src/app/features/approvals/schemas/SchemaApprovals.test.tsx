@@ -222,7 +222,9 @@ describe("SchemaApprovals", () => {
     });
 
     it("shows a table with all schema requests and a header row", () => {
-      const table = screen.getByRole("table", { name: "Schema requests" });
+      const table = screen.getByRole("table", {
+        name: "Schema approval requests, page 1 of 4",
+      });
       const rows = within(table).getAllByRole("row");
 
       expect(table).toBeVisible();

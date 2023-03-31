@@ -188,6 +188,9 @@ function SchemaApprovals() {
       onDecline={handleDeclineRequest}
       isBeingDeclined={handleIsBeingDeclined}
       isBeingApproved={handleIsBeingApproved}
+      ariaLabel={`Schema approval requests, page ${
+        schemaRequests?.currentPage ?? 0
+      } of ${schemaRequests?.totalPages ?? 0}`}
     />
   );
   const pagination =

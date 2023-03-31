@@ -16,7 +16,9 @@ describe("TopicTable.tsx", () => {
     afterAll(cleanup);
 
     it("show empty state when there is no data", () => {
-      render(<TopicTable topics={[]} />);
+      render(
+        <TopicTable topics={[]} ariaLabel={"Topics overview, page 0 of 0"} />
+      );
       expect(screen.getByRole("heading", { name: "No Topics" })).toBeVisible();
     });
   });
@@ -24,14 +26,19 @@ describe("TopicTable.tsx", () => {
   describe("shows all topics as a table", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(<TopicTable topics={mockedTopics} />);
+      render(
+        <TopicTable
+          topics={mockedTopics}
+          ariaLabel={"Topics overview, page 1 of 10"}
+        />
+      );
     });
 
     afterAll(cleanup);
 
     it("renders a topic table with information about pages", async () => {
       const table = screen.getByRole("table", {
-        name: "Topics overview",
+        name: "Topics overview, page 1 of 10",
       });
 
       expect(table).toBeVisible();
@@ -40,7 +47,7 @@ describe("TopicTable.tsx", () => {
     tableRowHeader.forEach((header) => {
       it(`renders a column header for ${header}`, () => {
         const table = screen.getByRole("table", {
-          name: "Topics overview",
+          name: "Topics overview, page 1 of 10",
         });
         const colHeader = within(table).getByRole("columnheader", {
           name: header,
@@ -53,7 +60,7 @@ describe("TopicTable.tsx", () => {
     mockedTopics.forEach((topic) => {
       it(`renders the topic name "${topic.topicName}" as a link to the detail view as row header`, () => {
         const table = screen.getByRole("table", {
-          name: "Topics overview",
+          name: "Topics overview, page 1 of 10",
         });
         const rowHeader = within(table).getByRole("cell", {
           name: topic.topicName,
@@ -72,7 +79,7 @@ describe("TopicTable.tsx", () => {
 
       it(`renders the team for ${topic.topicName} `, () => {
         const table = screen.getByRole("table", {
-          name: "Topics overview",
+          name: "Topics overview, page 1 of 10",
         });
         const row = within(table).getByRole("row", {
           name: new RegExp(`${topic.topicName}`, "i"),
@@ -84,7 +91,7 @@ describe("TopicTable.tsx", () => {
 
       it(`renders a list of Environments for topic ${topic}`, () => {
         const table = screen.getByRole("table", {
-          name: "Topics overview",
+          name: "Topics overview, page 1 of 10",
         });
         const row = within(table).getByRole("row", {
           name: new RegExp(`${topic.topicName}`, "i"),
@@ -99,7 +106,7 @@ describe("TopicTable.tsx", () => {
       topic.environmentsList.forEach((env) => {
         it(`renders Environment ${env} for topic ${topic}`, () => {
           const table = screen.getByRole("table", {
-            name: "Topics overview",
+            name: "Topics overview, page 1 of 10",
           });
           const row = within(table).getByRole("row", {
             name: new RegExp(`${topic.topicName}`, "i"),
@@ -117,9 +124,14 @@ describe("TopicTable.tsx", () => {
   describe("enables user to keyboard navigate from topic name to topic name", () => {
     beforeEach(() => {
       mockIntersectionObserver();
-      render(<TopicTable topics={mockedTopics} />);
+      render(
+        <TopicTable
+          topics={mockedTopics}
+          ariaLabel={"Topics overview, page 1 of 10"}
+        />
+      );
       const table = screen.getByRole("table", {
-        name: "Topics overview",
+        name: "Topics overview, page 1 of 10",
       });
       table.focus();
     });

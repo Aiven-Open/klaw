@@ -88,6 +88,7 @@ describe("AclRequestsTable", () => {
         requests={mockedRequests}
         onDetails={jest.fn()}
         onDelete={jest.fn()}
+        ariaLabel={"ACL requests, page 1 of 22"}
         {...props}
       />
     );

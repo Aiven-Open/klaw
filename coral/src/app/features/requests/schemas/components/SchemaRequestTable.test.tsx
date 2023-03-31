@@ -37,6 +37,7 @@ describe("SchemaRequestTable", () => {
           requests={[]}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
+          ariaLabel={"Schema requests, page 1 of 10"}
         />
       );
     });
@@ -57,6 +58,7 @@ describe("SchemaRequestTable", () => {
           requests={schemaRequests}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
+          ariaLabel={"Schema requests, page 1 of 10"}
         />
       );
     });
@@ -64,27 +66,35 @@ describe("SchemaRequestTable", () => {
     afterAll(cleanup);
 
     it("shows a table with all schema requests", () => {
-      const table = screen.getByRole("table", { name: "Schema requests" });
+      const table = screen.getByRole("table", {
+        name: "Schema requests, page 1 of 10",
+      });
 
       expect(table).toBeVisible();
     });
 
     it("shows all column headers", () => {
-      const table = screen.getByRole("table", { name: "Schema requests" });
+      const table = screen.getByRole("table", {
+        name: "Schema requests, page 1 of 10",
+      });
       const header = within(table).getAllByRole("columnheader");
 
       expect(header).toHaveLength(columnsFieldMap.length);
     });
 
     it("shows a row for each given requests plus header row", () => {
-      const table = screen.getByRole("table", { name: "Schema requests" });
+      const table = screen.getByRole("table", {
+        name: "Schema requests, page 1 of 10",
+      });
       const row = within(table).getAllByRole("row");
 
       expect(row).toHaveLength(schemaRequests.length + 1);
     });
 
     it("shows a button to view details for every row", () => {
-      const table = screen.getByRole("table", { name: "Schema requests" });
+      const table = screen.getByRole("table", {
+        name: "Schema requests, page 1 of 10",
+      });
       const buttons = within(table).getAllByRole("button", {
         name: /View schema request for/,
       });
@@ -93,7 +103,9 @@ describe("SchemaRequestTable", () => {
     });
 
     it("shows an enabled button for every row where request is 'deletable'", () => {
-      const table = screen.getByRole("table", { name: "Schema requests" });
+      const table = screen.getByRole("table", {
+        name: "Schema requests, page 1 of 10",
+      });
       const buttons = within(table).getAllByRole("button", {
         name: /Delete schema request for/,
       });
@@ -114,7 +126,9 @@ describe("SchemaRequestTable", () => {
       //@TODO buttons don't have discernible names right now
       // should be fixed for accessibility
       it(`shows a button to show the detailed schema request for topic name ${request.topicname}`, () => {
-        const table = screen.getByRole("table", { name: "Schema requests" });
+        const table = screen.getByRole("table", {
+          name: "Schema requests, page 1 of 10",
+        });
         const button = within(table).getByRole("button", {
           name: `View schema request for ${request.topicname}`,
         });
@@ -127,7 +141,9 @@ describe("SchemaRequestTable", () => {
       //@TODO buttons don't have discernible names right now
       // should be fixed for accessibility
       it(`shows a button to delete schema request for topic name ${request.topicname}`, () => {
-        const table = screen.getByRole("table", { name: "Schema requests" });
+        const table = screen.getByRole("table", {
+          name: "Schema requests, page 1 of 10",
+        });
         const button = within(table).getByRole("button", {
           name: `Delete schema request for ${request.topicname}`,
         });
@@ -144,6 +160,7 @@ describe("SchemaRequestTable", () => {
           requests={schemaRequests}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
+          ariaLabel={"Schema requests, page 1 of 10"}
         />
       );
     });
@@ -152,7 +169,7 @@ describe("SchemaRequestTable", () => {
 
     it(`renders the right amount of cells`, () => {
       const table = screen.getByRole("table", {
-        name: "Schema requests",
+        name: "Schema requests, page 1 of 10",
       });
       const cells = within(table).getAllByRole("cell");
 
@@ -164,7 +181,7 @@ describe("SchemaRequestTable", () => {
     columnsFieldMap.forEach((column) => {
       it(`shows a column header for ${column.columnHeader}`, () => {
         const table = screen.getByRole("table", {
-          name: "Schema requests",
+          name: "Schema requests, page 1 of 10",
         });
         const header = within(table).getByRole("columnheader", {
           name: column.columnHeader,
@@ -177,7 +194,7 @@ describe("SchemaRequestTable", () => {
         schemaRequests.forEach((request) => {
           it(`shows field ${column.relatedField} for request number ${request.req_no}`, () => {
             const table = screen.getByRole("table", {
-              name: "Schema requests",
+              name: "Schema requests, page 1 of 10",
             });
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -212,6 +229,7 @@ describe("SchemaRequestTable", () => {
           requests={schemaRequests}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
+          ariaLabel={"Schema requests, page 1 of 10"}
         />
       );
     });
@@ -252,6 +270,7 @@ describe("SchemaRequestTable", () => {
           requests={schemaRequests}
           showDetails={showDetailsMock}
           showDeleteDialog={showDeleteDialogMock}
+          ariaLabel={"Schema requests, page 1 of 10"}
         />
       );
     });

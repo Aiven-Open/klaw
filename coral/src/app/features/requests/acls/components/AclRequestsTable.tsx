@@ -39,12 +39,14 @@ type AclRequestsTableProps = {
   requests: AclRequest[];
   onDetails: (req_no: number) => void;
   onDelete: (req_no: number) => void;
+  ariaLabel: string;
 };
 
 function AclRequestsTable({
   requests,
   onDetails,
   onDelete,
+  ariaLabel,
 }: AclRequestsTableProps) {
   const columns: Array<DataTableColumn<AclRequestTableRow>> = [
     { type: "text", field: "topicname", headerName: "Topic" },
@@ -193,7 +195,7 @@ function AclRequestsTable({
 
   return (
     <DataTable
-      ariaLabel={"ACL requests"}
+      ariaLabel={ariaLabel}
       columns={columns}
       rows={rows}
       noWrap={false}

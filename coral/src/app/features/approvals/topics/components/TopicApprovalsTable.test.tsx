@@ -108,6 +108,7 @@ describe("TopicApprovalsTable", () => {
           onDecline={jest.fn()}
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
+          ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
       screen.getByText("No Topic requests");
@@ -126,33 +127,42 @@ describe("TopicApprovalsTable", () => {
           onDecline={jest.fn()}
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
+          ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
     });
     afterAll(cleanup);
 
     it("shows a table with all topic requests", () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
 
       expect(table).toBeVisible();
     });
 
     it("shows all column headers", () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const header = within(table).getAllByRole("columnheader");
 
       expect(header).toHaveLength(columnsFieldMap.length);
     });
 
     it("shows a row for each given requests plus header row", () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const row = within(table).getAllByRole("row");
 
       expect(row).toHaveLength(mockedRequests.length + 1);
     });
 
     it("shows an detail button for every row", () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const buttons = within(table).getAllByRole("button", {
         name: /View topic request for /,
       });
@@ -161,7 +171,9 @@ describe("TopicApprovalsTable", () => {
     });
 
     it("shows an approve button for every row", () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const buttons = within(table).getAllByRole("button", {
         name: /Approve topic request for /,
       });
@@ -170,7 +182,9 @@ describe("TopicApprovalsTable", () => {
     });
 
     it("shows an decline button for every row", () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const buttons = within(table).getAllByRole("button", {
         name: /Decline topic request for /,
       });
@@ -190,6 +204,7 @@ describe("TopicApprovalsTable", () => {
           onDecline={jest.fn()}
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
+          ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
     });
@@ -198,7 +213,7 @@ describe("TopicApprovalsTable", () => {
 
     it(`renders the right amount of cells`, () => {
       const table = screen.getByRole("table", {
-        name: "Topic requests",
+        name: "Topic approval requests, page 1 of 10",
       });
       const cells = within(table).getAllByRole("cell");
 
@@ -213,7 +228,7 @@ describe("TopicApprovalsTable", () => {
           return;
         }
         const table = screen.getByRole("table", {
-          name: "Topic requests",
+          name: "Topic approval requests, page 1 of 10",
         });
         const header = within(table).getByRole("columnheader", {
           name: column.columnHeader,
@@ -226,7 +241,7 @@ describe("TopicApprovalsTable", () => {
         mockedRequests.forEach((request) => {
           it(`shows field ${column.relatedField} for topic id ${request.topicid}`, () => {
             const table = screen.getByRole("table", {
-              name: "Topic requests",
+              name: "Topic approval requests, page 1 of 10",
             });
 
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -265,6 +280,7 @@ describe("TopicApprovalsTable", () => {
           onDecline={jest.fn()}
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
+          ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
     });
@@ -298,6 +314,7 @@ describe("TopicApprovalsTable", () => {
           onDecline={jest.fn()}
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
+          ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
     });
@@ -305,7 +322,9 @@ describe("TopicApprovalsTable", () => {
 
     requestsWithStatusCreated.forEach((request) => {
       it(`disables button to approve topic request for topic name ${request.topicname}`, () => {
-        const table = screen.getByRole("table", { name: "Topic requests" });
+        const table = screen.getByRole("table", {
+          name: "Topic approval requests, page 1 of 10",
+        });
         const button = within(table).getByRole("button", {
           name: `Approve topic request for ${request.topicname}`,
         });
@@ -314,7 +333,9 @@ describe("TopicApprovalsTable", () => {
       });
 
       it(`disables  button to decline topic request for topic name ${request.topicname}`, () => {
-        const table = screen.getByRole("table", { name: "Topic requests" });
+        const table = screen.getByRole("table", {
+          name: "Topic approval requests, page 1 of 10",
+        });
         const button = within(table).getByRole("button", {
           name: `Decline topic request for ${request.topicname}`,
         });
@@ -323,7 +344,9 @@ describe("TopicApprovalsTable", () => {
       });
 
       it(`does not disables details for topic request for topic name ${request.topicname}`, () => {
-        const table = screen.getByRole("table", { name: "Topic requests" });
+        const table = screen.getByRole("table", {
+          name: "Topic approval requests, page 1 of 10",
+        });
         const detailsButton = within(table).getByRole("button", {
           name: `View topic request for ${request.topicname}`,
         });
@@ -343,12 +366,15 @@ describe("TopicApprovalsTable", () => {
           onDecline={jest.fn()}
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
+          ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
     });
     afterEach(cleanup);
     it("disables approve action if request is not in created state", async () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const rows = within(table).getAllByRole("row");
       const approvedRequestRow = rows[2];
       const approve = within(approvedRequestRow).getByRole("button", {
@@ -357,7 +383,9 @@ describe("TopicApprovalsTable", () => {
       expect(approve).toBeDisabled();
     });
     it("disables decline action if request is not in created state", async () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const rows = within(table).getAllByRole("row");
       const approvedRequestRow = rows[2];
       const decline = within(approvedRequestRow).getByRole("button", {
@@ -379,12 +407,15 @@ describe("TopicApprovalsTable", () => {
           onDecline={jest.fn()}
           isBeingApproved={isBeingApproved}
           isBeingDeclined={isBeingDeclined}
+          ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
     });
     afterEach(cleanup);
     it("disables approve action if request is already in progress", async () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const rows = within(table).getAllByRole("row");
       const createdRequestRow = rows[1];
       const approve = within(createdRequestRow).getByRole("button", {
@@ -393,7 +424,9 @@ describe("TopicApprovalsTable", () => {
       expect(approve).toBeDisabled();
     });
     it("disables decline action if request is already in progress", async () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const rows = within(table).getAllByRole("row");
       const createdRequestRow = rows[1];
       const decline = within(createdRequestRow).getByRole("button", {
@@ -414,12 +447,15 @@ describe("TopicApprovalsTable", () => {
           onDecline={jest.fn()}
           isBeingApproved={jest.fn()}
           isBeingDeclined={jest.fn()}
+          ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
     });
     afterAll(cleanup);
     it("triggers details action for the corresponding request when clicked", async () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 10",
+      });
       const rows = within(table).getAllByRole("row");
       const createdRequestRow = rows[1];
       await userEvent.click(

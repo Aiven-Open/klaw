@@ -55,7 +55,14 @@ function BrowseTopics() {
         <EnvironmentFilter key="environment" />,
         <TopicFilter key="search" />,
       ]}
-      table={<TopicTable topics={topics?.entries ?? []} />}
+      table={
+        <TopicTable
+          topics={topics?.entries ?? []}
+          ariaLabel={`Topics overview, page ${topics?.currentPage ?? 0} of ${
+            topics?.totalPages ?? 0
+          }`}
+        />
+      }
       pagination={pagination}
       isLoading={isLoading}
       isErrorLoading={isError}
