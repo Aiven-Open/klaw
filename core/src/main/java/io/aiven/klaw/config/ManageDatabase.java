@@ -727,21 +727,25 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
           oneEnvParamsMap.put("replicationFactorList", rf);
         } else if (param.startsWith("topic.prefix")) {
-          String topicPrefix = param.substring(param.indexOf("=") + 1);
-          List<String> topicPrefixList = new ArrayList<>();
-          topicPrefixList.add(topicPrefix);
-          oneEnvParamsMap.put("topicPrefix", topicPrefixList);
+          setTopicNamingConstraint(param, oneEnvParamsMap, "topicPrefix");
         } else if (param.startsWith("topic.suffix")) {
-          String topicSuffix = param.substring(param.indexOf("=") + 1);
-          List<String> topicSuffixList = new ArrayList<>();
-          topicSuffixList.add(topicSuffix);
-          oneEnvParamsMap.put("topicSuffix", topicSuffixList);
+          setTopicNamingConstraint(param, oneEnvParamsMap, "topicSuffix");
+        } else if (param.startsWith("topic.regex")) {
+          setTopicNamingConstraint(param, oneEnvParamsMap, "topicRegex");
         }
       }
 
       envParamsMap.put(env.getId(), oneEnvParamsMap);
     }
     envParamsMapPerTenant.put(tenantId, envParamsMap);
+  }
+
+  private static void setTopicNamingConstraint(
+      String param, Map<String, List<String>> oneEnvParamsMap, String topicConventionName) {
+    String topicConvention = param.substring(param.indexOf("=") + 1);
+    List<String> topicConventionNamingList = new ArrayList<>();
+    topicConventionNamingList.add(topicConvention);
+    oneEnvParamsMap.put(topicConventionName, topicConventionNamingList);
   }
 
   public Map<String, List<String>> getRolesPermissionsPerTenant(int tenantId) {

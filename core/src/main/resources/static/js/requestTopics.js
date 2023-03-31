@@ -61,6 +61,16 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                                 $scope.topicPrefix = output.topicPrefix[0];
                             if(output.topicSuffix != null)
                                 $scope.topicSuffix = output.topicSuffix[0];
+                            if(output.topicRegex != null) {
+                            $scope.topicRegex = output.topicRegex[0];
+                                if(!$scope.topicRegex.startsWith('^')) {
+                                   $scope.topicRegex = '^' + $scope.topicRegex;
+                                }
+                                if(!$scope.topicRegex.endsWith('$')) {
+                                   $scope.topicRegex = $scope.topicRegex + '$';
+                                }
+                            $scope.topicRegex = new RegExp(RegExp.quote( $scope.topicRegex));
+                            }
                         }).error(
                             function(error)
                             {
@@ -425,6 +435,9 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             );
         }
 
+        RegExp.quote = function(str) {
+             return str.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
+        }
 
         $scope.refreshPage = function(){
                 $window.location.reload();
@@ -623,4 +636,5 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     );
             }
 }
+
 );

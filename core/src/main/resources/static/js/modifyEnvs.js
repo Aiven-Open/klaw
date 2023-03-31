@@ -565,6 +565,12 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 else
                     $scope.envDetails.topicsuffix = "";
 
+                if($scope.envDetails.topicregex && $scope.envDetails.topicregex.length > 0) {
+                    $scope.envDetails.topicregex = $scope.envDetails.topicregex.trim();
+                } else {
+                    $scope.envDetails.topicregex = "";
+                }
+
                 var serviceInput = {};
 
                 serviceInput['id'] = $scope.envToEdit;
@@ -577,7 +583,8 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                  + ",default.replication.factor=" + $scope.envDetails.defaultReplicationFactor
                  + ",max.replication.factor=" + $scope.envDetails.maxReplicationFactor
                  + ",topic.prefix=" + $scope.envDetails.topicprefix
-                 + ",topic.suffix=" + $scope.envDetails.topicsuffix;
+                 + ",topic.suffix=" + $scope.envDetails.topicsuffix
+                 + ",topic.regex=" + $scope.envDetails.topicregex  ;
 
                 $http({
                     method: "POST",

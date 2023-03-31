@@ -44,6 +44,8 @@ public class EnvModelResponse implements Serializable {
 
   private String topicsuffix;
 
+  private String topicregex;
+
   private String defaultPartitions;
 
   private String maxPartitions;

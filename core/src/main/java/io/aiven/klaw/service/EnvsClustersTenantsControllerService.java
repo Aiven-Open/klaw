@@ -160,6 +160,8 @@ public class EnvsClustersTenantsControllerService {
             topicPrefix = param.substring(param.indexOf("=") + 1);
           } else if (param.startsWith("topic.suffix")) {
             topicSuffix = param.substring(param.indexOf("=") + 1);
+          } else if (param.startsWith("topic.regex")) {
+            env.setTopicregex(param.substring(param.indexOf("=") + 1));
           }
         }
         env.setDefaultPartitions(defPartns);

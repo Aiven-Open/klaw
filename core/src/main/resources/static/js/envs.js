@@ -867,6 +867,13 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 else
                     $scope.addNewEnv.topicsuffix = "";
 
+                if($scope.addNewEnv.topicregex && $scope.addNewEnv.topicregex.length > 0) {
+                    $scope.addNewEnv.topicregex = $scope.addNewEnv.topicregex.trim();
+
+                } else {
+                    $scope.addNewEnv.topicregex = "";
+                }
+
                 if($scope.addNewEnv.envname == undefined || !$scope.addNewEnv.envname)
                 {
                     $scope.alertnote = "Please fill in a name for environment";
@@ -907,7 +914,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                          + ",default.replication.factor=" + $scope.addNewEnv.defrepfctr
                                          + ",max.replication.factor=" + $scope.addNewEnv.maxrepfctr
                                          + ",topic.prefix=" + $scope.addNewEnv.topicprefix
-                                         + ",topic.suffix=" + $scope.addNewEnv.topicsuffix;
+                                         + ",topic.suffix=" + $scope.addNewEnv.topicsuffix
+                                         + ",topic.regex=" + $scope.addNewEnv.topicregex;
 
 
                 $http({
