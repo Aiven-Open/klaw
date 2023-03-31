@@ -380,9 +380,17 @@ public class UsersTeamsControllerService {
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
+    if (manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId).size()
+        > 0) {
+      return ApiResponse.builder()
+          .result("Not allowed to delete this team, as there are associated users.")
+          .build();
+    }
+
     if (manageDatabase.getHandleDbRequests().findAllComponentsCountForTeam(teamId, tenantId) > 0) {
       return ApiResponse.builder()
-          .result("Not allowed to delete this team, as there are associated topics/acls/requests..")
+          .result(
+              "Not allowed to delete this team, as there are associated topics/acls/requests/connectors.")
           .build();
     }
 
@@ -408,16 +416,17 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public ApiResponse deleteUser(String userId, boolean isExternal) throws KlawException {
-    log.info("deleteUser {}", userId);
-    String userDetails = getUserName();
+  public ApiResponse deleteUser(String userIdToDelete, boolean isExternal) throws KlawException {
+    log.info("deleteUser {}", userIdToDelete);
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
       return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
-    UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
+    UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userIdToDelete);
     List<String> permissions =
         manageDatabase
             .getRolesPermissionsPerTenant(commonUtilsService.getTenantId(getUserName()))
@@ -429,15 +438,23 @@ public class UsersTeamsControllerService {
           .build();
     }
 
+    if (manageDatabase.getHandleDbRequests().findAllComponentsCountForUser(userIdToDelete, tenantId)
+        > 0) {
+      return ApiResponse.builder()
+          .result(
+              "Not allowed to delete this user, as there are associated requests in the metadata.")
+          .build();
+    }
+
     String envAddResult = "{\"result\":\"User cannot be deleted\"}";
-    if (Objects.equals(userDetails, userId) && isExternal) {
+    if (Objects.equals(userName, userIdToDelete) && isExternal) {
       return ApiResponse.builder().result(envAddResult).build();
     }
 
     try {
-      inMemoryUserDetailsManager.deleteUser(userId);
+      inMemoryUserDetailsManager.deleteUser(userIdToDelete);
       return ApiResponse.builder()
-          .result(manageDatabase.getHandleDbRequests().deleteUserRequest(userId))
+          .result(manageDatabase.getHandleDbRequests().deleteUserRequest(userIdToDelete))
           .build();
     } catch (Exception e) {
       log.error("Exception:", e);

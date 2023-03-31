@@ -19,18 +19,24 @@ public interface TopicRequestsRepo
       String topicStatus, String topicName, String envId, int tenantId);
 
   @Query(
-      value =
-          "select count(*) from kwtopicrequests where env = :envId and tenantid = :tenantId and topicstatus='created'",
+      value = "select count(*) from kwtopicrequests where env = :envId and tenantid = :tenantId",
       nativeQuery = true)
   List<Object[]> findAllTopicRequestsCountForEnv(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
       value =
-          "select count(*) from kwtopicrequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created'",
+          "select count(*) from kwtopicrequests where teamid = :teamId and tenantid = :tenantId",
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+
+  @Query(
+      value =
+          "select count(*) from kwtopicrequests where (requestor = :userId or approver = :userId) and tenantid = :tenantId",
+      nativeQuery = true)
+  List<Object[]> findAllRecordsCountForUserId(
+      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
   @Query(
       value = "select max(topicid) from kwtopicrequests where tenantid = :tenantId",
