@@ -1,8 +1,8 @@
 # ℹ️
-# This workflow runs for pull_requests that are base on main
+# This workflow runs for pull_requests that are based on main
 # if there is a change in the file `openapi.yaml`
-# but only when opening a PR with changes to the file
-# of if a commit is added to a PR with changes to the file
+# but only when opening a PR containing changes to the file
+# of if a commit is added to a PR containing changes to the file
 #
 #    - 1. it runs the coral setup
 #    - 2. auto generates the file `coral/types/api.t.ds` from the `openapi.yaml`
