@@ -327,6 +327,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       RequestOperationType requestOperationType,
       String topic,
       String environment,
+      String wildcardSearch,
       AclType aclType,
       int tenantId) {
     return jdbcSelectHelper.selectFilteredAclRequests(
@@ -338,7 +339,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         showRequestsOfAllTeams,
         topic,
         environment,
-        null,
+        wildcardSearch,
         aclType,
         false,
         tenantId);

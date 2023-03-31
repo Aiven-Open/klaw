@@ -62,7 +62,7 @@ function SchemaRequests() {
         pageNo: String(currentPage),
         env: environment,
         requestStatus: status !== defaultStatus ? status : undefined,
-        topic,
+        search: topic,
         isMyRequest: showOnlyMyRequests,
         operationType: requestType !== defaultType ? requestType : undefined,
       }),

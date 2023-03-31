@@ -477,6 +477,7 @@ public class AclControllerService {
       String topic,
       String environment,
       RequestOperationType requestOperationType,
+      String search,
       AclType aclType,
       Order order) {
     log.debug("getCreatedAclRequests {} {}", pageNo, requestStatus);
@@ -497,6 +498,7 @@ public class AclControllerService {
                   requestOperationType,
                   topic,
                   environment,
+                  search,
                   aclType,
                   tenantId);
     } else {
@@ -510,6 +512,7 @@ public class AclControllerService {
                   requestOperationType,
                   topic,
                   environment,
+                  search,
                   aclType,
                   tenantId);
     }

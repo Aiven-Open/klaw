@@ -47,7 +47,7 @@ type GetSchemaRequestsForApproverQueryParams = ResolveIntersectionTypes<
   > &
     Pick<
       KlawApiRequestQueryParameters<"getSchemaRequestsForApprover">,
-      "pageNo" | "env" | "topic"
+      "pageNo" | "env" | "search"
     >
 >;
 
@@ -57,7 +57,7 @@ const getSchemaRequestsForApprover = (
   const queryObject: GetSchemaRequestsForApproverQueryParams = {
     pageNo: args.pageNo,
     requestStatus: args.requestStatus,
-    ...(args.topic && { topic: args.topic }),
+    ...(args.search && args.search !== "" && { search: args.search }),
     ...(args.env && args.env !== "ALL" && { env: args.env }),
   };
 
@@ -75,7 +75,7 @@ type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
     KlawApiRequestQueryParameters<"getSchemaRequests">,
     | "pageNo"
     | "requestStatus"
-    | "topic"
+    | "search"
     | "env"
     | "isMyRequest"
     | "operationType"
@@ -91,7 +91,7 @@ const getSchemaRequests = (
     pageNo: args.pageNo,
     ...(args.operationType && { operationType: args.operationType }),
     ...(args.requestStatus && { requestStatus: args.requestStatus }),
-    ...(args.topic && { topic: args.topic }),
+    ...(args.search && args.search !== "" && { search: args.search }),
     ...(args.env && args.env !== "ALL" && { env: args.env }),
     ...(args.operationType !== undefined && { env: args.operationType }),
     ...(args.isMyRequest && { isMyRequest: String(Boolean(args.isMyRequest)) }),

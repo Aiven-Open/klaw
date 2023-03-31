@@ -72,7 +72,7 @@ function AclRequests() {
     queryFn: () =>
       getAclRequests({
         pageNo: String(currentPage),
-        topic,
+        search: topic,
         env: environment,
         aclType,
         requestStatus: status,

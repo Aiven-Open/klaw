@@ -147,6 +147,7 @@ public interface HandleDbRequests {
       RequestOperationType requestOperationType,
       String topic,
       String environment,
+      String wildcardSearch,
       AclType aclType,
       int tenantId);
 

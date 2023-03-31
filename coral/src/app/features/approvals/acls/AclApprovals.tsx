@@ -79,7 +79,7 @@ function AclApprovals() {
         env: environment,
         requestStatus: status,
         aclType,
-        topic,
+        search: topic,
         operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
