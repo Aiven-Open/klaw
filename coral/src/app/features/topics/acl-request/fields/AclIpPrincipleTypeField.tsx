@@ -14,7 +14,6 @@ const AclIpPrincipleTypeField = ({
     <RadioButtonGroup
       name="aclIpPrincipleType"
       labelText={`IP or ${principalLabelText} based`}
-      required
       // If isAivenCluster is undefined, we have not yet fetched it (no environment selected)
       // So all the options are disabled
       disabled={isAivenCluster || isAivenCluster === undefined}

@@ -34,7 +34,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
       </p>
     </div>
     <button
-      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative typography-default py-3 px-4"
+      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative typography-default-strong py-3 px-4"
       title="Submit"
       type="submit"
     />
@@ -76,7 +76,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
       </p>
     </div>
     <button
-      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative typography-default py-3 px-4"
+      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative typography-default-strong py-3 px-4"
       title="Submit"
       type="submit"
     />
