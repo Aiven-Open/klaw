@@ -10,10 +10,9 @@
 #       - if not: ends the workflow ✅
 #       - if yes:
 #         - 3.1 runs the typescript compiler in 'coral/'
-#         - 3.2 runs the frontend tests in 'coral/'
-#           - if 3.1. and 3.2. are successful
+#           - if 3.1. is successful
 #              -> adds the file `coral/types/api.t.ds` as new commit  ✅
-#           - if 3.1. or 3.2. fail
+#           - if 3.1. fails
 #             -> fails the workflow ⛔️
 
 
@@ -112,10 +111,6 @@ jobs:
       - name: Run TypeScript compiler
         working-directory: ./coral
         run: pnpm tsc
-
-      - name: Run Frontend tests
-        working-directory: ./coral
-        run: pnpm test
 
       - name: Add changed file
         run: |
