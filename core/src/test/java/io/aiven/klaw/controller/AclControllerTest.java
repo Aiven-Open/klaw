@@ -148,7 +148,7 @@ public class AclControllerTest {
         .perform(
             MockMvcRequestBuilders.get("/getAclRequestsForApprover")
                 .param("pageNo", "1")
-                .param("operationType", "CREATE")
+                .param("operationType", RequestOperationType.CREATE.toString())
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
