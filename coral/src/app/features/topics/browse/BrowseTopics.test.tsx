@@ -6,7 +6,6 @@ import { Environment, getEnvironments } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { getTeams } from "src/domain/team";
-import { mockedAllTeamsResponse } from "src/domain/team/team-api.msw";
 import { AllTeams } from "src/domain/team/team-types";
 import { getTopics } from "src/domain/topic";
 import {
@@ -39,7 +38,38 @@ const mockedGetTopicsResponseMultiplePages: TopicApiResponse =
   mockedResponseMultiplePageTransformed;
 const mockGetEnvironmentResponse: Environment[] =
   transformEnvironmentApiResponse(mockedEnvironmentResponse);
-const mockGetTeamsResponse: AllTeams = mockedAllTeamsResponse;
+const mockGetTeamsResponse: AllTeams = [
+  {
+    teamname: "TEST_TEAM_01",
+    teamphone: "000",
+    contactperson: "000",
+    teamId: 1,
+    tenantId: 1,
+    showDeleteTeam: true,
+    tenantName: "tenant",
+    envList: ["ALL"],
+  },
+  {
+    teamname: "TEST_TEAM_02",
+    teamphone: "000",
+    contactperson: "000",
+    teamId: 2,
+    tenantId: 1,
+    showDeleteTeam: true,
+    tenantName: "tenant",
+    envList: ["ALL"],
+  },
+  {
+    teamname: "TEST_TEAM_03",
+    teamphone: "000",
+    contactperson: "000",
+    teamId: 3,
+    tenantId: 1,
+    showDeleteTeam: true,
+    tenantName: "tenant",
+    envList: ["ALL"],
+  },
+];
 
 describe("BrowseTopics.tsx", () => {
   beforeAll(() => {
