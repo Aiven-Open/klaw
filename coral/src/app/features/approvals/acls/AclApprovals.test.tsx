@@ -403,7 +403,7 @@ describe("AclApprovals", () => {
           env: "ALL",
           pageNo: "1",
           requestStatus: "CREATED",
-          topic: "",
+          search: "",
           operationType: "CREATE",
         })
       );
@@ -467,7 +467,7 @@ describe("AclApprovals", () => {
           env: "ALL",
           pageNo: "1",
           requestStatus: "CREATED",
-          topic: "",
+          search: "",
           operationType: "DELETE",
         })
       );
