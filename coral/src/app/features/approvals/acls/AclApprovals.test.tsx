@@ -311,7 +311,7 @@ describe("AclApprovals", () => {
           env: "1",
           pageNo: "1",
           requestStatus: "CREATED",
-          topic: "",
+          search: "",
         });
       });
     });
@@ -335,7 +335,7 @@ describe("AclApprovals", () => {
           env: "ALL",
           pageNo: "1",
           requestStatus: "DECLINED",
-          topic: "",
+          search: "",
         })
       );
     });
@@ -359,7 +359,7 @@ describe("AclApprovals", () => {
           env: "ALL",
           pageNo: "1",
           requestStatus: "CREATED",
-          topic: "",
+          search: "",
         })
       );
     });
@@ -379,7 +379,7 @@ describe("AclApprovals", () => {
           env: "ALL",
           pageNo: "1",
           requestStatus: "CREATED",
-          topic: "topicname",
+          search: "topicname",
         })
       );
     });
@@ -429,7 +429,7 @@ describe("AclApprovals", () => {
           env: "ALL",
           pageNo: "1",
           requestStatus: "CREATED",
-          topic: "topicname",
+          search: "topicname",
         })
       );
     });

@@ -372,6 +372,7 @@ public class AclControllerServiceTest {
             any(),
             any(),
             any(),
+            any(),
             anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -389,6 +390,7 @@ public class AclControllerServiceTest {
             null,
             RequestOperationType.CREATE,
             null,
+            null,
             io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
     assertThat(listReqs.size()).isEqualTo(10);
   }
@@ -404,6 +406,7 @@ public class AclControllerServiceTest {
             anyString(),
             anyBoolean(),
             eq(RequestOperationType.CREATE),
+            any(),
             any(),
             any(),
             any(),
@@ -424,6 +427,7 @@ public class AclControllerServiceTest {
             null,
             null,
             RequestOperationType.CREATE,
+            null,
             null,
             io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
     assertThat(listReqs.size()).isEqualTo(10);
@@ -971,6 +975,7 @@ public class AclControllerServiceTest {
             eq(null),
             eq(null),
             eq(null),
+            eq(null),
             anyInt()))
         .thenReturn(getAclRequests("testtopic", 16));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -988,6 +993,7 @@ public class AclControllerServiceTest {
             null,
             operationType,
             null,
+            null,
             io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
     assertThat(listReqs.size()).isEqualTo(10);
     verify(handleDbRequests, times(1))
@@ -996,6 +1002,7 @@ public class AclControllerServiceTest {
             eq(""),
             eq(true),
             eq(operationType),
+            eq(null),
             eq(null),
             eq(null),
             eq(null),

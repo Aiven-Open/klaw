@@ -4898,6 +4898,13 @@
             "type" : "string"
           }
         }, {
+          "name" : "search",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
           "name" : "aclType",
           "in" : "query",
           "required" : false,

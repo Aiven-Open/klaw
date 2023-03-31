@@ -97,6 +97,7 @@ public class AclController {
    * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or 'DELETED'
    * @param topic The name of the topic you would like returned
    * @param env The name of the environment you would like returned e.g. '1' or '4'
+   * @param search is a wildcard search that will patial match against the topic name
    * @param aclType The Type of acl Consumer/Producer
    * @param order allows the requestor to specify what order the pagination should be returned in
    *     OLDEST_FIRST/NEWEST_FIRST
@@ -117,6 +118,7 @@ public class AclController {
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "topic", required = false) String topic,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "search", required = false) String search,
       @RequestParam(value = "aclType", required = false) AclType aclType,
       @RequestParam(value = "operationType", required = false)
           RequestOperationType requestOperationType,
@@ -130,6 +132,7 @@ public class AclController {
             topic,
             env,
             requestOperationType,
+            search,
             aclType,
             order),
         HttpStatus.OK);

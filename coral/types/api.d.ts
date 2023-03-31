@@ -3510,6 +3510,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         topic?: string;
         env?: string;
+        search?: string;
         aclType?: "PRODUCER" | "CONSUMER";
         operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
