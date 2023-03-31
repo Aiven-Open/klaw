@@ -859,6 +859,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public int findAllComponentsCountForUser(String userId, int tenantId) {
+    return jdbcSelectHelper.findAllComponentsCountForUser(userId, tenantId);
+  }
+
+  @Override
   public int getAllTopicsCountInAllTenants() {
     return jdbcSelectHelper.getAllTopicsCountInAllTenants();
   }

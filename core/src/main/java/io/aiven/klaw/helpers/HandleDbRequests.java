@@ -359,4 +359,6 @@ public interface HandleDbRequests {
   int findAllComponentsCountForTeam(Integer teamId, int tenantId);
 
   int getAllTopicsCountInAllTenants();
+
+  int findAllComponentsCountForUser(String userName, int tenantId);
 }

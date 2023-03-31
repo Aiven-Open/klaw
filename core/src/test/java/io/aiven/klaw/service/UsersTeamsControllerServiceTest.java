@@ -14,6 +14,8 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import java.util.Collections;
+import java.util.HashMap;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -134,10 +136,52 @@ public class UsersTeamsControllerServiceTest {
   void getAllTeamsSUOnly() {}
 
   @Test
-  void deleteTeam() {}
+  void deleteTeamFailure() throws KlawException {
+    int teamId = 101;
+    int tenantId = 101;
+    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
+        .thenReturn(utilMethods.getRolesPermsMap());
+    when(handleDbRequests.selectAllUsersInfoForTeam(teamId, tenantId))
+        .thenReturn(Collections.singletonList(new UserInfo()));
+    ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(teamId);
+    assertThat(apiResponse.getResult())
+        .isEqualTo("Not allowed to delete this team, as there are associated users.");
+  }
 
   @Test
-  void deleteUser() {}
+  void deleteUserFailureHasRequests() throws KlawException {
+    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(manageDatabase.getRolesPermissionsPerTenant(anyInt())).thenReturn(new HashMap<>());
+    when(handleDbRequests.findAllComponentsCountForUser("testuser", 101)).thenReturn(1);
+    ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
+    assertThat(apiResponse.getResult())
+        .isEqualTo(
+            "Not allowed to delete this user, as there are associated requests in the metadata.");
+  }
+
+  @Test
+  void deleteUserFailureisAdmin() throws KlawException {
+    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
+        .thenReturn(utilMethods.getRolesPermsMap());
+    when(handleDbRequests.findAllComponentsCountForUser("testuser", 101)).thenReturn(1);
+    ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
+    assertThat(apiResponse.getResult())
+        .isEqualTo("Not Authorized. Cannot delete a user with SUPERADMIN access.");
+  }
 
   @Test
   void addNewUser() {}

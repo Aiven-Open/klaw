@@ -1444,6 +1444,18 @@ public class SelectDataJdbc {
             .intValue();
   }
 
+  public int findAllComponentsCountForUser(String userId, int tenantId) {
+    return ((Long) schemaRequestRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+            .intValue()
+        + ((Long)
+                kafkaConnectorRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+            .intValue()
+        + ((Long) topicRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+            .intValue()
+        + ((Long) aclRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+            .intValue();
+  }
+
   public int getAllTopicsCountInAllTenants() {
     return ((Long) topicRepo.findAllTopicsCount().get(0)[0]).intValue();
   }
