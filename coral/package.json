@@ -5,7 +5,10 @@
   "type": "module",
   "main": "",
   "license": "Apache-2.0",
+  "engineStrict": true,
   "engines": {
+    "node": ">=18.0.0 <=18.15.0",
+    "pnpm": ">=7.0.0 <8.0.0 ",
     "yarn": "❗Please use pnpm to assure a consistent package management.",
     "npm": "❗Please use pnpm to assure a consistent package management."
   },
