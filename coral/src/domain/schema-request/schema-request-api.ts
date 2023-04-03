@@ -47,7 +47,7 @@ type GetSchemaRequestsForApproverQueryParams = ResolveIntersectionTypes<
   > &
     Pick<
       KlawApiRequestQueryParameters<"getSchemaRequestsForApprover">,
-      "pageNo" | "env" | "search"
+      "pageNo" | "env" | "search" | "operationType"
     >
 >;
 

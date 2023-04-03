@@ -6,13 +6,14 @@ import { Pagination } from "src/app/components/Pagination";
 import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApprovalsTable";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
-import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import TopicFilter from "src/app/features/components/filters/TopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
   approveAclRequest,
   declineAclRequest,
@@ -20,7 +21,6 @@ import {
 } from "src/domain/acl/acl-api";
 import { AclRequestsForApprover } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 
 const defaultType = "ALL";
 

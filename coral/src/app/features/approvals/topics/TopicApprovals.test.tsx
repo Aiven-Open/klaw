@@ -583,6 +583,31 @@ describe("TopicApprovals", () => {
       );
     });
 
+    it("filters by Request type", async () => {
+      const select = screen.getByLabelText("Filter by request type");
+
+      const option = within(select).getByRole("option", {
+        name: "Create",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("Create");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "",
+          teamId: undefined,
+          operationType: "CREATE",
+        })
+      );
+    });
+
     it("filters by ACL type", async () => {
       const select = screen.getByLabelText("Filter by team");
 

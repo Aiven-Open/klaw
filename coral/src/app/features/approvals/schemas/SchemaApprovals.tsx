@@ -18,6 +18,9 @@ import {
   getSchemaRequestsForApprover,
 } from "src/domain/schema-request";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
+
+const defaultType = "ALL";
 
 function SchemaApprovals() {
   const queryClient = useQueryClient();
@@ -27,7 +30,7 @@ function SchemaApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, topic } = useFiltersValues({
+  const { environment, status, topic, requestType } = useFiltersValues({
     defaultStatus: "CREATED",
   });
 
@@ -60,6 +63,7 @@ function SchemaApprovals() {
       status,
       environment,
       topic,
+      requestType,
     ],
     queryFn: () =>
       getSchemaRequestsForApprover({
@@ -67,6 +71,7 @@ function SchemaApprovals() {
         pageNo: currentPage.toString(),
         env: environment,
         search: topic,
+        operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -266,6 +271,7 @@ function SchemaApprovals() {
             isSchemaRegistryEnvironments
           />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
+          <RequestTypeFilter key={"requestType"} />,
           <TopicFilter key={"topic"} />,
         ]}
         table={table}
