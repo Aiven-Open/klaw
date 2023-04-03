@@ -88,6 +88,7 @@ public interface HandleDbRequests {
       boolean showRequestsOfAllTeams,
       int tenantId,
       String env,
+      RequestOperationType requestOperationType,
       String search);
 
   TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId);

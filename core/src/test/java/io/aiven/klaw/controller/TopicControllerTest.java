@@ -173,6 +173,7 @@ public class TopicControllerTest {
             null,
             null,
             null,
+            null,
             io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME))
         .thenReturn(topicReqs);
 

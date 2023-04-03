@@ -2587,6 +2587,14 @@
             "type" : "string"
           }
         }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+          }
+        }, {
           "name" : "search",
           "in" : "query",
           "required" : false,
@@ -3145,14 +3153,6 @@
             "type" : "string"
           }
         }, {
-          "name" : "operationType",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
-          }
-        }, {
           "name" : "env",
           "in" : "query",
           "required" : false,
@@ -3165,6 +3165,14 @@
           "required" : false,
           "schema" : {
             "type" : "string"
+          }
+        }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
           }
         }, {
           "name" : "order",
@@ -3249,6 +3257,14 @@
           "required" : false,
           "schema" : {
             "type" : "string"
+          }
+        }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
           }
         }, {
           "name" : "order",
@@ -3990,14 +4006,6 @@
             "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
           }
         }, {
-          "name" : "operationType",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
-          }
-        }, {
           "name" : "env",
           "in" : "query",
           "required" : false,
@@ -4012,6 +4020,14 @@
             "type" : "string",
             "default" : "DESC_REQUESTED_TIME",
             "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
+          }
+        }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
           }
         }, {
           "name" : "search",
@@ -4081,6 +4097,14 @@
             "type" : "string",
             "default" : "DESC_REQUESTED_TIME",
             "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
+          }
+        }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
           }
         }, {
           "name" : "search",
@@ -5784,13 +5808,15 @@
           "acl_ip" : {
             "type" : "array",
             "items" : {
-              "type" : "string"
+              "type" : "string",
+              "pattern" : "^$|^(([0-9]|[1-9][0-9]|1[0-9][0-9]|2[0-4][0-9]|25[0-5])(\\.(?!$)|$)){4}$"
             }
           },
           "acl_ssl" : {
             "type" : "array",
             "items" : {
-              "type" : "string"
+              "type" : "string",
+              "pattern" : "^$|^[a-zA-Z 0-9_.,=-]{3,}$"
             }
           },
           "aclPatternType" : {

@@ -561,7 +561,14 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedTopicRequests(
-            anyString(), anyString(), anyBoolean(), anyInt(), eq(null), eq(null), eq(null)))
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            anyInt(),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null)))
         .thenReturn(listTopicReqs);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -570,7 +577,14 @@ public class TopicControllerServiceTest {
 
     List<TopicRequestsResponseModel> topicList =
         topicControllerService.getTopicRequestsForApprover(
-            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
+            "1",
+            "",
+            "all",
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
 
     assertThat(topicList).hasSize(2);
   }
@@ -588,7 +602,14 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getCreatedTopicRequests(
-            anyString(), anyString(), anyBoolean(), anyInt(), eq(null), eq(null), eq(null)))
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            anyInt(),
+            eq(null),
+            eq(null),
+            eq(null),
+            eq(null)))
         .thenReturn(listTopicReqs);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -597,7 +618,14 @@ public class TopicControllerServiceTest {
 
     List<TopicRequestsResponseModel> topicList =
         topicControllerService.getTopicRequestsForApprover(
-            "1", "", "all", null, null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
+            "1",
+            "",
+            "all",
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME);
 
     assertThat(topicList).hasSize(5);
     assertThat(topicList.get(0).getTopicpartitions()).isEqualTo(2);
