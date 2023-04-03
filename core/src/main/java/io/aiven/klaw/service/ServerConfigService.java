@@ -1,5 +1,11 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_105;
+import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -71,9 +77,7 @@ public class ServerConfigService {
 
   @PostConstruct
   public void getAllProperties() {
-
-    log.info("All server properties being loaded");
-
+    log.debug("All server properties being loaded");
     List<ServerConfigProperties> listProps = new ArrayList<>();
     List<String> allowedKeys = Arrays.asList("spring.", "klaw.");
 
@@ -90,7 +94,7 @@ public class ServerConfigService {
                 || key.contains("pwd")
                 || key.contains("cert")
                 || key.contains("secret")) {
-              props.setValue("*******");
+              props.setValue(MASKED_PWD);
             } else {
               props.setValue(WordUtils.wrap(propertySource.getProperty(key) + "", 125, "\n", true));
             }
@@ -211,16 +215,11 @@ public class ServerConfigService {
             updateEnvIdValues(dynamicObj);
             kwPropertiesModel.setKwValue(OBJECT_MAPPER.writeValueAsString(dynamicObj));
           } else {
-            return ApiResponse.builder()
-                .result(
-                    "Failure. Invalid json / incorrect name values. Check tenant and env details.")
-                .build();
+            return ApiResponse.builder().result(SERVER_CONFIG_ERR_101).build();
           }
         } catch (IOException e) {
           log.error("Exception:", e);
-          return ApiResponse.builder()
-              .result("Failure. Invalid json values. Please check if tenant/environments exist.")
-              .build();
+          return ApiResponse.builder().result(SERVER_CONFIG_ERR_102).build();
         }
       }
     } catch (KlawException klawException) {
@@ -228,9 +227,7 @@ public class ServerConfigService {
 
     } catch (Exception e) {
       log.error("Exception:", e);
-      return ApiResponse.builder()
-          .result("Failure. Please check if the environment names exist.")
-          .build();
+      return ApiResponse.builder().result(SERVER_CONFIG_ERR_103).build();
     }
 
     try {
@@ -431,16 +428,12 @@ public class ServerConfigService {
     Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
     List<Env> envList = manageDatabase.getKafkaEnvList(tenantId);
     List<Env> envKafkaConnectList = manageDatabase.getKafkaConnectEnvList(tenantId);
-    List<Env> schemaList = manageDatabase.getSchemaRegEnvList(tenantId);
 
     List<String> envListStr = new ArrayList<>();
     envList.forEach(a -> envListStr.add(a.getName()));
 
     List<String> envListKafkaConnectStr = new ArrayList<>();
     envKafkaConnectList.forEach(a -> envListKafkaConnectStr.add(a.getName()));
-
-    List<String> envListSchemaRegistryStr = new ArrayList<>();
-    schemaList.forEach(a -> envListSchemaRegistryStr.add(a.getName()));
 
     boolean tenantCheck;
     try {
@@ -474,10 +467,7 @@ public class ServerConfigService {
   private void isBaseSyncValid(String baseSync, List<String> existingResources)
       throws KlawException {
     if (baseSync != null && !existingResources.contains(baseSync)) {
-      throw new KlawException(
-          "Base Sync Resource "
-              + baseSync
-              + " must be created before being added to the Tenant Model");
+      throw new KlawException(String.format(SERVER_CONFIG_ERR_104, baseSync));
     }
   }
 
@@ -487,8 +477,7 @@ public class ServerConfigService {
     if (namedResources != null) {
       for (String res : namedResources) {
         if (!existingResources.contains(res)) {
-          throw new KlawException(
-              "Resource " + res + " must be created before being added to the Tenant Model");
+          throw new KlawException(String.format(SERVER_CONFIG_ERR_105, res));
         }
       }
     }

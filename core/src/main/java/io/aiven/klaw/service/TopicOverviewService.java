@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TOPIC_OVW_ERR_101;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Topic;
@@ -97,7 +99,6 @@ public class TopicOverviewService extends BaseOverviewService {
         handleDb,
         tenantId,
         loggedInUserTeam,
-        reqTopicsEnvsList,
         topicInfoList,
         aclInfo,
         prefixedAclsInfo,
@@ -123,7 +124,6 @@ public class TopicOverviewService extends BaseOverviewService {
       HandleDbRequests handleDb,
       int tenantId,
       Integer loggedInUserTeam,
-      Set<String> reqTopicsEnvsList,
       List<TopicInfo> topicInfoList,
       List<AclInfo> aclInfo,
       List<AclInfo> prefixedAclsInfo,
@@ -228,12 +228,12 @@ public class TopicOverviewService extends BaseOverviewService {
         }
       } else {
         Map<String, String> hashMap = new HashMap<>();
-        hashMap.put("status", "not_authorized");
+        hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
         topicOverview.setTopicPromotionDetails(hashMap);
       }
     } catch (Exception e) {
       Map<String, String> hashMap = new HashMap<>();
-      hashMap.put("status", "not_authorized");
+      hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
       topicOverview.setTopicPromotionDetails(hashMap);
     }
   }
@@ -261,7 +261,7 @@ public class TopicOverviewService extends BaseOverviewService {
     } catch (Exception e) {
       log.error("getTopicPromotionEnv error ", e);
       hashMap.put("status", ApiResultStatus.FAILURE.value);
-      hashMap.put("error", "Topic does not exist in any environment.");
+      hashMap.put("error", TOPIC_OVW_ERR_101);
     }
 
     return hashMap;

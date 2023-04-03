@@ -1,5 +1,23 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_108;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_109;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_110;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_111;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_112;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_113;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_115;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_116;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_118;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
@@ -142,7 +160,7 @@ public class UsersTeamsControllerService {
     }
 
     if (newUser.getTeamId() == null) {
-      return ApiResponse.builder().result("Team id cannot be empty.").build();
+      return ApiResponse.builder().result(TEAMS_ERR_101).build();
     }
 
     UserInfo existingUserInfo =
@@ -154,9 +172,7 @@ public class UsersTeamsControllerService {
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
       if (!Objects.equals(
           getUserName(), newUser.getUsername())) { // should be able to update same user
-        return ApiResponse.builder()
-            .result("Not Authorized to update another SUPERADMIN user.")
-            .build();
+        return ApiResponse.builder().result(TEAMS_ERR_102).build();
       }
     }
 
@@ -382,21 +398,16 @@ public class UsersTeamsControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId).size()
         > 0) {
-      return ApiResponse.builder()
-          .result("Not allowed to delete this team, as there are associated users.")
-          .build();
+      return ApiResponse.builder().result(TEAMS_ERR_103).build();
     }
 
     if (manageDatabase.getHandleDbRequests().findAllComponentsCountForTeam(teamId, tenantId) > 0) {
-      return ApiResponse.builder()
-          .result(
-              "Not allowed to delete this team, as there are associated topics/acls/requests/connectors.")
-          .build();
+      return ApiResponse.builder().result(TEAMS_ERR_104).build();
     }
 
     // own team cannot be deleted
     if (Objects.equals(commonUtilsService.getTeamId(userName), teamId)) {
-      return ApiResponse.builder().result("Team cannot be deleted.").build();
+      return ApiResponse.builder().result(TEAMS_ERR_105).build();
     }
 
     try {
@@ -433,22 +444,16 @@ public class UsersTeamsControllerService {
             .get(existingUserInfo.getRole());
     if (permissions != null
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
-      return ApiResponse.builder()
-          .result("Not Authorized. Cannot delete a user with SUPERADMIN access.")
-          .build();
+      return ApiResponse.builder().result(TEAMS_ERR_106).build();
     }
 
     if (manageDatabase.getHandleDbRequests().findAllComponentsCountForUser(userIdToDelete, tenantId)
         > 0) {
-      return ApiResponse.builder()
-          .result(
-              "Not allowed to delete this user, as there are associated requests in the metadata.")
-          .build();
+      return ApiResponse.builder().result(TEAMS_ERR_107).build();
     }
 
-    String envAddResult = "{\"result\":\"User cannot be deleted\"}";
     if (Objects.equals(userName, userIdToDelete) && isExternal) {
-      return ApiResponse.builder().result(envAddResult).build();
+      return ApiResponse.builder().result(TEAMS_ERR_108).build();
     }
 
     try {
@@ -485,7 +490,7 @@ public class UsersTeamsControllerService {
     log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeam(), newUser.getRole());
     boolean userNamePatternCheck = userNamePatternValidation(newUser.getUsername());
     if (!userNamePatternCheck) {
-      return ApiResponse.builder().result("Invalid username/mail id").build();
+      return ApiResponse.builder().result(TEAMS_ERR_109).build();
     }
 
     int tenantId;
@@ -556,10 +561,10 @@ public class UsersTeamsControllerService {
         log.error("Try deleting user");
       }
       if (e.getMessage().contains("should not exist")) {
-        return ApiResponse.builder().result("Failure. User already exists.").build();
+        return ApiResponse.builder().result(TEAMS_ERR_110).build();
       } else {
         log.error("Error ", e);
-        throw new KlawException("Unable to create the user.");
+        throw new KlawException(TEAMS_ERR_111);
       }
     }
   }
@@ -570,9 +575,9 @@ public class UsersTeamsControllerService {
       if (switchAllowedTeamIds == null
           || switchAllowedTeamIds.isEmpty()
           || switchAllowedTeamIds.size() < 2) { // make sure atleast 2 teams are selected to switch
-        return Pair.of(Boolean.TRUE, "Please make sure atleast 2 teams are selected.");
+        return Pair.of(Boolean.TRUE, TEAMS_ERR_112);
       } else if (!switchAllowedTeamIds.contains(sourceUser.getTeamId())) {
-        return Pair.of(Boolean.TRUE, "Please select your own team, in the switch teams list.");
+        return Pair.of(Boolean.TRUE, TEAMS_ERR_113);
       }
     }
     return Pair.of(Boolean.FALSE, "");
@@ -647,9 +652,7 @@ public class UsersTeamsControllerService {
   public ApiResponse changePwd(String changePwd) throws KlawException {
     if (LDAP.value.equals(authenticationType)
         || ACTIVE_DIRECTORY.value.equals(authenticationType)) {
-      return ApiResponse.builder()
-          .result("Password cannot be updated in ldap/ad authentication mode.")
-          .build();
+      return ApiResponse.builder().result(TEAMS_ERR_114).build();
     }
     String userDetails = getUserName();
     GsonJsonParser jsonParser = new GsonJsonParser();
@@ -791,10 +794,10 @@ public class UsersTeamsControllerService {
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
     if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
-      return ApiResponse.builder().result("User already exists.").build();
+      return ApiResponse.builder().result(TEAMS_ERR_115).build();
     } else if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getUsername()))) {
-      return ApiResponse.builder().result("User already exists.").build();
+      return ApiResponse.builder().result(TEAMS_ERR_115).build();
     }
 
     // check if registration exists
@@ -802,10 +805,10 @@ public class UsersTeamsControllerService {
         manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
     if (registerUserInfoList.stream()
         .anyMatch(user -> user.getUsername().equals(newUser.getMailid()))) {
-      return ApiResponse.builder().result("User already exists.").build();
+      return ApiResponse.builder().result(TEAMS_ERR_115).build();
     } else if (registerUserInfoList.stream()
         .anyMatch(user -> user.getUsername().equals(newUser.getUsername()))) {
-      return ApiResponse.builder().result("User already exists.").build();
+      return ApiResponse.builder().result(TEAMS_ERR_115).build();
     }
 
     // get the user details from db
@@ -873,14 +876,14 @@ public class UsersTeamsControllerService {
             }
           } catch (Exception e) {
             log.error("Exception:", e);
-            return ApiResponse.builder().result("Invalid tenant provided.").build();
+            return ApiResponse.builder().result(TEAMS_ERR_116).build();
           }
         }
       }
 
       String resultRegister = dbHandle.registerUser(registerUserInfo);
       if (resultRegister.contains("Failure")) {
-        return ApiResponse.builder().result("Registration already exists.").build();
+        return ApiResponse.builder().result(TEAMS_ERR_117).build();
       }
 
       if (isExternal) {
@@ -891,7 +894,7 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().result(resultRegister).build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      throw new KlawException("Failure. Something went wrong. Please try later.");
+      throw new KlawException(TEAMS_ERR_118);
     }
   }
 

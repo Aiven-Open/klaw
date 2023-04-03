@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ROLE_PRM_ERR_101;
+
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.KwRolesPermissions;
 import io.aiven.klaw.error.KlawException;
@@ -174,7 +176,7 @@ public class RolesPermissionsControllerService {
     }
 
     if (KwConstants.USER_ROLE.equals(roleId) || KwConstants.SUPERADMIN_ROLE.equals(roleId)) {
-      return ApiResponse.builder().result("Not Allowed").build();
+      return ApiResponse.builder().result(ROLE_PRM_ERR_101).build();
     }
 
     try {

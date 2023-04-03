@@ -517,7 +517,7 @@ public class UtilControllerService {
 
       String companyInfo = manageDatabase.getTenantFullConfig(tenantId).getOrgName();
       if (companyInfo == null || companyInfo.equals("")) {
-        companyInfo = "Our Organization";
+        companyInfo = ENV_CLUSTER_TNT_109;
       }
 
       authenticationInfo.setSupportlink("https://github.com/aiven/klaw/issues");

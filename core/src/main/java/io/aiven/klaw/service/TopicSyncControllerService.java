@@ -1,5 +1,11 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_104;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -396,7 +402,7 @@ public class TopicSyncControllerService {
       for (Topic topicObj : topicsFromSOT) {
         List<String> possibleTeams = new ArrayList<>();
         possibleTeams.add(manageDatabase.getTeamNameFromTeamId(tenantId, topicObj.getTeamId()));
-        possibleTeams.add("REMOVE FROM KLAW");
+        possibleTeams.add(SYNC_102);
 
         sotTopicStringList.add(topicObj.getTopicname());
         TopicRequestsResponseModel topicRequestModel = new TopicRequestsResponseModel();
@@ -518,15 +524,12 @@ public class TopicSyncControllerService {
             .getResult()
             .contains("TopicExistsException")) {
           logUpdateSyncBackTopics.add(
-              "Error in Topic creation. Topic:"
+              TOPICS_SYNC_ERR_101
                   + topicFound.getTopicname()
                   + " already exists. TopicExistsException");
         } else {
           logUpdateSyncBackTopics.add(
-              "Error in Topic creation. Topic:"
-                  + topicFound.getTopicname()
-                  + " "
-                  + response.getBody());
+              TOPICS_SYNC_ERR_101 + topicFound.getTopicname() + " " + response.getBody());
         }
       } else {
         logUpdateSyncBackTopics.add("Topic created " + topicFound.getTopicname());
@@ -830,7 +833,7 @@ public class TopicSyncControllerService {
               + " "
               + updateSyncTopics(updatedSyncTopicsList).getResult());
     } catch (Exception e) {
-      logArray.add("Topic update failed :" + hashMap.get("topicName") + " " + e);
+      logArray.add(TOPICS_SYNC_ERR_102 + hashMap.get("topicName") + " " + e);
       log.error("Exception:", e);
     }
   }
@@ -892,7 +895,7 @@ public class TopicSyncControllerService {
           "Topic status :" + topicName + " " + updateSyncTopics(updatedSyncTopicsList).getResult());
     } catch (Exception e) {
       log.error("Exception:", e);
-      logArray.add("Topic update failed :" + topicName + " " + e);
+      logArray.add(TOPICS_SYNC_ERR_102 + topicName + " " + e);
     }
   }
 
@@ -1042,25 +1045,13 @@ public class TopicSyncControllerService {
 
     if (topicsDontExistInMainCluster) {
       return ApiResponse.builder()
-          .result(
-              "Failure. Please sync up the team of the following topic(s) first in"
-                  + " main Sync cluster"
-                  + " :"
-                  + syncCluster
-                  + ". \n Topics : "
-                  + erroredTopicsExist)
+          .result(TOPICS_SYNC_ERR_103 + syncCluster + ". \n Topics : " + erroredTopicsExist)
           .build();
     }
 
     if (topicsWithDiffTeams) {
       return ApiResponse.builder()
-          .result(
-              "Failure. The following topics are being synchronized with"
-                  + " a different team, when compared to main Sync cluster"
-                  + " :"
-                  + syncCluster
-                  + ". \n Topics : "
-                  + erroredTopics)
+          .result(TOPICS_SYNC_ERR_104 + syncCluster + ". \n Topics : " + erroredTopics)
           .build();
     }
 
@@ -1074,7 +1065,7 @@ public class TopicSyncControllerService {
         throw new KlawException(e.getMessage());
       }
     } else {
-      return ApiResponse.builder().result("No record updated.").build();
+      return ApiResponse.builder().result(SYNC_ERR_101).build();
     }
   }
 
@@ -1084,7 +1075,7 @@ public class TopicSyncControllerService {
       int tenantId) {
     List<SyncTopicUpdates> updatedSyncTopicsUpdated = new ArrayList<>();
     for (SyncTopicUpdates updatedSyncTopic : updatedSyncTopics) {
-      if ("REMOVE FROM KLAW".equals(updatedSyncTopic.getTeamSelected())) {
+      if (SYNC_102.equals(updatedSyncTopic.getTeamSelected())) {
         updatedSyncTopicsDelete.add(Integer.parseInt(updatedSyncTopic.getSequence()));
       } else {
         updatedSyncTopicsUpdated.add(updatedSyncTopic);

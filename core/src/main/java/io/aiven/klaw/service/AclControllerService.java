@@ -1,5 +1,12 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.model.enums.MailType.ACL_DELETE_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.ACL_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_APPROVED;
@@ -93,9 +100,7 @@ public class AclControllerService {
 
     String result;
     if (verifyIfTopicExists(aclRequestsModel, tenantId)) {
-      return ApiResponse.builder()
-          .result("Failure : Topic not found on target environment.")
-          .build();
+      return ApiResponse.builder().result(ACL_ERR_101).build();
     }
 
     String kafkaFlavor =
@@ -106,7 +111,7 @@ public class AclControllerService {
 
     if (AclType.CONSUMER == aclRequestsModel.getAclType()) {
       if (AclPatternType.PREFIXED.value.equals(aclRequestsModel.getAclPatternType())) {
-        result = "Failure : Please change the pattern to LITERAL for topic type.";
+        result = ACL_ERR_102;
         return ApiResponse.builder().result(result).build();
       }
 
@@ -114,10 +119,7 @@ public class AclControllerService {
       if (!kafkaFlavor.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
         if (validateTeamConsumerGroup(
             aclRequestsModel.getRequestingteam(), aclRequestsModel.getConsumergroup(), tenantId)) {
-          result =
-              "Failure : Consumer group "
-                  + aclRequestsModel.getConsumergroup()
-                  + " used by another team.";
+          result = String.format(ACL_ERR_103, aclRequestsModel.getConsumergroup());
           return ApiResponse.builder().result(result).build();
         }
       }
@@ -125,9 +127,7 @@ public class AclControllerService {
 
     if (kafkaFlavor.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
       if (verifyServiceAccountsOfTeam(aclRequestsModel, tenantId))
-        return ApiResponse.builder()
-            .result("Failure : Mentioned Service account used by another team.")
-            .build();
+        return ApiResponse.builder().result(ACL_ERR_104).build();
     }
 
     String transactionalId = aclRequestsModel.getTransactionalId();
@@ -639,17 +639,15 @@ public class AclControllerService {
 
   private ApiResponse validateAclRequest(AclRequests aclReq, String userDetails) {
     if (aclReq == null || aclReq.getReq_no() == null) {
-      return ApiResponse.builder().result("Record not found !").build();
+      return ApiResponse.builder().result(ACL_ERR_105).build();
     }
 
     if (Objects.equals(aclReq.getRequestor(), userDetails)) {
-      return ApiResponse.builder()
-          .result("You are not allowed to approve your own subscription requests.")
-          .build();
+      return ApiResponse.builder().result(ACL_ERR_106).build();
     }
 
     if (!RequestStatus.CREATED.value.equals(aclReq.getRequestStatus())) {
-      return ApiResponse.builder().result("This request does not exist anymore.").build();
+      return ApiResponse.builder().result(REQ_ERR_101).build();
     }
 
     // tenant filtering
@@ -753,11 +751,11 @@ public class AclControllerService {
         dbHandle.selectAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
 
     if (aclReq.getReq_no() == null) {
-      return ApiResponse.builder().result("Record not found !").build();
+      return ApiResponse.builder().result(ACL_ERR_105).build();
     }
 
     if (!RequestStatus.CREATED.value.equals(aclReq.getRequestStatus())) {
-      return ApiResponse.builder().result("This request does not exist anymore.").build();
+      return ApiResponse.builder().result(REQ_ERR_101).build();
     }
 
     // tenant filtering

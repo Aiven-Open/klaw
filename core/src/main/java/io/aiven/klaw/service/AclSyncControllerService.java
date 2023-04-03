@@ -1,5 +1,9 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_SYNC_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_SYNC_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_SYNC_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_ERR_101;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -104,7 +108,7 @@ public class AclSyncControllerService {
         listTopics.add(t);
       }
     } else {
-      return ApiResponse.builder().result("No record updated.").build();
+      return ApiResponse.builder().result(SYNC_ERR_101).build();
     }
 
     try {
@@ -113,7 +117,7 @@ public class AclSyncControllerService {
             .result(manageDatabase.getHandleDbRequests().addToSyncacls(listTopics))
             .build();
       }
-      return ApiResponse.builder().result("No record updated.").build();
+      return ApiResponse.builder().result(SYNC_ERR_101).build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -194,12 +198,12 @@ public class AclSyncControllerService {
       if (!Objects.requireNonNull(resultAclNullCheck).contains(ApiResultStatus.SUCCESS.value)) {
         log.error("Error in creating acl {} {}", aclFound, responseBody);
         logUpdateSyncBackTopics.add(
-            "Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + resultAclNullCheck);
+            String.format(ACL_SYNC_ERR_102, aclFound.getTopicname() + " " + resultAclNullCheck));
       } else if (resultAclNullCheck.contains("Acl already exists")) {
-        logUpdateSyncBackTopics.add("Acl already exists " + aclFound.getTopicname());
+        logUpdateSyncBackTopics.add(String.format(ACL_SYNC_ERR_103, aclFound.getTopicname()));
       } else {
         if (!Objects.equals(syncBackAcls.getSourceEnv(), syncBackAcls.getTargetEnv())) {
-          logUpdateSyncBackTopics.add("Acl added: " + aclFound.getTopicname());
+          logUpdateSyncBackTopics.add(String.format(ACL_SYNC_ERR_104, aclFound.getTopicname()));
           // Create request
           Map<String, String> resultMapReq =
               manageDatabase.getHandleDbRequests().requestForAcl(aclReq);

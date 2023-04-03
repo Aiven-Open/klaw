@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.BASE_OVERVIEW_101;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -35,7 +37,7 @@ public abstract class BaseOverviewService {
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
-  private static final String MASKED_FOR_SECURITY = "Not Authorized to see this.";
+  private static final String MASKED_FOR_SECURITY = BASE_OVERVIEW_101;
   @Autowired protected ManageDatabase manageDatabase;
   @Autowired protected ClusterApiService clusterApiService;
   @Autowired protected CommonUtilsService commonUtilsService;
@@ -175,10 +177,9 @@ public abstract class BaseOverviewService {
 
   protected Env getEnvDetails(String envId, int tenantId) {
     Optional<Env> envFound =
-        envFound =
-            manageDatabase.getAllEnvList(tenantId).stream()
-                .filter(env -> Objects.equals(env.getId(), envId))
-                .findFirst();
+        manageDatabase.getAllEnvList(tenantId).stream()
+            .filter(env -> Objects.equals(env.getId(), envId))
+            .findFirst();
     return envFound.orElse(null);
   }
 }

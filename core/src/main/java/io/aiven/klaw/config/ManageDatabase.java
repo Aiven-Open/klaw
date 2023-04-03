@@ -321,14 +321,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return allEnvListPerTenant.get(tenantId);
   }
 
-  public void setIsTrialLicense(boolean isTrialLicensed) {
-    isTrialLicense = isTrialLicensed;
-  }
-
-  public boolean getIsTrialLicense() {
-    return isTrialLicense;
-  }
-
   private Integer getTenantIdFromName(String tenantName) {
     return tenantMap.entrySet().stream()
         .filter(obj -> Objects.equals(obj.getValue(), tenantName))
@@ -369,10 +361,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
                 serviceAccounts.addAll(a.getServiceAccounts().getServiceAccountsList());
               }
             });
-  }
-
-  public Set<String> getTeamNamesForTenant(int tenantId) {
-    return teamsPerTenant.get(tenantId).stream().map(Team::getTeamname).collect(Collectors.toSet());
   }
 
   public Integer getTeamIdFromTeamName(int tenantId, String teamName) {
@@ -678,7 +666,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     List<Env> kafkaEnvTenantList =
         kafkaEnvList.stream()
             .filter(kafkaEnv -> Objects.equals(kafkaEnv.getTenantId(), tenantId))
-            .collect(Collectors.toList());
+            .toList();
     Map<String, Map<String, List<String>>> envParamsMap = new HashMap<>();
 
     Map<String, List<String>> oneEnvParamsMap;
@@ -764,9 +752,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
 
     List<KwRolesPermissions> rolesPermsList =
-        rolesPermissions.stream()
-            .filter(rolePerms -> rolePerms.getTenantId() == tenantId)
-            .collect(Collectors.toList());
+        rolesPermissions.stream().filter(rolePerms -> rolePerms.getTenantId() == tenantId).toList();
     List<String> tmpList;
     Map<String, List<String>> rolesPermsMap = new HashMap<>();
     for (KwRolesPermissions rolesPermission : rolesPermsList) {

@@ -1,10 +1,20 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_109;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_108;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_EXPIRY_DEFAULT_TENANT;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_TRIAL_PERIOD;
 import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
 import static io.aiven.klaw.helpers.KwConstants.SUPERADMIN_ROLE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
+import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -129,7 +139,7 @@ public class EnvsClustersTenantsControllerService {
       envModel.setTenantName(manageDatabase.getTenantMap().get(envModel.getTenantId()));
 
       extractKwEnvParameters(envModel);
-      log.info("Return env model {}", envModel);
+      log.debug("Return env model {}", envModel);
       return envModel;
     }
     return null;
@@ -179,7 +189,7 @@ public class EnvsClustersTenantsControllerService {
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     if (userInfo != null) {
       copyProperties(userInfo, userInfoModel);
-      userInfoModel.setUserPassword("*******");
+      userInfoModel.setUserPassword(MASKED_PWD);
       return userInfoModel;
     } else {
       return null;
@@ -208,7 +218,6 @@ public class EnvsClustersTenantsControllerService {
           tmpClusterModel.setShowDeleteCluster(false);
         }
       }
-
       clustersModels.add(tmpClusterModel);
     }
 
@@ -684,9 +693,7 @@ public class EnvsClustersTenantsControllerService {
                         && Objects.equals(en.getTenantId(), newEnv.getTenantId())
                         && Objects.equals(en.getEnvExists(), "true"));
     if (envNameAlreadyPresent) {
-      return ApiResponse.builder()
-          .result("Failure. Please choose a different name. This environment name already exists.")
-          .build();
+      return ApiResponse.builder().result(ENV_CLUSTER_TNT_ERR_101).build();
     } else if (envActualList.stream()
         .anyMatch(
             en ->
@@ -757,9 +764,7 @@ public class EnvsClustersTenantsControllerService {
               });
 
       if (clusterNameAlreadyExists.get()) {
-        return ApiResponse.builder()
-            .result("Failure. Please choose a different name. This cluster name already exists.")
-            .build();
+        return ApiResponse.builder().result(ENV_CLUSTER_TNT_ERR_102).build();
       }
     }
     KwClusters kwCluster = new KwClusters();
@@ -772,7 +777,7 @@ public class EnvsClustersTenantsControllerService {
         && kwCluster.getClusterId() == null
         && "saas".equals(kwInstallationType)) {
       if (!savePublicKey(kwClustersModel, resultMap, tenantId, kwCluster)) {
-        return ApiResponse.builder().result("Failure. Unable to save public key.").build();
+        return ApiResponse.builder().result(ENV_CLUSTER_TNT_ERR_103).build();
       }
     }
 
@@ -851,9 +856,7 @@ public class EnvsClustersTenantsControllerService {
     List<Env> allEnvList = manageDatabase.getAllEnvList(tenantId);
     if (allEnvList.stream()
         .anyMatch(env -> Objects.equals(env.getClusterId(), Integer.parseInt(clusterId)))) {
-      return ApiResponse.builder()
-          .result("Not allowed to delete this cluster, as there are associated environments.")
-          .build();
+      return ApiResponse.builder().result(ENV_CLUSTER_TNT_ERR_104).build();
     }
 
     try {
@@ -879,9 +882,7 @@ public class EnvsClustersTenantsControllerService {
       case "kafka":
         if (manageDatabase.getHandleDbRequests().findAllKafkaComponentsCountForEnv(envId, tenantId)
             > 0) {
-          String notAllowed =
-              "Not allowed to delete this environment, as there are associated topics/acls/requests.";
-          return ApiResponse.builder().result(notAllowed).build();
+          return ApiResponse.builder().result(ENV_CLUSTER_TNT_ERR_105).build();
         }
         break;
       case "kafkaconnect":
@@ -889,17 +890,13 @@ public class EnvsClustersTenantsControllerService {
                 .getHandleDbRequests()
                 .findAllConnectorComponentsCountForEnv(envId, tenantId)
             > 0) {
-          String notAllowed =
-              "Not allowed to delete this environment, as there are associated connectors/requests.";
-          return ApiResponse.builder().result(notAllowed).build();
+          return ApiResponse.builder().result(ENV_CLUSTER_TNT_ERR_106).build();
         }
         break;
       case "schemaregistry":
         if (manageDatabase.getHandleDbRequests().findAllSchemaComponentsCountForEnv(envId, tenantId)
             > 0) {
-          String notAllowed =
-              "Not allowed to delete this environment, as there are associated schemaregistry/requests.";
-          return ApiResponse.builder().result(notAllowed).build();
+          return ApiResponse.builder().result(ENV_CLUSTER_TNT_ERR_107).build();
         }
         break;
     }
@@ -940,7 +937,7 @@ public class EnvsClustersTenantsControllerService {
       throws KlawValidationException {
     // only assignable on a schema registry
     if (KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
-      log.info("Env Tag supplied = ", envTag);
+      log.debug("Env Tag supplied = {}", envTag);
       if (envTag != null && !envTag.getId().isEmpty()) {
 
         associateWithKafkaEnv(envTag, envId, envName, tenantId);
@@ -1073,7 +1070,7 @@ public class EnvsClustersTenantsControllerService {
       throws KlawException {
     if (manageDatabase.getHandleDbRequests().getTenants().size()
         >= maxNumberOfTenantsCanBeCreated) {
-      return ApiResponse.builder().result("Maximum tenants reached.").build();
+      return ApiResponse.builder().result(ENV_CLUSTER_TNT_ERR_108).build();
     }
 
     if (isExternal
@@ -1086,7 +1083,7 @@ public class EnvsClustersTenantsControllerService {
     kwTenants.setTenantDesc(kwTenantModel.getTenantDesc());
     kwTenants.setInTrial(kwTenantModel.isInTrialPhase() + "");
     kwTenants.setContactPerson(kwTenantModel.getContactPerson());
-    kwTenants.setOrgName("Our Organization");
+    kwTenants.setOrgName(ENV_CLUSTER_TNT_109);
     if (isExternal) {
       kwTenantModel.setActiveTenant(true);
     }
@@ -1162,12 +1159,9 @@ public class EnvsClustersTenantsControllerService {
       kwTenantModel.setActiveTenant("true".equals(tenant.get().getIsActive()));
       kwTenantModel.setOrgName(tenant.get().getOrgName());
 
-      if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-        kwTenantModel.setAuthorizedToDelete(false);
-      } else {
-        kwTenantModel.setAuthorizedToDelete(true);
-      }
+      kwTenantModel.setAuthorizedToDelete(
+          !commonUtilsService.isNotAuthorizedUser(
+              getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT));
     }
     return kwTenantModel;
   }
