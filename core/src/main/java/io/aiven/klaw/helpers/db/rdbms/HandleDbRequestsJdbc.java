@@ -869,4 +869,74 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   public int getAllTopicsCountInAllTenants() {
     return jdbcSelectHelper.getAllTopicsCountInAllTenants();
   }
+
+  @Override
+  public List<TopicRequest> getAllTopicRequests() {
+    return jdbcSelectHelper.getAllTopicRequests();
+  }
+
+  @Override
+  public List<KafkaConnectorRequest> getAllConnectorRequests() {
+    return jdbcSelectHelper.getAllConnectorRequests();
+  }
+
+  @Override
+  public List<KwKafkaConnector> getAllConnectors() {
+    return jdbcSelectHelper.getAllConnectors();
+  }
+
+  @Override
+  public List<Topic> getAllTopics() {
+    return jdbcSelectHelper.getAllTopics();
+  }
+
+  @Override
+  public List<Acl> getAllSubscriptions() {
+    return jdbcSelectHelper.getAllSubscriptions();
+  }
+
+  @Override
+  public List<AclRequests> getAllAclRequests() {
+    return jdbcSelectHelper.getAllAclRequests();
+  }
+
+  @Override
+  public List<SchemaRequest> getAllSchemaRequests() {
+    return jdbcSelectHelper.getAllSchemaRequests();
+  }
+
+  @Override
+  public List<MessageSchema> selectAllSchemas() {
+    return jdbcSelectHelper.selectAllSchemas();
+  }
+
+  @Override
+  public List<Team> selectTeams() {
+    return jdbcSelectHelper.selectTeams();
+  }
+
+  @Override
+  public List<RegisterUserInfo> getAllRegisterUsersInfo() {
+    return jdbcSelectHelper.getAllRegisterUsersInfo();
+  }
+
+  @Override
+  public List<Env> selectEnvs() {
+    return jdbcSelectHelper.selectEnvs();
+  }
+
+  @Override
+  public List<ActivityLog> getAllActivityLog() {
+    return jdbcSelectHelper.getAllActivityLog();
+  }
+
+  @Override
+  public List<KwProperties> selectKwProperties() {
+    return jdbcSelectHelper.selectKwProperties();
+  }
+
+  @Override
+  public List<KwClusters> getClusters() {
+    return jdbcSelectHelper.getClusters();
+  }
 }

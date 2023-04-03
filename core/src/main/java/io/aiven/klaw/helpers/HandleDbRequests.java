@@ -363,4 +363,32 @@ public interface HandleDbRequests {
   int getAllTopicsCountInAllTenants();
 
   int findAllComponentsCountForUser(String userName, int tenantId);
+
+  List<Topic> getAllTopics();
+
+  List<TopicRequest> getAllTopicRequests();
+
+  List<KafkaConnectorRequest> getAllConnectorRequests();
+
+  List<KwKafkaConnector> getAllConnectors();
+
+  List<Acl> getAllSubscriptions();
+
+  List<AclRequests> getAllAclRequests();
+
+  List<SchemaRequest> getAllSchemaRequests();
+
+  List<MessageSchema> selectAllSchemas();
+
+  List<Team> selectTeams();
+
+  List<RegisterUserInfo> getAllRegisterUsersInfo();
+
+  List<Env> selectEnvs();
+
+  List<ActivityLog> getAllActivityLog();
+
+  List<KwProperties> selectKwProperties();
+
+  List<KwClusters> getClusters();
 }
