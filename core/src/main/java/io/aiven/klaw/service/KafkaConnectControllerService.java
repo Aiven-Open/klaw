@@ -460,6 +460,7 @@ public class KafkaConnectControllerService {
       String currentPage,
       String requestsType,
       String env,
+      RequestOperationType requestOperationType,
       Order order,
       String search) {
     log.debug("getCreatedTopicRequests {} {}", pageNo, requestsType);
@@ -473,12 +474,14 @@ public class KafkaConnectControllerService {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedConnectorRequests(userDetails, requestsType, false, tenantId, env, search);
+              .getCreatedConnectorRequests(
+                  userDetails, requestsType, false, tenantId, env, requestOperationType, search);
     else
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedConnectorRequests(userDetails, requestsType, true, tenantId, env, search);
+              .getCreatedConnectorRequests(
+                  userDetails, requestsType, true, tenantId, env, requestOperationType, search);
 
     createdTopicReqList = filterByTenantAndOrder(userDetails, createdTopicReqList, order);
 

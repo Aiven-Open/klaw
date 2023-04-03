@@ -137,6 +137,8 @@ public class TopicController {
    * @param teamId The identifier of the team that created the request that you wish to filter the
    *     results by, e.g. 1,2,3
    * @param env The name of the environment you would like returned e.g. '1' or '4'
+   * @param requestOperationType is a filter to only return requests of a certain operation type *
+   *     e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param search A wildcard search term that searches topicNames.
    * @param order allows the requestor to specify what order the pagination should be returned in *
    *     OLDEST_FIRST/NEWEST_FIRST
@@ -152,12 +154,21 @@ public class TopicController {
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "teamId", required = false) Integer teamId,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "operationType", required = false)
+          RequestOperationType requestOperationType,
       @RequestParam(value = "search", required = false) String search,
       @RequestParam(value = "order", required = false, defaultValue = "ASC_REQUESTED_TIME")
           Order order) {
     return new ResponseEntity<>(
         topicControllerService.getTopicRequestsForApprover(
-            pageNo, currentPage, requestStatus.value, teamId, env, search, order),
+            pageNo,
+            currentPage,
+            requestStatus.value,
+            teamId,
+            env,
+            requestOperationType,
+            search,
+            order),
         HttpStatus.OK);
   }
 

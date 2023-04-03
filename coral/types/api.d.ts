@@ -2537,6 +2537,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         teamId?: number;
         env?: string;
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
@@ -2754,9 +2755,9 @@ export type operations = {
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         topic?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         env?: string;
         search?: string;
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
       };
@@ -2779,6 +2780,7 @@ export type operations = {
         topic?: string;
         env?: string;
         search?: string;
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
@@ -3118,9 +3120,9 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         search?: string;
       };
     };
@@ -3141,6 +3143,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         search?: string;
       };
     };
