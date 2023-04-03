@@ -8,7 +8,6 @@ import io.aiven.klaw.dao.metadata.KwAdminConfig;
 import io.aiven.klaw.dao.metadata.KwData;
 import io.aiven.klaw.dao.metadata.KwRequests;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -54,7 +53,6 @@ public class ExportImportDataService {
 
   @Async("metadataExportTaskExecutor")
   @Scheduled(cron = "${klaw.export.cron.expression:0 0 0 * * ?}")
-  @PostConstruct
   void exportKwMetadataScheduler() {
     if (!exportMetadata) {
       return;
