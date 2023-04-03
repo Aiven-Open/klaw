@@ -15,6 +15,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KwRequests {
+  String klawVersion;
+  String createdTime;
   List<TopicRequest> topicRequests;
   List<AclRequests> subscriptionRequests;
   List<SchemaRequest> schemaRequests;

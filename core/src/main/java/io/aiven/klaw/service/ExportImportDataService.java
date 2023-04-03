@@ -33,6 +33,15 @@ public class ExportImportDataService {
   @Value("${klaw.jasypt.encryptor.secretkey}")
   private String encryptorSecretKey;
 
+  @Value("${klaw.export.file.path:/export}")
+  private String klawExportFilePath;
+
+  @Value("${klaw.export.scheduler.enable:false}")
+  private boolean exportMetadata;
+
+  @Value("${klaw.version}")
+  private String klawVersion;
+
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final String FILE_EXT = ".json";
   private static final String FILE_PREFIX = "kwmetadata";
@@ -40,12 +49,6 @@ public class ExportImportDataService {
   private static final String KW_DATA_PREFIX = "kwdata";
   private static final String KW_REQUEST_DATA_PREFIX = "kwrequests_data";
   @Autowired ManageDatabase manageDatabase;
-
-  @Value("${klaw.export.file.path:/target}")
-  private String klawExportFilePath;
-
-  @Value("${klaw.export.scheduler.enable:false}")
-  private boolean exportMetadata;
 
   @Async("metadataExportTaskExecutor")
   @Scheduled(cron = "${klaw.export.cron.expression:0 0 0 * * ?}")
@@ -58,14 +61,14 @@ public class ExportImportDataService {
 
   // select data from database, write to files in json format
   private void exportKwMetadata() {
+    String timeStamp = getTimeStamp();
     HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
-    KwAdminConfig adminConfig = getAdminConfig(handleDbRequests);
-    KwData kwData = getKwData(handleDbRequests);
-    KwRequests kwRequestData = getRequestsData(handleDbRequests);
+    KwAdminConfig adminConfig = getAdminConfig(handleDbRequests, timeStamp);
+    KwData kwData = getKwData(handleDbRequests, timeStamp);
+    KwRequests kwRequestData = getRequestsData(handleDbRequests, timeStamp);
 
     // write to files
     try {
-      String timeStamp = getTimeStamp();
       OBJECT_MAPPER
           .writerWithDefaultPrettyPrinter()
           .writeValue(getFile(ADMIN_CONFIG_PREFIX, timeStamp), adminConfig);
@@ -82,7 +85,7 @@ public class ExportImportDataService {
   }
 
   // tenants, clusters, environments, roles, permissions, teams, users, properties
-  public KwAdminConfig getAdminConfig(HandleDbRequests handleDbRequests) {
+  public KwAdminConfig getAdminConfig(HandleDbRequests handleDbRequests, String timeStamp) {
     log.info(
         "Selecting Kw Admin Config (tenants, clusters, environments, roles, permissions, teams, users, properties) --- STARTED");
     List<UserInfo> userList = getUpdatedUserList(handleDbRequests.selectAllUsersAllTenants());
@@ -98,6 +101,8 @@ public class ExportImportDataService {
             .properties(handleDbRequests.selectKwProperties())
             .productDetails(
                 handleDbRequests.selectProductDetails("Klaw").orElse(new ProductDetails()))
+            .klawVersion(klawVersion)
+            .createdTime(timeStamp)
             .build();
     log.info("Selecting Kw Admin Config --- ENDED");
     return kwMetadata;
@@ -113,7 +118,7 @@ public class ExportImportDataService {
   }
 
   // Get core configuration of topics, acls, schemas, connectors
-  public KwData getKwData(HandleDbRequests handleDbRequests) {
+  public KwData getKwData(HandleDbRequests handleDbRequests, String timeStamp) {
     log.info("Selecting Kw Data (topics, acls, schemas, connectors) --- STARTED");
     KwData kwMetadata =
         KwData.builder()
@@ -121,13 +126,15 @@ public class ExportImportDataService {
             .subscriptions(handleDbRequests.getAllSubscriptions())
             .schemas(handleDbRequests.selectAllSchemas())
             .kafkaConnectors(handleDbRequests.getAllConnectors())
+            .klawVersion(klawVersion)
+            .createdTime(timeStamp)
             .build();
     log.info("Selecting Kw Data --- STARTED");
     return kwMetadata;
   }
 
   // Get requests data and activity log
-  public KwRequests getRequestsData(HandleDbRequests handleDbRequests) {
+  public KwRequests getRequestsData(HandleDbRequests handleDbRequests, String timeStamp) {
     log.info(
         "Selecting Kw Requests Data (topic, subscription, schema and connector requests, activity log)--- STARTED");
     KwRequests kwMetadata =
@@ -137,20 +144,30 @@ public class ExportImportDataService {
             .schemaRequests(handleDbRequests.getAllSchemaRequests())
             .connectorRequests(handleDbRequests.getAllConnectorRequests())
             .activityLogs(handleDbRequests.getAllActivityLog())
+            .klawVersion(klawVersion)
+            .createdTime(timeStamp)
             .build();
     log.info("Selecting Kw Requests Data --- ENDED");
     return kwMetadata;
   }
 
   private File getFile(String fileName, String timeStamp) {
-    File file =
-        new File(klawExportFilePath + FILE_PREFIX + "-" + fileName + "-" + timeStamp + FILE_EXT);
-    log.info("File : {}", file);
+    String filePath =
+        klawExportFilePath
+            .concat("/")
+            .concat(FILE_PREFIX)
+            .concat("-")
+            .concat(fileName)
+            .concat("-")
+            .concat(timeStamp)
+            .concat(FILE_EXT);
+    File file = new File(filePath);
+    log.info("File : {}", filePath);
     return file;
   }
 
   private String getTimeStamp() {
-    String dataPattern = "yyyy-MM-ddHH-mm-ssSSS";
+    String dataPattern = "yyyy-MM-dd-HH-mm-ss";
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dataPattern);
     return simpleDateFormat.format(new Date());
   }

@@ -17,6 +17,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KwAdminConfig {
+  String klawVersion;
+  String createdTime;
   List<KwTenants> tenants;
   List<KwClusters> clusters;
   List<Env> environments;

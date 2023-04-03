@@ -13,6 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KwData {
+  String klawVersion;
+  String createdTime;
   List<Topic> topics;
   List<Acl> subscriptions;
   List<MessageSchema> schemas;

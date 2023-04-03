@@ -46,7 +46,7 @@ public class ExportImportDataServiceTest {
         .thenReturn(utilMethods.getUserInfoList("", ""));
     when(handleDbRequests.getClusters())
         .thenReturn(Collections.singletonList(utilMethods.getKwClusters()));
-    KwAdminConfig kwAdminConfig = exportImportDataService.getAdminConfig(handleDbRequests);
+    KwAdminConfig kwAdminConfig = exportImportDataService.getAdminConfig(handleDbRequests, "");
     assertThat(kwAdminConfig.getUsers().size()).isEqualTo(1);
     assertThat(kwAdminConfig.getClusters().size()).isEqualTo(1);
   }
@@ -56,7 +56,7 @@ public class ExportImportDataServiceTest {
     when(handleDbRequests.getAllTopics()).thenReturn(utilMethods.getMultipleTopics("test", 10));
     when(handleDbRequests.getAllConnectors())
         .thenReturn(Collections.singletonList(new KwKafkaConnector()));
-    KwData kwData = exportImportDataService.getKwData(handleDbRequests);
+    KwData kwData = exportImportDataService.getKwData(handleDbRequests, "");
     assertThat(kwData.getTopics().size()).isEqualTo(10);
     assertThat(kwData.getKafkaConnectors().size()).isEqualTo(1);
   }
@@ -65,7 +65,7 @@ public class ExportImportDataServiceTest {
   public void getRequestsData() {
     when(handleDbRequests.getAllTopicRequests()).thenReturn(utilMethods.getTopicRequests());
     when(handleDbRequests.getAllAclRequests()).thenReturn(utilMethods.getAclRequests());
-    KwRequests kwRequests = exportImportDataService.getRequestsData(handleDbRequests);
+    KwRequests kwRequests = exportImportDataService.getRequestsData(handleDbRequests, "");
     assertThat(kwRequests.getTopicRequests().size()).isEqualTo(1);
     assertThat(kwRequests.getSubscriptionRequests().size()).isEqualTo(1);
   }
