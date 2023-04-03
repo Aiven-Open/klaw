@@ -50,7 +50,7 @@ public class KafkaConnectController {
    * @return A List of Kafka Connector Requests filtered by the provided parameters.
    */
   @RequestMapping(
-      value = "/getConnectorRequestsForApproval",
+      value = "/getConnectorRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<KafkaConnectorRequestsResponseModel>> getCreatedConnectorRequests(
@@ -58,12 +58,14 @@ public class KafkaConnectController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "operationType", required = false)
+          RequestOperationType requestOperationType,
       @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
           Order order,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getCreatedConnectorRequests(
-            pageNo, currentPage, requestStatus.value, env, order, search),
+            pageNo, currentPage, requestStatus.value, env, order, requestOperationType, search),
         HttpStatus.OK);
   }
 
@@ -122,6 +124,7 @@ public class KafkaConnectController {
    *     OLDEST_FIRST/NEWEST_FIRST @Param search A wildcard search that filters by a partial case
    *     insensitive match
    * @param search A wildcard search term that searches topicNames.
+   * @param isMyRequest Only return requests created by the user calling the API
    * @return A list of Kafka Connector requests
    */
   @RequestMapping(
@@ -137,10 +140,19 @@ public class KafkaConnectController {
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
           Order order,
-      @RequestParam(value = "search", required = false) String search) {
+      @RequestParam(value = "search", required = false) String search,
+      @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
+          boolean isMyRequest) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorRequests(
-            pageNo, currentPage, requestStatus.value, requestOperationType, env, order, search),
+            pageNo,
+            currentPage,
+            requestStatus.value,
+            requestOperationType,
+            env,
+            order,
+            search,
+            isMyRequest),
         HttpStatus.OK);
   }
 

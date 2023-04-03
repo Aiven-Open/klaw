@@ -182,7 +182,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       RequestOperationType requestOperationType,
       String env,
       String wildcardSearch,
-      int tenantId) {
+      int tenantId,
+      boolean isMyRequest) {
     return jdbcSelectHelper.selectFilteredKafkaConnectorRequests(
         false,
         requestor,
@@ -191,18 +192,29 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         false,
         tenantId,
         env,
-        wildcardSearch);
+        wildcardSearch,
+        isMyRequest);
   }
 
+  @Override
   public List<KafkaConnectorRequest> getCreatedConnectorRequests(
       String requestor,
       String status,
       boolean showRequestsOfAllTeams,
       int tenantId,
       String env,
+      RequestOperationType requestOperationType,
       String search) {
     return jdbcSelectHelper.selectFilteredKafkaConnectorRequests(
-        true, requestor, status, null, showRequestsOfAllTeams, tenantId, env, search);
+        true,
+        requestor,
+        status,
+        requestOperationType,
+        showRequestsOfAllTeams,
+        tenantId,
+        env,
+        search,
+        false);
   }
 
   public TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId) {

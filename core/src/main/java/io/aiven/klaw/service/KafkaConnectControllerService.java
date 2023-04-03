@@ -461,6 +461,7 @@ public class KafkaConnectControllerService {
       String requestsType,
       String env,
       Order order,
+      RequestOperationType requestOperationType,
       String search) {
     log.debug("getCreatedTopicRequests {} {}", pageNo, requestsType);
     String userDetails = getUserName();
@@ -473,12 +474,14 @@ public class KafkaConnectControllerService {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedConnectorRequests(userDetails, requestsType, false, tenantId, env, search);
+              .getCreatedConnectorRequests(
+                  userDetails, requestsType, false, tenantId, env, requestOperationType, search);
     else
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
-              .getCreatedConnectorRequests(userDetails, requestsType, true, tenantId, env, search);
+              .getCreatedConnectorRequests(
+                  userDetails, requestsType, true, tenantId, env, requestOperationType, search);
 
     createdTopicReqList = filterByTenantAndOrder(userDetails, createdTopicReqList, order);
 
@@ -801,14 +804,16 @@ public class KafkaConnectControllerService {
       RequestOperationType requestOperationType,
       String env,
       Order order,
-      String search) {
+      String search,
+      boolean isMyRequest) {
     log.debug("getConnectorRequests page {} requestsType {}", pageNo, requestsType);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<KafkaConnectorRequest> topicReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getAllConnectorRequests(userDetails, requestOperationType, env, search, tenantId);
+            .getAllConnectorRequests(
+                userDetails, requestOperationType, env, search, tenantId, isMyRequest);
 
     topicReqs = filterByTenantAndOrder(userDetails, topicReqs, order);
     // TODO is this really needed?

@@ -221,7 +221,7 @@ public class KafkaConnectControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
-            anyString(), eq(null), eq(null), eq(null), eq(101)))
+            anyString(), eq(null), eq(null), eq(null), eq(101), eq(false)))
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -229,7 +229,14 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
-            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME, null);
+            "1",
+            "1",
+            "all",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
+            null,
+            false);
 
     assertThat(ordered_response).hasSize(10);
 
@@ -253,7 +260,7 @@ public class KafkaConnectControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
-            anyString(), eq(null), eq(null), eq(null), eq(101)))
+            anyString(), eq(null), eq(null), eq(null), eq(101), eq(false)))
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -261,7 +268,14 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
-            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME, null);
+            "1",
+            "1",
+            "all",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            null,
+            false);
 
     assertThat(ordered_response).hasSize(10);
 

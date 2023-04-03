@@ -80,7 +80,8 @@ public interface HandleDbRequests {
       RequestOperationType requestOperationType,
       String env,
       String wildcardSearch,
-      int tenantId);
+      int tenantId,
+      boolean isMyRequest);
 
   List<KafkaConnectorRequest> getCreatedConnectorRequests(
       String requestor,
@@ -88,6 +89,7 @@ public interface HandleDbRequests {
       boolean showRequestsOfAllTeams,
       int tenantId,
       String env,
+      RequestOperationType requestOperationType,
       String search);
 
   TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId);
