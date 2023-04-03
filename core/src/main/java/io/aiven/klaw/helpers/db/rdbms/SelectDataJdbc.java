@@ -1395,7 +1395,14 @@ public class SelectDataJdbc {
   }
 
   public List<UserInfo> selectAllUsersAllTenants() {
-    return Lists.newArrayList(userInfoRepo.findAll());
+    List<UserInfo> userList = Lists.newArrayList(userInfoRepo.findAll());
+
+    userList =
+        userList.stream()
+            .filter(user -> user.getUsername().equals("superadmin"))
+            .collect(Collectors.toList());
+    userList.forEach(user -> user.setPwd(""));
+    return userList;
   }
 
   public Optional<ProductDetails> selectProductDetails(String name) {
@@ -1645,5 +1652,61 @@ public class SelectDataJdbc {
 
   private static void updateMap(Map<String, Long> countsMap, List<Object[]> requestObjList) {
     requestObjList.forEach(reqObj -> countsMap.put((String) reqObj[0], (Long) reqObj[1]));
+  }
+
+  public List<KwClusters> getClusters() {
+    return Lists.newArrayList(kwClusterRepo.findAll());
+  }
+
+  public List<Env> selectEnvs() {
+    return Lists.newArrayList(envRepo.findAll());
+  }
+
+  public List<Team> selectTeams() {
+    return Lists.newArrayList(teamRepo.findAll());
+  }
+
+  public List<KwProperties> selectKwProperties() {
+    return Lists.newArrayList(kwPropertiesRepo.findAll());
+  }
+
+  public List<Topic> getAllTopics() {
+    return Lists.newArrayList(topicRepo.findAll());
+  }
+
+  public List<Acl> getAllSubscriptions() {
+    return Lists.newArrayList(aclRepo.findAll());
+  }
+
+  public List<MessageSchema> selectAllSchemas() {
+    return Lists.newArrayList(messageSchemaRepo.findAll());
+  }
+
+  public List<KwKafkaConnector> getAllConnectors() {
+    return Lists.newArrayList(kafkaConnectorRepo.findAll());
+  }
+
+  public List<ActivityLog> getAllActivityLog() {
+    return Lists.newArrayList(activityLogRepo.findAll());
+  }
+
+  public List<TopicRequest> getAllTopicRequests() {
+    return Lists.newArrayList(topicRequestsRepo.findAll());
+  }
+
+  public List<AclRequests> getAllAclRequests() {
+    return Lists.newArrayList(aclRequestsRepo.findAll());
+  }
+
+  public List<SchemaRequest> getAllSchemaRequests() {
+    return Lists.newArrayList(schemaRequestRepo.findAll());
+  }
+
+  public List<KafkaConnectorRequest> getAllConnectorRequests() {
+    return Lists.newArrayList(kafkaConnectorRequestsRepo.findAll());
+  }
+
+  public List<RegisterUserInfo> getAllRegisterUsersInfo() {
+    return Lists.newArrayList(registerInfoRepo.findAll());
   }
 }
