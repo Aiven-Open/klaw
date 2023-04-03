@@ -59,13 +59,14 @@ const getSchemaRequestsForApprover = (
     requestStatus: args.requestStatus,
     ...(args.search && args.search !== "" && { search: args.search }),
     ...(args.env && args.env !== "ALL" && { env: args.env }),
+    ...(args.operationType !== undefined && {
+      operationType: args.operationType,
+    }),
   };
 
   return api
     .get<KlawApiResponse<"getSchemaRequestsForApprover">>(
-      `/getSchemaRequestsForApprover?${new URLSearchParams(
-        queryObject
-      ).toString()}`
+      `/getSchemaRequestsForApprover?${new URLSearchParams(queryObject)}`
     )
     .then(transformGetSchemaRequests);
 };
