@@ -25,7 +25,7 @@ For the versions available, see the [tags on this repository](https://github.com
 - Topics (approval): Create, Update, Delete, Promote
   - React UI - New look and feel for Browse topics, Create topic Request
   - React UI - New look and feel for Approving topics, ACLs, Schemas
-  - React UI - New look and feel for viewing 'My Teams Requests' for topics, ACLs and Schemas 
+  - React UI - New look and feel for viewing 'My Team's Requests' for topics, ACLs and Schemas 
   
 - Acls (approval):  Create,Delete
   - React UI - Create Acl Request 
