@@ -1,10 +1,7 @@
 name: Coral PR Pipeline
 
 on:
-  pull_request:
-    paths:
-      - 'coral/**'
-      - '!coral/types/api.d.ts'
+  workflow_call
 
 permissions:
   contents: read
