@@ -201,10 +201,10 @@ public class ClusterApiServiceTest {
   @Test
   @Order(7)
   public void approveTopicRequestsSuccess() throws KlawException {
-    ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response =
         new ResponseEntity<>(
-            ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build(), HttpStatus.OK);
+            ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build(), HttpStatus.OK);
 
     String topicName = "testtopic";
     TopicRequest topicRequest = new TopicRequest();
@@ -225,7 +225,7 @@ public class ClusterApiServiceTest {
     ResponseEntity<ApiResponse> response1 =
         clusterApiService.approveTopicRequests(
             topicName, RequestOperationType.CREATE.value, 1, "1", "", null, 1, false);
-    assertThat(Objects.requireNonNull(response1.getBody()).getResult())
+    assertThat(Objects.requireNonNull(response1.getBody()).getMessage())
         .isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
@@ -265,7 +265,7 @@ public class ClusterApiServiceTest {
     aclRequests.setRequestOperationType(RequestOperationType.CREATE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -284,7 +284,7 @@ public class ClusterApiServiceTest {
         .thenReturn(responseEntity);
 
     ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclRequests, 1);
-    assertThat(response.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getBody().getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -297,7 +297,7 @@ public class ClusterApiServiceTest {
     aclRequests.setRequestOperationType(RequestOperationType.DELETE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -316,7 +316,7 @@ public class ClusterApiServiceTest {
         .thenReturn(responseEntity);
 
     ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclRequests, 1);
-    assertThat(response.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getBody().getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -340,7 +340,7 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -355,7 +355,7 @@ public class ClusterApiServiceTest {
 
     ResponseEntity<ApiResponse> result =
         clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
-    assertThat(result.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.getBody().getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @ParameterizedTest
@@ -368,7 +368,7 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -385,7 +385,7 @@ public class ClusterApiServiceTest {
         clusterApiService.postSchema(schemaRequest, envSel, topicName, 1);
     verify(restTemplate, times(1))
         .postForEntity(anyString(), clusterSchemaRequestCaptor.capture(), eq(ApiResponse.class));
-    assertThat(result.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.getBody().getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     ClusterSchemaRequest clusterSchemaRequest = clusterSchemaRequestCaptor.getValue().getBody();
     assertThat(clusterSchemaRequest.isForceRegister()).isFalse();
     assertThat(clusterSchemaRequest.getFullSchema()).isEqualTo(SCHEMAFULL);
@@ -400,7 +400,7 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -418,7 +418,7 @@ public class ClusterApiServiceTest {
 
     verify(restTemplate, times(1))
         .postForEntity(anyString(), clusterSchemaRequestCaptor.capture(), eq(ApiResponse.class));
-    assertThat(result.getBody().getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.getBody().getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     ClusterSchemaRequest clusterSchemaRequest = clusterSchemaRequestCaptor.getValue().getBody();
     assertThat(clusterSchemaRequest.isForceRegister()).isTrue();
     assertThat(clusterSchemaRequest.getFullSchema()).isEqualTo(SCHEMAFULL);

@@ -81,7 +81,7 @@ public class SaasService {
             envsClustersTenantsControllerService.addTenantId(kwTenantModel, false);
 
         // create INFRATEAM and STAGINGTEAM
-        if (ApiResultStatus.SUCCESS.value.equals(addTenantResult.getResult())) {
+        if (ApiResultStatus.SUCCESS.value.equals(addTenantResult.getMessage())) {
           tenantId = Integer.parseInt((String) addTenantResult.getData());
 
           Map<String, String> teamAddMap =
@@ -95,7 +95,7 @@ public class SaasService {
             ApiResponse resultApproveUser =
                 usersTeamsControllerService.approveNewUserRequests(
                     newUser.getUsername(), false, tenantId, KwConstants.INFRATEAM);
-            if (resultApproveUser.getResult().contains(ApiResultStatus.SUCCESS.value)) {
+            if (resultApproveUser.getMessage().contains(ApiResultStatus.SUCCESS.value)) {
               updateStaticData(newUser, tenantId);
             } else {
               resultMap.put("error", SAAS_ERR_102);
@@ -107,7 +107,7 @@ public class SaasService {
             return resultMap;
           }
         } else {
-          resultMap.put("error", "Failure :" + addTenantResult.getResult());
+          resultMap.put("error", "Failure :" + addTenantResult.getMessage());
           return resultMap;
         }
       }
@@ -129,7 +129,7 @@ public class SaasService {
 
     try {
       if (handleValidations(newUser, tenantMap, resultMap)) {
-        return ApiResponse.builder().result(resultMap.get("result")).build();
+        return ApiResponse.builder().success(false).message(resultMap.get("result")).build();
       }
 
       RegisterUserInfoModel newUserTarget = new RegisterUserInfoModel();
@@ -142,19 +142,23 @@ public class SaasService {
       if (newUser.getTenantName() == null || newUser.getTenantName().equals("")) {
         // new user
         if (createNewUserForActivation(resultMap, newUserTarget)) {
-          return ApiResponse.builder().result(resultMap.get("error")).build();
+          return ApiResponse.builder().success(false).message(resultMap.get("error")).build();
         }
       } else if (!tenantMap.containsValue(newUser.getTenantName())) {
         resultMap.put("error", SAAS_ERR_103);
-        return ApiResponse.builder().result(SAAS_ERR_103).message(SAAS_ERR_103).build();
+        return ApiResponse.builder()
+            .success(false)
+            .message(SAAS_ERR_103)
+            .message(SAAS_ERR_103)
+            .build();
       } else {
         // create user for existing tenant
         if (createUserForExistingTenant(newUser, tenantMap, resultMap, newUserTarget)) {
-          return ApiResponse.builder().result(resultMap.get("error")).build();
+          return ApiResponse.builder().success(false).message(resultMap.get("error")).build();
         }
       }
 
-      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -171,7 +175,7 @@ public class SaasService {
     newUserTarget.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
     ApiResponse userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
-    if (!ApiResultStatus.SUCCESS.value.equals(userRegMap.getResult())) {
+    if (!ApiResultStatus.SUCCESS.value.equals(userRegMap.getMessage())) {
       resultMap.put("error", SAAS_ERR_102);
       return true;
     }
@@ -216,7 +220,7 @@ public class SaasService {
     newUserTarget.setRole(KwConstants.USER_ROLE);
     ApiResponse userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
-    if (!ApiResultStatus.SUCCESS.value.equals(userRegMap.getResult())) {
+    if (!ApiResultStatus.SUCCESS.value.equals(userRegMap.getMessage())) {
       resultMap.put("error", SAAS_ERR_102);
       return true;
     } else {

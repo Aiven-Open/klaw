@@ -95,12 +95,15 @@ public class AclControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     String result;
     if (verifyIfTopicExists(aclRequestsModel, tenantId)) {
-      return ApiResponse.builder().result(ACL_ERR_101).build();
+      return ApiResponse.builder().success(false).message(ACL_ERR_101).build();
     }
 
     String kafkaFlavor =
@@ -112,7 +115,7 @@ public class AclControllerService {
     if (AclType.CONSUMER == aclRequestsModel.getAclType()) {
       if (AclPatternType.PREFIXED.value.equals(aclRequestsModel.getAclPatternType())) {
         result = ACL_ERR_102;
-        return ApiResponse.builder().result(result).build();
+        return ApiResponse.builder().success(false).message(result).build();
       }
 
       // ignore consumer group check for Aiven kafka flavors
@@ -120,14 +123,14 @@ public class AclControllerService {
         if (validateTeamConsumerGroup(
             aclRequestsModel.getRequestingteam(), aclRequestsModel.getConsumergroup(), tenantId)) {
           result = String.format(ACL_ERR_103, aclRequestsModel.getConsumergroup());
-          return ApiResponse.builder().result(result).build();
+          return ApiResponse.builder().success(false).message(result).build();
         }
       }
     }
 
     if (kafkaFlavor.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
       if (verifyServiceAccountsOfTeam(aclRequestsModel, tenantId))
-        return ApiResponse.builder().result(ACL_ERR_104).build();
+        return ApiResponse.builder().success(false).message(ACL_ERR_104).build();
     }
 
     String transactionalId = aclRequestsModel.getTransactionalId();
@@ -217,8 +220,9 @@ public class AclControllerService {
             manageDatabase.getHandleDbRequests(),
             mailType,
             commonUtilsService.getLoginUrl());
+        return ApiResponse.builder().success(true).message(execRes).build();
       }
-      return ApiResponse.builder().result(execRes).build();
+      return ApiResponse.builder().success(false).message(execRes).build();
     } catch (Exception e) {
       log.error("Exception : ", e);
       throw new KlawException(e.getMessage());
@@ -273,9 +277,7 @@ public class AclControllerService {
             tenantId);
 
     aclReqs = filterAclRequestsByTenantAndOrder(userName, aclReqs, order);
-
     aclReqs = getAclRequestsPaged(aclReqs, pageNo, currentPage, tenantId);
-
     return getAclRequestsModels(aclReqs, tenantId, userName);
   }
 
@@ -542,7 +544,7 @@ public class AclControllerService {
     try {
       if (commonUtilsService.isNotAuthorizedUser(
           getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
-        return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+        return ApiResponse.builder().message(ApiResultStatus.NOT_AUTHORIZED.value).build();
       }
       String userName = getCurrentUserName();
       log.info("deleteAclRequests {}", req_no);
@@ -551,7 +553,10 @@ public class AclControllerService {
               .getHandleDbRequests()
               .deleteAclRequest(
                   Integer.parseInt(req_no), userName, commonUtilsService.getTenantId(userName));
-      return ApiResponse.builder().result(result).build();
+      return ApiResponse.builder()
+          .success((result.equals(ApiResultStatus.SUCCESS.value)))
+          .message(result)
+          .build();
     } catch (Exception e) {
       log.error("Exception ", e);
       throw new KlawException(e.getMessage());
@@ -564,7 +569,10 @@ public class AclControllerService {
     final String userDetails = getCurrentUserName();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_SUBSCRIPTIONS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -574,11 +582,14 @@ public class AclControllerService {
 
     // Verify if user raising request belongs to the same team as the Subscription owner team
     if (!Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(userDetails))) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
-      return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+      return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
     }
 
     AclRequests aclRequestsDao = new AclRequests();
@@ -599,14 +610,17 @@ public class AclControllerService {
     int tenantId = commonUtilsService.getTenantId(userDetails);
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq = dbHandle.selectAcl(Integer.parseInt(req_no), tenantId);
 
     ApiResponse aclValidationResponse = validateAclRequest(aclReq, userDetails);
-    if (!aclValidationResponse.getResult().equals(ApiResultStatus.SUCCESS.value)) {
+    if (!aclValidationResponse.getMessage().equals(ApiResultStatus.SUCCESS.value)) {
       return aclValidationResponse;
     }
 
@@ -634,28 +648,34 @@ public class AclControllerService {
         dbHandle,
         notifyUserType,
         commonUtilsService.getLoginUrl());
-    return ApiResponse.builder().result(updateAclReqStatus).build();
+    return ApiResponse.builder()
+        .success((updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)))
+        .message(updateAclReqStatus)
+        .build();
   }
 
   private ApiResponse validateAclRequest(AclRequests aclReq, String userDetails) {
     if (aclReq == null || aclReq.getReq_no() == null) {
-      return ApiResponse.builder().result(ACL_ERR_105).build();
+      return ApiResponse.builder().success(false).message(ACL_ERR_105).build();
     }
 
     if (Objects.equals(aclReq.getRequestor(), userDetails)) {
-      return ApiResponse.builder().result(ACL_ERR_106).build();
+      return ApiResponse.builder().success(false).message(ACL_ERR_106).build();
     }
 
     if (!RequestStatus.CREATED.value.equals(aclReq.getRequestStatus())) {
-      return ApiResponse.builder().result(REQ_ERR_101).build();
+      return ApiResponse.builder().success(false).message(REQ_ERR_101).build();
     }
 
     // tenant filtering
     if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
   private String handleAclRequestClusterApiResponse(
@@ -668,7 +688,7 @@ public class AclControllerService {
     try {
       ApiResponse responseBody = Objects.requireNonNull(response).getBody();
       if (Objects.requireNonNull(responseBody)
-          .getResult()
+          .getMessage()
           .contains(ApiResultStatus.SUCCESS.value)) {
         String jsonParams = "", aivenAclIdKey = "aivenaclid";
         Object responseData = responseBody.getData();
@@ -743,7 +763,10 @@ public class AclControllerService {
     String userDetails = getCurrentUserName();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -751,16 +774,19 @@ public class AclControllerService {
         dbHandle.selectAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
 
     if (aclReq.getReq_no() == null) {
-      return ApiResponse.builder().result(ACL_ERR_105).build();
+      return ApiResponse.builder().success(false).message(ACL_ERR_105).build();
     }
 
     if (!RequestStatus.CREATED.value.equals(aclReq.getRequestStatus())) {
-      return ApiResponse.builder().result(REQ_ERR_101).build();
+      return ApiResponse.builder().success(false).message(REQ_ERR_101).build();
     }
 
     // tenant filtering
     if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     try {
@@ -774,7 +800,10 @@ public class AclControllerService {
           ACL_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());
 
-      return ApiResponse.builder().result(updateAclReqStatus).build();
+      return ApiResponse.builder()
+          .success((updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)))
+          .message(updateAclReqStatus)
+          .build();
     } catch (Exception e) {
       log.error("Error ", e);
       throw new KlawException(e.getMessage());
@@ -850,7 +879,10 @@ public class AclControllerService {
 
       // Verify if loggedInUser belongs to the same team as the Subscription owner team
       if (!Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(loggedInUser))) {
-        return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+        return ApiResponse.builder()
+            .success(false)
+            .message(ApiResultStatus.NOT_AUTHORIZED.value)
+            .build();
       }
 
       // Get details from Cluster Api
@@ -863,7 +895,7 @@ public class AclControllerService {
     } catch (Exception e) {
       log.error("Ignoring error while retrieving service account credentials {} ", e.toString());
     }
-    return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
   }
 
   public ApiResponse getAivenServiceAccounts(String envId) {
@@ -882,12 +914,13 @@ public class AclControllerService {
         serviceAccountsOfTeam = optionalTeam.get().getServiceAccounts().getServiceAccountsList();
       }
       return ApiResponse.builder()
-          .result(ApiResultStatus.SUCCESS.value)
+          .success(true)
+          .message(ApiResultStatus.SUCCESS.value)
           .data(serviceAccountsOfTeam)
           .build();
     } catch (Exception e) {
       log.error("Ignoring error while retrieving service accounts {} ", e.toString());
     }
-    return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
   }
 }

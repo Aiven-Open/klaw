@@ -800,6 +800,6 @@ class RequestControllerTest {
   }
 
   private ApiResponse getApiResponse(ApiResultStatus status) {
-    return ApiResponse.builder().result(status.value).build();
+    return ApiResponse.builder().message(status.value).build();
   }
 }

@@ -398,7 +398,7 @@ public class ClusterApiControllerIT {
     // found in handling by receiving clients.
     ApiResponse apiResponse =
         mapper.readValue(returnedValue.getContentAsString(), ApiResponse.class);
-    assertTrue(apiResponse.getResult().contains("TopicExistsException"));
+    assertTrue(apiResponse.getMessage().contains("TopicExistsException"));
 
     embeddedKafkaBroker.doWithAdmin(
         adminClient -> {
@@ -438,7 +438,7 @@ public class ClusterApiControllerIT {
     when(schemaService.deleteSchema(any()))
         .thenReturn(
             ApiResponse.builder()
-                .result("Schema deletion " + ApiResultStatus.SUCCESS.value)
+                .message("Schema deletion " + ApiResultStatus.SUCCESS.value)
                 .build());
     MockHttpServletResponse response = executeCreateTopicRequest(jsonReq, url);
 

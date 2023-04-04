@@ -145,12 +145,12 @@ public class ClusterApiController {
         aivenApiService.getServiceAccountDetails(projectName, serviceName, userName);
     ApiResponse apiResponse;
     if (serviceDetailsMap.isEmpty()) {
-      apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+      apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
     } else {
       apiResponse =
           ApiResponse.builder()
               .data(aivenApiService.getServiceAccountDetails(projectName, serviceName, userName))
-              .result(ApiResultStatus.SUCCESS.value)
+              .message(ApiResultStatus.SUCCESS.value)
               .build();
     }
     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
@@ -168,7 +168,7 @@ public class ClusterApiController {
     ApiResponse apiResponse =
         ApiResponse.builder()
             .data(aivenApiService.getServiceAccountUsers(projectName, serviceName))
-            .result(ApiResultStatus.SUCCESS.value)
+            .message(ApiResultStatus.SUCCESS.value)
             .build();
     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
   }
@@ -270,29 +270,29 @@ public class ClusterApiController {
         } else {
           result = apacheKafkaAclService.updateConsumerAcl(clusterAclRequest);
         }
-        return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
+        return new ResponseEntity<>(ApiResponse.builder().message(result).build(), HttpStatus.OK);
       } else if (AclsNativeType.AIVEN.name().equals(clusterAclRequest.getAclNativeType())) {
         resultMap = aivenApiService.createAcls(clusterAclRequest);
         return new ResponseEntity<>(
-            ApiResponse.builder().result(resultMap.get("result")).data(resultMap).build(),
+            ApiResponse.builder().message(resultMap.get("result")).data(resultMap).build(),
             HttpStatus.OK);
       } else if (AclsNativeType.CONFLUENT_CLOUD
           .name()
           .equals(clusterAclRequest.getAclNativeType())) {
         resultMap = confluentCloudApiService.createAcls(clusterAclRequest);
         return new ResponseEntity<>(
-            ApiResponse.builder().result(resultMap.get("result")).data(resultMap).build(),
+            ApiResponse.builder().message(resultMap.get("result")).data(resultMap).build(),
             HttpStatus.OK);
       }
     } catch (Exception e) {
       resultMap.put("result", "failure " + e.getMessage());
       return new ResponseEntity<>(
-          ApiResponse.builder().result("failure " + e.getMessage()).build(),
+          ApiResponse.builder().message("failure " + e.getMessage()).build(),
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
     resultMap.put("result", "Not a valid request");
     return new ResponseEntity<>(
-        ApiResponse.builder().result("Not a valid request").build(),
+        ApiResponse.builder().message("Not a valid request").build(),
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
@@ -309,24 +309,24 @@ public class ClusterApiController {
           result = apacheKafkaAclService.updateConsumerAcl(clusterAclRequest);
         }
 
-        return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
+        return new ResponseEntity<>(ApiResponse.builder().message(result).build(), HttpStatus.OK);
       } else if (AclsNativeType.AIVEN.name().equals(clusterAclRequest.getAclNativeType())) {
         result = aivenApiService.deleteAcls(clusterAclRequest);
 
-        return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
+        return new ResponseEntity<>(ApiResponse.builder().message(result).build(), HttpStatus.OK);
       } else if (AclsNativeType.CONFLUENT_CLOUD
           .name()
           .equals(clusterAclRequest.getAclNativeType())) {
         result = confluentCloudApiService.deleteAcls(clusterAclRequest);
 
-        return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
+        return new ResponseEntity<>(ApiResponse.builder().message(result).build(), HttpStatus.OK);
       }
 
     } catch (Exception e) {
       return handleException(e);
     }
     return new ResponseEntity<>(
-        ApiResponse.builder().result("Not a valid request").build(),
+        ApiResponse.builder().message("Not a valid request").build(),
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
@@ -367,6 +367,6 @@ public class ClusterApiController {
   private static ResponseEntity<ApiResponse> handleException(Exception e) {
     log.error("Exception:", e);
     return new ResponseEntity<>(
-        ApiResponse.builder().result(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        ApiResponse.builder().message(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

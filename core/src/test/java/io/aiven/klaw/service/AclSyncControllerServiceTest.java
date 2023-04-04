@@ -93,7 +93,7 @@ public class AclSyncControllerServiceTest {
 
     ApiResponse resultResp =
         aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -104,7 +104,7 @@ public class AclSyncControllerServiceTest {
 
     ApiResponse resultResp =
         aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -132,7 +132,7 @@ public class AclSyncControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     ApiResponse resultResp = aclSyncControllerService.updateSyncAcls(updates);
-    assertThat(resultResp.getResult()).isEqualTo("No record updated.");
+    assertThat(resultResp.getMessage()).isEqualTo("No record updated.");
   }
 
   @Test

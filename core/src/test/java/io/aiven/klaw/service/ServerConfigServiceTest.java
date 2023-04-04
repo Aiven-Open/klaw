@@ -127,7 +127,7 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
     KwProperties property = propertyCaptor.getValue();
     assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
@@ -165,7 +165,7 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
     KwProperties property = propertyCaptor.getValue();
     assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
@@ -211,7 +211,7 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(0)).updateKwProperty(any(), eq(101));
   }
 
@@ -246,9 +246,9 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(0)).updateKwProperty(any(), eq(101));
-    assertThat(response.getResult())
+    assertThat(response.getMessage())
         .isEqualTo("Failure. Resource UTA must be created before being added to the Tenant Model");
   }
 
@@ -261,8 +261,8 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(response.getResult())
+    assertThat(response.getMessage()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage())
         .isEqualTo("Failure. Please check if the environment names exist.");
   }
 
@@ -289,7 +289,7 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(any(), eq(101));
   }
 

@@ -467,7 +467,10 @@ public class TopicSyncControllerService {
     logArray.add("Type of Sync " + syncBackTopics.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     List<String> resultStatus = new ArrayList<>();
@@ -496,7 +499,12 @@ public class TopicSyncControllerService {
       }
     }
 
-    return ApiResponse.builder().result(resultMap.get("result").get(0)).data(logArray).build();
+    String result = resultMap.get("result").get(0);
+    return ApiResponse.builder()
+        .success(result.equals(ApiResultStatus.SUCCESS.value))
+        .message(result)
+        .data(logArray)
+        .build();
   }
 
   private void approveSyncBackTopics(
@@ -518,10 +526,10 @@ public class TopicSyncControllerService {
               false);
 
       if (!Objects.equals(
-          Objects.requireNonNull(response.getBody()).getResult(), ApiResultStatus.SUCCESS.value)) {
+          Objects.requireNonNull(response.getBody()).getMessage(), ApiResultStatus.SUCCESS.value)) {
         log.error("Error in creating topic {} {}", topicFound, response.getBody());
         if (Objects.requireNonNull(response.getBody())
-            .getResult()
+            .getMessage()
             .contains("TopicExistsException")) {
           logUpdateSyncBackTopics.add(
               TOPICS_SYNC_ERR_101
@@ -781,7 +789,10 @@ public class TopicSyncControllerService {
     logArray.add("Type of Sync " + syncTopicsBulk.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     if ("SELECTED_TOPICS".equals(syncTopicsBulk.getTypeOfSync())) {
@@ -810,7 +821,11 @@ public class TopicSyncControllerService {
       }
     }
 
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(logArray).build();
+    return ApiResponse.builder()
+        .success(true)
+        .message(ApiResultStatus.SUCCESS.value)
+        .data(logArray)
+        .build();
   }
 
   private void invokeUpdateSyncAllTopics(
@@ -831,7 +846,7 @@ public class TopicSyncControllerService {
           "Topic status :"
               + hashMap.get("topicName")
               + " "
-              + updateSyncTopics(updatedSyncTopicsList).getResult());
+              + updateSyncTopics(updatedSyncTopicsList).getMessage());
     } catch (Exception e) {
       logArray.add(TOPICS_SYNC_ERR_102 + hashMap.get("topicName") + " " + e);
       log.error("Exception:", e);
@@ -892,7 +907,10 @@ public class TopicSyncControllerService {
     updatedSyncTopicsList.add(syncTopicUpdates);
     try {
       logArray.add(
-          "Topic status :" + topicName + " " + updateSyncTopics(updatedSyncTopicsList).getResult());
+          "Topic status :"
+              + topicName
+              + " "
+              + updateSyncTopics(updatedSyncTopicsList).getMessage());
     } catch (Exception e) {
       log.error("Exception:", e);
       logArray.add(TOPICS_SYNC_ERR_102 + topicName + " " + e);
@@ -905,7 +923,10 @@ public class TopicSyncControllerService {
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     // tenant filtering
@@ -942,7 +963,10 @@ public class TopicSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userDetails)
             .contains(topicUpdate.getEnvSelected())) {
-          return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+          return ApiResponse.builder()
+              .success(false)
+              .message(ApiResultStatus.NOT_AUTHORIZED.value)
+              .build();
         }
         existingTopics = getTopicFromName(topicUpdate.getTopicName(), tenantId);
 
@@ -1040,32 +1064,35 @@ public class TopicSyncControllerService {
     }
 
     if (updatedSyncTopics.size() == 0 && updatedSyncTopicsDelete.size() > 0) {
-      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     }
 
     if (topicsDontExistInMainCluster) {
       return ApiResponse.builder()
-          .result(TOPICS_SYNC_ERR_103 + syncCluster + ". \n Topics : " + erroredTopicsExist)
+          .success(false)
+          .message(TOPICS_SYNC_ERR_103 + syncCluster + ". \n Topics : " + erroredTopicsExist)
           .build();
     }
 
     if (topicsWithDiffTeams) {
       return ApiResponse.builder()
-          .result(TOPICS_SYNC_ERR_104 + syncCluster + ". \n Topics : " + erroredTopics)
+          .success(false)
+          .message(TOPICS_SYNC_ERR_104 + syncCluster + ". \n Topics : " + erroredTopics)
           .build();
     }
 
     if (listTopics.size() > 0) {
       try {
         return ApiResponse.builder()
-            .result(manageDatabase.getHandleDbRequests().addToSynctopics(listTopics))
+            .success(false)
+            .message(manageDatabase.getHandleDbRequests().addToSynctopics(listTopics))
             .build();
       } catch (Exception e) {
         log.error(e.getMessage());
         throw new KlawException(e.getMessage());
       }
     } else {
-      return ApiResponse.builder().result(SYNC_ERR_101).build();
+      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
     }
   }
 

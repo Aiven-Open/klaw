@@ -32,7 +32,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       KlawException ex, WebRequest request) {
     log.error("Error ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build(),
+        ApiResponse.builder().message(ApiResultStatus.NOT_AUTHORIZED.value).build(),
         HttpStatus.UNAUTHORIZED);
   }
 
@@ -42,7 +42,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
     log.error("Error ", ex);
     return new ResponseEntity<>(
         ApiResponse.builder()
-            .result(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
+            .message(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
             .build(),
         HttpStatus.BAD_REQUEST);
   }
@@ -53,7 +53,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
     log.error("KlawValidationException handler: ", ex);
     return new ResponseEntity<>(
         ApiResponse.builder()
-            .result(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
+            .message(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
             .build(),
         HttpStatus.CONFLICT);
   }

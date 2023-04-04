@@ -154,7 +154,7 @@ public class UsersTeamsControllerIT {
             .getContentAsString();
     ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(objectResponse.getResult()).contains("Failure. Team already exists");
+    assertThat(objectResponse.getMessage()).contains("Failure. Team already exists");
   }
 
   // Create team failure, invalid team mail id

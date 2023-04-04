@@ -83,7 +83,10 @@ public class KafkaConnectControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     try {
@@ -92,15 +95,15 @@ public class KafkaConnectControllerService {
         JsonNode jsonNode =
             OBJECT_MAPPER.readTree(connectorRequestModel.getConnectorConfig().trim());
         if (!jsonNode.has("tasks.max")) {
-          return ApiResponse.builder().result(KAFKA_CONNECT_ERR_101).build();
+          return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_101).build();
         } else if (!jsonNode.has("connector.class")) {
-          return ApiResponse.builder().result(KAFKA_CONNECT_ERR_102).build();
+          return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_102).build();
         } else if (!jsonNode.has("topics") && !jsonNode.has("topics.regex")) {
-          return ApiResponse.builder().result(KAFKA_CONNECT_ERR_103).build();
+          return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_103).build();
         }
 
         if (jsonNode.has("topics") && jsonNode.has("topics.regex")) {
-          return ApiResponse.builder().result(KAFKA_CONNECT_ERR_104).build();
+          return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_104).build();
         }
 
         Map<String, Object> resultMap =
@@ -120,7 +123,7 @@ public class KafkaConnectControllerService {
 
     // tenant filtering
     if (!commonUtilsService.getEnvsFromUserId(userName).contains(envSelected)) {
-      return ApiResponse.builder().result(KAFKA_CONNECT_ERR_105).build();
+      return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_105).build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -141,7 +144,7 @@ public class KafkaConnectControllerService {
     if (!kafkaConnectorList.isEmpty()
         && !Objects.equals(
             kafkaConnectorList.get(0).getTeamId(), connectorRequestModel.getTeamId())) {
-      return ApiResponse.builder().result(KAFKA_CONNECT_ERR_106).build();
+      return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_106).build();
     }
 
     boolean promotionOrderCheck =
@@ -156,10 +159,10 @@ public class KafkaConnectControllerService {
                     .count();
         if (devTopicFound != 1) {
           if (getKafkaConnectEnvDetails(syncCluster) == null) {
-            return ApiResponse.builder().result(KAFKA_CONNECT_ERR_107).build();
+            return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_107).build();
           } else {
             return ApiResponse.builder()
-                .result(
+                .message(
                     String.format(
                         KAFKA_CONNECT_ERR_108, getKafkaConnectEnvDetails(syncCluster).getName()))
                 .build();
@@ -169,7 +172,8 @@ public class KafkaConnectControllerService {
     } else if (!Objects.equals(connectorRequestModel.getEnvironment(), syncCluster)) {
       if (promotionOrderCheck) {
         return ApiResponse.builder()
-            .result(
+            .success(false)
+            .message(
                 String.format(
                     KAFKA_CONNECT_ERR_109, getKafkaConnectEnvDetails(syncCluster).getName()))
             .build();
@@ -185,7 +189,7 @@ public class KafkaConnectControllerService {
                 tenantId)
             .size()
         > 0) {
-      return ApiResponse.builder().result(KAFKA_CONNECT_ERR_110).build();
+      return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_110).build();
     }
 
     // Ignore connector exists check if Update request
@@ -200,7 +204,7 @@ public class KafkaConnectControllerService {
                             topicEx.getEnvironment(), connectorRequestModel.getEnvironment()));
       }
       if (topicExists) {
-        return ApiResponse.builder().result(KAFKA_CONNECT_ERR_111).build();
+        return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_111).build();
       }
     }
 
@@ -218,8 +222,11 @@ public class KafkaConnectControllerService {
         dbHandle,
         CONNECTOR_CREATE_REQUESTED,
         commonUtilsService.getLoginUrl());
-
-    return ApiResponse.builder().result(result).build();
+    if (result.equals(ApiResultStatus.SUCCESS.value)) {
+      return ApiResponse.builder().success(true).message(result).build();
+    } else {
+      return ApiResponse.builder().success(false).message(result).build();
+    }
   }
 
   public List<List<KafkaConnectorModel>> getConnectors(
@@ -420,7 +427,10 @@ public class KafkaConnectControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
     try {
       String deleteTopicReqStatus =
@@ -429,7 +439,7 @@ public class KafkaConnectControllerService {
               .deleteConnectorRequest(
                   Integer.parseInt(topicId), commonUtilsService.getTenantId(getUserName()));
 
-      return ApiResponse.builder().result(deleteTopicReqStatus).build();
+      return ApiResponse.builder().success(true).message(deleteTopicReqStatus).build();
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
@@ -461,7 +471,6 @@ public class KafkaConnectControllerService {
               .getCreatedConnectorRequests(userDetails, requestsType, true, tenantId, env, search);
 
     createdTopicReqList = filterByTenantAndOrder(userDetails, createdTopicReqList, order);
-
     createdTopicReqList = getConnectorRequestsPaged(createdTopicReqList, pageNo, currentPage);
 
     return updateCreateConnectorReqsList(createdTopicReqList, tenantId);
@@ -504,7 +513,10 @@ public class KafkaConnectControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     KafkaConnectorRequest connectorRequest =
@@ -522,17 +534,20 @@ public class KafkaConnectControllerService {
     }
 
     if (connectorRequest.getRequestor().equals(userDetails)) {
-      return ApiResponse.builder().result(KAFKA_CONNECT_ERR_113).build();
+      return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_113).build();
     }
 
     if (!RequestStatus.CREATED.value.equals(connectorRequest.getRequestStatus())) {
-      return ApiResponse.builder().result(REQ_ERR_101).build();
+      return ApiResponse.builder().success(false).message(REQ_ERR_101).build();
     }
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
     if (!allowedEnvIdSet.contains(connectorRequest.getEnvironment())) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -599,7 +614,10 @@ public class KafkaConnectControllerService {
       }
     }
 
-    return ApiResponse.builder().result(updateTopicReqStatus).build();
+    return ApiResponse.builder()
+        .success((updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)))
+        .message(updateTopicReqStatus)
+        .build();
   }
 
   private void setConnectorHistory(
@@ -646,7 +664,10 @@ public class KafkaConnectControllerService {
     log.info("declineConnectorRequests {} {}", connectorId, reasonForDecline);
     String userDetails = getUserName();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -656,13 +677,16 @@ public class KafkaConnectControllerService {
         dbHandle.selectConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
 
     if (!RequestStatus.CREATED.value.equals(connectorRequest.getRequestStatus())) {
-      return ApiResponse.builder().result(REQ_ERR_101).build();
+      return ApiResponse.builder().success(false).message(REQ_ERR_101).build();
     }
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
     if (!allowedEnvIdSet.contains(connectorRequest.getEnvironment())) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     try {
@@ -676,7 +700,10 @@ public class KafkaConnectControllerService {
           CONNECTOR_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());
 
-      return ApiResponse.builder().result(result).build();
+      return ApiResponse.builder()
+          .success((result.equals(ApiResultStatus.SUCCESS.value)))
+          .message(result)
+          .build();
     } catch (Exception e) {
       log.error(e.getMessage());
       throw new KlawException(e.getMessage());
@@ -691,7 +718,7 @@ public class KafkaConnectControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_CONNECTORS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder().message(ApiResultStatus.NOT_AUTHORIZED.value).build();
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -704,7 +731,7 @@ public class KafkaConnectControllerService {
     if (topics != null
         && topics.size() > 0
         && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
-      return ApiResponse.builder().result(KAFKA_CONNECT_ERR_114).build();
+      return ApiResponse.builder().message(KAFKA_CONNECT_ERR_114).build();
     }
 
     kafkaConnectorRequest.setRequestor(userDetails);
@@ -730,7 +757,7 @@ public class KafkaConnectControllerService {
                 tenantId)
             .size()
         > 0) {
-      return ApiResponse.builder().result(KAFKA_CONNECT_ERR_115).build();
+      return ApiResponse.builder().message(KAFKA_CONNECT_ERR_115).build();
     }
 
     if (topicOb.isPresent()) {
@@ -751,7 +778,7 @@ public class KafkaConnectControllerService {
                 .getHandleDbRequests()
                 .requestForConnector(kafkaConnectorRequest)
                 .get("result");
-        return ApiResponse.builder().result(result).build();
+        return ApiResponse.builder().message(result).build();
       } catch (Exception e) {
         log.error(e.getMessage());
         throw new KlawException(e.getMessage());
@@ -759,7 +786,7 @@ public class KafkaConnectControllerService {
     } else {
       log.error("Connector not found : {}", connectorName);
       return ApiResponse.builder()
-          .result(String.format(KAFKA_CONNECT_ERR_116, connectorName))
+          .message(String.format(KAFKA_CONNECT_ERR_116, connectorName))
           .build();
     }
   }
@@ -830,7 +857,7 @@ public class KafkaConnectControllerService {
             .selectConnectorRequests(connectorName, envId, RequestStatus.CREATED.value, tenantId)
             .size()
         > 0) {
-      return ApiResponse.builder().result(KAFKA_CONNECT_ERR_117).build();
+      return ApiResponse.builder().message(KAFKA_CONNECT_ERR_117).build();
     }
 
     List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);
@@ -875,7 +902,10 @@ public class KafkaConnectControllerService {
     try {
       String res =
           manageDatabase.getHandleDbRequests().requestForConnector(connectorRequest).get("result");
-      return ApiResponse.builder().result(res).build();
+      return ApiResponse.builder()
+          .success(res.equals(ApiResultStatus.SUCCESS.value))
+          .message(res)
+          .build();
     } catch (Exception e) {
       log.error(e.getMessage());
       throw new KlawException(e.getMessage());
@@ -1146,10 +1176,11 @@ public class KafkaConnectControllerService {
 
     if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
       return ApiResponse.builder()
-          .result(manageDatabase.getHandleDbRequests().updateConnectorDocumentation(topic))
+          .success(true)
+          .message(manageDatabase.getHandleDbRequests().updateConnectorDocumentation(topic))
           .build();
     } else {
-      return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+      return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
     }
   }
 

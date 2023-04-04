@@ -63,7 +63,10 @@ public class AclSyncControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     List<Acl> listTopics = new ArrayList<>();
@@ -87,7 +90,7 @@ public class AclSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userName)
             .contains(syncAclUpdateItem.getEnvSelected())) {
-          return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+          return ApiResponse.builder().message(ApiResultStatus.NOT_AUTHORIZED.value).build();
         }
 
         t = new Acl();
@@ -108,16 +111,17 @@ public class AclSyncControllerService {
         listTopics.add(t);
       }
     } else {
-      return ApiResponse.builder().result(SYNC_ERR_101).build();
+      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
     }
 
     try {
       if (!listTopics.isEmpty()) {
         return ApiResponse.builder()
-            .result(manageDatabase.getHandleDbRequests().addToSyncacls(listTopics))
+            .success(true)
+            .message(manageDatabase.getHandleDbRequests().addToSyncacls(listTopics))
             .build();
       }
-      return ApiResponse.builder().result(SYNC_ERR_101).build();
+      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -139,7 +143,10 @@ public class AclSyncControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     List<String> resultStatus = new ArrayList<>();
@@ -169,7 +176,11 @@ public class AclSyncControllerService {
       throw new KlawException(e.getMessage());
     }
 
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(logArray).build();
+    return ApiResponse.builder()
+        .success(true)
+        .message(ApiResultStatus.SUCCESS.value)
+        .data(logArray)
+        .build();
   }
 
   private void approveSyncBackAcls(
@@ -194,7 +205,7 @@ public class AclSyncControllerService {
       ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclReq, tenantId);
 
       ApiResponse responseBody = response.getBody();
-      String resultAclNullCheck = Objects.requireNonNull(responseBody).getResult();
+      String resultAclNullCheck = Objects.requireNonNull(responseBody).getMessage();
       if (!Objects.requireNonNull(resultAclNullCheck).contains(ApiResultStatus.SUCCESS.value)) {
         log.error("Error in creating acl {} {}", aclFound, responseBody);
         logUpdateSyncBackTopics.add(
@@ -356,7 +367,6 @@ public class AclSyncControllerService {
     if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
 
     int tenantId = commonUtilsService.getTenantId(userName);
-
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
       return null;
@@ -372,7 +382,6 @@ public class AclSyncControllerService {
 
     List<AclInfo> aclInfoList;
     Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
-
     aclInfoList =
         getAclsList(
             pageNo, currentPage, applyFiltersAclsForSOT(loggedInUserTeam, aclsFromSOT, tenantId));

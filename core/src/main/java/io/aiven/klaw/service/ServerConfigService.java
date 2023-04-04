@@ -196,13 +196,19 @@ public class ServerConfigService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     // SUPERADMINS filter
     if (tenantId != KwConstants.DEFAULT_TENANT_ID) {
       if (!KwConstants.allowConfigForAdmins.contains(kwKey)) {
-        return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+        return ApiResponse.builder()
+            .success(false)
+            .message(ApiResultStatus.NOT_AUTHORIZED.value)
+            .build();
       }
     }
 
@@ -215,19 +221,22 @@ public class ServerConfigService {
             updateEnvIdValues(dynamicObj);
             kwPropertiesModel.setKwValue(OBJECT_MAPPER.writeValueAsString(dynamicObj));
           } else {
-            return ApiResponse.builder().result(SERVER_CONFIG_ERR_101).build();
+            return ApiResponse.builder().success(false).message(SERVER_CONFIG_ERR_101).build();
           }
         } catch (IOException e) {
           log.error("Exception:", e);
-          return ApiResponse.builder().result(SERVER_CONFIG_ERR_102).build();
+          return ApiResponse.builder().success(false).message(SERVER_CONFIG_ERR_102).build();
         }
       }
     } catch (KlawException klawException) {
-      return ApiResponse.builder().result("Failure. " + klawException.getMessage()).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message("Failure. " + klawException.getMessage())
+          .build();
 
     } catch (Exception e) {
       log.error("Exception:", e);
-      return ApiResponse.builder().result(SERVER_CONFIG_ERR_103).build();
+      return ApiResponse.builder().success(false).message(SERVER_CONFIG_ERR_103).build();
     }
 
     try {
@@ -237,9 +246,13 @@ public class ServerConfigService {
       if (ApiResultStatus.SUCCESS.value.equals(res)) {
         commonUtilsService.updateMetadata(
             tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE);
-        return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(kwKey).build();
+        return ApiResponse.builder()
+            .success(true)
+            .message(ApiResultStatus.SUCCESS.value)
+            .data(kwKey)
+            .build();
       } else {
-        return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+        return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
       }
     } catch (Exception e) {
       throw new KlawException(e.getMessage());

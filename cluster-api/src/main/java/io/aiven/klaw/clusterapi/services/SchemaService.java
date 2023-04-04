@@ -116,16 +116,19 @@ public class SchemaService {
 
       String updateTopicReqStatus = registerSchemaPostCall(clusterSchemaRequest);
 
-      return ApiResponse.builder().result(updateTopicReqStatus).build();
+      return ApiResponse.builder()
+          .success(updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value))
+          .message(updateTopicReqStatus)
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
       if (e instanceof HttpClientErrorException
           && ((HttpClientErrorException.Conflict) e).getStatusCode().value() == 409) {
         return ApiResponse.builder()
-            .result("Schema being registered is incompatible with an earlier schema")
+            .message("Schema being registered is incompatible with an earlier schema")
             .build();
       }
-      return ApiResponse.builder().result("Failure in registering schema.").build();
+      return ApiResponse.builder().success(false).message("Failure in registering schema.").build();
     } finally {
       // Ensure the Schema compatibility is returned to previous setting before the force update.
       resetCompatibilityOnSubject(
@@ -443,12 +446,10 @@ public class SchemaService {
               request,
               new ParameterizedTypeReference<>() {});
       log.info("Schema deleted {}", clusterTopicRequest);
-      return ApiResponse.builder()
-          .result("Schema deletion " + ApiResultStatus.SUCCESS.value)
-          .build();
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } catch (RestClientException e) {
       log.error("Exception:", e);
-      return ApiResponse.builder().result("Schema deletion failure " + e.getMessage()).build();
+      return ApiResponse.builder().message("Schema deletion failure " + e.getMessage()).build();
     }
   }
 
@@ -462,7 +463,8 @@ public class SchemaService {
       log.info("Check Schema Compatibility for TopicName: {}", topicName);
       if (isFirstSchema(topicName, schemaProtocol, schemaEnv, clusterIdentification)) {
         return ApiResponse.builder()
-            .result(ApiResultStatus.SUCCESS.value + " No Existing Schemas")
+            .success(true)
+            .message(ApiResultStatus.SUCCESS.value + " No Existing Schemas")
             .build();
       }
 
@@ -476,21 +478,23 @@ public class SchemaService {
           reqDetails
               .getRight()
               .postForEntity(reqDetails.getLeft(), request, SchemaCompatibilityCheckResponse.class);
-      if (compatibility != null
-          && compatibility.hasBody()
-          && compatibility.getBody().isCompatible()) {
+      if (compatibility.hasBody()
+          && Objects.requireNonNull(compatibility.getBody()).isCompatible()) {
         return ApiResponse.builder()
-            .result(ApiResultStatus.SUCCESS.value + " Schema is compatible.")
+            .success(true)
+            .message(ApiResultStatus.SUCCESS.value + " Schema is compatible.")
             .build();
       } else {
         return ApiResponse.builder()
-            .result(ApiResultStatus.FAILURE.value + "  Schema is not compatible.")
+            .success(false)
+            .message(ApiResultStatus.FAILURE.value + "  Schema is not compatible.")
             .build();
       }
     } catch (Exception ex) {
       log.error("Exception on validating: ", ex);
       return ApiResponse.builder()
-          .result(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.")
+          .success(false)
+          .message(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.")
           .build();
     }
   }
@@ -535,7 +539,6 @@ public class SchemaService {
     HttpHeaders headers =
         clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
     headers.set("Content-Type", SCHEMA_REGISTRY_CONTENT_TYPE);
-    HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
-    return request;
+    return new HttpEntity<>(params, headers);
   }
 }

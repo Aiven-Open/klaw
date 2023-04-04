@@ -85,7 +85,10 @@ public class KafkaConnectSyncControllerService {
     String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     // tenant filtering
@@ -115,7 +118,10 @@ public class KafkaConnectSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userName)
             .contains(topicUpdate.getEnvSelected())) {
-          return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+          return ApiResponse.builder()
+              .success(false)
+              .message(ApiResultStatus.NOT_AUTHORIZED.value)
+              .build();
         }
         existingTopics = getConnectorsFromName(topicUpdate.getConnectorName(), tenantId);
 
@@ -146,7 +152,8 @@ public class KafkaConnectSyncControllerService {
         } catch (KlawException | JsonProcessingException e) {
           log.error("Exception:", e);
           return ApiResponse.builder()
-              .result(String.format(KAFKA_CONNECT_SYNC_ERR_101, topicUpdate.getConnectorName()))
+              .success(false)
+              .message(String.format(KAFKA_CONNECT_SYNC_ERR_101, topicUpdate.getConnectorName()))
               .build();
         }
 
@@ -224,12 +231,13 @@ public class KafkaConnectSyncControllerService {
     }
 
     if (updatedSyncTopics.size() == 0 && updatedSyncTopicsDelete.size() > 0) {
-      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     }
 
     if (topicsDontExistInMainCluster) {
       return ApiResponse.builder()
-          .result(
+          .success(false)
+          .message(
               KAFKA_CONNECT_SYNC_ERR_102
                   + " :"
                   + syncCluster
@@ -240,7 +248,8 @@ public class KafkaConnectSyncControllerService {
 
     if (topicsWithDiffTeams) {
       return ApiResponse.builder()
-          .result(
+          .success(false)
+          .message(
               KAFKA_CONNECT_SYNC_ERR_103 + " :" + syncCluster + ". \n Topics : " + erroredTopics)
           .build();
     }
@@ -249,12 +258,15 @@ public class KafkaConnectSyncControllerService {
       try {
         String result =
             manageDatabase.getHandleDbRequests().addToSyncConnectors(kafkaConnectorList);
-        return ApiResponse.builder().result(result).build();
+        return ApiResponse.builder()
+            .success((result.equals(ApiResultStatus.SUCCESS.value)))
+            .message(result)
+            .build();
       } catch (Exception e) {
         throw new KlawException(e.getMessage());
       }
     } else {
-      return ApiResponse.builder().result(SYNC_ERR_101).build();
+      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
     }
   }
 

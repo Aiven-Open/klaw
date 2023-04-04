@@ -7,23 +7,22 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.http.HttpStatus;
 
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApiResponse {
-  private HttpStatus status;
+  private boolean success;
 
-  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
-  private LocalDateTime timestamp;
+  private String errCode;
 
-  private String message;
+  @NotNull private String message;
 
   private String debugMessage;
 
-  @NotNull private String result;
-
   private Object data;
+
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
+  private LocalDateTime timestamp;
 }

@@ -119,7 +119,7 @@ public class KafkaConnectControllerTest {
   @Test
   public void postConnectorTest() throws Exception {
     String postUrl = "/topics/postConnector";
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ClusterConnectorRequest clusterConnectorRequest = getClusterConnectorRequest();
     String jsonReq = new ObjectMapper().writer().writeValueAsString(clusterConnectorRequest);
     when(kafkaConnectService.postNewConnector(any())).thenReturn(apiResponse);
@@ -133,7 +133,7 @@ public class KafkaConnectControllerTest {
   @Test
   public void postConnectorClusterFailureTest() throws Exception {
     String postUrl = "/topics/postConnector";
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
     ClusterConnectorRequest clusterConnectorRequest = getClusterConnectorRequest();
     String jsonReq = new ObjectMapper().writer().writeValueAsString(clusterConnectorRequest);
     when(kafkaConnectService.postNewConnector(any())).thenReturn(apiResponse);
