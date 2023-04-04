@@ -1,9 +1,10 @@
 # This workflow is called for every pull request
+# regardless which branch its targets
+
 name: Pull Request pipeline
 
 on:
-  pull_request:
-    branches: ["main"]
+  pull_request
 
 jobs:
   check-changes:
