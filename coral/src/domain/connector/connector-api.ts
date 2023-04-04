@@ -1,5 +1,8 @@
 import omitBy from "lodash/omitBy";
-import transformConnectorRequestApiResponse from "src/domain/connector/connector-transformer";
+import {
+  transformConnectorRequestApiResponse,
+  transformConnectorApiResponse,
+} from "src/domain/connector/connector-transformer";
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
@@ -34,6 +37,32 @@ const filterGetConnectorRequestParams = (
       omitSearch
     );
   });
+};
+
+const getConnectors = ({
+  currentPage,
+  environment = "ALL",
+  teamName,
+  connectorName,
+}: {
+  currentPage: number;
+  environment: string;
+  teamName?: string;
+  connectorName?: string;
+}) => {
+  const queryParams: KlawApiRequestQueryParameters<"getConnectors"> = {
+    pageNo: currentPage.toString(),
+    env: environment,
+    ...(teamName && { teamName: teamName }),
+    ...(connectorName && {
+      connectornamesearch: connectorName,
+    }),
+  };
+  return api
+    .get<KlawApiResponse<"getConnectors">>(
+      `/getConnectors?${new URLSearchParams(queryParams)}`
+    )
+    .then(transformConnectorApiResponse);
 };
 
 const getConnectorRequestsForApprover = (
@@ -100,4 +129,5 @@ export {
   approveConnectorRequest,
   declineConnectorRequest,
   deleteConnectorRequest,
+  getConnectors,
 };
