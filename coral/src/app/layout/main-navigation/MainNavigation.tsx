@@ -72,8 +72,9 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={layoutGroupBy}
-            to={`/kafkaConnectors`}
+            to={Routes.CONNECTORS}
             linkText={"Kafka Connectors"}
+            active={pathname.startsWith(Routes.CONNECTORS)}
           />
         </li>
         <li>
