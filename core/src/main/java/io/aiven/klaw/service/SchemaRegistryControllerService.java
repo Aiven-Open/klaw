@@ -370,7 +370,7 @@ public class SchemaRegistryControllerService {
     Optional<Env> optionalEnv = getSchemaEnvFromId(schemaPromotion.getSourceEnvironment());
 
     if (optionalEnv.isEmpty()) {
-      return ApiResponse.builder().message(SCHEMA_ERR_104).build();
+      return ApiResponse.builder().success(false).message(SCHEMA_ERR_104).build();
     }
     Env schemaSourceEnv = optionalEnv.get();
     SortedMap<Integer, Map<String, Object>> schemaObjects =

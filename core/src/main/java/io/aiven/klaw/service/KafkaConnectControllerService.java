@@ -731,7 +731,7 @@ public class KafkaConnectControllerService {
     if (topics != null
         && topics.size() > 0
         && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
-      return ApiResponse.builder().message(KAFKA_CONNECT_ERR_114).build();
+      return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_114).build();
     }
 
     kafkaConnectorRequest.setRequestor(userDetails);
@@ -757,7 +757,7 @@ public class KafkaConnectControllerService {
                 tenantId)
             .size()
         > 0) {
-      return ApiResponse.builder().message(KAFKA_CONNECT_ERR_115).build();
+      return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_115).build();
     }
 
     if (topicOb.isPresent()) {
@@ -778,7 +778,10 @@ public class KafkaConnectControllerService {
                 .getHandleDbRequests()
                 .requestForConnector(kafkaConnectorRequest)
                 .get("result");
-        return ApiResponse.builder().message(result).build();
+        return ApiResponse.builder()
+            .success(result.equals(ApiResultStatus.SUCCESS.value))
+            .message(result)
+            .build();
       } catch (Exception e) {
         log.error(e.getMessage());
         throw new KlawException(e.getMessage());
@@ -786,6 +789,7 @@ public class KafkaConnectControllerService {
     } else {
       log.error("Connector not found : {}", connectorName);
       return ApiResponse.builder()
+          .success(false)
           .message(String.format(KAFKA_CONNECT_ERR_116, connectorName))
           .build();
     }
@@ -857,7 +861,7 @@ public class KafkaConnectControllerService {
             .selectConnectorRequests(connectorName, envId, RequestStatus.CREATED.value, tenantId)
             .size()
         > 0) {
-      return ApiResponse.builder().message(KAFKA_CONNECT_ERR_117).build();
+      return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_117).build();
     }
 
     List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);

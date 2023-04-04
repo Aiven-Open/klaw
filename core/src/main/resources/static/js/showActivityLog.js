@@ -95,11 +95,11 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -137,51 +137,6 @@ app.controller("showActivityLogCtrl", function($scope, $http, $location, $window
                     $scope.alert = error;
                 }
             );
-        }
-
-        $scope.onSwitchTeam = function() {
-            var serviceInput = {};
-            serviceInput['username'] = $scope.userlogged;
-            serviceInput['teamId'] = $scope.teamId;
-
-            swal({
-                title: "Are you sure?",
-                text: "You would like to update your team ?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes !",
-                cancelButtonText: "No, cancel please!",
-                closeOnConfirm: true,
-                closeOnCancel: true
-            }).then(function(isConfirm) {
-                if (isConfirm.dismiss !== "cancel") {
-                    $http({
-                        method: "POST",
-                        url: "user/updateTeam",
-                        headers : { 'Content-Type' : 'application/json' },
-                        data: serviceInput
-                    }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
-                            swal({
-                                title: "",
-                                text: "User team update request : "+output.result,
-                                timer: 2000,
-                                showConfirmButton: true
-                            }).then(function(isConfirm){
-                                $scope.refreshPage();
-                            });
-                        }else $scope.showSubmitFailed('','');
-                    }).error(
-                        function (error) {
-                            $scope.handleValidationErrors(error);
-                        }
-                    );
-                } else {
-                    return;
-                }
-            });
         }
 
         $scope.checkSwitchTeams = function(canSwitchTeams, teamId, userId){

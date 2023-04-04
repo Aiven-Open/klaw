@@ -363,6 +363,12 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
             });
   }
 
+  public List<String> getTeamNamesForTenant(int tenantId) {
+    return teamsPerTenant.get(tenantId).stream()
+        .map(Team::getTeamname)
+        .collect(Collectors.toList());
+  }
+
   public Integer getTeamIdFromTeamName(int tenantId, String teamName) {
     Optional<Map.Entry<Integer, String>> optionalTeam;
     if (teamName != null) {

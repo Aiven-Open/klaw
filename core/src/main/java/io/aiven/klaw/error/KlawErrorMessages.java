@@ -405,6 +405,8 @@ public class KlawErrorMessages {
 
   public static final String TEAMS_ERR_118 = "Failure. Something went wrong. Please try later.";
 
+  public static final String TEAMS_ERR_119 = "Failure. Team already exists.";
+
   // security config
   public static final String SEC_CONFIG_ERR_101 = "Please check if insert scripts are executed.";
 

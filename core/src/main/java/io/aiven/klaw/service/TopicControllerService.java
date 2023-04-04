@@ -197,7 +197,7 @@ public class TopicControllerService {
     if (topics != null
         && !topics.isEmpty()
         && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
-      return ApiResponse.builder().message(TOPICS_ERR_104).build();
+      return ApiResponse.builder().success(false).message(TOPICS_ERR_104).build();
     }
 
     TopicRequest topicRequestReq = new TopicRequest();
