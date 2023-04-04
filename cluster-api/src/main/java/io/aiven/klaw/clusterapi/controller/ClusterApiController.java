@@ -273,7 +273,12 @@ public class ClusterApiController {
         } else {
           result = apacheKafkaAclService.updateConsumerAcl(clusterAclRequest);
         }
-        return new ResponseEntity<>(ApiResponse.builder().message(result).build(), HttpStatus.OK);
+        return new ResponseEntity<>(
+            ApiResponse.builder()
+                .success(result.equals(ApiResultStatus.SUCCESS.value))
+                .message(result)
+                .build(),
+            HttpStatus.OK);
       } else if (AclsNativeType.AIVEN.name().equals(clusterAclRequest.getAclNativeType())) {
         resultMap = aivenApiService.createAcls(clusterAclRequest);
         String resultStatus = resultMap.get("result");
