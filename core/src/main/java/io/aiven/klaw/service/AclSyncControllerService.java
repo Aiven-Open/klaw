@@ -90,7 +90,10 @@ public class AclSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userName)
             .contains(syncAclUpdateItem.getEnvSelected())) {
-          return ApiResponse.builder().message(ApiResultStatus.NOT_AUTHORIZED.value).build();
+          return ApiResponse.builder()
+              .success(false)
+              .message(ApiResultStatus.NOT_AUTHORIZED.value)
+              .build();
         }
 
         t = new Acl();

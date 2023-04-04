@@ -544,7 +544,10 @@ public class AclControllerService {
     try {
       if (commonUtilsService.isNotAuthorizedUser(
           getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
-        return ApiResponse.builder().message(ApiResultStatus.NOT_AUTHORIZED.value).build();
+        return ApiResponse.builder()
+            .success(false)
+            .message(ApiResultStatus.NOT_AUTHORIZED.value)
+            .build();
       }
       String userName = getCurrentUserName();
       log.info("deleteAclRequests {}", req_no);

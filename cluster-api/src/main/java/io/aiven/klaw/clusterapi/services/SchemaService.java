@@ -449,7 +449,10 @@ public class SchemaService {
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } catch (RestClientException e) {
       log.error("Exception:", e);
-      return ApiResponse.builder().message("Schema deletion failure " + e.getMessage()).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message("Schema deletion failure " + e.getMessage())
+          .build();
     }
   }
 

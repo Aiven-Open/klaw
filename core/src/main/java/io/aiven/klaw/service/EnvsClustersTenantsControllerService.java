@@ -696,7 +696,7 @@ public class EnvsClustersTenantsControllerService {
                         && Objects.equals(en.getTenantId(), newEnv.getTenantId())
                         && Objects.equals(en.getEnvExists(), "true"));
     if (envNameAlreadyPresent) {
-      return ApiResponse.builder().message(ENV_CLUSTER_TNT_ERR_101).build();
+      return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_101).build();
     } else if (envActualList.stream()
         .anyMatch(
             en ->
@@ -1095,12 +1095,15 @@ public class EnvsClustersTenantsControllerService {
       throws KlawException {
     if (manageDatabase.getHandleDbRequests().getTenants().size()
         >= maxNumberOfTenantsCanBeCreated) {
-      return ApiResponse.builder().message(ENV_CLUSTER_TNT_ERR_108).build();
+      return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_108).build();
     }
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ADD_TENANT)) {
-      return ApiResponse.builder().message(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     KwTenants kwTenants = new KwTenants();
@@ -1155,7 +1158,11 @@ public class EnvsClustersTenantsControllerService {
         commonUtilsService.updateMetadata(
             tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE);
       }
-      return ApiResponse.builder().message(addNewTenantStatus).data("" + tenantId).build();
+      return ApiResponse.builder()
+          .success(true)
+          .message(addNewTenantStatus)
+          .data("" + tenantId)
+          .build();
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }

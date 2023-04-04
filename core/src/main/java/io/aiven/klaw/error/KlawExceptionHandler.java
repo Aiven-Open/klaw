@@ -24,7 +24,8 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       KlawException ex, WebRequest request) {
     log.error("Error ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder().message(REQ_FAILURE).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        ApiResponse.builder().success(false).message(REQ_FAILURE).build(),
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler({KlawNotAuthorizedException.class})
@@ -32,7 +33,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       KlawException ex, WebRequest request) {
     log.error("Error ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder().message(ApiResultStatus.NOT_AUTHORIZED.value).build(),
+        ApiResponse.builder().success(false).message(ApiResultStatus.NOT_AUTHORIZED.value).build(),
         HttpStatus.UNAUTHORIZED);
   }
 
@@ -42,6 +43,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
     log.error("Error ", ex);
     return new ResponseEntity<>(
         ApiResponse.builder()
+            .success(false)
             .message(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
             .build(),
         HttpStatus.BAD_REQUEST);
@@ -53,6 +55,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
     log.error("KlawValidationException handler: ", ex);
     return new ResponseEntity<>(
         ApiResponse.builder()
+            .success(false)
             .message(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
             .build(),
         HttpStatus.CONFLICT);
@@ -66,7 +69,10 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       WebRequest request) {
     log.error("Validation Error ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder().message(ex.getAllErrors().get(0).getDefaultMessage()).build(),
+        ApiResponse.builder()
+            .success(false)
+            .message(ex.getAllErrors().get(0).getDefaultMessage())
+            .build(),
         HttpStatus.BAD_REQUEST);
   }
 }

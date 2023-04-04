@@ -82,7 +82,7 @@ public class RequestService {
   }
 
   private static ApiResponse undeterinableResource() {
-    return ApiResponse.builder().message(REQ_SER_ERR_103).build();
+    return ApiResponse.builder().success(false).message(REQ_SER_ERR_103).build();
   }
 
   private ApiResponse processDeclineRequests(
