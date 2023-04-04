@@ -365,6 +365,24 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
+
+                        if($scope.clusterDetails.kafkaFlavor === 'Aiven for Apache Kafka')
+                        {
+                            if($scope.clusterDetails.projectName === undefined || !$scope.clusterDetails.projectName)
+                            {
+                                $scope.alertnote = "Please fill in Project Name as defined in Aiven console";
+                                $scope.showAlertToast();
+                                return;
+                            }
+
+                            if($scope.clusterDetails.serviceName === undefined || !$scope.clusterDetails.serviceName)
+                            {
+                                $scope.alertnote = "Please fill in service Name as defined in Aiven console";
+                                $scope.showAlertToast();
+                                return;
+                            }
+                        }
+
                 var serviceInput = {};
                 serviceInput['clusterId'] = $scope.clusterToEdit;
                 serviceInput['clusterName'] = $scope.clusterDetails.clusterName;
@@ -372,7 +390,8 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['protocol'] = $scope.clusterDetails.protocol;
                 serviceInput['clusterType'] = $scope.clusterDetails.type;
                 serviceInput['kafkaFlavor'] = $scope.clusterDetails.kafkaFlavor;
-
+                serviceInput['projectName'] = $scope.clusterDetails.projectName;
+                serviceInput['serviceName'] = $scope.clusterDetails.serviceName;
                 serviceInput['otherParams'] = "default.partitions=na,max.partitions=na,replication.factor=na";
 
                 $http({
