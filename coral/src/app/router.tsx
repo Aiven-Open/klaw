@@ -15,6 +15,7 @@ import ConnectorApprovalsPage from "src/app/pages/approvals/connectors";
 import { getRouterBasename } from "src/config";
 import RequestTopic from "src/app/pages/topics/request";
 import SchemaRequest from "src/app/pages/topics/schema-request";
+import ConnectorsPage from "src/app/pages/connectors";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
@@ -32,6 +33,10 @@ const routes: Array<RouteObject> = [
   {
     path: Routes.TOPICS,
     element: <Topics />,
+  },
+  {
+    path: Routes.CONNECTORS,
+    element: <ConnectorsPage />,
   },
   {
     path: Routes.TOPIC_REQUEST,
