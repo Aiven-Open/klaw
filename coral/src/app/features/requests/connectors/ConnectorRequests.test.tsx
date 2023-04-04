@@ -1,4 +1,4 @@
-import { cleanup } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
 import transformConnectorRequestApiResponse from "src/domain/connector/connector-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { ConnectorRequests } from "src/app/features/requests/connectors/ConnectorRequests";
@@ -65,5 +65,61 @@ describe("ConnectorRequests", () => {
       memoryRouter: true,
     });
     expect(getConnectorRequests).toBeCalledTimes(1);
+  });
+
+  describe("handles loading and error state when fetching the requests", () => {
+    const originalConsoleError = console.error;
+    beforeEach(() => {
+      // used to swallow a console.error that _should_ happen
+      // while making sure to not swallow other console.errors
+      console.error = jest.fn();
+
+      mockGetConnectorEnvironmentRequest.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequests.mockResolvedValue({
+        entries: [],
+        totalPages: 1,
+        currentPage: 1,
+      });
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("shows a loading state instead of a table while connector requests are being fetched", () => {
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      const table = screen.queryByRole("table");
+      const loading = screen.getByTestId("skeleton-table");
+
+      expect(table).not.toBeInTheDocument();
+      expect(loading).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("shows a error message in case of an error for fetching connector requests", async () => {
+      mockGetConnectorRequests.mockRejectedValue("mock-error");
+
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      const table = screen.queryByRole("table");
+      const errorMessage = await screen.findByText(
+        "Unexpected error. Please try again later!"
+      );
+
+      expect(table).not.toBeInTheDocument();
+      expect(errorMessage).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith("mock-error");
+    });
   });
 });

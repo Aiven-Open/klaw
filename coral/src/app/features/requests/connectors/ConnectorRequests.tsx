@@ -4,7 +4,7 @@ import { ConnectorRequestsTable } from "src/app/features/requests/connectors/com
 import { getConnectorRequests } from "src/domain/connector";
 
 function ConnectorRequests() {
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["connectorRequests"],
     queryFn: () =>
       getConnectorRequests({
@@ -24,6 +24,8 @@ function ConnectorRequests() {
         />
       }
       isLoading={isLoading}
+      isErrorLoading={isError}
+      errorMessage={error}
     />
   );
 }
