@@ -460,7 +460,6 @@ public class KafkaConnectControllerService {
       String currentPage,
       String requestsType,
       String env,
-      RequestOperationType requestOperationType,
       Order order,
       RequestOperationType requestOperationType,
       String search) {

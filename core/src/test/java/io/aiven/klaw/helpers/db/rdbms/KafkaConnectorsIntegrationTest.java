@@ -699,6 +699,59 @@ public class KafkaConnectorsIntegrationTest {
     assertThat(james).hasSize(Integer.valueOf(number));
   }
 
+  @Order(29)
+  @ParameterizedTest
+  @CsvSource({"James,0", "Jackie,0", "John,0"})
+  public void getConnectorRequestsForApprovalIsMyRequestTrueNonReturned(
+      String requestor, String number) {
+    // allreqs true so only requests from your team will be returned.
+    List<KafkaConnectorRequest> requests =
+        selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            true, requestor, null, null, false, 101, null, null, true);
+
+    for (KafkaConnectorRequest req : requests) {
+      assertThat(req.getRequestor()).isEqualTo(requestor);
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+
+    assertThat(requests).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(30)
+  @ParameterizedTest
+  @CsvSource({"James,101,0", "Jackie,103,10", "John,103,0"})
+  public void getConnectorRequestsForTeamViewIsMyRequestTrueRequestorsRequestsOnlyReturned(
+      String requestor, String teamId, String number) {
+    // allreqs true so only requests from your team will be returned.
+    List<KafkaConnectorRequest> requests =
+        selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            false, requestor, null, null, false, 103, null, null, true);
+
+    for (KafkaConnectorRequest req : requests) {
+      assertThat(req.getRequestor()).isEqualTo(requestor);
+      assertThat(req.getTeamId()).isEqualTo(Integer.valueOf(teamId));
+    }
+
+    assertThat(requests).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(31)
+  @ParameterizedTest
+  @CsvSource({"James,0", "Jackie,31", "John,0"})
+  public void getConnectorRequestsForTeamViewAllTeamsIsMyRequestTrueRequestorsRequestsOnlyReturned(
+      String requestor, String number) {
+    // allreqs true so only requests from your team will be returned.
+    List<KafkaConnectorRequest> requests =
+        selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            false, requestor, null, null, true, 101, null, null, true);
+
+    for (KafkaConnectorRequest req : requests) {
+      assertThat(req.getRequestor()).isEqualTo(requestor);
+    }
+
+    assertThat(requests).hasSize(Integer.valueOf(number));
+  }
+
   private void generateData(
       int number,
       int tenantId,
