@@ -544,6 +544,27 @@ describe("SchemaApprovals", () => {
       });
     });
 
+    it("enables user to filter by 'request type'", async () => {
+      const select = screen.getByLabelText("Filter by request type");
+
+      const option = within(select).getByRole("option", {
+        name: "Create",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("Create");
+
+      await waitFor(() =>
+        expect(mockGetSchemaRequestsForApprover).toHaveBeenCalledWith({
+          ...defaultApiParams,
+          operationType: "CREATE",
+        })
+      );
+    });
+
     it("enables user to filter by 'environment'", async () => {
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,

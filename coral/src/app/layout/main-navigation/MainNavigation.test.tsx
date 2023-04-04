@@ -16,8 +16,12 @@ const navLinks = [
     linkTo: "/index",
   },
   {
-    name: "All Topics",
+    name: "Topics",
     linkTo: "/topics",
+  },
+  {
+    name: "Kafka Connectors",
+    linkTo: "/kafkaConnectors",
   },
   { name: "Approve requests", linkTo: "/approvals" },
   { name: "My team's requests", linkTo: "/requests" },
@@ -26,14 +30,13 @@ const navLinks = [
 ];
 
 const submenuItems = [
-  { name: "Kafka Connectors", links: ["All Connectors", "Connector requests"] },
   { name: "Users and teams", links: ["Users", "Teams", "User requests"] },
 ];
 
 const navOrderFirstLevel = [
   { name: "Dashboard", isSubmenu: false },
-  { name: "All Topics", isSubmenu: false },
-  { name: "Kafka Connectors", isSubmenu: true },
+  { name: "Topics", isSubmenu: false },
+  { name: "Kafka Connectors", isSubmenu: false },
   { name: "Users and teams", isSubmenu: true },
   { name: "Approve requests", isSubmenu: false },
   { name: "My team's requests", isSubmenu: false },

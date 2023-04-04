@@ -479,6 +479,7 @@ public class TopicControllerService {
       String requestsType,
       Integer teamId,
       String env,
+      RequestOperationType requestOperationType,
       String wildcardSearch,
       Order order) {
     if (log.isDebugEnabled()) {
@@ -488,6 +489,7 @@ public class TopicControllerService {
           requestsType,
           teamId,
           env,
+          requestOperationType,
           wildcardSearch);
     }
 
@@ -501,13 +503,27 @@ public class TopicControllerService {
           manageDatabase
               .getHandleDbRequests()
               .getCreatedTopicRequests(
-                  userName, requestsType, false, tenantId, teamId, env, wildcardSearch);
+                  userName,
+                  requestsType,
+                  false,
+                  tenantId,
+                  teamId,
+                  env,
+                  requestOperationType,
+                  wildcardSearch);
     } else {
       createdTopicReqList =
           manageDatabase
               .getHandleDbRequests()
               .getCreatedTopicRequests(
-                  userName, requestsType, true, tenantId, teamId, env, wildcardSearch);
+                  userName,
+                  requestsType,
+                  true,
+                  tenantId,
+                  teamId,
+                  env,
+                  requestOperationType,
+                  wildcardSearch);
     }
 
     createdTopicReqList = filterByTenantAndSort(order, userName, createdTopicReqList);

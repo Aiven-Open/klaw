@@ -1404,14 +1404,7 @@ public class SelectDataJdbc {
   }
 
   public List<UserInfo> selectAllUsersAllTenants() {
-    List<UserInfo> userList = Lists.newArrayList(userInfoRepo.findAll());
-
-    userList =
-        userList.stream()
-            .filter(user -> user.getUsername().equals("superadmin"))
-            .collect(Collectors.toList());
-    userList.forEach(user -> user.setPwd(""));
-    return userList;
+    return Lists.newArrayList(userInfoRepo.findAll());
   }
 
   public Optional<ProductDetails> selectProductDetails(String name) {

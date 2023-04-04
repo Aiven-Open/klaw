@@ -117,8 +117,10 @@ const getTopicRequestsForApprover = (
       const omitSearch = property === "search" && value === "";
       const omitEnv =
         property === "env" && (value === "ALL" || value === undefined);
+      const omitOperationType =
+        property === "operationType" && value === undefined;
 
-      return omitTeamId || omitSearch || omitEnv;
+      return omitTeamId || omitSearch || omitEnv || omitOperationType;
     }
   );
 
