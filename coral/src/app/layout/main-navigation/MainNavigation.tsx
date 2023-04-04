@@ -61,7 +61,7 @@ function MainNavigation() {
         <li>
           <MainNavigationLink
             icon={codeBlock}
-            linkText={"All Topics"}
+            linkText={"Topics"}
             to={Routes.TOPICS}
             active={
               pathname.startsWith(Routes.TOPICS) ||
@@ -70,19 +70,11 @@ function MainNavigation() {
           />
         </li>
         <li>
-          <MainNavigationSubmenuList
+          <MainNavigationLink
             icon={layoutGroupBy}
-            text={"Kafka Connectors"}
-          >
-            <MainNavigationLink
-              to={`/kafkaConnectors`}
-              linkText={"All Connectors"}
-            />
-            <MainNavigationLink
-              to={`/execConnectors`}
-              linkText={"Connector requests"}
-            />
-          </MainNavigationSubmenuList>
+            to={`/kafkaConnectors`}
+            linkText={"Kafka Connectors"}
+          />
         </li>
         <li>
           <MainNavigationSubmenuList icon={people} text={"Users and teams"}>
