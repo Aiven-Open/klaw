@@ -5033,7 +5033,7 @@
             "format" : "date-time"
           }
         },
-        "required" : [ "message" ]
+        "required" : [ "message", "success" ]
       },
       "UserInfoModel" : {
         "properties" : {

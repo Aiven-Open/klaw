@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ApiResponse {
-  private boolean success;
+  @NotNull private boolean success;
 
   private String errCode;
 
