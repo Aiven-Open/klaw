@@ -1,4 +1,4 @@
-import { KlawApiModel, KlawApiResponse } from "types/utils";
+import { KlawApiModel } from "types/utils";
 
 // KlawApiModel<"EnvModel">
 // is only relevant when creating a new Environment and reserved to that usage
@@ -23,10 +23,8 @@ type Environment = {
   type: KlawApiModel<"EnvModelResponse">["type"];
 };
 
-type ClusterInfo = KlawApiResponse<"getClusterInfoFromEnv">;
-
 const ALL_ENVIRONMENTS_VALUE = "ALL";
 const ENVIRONMENT_NOT_INITIALIZED = "d3a914ff-cff6-42d4-988e-b0425128e770";
 
-export type { Environment, ClusterInfo };
+export type { Environment };
 export { ALL_ENVIRONMENTS_VALUE, ENVIRONMENT_NOT_INITIALIZED };

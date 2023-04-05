@@ -1,8 +1,5 @@
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
-import {
-  ClusterInfo,
-  Environment,
-} from "src/domain/environment/environment-types";
+import { Environment } from "src/domain/environment/environment-types";
 import api from "src/services/api";
 import { KlawApiResponse } from "types/utils";
 
@@ -31,7 +28,7 @@ const getClusterInfo = async ({
 }: {
   envSelected: string;
   envType: Environment["type"];
-}): Promise<ClusterInfo> => {
+}): Promise<KlawApiResponse<"getClusterInfoFromEnv">> => {
   const params = new URLSearchParams({ envSelected, envType });
   return api.get<KlawApiResponse<"getClusterInfoFromEnv">>(
     `/getClusterInfoFromEnv?${params}`
