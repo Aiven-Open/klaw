@@ -4,7 +4,6 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import { getHTTPBaseAPIUrl } from "src/config";
 import { KlawApiResponse } from "types/utils";
 import { operations } from "types/api";
-import { ClusterInfo } from "src/domain/environment/environment-types";
 
 type MockApi<T extends keyof operations> = {
   mswInstance: MswInstance;
@@ -60,7 +59,7 @@ function mockGetClusterInfoFromEnv({
 
 const getMockedResponseGetClusterInfoFromEnv = (
   isAivenCluster: boolean
-): ClusterInfo => ({
+): KlawApiResponse<"getClusterInfoFromEnv"> => ({
   aivenCluster: isAivenCluster,
 });
 
