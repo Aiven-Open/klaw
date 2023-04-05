@@ -623,7 +623,9 @@ describe("SchemaRequest", () => {
     });
 
     it("user can delete a request by clicking a button in the modal", async () => {
-      mockDeleteSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeleteSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
       const testRequest = mockedApiResponseSchemaRequests.entries[0];
@@ -685,7 +687,9 @@ describe("SchemaRequest", () => {
     });
 
     it("send a delete request api call if user deletes a schema request", async () => {
-      mockDeleteSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeleteSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
 
       const deleteButton = screen.getByRole("button", {
         name: `Delete schema request for ${testRequest.topicname}`,
@@ -707,7 +711,9 @@ describe("SchemaRequest", () => {
     });
 
     it("updates the the data for the table if user deletes a schema request", async () => {
-      mockDeleteSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeleteSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         1,
         defaultApiParams
