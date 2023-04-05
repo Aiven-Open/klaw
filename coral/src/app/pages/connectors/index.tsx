@@ -3,6 +3,7 @@ import add from "@aivenio/aquarium/dist/src/icons/add";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 import PreviewBanner from "src/app/components/PreviewBanner";
 import Layout from "src/app/layout/Layout";
+import BrowseConnectors from "src/app/features/connectors/browse/BrowseConnectors";
 
 const ConnectorsPage = () => {
   return (
@@ -17,7 +18,7 @@ const ConnectorsPage = () => {
             icon: add,
           }}
         />
-        <div>👋Kafka Connectors here </div>
+        <BrowseConnectors />
       </Layout>
     </AuthenticationRequiredBoundary>
   );

@@ -3,7 +3,7 @@ import {
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
-import transformConnectorRequestApiResponse from "src/domain/connector/connector-transformer";
+import { transformConnectorRequestApiResponse } from "src/domain/connector/connector-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { ConnectorRequests } from "src/app/features/requests/connectors/ConnectorRequests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
