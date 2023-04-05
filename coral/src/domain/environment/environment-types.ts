@@ -1,18 +1,26 @@
 import { KlawApiModel, KlawApiResponse } from "types/utils";
 
-//@TODO this seems to be specifically modified to fit
-// for creating a TopicRequest, we should check this
-// with backend and align API and our types/needs
+// KlawApiModel<"EnvModel">
+// is only relevant when creating a new Environment and reserved to that usage
+// we're not using that right now, that's why it's commented out
+// type CreateEnvironment = KlawApiModel<"EnvModel">
+
+// KlawApiModel<"EnvModelResponse">
+// This represents the Environment in the Backend and is what we're using
+// when talking about "Environment"
+// we're redefining property types here to fit our need in app better
+// transformEnvironmentApiResponse() is taking care of transforming
+// the properties and makes sure the types are matching between BE and FE
 type Environment = {
-  name: KlawApiModel<"EnvModel">["name"];
-  id: KlawApiModel<"EnvModel">["id"];
+  name: KlawApiModel<"EnvModelResponse">["name"];
+  id: KlawApiModel<"EnvModelResponse">["id"];
   defaultPartitions: number | undefined;
   defaultReplicationFactor: number | undefined;
   maxPartitions: number | undefined;
   maxReplicationFactor: number | undefined;
   topicNamePrefix: string | undefined;
   topicNameSuffix: string | undefined;
-  type: KlawApiModel<"EnvModel">["type"];
+  type: KlawApiModel<"EnvModelResponse">["type"];
 };
 
 type ClusterInfo = KlawApiResponse<"getClusterInfoFromEnv">;
