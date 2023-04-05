@@ -301,7 +301,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
-    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.isSuccess()).isTrue();
   }
 
   @Test
@@ -744,9 +744,11 @@ public class SchemaRegistryControllerServiceTest {
 
   private static ResponseEntity<ApiResponse> buildValidationResponse(boolean isSuccess) {
     if (isSuccess) {
-      return ResponseEntity.ok(ApiResponse.builder().message(VALIDATION_SUCCESS_MSG).build());
+      return ResponseEntity.ok(
+          ApiResponse.builder().success(true).message(VALIDATION_SUCCESS_MSG).build());
     } else {
-      return ResponseEntity.ok(ApiResponse.builder().message(VALIDATION_FAILURE_MSG).build());
+      return ResponseEntity.ok(
+          ApiResponse.builder().success(false).message(VALIDATION_FAILURE_MSG).build());
     }
   }
 

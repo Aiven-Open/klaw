@@ -116,10 +116,7 @@ public class SchemaService {
 
       String updateTopicReqStatus = registerSchemaPostCall(clusterSchemaRequest);
 
-      return ApiResponse.builder()
-          .success(updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value))
-          .message(updateTopicReqStatus)
-          .build();
+      return ApiResponse.builder().success(true).message(updateTopicReqStatus).build();
     } catch (Exception e) {
       log.error("Exception:", e);
       if (e instanceof HttpClientErrorException
@@ -465,10 +462,7 @@ public class SchemaService {
     try {
       log.info("Check Schema Compatibility for TopicName: {}", topicName);
       if (isFirstSchema(topicName, schemaProtocol, schemaEnv, clusterIdentification)) {
-        return ApiResponse.builder()
-            .success(true)
-            .message(ApiResultStatus.SUCCESS.value + " No Existing Schemas")
-            .build();
+        return ApiResponse.builder().success(true).message("No Existing Schemas").build();
       }
 
       Pair<String, RestTemplate> reqDetails =

@@ -449,7 +449,7 @@ public class SchemaRegistryControllerService {
         && (schemaRequest.getForceRegister() == null || !schemaRequest.getForceRegister())) {
       // check if Schema is valid
       ApiResponse isValid = validateSchema(schemaRequest);
-      if (isValid.getMessage().contains(ApiResultStatus.FAILURE.value)) {
+      if (!isValid.isSuccess()) {
         // Return on Failure response
         return isValid;
       }

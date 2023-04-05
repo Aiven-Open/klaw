@@ -249,7 +249,7 @@ public class ServerConfigServiceTest {
     assertThat(response.getMessage()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(0)).updateKwProperty(any(), eq(101));
     assertThat(response.getMessage())
-        .isEqualTo("Failure. Resource UTA must be created before being added to the Tenant Model");
+        .isEqualTo("Resource UTA must be created before being added to the Tenant Model");
   }
 
   @Test

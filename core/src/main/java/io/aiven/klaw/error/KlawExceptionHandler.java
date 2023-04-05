@@ -42,10 +42,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       KlawRestException ex, WebRequest request) {
     log.error("Error ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder()
-            .success(false)
-            .message(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
-            .build(),
+        ApiResponse.builder().success(false).message(ex.getMessage()).build(),
         HttpStatus.BAD_REQUEST);
   }
 
@@ -54,11 +51,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       KlawValidationException ex, WebRequest request) {
     log.error("KlawValidationException handler: ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder()
-            .success(false)
-            .message(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
-            .build(),
-        HttpStatus.CONFLICT);
+        ApiResponse.builder().success(false).message(ex.getMessage()).build(), HttpStatus.CONFLICT);
   }
 
   @Override

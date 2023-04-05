@@ -744,7 +744,7 @@ public class TopicControllerService {
 
     updateTopicReqStatus = Objects.requireNonNull(response.getBody()).getMessage();
 
-    if (ApiResultStatus.SUCCESS.value.equals(response.getBody().getMessage())) {
+    if (response.getBody().isSuccess()) {
       setTopicHistory(topicRequest, userName, tenantId);
       updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userName);
       mailService.sendMail(

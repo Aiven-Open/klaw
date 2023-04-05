@@ -484,7 +484,8 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
 
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse =
+        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
@@ -493,7 +494,7 @@ public class AclControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
-    assertThat(apiResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResp.isSuccess()).isTrue();
   }
 
   @Test
@@ -509,7 +510,11 @@ public class AclControllerServiceTest {
     dataObj.put(aivenAclIdKey, "abcdef"); // any test key
 
     ApiResponse apiResponse =
-        ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).data(dataObj).build();
+        ApiResponse.builder()
+            .success(true)
+            .message(ApiResultStatus.SUCCESS.value)
+            .data(dataObj)
+            .build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
@@ -518,7 +523,7 @@ public class AclControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
-    assertThat(apiResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResp.isSuccess()).isTrue();
   }
 
   @Test

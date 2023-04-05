@@ -363,7 +363,8 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TeamModel> teamModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    List<TeamModelResponse> teamModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModels).hasSize(3);
   }
 

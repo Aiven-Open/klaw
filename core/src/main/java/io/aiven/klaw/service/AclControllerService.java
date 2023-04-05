@@ -623,7 +623,7 @@ public class AclControllerService {
     AclRequests aclReq = dbHandle.selectAcl(Integer.parseInt(req_no), tenantId);
 
     ApiResponse aclValidationResponse = validateAclRequest(aclReq, userDetails);
-    if (!aclValidationResponse.getMessage().equals(ApiResultStatus.SUCCESS.value)) {
+    if (!aclValidationResponse.isSuccess()) {
       return aclValidationResponse;
     }
 
@@ -690,9 +690,7 @@ public class AclControllerService {
     String updateAclReqStatus;
     try {
       ApiResponse responseBody = Objects.requireNonNull(response).getBody();
-      if (Objects.requireNonNull(responseBody)
-          .getMessage()
-          .contains(ApiResultStatus.SUCCESS.value)) {
+      if (Objects.requireNonNull(responseBody).isSuccess()) {
         String jsonParams = "", aivenAclIdKey = "aivenaclid";
         Object responseData = responseBody.getData();
         if (responseData instanceof Map) {

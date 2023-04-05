@@ -237,7 +237,7 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getMessage()).startsWith(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.isSuccess()).isTrue();
 
     mockRestServiceServer.verify();
   }

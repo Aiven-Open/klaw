@@ -229,10 +229,7 @@ public class ServerConfigService {
         }
       }
     } catch (KlawException klawException) {
-      return ApiResponse.builder()
-          .success(false)
-          .message("Failure. " + klawException.getMessage())
-          .build();
+      return ApiResponse.builder().success(false).message(klawException.getMessage()).build();
 
     } catch (Exception e) {
       log.error("Exception:", e);
