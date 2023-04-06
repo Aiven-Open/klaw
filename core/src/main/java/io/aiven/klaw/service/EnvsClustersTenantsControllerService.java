@@ -28,9 +28,7 @@ import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KafkaSupportedProtocol;
-import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
-import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -38,8 +36,11 @@ import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.KwClustersModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.ClusterInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
+import io.aiven.klaw.model.response.KwClustersModelResponse;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -196,18 +197,18 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  public List<KwClustersModel> getClusters(String typeOfCluster) {
+  public List<KwClustersModelResponse> getClusters(String typeOfCluster) {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<KwClusters> clusters =
         new ArrayList<>(
             manageDatabase.getClusters(KafkaClustersType.of(typeOfCluster), tenantId).values());
-    List<KwClustersModel> clustersModels = new ArrayList<>();
+    List<KwClustersModelResponse> clustersModels = new ArrayList<>();
     List<Env> allEnvList = manageDatabase.getAllEnvList(tenantId);
-    KwClustersModel tmpClusterModel;
+    KwClustersModelResponse tmpClusterModel;
     for (KwClusters cluster : clusters) {
-      tmpClusterModel = new KwClustersModel();
+      tmpClusterModel = new KwClustersModelResponse();
       copyProperties(cluster, tmpClusterModel);
-      KwClustersModel finalTmpClusterModel = tmpClusterModel;
+      KwClustersModelResponse finalTmpClusterModel = tmpClusterModel;
       tmpClusterModel.setShowDeleteCluster(true);
       // set only for authorized users
       if (!commonUtilsService.isNotAuthorizedUser(
@@ -224,9 +225,9 @@ public class EnvsClustersTenantsControllerService {
     return clustersModels;
   }
 
-  public List<KwClustersModel> getClustersPaginated(
+  public List<KwClustersModelResponse> getClustersPaginated(
       String typeOfCluster, String clusterId, String pageNo, String searchClusterParam) {
-    List<KwClustersModel> kwClustersModelList = getClusters("all");
+    List<KwClustersModelResponse> kwClustersModelList = getClusters("all");
 
     if (clusterId != null && !clusterId.equals("")) {
       kwClustersModelList =
@@ -236,13 +237,13 @@ public class EnvsClustersTenantsControllerService {
     }
 
     if (searchClusterParam != null && !searchClusterParam.equals("")) {
-      List<KwClustersModel> envListMap1 =
+      List<KwClustersModelResponse> envListMap1 =
           kwClustersModelList.stream()
               .filter(
                   env ->
                       env.getClusterName().toLowerCase().contains(searchClusterParam.toLowerCase()))
               .collect(Collectors.toList());
-      List<KwClustersModel> envListMap2 =
+      List<KwClustersModelResponse> envListMap2 =
           kwClustersModelList.stream()
               .filter(
                   env ->
@@ -250,7 +251,7 @@ public class EnvsClustersTenantsControllerService {
                           .toLowerCase()
                           .contains(searchClusterParam.toLowerCase()))
               .toList();
-      List<KwClustersModel> envListMap3 =
+      List<KwClustersModelResponse> envListMap3 =
           kwClustersModelList.stream()
               .filter(
                   env ->
@@ -268,15 +269,17 @@ public class EnvsClustersTenantsControllerService {
               .collect(
                   Collectors.collectingAndThen(
                       Collectors.toCollection(
-                          () -> new TreeSet<>(Comparator.comparing(KwClustersModel::getClusterId))),
+                          () ->
+                              new TreeSet<>(
+                                  Comparator.comparing(KwClustersModelResponse::getClusterId))),
                       ArrayList::new));
     }
     return getClustersModelsPaginated(pageNo, kwClustersModelList);
   }
 
-  private List<KwClustersModel> getClustersModelsPaginated(
-      String pageNo, List<KwClustersModel> envListMap) {
-    List<KwClustersModel> envListMapUpdated = new ArrayList<>();
+  private List<KwClustersModelResponse> getClustersModelsPaginated(
+      String pageNo, List<KwClustersModelResponse> envListMap) {
+    List<KwClustersModelResponse> envListMapUpdated = new ArrayList<>();
 
     int totalRecs = envListMap.size();
     int recsPerPage = 10;
@@ -291,7 +294,7 @@ public class EnvsClustersTenantsControllerService {
     for (int i = 0; i < totalRecs; i++) {
 
       if (i >= startVar && i < lastVar) {
-        KwClustersModel mp = envListMap.get(i);
+        KwClustersModelResponse mp = envListMap.get(i);
 
         mp.setTotalNoPages(totalPages + "");
         List<String> numList = new ArrayList<>();
@@ -1063,7 +1066,7 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
-  public KwClustersModel getClusterDetails(String clusterId) {
+  public KwClustersModelResponse getClusterDetails(String clusterId) {
     try {
       int tenantId = commonUtilsService.getTenantId(getUserName());
       KwClusters kwClusters =
@@ -1071,7 +1074,7 @@ public class EnvsClustersTenantsControllerService {
               .getHandleDbRequests()
               .getClusterDetails(Integer.parseInt(clusterId), tenantId);
       if (kwClusters != null) {
-        KwClustersModel kwClustersModel = new KwClustersModel();
+        KwClustersModelResponse kwClustersModel = new KwClustersModelResponse();
         copyProperties(kwClusters, kwClustersModel);
 
         return kwClustersModel;

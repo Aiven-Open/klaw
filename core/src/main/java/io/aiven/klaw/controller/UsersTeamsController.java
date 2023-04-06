@@ -4,9 +4,10 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.RegisterSaasUserInfoModel;
 import io.aiven.klaw.model.RegisterUserInfoModel;
-import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.UserInfoModelResponse;
 import io.aiven.klaw.service.SaasService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import jakarta.validation.Valid;
@@ -180,7 +181,7 @@ public class UsersTeamsController {
       value = "/showUserList",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<UserInfoModel>> showUsers(
+  public ResponseEntity<List<UserInfoModelResponse>> showUsers(
       @RequestParam(value = "teamName", defaultValue = "") String teamName,
       @RequestParam(value = "pageNo", defaultValue = "1") String pageNo,
       @RequestParam(value = "searchUserParam", defaultValue = "") String searchUserParam) {
@@ -192,7 +193,7 @@ public class UsersTeamsController {
       value = "/getMyProfileInfo",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<UserInfoModel> getMyProfileInfo() {
+  public ResponseEntity<UserInfoModelResponse> getMyProfileInfo() {
     return new ResponseEntity<>(usersTeamsControllerService.getMyProfileInfo(), HttpStatus.OK);
   }
 
@@ -200,7 +201,7 @@ public class UsersTeamsController {
       value = "/getUserDetails",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<UserInfoModel> getUserDetails(
+  public ResponseEntity<UserInfoModelResponse> getUserDetails(
       @RequestParam(value = "userId") String userId) {
     return new ResponseEntity<>(
         usersTeamsControllerService.getUserInfoDetails(userId), HttpStatus.OK);

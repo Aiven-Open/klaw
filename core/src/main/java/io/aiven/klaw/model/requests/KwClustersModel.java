@@ -1,11 +1,11 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.requests;
 
+import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.validation.KafkaClusterValidator;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -41,11 +41,4 @@ public class KwClustersModel implements Serializable {
   private String serviceName;
 
   private String publicKey;
-
-  private boolean showDeleteCluster;
-
-  private String clusterStatus;
-
-  private String totalNoPages;
-  private List<String> allPageNos;
 }

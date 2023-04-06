@@ -7,10 +7,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.requests.TeamModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -375,7 +376,7 @@ public class UsersTeamsControllerIT {
     String role = "USER";
     UserInfoModel userInfoModel =
         mockMethods.getUserInfoModelSwitchTeams(
-            switchUser1, role, INFRATEAM, 2); // switch teams 1001, 1002
+            switchUser1, role, 1001, 2); // switch teams 1001, 1002
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
     String response =
@@ -421,7 +422,7 @@ public class UsersTeamsControllerIT {
   public void createUserWithSwitchTeamsOwnTeamIsNotInSwitchTeamsFailure() throws Exception {
     String role = "USER";
     UserInfoModel userInfoModel =
-        mockMethods.getUserInfoModelSwitchTeams(switchUser2, role, octopusTeamName, 2);
+        mockMethods.getUserInfoModelSwitchTeams(switchUser2, role, 1003, 2);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
     String response =
@@ -443,8 +444,7 @@ public class UsersTeamsControllerIT {
   public void createUserWithSwitchTeamsOnlyOneTeamSelectedFailure() throws Exception {
     String role = "USER";
     UserInfoModel userInfoModel =
-        mockMethods.getUserInfoModelSwitchTeams(
-            switchUser3, role, octopusTeamName, 1); // 1 switch team
+        mockMethods.getUserInfoModelSwitchTeams(switchUser3, role, 1003, 1); // 1 switch team
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
     String response =
@@ -466,8 +466,7 @@ public class UsersTeamsControllerIT {
   public void createUserWithSwitchTeamsNoTeamSelectedFailure() throws Exception {
     String role = "USER";
     UserInfoModel userInfoModel =
-        mockMethods.getUserInfoModelSwitchTeams(
-            "kwuserf", role, octopusTeamName, 0); // 0 switch teams
+        mockMethods.getUserInfoModelSwitchTeams("kwuserf", role, 1003, 0); // 0 switch teams
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
     String response =
@@ -517,10 +516,9 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    UserInfoModel userInfoModelActual =
+    UserInfoModelResponse userInfoModelActual =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
     assertThat(userInfoModelActual.getTeamId()).isEqualTo(newTeamId);
-    assertThat(userInfoModelActual.getTeam()).isEqualTo(STAGINGTEAM);
     assertThat(userInfoModelActual.getSwitchAllowedTeamIds())
         .hasSize(2)
         .containsExactlyInAnyOrder(1001, 1002);
@@ -560,10 +558,9 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    UserInfoModel userInfoModelActual =
+    UserInfoModelResponse userInfoModelActual =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
     assertThat(userInfoModelActual.getTeamId()).isEqualTo(1002); // no change
-    assertThat(userInfoModelActual.getTeam()).isEqualTo(STAGINGTEAM); // no change, old team
   }
 
   // Update user with USER role, switch teams
@@ -573,7 +570,7 @@ public class UsersTeamsControllerIT {
     String role = "USER";
     UserInfoModel userInfoModel =
         mockMethods.getUserInfoModelSwitchTeams(
-            user2, role, INFRATEAM, 2); // add switch teams 1001, 1002
+            user2, role, 1001, 2); // add switch teams 1001, 1002
     userInfoModel.setTeamId(1001);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
 
@@ -628,7 +625,7 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    List<UserInfoModel> userInfoModelList =
+    List<UserInfoModelResponse> userInfoModelList =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
     assertThat(userInfoModelList).hasSizeBetween(3, 6); // superadmin, kwuserb, kwuserc
     assertThat(
@@ -660,10 +657,9 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    UserInfoModel userInfoModelActual =
+    UserInfoModelResponse userInfoModelActual =
         new ObjectMapper().readValue(response, new TypeReference<>() {});
     assertThat(userInfoModelActual.getTeamId()).isEqualTo(1002); // no change
-    assertThat(userInfoModelActual.getTeam()).isEqualTo(STAGINGTEAM); // no change, old team
     assertThat(userInfoModelActual.getSwitchAllowedTeamIds())
         .hasSize(2)
         .containsExactlyInAnyOrder(1001, 1002);

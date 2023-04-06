@@ -29,11 +29,13 @@ import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
+import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -75,11 +77,23 @@ public class UtilMethods {
 
   public UserInfoModel getUserInfoMock() {
     UserInfoModel userInfo = new UserInfoModel();
+    userInfo.setUsername("kwusera");
+    userInfo.setTeamId(101);
+    userInfo.setTenantId(101);
+    userInfo.setRole("USER");
+    userInfo.setMailid("test@test.com");
+    userInfo.setFullname("My full name");
+    userInfo.setUserPassword("mypwadasdas");
+
+    return userInfo;
+  }
+
+  public UserInfoModelResponse getUserInfoMockResponse() {
+    UserInfoModelResponse userInfo = new UserInfoModelResponse();
     userInfo.setTeam("Seahorses");
     userInfo.setUsername("kwusera");
     userInfo.setTeamId(101);
     userInfo.setTenantId(101);
-    userInfo.setTenantName("default");
     userInfo.setRole("USER");
     userInfo.setMailid("test@test.com");
     userInfo.setFullname("My full name");
@@ -109,9 +123,9 @@ public class UtilMethods {
     return userInfoList;
   }
 
-  public List<UserInfoModel> getUserInfoListModel(String username, String role) {
-    List<UserInfoModel> userInfoList = new ArrayList<>();
-    UserInfoModel userInfo = new UserInfoModel();
+  public List<UserInfoModelResponse> getUserInfoListModel(String username, String role) {
+    List<UserInfoModelResponse> userInfoList = new ArrayList<>();
+    UserInfoModelResponse userInfo = new UserInfoModelResponse();
     userInfo.setTeam("Seahorses");
     userInfo.setUsername(username);
     userInfo.setRole(role);
