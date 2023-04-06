@@ -307,7 +307,7 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo(
             ApiResultStatus.FAILURE.value
                 + " Invalid Schema. Unable to validate Schema Compatibility.");

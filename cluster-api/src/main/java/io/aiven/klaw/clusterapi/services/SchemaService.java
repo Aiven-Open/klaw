@@ -493,7 +493,8 @@ public class SchemaService {
       if (httpEx.getStatusCode().equals(HttpStatusCode.valueOf(422))) {
 
         return ApiResponse.builder()
-            .result(
+            .success(false)
+            .message(
                 ApiResultStatus.FAILURE.value
                     + " Invalid Schema. Unable to validate Schema Compatibility.")
             .build();
