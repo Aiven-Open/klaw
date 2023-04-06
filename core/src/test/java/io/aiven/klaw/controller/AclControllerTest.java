@@ -68,7 +68,7 @@ public class AclControllerTest {
   public void createAcl() throws Exception {
     AclRequestsModel addAclRequest = utilMethods.getAclRequestModel(topicName + topicId);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addAclRequest);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.createAcl(any())).thenReturn(apiResponse);
 
     mvcAcls
@@ -78,7 +78,7 @@ public class AclControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -87,7 +87,7 @@ public class AclControllerTest {
 
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncUpdates);
 
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(aclSyncControllerService.updateSyncAcls(any())).thenReturn(apiResponse);
 
     mvcAclsSync
@@ -97,7 +97,7 @@ public class AclControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -158,7 +158,7 @@ public class AclControllerTest {
 
   @Test
   public void deleteAclRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.deleteAclRequests(anyString())).thenReturn(apiResponse);
     mvcAcls
         .perform(
@@ -167,12 +167,12 @@ public class AclControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   public void approveAclRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.approveAclRequests(anyString())).thenReturn(apiResponse);
 
     mvcAcls
@@ -182,12 +182,12 @@ public class AclControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   public void declineAclRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(aclControllerService.declineAclRequests(anyString(), anyString())).thenReturn(apiResponse);
     mvcAcls
         .perform(
@@ -197,7 +197,7 @@ public class AclControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -261,7 +261,7 @@ public class AclControllerTest {
 
     ApiResponse apiResponse =
         ApiResponse.builder()
-            .result(ApiResultStatus.SUCCESS.value)
+            .message(ApiResultStatus.SUCCESS.value)
             .data(serviceAccountInfoMap)
             .build();
     when(aclControllerService.getAivenServiceAccountDetails(

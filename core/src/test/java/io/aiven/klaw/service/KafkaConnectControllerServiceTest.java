@@ -125,7 +125,7 @@ public class KafkaConnectControllerServiceTest {
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(getConnectRequestModel());
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -155,7 +155,7 @@ public class KafkaConnectControllerServiceTest {
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(kafkaConnectorRequestModel);
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo("Failure. Invalid config. topics/topics.regex is not configured");
   }
 
@@ -170,7 +170,7 @@ public class KafkaConnectControllerServiceTest {
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(kafkaConnectorRequestModel);
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo("Failure. Invalid config. topics and topics.regex both cannot be configured.");
   }
 
@@ -185,6 +185,9 @@ public class KafkaConnectControllerServiceTest {
     when(handleDbRequests.getConnectorsFromName(eq("ConnectorOne"), eq(101)))
         .thenReturn(List.of(getKwKafkaConnector()));
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(envListIds);
+    Map<String, String> res = new HashMap<>();
+    res.put("result", "success");
+    when(handleDbRequests.requestForConnector(any())).thenReturn(res);
     ApiResponse apiResponse =
         kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne", "1");
 
@@ -207,7 +210,7 @@ public class KafkaConnectControllerServiceTest {
     ApiResponse apiResponse =
         kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne", "1");
 
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo("Failure. A request already exists for this connector.");
   }
 

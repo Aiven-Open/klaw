@@ -201,7 +201,7 @@ public class ConfluentCloudApiServiceTest {
     when(restTemplate.postForEntity(anyString(), any(), any())).thenReturn(null);
 
     ApiResponse apiResponse = confluentCloudApiService.createTopic(clusterTopicRequest);
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -211,7 +211,7 @@ public class ConfluentCloudApiServiceTest {
     when(restTemplate.postForEntity(anyString(), any(), any())).thenReturn(null);
 
     ApiResponse apiResponse = confluentCloudApiService.deleteTopic(clusterTopicRequest);
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test

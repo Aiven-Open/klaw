@@ -141,7 +141,7 @@ public class AclControllerServiceTest {
     mockKafkaFlavor();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -160,7 +160,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -192,7 +192,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -205,7 +205,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequests);
-    assertThat(resultResp.getResult())
+    assertThat(resultResp.getMessage())
         .isEqualTo("Failure : Topic not found on target environment.");
   }
 
@@ -222,7 +222,7 @@ public class AclControllerServiceTest {
     mockKafkaFlavor();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequestsModel);
-    assertThat(resultResp.getResult())
+    assertThat(resultResp.getMessage())
         .isEqualTo("Failure : Please change the pattern to LITERAL for topic type.");
   }
 
@@ -243,7 +243,7 @@ public class AclControllerServiceTest {
     mockKafkaFlavor();
 
     ApiResponse resultResp = aclControllerService.createAcl(aclRequestsModel);
-    assertThat(resultResp.getResult())
+    assertThat(resultResp.getMessage())
         .isEqualTo(
             "Failure : Consumer group "
                 + aclRequestsModel.getConsumergroup()
@@ -442,7 +442,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.deleteAclRequest(anyInt(), anyString(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
-    assertThat(result.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -451,7 +451,7 @@ public class AclControllerServiceTest {
     String req_no = "1001";
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
-    assertThat(result.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -460,7 +460,7 @@ public class AclControllerServiceTest {
     String req_no = "1001";
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     ApiResponse result = aclControllerService.deleteAclRequests(req_no);
-    assertThat(result.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -484,7 +484,8 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
 
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse =
+        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
@@ -493,7 +494,7 @@ public class AclControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
-    assertThat(apiResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResp.isSuccess()).isTrue();
   }
 
   @Test
@@ -509,7 +510,11 @@ public class AclControllerServiceTest {
     dataObj.put(aivenAclIdKey, "abcdef"); // any test key
 
     ApiResponse apiResponse =
-        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(dataObj).build();
+        ApiResponse.builder()
+            .success(true)
+            .message(ApiResultStatus.SUCCESS.value)
+            .data(dataObj)
+            .build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
@@ -518,7 +523,7 @@ public class AclControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
-    assertThat(apiResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResp.isSuccess()).isTrue();
   }
 
   @Test
@@ -527,7 +532,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
-    assertThat(apiResp.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(apiResp.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -538,7 +543,7 @@ public class AclControllerServiceTest {
     aclReq.setRequestor("kwusera");
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
-    assertThat(apiResp.getResult())
+    assertThat(apiResp.getMessage())
         .isEqualTo("You are not allowed to approve your own subscription requests.");
   }
 
@@ -552,12 +557,12 @@ public class AclControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
 
-    ApiResponse apiResponse = ApiResponse.builder().result("failure").build();
+    ApiResponse apiResponse = ApiResponse.builder().message("failure").build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
-    assertThat(apiResp.getResult()).isEqualTo("failure");
+    assertThat(apiResp.getMessage()).isEqualTo("failure");
   }
 
   @Test
@@ -571,14 +576,14 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
         .thenThrow(new RuntimeException("Error"));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
-    assertThat(apiResp.getResult()).isEqualTo("failure");
+    assertThat(apiResp.getMessage()).isEqualTo("failure");
   }
 
   @Test
@@ -594,7 +599,7 @@ public class AclControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
-    assertThat(apiResp.getResult()).isEqualTo("This request does not exist anymore.");
+    assertThat(apiResp.getMessage()).isEqualTo("This request does not exist anymore.");
   }
 
   @Test
@@ -611,7 +616,7 @@ public class AclControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
     ApiResponse resultResp = aclControllerService.declineAclRequests(req_no, "");
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -650,7 +655,7 @@ public class AclControllerServiceTest {
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
 
     ApiResponse resultResp = aclControllerService.createDeleteAclSubscriptionRequest(reqNo);
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -665,7 +670,7 @@ public class AclControllerServiceTest {
 
     ApiResponse apiResponse =
         ApiResponse.builder()
-            .result(ApiResultStatus.SUCCESS.value)
+            .message(ApiResultStatus.SUCCESS.value)
             .data(serviceAccountInfoMap)
             .build();
     Acl acl = utilMethods.getAllAcls().get(1);
@@ -683,7 +688,7 @@ public class AclControllerServiceTest {
         aclControllerService.getAivenServiceAccountDetails("1", "testtopic", "service", reqNo);
     Map<String, String> resultObj = (Map) resultResp.getData();
 
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     assertThat(resultObj).hasSize(2);
   }
 
@@ -697,7 +702,7 @@ public class AclControllerServiceTest {
 
     ApiResponse apiResponse =
         ApiResponse.builder()
-            .result(ApiResultStatus.FAILURE.value)
+            .message(ApiResultStatus.FAILURE.value)
             .data(serviceAccountInfoMap)
             .build();
     Acl acl = utilMethods.getAllAcls().get(1);
@@ -714,7 +719,7 @@ public class AclControllerServiceTest {
     ApiResponse resultResp =
         aclControllerService.getAivenServiceAccountDetails("1", "testtopic", "service", reqNo);
 
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.FAILURE.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
   }
 
   @Test
@@ -728,7 +733,7 @@ public class AclControllerServiceTest {
 
     ApiResponse apiResponse =
         ApiResponse.builder()
-            .result(ApiResultStatus.SUCCESS.value)
+            .message(ApiResultStatus.SUCCESS.value)
             .data(serviceAccountInfoSet)
             .build();
 
@@ -742,7 +747,7 @@ public class AclControllerServiceTest {
     ApiResponse resultResp = aclControllerService.getAivenServiceAccounts("1");
     Set<String> resultObj = (Set) resultResp.getData();
 
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     assertThat(resultObj).hasSize(2);
   }
 
@@ -755,7 +760,7 @@ public class AclControllerServiceTest {
 
     ApiResponse apiResponse =
         ApiResponse.builder()
-            .result(ApiResultStatus.SUCCESS.value)
+            .message(ApiResultStatus.SUCCESS.value)
             .data(serviceAccountInfoSet)
             .build();
 
@@ -770,7 +775,7 @@ public class AclControllerServiceTest {
     ApiResponse resultResp = aclControllerService.getAivenServiceAccounts("1");
     Set<String> resultObj = (Set) resultResp.getData();
 
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     assertThat(resultObj).hasSize(0);
   }
 

@@ -115,11 +115,11 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -467,7 +467,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                     params: {'topicId': topicId},
                     data: {'topicId': topicId}
                 }).success(function (output) {
-                    $scope.alert = "Topic Delete Request : " + output.result;
+                    $scope.alert = "Topic Delete Request : " + output.message;
                     $scope.getMyTopicRequests(1);
                 }).error(
                     function (error) {
@@ -501,11 +501,11 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                               params: {'connectorId' : topicId },
                               data: {'connectorId' : topicId }
                           }).success(function(output) {
-                              $scope.alert = "Request deleted : " + output.result;
-                              if(output.result === 'success'){
+                              $scope.alert = "Request deleted : " + output.message;
+                              if(output.success){
                                   swal({
                                        title: "",
-                                       text: "Request deleted : "+output.result,
+                                       text: "Request deleted : "+output.message,
                                        timer: 2000,
                                        showConfirmButton: false
                                    });
@@ -544,12 +544,12 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                             params: {'req_no' : req_no },
                             data: {'req_no' : req_no}
                         }).success(function(output) {
-                            $scope.alert = "Request deleted : "+output.result;
+                            $scope.alert = "Request deleted : "+output.message;
                             $scope.getMyAclRequests(1, true);
-                            if(output.result === 'success'){
+                            if(output.success){
                                   swal({
                                        title: "",
-                                       text: "Request deleted : "+output.result,
+                                       text: "Request deleted : "+output.message,
                                        timer: 2000,
                                        showConfirmButton: false
                                    });
@@ -586,12 +586,12 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                             params: {'req_no' : req_no },
                             data: {'req_no' : req_no}
                         }).success(function(output) {
-                            $scope.alert = "Request deleted : "+output.result;
+                            $scope.alert = "Request deleted : "+output.message;
                             $scope.getMySchemaRequests(1, true);
-                            if(output.result === 'success'){
+                            if(output.success){
                                   swal({
                                        title: "",
-                                       text: "Request deleted : "+output.result,
+                                       text: "Request deleted : "+output.message,
                                        timer: 2000,
                                        showConfirmButton: false
                                    });

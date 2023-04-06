@@ -398,7 +398,8 @@ public class TopicAclControllerIT {
     String topicName = TopicAclControllerIT.topicName + topicId1;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
         .thenReturn("ONLINE");
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse =
+        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
 
     when(clusterApiService.approveTopicRequests(
             topicName, RequestOperationType.CREATE.value, 2, "1", "1", new HashMap<>(), 101, null))
@@ -674,9 +675,14 @@ public class TopicAclControllerIT {
       String aivenAclIdKey = "aivenaclid";
       dataObj.put(aivenAclIdKey, "abcdef"); // any test key
       apiResponse =
-          ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(dataObj).build();
+          ApiResponse.builder()
+              .success(true)
+              .message(ApiResultStatus.SUCCESS.value)
+              .data(dataObj)
+              .build();
     } else {
-      apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+      apiResponse =
+          ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     }
 
     when(clusterApiService.approveAclRequests(any(), anyInt()))
@@ -987,7 +993,8 @@ public class TopicAclControllerIT {
     String topicName = TopicAclControllerIT.topicName + topicID;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
         .thenReturn("ONLINE");
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse =
+        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
 
     when(clusterApiService.approveTopicRequests(
             topicName,

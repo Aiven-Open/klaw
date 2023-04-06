@@ -356,11 +356,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                 url: "deleteTenant",
                                 headers : { 'Content-Type' : 'application/json' }
                             }).success(function(output) {
-                                $scope.alert = "Delete Tenant Request : "+output.result;
-                                if(output.result==='success'){
+                                $scope.alert = "Delete Tenant Request : "+output.message;
+                                if(output.success){
                                     swal({
                                          title: "",
-                                         text: "Delete Tenant Request : "+output.result,
+                                         text: "Delete Tenant Request : "+output.message,
                                          timer: 2000,
                                          showConfirmButton: false
                                      });
@@ -415,11 +415,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 params: {'orgName' : orgName},
                 data: {'orgName' : orgName}
             }).success(function(output) {
-                    $scope.alert = "Update Tenant Request : "+output.result;
-                    if(output.result==='success'){
+                    $scope.alert = "Update Tenant Request : "+output.message;
+                    if(output.success){
                         swal({
                              title: "",
-                             text: "Update Tenant Request : "+output.result,
+                             text: "Update Tenant Request : "+output.message,
                              timer: 2000,
                              showConfirmButton: false
                          });
@@ -455,11 +455,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     params: {'selectedTenantExtensionPeriod' : $scope.selectedTenantExtensionPeriod},
                     data: {'selectedTenantExtensionPeriod' : $scope.selectedTenantExtensionPeriod}
                 }).success(function(output) {
-                        $scope.alert = "Update Tenant extension Request : "+output.result;
-                        if(output.result==='success'){
+                        $scope.alert = "Update Tenant extension Request : "+output.message;
+                        if(output.success){
                             swal({
                                  title: "",
-                                 text: "Update Tenant extension Request : "+output.result + ". You will hear from us very soon. Thank you !!",
+                                 text: "Update Tenant extension Request : "+output.message + ". You will hear from us very soon. Thank you !!",
                                  timer: 2000,
                                  showConfirmButton: false
                              });
@@ -605,11 +605,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                 params: {'clusterId' : idval },
                                 data: {'clusterId' : idval}
                             }).success(function(output) {
-                                $scope.alert = "Delete Cluster Request : "+output.result;
-                                if(output.result==='success'){
+                                $scope.alert = "Delete Cluster Request : "+output.message;
+                                if(output.success){
                                     swal({
                                          title: "",
-                                         text: "Delete Cluster Request : "+output.result,
+                                         text: "Delete Cluster Request : "+output.message,
                                          timer: 2000,
                                          showConfirmButton: true
                                      }).then(function(isConfirm){
@@ -649,11 +649,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                 params: {'envId' : idval, 'envType' : envType },
                                 data: {'envId' : idval}
                             }).success(function(output) {
-                                $scope.alert = "Delete Environment Request : "+output.result;
-                                if(output.result==='success'){
+                                $scope.alert = "Delete Environment Request : "+output.message;
+                                if(output.success){
                                     swal({
                                          title: "",
-                                         text: "Delete Environment Request : "+output.result,
+                                         text: "Delete Environment Request : "+output.message,
                                          timer: 2000,
                                          showConfirmButton: true
                                      }).then(function(isConfirm){
@@ -726,7 +726,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             }
                         }
 
-                        if($scope.kafkaFlavor === 'Aiven for Apache Kafka')
+                        if($scope.kafkaFlavor === 'Aiven for Apache Kafka' && $scope.addNewCluster.clusterType === 'kafka')
                         {
                             if($scope.addNewCluster.projectName === undefined || !$scope.addNewCluster.projectName)
                             {
@@ -763,14 +763,14 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             params: {'addNewCluster' : serviceInput },
                             data: serviceInput
                         }).success(function(output) {
-                            $scope.alert = "New cluster added : "+output.result;
+                            $scope.alert = "New cluster added : "+output.message;
                             $scope.addNewCluster.envname = "";
                             $scope.addNewCluster.host = "";
                             $scope.addNewCluster.pubKeyFile = "";
-                            if(output.result==='success'){
+                            if(output.success){
                                 swal({
                                      title: "",
-                                     text: "New cluster added : "+output.result,
+                                     text: "New cluster added : "+output.message,
                                      timer: 2000,
                                      showConfirmButton: true
                                  }).then(function(isConfirm){
@@ -917,12 +917,12 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     params: {'addNewEnv' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
-                    $scope.alert = "New environment status : "+output.result;
+                    $scope.alert = "New environment status : "+output.message;
                     $scope.addNewEnv.envname = "";
-                    if(output.result=='success'){
+                    if(output.success){
                         swal({
                              title: "",
-                             text: "New environment status : "+output.result,
+                             text: "New environment status : "+output.message,
                              timer: 3000,
                              showConfirmButton: true
                          }).then(function(isConfirm){
@@ -988,11 +988,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     params: {'addNewEnv' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
-                    $scope.alert = "New Environment added status: " + output.result;
-                    if(output.result == 'success'){
+                    $scope.alert = "New Environment added status: " + output.message;
+                    if(output.success){
                         swal({
                              title: "",
-                             text: "New Schema environment status : "+output.result,
+                             text: "New Schema environment status : "+output.message,
                              timer: 2000,
                              showConfirmButton: true
                          }).then(function(isConfirm){
@@ -1053,11 +1053,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 params: {'addNewEnv' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
-                $scope.alert = "New Environment added status: " + output.result;
-                if(output.result == 'success'){
+                $scope.alert = "New Environment added status: " + output.message;
+                if(output.success){
                     swal({
                          title: "",
-                         text: "New KafkaConnect environment status : "+output.result,
+                         text: "New KafkaConnect environment status : "+output.message,
                          timer: 3000,
                          showConfirmButton: true
                      }).then(function(isConfirm){
@@ -1180,11 +1180,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

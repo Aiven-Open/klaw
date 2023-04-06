@@ -20,6 +20,8 @@ public class TopicInfo {
 
   @NotNull private String teamname;
 
+  @NotNull private int teamId;
+
   @NotNull private String envId;
 
   @NotNull private List<String> environmentsList;

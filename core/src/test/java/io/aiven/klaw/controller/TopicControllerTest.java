@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -35,7 +36,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -81,8 +81,7 @@ public class TopicControllerTest {
   public void createTopics() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
-    ApiResponse apiResponse =
-        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(topicControllerService.createTopicsCreateRequest(any())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -91,7 +90,7 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -99,7 +98,7 @@ public class TopicControllerTest {
   public void updateSyncTopics() throws Exception {
     List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncTopicUpdates);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(apiResponse);
 
     mvcSync
@@ -109,7 +108,7 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -189,7 +188,7 @@ public class TopicControllerTest {
   @Test
   @Order(6)
   public void deleteTopicRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(topicControllerService.deleteTopicRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -198,14 +197,13 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   @Order(7)
   public void approveTopicRequests() throws Exception {
-    ApiResponse apiResponse =
-        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(topicControllerService.approveTopicRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -214,13 +212,13 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   @Order(8)
   public void declineTopicRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
         .thenReturn(apiResponse);
 
@@ -231,7 +229,7 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -240,7 +238,7 @@ public class TopicControllerTest {
     List<List<TopicInfo>> topicList = utilMethods.getTopicInfoList();
 
     when(topicControllerService.getTopics(
-            anyString(), anyString(), anyString(), anyString(), anyString(), any()))
+            anyString(), anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(topicList);
 
     mvc.perform(
@@ -248,7 +246,7 @@ public class TopicControllerTest {
                 .param("env", "1")
                 .param("pageNo", "1")
                 .param("topicnamesearch", "testtopic")
-                .param("teamName", "Team1")
+                .param("teamId", "1001")
                 .param("topicType", "")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -299,8 +297,7 @@ public class TopicControllerTest {
   public void updateTopic() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicUpdateRequestModel(1001);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
-    ApiResponse apiResponse =
-        ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).status(HttpStatus.OK).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(topicControllerService.createTopicsUpdateRequest(any())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -309,6 +306,6 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 }

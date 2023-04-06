@@ -5,7 +5,12 @@ import { objectHasProperty } from "src/services/type-utils";
 import { ResolveIntersectionTypes } from "types/utils";
 import isArray from "lodash/isArray";
 
-type GenericApiResponse = components["schemas"]["ApiResponse"];
+type KlawApiResponse = ResolveIntersectionTypes<
+  components["schemas"]["ApiResponse"]
+>;
+type KlawApiError = KlawApiResponse & {
+  success: false;
+};
 
 enum HTTPMethod {
   GET = "GET",
@@ -87,7 +92,7 @@ type ServerError = ResolveIntersectionTypes<
   }
 >;
 
-function hasHTTPErrorProperties(
+function isHTTPErrorProperties(
   value: Record<string, unknown>
 ): value is Record<keyof HTTPError, unknown> {
   return (
@@ -103,7 +108,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isHTTPError(value: unknown): value is HTTPError {
-  if (isRecord(value) && hasHTTPErrorProperties(value)) {
+  if (isRecord(value) && isHTTPErrorProperties(value)) {
     return (
       typeof value.status === "number" &&
       typeof value.statusText === "string" &&
@@ -205,41 +210,14 @@ const checkStatus = (response: Response): Promise<Response> => {
   return Promise.resolve(response);
 };
 
-function isGenericApiResponse(
+function isKlawApiError(
   response: unknown | unknown[]
-): response is GenericApiResponse {
-  return objectHasProperty(response, "result");
-}
-
-// Klaw currently does not return ERRORs from the API but always a 200
-// An error is always following this patter:
-// {
-// status?: "100 CONTINUE" ...(etc._
-// timestamp?: string;
-// message?: string;
-// debugMessage?: string;
-// result: string;
-// data?: Record<string, never>;
-// };
-// to provide error messages for the user, we added this
-// temp fix. It can be removed once the API is updated
-
-async function checkForFailureHiddenAsSuccess<TResponse extends SomeObject>(
-  response: TResponse
-): Promise<TResponse> {
-  if (isGenericApiResponse(response)) {
-    const res: GenericApiResponse = response;
-    if (res.result?.toLowerCase().startsWith("failure")) {
-      const httpError: HTTPError = {
-        data: { message: res.result },
-        status: 400,
-        statusText: "Bad Request",
-        headers: new Headers(),
-      };
-      return Promise.reject(httpError);
-    }
-  }
-  return Promise.resolve(response);
+): response is KlawApiError {
+  return (
+    objectHasProperty(response, "message") &&
+    objectHasProperty(response, "success") &&
+    response.success === false
+  );
 }
 
 function parseResponseBody<T extends SomeObject>(
@@ -257,23 +235,38 @@ function parseResponseBody<T extends SomeObject>(
   }
 }
 
-function handleHTTPError(errorOrResponse: Error | Response): Promise<never> {
+function checkForKlawErrors<TResponse extends SomeObject>(
+  parsedResponse: TResponse
+): Promise<TResponse> {
+  if (isKlawApiError(parsedResponse)) {
+    return Promise.reject(parsedResponse);
+  }
+  return Promise.resolve(parsedResponse);
+}
+
+function handleError(
+  errorOrResponse: Error | Response | KlawApiError
+): Promise<never> {
+  // errorOrResponse is an Response when the api response
+  // was identified as an error `checkStatus` and we've
+  // not yet read the body stream
   if (errorOrResponse instanceof Response) {
     return parseResponseBody(errorOrResponse).then((body) => {
-      const bodyToReturn = isArray(body) ? body[0] : body;
       // We have api endpoints that return ApiResponse[]
       // these endpoints are all meant for enabling "batch" processing,
       // for example to delete multiple requests
       // this is currently not implemented as a feature.
       // If this endpoints contain an error, it will be contained
       // in the first (and only) entry of the ApiResponse[]
-      // which is why we return that entry as body in case the
-      // body is an array. This enables us to show the correct
-      // error message to users.
       // see more details: https://github.com/aiven/klaw/pull/921#issue-1641959704
+      const bodyToCheck = isArray(body) ? body[0] : body;
+      if (isKlawApiError(bodyToCheck)) {
+        const error: KlawApiError = bodyToCheck;
+        return Promise.reject(error);
+      }
 
       const httpError: HTTPError = {
-        data: bodyToReturn,
+        data: bodyToCheck,
         status: errorOrResponse.status,
         statusText: errorOrResponse.statusText,
         headers: errorOrResponse.headers,
@@ -281,7 +274,7 @@ function handleHTTPError(errorOrResponse: Error | Response): Promise<never> {
       return Promise.reject(httpError);
     });
   }
-  return Promise.reject(errorOrResponse);
+  return Promise.reject(errorOrResponse as Error);
 }
 
 function handleResponse<TResponse extends SomeObject>(
@@ -292,8 +285,8 @@ function handleResponse<TResponse extends SomeObject>(
     .then(transformHTTPRedirectToRootTo204)
     .then(checkStatus)
     .then((response) => parseResponseBody<TResponse>(response))
-    .then(checkForFailureHiddenAsSuccess)
-    .catch(handleHTTPError);
+    .then(checkForKlawErrors)
+    .catch(handleError);
 }
 
 function withPayloadAndVerb<
@@ -356,5 +349,11 @@ export default {
   delete: delete_,
 };
 
-export type { AbsolutePathname, HTTPError, GenericApiResponse };
-export { HTTPMethod, isUnauthorizedError, isServerError, isClientError };
+export type { AbsolutePathname, HTTPError, KlawApiResponse, KlawApiError };
+export {
+  HTTPMethod,
+  isUnauthorizedError,
+  isServerError,
+  isClientError,
+  isKlawApiError,
+};

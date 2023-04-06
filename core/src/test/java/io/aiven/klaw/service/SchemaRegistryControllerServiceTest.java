@@ -172,7 +172,7 @@ public class SchemaRegistryControllerServiceTest {
     when(handleDbRequests.deleteSchemaRequest(anyInt(), anyString(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse resultResp = schemaRegistryControllerService.deleteSchemaRequests("" + schemaReqId);
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -195,7 +195,7 @@ public class SchemaRegistryControllerServiceTest {
   public void execSchemaRequestsSuccess() throws KlawException {
     int schemaReqId = 1001;
 
-    ApiResponse apiResponse = ApiResponse.builder().result("Schema registered id\": 215").build();
+    ApiResponse apiResponse = ApiResponse.builder().message("Schema registered id\": 215").build();
 
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
@@ -216,7 +216,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     ApiResponse resultResp = schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
-    assertThat(resultResp.getResult()).contains(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).contains(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -224,7 +224,7 @@ public class SchemaRegistryControllerServiceTest {
   public void execSchemaRequestsFailure1() throws KlawException {
     int schemaReqId = 1001;
 
-    ApiResponse apiResponse = ApiResponse.builder().result("Schema not registered").build();
+    ApiResponse apiResponse = ApiResponse.builder().message("Schema not registered").build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
@@ -244,7 +244,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     ApiResponse resultResp = schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
-    assertThat(resultResp.getResult()).contains("Schema not registered");
+    assertThat(resultResp.getMessage()).contains("Schema not registered");
   }
 
   @Test()
@@ -252,7 +252,7 @@ public class SchemaRegistryControllerServiceTest {
   public void execSchemaRequestsFailure2() {
     int schemaReqId = 1001;
 
-    ApiResponse apiResponse = ApiResponse.builder().result("Schema registered id\": 215").build();
+    ApiResponse apiResponse = ApiResponse.builder().message("Schema registered id\": 215").build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     SchemaRequest schemaRequest = new SchemaRequest();
@@ -301,7 +301,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.isSuccess()).isTrue();
   }
 
   @Test
@@ -337,7 +337,7 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(true);
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
-    assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(returnedValue.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -348,7 +348,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTeamId(any())).thenReturn(101);
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
-    assertThat(returnedValue.getResult())
+    assertThat(returnedValue.getMessage())
         .isEqualTo("Unable to find or access the source Schema Registry");
   }
 
@@ -364,9 +364,9 @@ public class SchemaRegistryControllerServiceTest {
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
-    assertThat(returnedValue.getResult())
+    assertThat(returnedValue.getMessage())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
-    assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(returnedValue.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -381,9 +381,9 @@ public class SchemaRegistryControllerServiceTest {
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
-    assertThat(returnedValue.getResult())
+    assertThat(returnedValue.getMessage())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
-    assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(returnedValue.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).requestForSchema(schemaRequestCaptor.capture());
     assertThat(schemaRequestCaptor.getValue().getSchemaversion()).isEqualTo("1");
     JsonNode json = mapper.readTree(schemaRequestCaptor.getValue().getSchemafull());
@@ -402,9 +402,9 @@ public class SchemaRegistryControllerServiceTest {
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "2"));
-    assertThat(returnedValue.getResult())
+    assertThat(returnedValue.getMessage())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
-    assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(returnedValue.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).requestForSchema(schemaRequestCaptor.capture());
     assertThat(schemaRequestCaptor.getValue().getSchemaversion()).isEqualTo("2");
     JsonNode json = mapper.readTree(schemaRequestCaptor.getValue().getSchemafull());
@@ -423,9 +423,9 @@ public class SchemaRegistryControllerServiceTest {
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "3"));
-    assertThat(returnedValue.getResult())
+    assertThat(returnedValue.getMessage())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
-    assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(returnedValue.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
 
     verify(handleDbRequests, times(1)).requestForSchema(schemaRequestCaptor.capture());
     assertThat(schemaRequestCaptor.getValue().getSchemaversion()).isEqualTo("3");
@@ -445,9 +445,9 @@ public class SchemaRegistryControllerServiceTest {
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "4"));
-    assertThat(returnedValue.getResult())
+    assertThat(returnedValue.getMessage())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
-    assertThat(returnedValue.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(returnedValue.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).requestForSchema(schemaRequestCaptor.capture());
     assertThat(schemaRequestCaptor.getValue().getSchemaversion()).isEqualTo("4");
     JsonNode json = mapper.readTree(schemaRequestCaptor.getValue().getSchemafull());
@@ -466,9 +466,9 @@ public class SchemaRegistryControllerServiceTest {
 
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "4"));
-    assertThat(returnedValue.getResult())
+    assertThat(returnedValue.getMessage())
         .isNotEqualTo("Unable to find or access the source Schema Registry");
-    assertThat(returnedValue.getResult()).isEqualTo(VALIDATION_FAILURE_MSG);
+    assertThat(returnedValue.getMessage()).isEqualTo(VALIDATION_FAILURE_MSG);
     verify(clusterApiService, times(1))
         .validateSchema(anyString(), anyString(), anyString(), anyInt());
   }
@@ -488,7 +488,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo(VALIDATION_FAILURE_MSG);
+    assertThat(resultResp.getMessage()).isEqualTo(VALIDATION_FAILURE_MSG);
     verify(clusterApiService, times(1))
         .validateSchema(anyString(), anyString(), anyString(), anyInt());
   }
@@ -505,7 +505,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
 
     ApiResponse resultResp = schemaRegistryControllerService.validateSchema(schemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo(VALIDATION_FAILURE_MSG);
+    assertThat(resultResp.getMessage()).isEqualTo(VALIDATION_FAILURE_MSG);
     verify(clusterApiService, times(1))
         .validateSchema(anyString(), anyString(), anyString(), anyInt());
   }
@@ -522,7 +522,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
 
     ApiResponse resultResp = schemaRegistryControllerService.validateSchema(schemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo(VALIDATION_SUCCESS_MSG);
+    assertThat(resultResp.getMessage()).isEqualTo(VALIDATION_SUCCESS_MSG);
     verify(clusterApiService, times(1))
         .validateSchema(anyString(), anyString(), anyString(), anyInt());
   }
@@ -565,7 +565,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
 
     ApiResponse resultResp = schemaRegistryControllerService.validateSchema(schemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo(VALIDATION_SUCCESS_MSG);
+    assertThat(resultResp.getMessage()).isEqualTo(VALIDATION_SUCCESS_MSG);
 
     verify(clusterApiService, times(1))
         .validateSchema(anyString(), anyString(), anyString(), anyInt());
@@ -592,7 +592,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
 
     verify(clusterApiService, times(0))
         .validateSchema(anyString(), anyString(), anyString(), anyInt());
@@ -744,9 +744,11 @@ public class SchemaRegistryControllerServiceTest {
 
   private static ResponseEntity<ApiResponse> buildValidationResponse(boolean isSuccess) {
     if (isSuccess) {
-      return ResponseEntity.ok(ApiResponse.builder().result(VALIDATION_SUCCESS_MSG).build());
+      return ResponseEntity.ok(
+          ApiResponse.builder().success(true).message(VALIDATION_SUCCESS_MSG).build());
     } else {
-      return ResponseEntity.ok(ApiResponse.builder().result(VALIDATION_FAILURE_MSG).build());
+      return ResponseEntity.ok(
+          ApiResponse.builder().success(false).message(VALIDATION_FAILURE_MSG).build());
     }
   }
 

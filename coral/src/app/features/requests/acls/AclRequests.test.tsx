@@ -712,7 +712,7 @@ describe("AclRequests", () => {
     beforeEach(async () => {
       mockGetAclRequests.mockResolvedValue(mockGetAclRequestsResponse);
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentsResponse);
-      mockDeleteAclRequests.mockResolvedValue([{ result: "Success" }]);
+      mockDeleteAclRequests.mockResolvedValue([{ success: true, message: "" }]);
 
       customRender(<AclRequests />, {
         queryClient: true,

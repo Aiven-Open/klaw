@@ -171,7 +171,7 @@ public class ClusterApiControllerTest {
   @Test
   public void createTopics() throws Exception {
     String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getTopicRequest());
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
 
     when(apacheKafkaTopicService.createTopic(any(ClusterTopicRequest.class)))
         .thenReturn(apiResponse);
@@ -190,7 +190,7 @@ public class ClusterApiControllerTest {
   public void createTopicsConfluentCloud() throws Exception {
     ClusterTopicRequest topicReq = utilMethods.getConfluentCloudTopicRequest();
     String jsonReq = new ObjectMapper().writer().writeValueAsString(topicReq);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
 
     when(confluentCloudApiService.createTopic(any(ClusterTopicRequest.class)))
         .thenReturn(apiResponse);
@@ -271,13 +271,13 @@ public class ClusterApiControllerTest {
     mvc.perform(post("/topics/createAcls").content(jsonReq).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is5xxServerError())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.result", containsString("Error creating acls")));
+        .andExpect(jsonPath("$.message", containsString("Error creating acls")));
   }
 
   @Test
   public void postSchema() throws Exception {
     String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getSchema());
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(schemaService.registerSchema(any(ClusterSchemaRequest.class))).thenReturn(apiResponse);
 
     mvc.perform(
@@ -313,7 +313,7 @@ public class ClusterApiControllerTest {
             anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString()))
         .thenReturn(
             ApiResponse.builder()
-                .result(ApiResultStatus.SUCCESS.value + " Schema is compatible.")
+                .message(ApiResultStatus.SUCCESS.value + " Schema is compatible.")
                 .build());
 
     mvc.perform(
@@ -334,7 +334,7 @@ public class ClusterApiControllerTest {
             anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString()))
         .thenReturn(
             ApiResponse.builder()
-                .result(ApiResultStatus.FAILURE.value + "  Schema is not compatible.")
+                .message(ApiResultStatus.FAILURE.value + "  Schema is not compatible.")
                 .build());
 
     mvc.perform(

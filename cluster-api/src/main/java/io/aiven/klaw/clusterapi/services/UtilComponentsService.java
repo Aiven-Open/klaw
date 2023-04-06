@@ -56,17 +56,14 @@ public class UtilComponentsService {
       String clusterType,
       String kafkaFlavor) {
     log.info("getStatus {} {}", environment, protocol);
-    switch (clusterType) {
-      case "kafka":
-        return getStatusKafka(environment, protocol, clusterIdentification, kafkaFlavor);
-      case "schemaregistry":
-        return schemaService.getSchemaRegistryStatus(environment, protocol, clusterIdentification);
-      case "kafkaconnect":
-        return kafkaConnectService.getKafkaConnectStatus(
-            environment, protocol, clusterIdentification);
-      default:
-        return ClusterStatus.OFFLINE;
-    }
+    return switch (clusterType) {
+      case "kafka" -> getStatusKafka(environment, protocol, clusterIdentification, kafkaFlavor);
+      case "schemaregistry" -> schemaService.getSchemaRegistryStatus(
+          environment, protocol, clusterIdentification);
+      case "kafkaconnect" -> kafkaConnectService.getKafkaConnectStatus(
+          environment, protocol, clusterIdentification);
+      default -> ClusterStatus.OFFLINE;
+    };
   }
 
   private ClusterStatus getStatusKafka(

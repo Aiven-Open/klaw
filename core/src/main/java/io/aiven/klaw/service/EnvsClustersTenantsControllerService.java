@@ -1,10 +1,20 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_109;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_108;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_EXPIRY_DEFAULT_TENANT;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_TRIAL_PERIOD;
 import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
 import static io.aiven.klaw.helpers.KwConstants.SUPERADMIN_ROLE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
+import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -129,7 +139,7 @@ public class EnvsClustersTenantsControllerService {
       envModel.setTenantName(manageDatabase.getTenantMap().get(envModel.getTenantId()));
 
       extractKwEnvParameters(envModel);
-      log.info("Return env model {}", envModel);
+      log.debug("Return env model {}", envModel);
       return envModel;
     }
     return null;
@@ -179,7 +189,7 @@ public class EnvsClustersTenantsControllerService {
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     if (userInfo != null) {
       copyProperties(userInfo, userInfoModel);
-      userInfoModel.setUserPassword("*******");
+      userInfoModel.setUserPassword(MASKED_PWD);
       return userInfoModel;
     } else {
       return null;
@@ -208,7 +218,6 @@ public class EnvsClustersTenantsControllerService {
           tmpClusterModel.setShowDeleteCluster(false);
         }
       }
-
       clustersModels.add(tmpClusterModel);
     }
 
@@ -639,7 +648,10 @@ public class EnvsClustersTenantsControllerService {
     int tenantId = getUserDetails(getUserName()).getTenantId();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     newEnv.setTenantId(tenantId);
@@ -684,9 +696,7 @@ public class EnvsClustersTenantsControllerService {
                         && Objects.equals(en.getTenantId(), newEnv.getTenantId())
                         && Objects.equals(en.getEnvExists(), "true"));
     if (envNameAlreadyPresent) {
-      return ApiResponse.builder()
-          .result("Failure. Please choose a different name. This environment name already exists.")
-          .build();
+      return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_101).build();
     } else if (envActualList.stream()
         .anyMatch(
             en ->
@@ -721,9 +731,13 @@ public class EnvsClustersTenantsControllerService {
               env.getAssociatedEnv(), env.getId(), env.getName(), env.getTenantId(), env.getType());
       env.setAssociatedEnv(envTag);
       String result = manageDatabase.getHandleDbRequests().addNewEnv(env);
-      commonUtilsService.updateMetadata(
-          tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE);
-      return ApiResponse.builder().result(result).build();
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        commonUtilsService.updateMetadata(
+            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE);
+        return ApiResponse.builder().success(true).message(result).build();
+      } else {
+        return ApiResponse.builder().success(false).message(result).build();
+      }
     } catch (KlawValidationException ex) {
       log.error("KlawValidationException:", ex);
       throw ex;
@@ -741,7 +755,10 @@ public class EnvsClustersTenantsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_CLUSTERS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     AtomicBoolean clusterNameAlreadyExists = new AtomicBoolean(false);
@@ -757,9 +774,7 @@ public class EnvsClustersTenantsControllerService {
               });
 
       if (clusterNameAlreadyExists.get()) {
-        return ApiResponse.builder()
-            .result("Failure. Please choose a different name. This cluster name already exists.")
-            .build();
+        return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_102).build();
       }
     }
     KwClusters kwCluster = new KwClusters();
@@ -772,15 +787,16 @@ public class EnvsClustersTenantsControllerService {
         && kwCluster.getClusterId() == null
         && "saas".equals(kwInstallationType)) {
       if (!savePublicKey(kwClustersModel, resultMap, tenantId, kwCluster)) {
-        return ApiResponse.builder().result("Failure. Unable to save public key.").build();
+        return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_103).build();
       }
     }
 
     String result = manageDatabase.getHandleDbRequests().addNewCluster(kwCluster);
     if (result.equals(ApiResultStatus.SUCCESS.value)) {
       commonUtilsService.updateMetadata(tenantId, EntityType.CLUSTER, MetadataOperationType.CREATE);
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     }
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
   }
 
   private boolean savePublicKey(
@@ -845,22 +861,28 @@ public class EnvsClustersTenantsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_CLUSTERS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     List<Env> allEnvList = manageDatabase.getAllEnvList(tenantId);
     if (allEnvList.stream()
         .anyMatch(env -> Objects.equals(env.getClusterId(), Integer.parseInt(clusterId)))) {
-      return ApiResponse.builder()
-          .result("Not allowed to delete this cluster, as there are associated environments.")
-          .build();
+      return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_104).build();
     }
 
     try {
       String result =
           manageDatabase.getHandleDbRequests().deleteCluster(Integer.parseInt(clusterId), tenantId);
-      commonUtilsService.updateMetadata(tenantId, EntityType.CLUSTER, MetadataOperationType.DELETE);
-      return ApiResponse.builder().result(result).build();
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        commonUtilsService.updateMetadata(
+            tenantId, EntityType.CLUSTER, MetadataOperationType.DELETE);
+        return ApiResponse.builder().success(true).message(result).build();
+      } else {
+        return ApiResponse.builder().success(false).message(result).build();
+      }
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -872,16 +894,17 @@ public class EnvsClustersTenantsControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     switch (envType) {
       case "kafka":
         if (manageDatabase.getHandleDbRequests().findAllKafkaComponentsCountForEnv(envId, tenantId)
             > 0) {
-          String notAllowed =
-              "Not allowed to delete this environment, as there are associated topics/acls/requests.";
-          return ApiResponse.builder().result(notAllowed).build();
+          return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_105).build();
         }
         break;
       case "kafkaconnect":
@@ -889,17 +912,13 @@ public class EnvsClustersTenantsControllerService {
                 .getHandleDbRequests()
                 .findAllConnectorComponentsCountForEnv(envId, tenantId)
             > 0) {
-          String notAllowed =
-              "Not allowed to delete this environment, as there are associated connectors/requests.";
-          return ApiResponse.builder().result(notAllowed).build();
+          return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_106).build();
         }
         break;
       case "schemaregistry":
         if (manageDatabase.getHandleDbRequests().findAllSchemaComponentsCountForEnv(envId, tenantId)
             > 0) {
-          String notAllowed =
-              "Not allowed to delete this environment, as there are associated schemaregistry/requests.";
-          return ApiResponse.builder().result(notAllowed).build();
+          return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_107).build();
         }
         break;
     }
@@ -908,10 +927,13 @@ public class EnvsClustersTenantsControllerService {
       removeAssociatedKafkaOrSchemaEnvironment(envId, tenantId, envType);
       String result =
           manageDatabase.getHandleDbRequests().deleteEnvironmentRequest(envId, tenantId);
-      commonUtilsService.updateMetadata(
-          tenantId, EntityType.ENVIRONMENT, MetadataOperationType.DELETE);
-
-      return ApiResponse.builder().result(result).build();
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        commonUtilsService.updateMetadata(
+            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.DELETE);
+        return ApiResponse.builder().success(true).message(result).build();
+      } else {
+        return ApiResponse.builder().success(false).message(result).build();
+      }
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -940,7 +962,7 @@ public class EnvsClustersTenantsControllerService {
       throws KlawValidationException {
     // only assignable on a schema registry
     if (KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
-      log.info("Env Tag supplied = ", envTag);
+      log.debug("Env Tag supplied = {}", envTag);
       if (envTag != null && !envTag.getId().isEmpty()) {
 
         associateWithKafkaEnv(envTag, envId, envName, tenantId);
@@ -1073,12 +1095,15 @@ public class EnvsClustersTenantsControllerService {
       throws KlawException {
     if (manageDatabase.getHandleDbRequests().getTenants().size()
         >= maxNumberOfTenantsCanBeCreated) {
-      return ApiResponse.builder().result("Maximum tenants reached.").build();
+      return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_108).build();
     }
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.ADD_TENANT)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     KwTenants kwTenants = new KwTenants();
@@ -1086,7 +1111,7 @@ public class EnvsClustersTenantsControllerService {
     kwTenants.setTenantDesc(kwTenantModel.getTenantDesc());
     kwTenants.setInTrial(kwTenantModel.isInTrialPhase() + "");
     kwTenants.setContactPerson(kwTenantModel.getContactPerson());
-    kwTenants.setOrgName("Our Organization");
+    kwTenants.setOrgName(ENV_CLUSTER_TNT_109);
     if (isExternal) {
       kwTenantModel.setActiveTenant(true);
     }
@@ -1133,7 +1158,11 @@ public class EnvsClustersTenantsControllerService {
         commonUtilsService.updateMetadata(
             tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE);
       }
-      return ApiResponse.builder().result(addNewTenantStatus).data("" + tenantId).build();
+      return ApiResponse.builder()
+          .success(true)
+          .message(addNewTenantStatus)
+          .data("" + tenantId)
+          .build();
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
@@ -1162,12 +1191,9 @@ public class EnvsClustersTenantsControllerService {
       kwTenantModel.setActiveTenant("true".equals(tenant.get().getIsActive()));
       kwTenantModel.setOrgName(tenant.get().getOrgName());
 
-      if (commonUtilsService.isNotAuthorizedUser(
-          getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-        kwTenantModel.setAuthorizedToDelete(false);
-      } else {
-        kwTenantModel.setAuthorizedToDelete(true);
-      }
+      kwTenantModel.setAuthorizedToDelete(
+          !commonUtilsService.isNotAuthorizedUser(
+              getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT));
     }
     return kwTenantModel;
   }
@@ -1179,11 +1205,17 @@ public class EnvsClustersTenantsControllerService {
   public ApiResponse deleteTenant() throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (tenantId == DEFAULT_TENANT_ID) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
     String tenantName = manageDatabase.getTenantMap().get(tenantId);
 
@@ -1210,8 +1242,11 @@ public class EnvsClustersTenantsControllerService {
         commonUtilsService.updateMetadata(
             tenantId, EntityType.TENANT, MetadataOperationType.DELETE);
         SecurityContextHolder.getContext().setAuthentication(null);
+        return ApiResponse.builder().success(true).message(result).data(tenantName).build();
+      } else {
+        return ApiResponse.builder().success(false).message(result).build();
       }
-      return ApiResponse.builder().result(result).data(tenantName).build();
+
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
@@ -1220,7 +1255,10 @@ public class EnvsClustersTenantsControllerService {
   public ApiResponse updateTenant(String orgName) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
@@ -1229,9 +1267,10 @@ public class EnvsClustersTenantsControllerService {
       if (ApiResultStatus.SUCCESS.value.equals(result)) {
         commonUtilsService.updateMetadata(
             tenantId, EntityType.TENANT, MetadataOperationType.UPDATE);
+        return ApiResponse.builder().success(true).message(result).build();
+      } else {
+        return ApiResponse.builder().success(false).message(result).build();
       }
-
-      return ApiResponse.builder().result(result).build();
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
@@ -1247,7 +1286,10 @@ public class EnvsClustersTenantsControllerService {
     // send mail
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_DELETE_MY_TENANT)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -1260,7 +1302,10 @@ public class EnvsClustersTenantsControllerService {
             selectedTenantExtensionPeriod,
             commonUtilsService.getLoginUrl());
 
-    return ApiResponse.builder().result(result).build();
+    return ApiResponse.builder()
+        .success((result.equals(ApiResultStatus.SUCCESS.value)))
+        .message(result)
+        .build();
   }
 
   public Map<String, String> getAclCommands() {

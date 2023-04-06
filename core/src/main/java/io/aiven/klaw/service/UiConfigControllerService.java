@@ -137,7 +137,7 @@ public class UiConfigControllerService {
         contactFormMessage,
         commonUtilsService.getTenantId(getUserName()),
         commonUtilsService.getLoginUrl());
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
   public List<String> getRequestTypeStatuses() {
