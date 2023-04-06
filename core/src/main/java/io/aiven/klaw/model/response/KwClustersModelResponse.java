@@ -1,6 +1,6 @@
 package io.aiven.klaw.model.response;
 
-import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;

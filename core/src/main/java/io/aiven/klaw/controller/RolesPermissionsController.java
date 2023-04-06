@@ -2,7 +2,7 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.KwRolesPermissionsModel;
+import io.aiven.klaw.model.requests.KwRolesPermissionsModel;
 import io.aiven.klaw.service.RolesPermissionsControllerService;
 import java.util.List;
 import java.util.Map;

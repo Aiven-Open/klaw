@@ -1,6 +1,6 @@
 package io.aiven.klaw.model.requests;
 
-import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.validation.KafkaClusterValidator;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;

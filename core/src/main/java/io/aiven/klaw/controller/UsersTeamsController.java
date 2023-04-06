@@ -2,10 +2,11 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.RegisterSaasUserInfoModel;
-import io.aiven.klaw.model.RegisterUserInfoModel;
+import io.aiven.klaw.model.requests.RegisterSaasUserInfoModel;
+import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import io.aiven.klaw.service.SaasService;
@@ -118,7 +119,7 @@ public class UsersTeamsController {
       value = "/getNewUserRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<RegisterUserInfoModel>> getNewUserRequests() {
+  public ResponseEntity<List<RegisterUserInfoModelResponse>> getNewUserRequests() {
     return new ResponseEntity<>(usersTeamsControllerService.getNewUserRequests(), HttpStatus.OK);
   }
 
@@ -126,7 +127,7 @@ public class UsersTeamsController {
       value = "/getUserInfoFromRegistrationId",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<RegisterUserInfoModel> getRegistrationInfoFromId(
+  public ResponseEntity<RegisterUserInfoModelResponse> getRegistrationInfoFromId(
       @RequestParam("userRegistrationId") String userRegistrationId) {
     return new ResponseEntity<>(
         usersTeamsControllerService.getRegistrationInfoFromId(userRegistrationId, "STAGING"),

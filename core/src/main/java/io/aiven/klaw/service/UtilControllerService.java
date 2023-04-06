@@ -637,15 +637,15 @@ public class UtilControllerService {
    */
   private Map<String, String> buildSSOProviderDetails() {
     Map<String, String> ssoProviders = new HashMap<>();
-    if(registration != null) {
+    if (registration != null) {
       registration
-              .keySet()
-              .forEach(
-                      k -> {
-                        String providerName = k.substring(0, k.indexOf("."));
-                        String imageUri = registration.get(providerName + IMAGE_URI);
-                        ssoProviders.put(providerName, imageUri == null ? "" : imageUri);
-                      });
+          .keySet()
+          .forEach(
+              k -> {
+                String providerName = k.substring(0, k.indexOf("."));
+                String imageUri = registration.get(providerName + IMAGE_URI);
+                ssoProviders.put(providerName, imageUri == null ? "" : imageUri);
+              });
     }
 
     return ssoProviders;

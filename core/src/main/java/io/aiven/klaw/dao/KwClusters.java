@@ -1,6 +1,6 @@
 package io.aiven.klaw.dao;
 
-import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

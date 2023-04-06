@@ -1,11 +1,12 @@
 package io.aiven.klaw;
 
 import io.aiven.klaw.model.*;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
+import io.aiven.klaw.model.requests.KwRolesPermissionsModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import java.util.HashSet;

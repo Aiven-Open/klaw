@@ -34,14 +34,15 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.RegisterUserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.sql.Timestamp;
@@ -959,7 +960,7 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public List<RegisterUserInfoModel> getNewUserRequests() {
+  public List<RegisterUserInfoModelResponse> getNewUserRequests() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 
@@ -970,10 +971,10 @@ public class UsersTeamsControllerService {
       registerUserInfoList = manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
     }
 
-    List<RegisterUserInfoModel> registerUserInfoModels = new ArrayList<>();
-    RegisterUserInfoModel registerUserInfoModel;
+    List<RegisterUserInfoModelResponse> registerUserInfoModels = new ArrayList<>();
+    RegisterUserInfoModelResponse registerUserInfoModel;
     for (RegisterUserInfo registerUserInfo : registerUserInfoList) {
-      registerUserInfoModel = new RegisterUserInfoModel();
+      registerUserInfoModel = new RegisterUserInfoModelResponse();
       copyProperties(registerUserInfo, registerUserInfoModel);
       registerUserInfoModel.setTeam(
           manageDatabase.getTeamNameFromTeamId(tenantId, registerUserInfo.getTeamId()));
@@ -1059,12 +1060,13 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public RegisterUserInfoModel getRegistrationInfoFromId(String registrationId, String status) {
+  public RegisterUserInfoModelResponse getRegistrationInfoFromId(
+      String registrationId, String status) {
     RegisterUserInfo registerUserInfo =
         manageDatabase.getHandleDbRequests().getRegistrationDetails(registrationId, status);
 
     if (registerUserInfo != null) {
-      RegisterUserInfoModel registerUserInfoModel = new RegisterUserInfoModel();
+      RegisterUserInfoModelResponse registerUserInfoModel = new RegisterUserInfoModelResponse();
       copyProperties(registerUserInfo, registerUserInfoModel);
       return registerUserInfoModel;
     } else {

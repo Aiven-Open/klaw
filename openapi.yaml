@@ -2160,7 +2160,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/RegisterUserInfoModel"
+                  "$ref" : "#/components/schemas/RegisterUserInfoModelResponse"
                 }
               }
             }
@@ -2951,7 +2951,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/KafkaConnectorModel"
+                    "$ref" : "#/components/schemas/KafkaConnectorModelResponse"
                   }
                 }
               }
@@ -3483,7 +3483,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "$ref" : "#/components/schemas/RegisterUserInfoModel"
+                    "$ref" : "#/components/schemas/RegisterUserInfoModelResponse"
                   }
                 }
               }
@@ -3969,7 +3969,7 @@
                   "items" : {
                     "type" : "array",
                     "items" : {
-                      "$ref" : "#/components/schemas/KafkaConnectorModel"
+                      "$ref" : "#/components/schemas/KafkaConnectorModelResponse"
                     }
                   }
                 }
@@ -4220,8 +4220,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : { }
+                  "$ref" : "#/components/schemas/ConnectorOverviewPerEnv"
                 }
               }
             }
@@ -5468,10 +5467,6 @@
       },
       "KafkaConnectorModel" : {
         "properties" : {
-          "sequence" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "connectorId" : {
             "type" : "integer",
             "format" : "int32"
@@ -5479,61 +5474,11 @@
           "connectorName" : {
             "type" : "string"
           },
-          "connectorConfig" : {
-            "type" : "string"
-          },
-          "environmentName" : {
-            "type" : "string"
-          },
-          "environmentId" : {
-            "type" : "string"
-          },
-          "teamName" : {
-            "type" : "string"
-          },
-          "possibleTeams" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "allPageNos" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "totalNoPages" : {
-            "type" : "string"
-          },
-          "currentPage" : {
-            "type" : "string"
-          },
-          "remarks" : {
-            "type" : "string"
-          },
           "documentation" : {
             "type" : "string"
-          },
-          "environmentsList" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "showEditConnector" : {
-            "type" : "boolean"
-          },
-          "showDeleteConnector" : {
-            "type" : "boolean"
-          },
-          "connectorDeletable" : {
-            "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "connectorId", "connectorName", "documentation" ]
       },
       "RequestVerdict" : {
         "properties" : {
@@ -6164,6 +6109,53 @@
           }
         }
       },
+      "RegisterUserInfoModelResponse" : {
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "fullname" : {
+            "type" : "string"
+          },
+          "mailid" : {
+            "type" : "string"
+          },
+          "pwd" : {
+            "type" : "string"
+          },
+          "team" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "role" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "registeredTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "approver" : {
+            "type" : "string"
+          },
+          "registrationId" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "tenantName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "fullname", "username" ]
+      },
       "TopicTeamResponse" : {
         "properties" : {
           "team" : {
@@ -6428,6 +6420,76 @@
             "type" : "string"
           }
         }
+      },
+      "KafkaConnectorModelResponse" : {
+        "properties" : {
+          "sequence" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "connectorId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "connectorName" : {
+            "type" : "string"
+          },
+          "environmentId" : {
+            "type" : "string"
+          },
+          "teamName" : {
+            "type" : "string"
+          },
+          "showEditConnector" : {
+            "type" : "boolean"
+          },
+          "showDeleteConnector" : {
+            "type" : "boolean"
+          },
+          "connectorDeletable" : {
+            "type" : "boolean"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "environmentsList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "possibleTeams" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "connectorConfig" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "documentation" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "environmentId", "showDeleteConnector", "showEditConnector", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {
@@ -6813,10 +6875,10 @@
       },
       "ConnectorOverview" : {
         "properties" : {
-          "topicInfoList" : {
+          "connectorInfoList" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/KafkaConnectorModel"
+              "$ref" : "#/components/schemas/KafkaConnectorModelResponse"
             }
           },
           "topicHistoryList" : {
@@ -6865,6 +6927,23 @@
           },
           "remarks" : {
             "type" : "string"
+          }
+        }
+      },
+      "ConnectorOverviewPerEnv" : {
+        "properties" : {
+          "connectorExists" : {
+            "type" : "boolean"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "connectorId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "connectorContents" : {
+            "$ref" : "#/components/schemas/KafkaConnectorModelResponse"
           }
         }
       },

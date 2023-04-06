@@ -2,17 +2,18 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ConnectorOverview;
-import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.response.ConnectorOverview;
+import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
+import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import io.aiven.klaw.service.KafkaConnectControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -152,7 +153,7 @@ public class KafkaConnectController {
       value = "/getConnectors",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<List<KafkaConnectorModel>>> getConnectors(
+  public ResponseEntity<List<List<KafkaConnectorModelResponse>>> getConnectors(
       @RequestParam("env") String envId,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
@@ -197,7 +198,7 @@ public class KafkaConnectController {
       value = "/getConnectorDetailsPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, Object>> getConnectorDetailsPerEnv(
+  public ResponseEntity<ConnectorOverviewPerEnv> getConnectorDetailsPerEnv(
       @RequestParam("envSelected") String envId,
       @RequestParam("connectorName") String connectorName) {
     return new ResponseEntity<>(
