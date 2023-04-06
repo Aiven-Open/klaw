@@ -365,6 +365,8 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
+
+
                 var serviceInput = {};
                 serviceInput['clusterId'] = $scope.clusterToEdit;
                 serviceInput['clusterName'] = $scope.clusterDetails.clusterName;
@@ -372,7 +374,6 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['protocol'] = $scope.clusterDetails.protocol;
                 serviceInput['clusterType'] = $scope.clusterDetails.type;
                 serviceInput['kafkaFlavor'] = $scope.clusterDetails.kafkaFlavor;
-
                 serviceInput['otherParams'] = "default.partitions=na,max.partitions=na,replication.factor=na";
 
                 $http({
