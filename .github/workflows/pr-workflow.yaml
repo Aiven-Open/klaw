@@ -32,10 +32,10 @@ jobs:
           fi
 
 
-  maven-workflow:
-    needs: check-changes
-    if: needs.check-changes.outputs.changes-maven == 'true'
-    uses: ./.github/workflows/maven-jobs.yaml
+#  maven-workflow:
+#    needs: check-changes
+#    if: needs.check-changes.outputs.changes-maven == 'true'
+#    uses: ./.github/workflows/maven-jobs.yaml
   coral-workflow:
     needs: check-changes
     if: needs.check-changes.outputs.changes-coral == 'true'
