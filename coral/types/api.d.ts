@@ -621,6 +621,8 @@ export type components = {
       description: string;
       noOfReplicas: string;
       teamname: string;
+      /** Format: int32 */
+      teamId: number;
       envId: string;
       environmentsList: (string)[];
       showEditTopic: boolean;
@@ -2424,7 +2426,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         topicnamesearch?: string;
-        teamName?: string;
+        teamId?: number;
         topicType?: string;
       };
     };
@@ -2444,7 +2446,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         topicnamesearch?: string;
-        teamName?: string;
+        teamId?: number;
         topicType?: string;
       };
     };

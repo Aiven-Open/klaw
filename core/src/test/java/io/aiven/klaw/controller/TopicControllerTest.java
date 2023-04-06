@@ -5,6 +5,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -237,7 +238,7 @@ public class TopicControllerTest {
     List<List<TopicInfo>> topicList = utilMethods.getTopicInfoList();
 
     when(topicControllerService.getTopics(
-            anyString(), anyString(), anyString(), anyString(), anyString(), any()))
+            anyString(), anyString(), anyString(), anyString(), anyInt(), any()))
         .thenReturn(topicList);
 
     mvc.perform(
@@ -245,7 +246,7 @@ public class TopicControllerTest {
                 .param("env", "1")
                 .param("pageNo", "1")
                 .param("topicnamesearch", "testtopic")
-                .param("teamName", "Team1")
+                .param("teamId", "1001")
                 .param("topicType", "")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))

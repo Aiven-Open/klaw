@@ -50,11 +50,11 @@ public class TopicSyncController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
-      @RequestParam(value = "teamName", required = false) String teamName,
+      @RequestParam(value = "teamId", required = false) Integer teamId,
       @RequestParam(value = "topicType", required = false) String topicType) {
     return new ResponseEntity<>(
         topicSyncControllerService.getTopicsRowView(
-            envId, pageNo, currentPage, topicNameSearch, teamName, topicType),
+            envId, pageNo, currentPage, topicNameSearch, teamId, topicType),
         HttpStatus.OK);
   }
 

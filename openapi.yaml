@@ -2257,11 +2257,12 @@
             "type" : "string"
           }
         }, {
-          "name" : "teamName",
+          "name" : "teamId",
           "in" : "query",
           "required" : false,
           "schema" : {
-            "type" : "string"
+            "type" : "integer",
+            "format" : "int32"
           }
         }, {
           "name" : "topicType",
@@ -2325,11 +2326,12 @@
             "type" : "string"
           }
         }, {
-          "name" : "teamName",
+          "name" : "teamId",
           "in" : "query",
           "required" : false,
           "schema" : {
-            "type" : "string"
+            "type" : "integer",
+            "format" : "int32"
           }
         }, {
           "name" : "topicType",
@@ -5436,6 +5438,10 @@
           "teamname" : {
             "type" : "string"
           },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "envId" : {
             "type" : "string"
           },
@@ -5473,7 +5479,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "allPageNos", "currentPage", "description", "envId", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
+        "required" : [ "allPageNos", "currentPage", "description", "envId", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
       },
       "KafkaConnectorModel" : {
         "properties" : {

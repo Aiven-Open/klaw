@@ -35,7 +35,7 @@ public class CreateBulkTests {
 
     private void getTopics() {
       try {
-        List<List<TopicInfo>> s = topicControllerService.getTopics("1", "1", "", null, null, null);
+        List<List<TopicInfo>> s = topicControllerService.getTopics("1", "1", "", null, 0, null);
         // System.out.println(k+"--"+s.size());
       } catch (Exception e) {
         log.error("Exception:", e);

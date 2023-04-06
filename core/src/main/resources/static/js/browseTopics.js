@@ -36,7 +36,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
         $scope.loadTeams = function() {
                 $http({
                     method: "GET",
-                    url: "getAllTeamsSUOnly",
+                    url: "getAllTeamsSU",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.allTeams = output;
@@ -292,7 +292,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                 'pageNo' : pageNoSelected,
                 'currentPage' : $scope.currentPageSelected,
                  'topicnamesearch' : $scope.getTopics.topicnamesearch,
-                 'teamName' : teamSel,
+                 'teamId' : teamSel,
                  'topicType' : topicType
                  }
 		}).success(function(output) {
