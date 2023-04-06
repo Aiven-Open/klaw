@@ -191,17 +191,17 @@ app.controller("requestConnectorCtrl", function($scope, $http, $location, $windo
                     params: {'addConnectorRequest' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
-                    if(output.result === 'success'){
+                    if(output.success){
                         swal({
                                  title: "Awesome !",
-                                 text: "Connector Request : "+output.result,
+                                 text: "Connector Request : "+output.message,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
                                     $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=CREATED&connectorCreated=true";
                              });
                     }
                     else{
-                            $scope.alert = "Connector Request : "+output.result;
+                            $scope.alert = "Connector Request : "+output.message;
                             $scope.showSubmitFailed('','');
                         }
                 }).error(
@@ -307,11 +307,11 @@ app.controller("requestConnectorCtrl", function($scope, $http, $location, $windo
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

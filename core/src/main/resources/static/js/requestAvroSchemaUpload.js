@@ -194,19 +194,19 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                         params: {'addSchemaRequest' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
-                        $scope.alert = "Schema Upload Request : "+output.result;
+                        $scope.alert = "Schema Upload Request : "+output.message;
                         $scope.addSchema.topicname = "";
-                        if(output.result == 'success'){
+                        if(output.success){
                             swal({
                                      title: "Awesome !",
-                                     text: "Schema Request : " + output.result,
+                                     text: "Schema Request : " + output.message,
                                      showConfirmButton: true
                                  }).then(function(isConfirm){
                                         $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +"/mySchemaRequests?reqsType=CREATED&schemaCreated=true";
                                  });
                          }else
                          {
-                            $scope.alert = "Schema Request : " + output.result;
+                            $scope.alert = "Schema Request : " + output.message;
                             $scope.showSubmitFailed('','');
                          }
 
@@ -277,9 +277,9 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                                 headers : { 'Content-Type' : 'application/json' },
                                 data: serviceInput
                             }).success(function(output) {
-                                $scope.alert = "Schema Validation Request : "+output.result;
+                                $scope.alert = "Schema Validation Request : "+output.message;
                                 $scope.addSchema.topicname = "";
-                                if(output.result.includes('SUCCESS')){
+                                if(output.success){
                                     $scope.validatedSchema = true;
                                  }else
                                  {
@@ -378,11 +378,11 @@ app.controller("requestSchemaCtrl", function($scope, $http, $location, $window) 
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

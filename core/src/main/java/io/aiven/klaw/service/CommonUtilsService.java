@@ -210,18 +210,10 @@ public class CommonUtilsService {
 
   public String deriveCurrentPage(String pageNo, String currentPage, int totalPages) {
     switch (pageNo) {
-      case ">":
-        pageNo = (Integer.parseInt(currentPage) + 1) + "";
-        break;
-      case ">>":
-        pageNo = totalPages + "";
-        break;
-      case "<":
-        pageNo = (Integer.parseInt(currentPage) - 1) + "";
-        break;
-      case "<<":
-        pageNo = "1";
-        break;
+      case ">" -> pageNo = (Integer.parseInt(currentPage) + 1) + "";
+      case ">>" -> pageNo = totalPages + "";
+      case "<" -> pageNo = (Integer.parseInt(currentPage) - 1) + "";
+      case "<<" -> pageNo = "1";
     }
     return pageNo;
   }

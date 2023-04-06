@@ -139,7 +139,7 @@ public class TopicControllerServiceTest {
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsCreateRequest(getTopicWithAdvancedConfigs());
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -161,7 +161,7 @@ public class TopicControllerServiceTest {
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsCreateRequest(getTopicWithDefaultConfigs());
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   // invalid partitions
@@ -184,7 +184,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(getFailureTopic1());
-    assertThat(apiResponse.getResult()).contains("failure");
+    assertThat(apiResponse.getMessage()).contains("failure");
   }
 
   @Test
@@ -201,9 +201,12 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    Map<String, String> res = new HashMap<>();
+    res.put("result", ApiResultStatus.FAILURE.value);
+    when(handleDbRequests.requestForTopic(any())).thenReturn(res);
 
     ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(getFailureTopic1());
-    assertThat(apiResponse.getResult()).isEqualTo(null);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
   }
 
   @Test
@@ -232,7 +235,7 @@ public class TopicControllerServiceTest {
     try {
       ApiResponse apiResponse =
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
-      assertThat(apiResponse.getResult())
+      assertThat(apiResponse.getMessage())
           .isEqualTo("Failure. A delete topic request already exists.");
     } catch (KlawException e) {
       throw new RuntimeException(e);
@@ -258,7 +261,7 @@ public class TopicControllerServiceTest {
     try {
       ApiResponse apiResponse =
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
-      assertThat(apiResponse.getResult())
+      assertThat(apiResponse.getMessage())
           .isEqualTo(
               "Failure. Sorry, you cannot delete this topic, as you are not part of this team.");
     } catch (KlawException e) {
@@ -288,7 +291,7 @@ public class TopicControllerServiceTest {
     try {
       ApiResponse apiResponse =
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
-      assertThat(apiResponse.getResult())
+      assertThat(apiResponse.getMessage())
           .isEqualTo(
               "Failure. There are existing subscriptions for topic. Please get them deleted before.");
     } catch (KlawException e) {
@@ -316,7 +319,7 @@ public class TopicControllerServiceTest {
     try {
       ApiResponse apiResponse =
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
-      assertThat(apiResponse.getResult())
+      assertThat(apiResponse.getMessage())
           .isEqualTo("Failure. Topic not found on cluster: " + topicName);
     } catch (KlawException e) {
       throw new RuntimeException(e);
@@ -348,7 +351,7 @@ public class TopicControllerServiceTest {
     try {
       ApiResponse apiResponse =
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
-      assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+      assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     } catch (KlawException e) {
       throw new RuntimeException(e);
     } catch (KlawNotAuthorizedException e) {
@@ -367,7 +370,7 @@ public class TopicControllerServiceTest {
         .thenReturn(getListTopicRequests());
     try {
       ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
-      assertThat(apiResponse.getResult())
+      assertThat(apiResponse.getMessage())
           .isEqualTo("Failure. A request already exists for this topic.");
     } catch (KlawException e) {
       throw new RuntimeException(e);
@@ -395,7 +398,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(claimReqResult);
     try {
       ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
-      assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+      assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     } catch (KlawException e) {
       throw new RuntimeException(e);
     }
@@ -641,7 +644,7 @@ public class TopicControllerServiceTest {
     when(mailService.getUserName(any())).thenReturn("uiuser1");
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     ApiResponse resultResp = topicControllerService.deleteTopicRequests("1001");
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -650,7 +653,7 @@ public class TopicControllerServiceTest {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -670,7 +673,7 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse1.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -680,7 +683,7 @@ public class TopicControllerServiceTest {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     topicRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -707,7 +710,7 @@ public class TopicControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse1.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -717,7 +720,7 @@ public class TopicControllerServiceTest {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     topicRequest.setRequestOperationType(RequestOperationType.UPDATE.value);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -743,7 +746,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse1.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -752,7 +755,7 @@ public class TopicControllerServiceTest {
     String topicName = "topic1";
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
 
     stubUserInfo();
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -772,7 +775,7 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests("" + topicId);
-    assertThat(apiResponse1.getResult()).isEqualTo("failure");
+    assertThat(apiResponse1.getMessage()).isEqualTo("failure");
   }
 
   @Test
@@ -787,7 +790,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests("" + topicId);
-    assertThat(apiResponse1.getResult())
+    assertThat(apiResponse1.getMessage())
         .isEqualTo("You are not allowed to approve your own topic requests.");
   }
 
@@ -835,7 +838,7 @@ public class TopicControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
     ApiResponse apiResponse = topicControllerService.saveTopicDocumentation(topicInfo);
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -853,7 +856,7 @@ public class TopicControllerServiceTest {
         .thenReturn(ApiResultStatus.FAILURE.value);
 
     ApiResponse apiResponse = topicControllerService.saveTopicDocumentation(topicInfo);
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.FAILURE.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
   }
 
   @Test
@@ -1033,7 +1036,7 @@ public class TopicControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse resultResp = topicControllerService.declineTopicRequests(topicId + "", "Reason");
 
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -1051,7 +1054,7 @@ public class TopicControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse resultResp = topicControllerService.declineTopicRequests(topicId + "", "Reason");
 
-    assertThat(resultResp.getResult()).isEqualTo("This request does not exist anymore.");
+    assertThat(resultResp.getMessage()).isEqualTo("This request does not exist anymore.");
   }
 
   @Test
@@ -1122,7 +1125,7 @@ public class TopicControllerServiceTest {
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsUpdateRequest(getTopicWithAdvancedConfigs());
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -1144,7 +1147,7 @@ public class TopicControllerServiceTest {
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsUpdateRequest(getTopicWithDefaultConfigs());
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   // invalid partitions
@@ -1167,7 +1170,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
     ApiResponse apiResponse = topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
-    assertThat(apiResponse.getResult()).contains("failure");
+    assertThat(apiResponse.getMessage()).contains("failure");
   }
 
   @Test
@@ -1184,9 +1187,12 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+    Map<String, String> res = new HashMap<>();
+    res.put("result", ApiResultStatus.FAILURE.value);
+    when(handleDbRequests.requestForTopic(any())).thenReturn(res);
 
     ApiResponse apiResponse = topicControllerService.createTopicsUpdateRequest(getFailureTopic1());
-    assertThat(apiResponse.getResult()).isEqualTo(null);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
   }
 
   @Test
@@ -1224,7 +1230,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.requestForTopic(any())).thenReturn(claimReqResult);
 
     ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
 
     verify(handleDbRequests, times(1)).requestForTopic(topicRequestCaptor.capture());
     TopicRequest req = topicRequestCaptor.getValue();

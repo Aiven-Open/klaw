@@ -207,11 +207,11 @@ app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
                 params: {'updateUserObj' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
-                $scope.alert = "User update request : "+output.result;
-                if(output.result === 'success'){
+                $scope.alert = "User update request : "+output.message;
+                if(output.success){
                     swal({
                          title: "",
-                         text: "User update request : "+output.result,
+                         text: "User update request : "+output.message,
                          timer: 2000,
                          showConfirmButton: true
                      }).then(function(isConfirm){
@@ -316,11 +316,11 @@ app.controller("modifyUserCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

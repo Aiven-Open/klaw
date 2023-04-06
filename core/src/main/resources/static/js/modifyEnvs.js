@@ -320,11 +320,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         params: {'addNewCluster' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
-                        $scope.alert = "Cluster updated : " + output.result;
-                        if(output.result == 'success'){
+                        $scope.alert = "Cluster updated : " + output.message;
+                        if(output.success){
                             swal({
                                  title: "",
-                                 text: "Cluster updated : "+output.result,
+                                 text: "Cluster updated : "+output.message,
                                  timer: 3000,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
@@ -382,11 +382,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     params: {'addNewEnv' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
-                    $scope.alert = "Schema registry cluster updated: "+output.result;
-                    if(output.result === 'success'){
+                    $scope.alert = "Schema registry cluster updated: "+output.message;
+                    if(output.success){
                         swal({
                              title: "",
-                             text: "Schema registry cluster updated : "+output.result,
+                             text: "Schema registry cluster updated : "+output.message,
                              timer: 2000,
                              showConfirmButton: true
                          }).then(function(isConfirm){
@@ -443,11 +443,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                    params: {'addNewEnv' : serviceInput },
                    data: serviceInput
                }).success(function(output) {
-                   $scope.alert = "Schema registry cluster updated: "+output.result;
-                   if(output.result == 'success'){
+                   $scope.alert = "Schema registry cluster updated: "+output.message;
+                   if(output.success){
                        swal({
                             title: "",
-                            text: "Kafka Connect cluster updated : "+output.result,
+                            text: "Kafka Connect cluster updated : "+output.message,
                             timer: 2000,
                             showConfirmButton: false
                         }).then(function(isConfirm){
@@ -586,11 +586,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     params: {'addNewEnv' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
-                    $scope.alert = "Environment updated: "+output.result;
-                    if(output.result == 'success'){
+                    $scope.alert = "Environment updated: "+output.message;
+                    if(output.success){
                         swal({
                              title: "",
-                             text: "Environment updated : "+output.result,
+                             text: "Environment updated : "+output.message,
                              timer: 2000,
                              showConfirmButton: true
                          }).then(function(isConfirm){
@@ -652,11 +652,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         params: {'addNewEnv' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
-                    $scope.alert = "Environment updated: "+output.result;
-                    if(output.result == 'success'){
+                    $scope.alert = "Environment updated: "+output.message;
+                    if(output.success){
                         swal({
                              title: "",
-                             text: "Environment updated : "+output.result,
+                             text: "Environment updated : "+output.message,
                              timer: 2000,
                              showConfirmButton: true
                          }).then(function(isConfirm){
@@ -711,11 +711,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 params: {'addNewEnv' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
-            $scope.alert = "Environment updated: "+output.result;
-            if(output.result == 'success'){
+            $scope.alert = "Environment updated: "+output.message;
+            if(output.success){
                 swal({
                      title: "",
-                     text: "Environment updated : "+output.result,
+                     text: "Environment updated : "+output.message,
                      timer: 2000,
                      showConfirmButton: true
                  }).then(function(isConfirm){
@@ -806,11 +806,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

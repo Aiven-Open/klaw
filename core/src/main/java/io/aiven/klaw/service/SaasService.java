@@ -1,5 +1,10 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SAAS_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.SAAS_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SAAS_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.SAAS_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.SAAS_ERR_105;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -55,13 +60,13 @@ public class SaasService {
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
     if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
-      resultMap.put("error", "User already exists. You may login.");
+      resultMap.put("error", SAAS_ERR_101);
       return resultMap;
     }
 
     try {
       String newTenantName;
-      Integer tenantId = 0;
+      int tenantId;
 
       // create tenant, team
       if (!tenantMap.containsValue(newUser.getTenantName())) {
@@ -76,7 +81,7 @@ public class SaasService {
             envsClustersTenantsControllerService.addTenantId(kwTenantModel, false);
 
         // create INFRATEAM and STAGINGTEAM
-        if (ApiResultStatus.SUCCESS.value.equals(addTenantResult.getResult())) {
+        if (addTenantResult.isSuccess()) {
           tenantId = Integer.parseInt((String) addTenantResult.getData());
 
           Map<String, String> teamAddMap =
@@ -90,19 +95,19 @@ public class SaasService {
             ApiResponse resultApproveUser =
                 usersTeamsControllerService.approveNewUserRequests(
                     newUser.getUsername(), false, tenantId, KwConstants.INFRATEAM);
-            if (resultApproveUser.getResult().contains(ApiResultStatus.SUCCESS.value)) {
+            if (resultApproveUser.isSuccess()) {
               updateStaticData(newUser, tenantId);
             } else {
-              resultMap.put("error", "Something went wrong. Please try again.");
+              resultMap.put("error", SAAS_ERR_102);
               return resultMap;
             }
 
           } else {
-            resultMap.put("error", "Something went wrong. Please try again.");
+            resultMap.put("error", SAAS_ERR_102);
             return resultMap;
           }
         } else {
-          resultMap.put("error", "Failure :" + addTenantResult.getResult());
+          resultMap.put("error", "Failure :" + addTenantResult.getMessage());
           return resultMap;
         }
       }
@@ -111,7 +116,7 @@ public class SaasService {
       return resultMap;
     } catch (Exception e) {
       log.error("Exception:", e);
-      resultMap.put("error", "Something went wrong. Please try again.");
+      resultMap.put("error", SAAS_ERR_102);
       return resultMap;
     }
   }
@@ -124,7 +129,7 @@ public class SaasService {
 
     try {
       if (handleValidations(newUser, tenantMap, resultMap)) {
-        return ApiResponse.builder().result(resultMap.get("result")).build();
+        return ApiResponse.builder().success(false).message(resultMap.get("result")).build();
       }
 
       RegisterUserInfoModel newUserTarget = new RegisterUserInfoModel();
@@ -137,22 +142,19 @@ public class SaasService {
       if (newUser.getTenantName() == null || newUser.getTenantName().equals("")) {
         // new user
         if (createNewUserForActivation(resultMap, newUserTarget)) {
-          return ApiResponse.builder().result(resultMap.get("error")).build();
+          return ApiResponse.builder().success(false).message(resultMap.get("error")).build();
         }
       } else if (!tenantMap.containsValue(newUser.getTenantName())) {
-        resultMap.put("error", "Tenant does not exist.");
-        return ApiResponse.builder()
-            .result("Tenant does not exist.")
-            .message("Tenant does not exist.")
-            .build();
+        resultMap.put("error", SAAS_ERR_103);
+        return ApiResponse.builder().success(false).message(SAAS_ERR_103).build();
       } else {
         // create user for existing tenant
         if (createUserForExistingTenant(newUser, tenantMap, resultMap, newUserTarget)) {
-          return ApiResponse.builder().result(resultMap.get("error")).build();
+          return ApiResponse.builder().success(false).message(resultMap.get("error")).build();
         }
       }
 
-      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -169,8 +171,8 @@ public class SaasService {
     newUserTarget.setRegisteredTime(new Timestamp(System.currentTimeMillis()));
     ApiResponse userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
-    if (!ApiResultStatus.SUCCESS.value.equals(userRegMap.getResult())) {
-      resultMap.put("error", "Something went wrong. Please try again.");
+    if (!userRegMap.isSuccess()) {
+      resultMap.put("error", SAAS_ERR_102);
       return true;
     }
     String activationUrl =
@@ -214,8 +216,8 @@ public class SaasService {
     newUserTarget.setRole(KwConstants.USER_ROLE);
     ApiResponse userRegMap = usersTeamsControllerService.registerUser(newUserTarget, false);
 
-    if (!ApiResultStatus.SUCCESS.value.equals(userRegMap.getResult())) {
-      resultMap.put("error", "Something went wrong. Please try again.");
+    if (!ApiResultStatus.SUCCESS.value.equals(userRegMap.getMessage())) {
+      resultMap.put("error", SAAS_ERR_102);
       return true;
     } else {
       RegisterUserInfo registerUserInfo = new RegisterUserInfo();
@@ -245,7 +247,7 @@ public class SaasService {
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
     if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
-      resultMap.put("error", "User already exists. You may login.");
+      resultMap.put("error", SAAS_ERR_101);
       return true;
     }
 
@@ -253,13 +255,13 @@ public class SaasService {
         manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
     if (registerUserInfoList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
-      resultMap.put("error", "Registration already exists. You may login.");
+      resultMap.put("error", SAAS_ERR_104);
       return true;
     }
 
     if ("default"
         .equals(newUser.getTenantName())) { // don't allow users to be created on default tenant
-      resultMap.put("error", "You cannot request users for default tenant.");
+      resultMap.put("error", SAAS_ERR_105);
       return true;
     }
 

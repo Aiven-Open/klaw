@@ -130,6 +130,6 @@ public class KafkaConnectSyncControllerServiceTest {
     ApiResponse result =
         kafkaConnectSyncControllerService.updateSyncConnectors(
             utilMethods.getSyncConnectorUpdates());
-    assertThat(result.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 }

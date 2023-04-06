@@ -28,12 +28,13 @@ Export Klaw metadata (Admin config, Core data, Requests data) to json files
 @Service
 public class ExportImportDataService {
 
-  public static final String PWD_ALL_USERS = "WelcomeToKlaw!!";
+  @Value("${klaw.export.users.pwd:WelcomeToKlaw!!}")
+  private String pwdAllUsers;
 
   @Value("${klaw.jasypt.encryptor.secretkey}")
   private String encryptorSecretKey;
 
-  @Value("${klaw.export.file.path:/export}")
+  @Value("${klaw.export.file.path:./export}")
   private String klawExportFilePath;
 
   @Value("${klaw.export.scheduler.enable:false}")
@@ -109,10 +110,10 @@ public class ExportImportDataService {
   }
 
   private List<UserInfo> getUpdatedUserList(List<UserInfo> userList) {
-    log.info("Users password exported as : {}", PWD_ALL_USERS);
     BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
     textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
-    userList.forEach(user -> user.setPwd(textEncryptor.encrypt(PWD_ALL_USERS)));
+    String encryptedPwd = textEncryptor.encrypt(pwdAllUsers);
+    userList.forEach(user -> user.setPwd(encryptedPwd));
 
     return userList;
   }
@@ -143,7 +144,6 @@ public class ExportImportDataService {
             .subscriptionRequests(handleDbRequests.getAllAclRequests())
             .schemaRequests(handleDbRequests.getAllSchemaRequests())
             .connectorRequests(handleDbRequests.getAllConnectorRequests())
-            .activityLogs(handleDbRequests.getAllActivityLog())
             .klawVersion(klawVersion)
             .createdTime(timeStamp)
             .build();

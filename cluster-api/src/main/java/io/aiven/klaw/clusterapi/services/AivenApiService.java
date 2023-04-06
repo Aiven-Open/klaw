@@ -279,19 +279,13 @@ public class AivenApiService {
         Map<String, String> aclsMapUpdated = new HashMap<>();
         for (String keyAcls : aclsMap.keySet()) {
           switch (keyAcls) {
-            case "id":
-              aclsMapUpdated.put("aivenaclid", aclsMap.get(keyAcls));
-              break;
-            case "permission":
+            case "id" -> aclsMapUpdated.put("aivenaclid", aclsMap.get(keyAcls));
+            case "permission" -> {
               aclsMapUpdated.put("operation", aclsMap.get(keyAcls).toUpperCase());
               aclsMapUpdated.put("resourceType", "TOPIC");
-              break;
-            case "topic":
-              aclsMapUpdated.put("resourceName", aclsMap.get(keyAcls));
-              break;
-            case USERNAME:
-              aclsMapUpdated.put("principle", aclsMap.get(keyAcls));
-              break;
+            }
+            case "topic" -> aclsMapUpdated.put("resourceName", aclsMap.get(keyAcls));
+            case USERNAME -> aclsMapUpdated.put("principle", aclsMap.get(keyAcls));
           }
         }
         aclsMapUpdated.put("host", "*");
