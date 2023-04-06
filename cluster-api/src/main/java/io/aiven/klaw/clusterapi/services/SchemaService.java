@@ -487,8 +487,21 @@ public class SchemaService {
             .message(ApiResultStatus.FAILURE.value + "  Schema is not compatible.")
             .build();
       }
+    } catch (HttpClientErrorException httpEx) {
+      log.error("Exception on validating: ", httpEx);
+
+      if (httpEx.getStatusCode().equals(HttpStatusCode.valueOf(422))) {
+
+        return ApiResponse.builder()
+            .success(false)
+            .message(
+                ApiResultStatus.FAILURE.value
+                    + " Invalid Schema. Unable to validate Schema Compatibility.")
+            .build();
+      } else {
+        throw httpEx;
+      }
     } catch (Exception ex) {
-      log.error("Exception on validating: ", ex);
       return ApiResponse.builder()
           .success(false)
           .message(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.")
