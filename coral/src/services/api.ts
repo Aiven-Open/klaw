@@ -92,7 +92,7 @@ type ServerError = ResolveIntersectionTypes<
   }
 >;
 
-function hasHTTPErrorProperties(
+function isHTTPErrorProperties(
   value: Record<string, unknown>
 ): value is Record<keyof HTTPError, unknown> {
   return (
@@ -108,7 +108,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isHTTPError(value: unknown): value is HTTPError {
-  if (isRecord(value) && hasHTTPErrorProperties(value)) {
+  if (isRecord(value) && isHTTPErrorProperties(value)) {
     return (
       typeof value.status === "number" &&
       typeof value.statusText === "string" &&
@@ -251,7 +251,7 @@ function handleError(
   // was identified as an error `checkStatus` and we've
   // not yet read the body stream
   if (errorOrResponse instanceof Response) {
-    return parseResponseBody(errorOrResponse).then((parsed) => {
+    return parseResponseBody(errorOrResponse).then((body) => {
       // We have api endpoints that return ApiResponse[]
       // these endpoints are all meant for enabling "batch" processing,
       // for example to delete multiple requests
@@ -259,14 +259,14 @@ function handleError(
       // If this endpoints contain an error, it will be contained
       // in the first (and only) entry of the ApiResponse[]
       // see more details: https://github.com/aiven/klaw/pull/921#issue-1641959704
-      const body = isArray(parsed) ? parsed[0] : parsed;
-      if (isKlawApiError(body)) {
-        const error: KlawApiError = body;
+      const bodyToCheck = isArray(body) ? body[0] : body;
+      if (isKlawApiError(bodyToCheck)) {
+        const error: KlawApiError = bodyToCheck;
         return Promise.reject(error);
       }
 
       const httpError: HTTPError = {
-        data: body,
+        data: bodyToCheck,
         status: errorOrResponse.status,
         statusText: errorOrResponse.statusText,
         headers: errorOrResponse.headers,
@@ -350,4 +350,10 @@ export default {
 };
 
 export type { AbsolutePathname, HTTPError, KlawApiResponse, KlawApiError };
-export { HTTPMethod, isUnauthorizedError, isServerError, isClientError };
+export {
+  HTTPMethod,
+  isUnauthorizedError,
+  isServerError,
+  isClientError,
+  isKlawApiError,
+};
