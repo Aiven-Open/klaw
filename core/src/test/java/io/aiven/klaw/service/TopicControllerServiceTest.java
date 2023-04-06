@@ -931,7 +931,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.groupTopicsByEnv(any())).thenReturn(getSyncTopics("topic", 4));
 
     List<List<TopicInfo>> topicsList =
-        topicControllerService.getTopics(envSel, pageNo, "", topicNameSearch, null, null);
+        topicControllerService.getTopics(envSel, pageNo, "", topicNameSearch, 0, null);
 
     assertThat(topicsList).hasSize(2);
   }
@@ -962,7 +962,7 @@ public class TopicControllerServiceTest {
 
     List<List<TopicInfo>> topicsList =
         topicControllerService.getTopics(
-            envSel, pageNo, "", topicNameSearch, KwConstants.INFRATEAM, AclType.PRODUCER.value);
+            envSel, pageNo, "", topicNameSearch, 1001, AclType.PRODUCER.value);
 
     assertThat(topicsList).isNull(); // for this filter criteria, there are no topics.
   }
@@ -998,7 +998,7 @@ public class TopicControllerServiceTest {
 
     List<List<TopicInfo>> topicsList =
         topicControllerService.getTopics(
-            envSel, pageNo, "", topicNameSearch, KwConstants.INFRATEAM, AclType.PRODUCER.value);
+            envSel, pageNo, "", topicNameSearch, 1001, AclType.PRODUCER.value);
 
     assertThat(topicsList).isNull(); // for this filter criteria, there are no topics.
   }
@@ -1015,7 +1015,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getSyncTopics(envSel, null, 1)).thenReturn(getSyncTopics("topic", 4));
 
     List<List<TopicInfo>> topicsList =
-        topicControllerService.getTopics(envSel, pageNo, "", topicNameSearch, null, null);
+        topicControllerService.getTopics(envSel, pageNo, "", topicNameSearch, 0, null);
 
     assertThat(topicsList).isNull();
   }

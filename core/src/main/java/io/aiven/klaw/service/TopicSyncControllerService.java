@@ -585,13 +585,12 @@ public class TopicSyncControllerService {
       String pageNo,
       String currentPage,
       String topicNameSearch,
-      String teamName,
+      Integer teamId,
       String topicType) {
     log.info("getTopicsRowView {}", topicNameSearch);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<TopicInfo> topicListUpdated =
-        getTopicsPaginated(
-            env, pageNo, currentPage, topicNameSearch, teamName, topicType, tenantId);
+        getTopicsPaginated(env, pageNo, currentPage, topicNameSearch, teamId, topicType, tenantId);
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
       return topicListUpdated;
@@ -605,7 +604,7 @@ public class TopicSyncControllerService {
       String pageNo,
       String currentPage,
       String topicNameSearch,
-      String teamName,
+      Integer teamId,
       String topicType,
       int tenantId) {
     if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
@@ -615,10 +614,9 @@ public class TopicSyncControllerService {
     // To get Producer or Consumer topics, first get all topics based on acls and then filter
     List<Topic> producerConsumerTopics = new ArrayList<>();
     if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))
-        && teamName != null) {
+        && teamId != 0) {
       producerConsumerTopics =
-          handleDbRequests.selectAllTopicsByTopictypeAndTeamname(
-              topicType, manageDatabase.getTeamIdFromTeamName(tenantId, teamName), tenantId);
+          handleDbRequests.selectAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
 
       // tenant filtering, not really necessary though, as based on team is searched.
       producerConsumerTopics =
@@ -626,13 +624,11 @@ public class TopicSyncControllerService {
 
       // select all topics and then filter
       env = "ALL";
-      teamName = null;
+      teamId = 0;
     }
 
     // Get Sync topics
-    List<Topic> topicsFromSOT =
-        handleDbRequests.getSyncTopics(
-            env, manageDatabase.getTeamIdFromTeamName(tenantId, teamName), tenantId);
+    List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env, teamId, tenantId);
     topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
 
     // tenant filtering

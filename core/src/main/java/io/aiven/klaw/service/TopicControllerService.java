@@ -1012,7 +1012,7 @@ public class TopicControllerService {
       String pageNo,
       String currentPage,
       String topicNameSearch,
-      String teamName,
+      Integer teamId,
       String topicType) {
     log.debug("getTopics {}", topicNameSearch);
     String userName = getUserName();
@@ -1022,7 +1022,7 @@ public class TopicControllerService {
             pageNo,
             currentPage,
             topicNameSearch,
-            teamName,
+            teamId,
             topicType,
             commonUtilsService.getTenantId(userName));
 
@@ -1047,7 +1047,7 @@ public class TopicControllerService {
       String pageNo,
       String currentPage,
       String topicNameSearch,
-      String teamName,
+      Integer teamId,
       String topicType,
       int tenantId) {
     if (topicNameSearch != null) {
@@ -1059,10 +1059,9 @@ public class TopicControllerService {
     // To get Producer or Consumer topics, first get all topics based on acls and then filter
     List<Topic> producerConsumerTopics = new ArrayList<>();
     if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))
-        && teamName != null) {
+        && teamId != 0) {
       producerConsumerTopics =
-          handleDbRequests.selectAllTopicsByTopictypeAndTeamname(
-              topicType, manageDatabase.getTeamIdFromTeamName(tenantId, teamName), tenantId);
+          handleDbRequests.selectAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
 
       // tenant filtering, not really necessary though, as based on team is searched.
       producerConsumerTopics =
@@ -1070,13 +1069,11 @@ public class TopicControllerService {
 
       // select all topics and then filter
       env = "ALL";
-      teamName = null;
+      teamId = 0;
     }
 
     // Get Sync topics
-    List<Topic> topicsFromSOT =
-        handleDbRequests.getSyncTopics(
-            env, manageDatabase.getTeamIdFromTeamName(tenantId, teamName), tenantId);
+    List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env, teamId, tenantId);
     topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
 
     // tenant filtering
@@ -1253,6 +1250,7 @@ public class TopicControllerService {
         mp.setEnvId(topicSOT.getEnvironment());
         mp.setEnvironmentsList(getConvertedEnvs(listAllEnvs, envList));
         mp.setTopicName(topicSOT.getTopicname());
+        mp.setTeamId(topicSOT.getTeamId());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
 
         mp.setNoOfReplicas(topicSOT.getNoOfReplicas());

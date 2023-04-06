@@ -350,8 +350,9 @@ public class UsersTeamsControllerService {
 
   public List<TeamModelResponse> getAllTeamsSU() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
+
     List<TeamModelResponse> teamModels =
-        getTeamModels(manageDatabase.getHandleDbRequests().selectAllTeams(tenantId));
+        getTeamModels(manageDatabase.getTeamObjForTenant(tenantId));
 
     if (!commonUtilsService.isNotAuthorizedUser(
         getUserName(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
