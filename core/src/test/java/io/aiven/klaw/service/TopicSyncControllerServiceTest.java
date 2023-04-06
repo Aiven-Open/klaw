@@ -143,7 +143,7 @@ public class TopicSyncControllerServiceTest {
 
     ApiResponse result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
-    assertThat(result.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -160,7 +160,7 @@ public class TopicSyncControllerServiceTest {
         .thenReturn(Collections.singletonList("1"));
 
     ApiResponse result = topicSyncControllerService.updateSyncTopics(topicUpdates);
-    assertThat(result.getResult()).isEqualTo("No record updated.");
+    assertThat(result.getMessage()).isEqualTo("No record updated.");
   }
 
   @Test
@@ -173,7 +173,7 @@ public class TopicSyncControllerServiceTest {
 
     ApiResponse result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
-    assertThat(result.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -217,10 +217,9 @@ public class TopicSyncControllerServiceTest {
             any(),
             eq(TENANT_ID),
             anyBoolean()))
-        .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
+        .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value))
         .thenReturn(
             createAPIResponse(
-                HttpStatus.OK,
                 "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
 
     // execute
@@ -243,9 +242,9 @@ public class TopicSyncControllerServiceTest {
     verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
 
     // This should pass when clusterApi is updated
-    assertThat(retval.getResult())
+    assertThat(retval.getMessage())
         .isNotEqualTo("Error :Could not approve topic request. Please contact Administrator.");
-    assertThat(retval.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(retval.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -264,7 +263,7 @@ public class TopicSyncControllerServiceTest {
             any(),
             eq(TENANT_ID),
             anyBoolean()))
-        .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value));
+        .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value));
 
     // execute
     ApiResponse retval =
@@ -285,9 +284,9 @@ public class TopicSyncControllerServiceTest {
     verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
 
     verifyCaptureContents(req, update, 1, 2, TOPIC_NAME_2);
-    assertThat(retval.getResult())
+    assertThat(retval.getMessage())
         .isNotEqualTo("Error :Could not approve topic request. Please contact Administrator.");
-    assertThat(retval.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(retval.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -307,10 +306,9 @@ public class TopicSyncControllerServiceTest {
             any(),
             eq(TENANT_ID),
             anyBoolean()))
-        .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
+        .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value))
         .thenReturn(
             createAPIResponse(
-                HttpStatus.OK,
                 "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
 
     ApiResponse retval =
@@ -331,9 +329,9 @@ public class TopicSyncControllerServiceTest {
 
     verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
 
-    assertThat(retval.getResult())
+    assertThat(retval.getMessage())
         .isNotEqualTo("Error :Could not approve topic request. Please contact Administrator.");
-    assertThat(retval.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(retval.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -354,7 +352,7 @@ public class TopicSyncControllerServiceTest {
             any(),
             eq(TENANT_ID),
             anyBoolean()))
-        .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value));
+        .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value));
 
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
@@ -375,9 +373,9 @@ public class TopicSyncControllerServiceTest {
 
     verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
     verifyCaptureContents(req, update, 1, 2, TOPIC_NAME_2);
-    assertThat(retval.getResult())
+    assertThat(retval.getMessage())
         .isNotEqualTo("Error :Could not approve topic request. Please contact Administrator.");
-    assertThat(retval.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(retval.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -397,7 +395,7 @@ public class TopicSyncControllerServiceTest {
             any(),
             eq(TENANT_ID),
             anyBoolean()))
-        .thenReturn(createAPIResponse(HttpStatus.OK, ApiResultStatus.SUCCESS.value))
+        .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value))
         .thenThrow(
             new KlawException("Could not approve topic request. Please contact Administrator."));
 
@@ -419,7 +417,7 @@ public class TopicSyncControllerServiceTest {
 
     verifyCaptureContents(req, update, 0, 1, TOPIC_NAME_1);
 
-    assertThat(retval.getResult())
+    assertThat(retval.getMessage())
         .isEqualTo("Error :Could not approve topic request. Please contact Administrator.");
   }
 
@@ -470,9 +468,9 @@ public class TopicSyncControllerServiceTest {
     return topic;
   }
 
-  private ResponseEntity<ApiResponse> createAPIResponse(HttpStatus status, String resultStatus) {
-    return ResponseEntity.status(status)
-        .body(ApiResponse.builder().status(status).result(resultStatus).build());
+  private ResponseEntity<ApiResponse> createAPIResponse(String resultStatus) {
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(ApiResponse.builder().message(resultStatus).build());
   }
 
   private void mockMultipleTopics() {

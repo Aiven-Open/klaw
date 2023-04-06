@@ -286,12 +286,12 @@ public class ConfluentCloudApiService {
             "Topic: {} already exists in {}",
             clusterTopicRequest.getTopicName(),
             clusterTopicRequest.getEnv());
-        return ApiResponse.builder().result(e.getMessage()).build();
+        return ApiResponse.builder().success(false).message(e.getMessage()).build();
       }
       throw e;
     }
 
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
   public ApiResponse deleteTopic(ClusterTopicRequest clusterTopicRequest) throws Exception {
@@ -321,12 +321,12 @@ public class ConfluentCloudApiService {
             "Topic: {} do not exist in {}",
             clusterTopicRequest.getTopicName(),
             clusterTopicRequest.getEnv());
-        return ApiResponse.builder().result(e.getMessage()).build();
+        return ApiResponse.builder().success(false).message(e.getMessage()).build();
       }
       throw e;
     }
 
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
   // Confluent cloud doesn't provide api to update partitions/config of a topic. so either delete
@@ -334,7 +334,7 @@ public class ConfluentCloudApiService {
   public ApiResponse updateTopic(ClusterTopicRequest clusterTopicRequest) throws Exception {
     //    deleteTopic(clusterTopicRequest);
     //    createTopic(clusterTopicRequest);
-    return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
   }
 
   String updateQueryParams(

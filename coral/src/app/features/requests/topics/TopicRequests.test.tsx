@@ -513,7 +513,9 @@ describe("TopicRequests", () => {
     });
 
     it("user can delete a request by clicking a button in the modal", async () => {
-      mockDeleteTopicRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeleteTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
       const viewDetailsButton = screen.getByRole("button", {
@@ -572,7 +574,9 @@ describe("TopicRequests", () => {
     });
 
     it("send a delete request api call if user deletes a topic request", async () => {
-      mockDeleteTopicRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeleteTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
 
       const deleteButton = screen.getByRole("button", {
         name: "Delete topic request for test-topic-1",
@@ -594,7 +598,9 @@ describe("TopicRequests", () => {
     });
 
     it("updates the the data for the table if user deletes a topic request", async () => {
-      mockDeleteTopicRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeleteTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         search: "",

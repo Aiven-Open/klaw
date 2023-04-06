@@ -128,7 +128,7 @@ public class ApacheKafkaTopicService {
             "Topic: {} already exists in {}",
             clusterTopicRequest.getTopicName(),
             clusterTopicRequest.getEnv());
-        return ApiResponse.builder().result(e.getMessage()).build();
+        return ApiResponse.builder().success(false).message(e.getMessage()).build();
       }
       throw e;
     } catch (InterruptedException e) {
@@ -141,7 +141,7 @@ public class ApacheKafkaTopicService {
       throw e;
     }
 
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
   public synchronized ApiResponse updateTopic(ClusterTopicRequest clusterTopicRequest)
@@ -179,7 +179,7 @@ public class ApacheKafkaTopicService {
       client.createPartitions(newPartitionSet);
     }
 
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
   public synchronized ApiResponse deleteTopic(ClusterTopicRequest clusterTopicRequest)
@@ -207,10 +207,10 @@ public class ApacheKafkaTopicService {
       // delete associated schema if requested
       String schemaDeletionStatus = "";
       if (clusterTopicRequest.getDeleteAssociatedSchema()) {
-        schemaDeletionStatus = schemaService.deleteSchema(clusterTopicRequest).getResult();
+        schemaDeletionStatus = schemaService.deleteSchema(clusterTopicRequest).getMessage();
       }
       return ApiResponse.builder()
-          .result(ApiResultStatus.SUCCESS.value)
+          .success((schemaDeletionStatus.equals(ApiResultStatus.SUCCESS.value)))
           .message(schemaDeletionStatus)
           .build();
     } catch (KafkaException e) {

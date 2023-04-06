@@ -178,11 +178,11 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                     headers : { 'Content-Type' : 'application/json' },
                     data: serviceInput
                 }).success(function (output) {
-                    $scope.alert = "User team update request : "+output.result;
-                    if(output.result === 'success'){
+                    $scope.alert = "User team update request : "+output.message;
+                    if(output.success){
                         swal({
                             title: "",
-                            text: "User team update request : "+output.result,
+                            text: "User team update request : "+output.message,
                             timer: 2000,
                             showConfirmButton: true
                         }).then(function(isConfirm){
@@ -305,12 +305,12 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                             data: {'username' : username}
                         }).success(function(output) {
 
-                            $scope.alert = "User Approve Request : "+output.result;
+                            $scope.alert = "User Approve Request : "+output.message;
                             $scope.getUserRequests();
-                            if(output.result === 'success'){
+                            if(output.success){
                                 swal({
                                      title: "",
-                                     text: "User Approve Request : "+output.result,
+                                     text: "User Approve Request : "+output.message,
                                      timer: 2000,
                                      showConfirmButton: false
                                  });
@@ -334,12 +334,12 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                                 data: {'username' : username}
                             }).success(function(output) {
 
-                                $scope.alert = "User decline Request : "+output.result;
+                                $scope.alert = "User decline Request : "+output.message;
                                 $scope.getUserRequests();
-                                if(output.result === 'success'){
+                                if(output.success){
                                     swal({
                                          title: "",
-                                         text: "User decline Request : "+output.result,
+                                         text: "User decline Request : "+output.message,
                                          timer: 2000,
                                          showConfirmButton: false
                                      });
@@ -450,17 +450,17 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                 headers : { 'Content-Type' : 'application/json' },
                 data: serviceInput
             }).success(function(output) {
-                if(output.result === 'success'){
+                if(output.success){
                     swal({
                          title: "",
-                         text: "Registration Request : "+output.result,
+                         text: "Registration Request : "+output.message,
                          timer: 2000,
                          showConfirmButton: false
                      });
                     $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/registrationReview";
                  }else {
                        $scope.registrationStarted = 'false';
-                       $scope.alert = "Registration Request : " + output.result + "." + output.error ;
+                       $scope.alert = "Registration Request : " + output.message + "." + output.error ;
 //                       $scope.showSubmitFailed('','');
                        $scope.alertnote = $scope.alert;
                        $scope.showAlertToast();
@@ -546,18 +546,18 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                        headers : { 'Content-Type' : 'application/json' },
                        data: serviceInput
                    }).success(function(output) {
-                       if(output.result === 'success'){
-                            $scope.alert = "Registration Request : "+output.result;
+                       if(output.success){
+                            $scope.alert = "Registration Request : "+output.message;
                            swal({
                                 title: "",
-                                text: "Registration Request : "+output.result,
+                                text: "Registration Request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: false
                             });
                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/registrationReview";
                         }else {
                             $scope.registrationStarted = 'false';
-                            $scope.alert = "Registration Request : " + output.result + "." + output.error ;
+                            $scope.alert = "Registration Request : " + output.message + "." + output.error ;
                             $scope.alertnote = $scope.alert;
                             $scope.showAlertToast();
                         }
@@ -639,19 +639,19 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                         params: {'newUser' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
-                        $scope.alert = "Registration Request : "+output.result;
-                        if(output.result == 'success'){
+                        $scope.alert = "Registration Request : "+output.message;
+                        if(output.success){
 
                             swal({
                                  title: "",
-                                 text: "Registration Request : "+output.result,
+                                 text: "Registration Request : "+output.message,
                                  timer: 2000,
                                  showConfirmButton: false
                              });
                              $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/registrationReview";
                          }else  {
                                   $scope.registrationStarted = 'false';
-                                  $scope.alert = "Registration Request : " + output.result + "." + output.error ;
+                                  $scope.alert = "Registration Request : " + output.message + "." + output.error ;
                                   $scope.showSubmitFailed('','');
                               }
 

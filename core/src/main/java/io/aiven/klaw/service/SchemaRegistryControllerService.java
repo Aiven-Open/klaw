@@ -1,5 +1,12 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.SCHEMA_ERR_107;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -30,7 +37,6 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -211,7 +217,10 @@ public class SchemaRegistryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_SCHEMAS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
     String userName = getUserName();
     try {
@@ -222,7 +231,10 @@ public class SchemaRegistryControllerService {
                   Integer.parseInt(avroSchemaId),
                   userName,
                   commonUtilsService.getTenantId(getUserName()));
-      return ApiResponse.builder().result(result).build();
+      return ApiResponse.builder()
+          .success((result.equals(ApiResultStatus.SUCCESS.value)))
+          .message(result)
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -234,7 +246,10 @@ public class SchemaRegistryControllerService {
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     SchemaRequest schemaRequest =
@@ -243,21 +258,22 @@ public class SchemaRegistryControllerService {
             .selectSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
 
     if (Objects.equals(schemaRequest.getRequestor(), userDetails))
-      return ApiResponse.builder()
-          .result("You are not allowed to approve your own schema requests.")
-          .build();
+      return ApiResponse.builder().success(false).message(SCHEMA_ERR_101).build();
 
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
     if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     ResponseEntity<ApiResponse> response =
         clusterApiService.postSchema(
             schemaRequest, schemaRequest.getEnvironment(), schemaRequest.getTopicname(), tenantId);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    if (Objects.requireNonNull(Objects.requireNonNull(response.getBody()).getResult())
+    if (Objects.requireNonNull(Objects.requireNonNull(response.getBody()).getMessage())
         .contains("id\":")) {
       try {
         String responseDb = dbHandle.updateSchemaRequest(schemaRequest, userDetails);
@@ -269,18 +285,24 @@ public class SchemaRegistryControllerService {
             dbHandle,
             SCHEMA_REQUEST_APPROVED,
             commonUtilsService.getLoginUrl());
-        return ApiResponse.builder().result(responseDb).build();
+        return ApiResponse.builder()
+            .success((responseDb.equals(ApiResultStatus.SUCCESS.value)))
+            .message(responseDb)
+            .build();
       } catch (Exception e) {
         log.error("Exception:", e);
         throw new KlawException(e.getMessage());
       }
 
     } else {
-      String errStr = response.getBody().getResult();
+      String errStr = response.getBody().getMessage();
       if (errStr.length() > 100) {
         errStr = errStr.substring(0, 98) + "...";
       }
-      return ApiResponse.builder().result("Failure in uploading schema. Error : " + errStr).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(String.format(SCHEMA_ERR_102, errStr))
+          .build();
     }
   }
 
@@ -289,7 +311,10 @@ public class SchemaRegistryControllerService {
     log.info("execSchemaRequestsDecline {}", avroSchemaId);
     String userDetails = getUserName();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -298,7 +323,10 @@ public class SchemaRegistryControllerService {
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
     if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     try {
@@ -311,7 +339,10 @@ public class SchemaRegistryControllerService {
           dbHandle,
           SCHEMA_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());
-      return ApiResponse.builder().result(responseDb).build();
+      return ApiResponse.builder()
+          .success((responseDb.equals(ApiResultStatus.SUCCESS.value)))
+          .message(responseDb)
+          .build();
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
@@ -322,33 +353,29 @@ public class SchemaRegistryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     Integer userTeamId = commonUtilsService.getTeamId(userDetails);
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    int teamId = commonUtilsService.getTeamId(userDetails);
 
     if (!userAndTopicOwnerAreOnTheSameTeam(schemaPromotion.getTopicName(), userTeamId, tenantId)) {
-      return ApiResponse.builder()
-          .result("No topic selected Or Not authorized to register schema for this topic.")
-          .build();
+      return ApiResponse.builder().success(false).message(SCHEMA_ERR_103).build();
     }
 
     SchemaRequestModel schemaRequest = buildSchemaRequestFromPromotionRequest(schemaPromotion);
-
     Optional<Env> optionalEnv = getSchemaEnvFromId(schemaPromotion.getSourceEnvironment());
 
-    if (!optionalEnv.isPresent()) {
-      return ApiResponse.builder()
-          .status(HttpStatus.BAD_REQUEST)
-          .result("Unable to find or access the source Schema Registry")
-          .build();
+    if (optionalEnv.isEmpty()) {
+      return ApiResponse.builder().success(false).message(SCHEMA_ERR_104).build();
     }
     Env schemaSourceEnv = optionalEnv.get();
     SortedMap<Integer, Map<String, Object>> schemaObjects =
         getSchemasFromTopicName(schemaPromotion.getTopicName(), tenantId, schemaSourceEnv);
-    log.info(
+    log.debug(
         "getSchemaVersion {}, schemaObjects keySet {}",
         schemaPromotion.getSchemaVersion(),
         schemaObjects.keySet());
@@ -377,15 +404,12 @@ public class SchemaRegistryControllerService {
             .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
             .get(schemaEnv.getClusterId());
 
-    SortedMap<Integer, Map<String, Object>> schemaObjects =
-        clusterApiService.getAvroSchema(
-            kwClusters.getBootstrapServers(),
-            kwClusters.getProtocol(),
-            kwClusters.getClusterName() + kwClusters.getClusterId(),
-            topicName,
-            tenantId);
-
-    return schemaObjects;
+    return clusterApiService.getAvroSchema(
+        kwClusters.getBootstrapServers(),
+        kwClusters.getProtocol(),
+        kwClusters.getClusterName() + kwClusters.getClusterId(),
+        topicName,
+        tenantId);
   }
 
   private Optional<Env> getSchemaEnvFromId(String envId) {
@@ -414,7 +438,10 @@ public class SchemaRegistryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     // If force register is not set validate the schema
@@ -422,7 +449,7 @@ public class SchemaRegistryControllerService {
         && (schemaRequest.getForceRegister() == null || !schemaRequest.getForceRegister())) {
       // check if Schema is valid
       ApiResponse isValid = validateSchema(schemaRequest);
-      if (isValid.getResult().contains(ApiResultStatus.FAILURE.value)) {
+      if (!isValid.isSuccess()) {
         // Return on Failure response
         return isValid;
       }
@@ -432,16 +459,14 @@ public class SchemaRegistryControllerService {
       new ObjectMapper().readValue(schemaRequest.getSchemafull(), Object.class);
     } catch (IOException e) {
       log.error("Exception:", e);
-      return ApiResponse.builder().result("Failure. Invalid json").build();
+      return ApiResponse.builder().success(false).message(SCHEMA_ERR_105).build();
     }
 
     Integer userTeamId = commonUtilsService.getTeamId(userName);
     schemaRequest.setTeamId(userTeamId);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (!userAndTopicOwnerAreOnTheSameTeam(schemaRequest.getTopicname(), userTeamId, tenantId)) {
-      return ApiResponse.builder()
-          .result("No topic selected Or Not authorized to register schema for this topic.")
-          .build();
+      return ApiResponse.builder().success(false).message(SCHEMA_ERR_106).build();
     }
 
     List<SchemaRequest> schemaReqs =
@@ -468,9 +493,7 @@ public class SchemaRegistryControllerService {
                               schemaRequest1.getTopicname(), schemaRequest.getTopicname()))
               .collect(Collectors.toList());
       if (schemaReqs.size() > 0) {
-        return ApiResponse.builder()
-            .result("Failure. A request already exists for this topic.")
-            .build();
+        return ApiResponse.builder().success(false).message(SCHEMA_ERR_107).build();
       }
     }
 
@@ -491,7 +514,10 @@ public class SchemaRegistryControllerService {
           SCHEMA_REQUESTED,
           commonUtilsService.getLoginUrl());
 
-      return ApiResponse.builder().result(responseDb).build();
+      return ApiResponse.builder()
+          .success((responseDb.equals(ApiResultStatus.SUCCESS.value)))
+          .message(responseDb)
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());

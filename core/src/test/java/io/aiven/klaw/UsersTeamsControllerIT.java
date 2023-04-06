@@ -154,7 +154,7 @@ public class UsersTeamsControllerIT {
             .getContentAsString();
     ApiResponse objectResponse = new ObjectMapper().readValue(response, ApiResponse.class);
 
-    assertThat(objectResponse.getResult()).contains("Failure. Team already exists");
+    assertThat(objectResponse.getMessage()).contains("Failure. Team already exists");
   }
 
   // Create team failure, invalid team mail id
@@ -363,7 +363,8 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<TeamModel> teamModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    List<TeamModelResponse> teamModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModels).hasSize(3);
   }
 

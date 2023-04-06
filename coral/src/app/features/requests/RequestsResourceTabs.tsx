@@ -40,10 +40,9 @@ function RequestsResourceTabs({ currentTab }: Props) {
         {currentTab === RequestsTabEnum.SCHEMAS && <Outlet />}
       </Tabs.Tab>
       <Tabs.Tab
-        title="Connectors (coming soon)"
+        title="Connectors"
         value={RequestsTabEnum.CONNECTORS}
         aria-label={"Connector requests"}
-        disabled
       >
         {currentTab === RequestsTabEnum.CONNECTORS && <Outlet />}
       </Tabs.Tab>

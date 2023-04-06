@@ -238,7 +238,7 @@ public class UtilComponentsServiceTest {
     when(futureTocpiCreateResult.get(anyString())).thenReturn(kFutureVoid);
 
     ApiResponse result = apacheKafkaTopicService.createTopic(clusterTopicRequest);
-    assertThat(result.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   // TODO review test configuration, since an NPE is thrown, which is most likely not intended here.
@@ -367,7 +367,7 @@ public class UtilComponentsServiceTest {
   @Test
   public void postSchema1() {
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
-    ApiResponse apiResponse = ApiResponse.builder().result("Schema created id : 101").build();
+    ApiResponse apiResponse = ApiResponse.builder().message("Schema created id : 101").build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     when(clusterApiUtils.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
     when(clusterApiUtils.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
@@ -375,7 +375,7 @@ public class UtilComponentsServiceTest {
         .thenReturn(new ResponseEntity<>("Schema created id : 101", HttpStatus.OK));
 
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo("Schema created id : 101");
+    assertThat(resultResp.getMessage()).isEqualTo("Schema created id : 101");
   }
 
   @Test
@@ -388,7 +388,7 @@ public class UtilComponentsServiceTest {
             new ResponseEntity<>(
                 "Cannot retrieve SchemaRegistry Url", HttpStatus.INTERNAL_SERVER_ERROR));
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo("Cannot retrieve SchemaRegistry Url");
+    assertThat(resultResp.getMessage()).isEqualTo("Cannot retrieve SchemaRegistry Url");
   }
 
   private Map<String, TopicDescription> getTopicDescs() {

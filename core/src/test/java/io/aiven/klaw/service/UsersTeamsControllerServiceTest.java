@@ -83,7 +83,7 @@ public class UsersTeamsControllerServiceTest {
     when(mailService.getUserName(any())).thenReturn("kwusera");
     when(handleDbRequests.updateUser(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse apiResponse = usersTeamsControllerService.updateProfile(userInfoModel);
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -103,7 +103,7 @@ public class UsersTeamsControllerServiceTest {
     UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -116,7 +116,7 @@ public class UsersTeamsControllerServiceTest {
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMap());
     ApiResponse apiResponse = usersTeamsControllerService.updateUser(userInfoModel);
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo("Not Authorized to update another SUPERADMIN user.");
   }
 
@@ -149,7 +149,7 @@ public class UsersTeamsControllerServiceTest {
     when(handleDbRequests.selectAllUsersInfoForTeam(teamId, tenantId))
         .thenReturn(Collections.singletonList(new UserInfo()));
     ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(teamId);
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo("Not allowed to delete this team, as there are associated users.");
   }
 
@@ -163,7 +163,7 @@ public class UsersTeamsControllerServiceTest {
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt())).thenReturn(new HashMap<>());
     when(handleDbRequests.findAllComponentsCountForUser("testuser", 101)).thenReturn(1);
     ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo(
             "Not allowed to delete this user, as there are associated requests in the metadata.");
   }
@@ -179,7 +179,7 @@ public class UsersTeamsControllerServiceTest {
         .thenReturn(utilMethods.getRolesPermsMap());
     when(handleDbRequests.findAllComponentsCountForUser("testuser", 101)).thenReturn(1);
     ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo("Not Authorized. Cannot delete a user with SUPERADMIN access.");
   }
 

@@ -135,11 +135,11 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -410,16 +410,16 @@ app.controller("syncBackTopicsCtrl", function($scope, $http, $location, $window)
                         data:  serviceInput
                     }).success(function(output) {
                         $scope.ShowSpinnerStatus = false;
-                        $scope.alert = "Sync back topic request : "+ output.result;
-                        if(output.result === "success"){
+                        $scope.alert = "Sync back topic request : "+ output.message;
+                        if(output.success){
                             $scope.resetCheckBoxes();
                             $scope.syncbacklog = output.data;
                             $scope.alert = $scope.alert + ". Errors are ignored if topics already exist on the target environment. Please verify logs.";
                         }
-                         if(output.result === 'success'){
+                         if(output.success){
                           swal({
                         		   title: "",
-                        		   text: "Sync back topic request : "+ output.result,
+                        		   text: "Sync back topic request : "+ output.message,
                         		   timer: 2000,
                         		   showConfirmButton: false
                         	   });

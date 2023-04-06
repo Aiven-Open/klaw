@@ -119,12 +119,12 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
                                 params: {'avroSchemaReqId' : reqNo},
                                     data: {'avroSchemaReqId' : reqNo}
                             }).success(function(output) {
-                                $scope.alert = "Schema Approve Request : " + output.result;
+                                $scope.alert = "Schema Approve Request : " + output.message;
                                 $scope.getMySchemaRequests(1, false);
-                                if(output.result === 'success'){
+                                if(output.success){
                                      swal({
                                           title: "",
-                                          text: "Schema Approve Request : "+output.result,
+                                          text: "Schema Approve Request : "+output.message,
                                           timer: 2000,
                                           showConfirmButton: false
                                       });
@@ -200,15 +200,15 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
                                     params: {'avroSchemaReqId' : reqNo, 'reasonForDecline' : reason},
                                         data: {'avroSchemaReqId' : reqNo, 'reasonForDecline' : reason}
                                 }).success(function(output) {
-                                    $scope.alert = "Schema Decline Request : "+output.result;
+                                    $scope.alert = "Schema Decline Request : "+output.message;
                                     $scope.reasonForRejection = "";
                                     $scope.showDeclinePanel = "false";
                                     $scope.topicForDecline = "";
                                     $scope.getMySchemaRequests(1, false);
-                                    if(output.result === 'success'){
+                                    if(output.success){
                                          swal({
                                               title: "",
-                                              text: "Schema Decline Request : "+output.result,
+                                              text: "Schema Decline Request : "+output.message,
                                               timer: 2000,
                                               showConfirmButton: false
                                           });
@@ -289,11 +289,11 @@ app.controller("execSchemasCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

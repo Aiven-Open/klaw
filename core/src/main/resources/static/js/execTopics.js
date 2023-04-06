@@ -125,12 +125,12 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
                                         data: {'topicId' : topicId}
                                     }).success(function(output) {
 
-                                        $scope.alert = "Topic Approve Request : "+output.result;
+                                        $scope.alert = "Topic Approve Request : "+output.message;
                                         $scope.getMyTopicRequests(1, false);
-                                        if(output.result == 'success'){
+                                        if(output.success){
                                             swal({
                                                  title: "",
-                                                 text: "Topic Approve Request : "+output.result,
+                                                 text: "Topic Approve Request : "+output.message,
                                                  timer: 2000,
                                                  showConfirmButton: false
                                              });
@@ -206,15 +206,15 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
                                         data: {'topicId' : reqNo, 'reasonForDecline' : reason}
                                     }).success(function(output) {
 
-                                        $scope.alert = "Topic Decline Request : "+output.result;
+                                        $scope.alert = "Topic Decline Request : "+output.message;
                                         $scope.reasonForRejection = "";
                                         $scope.showDeclinePanel = "false";
                                         $scope.topicForDecline = "";
                                         $scope.getMyTopicRequests(1, false);
-                                        if(output.result == 'success'){
+                                        if(output.success){
                                             swal({
                                                  title: "",
-                                                 text: "Topic Decline Request : "+output.result,
+                                                 text: "Topic Decline Request : "+output.message,
                                                  timer: 2000,
                                                  showConfirmButton: false
                                              });
@@ -294,11 +294,11 @@ app.controller("execTopicsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

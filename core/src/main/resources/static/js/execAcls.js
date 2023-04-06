@@ -104,11 +104,11 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -272,12 +272,12 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                                     params: {'req_no' : reqNo },
                                     data: {'req_no' : reqNo}
                                 }).success(function(output) {
-                                    $scope.alert = "Acl Approve Request : "+output.result;
+                                    $scope.alert = "Acl Approve Request : "+output.message;
                                     $scope.getMyAclRequests(1, false);
-                                    if(output.result === 'success'){
+                                    if(output.success){
                                         swal({
                                              title: "",
-                                             text: "Subscription Approve Request : "+output.result,
+                                             text: "Subscription Approve Request : "+output.message,
                                              timer: 2000,
                                              showConfirmButton: false
                                          });
@@ -354,15 +354,15 @@ app.controller("execAclsCtrl", function($scope, $http, $location, $window) {
                                          data: {'req_no' : reqNo, 'reasonForDecline' : reason}
                                      }).success(function(output) {
 
-                                         $scope.alert = "Acl Decline Request : "+output.result;
+                                         $scope.alert = "Acl Decline Request : "+output.message;
                                          $scope.reasonForRejection = "";
                                          $scope.showDeclinePanel = "false";
                                          $scope.reqForDecline = "";
                                          $scope.getMyAclRequests(1, false);
-                                         if(output.result === 'success'){
+                                         if(output.success){
                                              swal({
                                                   title: "",
-                                                  text: "Subscription Decline Request : "+output.result,
+                                                  text: "Subscription Decline Request : "+output.message,
                                                   timer: 2000,
                                                   showConfirmButton: false
                                               });

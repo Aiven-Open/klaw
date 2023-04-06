@@ -78,7 +78,7 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(handleDbRequestsJdbc.selectEnvDetails(anyString(), anyInt())).thenReturn(SchemaEnv);
     ApiResponse response = service.addNewEnv(env);
-    assertThat(response.getResult()).contains("success");
+    assertThat(response.getMessage()).contains("success");
   }
 
   @Test
@@ -95,7 +95,7 @@ class EnvsClustersTenantsControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt()))
         .thenReturn(List.of(buildEnv("4", 101, "DEV", KafkaClustersType.KAFKA)));
     ApiResponse response = service.addNewEnv(env);
-    assertThat(response.getResult())
+    assertThat(response.getMessage())
         .contains("Failure. Please choose a different name. This environment name already exists.");
   }
 
@@ -115,7 +115,7 @@ class EnvsClustersTenantsControllerServiceTest {
     verify(handleDbRequestsJdbc, times(1)).addNewEnv(eq(kafkaEnv));
     // 1 for saving the schema env 1 for updating the kafka env
     verify(handleDbRequestsJdbc, times(2)).addNewEnv(any(Env.class));
-    assertThat(response.getResult()).contains("success");
+    assertThat(response.getMessage()).contains("success");
   }
 
   @Test
@@ -143,7 +143,7 @@ class EnvsClustersTenantsControllerServiceTest {
     verify(handleDbRequestsJdbc, times(1)).addNewEnv(eq(kafkaEnv));
     // 1 for saving the schema env 1 for updating the kafka env 1 for updating previous kafka env
     verify(handleDbRequestsJdbc, times(3)).addNewEnv(any(Env.class));
-    assertThat(response.getResult()).contains("success");
+    assertThat(response.getMessage()).contains("success");
   }
 
   @Test
@@ -182,7 +182,7 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse response = service.addNewEnv(env);
 
-    assertThat(response.getResult()).contains("success");
+    assertThat(response.getMessage()).contains("success");
     verify(handleDbRequestsJdbc, times(1)).addNewEnv(any());
   }
 
@@ -201,7 +201,7 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse response = service.addNewEnv(env);
 
-    assertThat(response.getResult()).contains("success");
+    assertThat(response.getMessage()).contains("success");
     // 1 time for the env we are saving and 1 time for removing an existing mapping of a kafka env.
     verify(handleDbRequestsJdbc, times(2)).addNewEnv(any(Env.class));
   }

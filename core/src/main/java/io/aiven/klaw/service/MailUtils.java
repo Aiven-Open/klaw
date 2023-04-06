@@ -22,6 +22,12 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class MailUtils {
 
+  public static final String KLAW_ACCESS_PASSWORD_RESET_REQUESTED =
+      "Klaw Access - Password reset requested";
+  public static final String NEW_USER_REGISTRATION_REQUEST = "New User Registration request";
+  public static final String KLAW_USER_REGISTRATION_REQUEST = "Klaw User Registration request";
+  public static final String KLAW_REGISTRATION_REQUEST = "Klaw Registration request";
+
   @Value("${klaw.admin.mailid}")
   private String kwSaasAdminMailId;
 
@@ -102,40 +108,40 @@ public class MailUtils {
     loadKwProps(tenantId);
 
     switch (mailType) {
-      case TOPIC_CREATE_REQUESTED:
+      case TOPIC_CREATE_REQUESTED -> {
         formattedStr = String.format(topicRequestMail, "'" + topicName + "'");
         subject = "Create Topic Request";
-        break;
-      case TOPIC_DELETE_REQUESTED:
+      }
+      case TOPIC_DELETE_REQUESTED -> {
         formattedStr = String.format(topicDeleteRequestMail, "'" + topicName + "'");
         subject = "Delete Topic Request";
-        break;
-      case TOPIC_CLAIM_REQUESTED:
+      }
+      case TOPIC_CLAIM_REQUESTED -> {
         formattedStr = String.format(topicClaimRequestMail, "'" + topicName + "'");
         subject = "Claim Topic Request";
-        break;
-      case TOPIC_REQUEST_APPROVED:
+      }
+      case TOPIC_REQUEST_APPROVED -> {
         formattedStr = String.format(topicRequestApproved, "'" + topicName + "'");
         subject = "Topic Request Approved";
-        break;
-      case TOPIC_REQUEST_DENIED:
+      }
+      case TOPIC_REQUEST_DENIED -> {
         formattedStr =
             String.format(topicRequestDenied, "'" + topicName + "'", "'" + reasonToDecline + "'");
         subject = "Topic Request Denied";
-        break;
-      case ACL_REQUESTED:
+      }
+      case ACL_REQUESTED -> {
         formattedStr = String.format(aclRequestMail, "'" + acl + "'", "'" + topicName + "'");
         subject = "New Acl Request";
-        break;
-      case ACL_DELETE_REQUESTED:
+      }
+      case ACL_DELETE_REQUESTED -> {
         formattedStr = String.format(aclDeleteRequestMail, "'" + acl + "'", "'" + topicName + "'");
         subject = "Acl Delete Request";
-        break;
-      case ACL_REQUEST_APPROVED:
+      }
+      case ACL_REQUEST_APPROVED -> {
         formattedStr = String.format(aclRequestApproved, "'" + acl + "'", "'" + topicName + "'");
         subject = "Acl Request Approved";
-        break;
-      case ACL_REQUEST_DENIED:
+      }
+      case ACL_REQUEST_DENIED -> {
         formattedStr =
             String.format(
                 aclRequestDenied,
@@ -143,11 +149,11 @@ public class MailUtils {
                 "'" + topicName + "'",
                 "'" + reasonToDecline + "'");
         subject = "Acl Request Denied";
-        break;
-      case ACL_REQUEST_FAILURE:
+      }
+      case ACL_REQUEST_FAILURE -> {
         formattedStr = "Acl Request processing failed : " + acl + ", " + topicName;
         subject = "Request processing failed.";
-        break;
+      }
     }
 
     sendMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
@@ -173,7 +179,7 @@ public class MailUtils {
     String formattedStr, subject;
     String passwordReset = manageDatabase.getKwPropertyValue(PWD_RESET_KEY, tenantId);
     formattedStr = String.format(passwordReset, username, pwd);
-    subject = "Klaw Access - Password reset requested";
+    subject = KLAW_ACCESS_PASSWORD_RESET_REQUESTED;
 
     sendMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
   }
@@ -194,7 +200,7 @@ public class MailUtils {
         String.format(
             registrationRequest, registerUserInfo.getUsername(), registerUserInfo.getFullname());
 
-    subject = "New User Registration request";
+    subject = NEW_USER_REGISTRATION_REQUEST;
     if (!Objects.equals(
         registerUserInfo.getMailid(),
         manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId)))
@@ -227,7 +233,7 @@ public class MailUtils {
               registerUserInfo.getRole());
     }
 
-    subject = "Klaw User Registration request";
+    subject = KLAW_USER_REGISTRATION_REQUEST;
     sendMail(
         registerUserInfo.getUsername(),
         dbHandle,
@@ -254,7 +260,7 @@ public class MailUtils {
               registerUserInfo.getTeam(),
               registerUserInfo.getRole());
 
-      subject = "New User Registration request";
+      subject = NEW_USER_REGISTRATION_REQUEST;
       if (!Objects.equals(
           registerUserInfo.getMailid(),
           manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId)))
@@ -270,7 +276,7 @@ public class MailUtils {
               registerUserInfo.getTeam(),
               registerUserInfo.getRole());
 
-      subject = "Klaw Registration request";
+      subject = KLAW_REGISTRATION_REQUEST;
       sendMail(
           registerUserInfo.getUsername(),
           dbHandle,

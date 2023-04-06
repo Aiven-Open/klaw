@@ -1,5 +1,9 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_SYNC_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_SYNC_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_SYNC_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_ERR_101;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -59,7 +63,10 @@ public class AclSyncControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     List<Acl> listTopics = new ArrayList<>();
@@ -83,7 +90,10 @@ public class AclSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userName)
             .contains(syncAclUpdateItem.getEnvSelected())) {
-          return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+          return ApiResponse.builder()
+              .success(false)
+              .message(ApiResultStatus.NOT_AUTHORIZED.value)
+              .build();
         }
 
         t = new Acl();
@@ -104,16 +114,17 @@ public class AclSyncControllerService {
         listTopics.add(t);
       }
     } else {
-      return ApiResponse.builder().result("No record updated.").build();
+      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
     }
 
     try {
       if (!listTopics.isEmpty()) {
         return ApiResponse.builder()
-            .result(manageDatabase.getHandleDbRequests().addToSyncacls(listTopics))
+            .success(true)
+            .message(manageDatabase.getHandleDbRequests().addToSyncacls(listTopics))
             .build();
       }
-      return ApiResponse.builder().result("No record updated.").build();
+      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -135,7 +146,10 @@ public class AclSyncControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     List<String> resultStatus = new ArrayList<>();
@@ -165,7 +179,11 @@ public class AclSyncControllerService {
       throw new KlawException(e.getMessage());
     }
 
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(logArray).build();
+    return ApiResponse.builder()
+        .success(true)
+        .message(ApiResultStatus.SUCCESS.value)
+        .data(logArray)
+        .build();
   }
 
   private void approveSyncBackAcls(
@@ -190,16 +208,16 @@ public class AclSyncControllerService {
       ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclReq, tenantId);
 
       ApiResponse responseBody = response.getBody();
-      String resultAclNullCheck = Objects.requireNonNull(responseBody).getResult();
+      String resultAclNullCheck = Objects.requireNonNull(responseBody).getMessage();
       if (!Objects.requireNonNull(resultAclNullCheck).contains(ApiResultStatus.SUCCESS.value)) {
         log.error("Error in creating acl {} {}", aclFound, responseBody);
         logUpdateSyncBackTopics.add(
-            "Error in Acl creation. Acl:" + aclFound.getTopicname() + " " + resultAclNullCheck);
+            String.format(ACL_SYNC_ERR_102, aclFound.getTopicname() + " " + resultAclNullCheck));
       } else if (resultAclNullCheck.contains("Acl already exists")) {
-        logUpdateSyncBackTopics.add("Acl already exists " + aclFound.getTopicname());
+        logUpdateSyncBackTopics.add(String.format(ACL_SYNC_ERR_103, aclFound.getTopicname()));
       } else {
         if (!Objects.equals(syncBackAcls.getSourceEnv(), syncBackAcls.getTargetEnv())) {
-          logUpdateSyncBackTopics.add("Acl added: " + aclFound.getTopicname());
+          logUpdateSyncBackTopics.add(String.format(ACL_SYNC_ERR_104, aclFound.getTopicname()));
           // Create request
           Map<String, String> resultMapReq =
               manageDatabase.getHandleDbRequests().requestForAcl(aclReq);
@@ -352,7 +370,6 @@ public class AclSyncControllerService {
     if (topicNameSearch != null) topicNameSearch = topicNameSearch.trim();
 
     int tenantId = commonUtilsService.getTenantId(userName);
-
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
       return null;
@@ -368,7 +385,6 @@ public class AclSyncControllerService {
 
     List<AclInfo> aclInfoList;
     Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
-
     aclInfoList =
         getAclsList(
             pageNo, currentPage, applyFiltersAclsForSOT(loggedInUserTeam, aclsFromSOT, tenantId));

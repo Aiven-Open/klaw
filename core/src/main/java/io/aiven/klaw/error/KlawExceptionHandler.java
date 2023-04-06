@@ -1,5 +1,7 @@
 package io.aiven.klaw.error;
 
+import static io.aiven.klaw.error.KlawErrorMessages.REQ_FAILURE;
+
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +18,14 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 @Slf4j
 public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
-  public static final String ERROR_MSG =
-      "Unable to process the request. Please contact our Administrator !!";
 
   @ExceptionHandler({KlawException.class})
   protected ResponseEntity<ApiResponse> handleKlawExceptionInternal(
       KlawException ex, WebRequest request) {
     log.error("Error ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder().message(ERROR_MSG).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        ApiResponse.builder().success(false).message(REQ_FAILURE).build(),
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
   @ExceptionHandler({KlawNotAuthorizedException.class})
@@ -32,7 +33,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       KlawException ex, WebRequest request) {
     log.error("Error ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build(),
+        ApiResponse.builder().success(false).message(ApiResultStatus.NOT_AUTHORIZED.value).build(),
         HttpStatus.UNAUTHORIZED);
   }
 
@@ -41,9 +42,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       KlawRestException ex, WebRequest request) {
     log.error("Error ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder()
-            .result(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
-            .build(),
+        ApiResponse.builder().success(false).message(ex.getMessage()).build(),
         HttpStatus.BAD_REQUEST);
   }
 
@@ -52,10 +51,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       KlawValidationException ex, WebRequest request) {
     log.error("KlawValidationException handler: ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder()
-            .result(ApiResultStatus.FAILURE.value + ": " + ex.getMessage())
-            .build(),
-        HttpStatus.CONFLICT);
+        ApiResponse.builder().success(false).message(ex.getMessage()).build(), HttpStatus.CONFLICT);
   }
 
   @Override
@@ -66,7 +62,10 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
       WebRequest request) {
     log.error("Validation Error ", ex);
     return new ResponseEntity<>(
-        ApiResponse.builder().message(ex.getAllErrors().get(0).getDefaultMessage()).build(),
+        ApiResponse.builder()
+            .success(false)
+            .message(ex.getAllErrors().get(0).getDefaultMessage())
+            .build(),
         HttpStatus.BAD_REQUEST);
   }
 }

@@ -21,7 +21,7 @@ const navLinks = [
   },
   {
     name: "Kafka Connectors",
-    linkTo: "/kafkaConnectors",
+    linkTo: "/connectors",
   },
   { name: "Approve requests", linkTo: "/approvals" },
   { name: "My team's requests", linkTo: "/requests" },

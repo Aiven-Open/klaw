@@ -85,7 +85,7 @@ public class SchemaRegistryControllerTest {
   @Test
   @Order(2)
   public void deleteSchemaRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegistryControllerService.deleteSchemaRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -94,13 +94,13 @@ public class SchemaRegistryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   @Order(3)
   public void execSchemaRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegistryControllerService.execSchemaRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -109,7 +109,7 @@ public class SchemaRegistryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -117,7 +117,7 @@ public class SchemaRegistryControllerTest {
   public void uploadSchema() throws Exception {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegistryControllerService.uploadSchema(any())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -126,7 +126,7 @@ public class SchemaRegistryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -134,7 +134,7 @@ public class SchemaRegistryControllerTest {
   public void promoteSchema() throws Exception {
     SchemaPromotion schemaPromotion = utilMethods.getSchemaPromotion().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaPromotion);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(schemaRegistryControllerService.promoteSchema(any())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -143,6 +143,6 @@ public class SchemaRegistryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 }

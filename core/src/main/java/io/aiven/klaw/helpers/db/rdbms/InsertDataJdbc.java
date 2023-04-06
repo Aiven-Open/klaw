@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -312,15 +311,6 @@ public class InsertDataJdbc {
     int teamId = getNextTeamId(team.getTenantId());
     TeamID teamID = new TeamID(teamId, team.getTenantId());
     team.setTeamId(teamId);
-
-    // making unique teamnames per tenant
-    if (teamRepo.findAllByTenantId(team.getTenantId()).stream()
-        .anyMatch(
-            team1 ->
-                Objects.equals(
-                    team1.getTeamname().toLowerCase(), team.getTeamname().toLowerCase()))) {
-      return "Failure. Team already exists";
-    }
 
     Optional<Team> teamExists = teamRepo.findById(teamID);
     if (teamExists.isPresent()) {

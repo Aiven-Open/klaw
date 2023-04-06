@@ -168,8 +168,7 @@ class SchemaServiceTest {
     this.mockRestServiceServer.expect(requestTo("/" + deleteSchemaUrl)).andRespond(withSuccess());
 
     ApiResponse apiResponse = schemaService.deleteSchema(clusterTopicRequest);
-    assertThat(apiResponse.getResult())
-        .isEqualTo("Schema deletion " + ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -193,7 +192,7 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getResult()).startsWith(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).startsWith(ApiResultStatus.SUCCESS.value);
 
     mockRestServiceServer.verify();
   }
@@ -221,7 +220,7 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getResult()).startsWith(ApiResultStatus.FAILURE.value);
+    assertThat(apiResponse.getMessage()).startsWith(ApiResultStatus.FAILURE.value);
 
     mockRestServiceServer.verify();
   }
@@ -239,7 +238,7 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getResult()).startsWith(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.isSuccess()).isTrue();
 
     mockRestServiceServer.verify();
   }
@@ -283,7 +282,7 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.");
   }
 
