@@ -5,7 +5,6 @@ import {
 import { mockGetEnvironments } from "src/domain/environment/environment-api.msw";
 import {
   ALL_ENVIRONMENTS_VALUE,
-  ClusterInfo,
   Environment,
 } from "src/domain/environment/environment-types";
 
@@ -15,4 +14,4 @@ export {
   ALL_ENVIRONMENTS_VALUE,
   getSchemaRegistryEnvironments,
 };
-export type { Environment, ClusterInfo };
+export type { Environment };
