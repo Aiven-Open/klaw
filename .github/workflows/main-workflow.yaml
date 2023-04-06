@@ -3,12 +3,50 @@
 # passes the pipeline checks and is merged  successfully.
 name: PR/Push to main pipeline
 
-on:
-  push:
-    branches: ["fake-main"]
-
 jobs:
-#  maven-workflow:
-#    uses: ./.github/workflows/maven-jobs.yaml
-  coral-workflow:
-    uses: ./.github/workflows/coral-jobs.yaml
+  merge-to-main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check-changes
+        runs-on: ubuntu-latest
+        outputs:
+          changes-maven: ${{ steps.check-changed-dirs.outputs.changes-maven }}
+          changes-coral: ${{ steps.check-changed-dirs.outputs.changes-coral }}
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+            with:
+              ref: ${{ github.ref }}
+              fetch-depth: 0
+
+          - id: check-changed-dirs
+            name: Check directories of changes
+            run: |
+              if git diff --name-only HEAD^ HEAD | grep -q '^coral/'; then
+                echo "Changes detected in coral directory 🪸"
+                echo "changes-coral=true" >> $GITHUB_OUTPUT
+              fi
+              if git diff --name-only HEAD^ HEAD | grep -qv '^coral/'; then
+                echo "Changes detected for core/api"
+                echo "changes-maven=true" >> $GITHUB_OUTPUT
+              fi
+
+      - name: changes-maven
+        needs: check-changes
+        if: needs.check-changes.outputs.changes-maven != 'true'
+        uses: ./.github/workflows/maven-jobs.yaml
+
+      - name: no-changes-maven
+        needs: check-changes
+        if: needs.check-changes.outputs.changes-maven != 'true'
+        echo: Maven pipeline not required
+
+      - name: changes-coral
+        needs: check-changes
+        if: needs.check-changes.outputs.changes-coral != 'true'
+        uses: ./.github/workflows/coral-jobs.yaml
+
+      - name: no-changes-coral
+        needs: check-changes
+        if: needs.check-changes.outputs.changes-coral != 'true'
+        echo: Coral pipeline not required
