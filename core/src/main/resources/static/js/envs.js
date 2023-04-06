@@ -726,7 +726,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                             }
                         }
 
-                        if($scope.kafkaFlavor === 'Aiven for Apache Kafka')
+                        if($scope.kafkaFlavor === 'Aiven for Apache Kafka' && $scope.addNewCluster.clusterType === 'kafka')
                         {
                             if($scope.addNewCluster.projectName === undefined || !$scope.addNewCluster.projectName)
                             {
