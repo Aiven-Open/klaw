@@ -12,7 +12,8 @@ type SetFiltersParams =
   | { name: "status"; value: RequestStatus }
   | { name: "team"; value: string }
   | { name: "showOnlyMyRequests"; value: boolean }
-  | { name: "requestType"; value: RequestOperationType | "ALL" };
+  | { name: "requestType"; value: RequestOperationType | "ALL" }
+  | { name: "search"; value: string };
 
 type UseFiltersValuesParams =
   | {
@@ -23,6 +24,7 @@ type UseFiltersValuesParams =
       defaultTeam?: string;
       defaultRequestType?: RequestOperationType | "ALL";
       defaultShowOnlyMyRequests?: boolean;
+      defaultSearch?: string;
     }
   | undefined;
 
@@ -36,6 +38,7 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
     defaultTeam = "ALL",
     defaultRequestType = "ALL",
     defaultShowOnlyMyRequests = false,
+    defaultSearch = "",
   } = defaultValues;
 
   const topic = searchParams.get("topic") ?? defaultTopic;
@@ -51,6 +54,7 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
   const requestType =
     (searchParams.get("requestType") as RequestOperationType | "ALL") ??
     defaultRequestType;
+  const search = searchParams.get("search") ?? defaultSearch;
 
   const setFilterValue = ({ name, value }: SetFiltersParams) => {
     if (
@@ -77,6 +81,7 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
     team,
     showOnlyMyRequests,
     requestType,
+    search,
     setFilterValue,
   };
 };

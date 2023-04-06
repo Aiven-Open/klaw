@@ -1,6 +1,7 @@
 import {
   cleanup,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { transformConnectorRequestApiResponse } from "src/domain/connector/connector-transformer";
@@ -156,6 +157,7 @@ describe("ConnectorRequests", () => {
 
       expect(mockGetConnectorRequests).toHaveBeenCalledWith({
         pageNo: "100",
+        search: "",
       });
     });
 
@@ -169,6 +171,7 @@ describe("ConnectorRequests", () => {
 
       expect(mockGetConnectorRequests).toHaveBeenCalledWith({
         pageNo: "1",
+        search: "",
       });
     });
 
@@ -275,6 +278,45 @@ describe("ConnectorRequests", () => {
 
       expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
+        search: "",
+      });
+    });
+  });
+
+  describe("user can filter topic requests based on the topic name", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?search=",
+      });
+      expect(getConnectorRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        search: "",
+      });
+    });
+
+    it("applies the topic filter by typing into to the search input", async () => {
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+      const search = screen.getByRole("search");
+      expect(search).toBeVisible();
+      expect(search).toHaveAccessibleDescription(
+        'Search for an partial match in name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+      );
+      await userEvent.type(search, "abc");
+      await waitFor(() => {
+        expect(getConnectorRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          search: "abc",
+        });
       });
     });
   });
