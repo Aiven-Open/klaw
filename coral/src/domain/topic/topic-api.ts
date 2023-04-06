@@ -1,12 +1,9 @@
 import omitBy from "lodash/omitBy";
-import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
   RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
-import { Team } from "src/domain/team";
-import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {
   transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsResponse,
@@ -23,34 +20,26 @@ import {
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
+import { convertQuery } from "src/services/api-helper";
 
-const getTopics = async ({
-  currentPage = 1,
-  environment = "ALL",
-  teamName,
-  searchTerm,
-}: {
-  currentPage: number;
-  environment: string;
-  teamName: Team;
-  searchTerm?: string;
-}): Promise<TopicApiResponse> => {
+const getTopics = async (
+  params: KlawApiRequestQueryParameters<"getTopics">
+): Promise<TopicApiResponse> => {
   // "ALL_TEAMS_VALUE" represents topic list without
   // the optional team parameter
   // where we still need a way to represent an
   // option for "Select all teams" to users
-  const team = teamName !== ALL_TEAMS_VALUE && teamName;
+  // const team = teamName !== ALL_TEAMS_VALUE && teamName;
 
-  const params: Record<string, string> = {
-    pageNo: currentPage.toString(),
-    env: environment || ALL_ENVIRONMENTS_VALUE,
-    ...(team && { teamName: team }),
-    ...(searchTerm && { topicnamesearch: searchTerm }),
-  };
+  const queryParams = convertQuery({
+    ...params,
+    ...(params.teamId && { teamId: params.teamId }),
+    ...(params.topicnamesearch && { topicnamesearch: params.topicnamesearch }),
+  });
 
   return api
     .get<KlawApiResponse<"getTopics">>(
-      `/getTopics?${new URLSearchParams(params)}`
+      `/getTopics?${new URLSearchParams(queryParams)}`
     )
     .then(transformTopicApiResponse);
 };

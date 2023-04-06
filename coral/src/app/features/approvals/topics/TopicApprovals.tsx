@@ -32,7 +32,7 @@ function TopicApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, topic, team, requestType } = useFiltersValues({
+  const { environment, status, topic, teamId, requestType } = useFiltersValues({
     defaultStatus: "CREATED",
   });
 
@@ -69,7 +69,7 @@ function TopicApprovals() {
       currentPage,
       environment,
       status,
-      team,
+      teamId,
       topic,
       requestType,
     ],
@@ -78,7 +78,7 @@ function TopicApprovals() {
         pageNo: String(currentPage),
         env: environment,
         requestStatus: status,
-        teamId: team === "ALL" ? undefined : Number(team),
+        teamId: teamId !== defaultType ? Number(teamId) : undefined,
         search: topic,
         operationType: requestType !== defaultType ? requestType : undefined,
       }),
