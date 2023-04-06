@@ -5,10 +5,10 @@ name: PR/Push to main pipeline
 
 on:
   push:
-    branches: ["main"]
+    branches: ["fake-main"]
 
 jobs:
-  maven-workflow:
-    uses: ./.github/workflows/maven-jobs.yaml
+#  maven-workflow:
+#    uses: ./.github/workflows/maven-jobs.yaml
   coral-workflow:
     uses: ./.github/workflows/coral-jobs.yaml
