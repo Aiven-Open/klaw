@@ -4100,14 +4100,6 @@
             "type" : "string"
           }
         }, {
-          "name" : "operationType",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
-          }
-        }, {
           "name" : "order",
           "in" : "query",
           "required" : false,
