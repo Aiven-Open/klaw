@@ -3,7 +3,7 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.ArrayList;
@@ -27,28 +27,44 @@ public class SchemaOverviewService extends BaseOverviewService {
 
   public SchemaOverview getSchemaOfTopic(
       String topicNameSearch, String schemaVersionSearch, List<String> kafkaEnvIds) {
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+
     SchemaOverview schemaOverview = new SchemaOverview();
     schemaOverview.setTopicExists(true);
     boolean retrieveSchemas = true;
     updateAvroSchema(
         topicNameSearch,
         schemaVersionSearch,
-        manageDatabase.getHandleDbRequests(),
         kafkaEnvIds,
         retrieveSchemas,
         schemaOverview,
+        userName,
         tenantId);
     return schemaOverview;
+  }
+
+  private boolean requestorOwnsTopic(
+      String topicNameSearch, String kafkaEnv, String userName, int tenantId) {
+    List<Topic> topic = manageDatabase.getHandleDbRequests().getTopics(topicNameSearch, tenantId);
+    log.info("topics : {} for kafkaEnv: {}", topic, kafkaEnv);
+    topic = topic.stream().filter(t -> t.getEnvironment().equals(kafkaEnv)).toList();
+    log.info("Single topic : {}", topic);
+    if (topic != null && topic.size() == 1) {
+      Integer teamId = topic.get(0).getTeamId();
+      return teamId.equals(commonUtilsService.getTeamId(userName));
+    }
+    // If topic isn't found or multiples found return false.
+    return false;
   }
 
   private void updateAvroSchema(
       String topicNameSearch,
       String schemaVersionSearch,
-      HandleDbRequests handleDbRequests,
       List<String> kafkaEnvIds,
       boolean retrieveSchemas,
       SchemaOverview schemaOverview,
+      String userName,
       int tenantId) {
     if (schemaOverview.isTopicExists() && retrieveSchemas) {
       List<Map<String, String>> schemaDetails = new ArrayList<>();
@@ -152,9 +168,12 @@ public class SchemaOverviewService extends BaseOverviewService {
 
             schemaDetails.add(schemaMap);
             schemaOverview.setSchemaExists(true);
-            // Set Promotion Details
-            processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv, kafkaEnvIds);
-            log.info("Getting schema details for: " + topicNameSearch);
+            if (requestorOwnsTopic(
+                topicNameSearch, schemaEnv.getAssociatedEnv().getId(), userName, tenantId)) {
+              // Set Promotion Details
+              processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv, kafkaEnvIds);
+              log.info("Getting schema details for: " + topicNameSearch);
+            }
           }
         } catch (Exception e) {
           log.error("Error ", e);
