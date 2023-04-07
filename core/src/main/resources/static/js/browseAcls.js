@@ -599,6 +599,10 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         $scope.firstPromote = "false";
         $scope.alertTopicDelete = null;
         $scope.alert = null;
+        if($scope.selectedGroupBy == undefined) {
+        $scope.selectedGroupBy = 'TEAM';
+        }
+        $scope.groupBy = [{ 'id':'TEAM', 'name':'Team' },{'id':'IP','name':'IP'},{'id':'PRINCIPAL','name':'Principal'},{'id':'ACL_TYPE','name':'ACL Type'},{'id':'ENV','name':'Environment'}];
 
         var topicSelected;
 
@@ -613,8 +617,13 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             }
         }
 
-        if(!topicSelected)
+        if(!topicSelected) {
             return;
+        }
+        var groupAclBy = 'TEAM';
+        if($scope.selectedGroupBy){
+        groupAclBy = $scope.selectedGroupBy;
+        }
 
 		$scope.topicSelectedParam = topicSelected;
 		$scope.ShowSpinnerStatusTopics = true;
@@ -625,6 +634,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 			url: "getAcls",
             headers : { 'Content-Type' : 'application/json' },
             params: {'topicnamesearch' : topicSelected,
+                     'groupBy' : groupAclBy
              }
 		}).success(function(output) {
 		    $scope.ShowSpinnerStatusTopics = false;

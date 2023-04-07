@@ -21,6 +21,7 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.TopicOverview;
+import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -122,7 +123,8 @@ public class TopicOverviewServiceTest {
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     mockTenantConfig();
-    List<AclInfo> aclList = topicOverviewService.getTopicOverview(TESTTOPIC).getAclInfoList();
+    List<AclInfo> aclList =
+        topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 
@@ -160,7 +162,8 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     mockTenantConfig();
 
-    List<AclInfo> aclList = topicOverviewService.getTopicOverview(topicNameSearch).getAclInfoList();
+    List<AclInfo> aclList =
+        topicOverviewService.getTopicOverview(topicNameSearch, AclGroupBy.IP).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 
@@ -180,7 +183,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
+    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
     assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
     assertThat(returnedValue.getTopicPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
@@ -199,7 +202,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS")))
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
+    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
     assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
     assertThat(returnedValue.getTopicPromotionDetails().get("status"))
@@ -217,7 +220,7 @@ public class TopicOverviewServiceTest {
 
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
+    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP);
     assertThat(returnedValue.getTopicPromotionDetails()).isNullOrEmpty();
     assertThat(returnedValue.isTopicExists()).isFalse();
   }
@@ -252,7 +255,8 @@ public class TopicOverviewServiceTest {
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     mockTenantConfig();
-    List<AclInfo> aclList = topicOverviewService.getTopicOverview(TESTTOPIC).getAclInfoList();
+    List<AclInfo> aclList =
+        topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 

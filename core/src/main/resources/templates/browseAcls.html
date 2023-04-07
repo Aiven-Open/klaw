@@ -636,6 +636,14 @@
 							<!-- Tab panes -->
 							<div class="tab-content">
 								<div class="tab-pane active" id="topicsubscriptions" role="tabpanel">
+									<div>
+
+											<label> Group ACLs By </label>
+											<select ng-model="selectedGroupBy" ng-options="group.id as group.name for group in groupBy"  ng-change="getAcls()">
+
+											</select>
+
+									</div>
 									<div class="ribbon-wrapper card" ng-show="resultBrowse.length==0">
 										<div class="ribbon ribbon-warning">Notification</div>
 										<p class="ribbon-content">No Subscriptions found for this topic.</p>

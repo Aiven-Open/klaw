@@ -12,11 +12,13 @@ import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.TopicOverview;
+import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +54,8 @@ public abstract class BaseOverviewService {
       TopicOverview topicOverview,
       List<TopicInfo> topicInfoList,
       List<AclInfo> aclInfo,
-      List<AclInfo> prefixedAclsInfo) {
+      List<AclInfo> prefixedAclsInfo,
+      AclGroupBy groupBy) {
     aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
     List<AclInfo> transactionalAcls =
         aclInfo.stream()
@@ -78,7 +81,27 @@ public abstract class BaseOverviewService {
     }
 
     topicOverview.setTopicInfoList(topicInfoList);
+    return sortAclInfo(aclInfo, groupBy);
+  }
+
+  private List<AclInfo> sortAclInfo(List<AclInfo> aclInfo, AclGroupBy groupBy) {
+
+    Collections.sort(aclInfo, getComparator(groupBy));
     return aclInfo;
+  }
+
+  private static Comparator<AclInfo> getComparator(AclGroupBy groupBy) {
+    Comparator<AclInfo> compare;
+    switch (groupBy) {
+      case TEAM -> compare = Comparator.comparing(AclInfo::getTeamname);
+      case ENV -> compare = Comparator.comparing(AclInfo::getEnvironmentName);
+      case IP -> compare = Comparator.comparing(AclInfo::getAcl_ip);
+      case PRINCIPAL -> compare = Comparator.comparing(AclInfo::getAcl_ssl);
+      case ACL_TYPE -> compare = Comparator.comparing(AclInfo::getTopictype);
+      default -> compare = Comparator.comparing(AclInfo::getTeamname);
+    }
+
+    return compare;
   }
 
   protected List<AclInfo> applyFiltersAclsForSOT(

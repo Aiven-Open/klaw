@@ -3,6 +3,7 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicOverview;
+import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -174,9 +175,11 @@ public class AclController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<TopicOverview> getAcls(
-      @RequestParam(value = "topicnamesearch") String topicNameSearch) {
+      @RequestParam(value = "topicnamesearch") String topicNameSearch,
+      @RequestParam(value = "groupBy", required = false, defaultValue = "TEAM")
+          AclGroupBy groupBy) {
     return new ResponseEntity<>(
-        topicOverviewService.getTopicOverview(topicNameSearch), HttpStatus.OK);
+        topicOverviewService.getTopicOverview(topicNameSearch, groupBy), HttpStatus.OK);
   }
 
   // getConsumerOffsets from kafka cluster
