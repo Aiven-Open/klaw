@@ -64,11 +64,13 @@ describe("useFiltersValues.tsx", () => {
         result: { current },
       } = renderHook(() => useFiltersValues(), {
         wrapper: ({ children }) => (
-          <MemoryRouter initialEntries={["/?team=1"]}>{children}</MemoryRouter>
+          <MemoryRouter initialEntries={["/?teamId=1"]}>
+            {children}
+          </MemoryRouter>
         ),
       });
 
-      expect(current.team).toBe("1");
+      expect(current.teamId).toBe("1");
     });
     it("gets the correct showOnlyMyRequests filter value", () => {
       const {
@@ -161,7 +163,7 @@ describe("useFiltersValues.tsx", () => {
           wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
         });
 
-        expect(current.team).toBe("2");
+        expect(current.teamId).toBe("2");
       });
       it("gets the correct showOnlyMyRequests filter value", () => {
         const {
@@ -267,11 +269,11 @@ describe("useFiltersValues.tsx", () => {
       });
 
       current.setFilterValue({
-        name: "team",
+        name: "teamId",
         value: "2",
       });
 
-      expect(window.location.search).toBe("?team=2&page=1");
+      expect(window.location.search).toBe("?teamId=2&page=1");
     });
     it("sets the correct showOnlyMyRequests filter value", () => {
       const {
