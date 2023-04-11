@@ -4,12 +4,16 @@ import ConnectorTable from "src/app/features/connectors/browse/components/Connec
 import { useQuery } from "@tanstack/react-query";
 import { getConnectors } from "src/domain/connector/connector-api";
 import { useSearchParams } from "react-router-dom";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import SearchFilter from "src/app/features/components/filters/SearchFilter";
 
 function BrowseConnectors() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
+  const { environment, search } = useFiltersValues();
 
   const {
     data: connectors,
@@ -17,11 +21,12 @@ function BrowseConnectors() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["browseConnectors", currentPage],
+    queryKey: ["browseConnectors", currentPage, environment, search],
     queryFn: () =>
       getConnectors({
-        currentPage,
-        environment: "ALL",
+        pageNo: currentPage.toString(),
+        env: environment,
+        connectornamesearch: search.length === 0 ? undefined : search,
       }),
     keepPreviousData: true,
   });
@@ -42,7 +47,13 @@ function BrowseConnectors() {
 
   return (
     <TableLayout
-      filters={[]}
+      filters={[
+        <EnvironmentFilter
+          key={"environment"}
+          environmentEndpoint={"getSyncConnectorsEnvironments"}
+        />,
+        <SearchFilter key="connector-name" />,
+      ]}
       table={
         <ConnectorTable
           connectors={connectors?.entries ?? []}
