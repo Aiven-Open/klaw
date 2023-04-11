@@ -1,13 +1,13 @@
 import isString from "lodash/isString";
 import { Environment } from "src/domain/environment/environment-types";
-import { KlawApiResponse } from "types/utils";
+import { KlawApiModel } from "types/utils";
 
 function parseNumberOrUndefined(value: string | undefined): number | undefined {
   return isString(value) ? parseInt(value, 10) : undefined;
 }
 
 function transformEnvironmentApiResponse(
-  apiResponse: KlawApiResponse<"getEnvs"> | KlawApiResponse<"getSchemaRegEnvs">
+  apiResponse: KlawApiModel<"EnvModelResponse">[]
 ): Environment[] {
   return apiResponse.map((environment) => {
     const rv: Environment = {
