@@ -496,21 +496,17 @@ export type components = {
     };
     UserInfoModel: {
       username: string;
-      userPassword?: string;
-      team?: string;
-      /** Format: int32 */
-      teamId?: number;
-      role?: string;
       fullname: string;
       mailid?: string;
-      switchTeams?: boolean;
+      role: string;
+      userPassword: string;
+      /** Format: int32 */
+      teamId: number;
+      switchTeams: boolean;
       switchAllowedTeamIds?: (number)[];
       switchAllowedTeamNames?: (string)[];
-      tenantName?: string;
       /** Format: int32 */
       tenantId?: number;
-      totalNoPages?: string;
-      allPageNos?: (string)[];
     };
     TopicConfigEntry: {
       configKey?: string;
@@ -636,25 +632,9 @@ export type components = {
     };
     KafkaConnectorModel: {
       /** Format: int32 */
-      sequence?: number;
-      /** Format: int32 */
-      connectorId?: number;
-      connectorName?: string;
-      connectorConfig?: string;
-      environmentName?: string;
-      environmentId?: string;
-      teamName?: string;
-      possibleTeams?: (string)[];
-      allPageNos?: (string)[];
-      totalNoPages?: string;
-      currentPage?: string;
-      remarks?: string;
-      documentation?: string;
-      environmentsList?: (string)[];
-      description?: string;
-      showEditConnector?: boolean;
-      showDeleteConnector?: boolean;
-      connectorDeletable?: boolean;
+      connectorId: number;
+      connectorName: string;
+      documentation: string;
     };
     RequestVerdict: {
       reason?: string;
@@ -807,10 +787,6 @@ export type components = {
       projectName?: string;
       serviceName?: string;
       publicKey?: string;
-      showDeleteCluster?: boolean;
-      clusterStatus?: string;
-      totalNoPages?: string;
-      allPageNos?: (string)[];
     };
     ServiceAccounts: {
       /** Format: int32 */
@@ -832,6 +808,23 @@ export type components = {
       teammail?: string;
       envList?: (string)[];
     };
+    UserInfoModelResponse: {
+      username: string;
+      fullname: string;
+      mailid: string;
+      role: string;
+      switchTeams: boolean;
+      team: string;
+      /** Format: int32 */
+      teamId: number;
+      /** Format: int32 */
+      tenantId: number;
+      userPassword?: string;
+      switchAllowedTeamIds?: (number)[];
+      switchAllowedTeamNames?: (string)[];
+      totalNoPages?: string;
+      allPageNos?: (string)[];
+    };
     RequestEntityStatusCount: {
       /** @enum {string} */
       requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
@@ -852,6 +845,24 @@ export type components = {
       requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       /** Format: int64 */
       count?: number;
+    };
+    RegisterUserInfoModelResponse: {
+      username: string;
+      fullname: string;
+      mailid?: string;
+      pwd?: string;
+      team?: string;
+      /** Format: int32 */
+      teamId?: number;
+      role?: string;
+      status?: string;
+      /** Format: date-time */
+      registeredTime?: string;
+      approver?: string;
+      registrationId?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      tenantName?: string;
     };
     TopicTeamResponse: {
       team?: string;
@@ -941,6 +952,28 @@ export type components = {
       type?: string;
       display?: boolean;
       position?: string;
+    };
+    KafkaConnectorModelResponse: {
+      /** Format: int32 */
+      sequence?: number;
+      /** Format: int32 */
+      connectorId: number;
+      connectorName: string;
+      environmentId: string;
+      teamName: string;
+      showEditConnector: boolean;
+      showDeleteConnector: boolean;
+      connectorDeletable: boolean;
+      allPageNos?: (string)[];
+      totalNoPages?: string;
+      currentPage?: string;
+      environmentsList?: (string)[];
+      possibleTeams?: (string)[];
+      connectorConfig?: string;
+      environmentName?: string;
+      remarks?: string;
+      documentation?: string;
+      description?: string;
     };
     EnvModelResponse: {
       id: string;
@@ -1080,7 +1113,7 @@ export type components = {
       editable?: boolean;
     };
     ConnectorOverview: {
-      topicInfoList?: (components["schemas"]["KafkaConnectorModel"])[];
+      connectorInfoList?: (components["schemas"]["KafkaConnectorModelResponse"])[];
       topicHistoryList?: (components["schemas"]["TopicHistory"])[];
       promotionDetails?: {
         [key: string]: string | undefined;
@@ -1098,6 +1131,31 @@ export type components = {
       approvedBy?: string;
       approvedTime?: string;
       remarks?: string;
+    };
+    ConnectorOverviewPerEnv: {
+      connectorExists?: boolean;
+      error?: string;
+      /** Format: int32 */
+      connectorId?: number;
+      connectorContents?: components["schemas"]["KafkaConnectorModelResponse"];
+    };
+    KwClustersModelResponse: {
+      /** Format: int32 */
+      clusterId: number;
+      clusterName: string;
+      bootstrapServers: string;
+      /** @enum {string} */
+      protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
+      clusterType: string;
+      kafkaFlavor: string;
+      showDeleteCluster: boolean;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      clusterStatus?: string;
+      associatedServers?: string;
+      projectName?: string;
+      serviceName?: string;
+      publicKey?: string;
     };
     ClusterInfo: {
       aivenCluster: boolean;
@@ -2320,7 +2378,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["UserInfoModel"])[];
+          "application/json": (components["schemas"]["UserInfoModelResponse"])[];
         };
       };
     };
@@ -2382,7 +2440,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["RegisterUserInfoModel"];
+          "application/json": components["schemas"]["RegisterUserInfoModelResponse"];
         };
       };
     };
@@ -2397,7 +2455,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["UserInfoModel"];
+          "application/json": components["schemas"]["UserInfoModelResponse"];
         };
       };
     };
@@ -2686,7 +2744,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KafkaConnectorModel"])[];
+          "application/json": (components["schemas"]["KafkaConnectorModelResponse"])[];
         };
       };
     };
@@ -2882,7 +2940,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["RegisterUserInfoModel"])[];
+          "application/json": (components["schemas"]["RegisterUserInfoModelResponse"])[];
         };
       };
     };
@@ -2902,7 +2960,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["UserInfoModel"];
+          "application/json": components["schemas"]["UserInfoModelResponse"];
         };
       };
     };
@@ -3110,7 +3168,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ((components["schemas"]["KafkaConnectorModel"])[])[];
+          "application/json": ((components["schemas"]["KafkaConnectorModelResponse"])[])[];
         };
       };
     };
@@ -3201,9 +3259,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: unknown | undefined;
-          };
+          "application/json": components["schemas"]["ConnectorOverviewPerEnv"];
         };
       };
     };
@@ -3218,7 +3274,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KwClustersModel"])[];
+          "application/json": (components["schemas"]["KwClustersModelResponse"])[];
         };
       };
     };
@@ -3236,7 +3292,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KwClustersModel"])[];
+          "application/json": (components["schemas"]["KwClustersModelResponse"])[];
         };
       };
     };
@@ -3267,7 +3323,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["KwClustersModel"];
+          "application/json": components["schemas"]["KwClustersModelResponse"];
         };
       };
     };
