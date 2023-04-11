@@ -49,11 +49,10 @@ function ApprovalResourceTabs({ currentTab }: Props) {
         {currentTab === ApprovalsTabEnum.SCHEMAS && <Outlet />}
       </Tabs.Tab>
       <Tabs.Tab
-        title="Connectors (coming soon)"
+        title="Kafka connectors"
         value={ApprovalsTabEnum.CONNECTORS}
         badge={getBadgeValue(data?.CONNECTOR)}
         aria-label={getTabAriaLabel("Connectors", data?.CONNECTOR)}
-        disabled
       >
         {currentTab === ApprovalsTabEnum.CONNECTORS && <Outlet />}
       </Tabs.Tab>
