@@ -384,7 +384,7 @@ export type paths = {
   "/getConnectorRequests": {
     get: operations["getConnectorRequests"];
   };
-  "/getConnectorRequestsForApproval": {
+  "/getConnectorRequestsForApprover": {
     get: operations["getCreatedConnectorRequests"];
   };
   "/getConnectorOverview": {
@@ -3125,6 +3125,7 @@ export type operations = {
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         search?: string;
+        isMyRequest?: boolean;
       };
     };
     responses: {

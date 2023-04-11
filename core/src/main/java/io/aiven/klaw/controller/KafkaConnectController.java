@@ -52,7 +52,7 @@ public class KafkaConnectController {
    * @return A List of Kafka Connector Requests filtered by the provided parameters.
    */
   @RequestMapping(
-      value = "/getConnectorRequestsForApproval",
+      value = "/getConnectorRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<KafkaConnectorRequestsResponseModel>> getCreatedConnectorRequests(
@@ -67,7 +67,7 @@ public class KafkaConnectController {
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getCreatedConnectorRequests(
-            pageNo, currentPage, requestStatus.value, env, requestOperationType, order, search),
+            pageNo, currentPage, requestStatus.value, env, order, requestOperationType, search),
         HttpStatus.OK);
   }
 
@@ -126,6 +126,7 @@ public class KafkaConnectController {
    * @param requestOperationType is a filter to only return requests of a certain operation type
    *     e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param search A wildcard search term that searches topicNames.
+   * @param isMyRequest Only return requests created by the user calling the API
    * @return A list of Kafka Connector requests
    */
   @RequestMapping(
@@ -141,10 +142,19 @@ public class KafkaConnectController {
           Order order,
       @RequestParam(value = "operationType", required = false)
           RequestOperationType requestOperationType,
-      @RequestParam(value = "search", required = false) String search) {
+      @RequestParam(value = "search", required = false) String search,
+      @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
+          boolean isMyRequest) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorRequests(
-            pageNo, currentPage, requestStatus.value, requestOperationType, env, order, search),
+            pageNo,
+            currentPage,
+            requestStatus.value,
+            requestOperationType,
+            env,
+            order,
+            search,
+            isMyRequest),
         HttpStatus.OK);
   }
 

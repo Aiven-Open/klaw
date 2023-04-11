@@ -4038,6 +4038,14 @@
           "schema" : {
             "type" : "string"
           }
+        }, {
+          "name" : "isMyRequest",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
         } ],
         "responses" : {
           "200" : {
@@ -4056,7 +4064,7 @@
         }
       }
     },
-    "/getConnectorRequestsForApproval" : {
+    "/getConnectorRequestsForApprover" : {
       "get" : {
         "tags" : [ "kafka-connect-controller" ],
         "operationId" : "getCreatedConnectorRequests",
