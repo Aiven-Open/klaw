@@ -739,7 +739,7 @@ public class SelectDataJdbc {
                   requestOperationType != null ? requestOperationType.value : null,
                   showRequestsOfAllTeams ? null : teamSelected,
                   env,
-                  null,
+                  status,
                   tenantId,
                   null,
                   isMyRequest ? requestor : null));
