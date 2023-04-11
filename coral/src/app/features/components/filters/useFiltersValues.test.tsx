@@ -97,6 +97,20 @@ describe("useFiltersValues.tsx", () => {
       expect(current.requestType).toBe("CLAIM");
     });
 
+    it("gets the correct search filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter initialEntries={["/?search=abc"]}>
+            {children}
+          </MemoryRouter>
+        ),
+      });
+
+      expect(current.search).toBe("abc");
+    });
+
     describe("should get correct filter values when default value is passed", () => {
       afterEach(() => {
         cleanup();
@@ -172,6 +186,15 @@ describe("useFiltersValues.tsx", () => {
         );
 
         expect(current.requestType).toBe("CREATE");
+      });
+      it("gets the correct search filter value", () => {
+        const {
+          result: { current },
+        } = renderHook(() => useFiltersValues({ defaultSearch: "abc" }), {
+          wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+        });
+
+        expect(current.search).toBe("abc");
       });
     });
   });
@@ -277,6 +300,20 @@ describe("useFiltersValues.tsx", () => {
       });
 
       expect(window.location.search).toBe("?requestType=CREATE&page=1");
+    });
+    it("sets the correct search filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+
+      current.setFilterValue({
+        name: "search",
+        value: "abc",
+      });
+
+      expect(window.location.search).toBe("?search=abc&page=1");
     });
   });
 });
