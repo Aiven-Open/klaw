@@ -1,4 +1,4 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.requests;
 
 import io.aiven.klaw.model.enums.RequestEntityType;
 import jakarta.annotation.Nullable;

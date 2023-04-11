@@ -1,4 +1,4 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.requests;
 
 import java.io.Serializable;
 import lombok.Getter;

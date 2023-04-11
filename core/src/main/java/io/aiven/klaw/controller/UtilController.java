@@ -1,8 +1,8 @@
 package io.aiven.klaw.controller;
 
-import io.aiven.klaw.model.RequestsCountOverview;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.response.AuthenticationInfo;
+import io.aiven.klaw.model.response.RequestsCountOverview;
 import io.aiven.klaw.service.RequestStatisticsService;
 import io.aiven.klaw.service.UtilControllerService;
 import io.swagger.v3.oas.annotations.Operation;

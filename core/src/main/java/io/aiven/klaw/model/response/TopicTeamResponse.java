@@ -1,4 +1,4 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.response;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

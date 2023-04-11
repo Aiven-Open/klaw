@@ -4,7 +4,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.helpers.ValidationHelper;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.RequestVerdict;
+import io.aiven.klaw.model.requests.RequestVerdict;
 import io.aiven.klaw.service.RequestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;

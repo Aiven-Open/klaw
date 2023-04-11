@@ -17,20 +17,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
-import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwPropertiesModel;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicOverview;
-import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.KwClustersModelResponse;
 import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.service.ClusterApiService;
 import java.util.ArrayList;
@@ -181,7 +182,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    List<KwClustersModelResponse> teamModel =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModel).hasSize(1);
   }
 
@@ -217,7 +219,7 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwClustersModel> kwClustersModels =
+    List<KwClustersModelResponse> kwClustersModels =
         OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(kwClustersModels).hasSize(2);
   }
