@@ -26,6 +26,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.response.SyncTopicsList;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -79,10 +80,8 @@ public class TopicSyncControllerService {
       for (String envStr : envsStrList) {
         reconStr = new StringBuilder();
         try {
-          @SuppressWarnings("unchecked")
           List<TopicRequestsResponseModel> results =
-              (List<TopicRequestsResponseModel>)
-                  getReconTopics(envStr, "-1", "", null, "false", false).get("resultSet");
+              getReconTopics(envStr, "-1", "", null, "false", false).getResultSet();
 
           for (TopicRequestsResponseModel topicRequestModel : results) {
             reconStr
@@ -107,7 +106,7 @@ public class TopicSyncControllerService {
     }
   }
 
-  public Map<String, Object> getReconTopics(
+  public SyncTopicsList getReconTopics(
       String envId,
       String pageNo,
       String currentPage,
@@ -115,13 +114,11 @@ public class TopicSyncControllerService {
       String showAllTopics,
       boolean isBulkOption)
       throws Exception {
-    Map<String, Object> syncTopicsObjectMap = new HashMap<>();
+    SyncTopicsList syncTopicsObjectMap = new SyncTopicsList();
 
-    @SuppressWarnings("unchecked")
     List<TopicRequestsResponseModel> topicRequestModelList =
-        (List<TopicRequestsResponseModel>)
-            getSyncTopics(envId, pageNo, currentPage, topicNameSearch, showAllTopics, isBulkOption)
-                .get("resultSet");
+        getSyncTopics(envId, pageNo, currentPage, topicNameSearch, showAllTopics, isBulkOption)
+            .getResultSet();
 
     topicRequestModelList =
         topicRequestModelList.stream()
@@ -144,13 +141,13 @@ public class TopicSyncControllerService {
           getPagedTopicReqModels(pageNo, currentPage, topicRequestModelList, tenantId);
     }
 
-    syncTopicsObjectMap.put("resultSet", topicRequestModelList);
-    syncTopicsObjectMap.put("allTopicsCount", allTopicsCount);
+    syncTopicsObjectMap.setResultSet(topicRequestModelList);
+    syncTopicsObjectMap.setAllTopicsCount(allTopicsCount);
 
     return syncTopicsObjectMap;
   }
 
-  public Map<String, Object> getSyncTopics(
+  public SyncTopicsList getSyncTopics(
       String env,
       String pageNo,
       String currentPage,
@@ -159,7 +156,7 @@ public class TopicSyncControllerService {
       boolean isBulkOption)
       throws Exception {
     boolean isReconciliation = !Boolean.parseBoolean(showAllTopics);
-    Map<String, Object> syncTopicsObjectMap = new HashMap<>();
+    SyncTopicsList syncTopicsObjectMap = new SyncTopicsList();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     log.info("getSyncTopics {} {} {}", env, pageNo, topicNameSearch);
 
@@ -181,14 +178,12 @@ public class TopicSyncControllerService {
     List<Integer> sizeOfTopics = new ArrayList<>();
 
     if (isReconciliation) {
-      syncTopicsObjectMap.put(
-          "resultSet",
+      syncTopicsObjectMap.setResultSet(
           getSyncTopicListRecon(
               topicsList, deletedTopicsFromClusterList, env, isBulkOption, tenantId));
-      syncTopicsObjectMap.put("allTopicsCount", topicsList.size());
+      syncTopicsObjectMap.setAllTopicsCount(topicsList.size());
     } else {
-      syncTopicsObjectMap.put(
-          "resultSet",
+      syncTopicsObjectMap.setResultSet(
           getSyncTopicList(
               topicsList,
               deletedTopicsFromClusterList,
@@ -198,7 +193,7 @@ public class TopicSyncControllerService {
               isBulkOption,
               sizeOfTopics,
               tenantId));
-      syncTopicsObjectMap.put("allTopicsCount", sizeOfTopics.get(0));
+      syncTopicsObjectMap.setAllTopicsCount(sizeOfTopics.get(0));
     }
 
     return syncTopicsObjectMap;

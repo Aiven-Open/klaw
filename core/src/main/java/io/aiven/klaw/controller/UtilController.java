@@ -2,6 +2,7 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.response.AuthenticationInfo;
+import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.model.response.RequestsCountOverview;
 import io.aiven.klaw.service.RequestStatisticsService;
 import io.aiven.klaw.service.UtilControllerService;
@@ -37,7 +38,7 @@ public class UtilController {
       value = "/getDashboardStats",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getDashboardStats() {
+  public ResponseEntity<DashboardStats> getDashboardStats() {
     return new ResponseEntity<>(utilControllerService.getDashboardStats(), HttpStatus.OK);
   }
 

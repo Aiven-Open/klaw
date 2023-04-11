@@ -32,6 +32,7 @@ import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.RequestEntityStatusCount;
 import io.aiven.klaw.model.response.RequestStatusCount;
@@ -600,17 +601,17 @@ public class UtilMethods {
     return envList;
   }
 
-  public List<Map<String, String>> getSyncEnv() {
-    List<Map<String, String>> envList = new ArrayList<>();
+  public List<EnvIdInfo> getSyncEnv() {
+    List<EnvIdInfo> envList = new ArrayList<>();
 
-    HashMap<String, String> hMap = new HashMap<>();
-    hMap.put("key", "1");
-    hMap.put("name", "DEV");
+    EnvIdInfo hMap = new EnvIdInfo();
+    hMap.setId("1");
+    hMap.setName("DEV");
     envList.add(hMap);
 
-    HashMap<String, String> hMap1 = new HashMap<>();
-    hMap1.put("key", "2");
-    hMap1.put("name", "TST");
+    EnvIdInfo hMap1 = new EnvIdInfo();
+    hMap1.setId("2");
+    hMap1.setName("TST");
     envList.add(hMap1);
 
     return envList;

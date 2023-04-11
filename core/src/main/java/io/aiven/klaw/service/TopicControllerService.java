@@ -46,6 +46,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
 import java.text.SimpleDateFormat;
@@ -934,9 +935,9 @@ public class TopicControllerService {
     }
   }
 
-  public Map<String, Object> getTopicDetailsPerEnv(String envId, String topicName) {
-    Map<String, Object> hashMap = new HashMap<>();
-    hashMap.put("topicExists", false);
+  public TopicDetailsPerEnv getTopicDetailsPerEnv(String envId, String topicName) {
+    TopicDetailsPerEnv hashMap = new TopicDetailsPerEnv();
+    hashMap.setTopicExists(false);
 
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
@@ -953,7 +954,7 @@ public class TopicControllerService {
 
     String topicDescription = "";
     if (topics.isEmpty()) {
-      hashMap.put("error", TOPICS_ERR_113);
+      hashMap.setError(TOPICS_ERR_113);
       return hashMap;
     } else {
       Optional<Topic> topicDescFound =
@@ -971,20 +972,20 @@ public class TopicControllerService {
       if (topicOptional.isPresent()) {
         topicInfo.setNoOfPartitions(topicOptional.get().getNoOfPartitions());
         topicInfo.setNoOfReplicas(topicOptional.get().getNoOfReplicas());
-        hashMap.put("topicId", "" + topicOptional.get().getTopicid());
+        hashMap.setTopicId("" + topicOptional.get().getTopicid());
         topicInfo.setDescription(topicDescription);
 
         Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
         if (!Objects.equals(loggedInUserTeamId, topicOptional.get().getTeamId())) {
-          hashMap.put("error", TOPICS_ERR_114);
+          hashMap.setError(TOPICS_ERR_114);
           return hashMap;
         }
       }
     }
 
     if (topicInfo.getNoOfPartitions() != null) {
-      hashMap.put("topicExists", true);
-      hashMap.put("topicContents", topicInfo);
+      hashMap.setTopicExists(true);
+      hashMap.setTopicContents(topicInfo);
     }
     return hashMap;
   }

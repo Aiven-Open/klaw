@@ -42,6 +42,7 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.OffsetDetails;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -837,9 +838,9 @@ public class AclControllerService {
     return envFound.orElse(null);
   }
 
-  public List<Map<String, String>> getConsumerOffsets(
+  public List<OffsetDetails> getConsumerOffsets(
       String envId, String consumerGroupId, String topicName) {
-    List<Map<String, String>> consumerOffsetInfoList = new ArrayList<>();
+    List<OffsetDetails> consumerOffsetInfoList = new ArrayList<>();
     int tenantId = commonUtilsService.getTenantId(getCurrentUserName());
     try {
       KwClusters kwClusters =

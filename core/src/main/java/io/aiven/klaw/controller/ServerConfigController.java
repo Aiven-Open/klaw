@@ -4,6 +4,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwPropertiesModel;
 import io.aiven.klaw.model.ServerConfigProperties;
+import io.aiven.klaw.model.response.KwPropertiesResponse;
 import io.aiven.klaw.service.ServerConfigService;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +37,7 @@ public class ServerConfigController {
       value = "/getAllServerEditableConfig",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<Map<String, String>>> getAllEditableProps() {
+  public ResponseEntity<List<KwPropertiesResponse>> getAllEditableProps() {
     return new ResponseEntity<>(serverConfigService.getAllEditableProps(), HttpStatus.OK);
   }
 

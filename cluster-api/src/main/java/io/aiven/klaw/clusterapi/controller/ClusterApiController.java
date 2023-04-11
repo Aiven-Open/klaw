@@ -4,6 +4,7 @@ import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.OffsetDetails;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
@@ -195,14 +196,14 @@ public class ClusterApiController {
           "/getConsumerOffsets/{bootstrapServers}/{protocol}/{clusterName}/{consumerGroupId}/{topicName}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<Map<String, String>>> getConsumerOffsets(
+  public ResponseEntity<List<OffsetDetails>> getConsumerOffsets(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterName,
       @PathVariable String consumerGroupId,
       @PathVariable String topicName)
       throws Exception {
-    List<Map<String, String>> consumerOffsetDetails =
+    List<OffsetDetails> consumerOffsetDetails =
         monitoringService.getConsumerGroupDetails(
             consumerGroupId, topicName, bootstrapServers, protocol, clusterName);
 

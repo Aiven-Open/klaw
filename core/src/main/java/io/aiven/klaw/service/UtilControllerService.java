@@ -19,6 +19,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AuthenticationInfo;
+import io.aiven.klaw.model.response.DashboardStats;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
@@ -79,7 +80,7 @@ public class UtilControllerService {
 
   @Autowired private ConfigurableApplicationContext context;
 
-  public Map<String, String> getDashboardStats() {
+  public DashboardStats getDashboardStats() {
     log.debug("getDashboardInfo");
     String userName = getUserName();
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
@@ -88,7 +89,7 @@ public class UtilControllerService {
           commonUtilsService.getTeamId(userName), commonUtilsService.getTenantId(getUserName()));
     }
 
-    return new HashMap<>();
+    return new DashboardStats();
   }
 
   private String getUserName() {

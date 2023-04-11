@@ -6,14 +6,20 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
+import io.aiven.klaw.model.response.AclCommands;
 import io.aiven.klaw.model.response.ClusterInfo;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
+import io.aiven.klaw.model.response.EnvParams;
+import io.aiven.klaw.model.response.EnvUpdatedStatus;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
+import io.aiven.klaw.model.response.KwReport;
+import io.aiven.klaw.model.response.SupportedProtocolInfo;
+import io.aiven.klaw.model.response.TenantInfo;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -144,7 +150,7 @@ public class EnvsClustersTenantsController {
       value = "/getSyncEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<Map<String, String>>> getSyncEnv() {
+  public ResponseEntity<List<EnvIdInfo>> getSyncEnv() {
     return new ResponseEntity<>(envsClustersTenantsControllerService.getSyncEnvs(), HttpStatus.OK);
   }
 
@@ -152,7 +158,7 @@ public class EnvsClustersTenantsController {
       value = "/getEnvParams",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, List<String>>> getEnvParams(
+  public ResponseEntity<EnvParams> getEnvParams(
       @RequestParam(value = "envSelected") String envSelected) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getEnvParams(envSelected), HttpStatus.OK);
@@ -270,7 +276,7 @@ public class EnvsClustersTenantsController {
       value = "/getAclCommands",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getAclCommand() {
+  public ResponseEntity<AclCommands> getAclCommand() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getAclCommands(), HttpStatus.OK);
   }
@@ -279,17 +285,15 @@ public class EnvsClustersTenantsController {
       value = "/getKwPubkey",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getKwPubkey() {
-
-    Map<String, String> fileMap = envsClustersTenantsControllerService.getPublicKey();
-    return new ResponseEntity<>(fileMap, HttpStatus.OK);
+  public ResponseEntity<KwReport> getKwPubkey() {
+    return new ResponseEntity<>(envsClustersTenantsControllerService.getPublicKey(), HttpStatus.OK);
   }
 
   @RequestMapping(
       value = "/getUpdateEnvStatus",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getUpdateEnvStatus(
+  public ResponseEntity<EnvUpdatedStatus> getUpdateEnvStatus(
       @RequestParam(value = "envId") String envId) throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getUpdateEnvStatus(envId), HttpStatus.OK);
@@ -299,7 +303,7 @@ public class EnvsClustersTenantsController {
       value = "/getTenantsInfo",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, Integer>> getTenantsInfo() {
+  public ResponseEntity<TenantInfo> getTenantsInfo() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getTenantsInfo(), HttpStatus.OK);
   }
@@ -320,7 +324,7 @@ public class EnvsClustersTenantsController {
       value = "/getKafkaProtocols",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<Map<String, String>>> getSupportedKafkaProtocols() {
+  public ResponseEntity<List<SupportedProtocolInfo>> getSupportedKafkaProtocols() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getSupportedKafkaProtocols(), HttpStatus.OK);
   }

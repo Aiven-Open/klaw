@@ -22,6 +22,7 @@ import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.model.TenantConfig;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.response.KwPropertiesResponse;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -302,9 +303,8 @@ public class ServerConfigServiceTest {
     when(managedb.getKwPropertiesMap(101)).thenReturn(buildFullDbObject());
 
     // Execute
-    List<Map<String, String>> response = serverConfigService.getAllEditableProps();
-    TenantConfig tenantConfig =
-        mapper.readValue(response.get(0).get("kwvalue"), TenantConfig.class);
+    List<KwPropertiesResponse> response = serverConfigService.getAllEditableProps();
+    TenantConfig tenantConfig = mapper.readValue(response.get(0).getKwvalue(), TenantConfig.class);
     verify(managedb, times(1)).getKwPropertiesMap(101);
     // assert that the order is as specified in getJsonString
 
@@ -349,9 +349,8 @@ public class ServerConfigServiceTest {
     when(managedb.getKwPropertiesMap(101)).thenReturn(dbObject);
 
     // Execute
-    List<Map<String, String>> response = serverConfigService.getAllEditableProps();
-    TenantConfig tenantConfig =
-        mapper.readValue(response.get(0).get("kwvalue"), TenantConfig.class);
+    List<KwPropertiesResponse> response = serverConfigService.getAllEditableProps();
+    TenantConfig tenantConfig = mapper.readValue(response.get(0).getKwvalue(), TenantConfig.class);
     verify(managedb, times(1)).getKwPropertiesMap(101);
     // assert that the order is as specified in getJsonString
     assertThat(tenantConfig.getTenantModel()).isNull();

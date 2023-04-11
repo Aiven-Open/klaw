@@ -33,6 +33,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
 import java.sql.Timestamp;
@@ -869,9 +870,9 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
-    Map<String, Object> topicDetailsPerEnvResponse =
+    TopicDetailsPerEnv topicDetailsPerEnvResponse =
         topicControllerService.getTopicDetailsPerEnv(envId, topicName);
-    assertThat(topicDetailsPerEnvResponse.get("error")).isEqualTo("Topic does not exist.");
+    assertThat(topicDetailsPerEnvResponse.getError()).isEqualTo("Topic does not exist.");
   }
 
   @Test
@@ -885,9 +886,9 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
 
-    Map<String, Object> topicDetailsPerEnvResponse =
+    TopicDetailsPerEnv topicDetailsPerEnvResponse =
         topicControllerService.getTopicDetailsPerEnv(envId, topicName);
-    assertThat(topicDetailsPerEnvResponse.get("error"))
+    assertThat(topicDetailsPerEnvResponse.getError())
         .isEqualTo("Sorry, your team does not own the topic !!");
   }
 
@@ -903,10 +904,10 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(commonUtilsService.getTeamId(anyString())).thenReturn(3);
 
-    Map<String, Object> topicDetailsPerEnvResponse =
+    TopicDetailsPerEnv topicDetailsPerEnvResponse =
         topicControllerService.getTopicDetailsPerEnv(envId, topicName);
-    assertThat(topicDetailsPerEnvResponse.get("topicExists")).isEqualTo(true);
-    assertThat(topicDetailsPerEnvResponse.get("topicContents")).isNotNull();
+    assertThat(topicDetailsPerEnvResponse.isTopicExists()).isTrue();
+    assertThat(topicDetailsPerEnvResponse.getTopicContents()).isNotNull();
   }
 
   @Test

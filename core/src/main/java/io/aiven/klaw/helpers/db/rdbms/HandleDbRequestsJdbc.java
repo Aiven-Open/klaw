@@ -7,6 +7,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.response.DashboardStats;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -585,7 +586,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public Map<String, String> getDashboardStats(Integer teamId, int tenantId) {
+  public DashboardStats getDashboardStats(Integer teamId, int tenantId) {
     return jdbcSelectHelper.getDashboardStats(teamId, tenantId);
   }
 

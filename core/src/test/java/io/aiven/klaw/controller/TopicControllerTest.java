@@ -20,12 +20,12 @@ import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.SyncTopicsList;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
 import io.aiven.klaw.service.TopicControllerService;
 import io.aiven.klaw.service.TopicSyncControllerService;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -272,8 +272,7 @@ public class TopicControllerTest {
   @Test
   @Order(11)
   public void getSyncTopics() throws Exception {
-    Map<String, Object> hashMap = new HashMap<>();
-    hashMap.put("", "");
+    SyncTopicsList hashMap = new SyncTopicsList();
 
     when(topicSyncControllerService.getSyncTopics(
             anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean()))
@@ -289,7 +288,7 @@ public class TopicControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.*", hasSize(1)));
+        .andExpect(jsonPath("$.allTopicsCount", is(0)));
   }
 
   @Test

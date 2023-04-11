@@ -1,5 +1,6 @@
 package io.aiven.klaw.clusterapi.services;
 
+import io.aiven.klaw.clusterapi.models.OffsetDetails;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.*;
@@ -20,7 +21,7 @@ public class MonitoringService {
     this.clusterApiUtils = clusterApiUtils;
   }
 
-  public List<Map<String, String>> getConsumerGroupDetails(
+  public List<OffsetDetails> getConsumerGroupDetails(
       String consumerGroupId,
       String topicName,
       String environment,
@@ -37,8 +38,9 @@ public class MonitoringService {
 
     AdminClient adminClient = clusterApiUtils.getAdminClient(environment, protocol, clusterName);
 
-    List<Map<String, String>> consumerGroupOffsetList = new ArrayList<>();
-    Map<String, String> offsetDetails;
+    //    List<Map<String, String>> consumerGroupOffsetList = new ArrayList<>();
+    List<OffsetDetails> consumerGroupOffsetList = new ArrayList<>();
+    OffsetDetails offsetDetails;
     try {
       DescribeTopicsResult describeTopicsResult =
           adminClient.describeTopics(Collections.singletonList(topicName));
@@ -67,16 +69,16 @@ public class MonitoringService {
       for (TopicPartitionInfo topicPartitionInfo : topicPartitions) {
         topicPartition = new TopicPartition(topicName, topicPartitionInfo.partition());
 
-        offsetDetails = new HashMap<>();
+        offsetDetails = new OffsetDetails();
         long earliestOffset =
             listOffsetsEarliestResult.partitionResult(topicPartition).get().offset();
         long latestOffset = listOffsetsLatestResult.partitionResult(topicPartition).get().offset();
         long lag = latestOffset - earliestOffset;
 
-        offsetDetails.put("topicPartitionId", Long.toString(topicPartition.partition()));
-        offsetDetails.put("currentOffset", Long.toString(earliestOffset));
-        offsetDetails.put("endOffset", Long.toString(latestOffset));
-        offsetDetails.put("lag", Long.toString(lag));
+        offsetDetails.setTopicPartitionId(Long.toString(topicPartition.partition()));
+        offsetDetails.setCurrentOffset(Long.toString(earliestOffset));
+        offsetDetails.setEndOffset(Long.toString(latestOffset));
+        offsetDetails.setLag(Long.toString(lag));
         consumerGroupOffsetList.add(offsetDetails);
       }
       return consumerGroupOffsetList;

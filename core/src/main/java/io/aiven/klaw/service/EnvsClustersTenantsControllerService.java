@@ -38,9 +38,16 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.AclCommands;
 import io.aiven.klaw.model.response.ClusterInfo;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
+import io.aiven.klaw.model.response.EnvParams;
+import io.aiven.klaw.model.response.EnvUpdatedStatus;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
+import io.aiven.klaw.model.response.KwReport;
+import io.aiven.klaw.model.response.SupportedProtocolInfo;
+import io.aiven.klaw.model.response.TenantInfo;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -309,7 +316,7 @@ public class EnvsClustersTenantsControllerService {
     return envListMapUpdated;
   }
 
-  public List<Map<String, String>> getSyncEnvs() {
+  public List<EnvIdInfo> getSyncEnvs() {
     log.debug("getSyncEnvs");
     Integer tenantId = getUserDetails(getUserName()).getTenantId();
     String syncCluster;
@@ -325,17 +332,16 @@ public class EnvsClustersTenantsControllerService {
       return new ArrayList<>();
     }
 
-    Map<String, String> hMap;
-    List<Map<String, String>> envsOnly = new ArrayList<>();
+    List<EnvIdInfo> envsOnly = new ArrayList<>();
     List<EnvModelResponse> envList = getKafkaEnvs();
     for (EnvModelResponse env : envList) {
-      hMap = new HashMap<>();
-      hMap.put("id", env.getId());
+      EnvIdInfo hMap = new EnvIdInfo();
+      hMap.setId(env.getId());
       String baseClusterDropDownStr = " (Base Sync cluster)";
       if (Objects.equals(syncCluster, env.getId())) {
-        hMap.put("name", env.getName() + baseClusterDropDownStr);
+        hMap.setName(env.getName() + baseClusterDropDownStr);
       } else {
-        hMap.put("name", env.getName());
+        hMap.setName(env.getName());
       }
 
       envsOnly.add(hMap);
@@ -535,7 +541,7 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public Map<String, List<String>> getEnvParams(String targetEnv) {
+  public EnvParams getEnvParams(String targetEnv) {
     return manageDatabase
         .getEnvParamsMap(commonUtilsService.getTenantId(getUserName()))
         .get(targetEnv);
@@ -1311,26 +1317,26 @@ public class EnvsClustersTenantsControllerService {
         .build();
   }
 
-  public Map<String, String> getAclCommands() {
-    Map<String, String> res = new HashMap<>();
-    res.put("result", ApiResultStatus.SUCCESS.value);
-    res.put("aclCommandSsl", aclCommandSsl);
-    res.put("aclCommandPlaintext", aclCommandPlaintext);
+  public AclCommands getAclCommands() {
+    AclCommands res = new AclCommands();
+    res.setResult(ApiResultStatus.SUCCESS.value);
+    res.setAclCommandSsl(aclCommandSsl);
+    res.setAclCommandPlaintext(aclCommandPlaintext);
     return res;
   }
 
-  public Map<String, String> getPublicKey() {
+  public KwReport getPublicKey() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     log.info("getPublicKey download " + tenantId);
 
-    Map<String, String> kwPublicKeyMap = new HashMap<>();
+    KwReport kwPublicKeyMap = new KwReport();
     File file = new File(kwPublicKey);
     try {
       byte[] arr = FileUtils.readFileToByteArray(file);
       String str = Base64.getEncoder().encodeToString(arr);
 
-      kwPublicKeyMap.put("data", str);
-      kwPublicKeyMap.put("filename", file.getName());
+      kwPublicKeyMap.setData(str);
+      kwPublicKeyMap.setFilename(file.getName());
 
       return kwPublicKeyMap;
     } catch (IOException e) {
@@ -1339,8 +1345,8 @@ public class EnvsClustersTenantsControllerService {
     return kwPublicKeyMap;
   }
 
-  public Map<String, String> getUpdateEnvStatus(String envId) throws KlawException {
-    Map<String, String> envUpdatedStatus = new HashMap<>();
+  public EnvUpdatedStatus getUpdateEnvStatus(String envId) throws KlawException {
+    EnvUpdatedStatus envUpdatedStatus = new EnvUpdatedStatus();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
 
@@ -1366,19 +1372,19 @@ public class EnvsClustersTenantsControllerService {
     manageDatabase.getHandleDbRequests().addNewEnv(env);
     manageDatabase.loadEnvMapForOneTenant(tenantId);
 
-    envUpdatedStatus.put("result", ApiResultStatus.SUCCESS.value);
-    envUpdatedStatus.put("envstatus", status);
+    envUpdatedStatus.setResult(ApiResultStatus.SUCCESS.value);
+    envUpdatedStatus.setEnvstatus(status);
 
     return envUpdatedStatus;
   }
 
   @Cacheable(cacheNames = "tenantsinfo")
-  public Map<String, Integer> getTenantsInfo() {
-    Map<String, Integer> tenantsInfo = new HashMap<>();
-    tenantsInfo.put("tenants", manageDatabase.getTenantMap().size());
-    tenantsInfo.put("teams", manageDatabase.getAllTeamsSize());
-    tenantsInfo.put("clusters", manageDatabase.getAllClustersSize());
-    tenantsInfo.put("topics", manageDatabase.getHandleDbRequests().getAllTopicsCountInAllTenants());
+  public TenantInfo getTenantsInfo() {
+    TenantInfo tenantsInfo = new TenantInfo();
+    tenantsInfo.setTenants(manageDatabase.getTenantMap().size());
+    tenantsInfo.setTeams(manageDatabase.getAllTeamsSize());
+    tenantsInfo.setClusters(manageDatabase.getAllClustersSize());
+    tenantsInfo.setTopics(manageDatabase.getHandleDbRequests().getAllTopicsCountInAllTenants());
 
     return tenantsInfo;
   }
@@ -1405,15 +1411,13 @@ public class EnvsClustersTenantsControllerService {
     return clusterInfo;
   }
 
-  public List<Map<String, String>> getSupportedKafkaProtocols() {
-    List<Map<String, String>> supportedProtocols = new ArrayList<>();
+  public List<SupportedProtocolInfo> getSupportedKafkaProtocols() {
+    List<SupportedProtocolInfo> supportedProtocols = new ArrayList<>();
     for (KafkaSupportedProtocol kafkaSupportedProtocol : KafkaSupportedProtocol.values()) {
-      supportedProtocols.add(
-          Map.of(
-              "name",
-              kafkaSupportedProtocol.getName(),
-              "value",
-              kafkaSupportedProtocol.getValue()));
+      SupportedProtocolInfo supportedProtocolInfo = new SupportedProtocolInfo();
+      supportedProtocolInfo.setName(kafkaSupportedProtocol.getName());
+      supportedProtocolInfo.setValue(kafkaSupportedProtocol.getValue());
+      supportedProtocols.add(supportedProtocolInfo);
     }
 
     return supportedProtocols;

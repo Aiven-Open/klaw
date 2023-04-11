@@ -267,7 +267,7 @@ app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window)
                     params: {'env' : $scope.getConnectors.envName,
                     'connectorName' : connectorName},
                 }).success(function(output) {
-                    $scope.connectorDetails = output.result;
+                    $scope.connectorDetails = output.message;
                     modal.style.display = "block";
                 }).error(
                     function(error)
