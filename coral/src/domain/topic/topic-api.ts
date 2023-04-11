@@ -20,7 +20,7 @@ import {
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
-import { convertQuery } from "src/services/api-helper";
+import { convertQueryValuesToString } from "src/services/api-helper";
 
 const getTopics = async (
   params: KlawApiRequestQueryParameters<"getTopics">
@@ -31,7 +31,7 @@ const getTopics = async (
   // option for "Select all teams" to users
   // const team = teamName !== ALL_TEAMS_VALUE && teamName;
 
-  const queryParams = convertQuery({
+  const queryParams = convertQueryValuesToString({
     ...params,
     ...(params.teamId && { teamId: params.teamId }),
     ...(params.topicnamesearch && { topicnamesearch: params.topicnamesearch }),

@@ -1,14 +1,14 @@
-import { convertQuery } from "src/services/api-helper";
+import { convertQueryValuesToString } from "src/services/api-helper";
 import { KlawApiRequestQueryParameters } from "types/utils";
 
-describe("convertQuery", () => {
+describe("convertQueryValuesToString", () => {
   it("converts a query param to an object with string properties simple object", () => {
     const simpleObject = {
       name: "me",
       age: 99,
     };
 
-    expect(convertQuery(simpleObject)).toMatchObject({
+    expect(convertQueryValuesToString(simpleObject)).toMatchObject({
       name: "me",
       age: "99",
     });
@@ -21,7 +21,7 @@ describe("convertQuery", () => {
       teamId: 1,
     };
 
-    expect(convertQuery(queryFake)).toMatchObject({
+    expect(convertQueryValuesToString(queryFake)).toMatchObject({
       pageNo: "1",
       env: "DEV",
       teamId: "1",

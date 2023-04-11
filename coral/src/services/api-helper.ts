@@ -6,7 +6,9 @@ type QueryToTransform = {
   [key: string]: string | boolean | number | QueryToTransform;
 };
 
-function convertQuery(query: QueryToTransform): Record<string, string> {
+function convertQueryValuesToString(
+  query: QueryToTransform
+): Record<string, string> {
   return cloneDeepWith(query, (value) => {
     // returning undefined if the value for the customizer function
     // is an object makes sure we're iterating over everything
@@ -16,4 +18,4 @@ function convertQuery(query: QueryToTransform): Record<string, string> {
   });
 }
 
-export { convertQuery };
+export { convertQueryValuesToString };
