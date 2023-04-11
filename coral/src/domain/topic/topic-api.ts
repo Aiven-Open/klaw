@@ -25,12 +25,6 @@ import { convertQueryValuesToString } from "src/services/api-helper";
 const getTopics = async (
   params: KlawApiRequestQueryParameters<"getTopics">
 ): Promise<TopicApiResponse> => {
-  // "ALL_TEAMS_VALUE" represents topic list without
-  // the optional team parameter
-  // where we still need a way to represent an
-  // option for "Select all teams" to users
-  // const team = teamName !== ALL_TEAMS_VALUE && teamName;
-
   const queryParams = convertQueryValuesToString({
     ...params,
     ...(params.teamId && { teamId: params.teamId }),
