@@ -22,6 +22,12 @@ const getSchemaRegistryEnvironments = (): Promise<Environment[]> => {
     .then(transformEnvironmentApiResponse);
 };
 
+const getSyncConnectorsEnvironments = (): Promise<Environment[]> => {
+  return api
+    .get<KlawApiResponse<"getSyncConnectorsEnv">>("/getSyncConnectorsEnv")
+    .then(transformEnvironmentApiResponse);
+};
+
 const getClusterInfo = async ({
   envSelected,
   envType,
@@ -40,4 +46,5 @@ export {
   getClusterInfo,
   getEnvironmentsForTeam,
   getSchemaRegistryEnvironments,
+  getSyncConnectorsEnvironments,
 };
