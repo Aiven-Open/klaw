@@ -738,8 +738,8 @@ public class SelectDataJdbc {
               findKafkaConnectorRequestsByExample(
                   requestOperationType != null ? requestOperationType.value : null,
                   showRequestsOfAllTeams ? null : teamSelected,
-                  null,
-                  null,
+                  env,
+                  status,
                   tenantId,
                   null,
                   isMyRequest ? requestor : null));

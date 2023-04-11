@@ -204,7 +204,7 @@ public class KafkaConnectorsIntegrationTest {
   @Test
   @Order(4)
   public void
-      getallRequestsFilteredByAdditionalStatus_NotAllReqs_IgnoreStatus_ExpectTeamFiltering() {
+      getallRequestsFilteredByAdditionalStatus_NotAllReqs_DoNotIgnoreStatus_ExpectTeamFiltering() {
 
     List<KafkaConnectorRequest> james =
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
@@ -219,7 +219,7 @@ public class KafkaConnectorsIntegrationTest {
     assertThat(james.size()).isEqualTo(0);
 
     assertThat(john.size()).isEqualTo(10);
-    assertThat(james2.size()).isEqualTo(31);
+    assertThat(james2.size()).isEqualTo(10);
     for (KafkaConnectorRequest req : james2) {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
@@ -331,7 +331,7 @@ public class KafkaConnectorsIntegrationTest {
 
   @Test
   @Order(11)
-  public void getNonApproversRequestsFilteredByStatusByWildcard_StatusIsIgnored() {
+  public void getNonApproversRequestsFilteredByStatusByWildcard_StatusIsNotIgnored() {
 
     List<KafkaConnectorRequest> tenant1 =
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
@@ -341,7 +341,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, "John", "created", null, true, 103, null, "conn", false);
 
-    assertThat(tenant1.size()).isEqualTo(31);
+    assertThat(tenant1.size()).isEqualTo(0);
 
     assertThat(tenant2.size()).isEqualTo(10);
   }
