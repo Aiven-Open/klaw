@@ -49,7 +49,7 @@ public class SchemaOverviewService extends BaseOverviewService {
     List<Topic> topic = manageDatabase.getHandleDbRequests().getTopics(topicNameSearch, tenantId);
     log.debug("topics : {} for kafkaEnv: {}", topic, kafkaEnv);
     topic = topic.stream().filter(t -> t.getEnvironment().equals(kafkaEnv)).toList();
-    
+
     if (topic != null && topic.size() == 1) {
       Integer teamId = topic.get(0).getTeamId();
       return teamId.equals(commonUtilsService.getTeamId(userName));
