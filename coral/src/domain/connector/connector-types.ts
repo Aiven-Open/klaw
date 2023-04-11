@@ -1,6 +1,6 @@
 import { KlawApiModel, Paginated, ResolveIntersectionTypes } from "types/utils";
 
-type Connector = KlawApiModel<"KafkaConnectorModel">;
+type Connector = KlawApiModel<"KafkaConnectorModelResponse">;
 type ConnectorApiResponse = ResolveIntersectionTypes<Paginated<Connector[]>>;
 
 type ConnectorRequest = KlawApiModel<"KafkaConnectorRequestsResponseModel">;
