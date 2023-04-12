@@ -1,6 +1,7 @@
 # This workflow is called on every merges to the main branch
 # Changes will not be applied to the main branch until the pull request
 # passes the pipeline checks and is merged  successfully.
+# change for new commit
 name: PR/Push to main pipeline
 
 on:
