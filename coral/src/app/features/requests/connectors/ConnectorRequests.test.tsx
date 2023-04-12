@@ -8,10 +8,14 @@ import { transformConnectorRequestApiResponse } from "src/domain/connector/conne
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { ConnectorRequests } from "src/app/features/requests/connectors/ConnectorRequests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { getEnvironments } from "src/domain/environment";
+import {
+  getEnvironments,
+  getSyncConnectorsEnvironments,
+} from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import { getConnectorRequests } from "src/domain/connector";
 import userEvent from "@testing-library/user-event";
+import { createEnvironment } from "src/domain/environment/environment-test-helper";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/connector/connector-api.ts");
@@ -22,6 +26,11 @@ const mockGetConnectorEnvironmentRequest =
 const mockGetConnectorRequests = getConnectorRequests as jest.MockedFunction<
   typeof getConnectorRequests
 >;
+
+const mockGetSyncConnectorsEnvironments =
+  getSyncConnectorsEnvironments as jest.MockedFunction<
+    typeof getSyncConnectorsEnvironments
+  >;
 
 const mockGetConnectorRequestsResponse = transformConnectorRequestApiResponse([
   {
@@ -49,9 +58,21 @@ const mockGetConnectorRequestsResponse = transformConnectorRequestApiResponse([
   },
 ]);
 
+const mockEnvironments = [
+  createEnvironment({
+    id: "1",
+    name: "DEV",
+  }),
+  createEnvironment({
+    id: "2",
+    name: "TST",
+  }),
+];
+
 describe("ConnectorRequests", () => {
   beforeEach(() => {
     mockIntersectionObserver();
+    mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
     mockGetConnectorEnvironmentRequest.mockResolvedValue(
       mockedEnvironmentResponse
     );
@@ -158,6 +179,7 @@ describe("ConnectorRequests", () => {
       expect(mockGetConnectorRequests).toHaveBeenCalledWith({
         pageNo: "100",
         search: "",
+        env: "ALL",
       });
     });
 
@@ -172,6 +194,7 @@ describe("ConnectorRequests", () => {
       expect(mockGetConnectorRequests).toHaveBeenCalledWith({
         pageNo: "1",
         search: "",
+        env: "ALL",
       });
     });
 
@@ -279,11 +302,12 @@ describe("ConnectorRequests", () => {
       expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
         search: "",
+        env: "ALL",
       });
     });
   });
 
-  describe("user can filter topic requests based on the topic name", () => {
+  describe("user can filter connector requests based on the connector name", () => {
     afterEach(() => {
       cleanup();
       jest.resetAllMocks();
@@ -298,10 +322,11 @@ describe("ConnectorRequests", () => {
       expect(getConnectorRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
         search: "",
+        env: "ALL",
       });
     });
 
-    it("applies the topic filter by typing into to the search input", async () => {
+    it("applies the search filter by typing into to the search input", async () => {
       customRender(<ConnectorRequests />, {
         queryClient: true,
         memoryRouter: true,
@@ -316,7 +341,57 @@ describe("ConnectorRequests", () => {
         expect(getConnectorRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
           search: "abc",
+          env: "ALL",
         });
+      });
+    });
+  });
+
+  describe("user can filter connector requests by 'environment'", () => {
+    beforeEach(async () => {
+      mockGetSyncConnectorsEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetConnectorEnvironmentRequest.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequests.mockResolvedValue(
+        mockGetConnectorRequestsResponse
+      );
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath:
+          "/?environment=TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        search: "",
+        env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+    });
+
+    it("enables user to filter by 'environment'", async () => {
+      const environmentFilter = screen.getByRole("combobox", {
+        name: "Filter by Environment",
+      });
+
+      const environmentOption = screen.getByRole("option", {
+        name: mockedEnvironmentResponse[0].name,
+      });
+      await userEvent.selectOptions(environmentFilter, environmentOption);
+
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(2, {
+        pageNo: "1",
+        search: "",
+        env: mockedEnvironmentResponse[0].id,
       });
     });
   });
