@@ -285,28 +285,27 @@ public class SaasService {
   }
 
   // approve users
-  public Map<String, String> getActivationInfo(String activationId) {
-    Map<String, String> resultMap = new HashMap<>();
+  public ApiResponse getActivationInfo(String activationId) {
     RegisterUserInfoModelResponse registerUserInfoModel =
         usersTeamsControllerService.getRegistrationInfoFromId(activationId, "");
 
     if (registerUserInfoModel == null) {
-      resultMap.put("result", ApiResultStatus.FAILURE.value);
-      return resultMap;
+      return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
     } else if ("APPROVED".equals(registerUserInfoModel.getStatus())) {
-      resultMap.put("result", "already_activated");
-      return resultMap;
+      return ApiResponse.builder().success(true).message("already_activated").build();
     } else if ("PENDING".equals(registerUserInfoModel.getStatus())) {
       Map<String, String> result;
       try {
         result = approveUserSaas(registerUserInfoModel);
         if (ApiResultStatus.SUCCESS.value.equals(result.get("result"))) {
-          resultMap.put("result", ApiResultStatus.SUCCESS.value);
-        } else resultMap.put("result", "othererror");
+          return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+        } else {
+          return ApiResponse.builder().success(false).message("othererror").build();
+        }
       } catch (Exception e) {
         log.error("Exception:", e);
       }
     }
-    return resultMap;
+    return ApiResponse.builder().success(false).message("error").build();
   }
 }

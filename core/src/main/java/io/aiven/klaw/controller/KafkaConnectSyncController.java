@@ -6,7 +6,6 @@ import io.aiven.klaw.model.SyncConnectorUpdates;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.service.KafkaConnectSyncControllerService;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,7 +34,7 @@ public class KafkaConnectSyncController {
       value = "/getConnectorDetails",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getConnectorDetails(
+  public ResponseEntity<ApiResponse> getConnectorDetails(
       @RequestParam("env") String envId, @RequestParam("connectorName") String connectorName)
       throws KlawException {
     return new ResponseEntity<>(

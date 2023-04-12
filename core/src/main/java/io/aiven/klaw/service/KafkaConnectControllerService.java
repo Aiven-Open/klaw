@@ -1162,7 +1162,9 @@ public class KafkaConnectControllerService {
           hashMap.put("sourceEnv", lastEnv);
           hashMap.put("sourceConnectorConfig", sourceConnectorConfig.get());
           String targetEnv = orderdEnvs.get(orderdEnvs.indexOf(lastEnv) + 1);
-          hashMap.put("targetEnv", getKafkaConnectEnvDetails(targetEnv).getName());
+          if (getKafkaConnectEnvDetails(targetEnv) != null) {
+            hashMap.put("targetEnv", getKafkaConnectEnvDetails(targetEnv).getName());
+          }
           hashMap.put("targetEnvId", targetEnv);
         }
 

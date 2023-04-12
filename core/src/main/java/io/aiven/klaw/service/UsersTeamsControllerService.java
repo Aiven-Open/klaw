@@ -43,6 +43,7 @@ import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
+import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.sql.Timestamp;
@@ -280,17 +281,17 @@ public class UsersTeamsControllerService {
     return sb.toString();
   }
 
-  public Map<String, String> resetPassword(String username) {
+  public ResetPasswordInfo resetPassword(String username) {
     log.info("resetPassword {}", username);
-    Map<String, String> userMap = new HashMap<>();
+    ResetPasswordInfo resetPasswordInfo = new ResetPasswordInfo();
     UserInfoModelResponse userInfoModel = getUserInfoDetails(username);
-    userMap.put("passwordSent", "false");
+    resetPasswordInfo.setPasswordSent("false");
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     if (userInfoModel == null) {
-      userMap.put("userFound", "false");
+      resetPasswordInfo.setUserFound("false");
     } else {
-      userMap.put("userFound", "true");
+      resetPasswordInfo.setUserFound("true");
       String newGeneratedPwd = generateRandomWord(15);
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
@@ -299,7 +300,7 @@ public class UsersTeamsControllerService {
           updatePwdUserDetails, encoder.encode(newGeneratedPwd));
       String pwdUpdated = dbHandle.updatePassword(username, encodePwd(newGeneratedPwd));
       if (ApiResultStatus.SUCCESS.value.equals(pwdUpdated)) {
-        userMap.put("passwordSent", "true");
+        resetPasswordInfo.setPasswordSent("true");
         mailService.sendMailResetPwd(
             username,
             newGeneratedPwd,
@@ -308,7 +309,7 @@ public class UsersTeamsControllerService {
             commonUtilsService.getLoginUrl());
       }
     }
-    return userMap;
+    return resetPasswordInfo;
   }
 
   private List<TeamModelResponse> getTeamModels(List<Team> teams) {

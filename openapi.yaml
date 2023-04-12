@@ -613,10 +613,7 @@
             "content" : {
               "*/*" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/ResetPasswordInfo"
                 }
               }
             }
@@ -2212,10 +2209,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/EnvUpdatedStatus"
                 }
               }
             }
@@ -2414,10 +2408,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/TopicsCountPerEnv"
                 }
               }
             }
@@ -2705,8 +2696,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : { }
+                  "$ref" : "#/components/schemas/TopicDetailsPerEnv"
                 }
               }
             }
@@ -2745,11 +2735,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "integer",
-                    "format" : "int32"
-                  }
+                  "$ref" : "#/components/schemas/TenantInfo"
                 }
               }
             }
@@ -2868,8 +2854,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : { }
+                  "$ref" : "#/components/schemas/SyncTopicsList"
                 }
               }
             }
@@ -2889,10 +2874,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "object",
-                    "additionalProperties" : {
-                      "type" : "string"
-                    }
+                    "$ref" : "#/components/schemas/EnvIdInfo"
                   }
                 }
               }
@@ -3538,10 +3520,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/KwReport"
                 }
               }
             }
@@ -3559,10 +3538,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/KwReport"
                 }
               }
             }
@@ -3582,10 +3558,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "object",
-                    "additionalProperties" : {
-                      "type" : "string"
-                    }
+                    "$ref" : "#/components/schemas/SupportedProtocolInfo"
                   }
                 }
               }
@@ -3783,13 +3756,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "array",
-                    "items" : {
-                      "type" : "string"
-                    }
-                  }
+                  "$ref" : "#/components/schemas/EnvParams"
                 }
               }
             }
@@ -3840,10 +3807,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/DbAuthInfo"
                 }
               }
             }
@@ -3861,10 +3825,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/DashboardStats"
                 }
               }
             }
@@ -3906,10 +3867,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "object",
-                    "additionalProperties" : {
-                      "type" : "string"
-                    }
+                    "$ref" : "#/components/schemas/OffsetDetails"
                   }
                 }
               }
@@ -4192,10 +4150,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/ApiResponse"
                 }
               }
             }
@@ -4506,10 +4461,7 @@
                 "schema" : {
                   "type" : "array",
                   "items" : {
-                    "type" : "object",
-                    "additionalProperties" : {
-                      "type" : "string"
-                    }
+                    "$ref" : "#/components/schemas/KwPropertiesResponse"
                   }
                 }
               }
@@ -4722,10 +4674,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/ApiResponse"
                 }
               }
             }
@@ -4777,10 +4726,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/AclsCountPerEnv"
                 }
               }
             }
@@ -4990,10 +4936,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/AclCommands"
                 }
               }
             }
@@ -5487,6 +5430,17 @@
           }
         },
         "required" : [ "connectorId", "connectorName", "documentation" ]
+      },
+      "ResetPasswordInfo" : {
+        "properties" : {
+          "passwordSent" : {
+            "type" : "string"
+          },
+          "userFound" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "passwordSent", "userFound" ]
       },
       "RequestVerdict" : {
         "properties" : {
@@ -6164,6 +6118,27 @@
         },
         "required" : [ "fullname", "username" ]
       },
+      "EnvUpdatedStatus" : {
+        "properties" : {
+          "result" : {
+            "type" : "string"
+          },
+          "envstatus" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "envstatus", "result" ]
+      },
+      "TopicsCountPerEnv" : {
+        "properties" : {
+          "status" : {
+            "type" : "string"
+          },
+          "topicsCount" : {
+            "type" : "string"
+          }
+        }
+      },
       "TopicTeamResponse" : {
         "properties" : {
           "team" : {
@@ -6292,6 +6267,43 @@
           }
         },
         "required" : [ "advancedTopicConfigEntries", "allPageNos", "approvingTeamDetails", "currentPage", "deleteAssociatedSchema", "description", "environment", "environmentName", "replicationfactor", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicid", "topicname", "topicpartitions", "totalNoPages" ]
+      },
+      "TopicDetailsPerEnv" : {
+        "properties" : {
+          "topicExists" : {
+            "type" : "boolean"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "topicId" : {
+            "type" : "string"
+          },
+          "topicContents" : {
+            "$ref" : "#/components/schemas/TopicInfo"
+          }
+        },
+        "required" : [ "topicExists" ]
+      },
+      "TenantInfo" : {
+        "properties" : {
+          "tenants" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teams" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "clusters" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "topics" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
       },
       "ChartsJsOverview" : {
         "properties" : {
@@ -6425,6 +6437,30 @@
             "type" : "boolean"
           },
           "position" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SyncTopicsList" : {
+        "properties" : {
+          "resultSet" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TopicRequestsResponseModel"
+            }
+          },
+          "allTopicsCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "EnvIdInfo" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
             "type" : "string"
           }
         }
@@ -6783,6 +6819,106 @@
                 "type" : "string"
               }
             }
+          }
+        }
+      },
+      "KwReport" : {
+        "properties" : {
+          "data" : {
+            "type" : "string"
+          },
+          "filename" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SupportedProtocolInfo" : {
+        "properties" : {
+          "name" : {
+            "type" : "string"
+          },
+          "value" : {
+            "type" : "string"
+          }
+        }
+      },
+      "EnvParams" : {
+        "properties" : {
+          "defaultPartitions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "partitionsList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "defaultRepFactor" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "replicationFactorList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "topicPrefix" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "topicSuffix" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "DbAuthInfo" : {
+        "properties" : {
+          "dbauth" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "dbauth" ]
+      },
+      "DashboardStats" : {
+        "properties" : {
+          "producerCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "consumerCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teamMembersCount" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "OffsetDetails" : {
+        "properties" : {
+          "topicPartitionId" : {
+            "type" : "string"
+          },
+          "currentOffset" : {
+            "type" : "string"
+          },
+          "endOffset" : {
+            "type" : "string"
+          },
+          "lag" : {
+            "type" : "string"
           }
         }
       },
@@ -7174,6 +7310,22 @@
         },
         "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackTopics", "syncConnectors", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
+      "KwPropertiesResponse" : {
+        "properties" : {
+          "result" : {
+            "type" : "string"
+          },
+          "kwkey" : {
+            "type" : "string"
+          },
+          "kwvalue" : {
+            "type" : "string"
+          },
+          "kwdesc" : {
+            "type" : "string"
+          }
+        }
+      },
       "ServerConfigProperties" : {
         "properties" : {
           "id" : {
@@ -7302,6 +7454,16 @@
           }
         }
       },
+      "AclsCountPerEnv" : {
+        "properties" : {
+          "status" : {
+            "type" : "string"
+          },
+          "aclsCount" : {
+            "type" : "string"
+          }
+        }
+      },
       "AclRequestsResponseModel" : {
         "properties" : {
           "environment" : {
@@ -7420,6 +7582,19 @@
           }
         },
         "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "acl_ip", "acl_ssl", "allPageNos", "approvingTeamDetails", "consumergroup", "currentPage", "environment", "environmentName", "req_no", "requestOperationType", "requestStatus", "requestingTeamName", "requestingteam", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicname", "totalNoPages" ]
+      },
+      "AclCommands" : {
+        "properties" : {
+          "result" : {
+            "type" : "string"
+          },
+          "aclCommandSsl" : {
+            "type" : "string"
+          },
+          "aclCommandPlaintext" : {
+            "type" : "string"
+          }
+        }
       }
     }
   }

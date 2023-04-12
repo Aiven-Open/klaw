@@ -21,6 +21,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.DefaultDataService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   @Autowired HandleDbRequestsJdbc handleDbRequests;
 
-  private static Map<Integer, Map<String, Map<String, List<String>>>> envParamsMapPerTenant;
+  private static Map<Integer, Map<String, EnvParams>> envParamsMapPerTenant;
 
   private static Map<Integer, Map<String, Map<String, String>>> kwPropertiesMapPerTenant;
 
@@ -329,7 +330,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
         .getKey();
   }
 
-  public Map<String, Map<String, List<String>>> getEnvParamsMap(Integer tenantId) {
+  public Map<String, EnvParams> getEnvParamsMap(Integer tenantId) {
     return envParamsMapPerTenant.get(tenantId);
   }
 
@@ -671,11 +672,10 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
         kafkaEnvList.stream()
             .filter(kafkaEnv -> Objects.equals(kafkaEnv.getTenantId(), tenantId))
             .toList();
-    Map<String, Map<String, List<String>>> envParamsMap = new HashMap<>();
+    Map<String, EnvParams> envParamsMap = new HashMap<>();
 
-    Map<String, List<String>> oneEnvParamsMap;
     for (Env env : kafkaEnvTenantList) {
-      oneEnvParamsMap = new HashMap<>();
+      EnvParams oneEnvParamsObj = new EnvParams();
       String envParams = env.getOtherParams();
 
       String[] params = envParams.split(",");
@@ -685,7 +685,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
           defaultPartitions = param.substring(param.indexOf("=") + 1);
           List<String> defPartitionsList = new ArrayList<>();
           defPartitionsList.add(defaultPartitions);
-          oneEnvParamsMap.put("defaultPartitions", defPartitionsList);
+          oneEnvParamsObj.setDefaultPartitions(defPartitionsList);
         } else if (param.startsWith("max.partitions")) {
           String maxPartitions = param.substring(param.indexOf("=") + 1);
           int maxPartitionsInt = Integer.parseInt(maxPartitions);
@@ -698,12 +698,12 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
               partitions.add(i + "");
             }
           }
-          oneEnvParamsMap.put("partitionsList", partitions);
+          oneEnvParamsObj.setPartitionsList(partitions);
         } else if (param.startsWith("default.replication.factor")) {
           defaultRf = param.substring(param.indexOf("=") + 1);
           List<String> repFactorList = new ArrayList<>();
           repFactorList.add(defaultRf);
-          oneEnvParamsMap.put("defaultRepFactor", repFactorList);
+          oneEnvParamsObj.setDefaultRepFactor(repFactorList);
         } else if (param.startsWith("max.replication.factor")) {
           String maxRf = param.substring(param.indexOf("=") + 1);
           int maxRfInt = Integer.parseInt(maxRf);
@@ -717,21 +717,21 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
             }
           }
 
-          oneEnvParamsMap.put("replicationFactorList", rf);
+          oneEnvParamsObj.setReplicationFactorList(rf);
         } else if (param.startsWith("topic.prefix")) {
           String topicPrefix = param.substring(param.indexOf("=") + 1);
           List<String> topicPrefixList = new ArrayList<>();
           topicPrefixList.add(topicPrefix);
-          oneEnvParamsMap.put("topicPrefix", topicPrefixList);
+          oneEnvParamsObj.setTopicPrefix(topicPrefixList);
         } else if (param.startsWith("topic.suffix")) {
           String topicSuffix = param.substring(param.indexOf("=") + 1);
           List<String> topicSuffixList = new ArrayList<>();
           topicSuffixList.add(topicSuffix);
-          oneEnvParamsMap.put("topicSuffix", topicSuffixList);
+          oneEnvParamsObj.setTopicSuffix(topicSuffixList);
         }
       }
 
-      envParamsMap.put(env.getId(), oneEnvParamsMap);
+      envParamsMap.put(env.getId(), oneEnvParamsObj);
     }
     envParamsMapPerTenant.put(tenantId, envParamsMap);
   }

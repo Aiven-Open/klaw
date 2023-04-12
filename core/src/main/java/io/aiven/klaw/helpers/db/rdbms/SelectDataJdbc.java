@@ -8,6 +8,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -385,8 +386,8 @@ public class SelectDataJdbc {
     }
   }
 
-  public Map<String, String> getDashboardStats(Integer teamId, int tenantId) {
-    Map<String, String> dashboardMap = new HashMap<>();
+  public DashboardStats getDashboardStats(Integer teamId, int tenantId) {
+    DashboardStats dashboardStats = new DashboardStats();
     int countProducers = 0, countConsumers = 0;
     List<Acl> acls =
         aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
@@ -395,7 +396,7 @@ public class SelectDataJdbc {
       acls.forEach(a -> topicList.add(a.getTopicname()));
       countProducers = (int) topicList.stream().distinct().count();
     }
-    dashboardMap.put("producerCount", "" + countProducers);
+    dashboardStats.setProducerCount(countProducers);
 
     acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
     List<String> topicListCons = new ArrayList<>();
@@ -403,12 +404,12 @@ public class SelectDataJdbc {
       acls.forEach(a -> topicListCons.add(a.getTopicname()));
       countConsumers = (int) topicListCons.stream().distinct().count();
     }
-    dashboardMap.put("consumerCount", "" + countConsumers);
+    dashboardStats.setConsumerCount(countConsumers);
 
     List<UserInfo> allUsers = userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
-    dashboardMap.put("teamMembersCount", "" + allUsers.size());
+    dashboardStats.setTeamMembersCount(allUsers.size());
 
-    return dashboardMap;
+    return dashboardStats;
   }
 
   public List<Topic> selectAllTopicsByTopictypeAndTeamname(

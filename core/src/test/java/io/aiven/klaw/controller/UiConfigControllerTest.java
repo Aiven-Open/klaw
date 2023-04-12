@@ -16,6 +16,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
@@ -23,7 +24,6 @@ import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import io.aiven.klaw.service.UiConfigControllerService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -103,7 +103,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(2)
   public void getSyncEnv() throws Exception {
-    List<Map<String, String>> envList = utilMethods.getSyncEnv();
+    List<EnvIdInfo> envList = utilMethods.getSyncEnv();
     when(envsClustersTenantsControllerService.getSyncEnvs()).thenReturn(envList);
 
     mvcEnvs

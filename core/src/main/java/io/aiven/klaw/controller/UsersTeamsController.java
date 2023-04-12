@@ -7,13 +7,13 @@ import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
+import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import io.aiven.klaw.service.SaasService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -110,7 +110,7 @@ public class UsersTeamsController {
       value = "/getActivationInfo",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getActivationInfo(
+  public ResponseEntity<ApiResponse> getActivationInfo(
       @RequestParam("userActivationId") String userActivationId) {
     return new ResponseEntity<>(saasService.getActivationInfo(userActivationId), HttpStatus.OK);
   }
@@ -209,7 +209,7 @@ public class UsersTeamsController {
   }
 
   @PostMapping(value = "/resetPassword")
-  public ResponseEntity<Map<String, String>> resetPassword(
+  public ResponseEntity<ResetPasswordInfo> resetPassword(
       @RequestParam("username") String username) {
     return new ResponseEntity<>(usersTeamsControllerService.resetPassword(username), HttpStatus.OK);
   }

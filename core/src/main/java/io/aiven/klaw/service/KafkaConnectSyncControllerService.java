@@ -24,7 +24,6 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -50,9 +49,7 @@ public class KafkaConnectSyncControllerService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  public Map<String, String> getConnectorDetails(String connectorName, String envId)
-      throws KlawException {
-    Map<String, String> response = new HashMap<>();
+  public ApiResponse getConnectorDetails(String connectorName, String envId) throws KlawException {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     KwClusters kwClusters =
         manageDatabase
@@ -69,14 +66,11 @@ public class KafkaConnectSyncControllerService {
 
     try {
       String schemaOfObj = OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(res);
-      response.put("result", schemaOfObj);
-      return response;
+      return ApiResponse.builder().success(true).message(schemaOfObj).build();
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
+      return ApiResponse.builder().success(false).message(e.getMessage()).build();
     }
-
-    response.put("result", res.toString());
-    return response;
   }
 
   public ApiResponse updateSyncConnectors(List<SyncConnectorUpdates> updatedSyncTopics)
