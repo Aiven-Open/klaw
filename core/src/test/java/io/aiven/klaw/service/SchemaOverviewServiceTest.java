@@ -90,7 +90,8 @@ public class SchemaOverviewServiceTest {
   public void givenASchemaWithOnlyOneSchemaEnv_ReturnNoPromotion() throws Exception {
     stubUserInfo();
     when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
-    when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
+    when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
+            eq(TESTTOPIC), eq(10), eq(101)))
         .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 1);
 
@@ -114,7 +115,8 @@ public class SchemaOverviewServiceTest {
 
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
     when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
-    when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
+    when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
+            eq(TESTTOPIC), eq(10), eq(101)))
         .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
     SchemaOverview returnedValue =
         schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", List.of("1", "2"));

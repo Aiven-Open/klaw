@@ -103,6 +103,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcInsertHelper.insertMetrics(kwMetrics);
   }
 
+  @Override
+  public List<Topic> getAllTopicsByTopicNameAndTeamIdAndTenantId(
+      String topicName, int teamId, int tenantId) {
+    return jdbcSelectHelper.getTopicsByTopicNameAndTeamId(topicName, teamId, tenantId);
+  }
+
   /*--------------------Select */
 
   public List<TopicRequest> getAllTopicRequests(

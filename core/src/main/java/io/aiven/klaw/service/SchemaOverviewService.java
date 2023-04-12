@@ -44,20 +44,6 @@ public class SchemaOverviewService extends BaseOverviewService {
     return schemaOverview;
   }
 
-  private boolean requestorOwnsTopic(
-      String topicNameSearch, String kafkaEnv, String userName, int tenantId) {
-    List<Topic> topic = manageDatabase.getHandleDbRequests().getTopics(topicNameSearch, tenantId);
-    log.debug("topics : {} for kafkaEnv: {}", topic, kafkaEnv);
-    topic = topic.stream().filter(t -> t.getEnvironment().equals(kafkaEnv)).toList();
-
-    if (topic != null && topic.size() == 1) {
-      Integer teamId = topic.get(0).getTeamId();
-      return teamId.equals(commonUtilsService.getTeamId(userName));
-    }
-    // If topic isn't found or multiples found return false.
-    return false;
-  }
-
   private void updateAvroSchema(
       String topicNameSearch,
       String schemaVersionSearch,
@@ -85,6 +71,12 @@ public class SchemaOverviewService extends BaseOverviewService {
                 .selectEnvDetails(associatedSchemaEnv.getId(), tenantId);
         schemaEnvs.add(schemaEnv);
       }
+
+      List<Topic> topics =
+          manageDatabase
+              .getHandleDbRequests()
+              .getAllTopicsByTopicNameAndTeamIdAndTenantId(
+                  topicNameSearch, commonUtilsService.getTeamId(userName), tenantId);
 
       Object dynamicObj;
       Map<String, Object> hashMapSchemaObj;
@@ -168,8 +160,9 @@ public class SchemaOverviewService extends BaseOverviewService {
 
             schemaDetails.add(schemaMap);
             schemaOverview.setSchemaExists(true);
-            if (requestorOwnsTopic(
-                topicNameSearch, schemaEnv.getAssociatedEnv().getId(), userName, tenantId)) {
+            // A team owns a topic across all environments so we can assume if the search returned
+            // one or more topics it is owned by this users team.
+            if (topics.size() > 0) {
               // Set Promotion Details
               processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv, kafkaEnvIds);
               log.info("Getting schema details for: " + topicNameSearch);
