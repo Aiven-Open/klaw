@@ -5439,7 +5439,8 @@
           "userFound" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "passwordSent", "userFound" ]
       },
       "RequestVerdict" : {
         "properties" : {
@@ -6125,7 +6126,8 @@
           "envstatus" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "envstatus", "result" ]
       },
       "TopicsCountPerEnv" : {
         "properties" : {
@@ -6280,7 +6282,8 @@
           "topicContents" : {
             "$ref" : "#/components/schemas/TopicInfo"
           }
-        }
+        },
+        "required" : [ "topicExists" ]
       },
       "TenantInfo" : {
         "properties" : {
@@ -6884,7 +6887,8 @@
           "dbauth" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "dbauth" ]
       },
       "DashboardStats" : {
         "properties" : {

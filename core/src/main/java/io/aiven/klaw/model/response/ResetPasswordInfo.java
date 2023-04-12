@@ -1,9 +1,12 @@
 package io.aiven.klaw.model.response;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class ResetPasswordInfo {
-  private String passwordSent;
-  private String userFound;
+
+  @NotNull private String passwordSent;
+
+  @NotNull private String userFound;
 }

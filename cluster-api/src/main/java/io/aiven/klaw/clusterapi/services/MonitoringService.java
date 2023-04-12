@@ -38,7 +38,6 @@ public class MonitoringService {
 
     AdminClient adminClient = clusterApiUtils.getAdminClient(environment, protocol, clusterName);
 
-    //    List<Map<String, String>> consumerGroupOffsetList = new ArrayList<>();
     List<OffsetDetails> consumerGroupOffsetList = new ArrayList<>();
     OffsetDetails offsetDetails;
     try {
