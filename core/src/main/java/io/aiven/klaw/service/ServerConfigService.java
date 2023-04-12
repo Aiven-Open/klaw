@@ -5,6 +5,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_104;
 import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_106;
 import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -31,10 +32,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.WordUtils;
@@ -222,19 +225,35 @@ public class ServerConfigService {
             updateEnvIdValues(dynamicObj);
             kwPropertiesModel.setKwValue(OBJECT_MAPPER.writeValueAsString(dynamicObj));
           } else {
-            return ApiResponse.builder().success(false).message(SERVER_CONFIG_ERR_101).build();
+            return ApiResponse.builder()
+                .success(false)
+                .message(SERVER_CONFIG_ERR_101)
+                .data(kwKey)
+                .build();
           }
         } catch (IOException e) {
           log.error("Exception:", e);
-          return ApiResponse.builder().success(false).message(SERVER_CONFIG_ERR_102).build();
+          return ApiResponse.builder()
+              .success(false)
+              .message(SERVER_CONFIG_ERR_102)
+              .data(kwKey)
+              .build();
         }
       }
     } catch (KlawException klawException) {
-      return ApiResponse.builder().success(false).message(klawException.getMessage()).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(klawException.getMessage())
+          .data(kwKey)
+          .build();
 
     } catch (Exception e) {
       log.error("Exception:", e);
-      return ApiResponse.builder().success(false).message(SERVER_CONFIG_ERR_103).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(SERVER_CONFIG_ERR_103)
+          .data(kwKey)
+          .build();
     }
 
     try {
@@ -343,38 +362,34 @@ public class ServerConfigService {
     }
   }
 
-  private void updateEnvIdValues(TenantConfig dynamicObj) {
+  private void updateEnvIdValues(TenantConfig dynamicObj) throws KlawException {
     if (dynamicObj.getTenantModel() != null) {
       KwTenantConfigModel tenantModel = dynamicObj.getTenantModel();
 
       // syncClusterName update
+      Integer tenantId = getTenantIdFromName(tenantModel.getTenantName());
       if (tenantModel.getBaseSyncEnvironment() != null) {
         tenantModel.setBaseSyncEnvironment(
-            getEnvDetailsFromName(
-                    tenantModel.getBaseSyncEnvironment(),
-                    getTenantIdFromName(tenantModel.getTenantName()))
-                .getId());
+            getEnvDetailsFromName(tenantModel.getBaseSyncEnvironment(), tenantId).getId());
       }
 
       // syncClusterKafkaConnectName update
       if (tenantModel.getBaseSyncKafkaConnectCluster() != null) {
         tenantModel.setBaseSyncKafkaConnectCluster(
             getKafkaConnectEnvDetailsFromName(
-                    tenantModel.getBaseSyncKafkaConnectCluster(),
-                    getTenantIdFromName(tenantModel.getTenantName()))
+                    tenantModel.getBaseSyncKafkaConnectCluster(), tenantId)
                 .getId());
       }
 
       // kafka
       if (tenantModel.getOrderOfTopicPromotionEnvsList() != null) {
         List<String> tmpOrderList = new ArrayList<>();
-        tenantModel
-            .getOrderOfTopicPromotionEnvsList()
-            .forEach(
-                a ->
-                    tmpOrderList.add(
-                        getEnvDetailsFromName(a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+        List<String> topicPromotionEnvs = tenantModel.getOrderOfTopicPromotionEnvsList();
+        topicPromotionEnvs.forEach(
+            a -> tmpOrderList.add(getEnvDetailsFromName(a, tenantId).getId()));
+        if (!validateEnvsClusters(topicPromotionEnvs, tenantId)) {
+          throw new KlawException(SERVER_CONFIG_ERR_106);
+        }
         tenantModel.setOrderOfTopicPromotionEnvsList(tmpOrderList);
       }
 
@@ -384,11 +399,7 @@ public class ServerConfigService {
         tenantModel
             .getOrderOfConnectorsPromotionEnvsList()
             .forEach(
-                a ->
-                    tmpOrderList1.add(
-                        getKafkaConnectEnvDetailsFromName(
-                                a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+                a -> tmpOrderList1.add(getKafkaConnectEnvDetailsFromName(a, tenantId).getId()));
         tenantModel.setOrderOfConnectorsPromotionEnvsList(tmpOrderList1);
       }
 
@@ -397,11 +408,7 @@ public class ServerConfigService {
         List<String> tmpReqTopicList = new ArrayList<>();
         tenantModel
             .getRequestTopicsEnvironmentsList()
-            .forEach(
-                a ->
-                    tmpReqTopicList.add(
-                        getEnvDetailsFromName(a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+            .forEach(a -> tmpReqTopicList.add(getEnvDetailsFromName(a, tenantId).getId()));
         tenantModel.setRequestTopicsEnvironmentsList(tmpReqTopicList);
       }
 
@@ -411,11 +418,7 @@ public class ServerConfigService {
         tenantModel
             .getRequestConnectorsEnvironmentsList()
             .forEach(
-                a ->
-                    tmpReqTopicList1.add(
-                        getKafkaConnectEnvDetailsFromName(
-                                a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+                a -> tmpReqTopicList1.add(getKafkaConnectEnvDetailsFromName(a, tenantId).getId()));
         tenantModel.setRequestConnectorsEnvironmentsList(tmpReqTopicList1);
       }
 
@@ -424,15 +427,18 @@ public class ServerConfigService {
         List<String> tmpSchemaReqList = new ArrayList<>();
         tenantModel
             .getRequestSchemaEnvironmentsList()
-            .forEach(
-                a ->
-                    tmpSchemaReqList.add(
-                        getSchemaEnvDetailsFromName(
-                                a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+            .forEach(a -> tmpSchemaReqList.add(getSchemaEnvDetailsFromName(a, tenantId).getId()));
         tenantModel.setRequestSchemaEnvironmentsList(tmpSchemaReqList);
       }
     }
+  }
+
+  // verify is same kafka clusters are configured for the topic promotion envs
+  private boolean validateEnvsClusters(List<String> topicPromotionEnvs, Integer tenantId) {
+    Set<Integer> uniqueClusterIds = new HashSet<>();
+    topicPromotionEnvs.forEach(
+        env -> uniqueClusterIds.add(getEnvDetailsFromName(env, tenantId).getClusterId()));
+    return uniqueClusterIds.size() == topicPromotionEnvs.size();
   }
 
   private boolean validateTenantConfig(TenantConfig dynamicObj, int tenantId) throws KlawException {

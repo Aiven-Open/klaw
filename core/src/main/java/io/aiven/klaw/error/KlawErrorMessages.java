@@ -144,6 +144,9 @@ public class KlawErrorMessages {
 
   public static final String ENV_CLUSTER_TNT_109 = "Our Organization";
 
+  public static final String ENV_CLUSTER_TNT_110 =
+      "Environments pointing to same cluster without a different prefix/suffix regex";
+
   // Kafka connect service
 
   public static final String KAFKA_CONNECT_ERR_101 =
@@ -270,6 +273,9 @@ public class KlawErrorMessages {
 
   public static final String SERVER_CONFIG_ERR_105 =
       "Resource %s must be created before being added to the Tenant Model";
+
+  public static final String SERVER_CONFIG_ERR_106 =
+      "Environments pointing to same kafka cluster is not allowed.";
 
   // Topic service
   public static final String TOPICS_ERR_101 = "Missing Permissions for this operation.";

@@ -42,6 +42,7 @@ import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.response.OffsetDetails;
+import io.aiven.klaw.model.response.TopicConfig;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
@@ -353,7 +354,7 @@ public class ClusterApiService {
     return aclListOriginal;
   }
 
-  public List<Map<String, String>> getAllTopics(
+  public List<TopicConfig> getAllTopics(
       String bootstrapHost,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
@@ -362,7 +363,7 @@ public class ClusterApiService {
       throws Exception {
     log.info("getAllTopics {} {}", bootstrapHost, protocol);
     getClusterApiProperties(tenantId);
-    List<Map<String, String>> topicsList;
+    List<TopicConfig> topicsList;
     String aclsNativeType = AclsNativeType.NATIVE.value;
 
     if (KafkaFlavors.CONFLUENT_CLOUD.value.equals(kafkaFlavors)) {
@@ -382,7 +383,7 @@ public class ClusterApiService {
                   aclsNativeType);
 
       HttpEntity<String> entity = getHttpEntity();
-      ResponseEntity<Set<Map<String, String>>> s =
+      ResponseEntity<Set<TopicConfig>> s =
           getRestTemplate()
               .exchange(
                   uriGetTopicsFull, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
