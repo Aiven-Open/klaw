@@ -754,7 +754,7 @@ public class SelectDataJdbc {
                 .format((row.getRequesttime()).getTime()));
       } catch (Exception ignored) {
       }
-      if (!wildcardSearch || row.getConnectorName().toLowerCase().contains(search))
+      if (!wildcardSearch || row.getConnectorName().toLowerCase().contains(search.toLowerCase()))
         topicRequestList.add(row); // no team filter
     }
 

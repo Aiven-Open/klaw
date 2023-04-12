@@ -307,7 +307,12 @@ public class KafkaConnectControllerService {
       final String topicSearchFilter = connectorNameSearch;
       topicFilteredList =
           topicsFromSOT.stream()
-              .filter(topic -> topic.getConnectorName().contains(topicSearchFilter))
+              .filter(
+                  topic ->
+                      topic
+                          .getConnectorName()
+                          .toLowerCase()
+                          .contains(topicSearchFilter.toLowerCase()))
               .collect(Collectors.toList());
 
       // searching documentation
@@ -316,7 +321,10 @@ public class KafkaConnectControllerService {
               .filter(
                   topic ->
                       (topic.getDocumentation() != null
-                          && topic.getDocumentation().contains(topicSearchFilter)))
+                          && topic
+                              .getDocumentation()
+                              .toLowerCase()
+                              .contains(topicSearchFilter.toLowerCase())))
               .toList();
 
       topicFilteredList.addAll(searchDocList);
