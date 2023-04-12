@@ -2,17 +2,18 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ConnectorOverview;
-import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.response.ConnectorOverview;
+import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
+import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import io.aiven.klaw.service.KafkaConnectControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,7 +53,7 @@ public class KafkaConnectController {
    * @return A List of Kafka Connector Requests filtered by the provided parameters.
    */
   @RequestMapping(
-      value = "/getConnectorRequestsForApproval",
+      value = "/getConnectorRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<KafkaConnectorRequestsResponseModel>> getCreatedConnectorRequests(
@@ -67,7 +68,7 @@ public class KafkaConnectController {
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getCreatedConnectorRequests(
-            pageNo, currentPage, requestStatus.value, env, requestOperationType, order, search),
+            pageNo, currentPage, requestStatus.value, env, order, requestOperationType, search),
         HttpStatus.OK);
   }
 
@@ -126,6 +127,7 @@ public class KafkaConnectController {
    * @param requestOperationType is a filter to only return requests of a certain operation type
    *     e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param search A wildcard search term that searches topicNames.
+   * @param isMyRequest Only return requests created by the user calling the API
    * @return A list of Kafka Connector requests
    */
   @RequestMapping(
@@ -141,10 +143,19 @@ public class KafkaConnectController {
           Order order,
       @RequestParam(value = "operationType", required = false)
           RequestOperationType requestOperationType,
-      @RequestParam(value = "search", required = false) String search) {
+      @RequestParam(value = "search", required = false) String search,
+      @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
+          boolean isMyRequest) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorRequests(
-            pageNo, currentPage, requestStatus.value, requestOperationType, env, order, search),
+            pageNo,
+            currentPage,
+            requestStatus.value,
+            requestOperationType,
+            env,
+            order,
+            search,
+            isMyRequest),
         HttpStatus.OK);
   }
 
@@ -152,7 +163,7 @@ public class KafkaConnectController {
       value = "/getConnectors",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<List<KafkaConnectorModel>>> getConnectors(
+  public ResponseEntity<List<List<KafkaConnectorModelResponse>>> getConnectors(
       @RequestParam("env") String envId,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
@@ -197,7 +208,7 @@ public class KafkaConnectController {
       value = "/getConnectorDetailsPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, Object>> getConnectorDetailsPerEnv(
+  public ResponseEntity<ConnectorOverviewPerEnv> getConnectorDetailsPerEnv(
       @RequestParam("envSelected") String envId,
       @RequestParam("connectorName") String connectorName) {
     return new ResponseEntity<>(

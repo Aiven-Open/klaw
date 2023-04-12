@@ -1,5 +1,8 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.response;
 
+import io.aiven.klaw.model.AclInfo;
+import io.aiven.klaw.model.TopicHistory;
+import io.aiven.klaw.model.TopicInfo;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;

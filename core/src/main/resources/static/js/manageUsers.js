@@ -400,7 +400,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             serviceInput['username'] = $scope.addNewUser.username;
             serviceInput['fullname'] = $scope.addNewUser.fullname;
             serviceInput['userPassword'] = $scope.addNewUser.pwd;
-            serviceInput['team'] = $scope.addNewUser.team.teamname;
+            serviceInput['teamId'] = $scope.addNewUser.team;
             serviceInput['role'] = $scope.addNewUser.role;
             serviceInput['mailid'] = $scope.addNewUser.emailid;
             serviceInput['switchTeams'] = $scope.addNewUser.canswitchteams;
@@ -485,9 +485,10 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             serviceInput['username'] = $scope.addNewUser.username;
             serviceInput['fullname'] = $scope.addNewUser.fullname;
             serviceInput['userPassword'] = $scope.addNewUser.pwd;
-            serviceInput['team'] = $scope.addNewUser.team.teamname;
+            serviceInput['teamId'] = $scope.addNewUser.team;
             serviceInput['role'] = $scope.addNewUser.role;
             serviceInput['mailid'] = $scope.addNewUser.username;
+            serviceInput['switchTeams'] = $scope.addNewUser.canswitchteams;
 
             $scope.addUserHttpCall(serviceInput);
         };

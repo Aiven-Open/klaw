@@ -14,9 +14,10 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
-import io.aiven.klaw.model.RegisterSaasUserInfoModel;
-import io.aiven.klaw.model.RegisterUserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.requests.RegisterSaasUserInfoModel;
+import io.aiven.klaw.model.requests.RegisterUserInfoModel;
+import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,8 @@ public class SaasService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  public Map<String, String> approveUserSaas(RegisterUserInfoModel newUser) throws Exception {
+  public Map<String, String> approveUserSaas(RegisterUserInfoModelResponse newUser)
+      throws Exception {
     log.info("approveUserSaas {} / {}", newUser.getFullname(), newUser.getMailid());
     Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
 
@@ -268,7 +270,7 @@ public class SaasService {
     return false;
   }
 
-  private void updateStaticData(RegisterUserInfoModel newUserTarget, Integer tenantId) {
+  private void updateStaticData(RegisterUserInfoModelResponse newUserTarget, Integer tenantId) {
     manageDatabase
         .getHandleDbRequests()
         .insertDefaultKwProperties(
@@ -285,7 +287,7 @@ public class SaasService {
   // approve users
   public Map<String, String> getActivationInfo(String activationId) {
     Map<String, String> resultMap = new HashMap<>();
-    RegisterUserInfoModel registerUserInfoModel =
+    RegisterUserInfoModelResponse registerUserInfoModel =
         usersTeamsControllerService.getRegistrationInfoFromId(activationId, "");
 
     if (registerUserInfoModel == null) {

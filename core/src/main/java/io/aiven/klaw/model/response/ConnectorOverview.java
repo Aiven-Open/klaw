@@ -1,12 +1,13 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.response;
 
+import io.aiven.klaw.model.TopicHistory;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
 
 @Data
 public class ConnectorOverview {
-  List<KafkaConnectorModel> topicInfoList;
+  List<KafkaConnectorModelResponse> connectorInfoList;
   private List<TopicHistory> topicHistoryList;
   Map<String, String> promotionDetails;
   boolean connectorExists;

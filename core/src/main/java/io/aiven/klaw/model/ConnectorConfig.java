@@ -1,4 +1,4 @@
-package io.aiven.klaw.model.connectorconfig;
+package io.aiven.klaw.model;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.io.Serializable;

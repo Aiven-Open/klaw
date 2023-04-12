@@ -24,6 +24,8 @@ describe("environment-test-helper.ts", () => {
         topicsuffix: undefined,
         totalNoPages: "1",
         type: "kafka",
+        associatedEnv: undefined,
+        clusterType: "ALL",
       };
 
       expect(createMockEnvironmentDTO({ name: nameToTest })).toEqual(result);

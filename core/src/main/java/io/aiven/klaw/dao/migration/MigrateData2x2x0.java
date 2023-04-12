@@ -52,7 +52,7 @@ public class MigrateData2x2x0 {
     int numberOfRequests = 0, numberOfRequestsUpdated = 0;
     List<KafkaConnectorRequest> kcRequests =
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
-            false, "superadmin", null, null, true, Integer.valueOf(tenantId), null, null);
+            false, "superadmin", null, null, true, Integer.valueOf(tenantId), null, null, false);
 
     kcRequests =
         kcRequests.stream()

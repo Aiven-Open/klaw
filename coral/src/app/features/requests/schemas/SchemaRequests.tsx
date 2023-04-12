@@ -166,7 +166,7 @@ function SchemaRequests() {
         filters={[
           <EnvironmentFilter
             key={"environments"}
-            isSchemaRegistryEnvironments
+            environmentEndpoint={"getSchemaRegistryEnvironments"}
           />,
           <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,

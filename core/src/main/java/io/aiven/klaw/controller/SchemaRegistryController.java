@@ -2,12 +2,12 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
+import io.aiven.klaw.model.response.SchemaOverview;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.service.SchemaOverviewService;
 import io.aiven.klaw.service.SchemaRegistryControllerService;

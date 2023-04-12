@@ -2,47 +2,124 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
-import { Environment, mockGetEnvironments } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
+import {
+  getEnvironments,
+  getSchemaRegistryEnvironments,
+  getSyncConnectorsEnvironments,
+} from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
-import { server } from "src/services/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-const filterLabel = "Filter by Environment";
-describe("EnvironmentFilter.tsx", () => {
-  beforeAll(() => {
-    server.listen();
-  });
+jest.mock("src/domain/environment/environment-api.ts");
 
-  afterAll(() => {
-    server.close();
-  });
+const mockGetEnvironments = getEnvironments as jest.MockedFunction<
+  typeof getEnvironments
+>;
 
-  const mockedEnvironmentDev: Environment = createEnvironment({
+const mockGetSchemaRegistryEnvironments =
+  getSchemaRegistryEnvironments as jest.MockedFunction<
+    typeof getSchemaRegistryEnvironments
+  >;
+
+const mockGetSyncConnectorsEnvironments =
+  getSyncConnectorsEnvironments as jest.MockedFunction<
+    typeof getSyncConnectorsEnvironments
+  >;
+
+const mockEnvironments = [
+  createEnvironment({
     name: "DEV",
     id: "1",
-  });
-  const mockedEnvironmentTst: Environment = createEnvironment({
+  }),
+  createEnvironment({
     name: "TST",
     id: "2",
+  }),
+];
+
+const filterLabel = "Filter by Environment";
+
+describe("EnvironmentFilter.tsx", () => {
+  describe("uses a given endpoint to fetch environments", () => {
+    beforeEach(() => {
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+    });
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("fetches from the getEnvironments endpoint", () => {
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+
+      expect(mockGetEnvironments).toHaveBeenCalled();
+      expect(mockGetSchemaRegistryEnvironments).not.toHaveBeenCalled();
+      expect(mockGetSyncConnectorsEnvironments).not.toHaveBeenCalled();
+    });
+
+    it("fetches from the getSchemaRegistryEnvironments endpoint", () => {
+      customRender(
+        <EnvironmentFilter
+          environmentEndpoint={"getSchemaRegistryEnvironments"}
+        />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+
+      expect(mockGetSchemaRegistryEnvironments).toHaveBeenCalled();
+      expect(mockGetEnvironments).not.toHaveBeenCalled();
+      expect(mockGetSyncConnectorsEnvironments).not.toHaveBeenCalled();
+    });
+
+    it("fetches from the getSyncConnectorsEnvironments endpoint", () => {
+      customRender(
+        <EnvironmentFilter
+          environmentEndpoint={"getSyncConnectorsEnvironments"}
+        />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+
+      expect(mockGetSyncConnectorsEnvironments).toHaveBeenCalled();
+      expect(mockGetEnvironments).not.toHaveBeenCalled();
+      expect(mockGetSchemaRegistryEnvironments).not.toHaveBeenCalled();
+    });
   });
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      customRender(<EnvironmentFilter />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
+      mockGetEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
     });
 
-    afterAll(cleanup);
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
 
     it("shows a select element for Kafka Environments", () => {
       const select = screen.getByRole("combobox", {
@@ -53,7 +130,7 @@ describe("EnvironmentFilter.tsx", () => {
     });
 
     it("renders a list of options for environments plus a option for `All Environments`", () => {
-      mockedEnvironmentResponse.forEach((environment) => {
+      mockEnvironments.forEach((environment) => {
         const option = screen.getByRole("option", {
           name: environment.name,
         });
@@ -61,7 +138,7 @@ describe("EnvironmentFilter.tsx", () => {
         expect(option).toBeEnabled();
       });
       expect(screen.getAllByRole("option")).toHaveLength(
-        mockedEnvironmentResponse.length + 1
+        mockEnvironments.length + 1
       );
     });
 
@@ -74,21 +151,23 @@ describe("EnvironmentFilter.tsx", () => {
   });
 
   describe("sets the active environment based on a query param", () => {
-    const mockedQueryParamDev = mockedEnvironmentDev.id;
+    const mockedQueryParamDev = mockEnvironments[0].id;
 
     beforeEach(async () => {
       const routePath = `/?environment=${mockedQueryParamDev}`;
 
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
+      mockGetEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
-      customRender(<EnvironmentFilter />, {
-        memoryRouter: true,
-        queryClient: true,
-        customRoutePath: routePath,
-      });
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+          customRoutePath: routePath,
+        }
+      );
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
@@ -99,26 +178,29 @@ describe("EnvironmentFilter.tsx", () => {
       cleanup();
     });
 
-    it(`shows "${mockedEnvironmentDev.name}" as the active option one`, async () => {
+    it(`shows "${mockEnvironments[0].name}" as the active option one`, async () => {
       const option = await screen.findByRole("option", {
-        name: mockedEnvironmentDev.name,
+        name: mockEnvironments[0].name,
         selected: true,
       });
       expect(option).toBeVisible();
-      expect(option).toHaveValue(mockedEnvironmentDev.id);
+      expect(option).toHaveValue(mockEnvironments[0].id);
     });
   });
 
   describe("handles user selecting a environment", () => {
     beforeEach(async () => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      customRender(<EnvironmentFilter />, {
-        queryClient: true,
-        memoryRouter: true,
-      });
+      mockGetEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
@@ -134,25 +216,28 @@ describe("EnvironmentFilter.tsx", () => {
         name: filterLabel,
       });
       const option = screen.getByRole("option", {
-        name: mockedEnvironmentDev.name,
+        name: mockEnvironments[1].name,
       });
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveValue(mockedEnvironmentDev.id);
+      expect(select).toHaveValue(mockEnvironments[1].id);
     });
   });
 
   describe("updates the search param to preserve environment in url", () => {
     beforeEach(async () => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      customRender(<EnvironmentFilter />, {
-        queryClient: true,
-        browserRouter: true,
-      });
+      mockGetEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        {
+          queryClient: true,
+          browserRouter: true,
+        }
+      );
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
@@ -169,20 +254,20 @@ describe("EnvironmentFilter.tsx", () => {
       expect(window.location.search).toEqual("");
     });
 
-    it(`sets "${mockedEnvironmentTst.name}&page=1" as search param when user selected it`, async () => {
+    it(`sets "${mockEnvironments[1].name}&page=1" as search param when user selected it`, async () => {
       const select = screen.getByRole("combobox", {
         name: filterLabel,
       });
 
       const option = screen.getByRole("option", {
-        name: mockedEnvironmentTst.name,
+        name: mockEnvironments[1].name,
       });
 
       await userEvent.selectOptions(select, option);
 
       await waitFor(() => {
         expect(window.location.search).toEqual(
-          `?environment=${mockedEnvironmentTst.id}&page=1`
+          `?environment=${mockEnvironments[1].id}&page=1`
         );
       });
     });

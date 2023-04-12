@@ -681,7 +681,8 @@ public class SelectDataJdbc {
       boolean showRequestsOfAllTeams,
       int tenantId,
       String env,
-      String search) {
+      String search,
+      boolean isMyRequest) {
     log.debug("selectConnectorRequestsByStatus {} {}", requestor, status);
     List<KafkaConnectorRequest> topicRequestList = new ArrayList<>();
 
@@ -700,7 +701,8 @@ public class SelectDataJdbc {
                   env,
                   status,
                   tenantId,
-                  String.valueOf(teamSelected)));
+                  String.valueOf(teamSelected),
+                  isMyRequest ? requestor : null));
 
       topicRequestListSub =
           Lists.newArrayList(
@@ -710,7 +712,8 @@ public class SelectDataJdbc {
                   env,
                   status,
                   tenantId,
-                  null));
+                  null,
+                  isMyRequest ? requestor : null));
 
       // Only execute just before adding the separate claim list as this will make sure only the
       // claim topics this team is able to approve will be returned.
@@ -735,10 +738,11 @@ public class SelectDataJdbc {
               findKafkaConnectorRequestsByExample(
                   requestOperationType != null ? requestOperationType.value : null,
                   showRequestsOfAllTeams ? null : teamSelected,
-                  null,
-                  null,
+                  env,
+                  status,
                   tenantId,
-                  null));
+                  null,
+                  isMyRequest ? requestor : null));
     }
 
     boolean wildcardSearch = search != null && !search.isEmpty();
@@ -775,7 +779,8 @@ public class SelectDataJdbc {
       String environment,
       String status,
       int tenantId,
-      String approvingTeam) {
+      String approvingTeam,
+      String requestor) {
 
     KafkaConnectorRequest request = new KafkaConnectorRequest();
     request.setTenantId(tenantId);
@@ -788,6 +793,10 @@ public class SelectDataJdbc {
     }
     if (teamId != null) {
       request.setTeamId(teamId);
+    }
+
+    if (requestor != null) {
+      request.setRequestor(requestor);
     }
 
     if (approvingTeam != null && !approvingTeam.isEmpty()) {

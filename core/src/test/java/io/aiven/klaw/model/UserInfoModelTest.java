@@ -2,6 +2,7 @@ package io.aiven.klaw.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.aiven.klaw.model.requests.UserInfoModel;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -79,6 +80,10 @@ public class UserInfoModelTest {
     UserInfoModel model = new UserInfoModel();
     model.setUsername("DORRIS");
     model.setMailid("bob@bob.com");
+    model.setTeamId(1001);
+    model.setRole("USER");
+    model.setSwitchTeams(false);
+    model.setUserPassword("");
     return model;
   }
 }

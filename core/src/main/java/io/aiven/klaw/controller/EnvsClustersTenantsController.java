@@ -3,11 +3,12 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.response.ClusterInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
+import io.aiven.klaw.model.response.KwClustersModelResponse;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
@@ -34,7 +35,7 @@ public class EnvsClustersTenantsController {
       value = "/getClusters",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<KwClustersModel>> getClusters(
+  public ResponseEntity<List<KwClustersModelResponse>> getClusters(
       @RequestParam(value = "clusterType") String clusterType) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getClusters(clusterType), HttpStatus.OK);
@@ -44,7 +45,7 @@ public class EnvsClustersTenantsController {
       value = "/getClustersPaginated",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<KwClustersModel>> getClustersPaginated(
+  public ResponseEntity<List<KwClustersModelResponse>> getClustersPaginated(
       @RequestParam(value = "clusterType") String clusterType,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "clusterId", defaultValue = "") String clusterId,
@@ -59,7 +60,7 @@ public class EnvsClustersTenantsController {
       value = "/getClusterDetails",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<KwClustersModel> getClusterDetails(
+  public ResponseEntity<KwClustersModelResponse> getClusterDetails(
       @RequestParam(value = "clusterId") String clusterId) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getClusterDetails(clusterId), HttpStatus.OK);

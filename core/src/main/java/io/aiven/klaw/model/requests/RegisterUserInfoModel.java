@@ -1,4 +1,4 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.requests;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -13,17 +13,30 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class RegisterSaasUserInfoModel implements Serializable {
+public class RegisterUserInfoModel implements Serializable {
 
-  @Size(min = 4, max = 300, message = "Name must be above 3 characters")
+  // Can be emailid or username
+  @Size(min = 6, max = 300, message = "UserName must be above 5 characters")
+  @NotNull(message = "Username cannot be null")
+  private String username;
+
+  private String pwd;
+
+  private String team;
+
+  private Integer teamId;
+
+  private String role;
+
+  @Size(min = 5, max = 50, message = "Name must be above 4 characters")
   @NotNull(message = "Name cannot be null")
-  @Pattern(message = "Invalid Full name.", regexp = "^[a-zA-z ]*$") // Pattern a-zA-z and/or spaces.
+  @Pattern(
+      message = "Invalid Full name.",
+      regexp = "^[a-zA-z ]*$") //  Pattern a-zA-z and/or spaces.
   private String fullname;
 
   @Email(message = "Email should be valid")
   private String mailid;
-
-  private String recaptchaStr;
 
   private String status;
 
@@ -32,6 +45,8 @@ public class RegisterSaasUserInfoModel implements Serializable {
   private String approver;
 
   private String registrationId;
+
+  private int tenantId;
 
   private String tenantName;
 }

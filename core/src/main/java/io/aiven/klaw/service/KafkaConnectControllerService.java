@@ -23,18 +23,20 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ConnectorOverview;
-import io.aiven.klaw.model.KafkaConnectorModel;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
+import io.aiven.klaw.model.ConnectorConfig;
 import io.aiven.klaw.model.TopicHistory;
-import io.aiven.klaw.model.connectorconfig.ConnectorConfig;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.response.ConnectorOverview;
+import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
+import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -229,11 +231,11 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public List<List<KafkaConnectorModel>> getConnectors(
+  public List<List<KafkaConnectorModelResponse>> getConnectors(
       String env, String pageNo, String currentPage, String connectorNameSearch, String teamName)
       throws Exception {
     log.debug("getConnectors {}", connectorNameSearch);
-    List<KafkaConnectorModel> topicListUpdated =
+    List<KafkaConnectorModelResponse> topicListUpdated =
         getConnectorsPaginated(env, pageNo, currentPage, connectorNameSearch, teamName);
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
@@ -244,13 +246,14 @@ public class KafkaConnectControllerService {
     return null;
   }
 
-  private List<List<KafkaConnectorModel>> getPagedList(List<KafkaConnectorModel> topicsList) {
+  private List<List<KafkaConnectorModelResponse>> getPagedList(
+      List<KafkaConnectorModelResponse> topicsList) {
 
-    List<List<KafkaConnectorModel>> newList = new ArrayList<>();
-    List<KafkaConnectorModel> innerList = new ArrayList<>();
+    List<List<KafkaConnectorModelResponse>> newList = new ArrayList<>();
+    List<KafkaConnectorModelResponse> innerList = new ArrayList<>();
     int modulusFactor = 3;
     int i = 0;
-    for (KafkaConnectorModel topicInfo : topicsList) {
+    for (KafkaConnectorModelResponse topicInfo : topicsList) {
 
       innerList.add(topicInfo);
 
@@ -268,7 +271,7 @@ public class KafkaConnectControllerService {
     return newList;
   }
 
-  private void updateTeamNamesForDisplay(List<KafkaConnectorModel> topicListUpdated) {
+  private void updateTeamNamesForDisplay(List<KafkaConnectorModelResponse> topicListUpdated) {
     topicListUpdated.forEach(
         topicInfo -> {
           if (topicInfo.getTeamName().length() > 9) {
@@ -277,7 +280,7 @@ public class KafkaConnectControllerService {
         });
   }
 
-  private List<KafkaConnectorModel> getConnectorsPaginated(
+  private List<KafkaConnectorModelResponse> getConnectorsPaginated(
       String env, String pageNo, String currentPage, String connectorNameSearch, String teamName) {
     if (connectorNameSearch != null) {
       connectorNameSearch = connectorNameSearch.trim();
@@ -333,7 +336,7 @@ public class KafkaConnectControllerService {
         topicsFromSOT, pageNo, currentPage, listAllEnvs, orderOfEnvs, tenantId);
   }
 
-  private List<KafkaConnectorModel> getConnectorModelsList(
+  private List<KafkaConnectorModelResponse> getConnectorModelsList(
       List<KwKafkaConnector> topicsFromSOT,
       String pageNo,
       String currentPage,
@@ -347,7 +350,7 @@ public class KafkaConnectControllerService {
     pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
     int requestPageNo = Integer.parseInt(pageNo);
 
-    List<KafkaConnectorModel> topicsListMap = null;
+    List<KafkaConnectorModelResponse> topicsListMap = null;
     if (totalRecs > 0) {
       topicsListMap = new ArrayList<>();
     }
@@ -361,7 +364,7 @@ public class KafkaConnectControllerService {
     for (int i = 0; i < topicsFromSOT.size(); i++) {
       int counterInc = counterIncrement();
       if (i >= startVar && i < lastVar) {
-        KafkaConnectorModel mp = new KafkaConnectorModel();
+        KafkaConnectorModelResponse mp = new KafkaConnectorModelResponse();
         mp.setSequence(counterInc);
         KwKafkaConnector topicSOT = topicsFromSOT.get(i);
 
@@ -450,8 +453,8 @@ public class KafkaConnectControllerService {
       String currentPage,
       String requestsType,
       String env,
-      RequestOperationType requestOperationType,
       Order order,
+      RequestOperationType requestOperationType,
       String search) {
     log.debug("getCreatedTopicRequests {} {}", pageNo, requestsType);
     String userDetails = getUserName();
@@ -810,14 +813,16 @@ public class KafkaConnectControllerService {
       RequestOperationType requestOperationType,
       String env,
       Order order,
-      String search) {
+      String search,
+      boolean isMyRequest) {
     log.debug("getConnectorRequests page {} requestsType {}", pageNo, requestsType);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<KafkaConnectorRequest> topicReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getAllConnectorRequests(userDetails, requestOperationType, env, search, tenantId);
+            .getAllConnectorRequests(
+                userDetails, requestOperationType, env, search, tenantId, isMyRequest);
 
     topicReqs = filterByTenantAndOrder(userDetails, topicReqs, order);
     // TODO is this really needed?
@@ -972,12 +977,12 @@ public class KafkaConnectControllerService {
       log.error("Error in getting req topic envs", e);
     }
 
-    List<KafkaConnectorModel> topicInfoList = new ArrayList<>();
+    List<KafkaConnectorModelResponse> topicInfoList = new ArrayList<>();
     ArrayList<TopicHistory> topicHistoryFromTopic;
     List<TopicHistory> topicHistoryList = new ArrayList<>();
 
     for (KwKafkaConnector topic : connectors) {
-      KafkaConnectorModel topicInfo = new KafkaConnectorModel();
+      KafkaConnectorModelResponse topicInfo = new KafkaConnectorModelResponse();
       topicInfo.setConnectorName(topic.getConnectorName());
       topicInfo.setEnvironmentName(getKafkaConnectEnvDetails(topic.getEnvironment()).getName());
       topicInfo.setEnvironmentId(topic.getEnvironment());
@@ -1014,7 +1019,7 @@ public class KafkaConnectControllerService {
     // tenant filtering
     Integer topicOwnerTeam = getFilteredConnectorsForTenant(topicsSearchList).get(0).getTeamId();
 
-    for (KafkaConnectorModel topicInfo : topicInfoList) {
+    for (KafkaConnectorModelResponse topicInfo : topicInfoList) {
       // show edit button only for restricted envs
       if (Objects.equals(topicOwnerTeam, loggedInUserTeam)
           && reqTopicsEnvsList.contains(topicInfo.getEnvironmentId())) {
@@ -1022,14 +1027,14 @@ public class KafkaConnectControllerService {
       }
     }
 
-    topicOverview.setTopicInfoList(topicInfoList);
+    topicOverview.setConnectorInfoList(topicInfoList);
     try {
       if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
         topicOverview.setPromotionDetails(
             getConnectorPromotionEnv(connectorNamesearch, connectors, tenantId));
 
         if (topicInfoList.size() > 0) {
-          KafkaConnectorModel lastItem = topicInfoList.get(topicInfoList.size() - 1);
+          KafkaConnectorModelResponse lastItem = topicInfoList.get(topicInfoList.size() - 1);
           lastItem.setConnectorDeletable(true);
           lastItem.setShowDeleteConnector(true);
         }
@@ -1048,13 +1053,13 @@ public class KafkaConnectControllerService {
     return topicOverview;
   }
 
-  public Map<String, Object> getConnectorDetailsPerEnv(String envId, String connectorName) {
-    Map<String, Object> hashMap = new HashMap<>();
-    hashMap.put("connectorExists", false);
+  public ConnectorOverviewPerEnv getConnectorDetailsPerEnv(String envId, String connectorName) {
+    ConnectorOverviewPerEnv connectorOverviewPerEnv = new ConnectorOverviewPerEnv();
+    connectorOverviewPerEnv.setConnectorExists(false);
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
 
-    KafkaConnectorModel connectorModel = new KafkaConnectorModel();
+    KafkaConnectorModelResponse connectorModel = new KafkaConnectorModelResponse();
     List<KwKafkaConnector> connectors =
         manageDatabase.getHandleDbRequests().getConnectors(connectorName, tenantId);
 
@@ -1067,8 +1072,8 @@ public class KafkaConnectControllerService {
 
     String topicDescription = "";
     if (connectors.size() == 0) {
-      hashMap.put("error", "Connector does not exist.");
-      return hashMap;
+      connectorOverviewPerEnv.setError("Connector does not exist.");
+      return connectorOverviewPerEnv;
     } else {
       Optional<KwKafkaConnector> topicDescFound =
           connectors.stream()
@@ -1091,7 +1096,7 @@ public class KafkaConnectControllerService {
       connectorModel.setConnectorConfig(kafkaConnector.getConnectorConfig());
       connectorModel.setTeamName(
           manageDatabase.getTeamNameFromTeamId(tenantId, kafkaConnector.getTeamId()));
-      hashMap.put("connectorId", "" + kafkaConnector.getConnectorId());
+      connectorOverviewPerEnv.setConnectorId(kafkaConnector.getConnectorId());
     }
 
     connectorModel.setDescription(topicDescription);
@@ -1103,15 +1108,15 @@ public class KafkaConnectControllerService {
             .get(0)
             .getTeamname();
     if (!Objects.equals(loggedInUserTeam, connectorModel.getTeamName())) {
-      hashMap.put("error", KAFKA_CONNECT_ERR_119);
-      return hashMap;
+      connectorOverviewPerEnv.setError(KAFKA_CONNECT_ERR_119);
+      return connectorOverviewPerEnv;
     }
 
     if (connectorModel.getConnectorConfig() != null) {
-      hashMap.put("connectorExists", true);
-      hashMap.put("connectorContents", connectorModel);
+      connectorOverviewPerEnv.setConnectorExists(true);
+      connectorOverviewPerEnv.setConnectorContents(connectorModel);
     }
-    return hashMap;
+    return connectorOverviewPerEnv;
   }
 
   private Map<String, String> getConnectorPromotionEnv(

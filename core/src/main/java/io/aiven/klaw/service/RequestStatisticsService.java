@@ -1,14 +1,14 @@
 package io.aiven.klaw.service;
 
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.model.RequestEntityStatusCount;
-import io.aiven.klaw.model.RequestStatusCount;
-import io.aiven.klaw.model.RequestsCountOverview;
-import io.aiven.klaw.model.RequestsOperationTypeCount;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.response.RequestEntityStatusCount;
+import io.aiven.klaw.model.response.RequestStatusCount;
+import io.aiven.klaw.model.response.RequestsCountOverview;
+import io.aiven.klaw.model.response.RequestsOperationTypeCount;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;

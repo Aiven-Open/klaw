@@ -16,7 +16,7 @@ function BrowseTopics() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { topic, environment, team } = useFiltersValues();
+  const { topic, environment, teamId } = useFiltersValues();
 
   const {
     data: topics,
@@ -24,13 +24,13 @@ function BrowseTopics() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["browseTopics", currentPage, topic, environment, team],
+    queryKey: ["browseTopics", currentPage, topic, environment, teamId],
     queryFn: () =>
       getTopics({
-        currentPage,
-        environment,
-        teamName: team,
-        searchTerm: topic,
+        pageNo: currentPage.toString(),
+        env: environment,
+        teamId: teamId === "ALL" ? undefined : Number(teamId),
+        topicnamesearch: topic,
       }),
     keepPreviousData: true,
   });
@@ -51,8 +51,11 @@ function BrowseTopics() {
   return (
     <TableLayout
       filters={[
-        <TeamFilter key="team" filterByName />,
-        <EnvironmentFilter key="environment" />,
+        <TeamFilter key="team" />,
+        <EnvironmentFilter
+          key="environment"
+          environmentEndpoint={"getEnvironments"}
+        />,
         <TopicFilter key="search" />,
       ]}
       table={
