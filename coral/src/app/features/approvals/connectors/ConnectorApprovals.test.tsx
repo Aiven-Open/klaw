@@ -4,6 +4,8 @@ import userEvent from "@testing-library/user-event";
 import ConnectorApprovals from "src/app/features/approvals/connectors/ConnectorApprovals";
 import {
   ConnectorRequest,
+  approveConnectorRequest,
+  declineConnectorRequest,
   getConnectorRequestsForApprover,
 } from "src/domain/connector";
 import { transformConnectorRequestApiResponse } from "src/domain/connector/connector-transformer";
@@ -26,6 +28,16 @@ const mockGetConnectorRequestsForApprover =
     typeof getConnectorRequestsForApprover
   >;
 
+const mockDeclineConnectorRequest =
+  declineConnectorRequest as jest.MockedFunction<
+    typeof declineConnectorRequest
+  >;
+
+const mockApproveConnectorRequest =
+  approveConnectorRequest as jest.MockedFunction<
+    typeof approveConnectorRequest
+  >;
+
 const mockedEnvironments = [
   {
     id: "4",
@@ -33,7 +45,7 @@ const mockedEnvironments = [
     type: "kafkaconnect",
   },
   {
-    id: "4",
+    id: "5",
     name: "TST",
     type: "kafkaconnect",
   },
@@ -51,7 +63,7 @@ const mockedConnectorRequests: ConnectorRequest[] = [
     requestor: "aindriul",
     teamId: 1003,
     teamname: "Ospo",
-    requestOperationType: "DELETE",
+    requestOperationType: "CREATE",
     requestStatus: "CREATED",
     requesttime: "2023-04-06T08:04:39.783+00:00",
     requesttimestring: "06-Apr-2023 08:04:39",
@@ -65,8 +77,8 @@ const mockedConnectorRequests: ConnectorRequest[] = [
     connectorConfig:
       '{\n  "name" : "Mirjam-10",\n  "topic" : "testtopic",\n  "tasks.max" : "1",\n  "topics.regex" : "*",\n  "connector.class" : "io.confluent.connect.storage.tools.ConnectorSourceConnector"\n}',
     connectorId: 1026,
-    deletable: false,
-    editable: false,
+    deletable: true,
+    editable: true,
   },
   {
     environment: "4",
@@ -104,6 +116,7 @@ describe("ConnectorApprovals", () => {
     env: "ALL",
     search: "",
   };
+
   beforeAll(() => {
     mockIntersectionObserver();
   });
@@ -115,6 +128,7 @@ describe("ConnectorApprovals", () => {
   // after this release cycle.
   describe("handles loading and error state when fetching the requests", () => {
     const originalConsoleError = console.error;
+
     beforeEach(() => {
       // used to swallow a console.error that _should_ happen
       // while making sure to not swallow other console.errors
@@ -131,10 +145,10 @@ describe("ConnectorApprovals", () => {
     afterEach(() => {
       console.error = originalConsoleError;
       cleanup();
-      jest.clearAllMocks();
+      // jest.clearAllMocks();
     });
 
-    it("shows a loading state instead of a table while schema requests are being fetched", () => {
+    it("shows a loading state instead of a table while Kafka connector requests are being fetched", () => {
       customRender(<ConnectorApprovals />, {
         queryClient: true,
         memoryRouter: true,
@@ -148,7 +162,7 @@ describe("ConnectorApprovals", () => {
       expect(console.error).not.toHaveBeenCalled();
     });
 
-    it("shows a error message in case of an error for fetching schema requests", async () => {
+    it("shows a error message in case of an error for fetching Kafka connector requests", async () => {
       mockGetConnectorRequestsForApprover.mockRejectedValue("mock-error");
 
       customRender(<ConnectorApprovals />, {
@@ -214,7 +228,7 @@ describe("ConnectorApprovals", () => {
       );
     });
 
-    it("shows a table with all schema requests and a header row", () => {
+    it("shows a table with all Kafka connector requests and a header row", () => {
       const table = screen.getByRole("table", {
         name: "Connector approval requests, page 1 of 1",
       });
@@ -376,6 +390,271 @@ describe("ConnectorApprovals", () => {
         ...defaultApiParams,
         pageNo: "2",
       });
+    });
+  });
+
+  describe("enables user to decline a request", () => {
+    const testRequest = mockedApiResponseConnectorRequests.entries[0];
+
+    const originalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetSyncConnectorsEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequestsForApprover.mockResolvedValue(
+        mockedApiResponseConnectorRequests
+      );
+
+      customRender(<ConnectorApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("requires user to add a reason for declining", async () => {
+      const declineButton = screen.getByRole("button", {
+        name: `Decline Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(declineButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(modal).getByRole("button", {
+        name: "Decline request",
+      });
+      expect(confirmDeclineButton).toBeDisabled();
+
+      await userEvent.click(confirmDeclineButton);
+      expect(mockDeclineConnectorRequest).not.toHaveBeenCalled();
+
+      const message = within(modal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+      expect(message).toBeRequired();
+
+      await userEvent.type(message, "This is my message");
+      await userEvent.tab();
+
+      expect(confirmDeclineButton).toBeEnabled();
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("send a decline request api call if user declines a Kafka connector request", async () => {
+      mockDeclineConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(declineButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(modal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      const message = within(modal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(message, "This is my message");
+      await userEvent.tab();
+      await userEvent.click(confirmDeclineButton);
+
+      expect(mockDeclineConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.connectorId.toString()],
+        reason: "This is my message",
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("updates the the data for the table if user declined a Kafka connector request", async () => {
+      mockDeclineConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(declineButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(modal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      const message = within(modal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(message, "This is my message");
+      await userEvent.tab();
+      await userEvent.click(confirmDeclineButton);
+
+      expect(mockDeclineConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.connectorId.toString()],
+        reason: "This is my message",
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if declining request was not successful", async () => {
+      mockDeclineConnectorRequest.mockRejectedValue("OH NO");
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(declineButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(modal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      const message = within(modal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(message, "This is my message");
+      await userEvent.tab();
+      await userEvent.click(confirmDeclineButton);
+
+      expect(mockDeclineConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.connectorId.toString()],
+        reason: "This is my message",
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetConnectorRequestsForApprover).not.toHaveBeenCalledTimes(2);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
+    });
+  });
+
+  describe("enables user to approve a request", () => {
+    const testRequest = mockedApiResponseConnectorRequests.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      mockGetSyncConnectorsEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequestsForApprover.mockResolvedValue(
+        mockedApiResponseConnectorRequests
+      );
+
+      customRender(<ConnectorApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("send a approve request api call if user approves a Kafka connector request", async () => {
+      mockApproveConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.connectorId.toString()],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("updates the the data for the table if user approves a Kafka connector request", async () => {
+      mockApproveConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.connectorId.toString()],
+      });
+
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if declining request was not successful", async () => {
+      mockApproveConnectorRequest.mockRejectedValue("OH NO");
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [testRequest.connectorId.toString()],
+      });
+
+      expect(mockApproveConnectorRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
     });
   });
 });

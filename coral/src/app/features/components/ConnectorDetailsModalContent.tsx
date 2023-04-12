@@ -1,9 +1,9 @@
-import { SchemaRequest } from "src/domain/schema-request";
 import { Flexbox, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
+import { ConnectorRequest } from "src/domain/connector";
 
 type DetailsModalContentProps = {
-  request?: SchemaRequest;
+  request?: ConnectorRequest;
 };
 
 const Label = ({ children }: { children: React.ReactNode }) => (
@@ -11,7 +11,8 @@ const Label = ({ children }: { children: React.ReactNode }) => (
     {children}
   </dt>
 );
-function SchemaRequestDetails(props: DetailsModalContentProps) {
+
+function ConnectorRequestDetails(props: DetailsModalContentProps) {
   const { request } = props;
   if (!request) return null;
   return (
@@ -23,27 +24,27 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
         </dd>
       </Flexbox>
       <Flexbox direction={"column"}>
-        <Label>Topic name</Label>
-        <dd>{request.topicname}</dd>
+        <Label>Connector name</Label>
+        <dd>{request.connectorName}</dd>
       </Flexbox>
 
       <GridItem colSpan={"span-2"}>
-        <Label>Schema version</Label>
-        <dd>{request.schemaversion}</dd>
+        <Label>Description</Label>
+        <dd>{request.description}</dd>
       </GridItem>
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
-          <Label>Schema preview</Label>
+          <Label>Connector configuration</Label>
           <dd>
             <MonacoEditor
-              data-testid="topic-schema"
+              data-testid="kafka-connector"
               height="250px"
               language="json"
               theme={"light"}
-              value={request.schemafull}
+              value={request.connectorConfig}
               loading={"Loading preview"}
               options={{
-                ariaLabel: "Schema preview",
+                ariaLabel: "Connector configuration",
                 readOnly: true,
                 domReadOnly: true,
                 renderControlCharacters: false,
@@ -76,4 +77,4 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
   );
 }
 
-export { SchemaRequestDetails };
+export { ConnectorRequestDetails };
