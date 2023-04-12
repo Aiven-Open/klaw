@@ -72,7 +72,7 @@ const getConnectorRequestsForApprover = (
 
   return api
     .get<KlawApiResponse<"getCreatedConnectorRequests">>(
-      `/getConnectorRequestsForApproval?${new URLSearchParams(filteredParams)}`
+      `/getConnectorRequestsForApprover?${new URLSearchParams(filteredParams)}`
     )
     .then(transformConnectorRequestApiResponse);
 };
