@@ -387,7 +387,7 @@ public class SelectDataJdbc {
   }
 
   public DashboardStats getDashboardStats(Integer teamId, int tenantId) {
-    DashboardStats dashboardMap = new DashboardStats();
+    DashboardStats dashboardStats = new DashboardStats();
     int countProducers = 0, countConsumers = 0;
     List<Acl> acls =
         aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
@@ -396,7 +396,7 @@ public class SelectDataJdbc {
       acls.forEach(a -> topicList.add(a.getTopicname()));
       countProducers = (int) topicList.stream().distinct().count();
     }
-    dashboardMap.setProducerCount(countProducers);
+    dashboardStats.setProducerCount(countProducers);
 
     acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
     List<String> topicListCons = new ArrayList<>();
@@ -404,12 +404,12 @@ public class SelectDataJdbc {
       acls.forEach(a -> topicListCons.add(a.getTopicname()));
       countConsumers = (int) topicListCons.stream().distinct().count();
     }
-    dashboardMap.setConsumerCount(countConsumers);
+    dashboardStats.setConsumerCount(countConsumers);
 
     List<UserInfo> allUsers = userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
-    dashboardMap.setTeamMembersCount(allUsers.size());
+    dashboardStats.setTeamMembersCount(allUsers.size());
 
-    return dashboardMap;
+    return dashboardStats;
   }
 
   public List<Topic> selectAllTopicsByTopictypeAndTeamname(

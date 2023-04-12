@@ -675,7 +675,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     Map<String, EnvParams> envParamsMap = new HashMap<>();
 
     for (Env env : kafkaEnvTenantList) {
-      EnvParams oneEnvParamsMap = new EnvParams();
+      EnvParams oneEnvParamsObj = new EnvParams();
       String envParams = env.getOtherParams();
 
       String[] params = envParams.split(",");
@@ -685,7 +685,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
           defaultPartitions = param.substring(param.indexOf("=") + 1);
           List<String> defPartitionsList = new ArrayList<>();
           defPartitionsList.add(defaultPartitions);
-          oneEnvParamsMap.setDefaultPartitions(defPartitionsList);
+          oneEnvParamsObj.setDefaultPartitions(defPartitionsList);
         } else if (param.startsWith("max.partitions")) {
           String maxPartitions = param.substring(param.indexOf("=") + 1);
           int maxPartitionsInt = Integer.parseInt(maxPartitions);
@@ -698,12 +698,12 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
               partitions.add(i + "");
             }
           }
-          oneEnvParamsMap.setPartitionsList(partitions);
+          oneEnvParamsObj.setPartitionsList(partitions);
         } else if (param.startsWith("default.replication.factor")) {
           defaultRf = param.substring(param.indexOf("=") + 1);
           List<String> repFactorList = new ArrayList<>();
           repFactorList.add(defaultRf);
-          oneEnvParamsMap.setDefaultRepFactor(repFactorList);
+          oneEnvParamsObj.setDefaultRepFactor(repFactorList);
         } else if (param.startsWith("max.replication.factor")) {
           String maxRf = param.substring(param.indexOf("=") + 1);
           int maxRfInt = Integer.parseInt(maxRf);
@@ -717,21 +717,21 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
             }
           }
 
-          oneEnvParamsMap.setReplicationFactorList(rf);
+          oneEnvParamsObj.setReplicationFactorList(rf);
         } else if (param.startsWith("topic.prefix")) {
           String topicPrefix = param.substring(param.indexOf("=") + 1);
           List<String> topicPrefixList = new ArrayList<>();
           topicPrefixList.add(topicPrefix);
-          oneEnvParamsMap.setTopicPrefix(topicPrefixList);
+          oneEnvParamsObj.setTopicPrefix(topicPrefixList);
         } else if (param.startsWith("topic.suffix")) {
           String topicSuffix = param.substring(param.indexOf("=") + 1);
           List<String> topicSuffixList = new ArrayList<>();
           topicSuffixList.add(topicSuffix);
-          oneEnvParamsMap.setTopicSuffix(topicSuffixList);
+          oneEnvParamsObj.setTopicSuffix(topicSuffixList);
         }
       }
 
-      envParamsMap.put(env.getId(), oneEnvParamsMap);
+      envParamsMap.put(env.getId(), oneEnvParamsObj);
     }
     envParamsMapPerTenant.put(tenantId, envParamsMap);
   }

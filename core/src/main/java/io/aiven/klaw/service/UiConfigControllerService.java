@@ -31,13 +31,13 @@ public class UiConfigControllerService {
   @Autowired ManageDatabase manageDatabase;
 
   public DbAuthInfo getDbAuth() {
-    DbAuthInfo dbMap = new DbAuthInfo();
+    DbAuthInfo dbAuthInfo = new DbAuthInfo();
     if (DATABASE.value.equals(authenticationType)) {
-      dbMap.setDbauth("true");
+      dbAuthInfo.setDbauth("true");
     } else {
-      dbMap.setDbauth("false");
+      dbAuthInfo.setDbauth("false");
     }
-    return dbMap;
+    return dbAuthInfo;
   }
 
   private String getUserName() {

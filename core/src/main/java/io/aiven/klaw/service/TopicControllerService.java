@@ -936,8 +936,8 @@ public class TopicControllerService {
   }
 
   public TopicDetailsPerEnv getTopicDetailsPerEnv(String envId, String topicName) {
-    TopicDetailsPerEnv hashMap = new TopicDetailsPerEnv();
-    hashMap.setTopicExists(false);
+    TopicDetailsPerEnv topicDetailsPerEnv = new TopicDetailsPerEnv();
+    topicDetailsPerEnv.setTopicExists(false);
 
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
@@ -954,8 +954,8 @@ public class TopicControllerService {
 
     String topicDescription = "";
     if (topics.isEmpty()) {
-      hashMap.setError(TOPICS_ERR_113);
-      return hashMap;
+      topicDetailsPerEnv.setError(TOPICS_ERR_113);
+      return topicDetailsPerEnv;
     } else {
       Optional<Topic> topicDescFound =
           topics.stream()
@@ -972,22 +972,22 @@ public class TopicControllerService {
       if (topicOptional.isPresent()) {
         topicInfo.setNoOfPartitions(topicOptional.get().getNoOfPartitions());
         topicInfo.setNoOfReplicas(topicOptional.get().getNoOfReplicas());
-        hashMap.setTopicId("" + topicOptional.get().getTopicid());
+        topicDetailsPerEnv.setTopicId("" + topicOptional.get().getTopicid());
         topicInfo.setDescription(topicDescription);
 
         Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
         if (!Objects.equals(loggedInUserTeamId, topicOptional.get().getTeamId())) {
-          hashMap.setError(TOPICS_ERR_114);
-          return hashMap;
+          topicDetailsPerEnv.setError(TOPICS_ERR_114);
+          return topicDetailsPerEnv;
         }
       }
     }
 
     if (topicInfo.getNoOfPartitions() != null) {
-      hashMap.setTopicExists(true);
-      hashMap.setTopicContents(topicInfo);
+      topicDetailsPerEnv.setTopicExists(true);
+      topicDetailsPerEnv.setTopicContents(topicInfo);
     }
-    return hashMap;
+    return topicDetailsPerEnv;
   }
 
   public Map<String, String> getAdvancedTopicConfigs() {

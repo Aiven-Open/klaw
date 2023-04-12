@@ -604,15 +604,15 @@ public class UtilMethods {
   public List<EnvIdInfo> getSyncEnv() {
     List<EnvIdInfo> envList = new ArrayList<>();
 
-    EnvIdInfo hMap = new EnvIdInfo();
-    hMap.setId("1");
-    hMap.setName("DEV");
-    envList.add(hMap);
+    EnvIdInfo envIdInfo = new EnvIdInfo();
+    envIdInfo.setId("1");
+    envIdInfo.setName("DEV");
+    envList.add(envIdInfo);
 
-    EnvIdInfo hMap1 = new EnvIdInfo();
-    hMap1.setId("2");
-    hMap1.setName("TST");
-    envList.add(hMap1);
+    EnvIdInfo envIdInfo1 = new EnvIdInfo();
+    envIdInfo1.setId("2");
+    envIdInfo1.setName("TST");
+    envList.add(envIdInfo1);
 
     return envList;
   }

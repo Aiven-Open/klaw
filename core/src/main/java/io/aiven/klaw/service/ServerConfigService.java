@@ -134,12 +134,12 @@ public class ServerConfigService {
 
   public List<KwPropertiesResponse> getAllEditableProps() {
     List<KwPropertiesResponse> listMap = new ArrayList<>();
-    KwPropertiesResponse resultMap = new KwPropertiesResponse();
+    KwPropertiesResponse propertiesResponse = new KwPropertiesResponse();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
-      resultMap.setResult(ApiResultStatus.NOT_AUTHORIZED.value);
-      listMap.add(resultMap);
+      propertiesResponse.setResult(ApiResultStatus.NOT_AUTHORIZED.value);
+      listMap.add(propertiesResponse);
       return listMap;
     }
 

@@ -74,11 +74,11 @@ public class AnalyticsController {
     try {
       byte[] arr = FileUtils.readFileToByteArray(file);
       String str = Base64.getEncoder().encodeToString(arr);
-      KwReport map = new KwReport();
-      map.setData(str);
-      map.setFilename(file.getName());
+      KwReport kwReport = new KwReport();
+      kwReport.setData(str);
+      kwReport.setFilename(file.getName());
 
-      return new ResponseEntity<>(map, HttpStatus.OK);
+      return new ResponseEntity<>(kwReport, HttpStatus.OK);
     } catch (IOException e) {
       log.error("Exception:", e);
     }

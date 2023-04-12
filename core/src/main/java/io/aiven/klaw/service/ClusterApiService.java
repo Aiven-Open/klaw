@@ -218,7 +218,7 @@ public class ClusterApiService {
       throws KlawException {
     log.info("getConsumerOffsets {} {} {} {}", bootstrapHost, protocol, topic, consumerGroupId);
     getClusterApiProperties(tenantId);
-    List<OffsetDetails> offsetsMap;
+    List<OffsetDetails> offsetDetailsList;
     try {
       String url = URI_GET_CONSUMER_OFFSETS;
       url =
@@ -234,12 +234,12 @@ public class ClusterApiService {
               .exchange(
                   url, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<>() {});
 
-      offsetsMap = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
+      offsetDetailsList = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
     } catch (Exception e) {
       log.error("Error from getConsumerOffsets ", e);
       throw new KlawException(CLUSTER_API_ERR_101);
     }
-    return offsetsMap;
+    return offsetDetailsList;
   }
 
   public Map<String, String> getTopicEvents(

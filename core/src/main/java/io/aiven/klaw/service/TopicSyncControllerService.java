@@ -114,7 +114,7 @@ public class TopicSyncControllerService {
       String showAllTopics,
       boolean isBulkOption)
       throws Exception {
-    SyncTopicsList syncTopicsObjectMap = new SyncTopicsList();
+    SyncTopicsList syncTopicsList = new SyncTopicsList();
 
     List<TopicRequestsResponseModel> topicRequestModelList =
         getSyncTopics(envId, pageNo, currentPage, topicNameSearch, showAllTopics, isBulkOption)
@@ -141,10 +141,10 @@ public class TopicSyncControllerService {
           getPagedTopicReqModels(pageNo, currentPage, topicRequestModelList, tenantId);
     }
 
-    syncTopicsObjectMap.setResultSet(topicRequestModelList);
-    syncTopicsObjectMap.setAllTopicsCount(allTopicsCount);
+    syncTopicsList.setResultSet(topicRequestModelList);
+    syncTopicsList.setAllTopicsCount(allTopicsCount);
 
-    return syncTopicsObjectMap;
+    return syncTopicsList;
   }
 
   public SyncTopicsList getSyncTopics(
@@ -156,7 +156,7 @@ public class TopicSyncControllerService {
       boolean isBulkOption)
       throws Exception {
     boolean isReconciliation = !Boolean.parseBoolean(showAllTopics);
-    SyncTopicsList syncTopicsObjectMap = new SyncTopicsList();
+    SyncTopicsList syncTopicsList = new SyncTopicsList();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     log.info("getSyncTopics {} {} {}", env, pageNo, topicNameSearch);
 
@@ -178,12 +178,12 @@ public class TopicSyncControllerService {
     List<Integer> sizeOfTopics = new ArrayList<>();
 
     if (isReconciliation) {
-      syncTopicsObjectMap.setResultSet(
+      syncTopicsList.setResultSet(
           getSyncTopicListRecon(
               topicsList, deletedTopicsFromClusterList, env, isBulkOption, tenantId));
-      syncTopicsObjectMap.setAllTopicsCount(topicsList.size());
+      syncTopicsList.setAllTopicsCount(topicsList.size());
     } else {
-      syncTopicsObjectMap.setResultSet(
+      syncTopicsList.setResultSet(
           getSyncTopicList(
               topicsList,
               deletedTopicsFromClusterList,
@@ -193,10 +193,10 @@ public class TopicSyncControllerService {
               isBulkOption,
               sizeOfTopics,
               tenantId));
-      syncTopicsObjectMap.setAllTopicsCount(sizeOfTopics.get(0));
+      syncTopicsList.setAllTopicsCount(sizeOfTopics.get(0));
     }
 
-    return syncTopicsObjectMap;
+    return syncTopicsList;
   }
 
   private List<TopicRequestsResponseModel> getSyncTopicList(

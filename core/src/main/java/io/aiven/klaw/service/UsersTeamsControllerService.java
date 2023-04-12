@@ -283,15 +283,15 @@ public class UsersTeamsControllerService {
 
   public ResetPasswordInfo resetPassword(String username) {
     log.info("resetPassword {}", username);
-    ResetPasswordInfo userMap = new ResetPasswordInfo();
+    ResetPasswordInfo resetPasswordInfo = new ResetPasswordInfo();
     UserInfoModelResponse userInfoModel = getUserInfoDetails(username);
-    userMap.setPasswordSent("false");
+    resetPasswordInfo.setPasswordSent("false");
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     if (userInfoModel == null) {
-      userMap.setUserFound("false");
+      resetPasswordInfo.setUserFound("false");
     } else {
-      userMap.setUserFound("true");
+      resetPasswordInfo.setUserFound("true");
       String newGeneratedPwd = generateRandomWord(15);
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
@@ -300,7 +300,7 @@ public class UsersTeamsControllerService {
           updatePwdUserDetails, encoder.encode(newGeneratedPwd));
       String pwdUpdated = dbHandle.updatePassword(username, encodePwd(newGeneratedPwd));
       if (ApiResultStatus.SUCCESS.value.equals(pwdUpdated)) {
-        userMap.setPasswordSent("true");
+        resetPasswordInfo.setPasswordSent("true");
         mailService.sendMailResetPwd(
             username,
             newGeneratedPwd,
@@ -309,7 +309,7 @@ public class UsersTeamsControllerService {
             commonUtilsService.getLoginUrl());
       }
     }
-    return userMap;
+    return resetPasswordInfo;
   }
 
   private List<TeamModelResponse> getTeamModels(List<Team> teams) {

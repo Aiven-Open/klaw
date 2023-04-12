@@ -84,7 +84,7 @@ public class AnalyticsControllerService {
 
     List<Map<String, String>> aclsPerEnvList =
         manageDatabase.getHandleDbRequests().selectAclsCountByEnv(null, tenantId);
-    AclsCountPerEnv resultMap = new AclsCountPerEnv();
+    AclsCountPerEnv aclsCountPerEnv = new AclsCountPerEnv();
 
     // tenant filtering
     List<String> allowedEnvIdList = manageDatabase.getEnvsOfTenantsMap().get(tenantId);
@@ -99,14 +99,14 @@ public class AnalyticsControllerService {
                 .collect(Collectors.toList());
 
         if (aclsPerEnvList.size() == 1) {
-          resultMap.setStatus(ApiResultStatus.SUCCESS.value);
-          resultMap.setAclsCount(aclsPerEnvList.get(0).get("aclscount"));
+          aclsCountPerEnv.setStatus(ApiResultStatus.SUCCESS.value);
+          aclsCountPerEnv.setAclsCount(aclsPerEnvList.get(0).get("aclscount"));
         }
       } catch (Exception e) {
         log.error("No environments/clusters found.", e);
       }
     }
-    return resultMap;
+    return aclsCountPerEnv;
   }
 
   // For Sync Back Topics
@@ -116,7 +116,7 @@ public class AnalyticsControllerService {
             .getHandleDbRequests()
             .selectTopicsCountByEnv(commonUtilsService.getTenantId(getCurrentUserName()));
 
-    TopicsCountPerEnv resultMap = new TopicsCountPerEnv();
+    TopicsCountPerEnv topicsCountPerEnv = new TopicsCountPerEnv();
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
     try {
@@ -130,14 +130,14 @@ public class AnalyticsControllerService {
                 .collect(Collectors.toList());
 
         if (topicsCountList.size() == 1) {
-          resultMap.setStatus(ApiResultStatus.SUCCESS.value);
-          resultMap.setTopicsCount(topicsCountList.get(0).get("topicscount"));
+          topicsCountPerEnv.setStatus(ApiResultStatus.SUCCESS.value);
+          topicsCountPerEnv.setTopicsCount(topicsCountList.get(0).get("topicscount"));
         }
       }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
     }
-    return resultMap;
+    return topicsCountPerEnv;
   }
 
   public ChartsJsOverview getProducerAclsTeamsOverview(Integer teamId, Integer tenantId) {

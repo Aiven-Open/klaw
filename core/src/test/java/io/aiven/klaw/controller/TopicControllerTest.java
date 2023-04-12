@@ -272,11 +272,11 @@ public class TopicControllerTest {
   @Test
   @Order(11)
   public void getSyncTopics() throws Exception {
-    SyncTopicsList hashMap = new SyncTopicsList();
+    SyncTopicsList syncTopicsList = new SyncTopicsList();
 
     when(topicSyncControllerService.getSyncTopics(
             anyString(), anyString(), anyString(), anyString(), anyString(), anyBoolean()))
-        .thenReturn(hashMap);
+        .thenReturn(syncTopicsList);
 
     mvcSync
         .perform(

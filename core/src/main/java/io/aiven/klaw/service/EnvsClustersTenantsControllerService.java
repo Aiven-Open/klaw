@@ -335,16 +335,16 @@ public class EnvsClustersTenantsControllerService {
     List<EnvIdInfo> envsOnly = new ArrayList<>();
     List<EnvModelResponse> envList = getKafkaEnvs();
     for (EnvModelResponse env : envList) {
-      EnvIdInfo hMap = new EnvIdInfo();
-      hMap.setId(env.getId());
+      EnvIdInfo envIdInfo = new EnvIdInfo();
+      envIdInfo.setId(env.getId());
       String baseClusterDropDownStr = " (Base Sync cluster)";
       if (Objects.equals(syncCluster, env.getId())) {
-        hMap.setName(env.getName() + baseClusterDropDownStr);
+        envIdInfo.setName(env.getName() + baseClusterDropDownStr);
       } else {
-        hMap.setName(env.getName());
+        envIdInfo.setName(env.getName());
       }
 
-      envsOnly.add(hMap);
+      envsOnly.add(envIdInfo);
     }
 
     return envsOnly;
@@ -1318,31 +1318,31 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public AclCommands getAclCommands() {
-    AclCommands res = new AclCommands();
-    res.setResult(ApiResultStatus.SUCCESS.value);
-    res.setAclCommandSsl(aclCommandSsl);
-    res.setAclCommandPlaintext(aclCommandPlaintext);
-    return res;
+    AclCommands aclCommands = new AclCommands();
+    aclCommands.setResult(ApiResultStatus.SUCCESS.value);
+    aclCommands.setAclCommandSsl(aclCommandSsl);
+    aclCommands.setAclCommandPlaintext(aclCommandPlaintext);
+    return aclCommands;
   }
 
   public KwReport getPublicKey() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     log.info("getPublicKey download " + tenantId);
 
-    KwReport kwPublicKeyMap = new KwReport();
-    File file = new File(kwPublicKey);
+    KwReport kwPublicKey = new KwReport();
+    File file = new File(this.kwPublicKey);
     try {
       byte[] arr = FileUtils.readFileToByteArray(file);
       String str = Base64.getEncoder().encodeToString(arr);
 
-      kwPublicKeyMap.setData(str);
-      kwPublicKeyMap.setFilename(file.getName());
+      kwPublicKey.setData(str);
+      kwPublicKey.setFilename(file.getName());
 
-      return kwPublicKeyMap;
+      return kwPublicKey;
     } catch (IOException e) {
       log.error("Exception:", e);
     }
-    return kwPublicKeyMap;
+    return kwPublicKey;
   }
 
   public EnvUpdatedStatus getUpdateEnvStatus(String envId) throws KlawException {
