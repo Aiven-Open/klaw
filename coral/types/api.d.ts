@@ -637,8 +637,8 @@ export type components = {
       documentation: string;
     };
     ResetPasswordInfo: {
-      passwordSent?: string;
-      userFound?: string;
+      passwordSent: string;
+      userFound: string;
     };
     RequestVerdict: {
       reason?: string;
@@ -869,8 +869,8 @@ export type components = {
       tenantName?: string;
     };
     EnvUpdatedStatus: {
-      result?: string;
-      envstatus?: string;
+      result: string;
+      envstatus: string;
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -923,7 +923,7 @@ export type components = {
       editable?: boolean;
     };
     TopicDetailsPerEnv: {
-      topicExists?: boolean;
+      topicExists: boolean;
       error?: string;
       topicId?: string;
       topicContents?: components["schemas"]["TopicInfo"];
@@ -1132,7 +1132,7 @@ export type components = {
       topicSuffix?: (string)[];
     };
     DbAuthInfo: {
-      dbauth?: string;
+      dbauth: string;
     };
     DashboardStats: {
       /** Format: int32 */
@@ -3562,6 +3562,7 @@ export type operations = {
     parameters: {
       query: {
         topicnamesearch: string;
+        groupBy?: "ACL_TYPE" | "ENV" | "TEAM" | "IP" | "PRINCIPAL";
       };
     };
     responses: {
