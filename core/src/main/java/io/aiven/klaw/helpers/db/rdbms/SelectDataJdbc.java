@@ -762,6 +762,11 @@ public class SelectDataJdbc {
     return topicRequestList;
   }
 
+  public List<Topic> getTopicsByTopicNameAndTeamId(String topicName, int teamId, int tenantId) {
+
+    return topicRepo.findAllByTopicnameAndTeamIdAndTenantId(topicName, teamId, tenantId);
+  }
+
   /**
    * Query the KafkaConnectorRequestsRepo by supplying optional search parameters any given search
    * parameters will be utilised in the search.

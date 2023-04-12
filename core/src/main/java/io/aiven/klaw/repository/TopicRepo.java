@@ -24,6 +24,8 @@ public interface TopicRepo extends CrudRepository<Topic, TopicID> {
   List<Topic> findAllByTopicnameAndEnvironmentAndTenantId(
       String topicName, String env, int tenantId);
 
+  List<Topic> findAllByTopicnameAndTeamIdAndTenantId(String topicName, int teamId, int tenantId);
+
   @Query(
       value =
           "select count(distinct(topicname)) from kwtopics where teamid = :teamIdVar and tenantid = :tenantId",
