@@ -26,9 +26,12 @@ const getTopics = async (
   params: KlawApiRequestQueryParameters<"getTopics">
 ): Promise<TopicApiResponse> => {
   const queryParams = convertQueryValuesToString({
-    ...params,
+    pageNo: params.pageNo,
+    env: params.env,
     ...(params.teamId && { teamId: params.teamId }),
-    ...(params.topicnamesearch && { topicnamesearch: params.topicnamesearch }),
+    ...(params.topicnamesearch && {
+      topicnamesearch: params.topicnamesearch,
+    }),
   });
 
   return api

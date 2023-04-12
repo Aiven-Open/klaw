@@ -30,7 +30,7 @@ function BrowseTopics() {
         pageNo: currentPage.toString(),
         env: environment,
         teamId: teamId === "ALL" ? undefined : Number(teamId),
-        topicnamesearch: topic,
+        topicnamesearch: topic.length === 0 ? undefined : topic,
       }),
     keepPreviousData: true,
   });

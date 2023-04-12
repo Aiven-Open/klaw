@@ -79,7 +79,7 @@ describe("BrowseTopics.tsx", () => {
   const defaultApiParams = {
     pageNo: "1",
     env: "ALL",
-    topicnamesearch: "",
+    topicnamesearch: undefined,
     teamId: undefined,
   };
 
