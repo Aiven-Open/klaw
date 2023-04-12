@@ -38,7 +38,7 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
           <dd>
             <MonacoEditor
               data-testid="kafka-connector"
-              height="300px"
+              height="250px"
               language="json"
               theme={"light"}
               value={request.connectorConfig}
