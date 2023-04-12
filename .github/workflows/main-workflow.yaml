@@ -4,8 +4,9 @@
 # change for new commit
 name: PR/Push to main pipeline
 
-on:
-  workflow_call
+pull_request_review:
+  types: [submitted]
+  branch: [fake-main]
 
 jobs:
   merge-to-main:
