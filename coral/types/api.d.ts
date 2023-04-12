@@ -636,6 +636,10 @@ export type components = {
       connectorName: string;
       documentation: string;
     };
+    ResetPasswordInfo: {
+      passwordSent?: string;
+      userFound?: string;
+    };
     RequestVerdict: {
       reason?: string;
       /** @enum {string} */
@@ -864,6 +868,14 @@ export type components = {
       tenantId?: number;
       tenantName?: string;
     };
+    EnvUpdatedStatus: {
+      result?: string;
+      envstatus?: string;
+    };
+    TopicsCountPerEnv: {
+      status?: string;
+      topicsCount?: string;
+    };
     TopicTeamResponse: {
       team?: string;
       /** Format: int32 */
@@ -910,6 +922,22 @@ export type components = {
       deletable?: boolean;
       editable?: boolean;
     };
+    TopicDetailsPerEnv: {
+      topicExists?: boolean;
+      error?: string;
+      topicId?: string;
+      topicContents?: components["schemas"]["TopicInfo"];
+    };
+    TenantInfo: {
+      /** Format: int32 */
+      tenants?: number;
+      /** Format: int32 */
+      teams?: number;
+      /** Format: int32 */
+      clusters?: number;
+      /** Format: int32 */
+      topics?: number;
+    };
     ChartsJsOverview: {
       data?: (number)[];
       labels?: (string)[];
@@ -952,6 +980,15 @@ export type components = {
       type?: string;
       display?: boolean;
       position?: string;
+    };
+    SyncTopicsList: {
+      resultSet?: (components["schemas"]["TopicRequestsResponseModel"])[];
+      /** Format: int32 */
+      allTopicsCount?: number;
+    };
+    EnvIdInfo: {
+      id?: string;
+      name?: string;
     };
     KafkaConnectorModelResponse: {
       /** Format: int32 */
@@ -1077,6 +1114,39 @@ export type components = {
       schemaDetails?: ({
           [key: string]: string | undefined;
         })[];
+    };
+    KwReport: {
+      data?: string;
+      filename?: string;
+    };
+    SupportedProtocolInfo: {
+      name?: string;
+      value?: string;
+    };
+    EnvParams: {
+      defaultPartitions?: (string)[];
+      partitionsList?: (string)[];
+      defaultRepFactor?: (string)[];
+      replicationFactorList?: (string)[];
+      topicPrefix?: (string)[];
+      topicSuffix?: (string)[];
+    };
+    DbAuthInfo: {
+      dbauth?: string;
+    };
+    DashboardStats: {
+      /** Format: int32 */
+      producerCount?: number;
+      /** Format: int32 */
+      consumerCount?: number;
+      /** Format: int32 */
+      teamMembersCount?: number;
+    };
+    OffsetDetails: {
+      topicPartitionId?: string;
+      currentOffset?: string;
+      endOffset?: string;
+      lag?: string;
     };
     KafkaConnectorRequestsResponseModel: {
       environment: string;
@@ -1214,6 +1284,12 @@ export type components = {
       supportlink: string;
       myteamtopics: string;
     };
+    KwPropertiesResponse: {
+      result?: string;
+      kwkey?: string;
+      kwvalue?: string;
+      kwdesc?: string;
+    };
     ServerConfigProperties: {
       id?: string;
       key?: string;
@@ -1257,6 +1333,10 @@ export type components = {
       /** Format: int32 */
       topicIdForDocumentation?: number;
     };
+    AclsCountPerEnv: {
+      status?: string;
+      aclsCount?: string;
+    };
     AclRequestsResponseModel: {
       environment: string;
       environmentName: string;
@@ -1299,6 +1379,11 @@ export type components = {
       aclResourceType?: string;
       deletable?: boolean;
       editable?: boolean;
+    };
+    AclCommands: {
+      result?: string;
+      aclCommandSsl?: string;
+      aclCommandPlaintext?: string;
     };
   };
   responses: never;
@@ -1623,9 +1708,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": {
-            [key: string]: string | undefined;
-          };
+          "*/*": components["schemas"]["ResetPasswordInfo"];
         };
       };
     };
@@ -2470,9 +2553,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["EnvUpdatedStatus"];
         };
       };
     };
@@ -2543,9 +2624,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["TopicsCountPerEnv"];
         };
       };
     };
@@ -2641,9 +2720,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: unknown | undefined;
-          };
+          "application/json": components["schemas"]["TopicDetailsPerEnv"];
         };
       };
     };
@@ -2663,9 +2740,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: number | undefined;
-          };
+          "application/json": components["schemas"]["TenantInfo"];
         };
       };
     };
@@ -2711,9 +2786,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: unknown | undefined;
-          };
+          "application/json": components["schemas"]["SyncTopicsList"];
         };
       };
     };
@@ -2723,9 +2796,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ({
-              [key: string]: string | undefined;
-            })[];
+          "application/json": (components["schemas"]["EnvIdInfo"])[];
         };
       };
     };
@@ -2970,9 +3041,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["KwReport"];
         };
       };
     };
@@ -2982,9 +3051,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["KwReport"];
         };
       };
     };
@@ -2994,9 +3061,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ({
-              [key: string]: string | undefined;
-            })[];
+          "application/json": (components["schemas"]["SupportedProtocolInfo"])[];
         };
       };
     };
@@ -3088,9 +3153,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: (string)[] | undefined;
-          };
+          "application/json": components["schemas"]["EnvParams"];
         };
       };
     };
@@ -3116,9 +3179,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["DbAuthInfo"];
         };
       };
     };
@@ -3128,9 +3189,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["DashboardStats"];
         };
       };
     };
@@ -3147,9 +3206,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ({
-              [key: string]: string | undefined;
-            })[];
+          "application/json": (components["schemas"]["OffsetDetails"])[];
         };
       };
     };
@@ -3242,9 +3299,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -3396,9 +3451,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ({
-              [key: string]: string | undefined;
-            })[];
+          "application/json": (components["schemas"]["KwPropertiesResponse"])[];
         };
       };
     };
@@ -3500,9 +3553,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -3532,9 +3583,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["AclsCountPerEnv"];
         };
       };
     };
@@ -3591,9 +3640,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["AclCommands"];
         };
       };
     };
