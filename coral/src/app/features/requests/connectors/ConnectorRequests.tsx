@@ -4,6 +4,9 @@ import { Pagination } from "src/app/components/Pagination";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { ConnectorRequestsTable } from "src/app/features/requests/connectors/components/ConnectorRequestsTable";
 import { getConnectorRequests } from "src/domain/connector";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import SearchFilter from "src/app/features/components/filters/SearchFilter";
+import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 
 function ConnectorRequests() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -11,11 +14,15 @@ function ConnectorRequests() {
     ? Number(searchParams.get("page"))
     : 1;
 
+  const { search, environment } = useFiltersValues();
+
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["connectorRequests", currentPage],
+    queryKey: ["connectorRequests", currentPage, search, environment],
     queryFn: () =>
       getConnectorRequests({
         pageNo: String(currentPage),
+        env: environment,
+        search,
       }),
     keepPreviousData: true,
   });
@@ -36,7 +43,13 @@ function ConnectorRequests() {
 
   return (
     <TableLayout
-      filters={[]}
+      filters={[
+        <SearchFilter key="connector" />,
+        <EnvironmentFilter
+          key="environment"
+          environmentEndpoint="getSyncConnectorsEnvironments"
+        />,
+      ]}
       table={
         <ConnectorRequestsTable
           ariaLabel="Connector requests"

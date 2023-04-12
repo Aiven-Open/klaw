@@ -1,11 +1,14 @@
 package io.aiven.klaw;
 
 import io.aiven.klaw.model.*;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.KwClustersModel;
+import io.aiven.klaw.model.requests.KwRolesPermissionsModel;
 import io.aiven.klaw.model.requests.TeamModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -41,7 +44,7 @@ public class MockMethods {
     userInfoModel.setUsername(username);
     userInfoModel.setUserPassword("user");
     userInfoModel.setRole(role);
-    userInfoModel.setTeam(team);
+    userInfoModel.setTeamId(1001);
     userInfoModel.setFullname("New User");
     userInfoModel.setMailid("test@test.com");
 
@@ -49,12 +52,12 @@ public class MockMethods {
   }
 
   public UserInfoModel getUserInfoModelSwitchTeams(
-      String username, String role, String team, int switchTeamSize) {
+      String username, String role, int teamId, int switchTeamSize) {
     UserInfoModel userInfoModel = new UserInfoModel();
     userInfoModel.setUsername(username);
     userInfoModel.setUserPassword("user");
     userInfoModel.setRole(role);
-    userInfoModel.setTeam(team);
+    userInfoModel.setTeamId(teamId);
     userInfoModel.setFullname("New User");
     userInfoModel.setMailid("test@test.com");
     userInfoModel.setSwitchTeams(true);

@@ -1,4 +1,4 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.response;
 
 import java.util.List;
 import java.util.Map;

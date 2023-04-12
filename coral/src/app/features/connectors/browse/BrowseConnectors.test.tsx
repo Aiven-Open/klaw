@@ -1,15 +1,24 @@
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import BrowseConnectors from "src/app/features/connectors/browse/BrowseConnectors";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { getConnectors } from "src/domain/connector";
+import { getSyncConnectorsEnvironments } from "src/domain/environment";
+import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
 jest.mock("src/domain/connector/connector-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
+
 const mockGetConnectors = getConnectors as jest.MockedFunction<
   typeof getConnectors
 >;
+const mockGetSyncConnectorsEnvironments =
+  getSyncConnectorsEnvironments as jest.MockedFunction<
+    typeof getSyncConnectorsEnvironments
+  >;
 
 const mockConnectors = [
   {
@@ -65,6 +74,23 @@ const mockResponseDefault = {
   entries: mockConnectors,
 };
 
+const defaultApiParams = {
+  pageNo: "1",
+  env: "ALL",
+  connectornamesearch: undefined,
+};
+
+const mockEnvironments = [
+  createEnvironment({
+    id: "1",
+    name: "DEV",
+  }),
+  createEnvironment({
+    id: "2",
+    name: "TST",
+  }),
+];
+
 describe("BrowseConnectors.tsx", () => {
   beforeAll(() => {
     mockIntersectionObserver();
@@ -72,6 +98,7 @@ describe("BrowseConnectors.tsx", () => {
 
   describe("handles successful response with one page", () => {
     beforeAll(async () => {
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue(mockResponseDefault);
 
       customRender(<BrowseConnectors />, {
@@ -117,6 +144,7 @@ describe("BrowseConnectors.tsx", () => {
 
   describe("handles successful response with three pages", () => {
     beforeAll(async () => {
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue({
         ...mockResponseDefault,
         totalPages: 3,
@@ -155,6 +183,7 @@ describe("BrowseConnectors.tsx", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue({
         ...mockResponseDefault,
         totalPages: 4,
@@ -191,9 +220,113 @@ describe("BrowseConnectors.tsx", () => {
       await userEvent.click(pageTwoButton);
 
       expect(mockGetConnectors).toHaveBeenNthCalledWith(2, {
-        currentPage: 3,
-        environment: "ALL",
+        ...defaultApiParams,
+        pageNo: "3",
       });
+    });
+  });
+
+  describe("handles user filtering connectors by Environment", () => {
+    const filterByEnvironmentLabel = "Filter by Environment";
+
+    beforeEach(async () => {
+      mockGetSyncConnectorsEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetConnectors.mockResolvedValue(mockResponseDefault);
+
+      customRender(<BrowseConnectors />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows a select element for Environments with `ALL` preselected", async () => {
+      const select = await screen.findByRole("combobox", {
+        name: filterByEnvironmentLabel,
+      });
+
+      expect(select).toHaveValue("ALL");
+      expect(select).toHaveDisplayValue("All Environments");
+    });
+
+    it("changes active selected option when user selects `DEV`", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByEnvironmentLabel,
+      });
+      const option = within(select).getByRole("option", {
+        name: "DEV",
+      });
+      expect(select).toHaveValue("ALL");
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveValue("1");
+      expect(select).toHaveDisplayValue("DEV");
+    });
+
+    it("fetches new data when user selects `DEV`", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByEnvironmentLabel,
+      });
+      const option = within(select).getByRole("option", {
+        name: "DEV",
+      });
+
+      await userEvent.selectOptions(select, option);
+
+      expect(mockGetConnectors).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        env: "1",
+      });
+    });
+  });
+
+  describe("handles user searching by connector name with search input", () => {
+    const testSearchInput = "My search name";
+    beforeEach(async () => {
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetConnectors.mockResolvedValue(mockResponseDefault);
+      customRender(<BrowseConnectors />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("fetches new data when when user enters text in input", async () => {
+      const input = screen.getByRole("search");
+      expect(input).toHaveValue("");
+
+      await userEvent.type(input, testSearchInput);
+
+      expect(input).toHaveValue(testSearchInput);
+
+      await waitFor(() =>
+        expect(mockGetConnectors).toHaveBeenNthCalledWith(2, {
+          ...defaultApiParams,
+          connectornamesearch: testSearchInput,
+        })
+      );
+    });
+
+    it("enables user to navigate to search input with keyboard", async () => {
+      const input = screen.getByRole("search");
+
+      expect(input).toHaveValue("");
+
+      await tabNavigateTo({ targetElement: input });
+
+      expect(input).toHaveFocus();
     });
   });
 });

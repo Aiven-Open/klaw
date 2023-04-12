@@ -12,17 +12,18 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.UserInfoModelResponse;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import io.aiven.klaw.service.UiConfigControllerService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -102,7 +103,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(2)
   public void getSyncEnv() throws Exception {
-    List<Map<String, String>> envList = utilMethods.getSyncEnv();
+    List<EnvIdInfo> envList = utilMethods.getSyncEnv();
     when(envsClustersTenantsControllerService.getSyncEnvs()).thenReturn(envList);
 
     mvcEnvs
@@ -353,7 +354,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(18)
   public void showUsers() throws Exception {
-    List<UserInfoModel> userList = utilMethods.getUserInfoListModel("uiuser", "ADMIN");
+    List<UserInfoModelResponse> userList = utilMethods.getUserInfoListModel("uiuser", "ADMIN");
     when(usersTeamsControllerService.showUsers(any(), any(), any())).thenReturn(userList);
 
     mvcUserTeams
@@ -370,7 +371,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(19)
   public void getMyProfileInfo() throws Exception {
-    UserInfoModel userInfo = utilMethods.getUserInfoMock();
+    UserInfoModelResponse userInfo = utilMethods.getUserInfoMockResponse();
     when(usersTeamsControllerService.getMyProfileInfo()).thenReturn(userInfo);
 
     mvcUserTeams

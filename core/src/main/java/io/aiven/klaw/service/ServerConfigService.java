@@ -25,6 +25,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.response.KwPropertiesResponse;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -131,14 +132,14 @@ public class ServerConfigService {
     return false;
   }
 
-  public List<Map<String, String>> getAllEditableProps() {
-    List<Map<String, String>> listMap = new ArrayList<>();
-    Map<String, String> resultMap = new HashMap<>();
+  public List<KwPropertiesResponse> getAllEditableProps() {
+    List<KwPropertiesResponse> listMap = new ArrayList<>();
+    KwPropertiesResponse propertiesResponse = new KwPropertiesResponse();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
-      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      listMap.add(resultMap);
+      propertiesResponse.setResult(ApiResultStatus.NOT_AUTHORIZED.value);
+      listMap.add(propertiesResponse);
       return listMap;
     }
 
@@ -147,10 +148,10 @@ public class ServerConfigService {
     String kwVal, kwKey;
 
     for (Map.Entry<String, Map<String, String>> stringStringEntry : kwProps.entrySet()) {
-      resultMap = new HashMap<>();
+      KwPropertiesResponse kwPropertiesResponse = new KwPropertiesResponse();
       kwKey = stringStringEntry.getKey();
       kwVal = stringStringEntry.getValue().get("kwvalue");
-      resultMap.put("kwkey", kwKey);
+      kwPropertiesResponse.setKwkey(kwKey);
 
       if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey)) {
         TenantConfig dynamicObj;
@@ -159,28 +160,28 @@ public class ServerConfigService {
           dynamicObj = OBJECT_MAPPER.readValue(kwVal, TenantConfig.class);
           updateEnvNameValues(dynamicObj, tenantId);
           kwVal = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
-          resultMap.put("kwvalue", kwVal);
-          resultMap.put("kwdesc", stringStringEntry.getValue().get("kwdesc"));
+          kwPropertiesResponse.setKwvalue(kwVal);
+          kwPropertiesResponse.setKwdesc(stringStringEntry.getValue().get("kwdesc"));
 
-          listMap.add(resultMap);
+          listMap.add(kwPropertiesResponse);
         } catch (Exception ioe) {
           log.error("Error from getAllEditableProps {}", kwKey, ioe);
           log.error("No environments/clusters found. {}", kwKey);
           kwVal = "{}";
-          resultMap.put("kwvalue", kwVal);
-          resultMap.put("kwdesc", stringStringEntry.getValue().get("kwdesc"));
+          kwPropertiesResponse.setKwvalue(kwVal);
+          kwPropertiesResponse.setKwdesc(stringStringEntry.getValue().get("kwdesc"));
         }
       } else {
-        resultMap.put("kwvalue", kwVal);
-        resultMap.put("kwdesc", stringStringEntry.getValue().get("kwdesc"));
+        kwPropertiesResponse.setKwvalue(kwVal);
+        kwPropertiesResponse.setKwdesc(stringStringEntry.getValue().get("kwdesc"));
 
-        listMap.add(resultMap);
+        listMap.add(kwPropertiesResponse);
       }
     }
 
     if (tenantId != KwConstants.DEFAULT_TENANT_ID) {
       return listMap.stream()
-          .filter(item -> KwConstants.allowConfigForAdmins.contains(item.get("kwkey")))
+          .filter(item -> KwConstants.allowConfigForAdmins.contains(item.getKwkey()))
           .collect(Collectors.toList());
     } else {
       return listMap;

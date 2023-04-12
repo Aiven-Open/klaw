@@ -21,12 +21,13 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.response.SyncTopicsList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -195,10 +196,10 @@ public class TopicSyncControllerServiceTest {
     when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
     when(kwClusters.getClusterName()).thenReturn("cluster");
 
-    Map<String, Object> topicRequests =
+    SyncTopicsList topicRequests =
         topicSyncControllerService.getSyncTopics(
             envSel, pageNo, "", topicNameSearch, "false", false);
-    assertThat(topicRequests).hasSize(2);
+    assertThat(topicRequests.getResultSet()).isNotNull();
   }
 
   @Test

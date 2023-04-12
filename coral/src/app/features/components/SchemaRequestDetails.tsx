@@ -37,7 +37,7 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
           <dd>
             <MonacoEditor
               data-testid="topic-schema"
-              height="300px"
+              height="250px"
               language="json"
               theme={"light"}
               value={request.schemafull}

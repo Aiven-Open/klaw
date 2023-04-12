@@ -6,8 +6,8 @@ import static io.aiven.klaw.error.KlawErrorMessages.REQ_SER_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_SER_ERR_104;
 
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.RequestVerdict;
 import io.aiven.klaw.model.enums.RequestEntityType;
+import io.aiven.klaw.model.requests.RequestVerdict;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;

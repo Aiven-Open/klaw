@@ -4,14 +4,15 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
+import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
+import io.aiven.klaw.model.response.TopicTeamResponse;
 import io.aiven.klaw.service.TopicControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -235,7 +236,7 @@ public class TopicController {
       value = "/getTopicDetailsPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, Object>> getTopicDetailsPerEnv(
+  public ResponseEntity<TopicDetailsPerEnv> getTopicDetailsPerEnv(
       @RequestParam("envSelected") String envId, @RequestParam("topicname") String topicName) {
     return new ResponseEntity<>(
         topicControllerService.getTopicDetailsPerEnv(envId, topicName), HttpStatus.OK);
@@ -249,6 +250,7 @@ public class TopicController {
   }
 
   // getTopic Events from kafka cluster
+  // <offsetId, content>
   @RequestMapping(
       value = "/getTopicEvents",
       method = RequestMethod.GET,

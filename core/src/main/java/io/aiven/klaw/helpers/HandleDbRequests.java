@@ -5,6 +5,7 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.response.DashboardStats;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -80,7 +81,8 @@ public interface HandleDbRequests {
       RequestOperationType requestOperationType,
       String env,
       String wildcardSearch,
-      int tenantId);
+      int tenantId,
+      boolean isMyRequest);
 
   List<KafkaConnectorRequest> getCreatedConnectorRequests(
       String requestor,
@@ -243,7 +245,7 @@ public interface HandleDbRequests {
 
   // Analytics - charts - dashboard
 
-  Map<String, String> getDashboardStats(Integer teamId, int tenantId);
+  DashboardStats getDashboardStats(Integer teamId, int tenantId);
 
   List<Topic> selectAllTopicsByTopictypeAndTeamname(String topicType, Integer teamId, int tenantId);
 

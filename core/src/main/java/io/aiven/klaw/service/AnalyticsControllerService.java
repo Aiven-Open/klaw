@@ -18,6 +18,8 @@ import io.aiven.klaw.model.charts.TeamOverview;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.response.AclsCountPerEnv;
+import io.aiven.klaw.model.response.TopicsCountPerEnv;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -77,12 +79,12 @@ public class AnalyticsControllerService {
   }
 
   // For Sync Back Acls
-  public Map<String, String> getAclsCountPerEnv(String sourceEnvSelected) {
+  public AclsCountPerEnv getAclsCountPerEnv(String sourceEnvSelected) {
     int tenantId = commonUtilsService.getTenantId(getCurrentUserName());
 
     List<Map<String, String>> aclsPerEnvList =
         manageDatabase.getHandleDbRequests().selectAclsCountByEnv(null, tenantId);
-    Map<String, String> resultMap = new HashMap<>();
+    AclsCountPerEnv aclsCountPerEnv = new AclsCountPerEnv();
 
     // tenant filtering
     List<String> allowedEnvIdList = manageDatabase.getEnvsOfTenantsMap().get(tenantId);
@@ -97,24 +99,24 @@ public class AnalyticsControllerService {
                 .collect(Collectors.toList());
 
         if (aclsPerEnvList.size() == 1) {
-          resultMap.put("status", ApiResultStatus.SUCCESS.value);
-          resultMap.put("aclsCount", aclsPerEnvList.get(0).get("aclscount"));
+          aclsCountPerEnv.setStatus(ApiResultStatus.SUCCESS.value);
+          aclsCountPerEnv.setAclsCount(aclsPerEnvList.get(0).get("aclscount"));
         }
       } catch (Exception e) {
         log.error("No environments/clusters found.", e);
       }
     }
-    return resultMap;
+    return aclsCountPerEnv;
   }
 
   // For Sync Back Topics
-  public Map<String, String> getTopicsCountPerEnv(String sourceEnvSelected) {
+  public TopicsCountPerEnv getTopicsCountPerEnv(String sourceEnvSelected) {
     List<Map<String, String>> topicsCountList =
         manageDatabase
             .getHandleDbRequests()
             .selectTopicsCountByEnv(commonUtilsService.getTenantId(getCurrentUserName()));
 
-    Map<String, String> resultMap = new HashMap<>();
+    TopicsCountPerEnv topicsCountPerEnv = new TopicsCountPerEnv();
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getCurrentUserName());
     try {
@@ -128,14 +130,14 @@ public class AnalyticsControllerService {
                 .collect(Collectors.toList());
 
         if (topicsCountList.size() == 1) {
-          resultMap.put("status", ApiResultStatus.SUCCESS.value);
-          resultMap.put("topicsCount", topicsCountList.get(0).get("topicscount"));
+          topicsCountPerEnv.setStatus(ApiResultStatus.SUCCESS.value);
+          topicsCountPerEnv.setTopicsCount(topicsCountList.get(0).get("topicscount"));
         }
       }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
     }
-    return resultMap;
+    return topicsCountPerEnv;
   }
 
   public ChartsJsOverview getProducerAclsTeamsOverview(Integer teamId, Integer tenantId) {

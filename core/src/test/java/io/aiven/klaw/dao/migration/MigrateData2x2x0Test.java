@@ -83,7 +83,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null));
+            eq(null),
+            eq(false));
     assertThat(success).isTrue();
   }
 
@@ -112,7 +113,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null)))
+            eq(null),
+            eq(false)))
         .thenReturn(getListOfConnectorRequests(0, 0, "0"));
 
     // Execute
@@ -141,7 +143,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null));
+            eq(null),
+            eq(false));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     verify(updateDataJdbc, times(0)).updateConnectorRequest(any());
@@ -173,7 +176,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null)))
+            eq(null),
+            eq(false)))
         .thenReturn(getListOfConnectorRequests(8, 0, "0"));
 
     // Execute
@@ -202,7 +206,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null));
+            eq(null),
+            eq(false));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     verify(updateDataJdbc, times(0)).updateConnectorRequest(any());
@@ -234,7 +239,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null)))
+            eq(null),
+            eq(false)))
         .thenReturn(getListOfConnectorRequests(8, 1, "1"));
 
     // Execute
@@ -263,7 +269,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null));
+            eq(null),
+            eq(false));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     // One Claim requests ensure it is saved back.
@@ -297,7 +304,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null)))
+            eq(null),
+            eq(false)))
         .thenReturn(getListOfConnectorRequests(8, 1, "A description"));
 
     // Execute
@@ -326,7 +334,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null));
+            eq(null),
+            eq(false));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     // One Claim requests but description is text not number so it wont update.
@@ -359,7 +368,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null)))
+            eq(null),
+            eq(false)))
         .thenReturn(setConnectorApprovingTeamId(getListOfConnectorRequests(18, 8, "1")));
 
     // Execute
@@ -388,7 +398,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null));
+            eq(null),
+            eq(false));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(0)).updateTopicRequest(any());
     // One Claim requests but description is text not number so it wont update.
@@ -422,7 +433,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null)))
+            eq(null),
+            eq(false)))
         .thenReturn(getListOfConnectorRequests(18, 8, "1"));
 
     // Execute
@@ -451,7 +463,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null));
+            eq(null),
+            eq(false));
     // No Claim Requests so no saving updates back to DB
     verify(updateDataJdbc, times(3)).updateTopicRequest(any());
     // One Claim requests but description is text not number so it wont update.
@@ -487,7 +500,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null)))
+            eq(null),
+            eq(false)))
         .thenReturn(getListOfConnectorRequests(18, 8, "1"))
         .thenReturn(setConnectorApprovingTeamId(getListOfConnectorRequests(18, 8, "1")))
         .thenReturn(getListOfConnectorRequests(43, 13, "2"));
@@ -518,7 +532,8 @@ class MigrateData2x2x0Test {
             eq(true),
             anyInt(),
             eq(null),
-            eq(null));
+            eq(null),
+            eq(false));
 
     // Topic Requests & Connector Requests have a mix of allready updated and non updated claims.
     // So we expect 11 topic reqs and 21 connector requests

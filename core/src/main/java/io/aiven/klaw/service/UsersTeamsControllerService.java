@@ -34,15 +34,18 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.RegisterUserInfoModel;
-import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
+import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -107,8 +110,8 @@ public class UsersTeamsControllerService {
   // pattern for simple username
   private static final Pattern defaultPattern = Pattern.compile("^[a-zA-Z0-9]{3,}$");
 
-  public UserInfoModel getUserInfoDetails(String userId) {
-    UserInfoModel userInfoModel = new UserInfoModel();
+  public UserInfoModelResponse getUserInfoDetails(String userId) {
+    UserInfoModelResponse userInfoModel = new UserInfoModelResponse();
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     if (userInfo != null) {
       copyProperties(userInfo, userInfoModel);
@@ -123,7 +126,10 @@ public class UsersTeamsControllerService {
   }
 
   private void updateSwitchTeamsList(
-      UserInfoModel userInfoModel, UserInfo userInfo, int tenantId, boolean updateTeamName) {
+      UserInfoModelResponse userInfoModel,
+      UserInfo userInfo,
+      int tenantId,
+      boolean updateTeamName) {
     if (userInfo.isSwitchTeams()) {
       Set<Integer> switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
       Set<String> switchAllowedTeamNames = new HashSet<>();
@@ -275,17 +281,17 @@ public class UsersTeamsControllerService {
     return sb.toString();
   }
 
-  public Map<String, String> resetPassword(String username) {
+  public ResetPasswordInfo resetPassword(String username) {
     log.info("resetPassword {}", username);
-    Map<String, String> userMap = new HashMap<>();
-    UserInfoModel userInfoModel = getUserInfoDetails(username);
-    userMap.put("passwordSent", "false");
+    ResetPasswordInfo resetPasswordInfo = new ResetPasswordInfo();
+    UserInfoModelResponse userInfoModel = getUserInfoDetails(username);
+    resetPasswordInfo.setPasswordSent("false");
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     if (userInfoModel == null) {
-      userMap.put("userFound", "false");
+      resetPasswordInfo.setUserFound("false");
     } else {
-      userMap.put("userFound", "true");
+      resetPasswordInfo.setUserFound("true");
       String newGeneratedPwd = generateRandomWord(15);
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
@@ -294,7 +300,7 @@ public class UsersTeamsControllerService {
           updatePwdUserDetails, encoder.encode(newGeneratedPwd));
       String pwdUpdated = dbHandle.updatePassword(username, encodePwd(newGeneratedPwd));
       if (ApiResultStatus.SUCCESS.value.equals(pwdUpdated)) {
-        userMap.put("passwordSent", "true");
+        resetPasswordInfo.setPasswordSent("true");
         mailService.sendMailResetPwd(
             username,
             newGeneratedPwd,
@@ -303,7 +309,7 @@ public class UsersTeamsControllerService {
             commonUtilsService.getLoginUrl());
       }
     }
-    return userMap;
+    return resetPasswordInfo;
   }
 
   private List<TeamModelResponse> getTeamModels(List<Team> teams) {
@@ -511,7 +517,7 @@ public class UsersTeamsControllerService {
   }
 
   public ApiResponse addNewUser(UserInfoModel newUser, boolean isExternal) throws KlawException {
-    log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeam(), newUser.getRole());
+    log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeamId(), newUser.getRole());
     boolean userNamePatternCheck = userNamePatternValidation(newUser.getUsername());
     if (!userNamePatternCheck) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_109).build();
@@ -526,10 +532,6 @@ public class UsersTeamsControllerService {
       }
 
       newUser.setTenantId(tenantId);
-
-      if (newUser.getTeamId() == null) {
-        newUser.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, newUser.getTeam()));
-      }
     }
 
     if (isExternal
@@ -733,9 +735,10 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public List<UserInfoModel> showUsers(String teamName, String userSearchStr, String pageNo) {
+  public List<UserInfoModelResponse> showUsers(
+      String teamName, String userSearchStr, String pageNo) {
 
-    List<UserInfoModel> userInfoModels = new ArrayList<>();
+    List<UserInfoModelResponse> userInfoModels = new ArrayList<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersInfo(tenantId);
 
@@ -748,7 +751,7 @@ public class UsersTeamsControllerService {
 
     userList.forEach(
         userListItem -> {
-          UserInfoModel userInfoModel = new UserInfoModel();
+          UserInfoModelResponse userInfoModel = new UserInfoModelResponse();
           copyProperties(userListItem, userInfoModel);
           updateSwitchTeamsList(userInfoModel, userListItem, tenantId, true);
           if (teamName != null && !teamName.equals("")) {
@@ -766,13 +769,14 @@ public class UsersTeamsControllerService {
           userInfoModel.setTeam(
               manageDatabase.getTeamNameFromTeamId(tenantId, userInfoModel.getTeamId()));
         });
-    userInfoModels.sort(Comparator.comparing(UserInfoModel::getTeam));
+    userInfoModels.sort(Comparator.comparing(UserInfoModelResponse::getTeam));
 
     return getPagedUsers(pageNo, userInfoModels);
   }
 
-  private List<UserInfoModel> getPagedUsers(String pageNo, List<UserInfoModel> userListMap) {
-    List<UserInfoModel> aclListMapUpdated = new ArrayList<>();
+  private List<UserInfoModelResponse> getPagedUsers(
+      String pageNo, List<UserInfoModelResponse> userListMap) {
+    List<UserInfoModelResponse> aclListMapUpdated = new ArrayList<>();
 
     int totalRecs = userListMap.size();
     int recsPerPage = 20;
@@ -787,7 +791,7 @@ public class UsersTeamsControllerService {
     for (int i = 0; i < totalRecs; i++) {
 
       if (i >= startVar && i < lastVar) {
-        UserInfoModel mp = userListMap.get(i);
+        UserInfoModelResponse mp = userListMap.get(i);
 
         mp.setTotalNoPages(totalPages + "");
         List<String> numList = new ArrayList<>();
@@ -801,9 +805,9 @@ public class UsersTeamsControllerService {
     return aclListMapUpdated;
   }
 
-  public UserInfoModel getMyProfileInfo() {
+  public UserInfoModelResponse getMyProfileInfo() {
     String userDetails = getUserName();
-    UserInfoModel userInfoModel = new UserInfoModel();
+    UserInfoModelResponse userInfoModel = new UserInfoModelResponse();
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails);
     copyProperties(userInfo, userInfoModel);
     updateSwitchTeamsList(userInfoModel, userInfo, userInfo.getTenantId(), true);
@@ -957,7 +961,7 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public List<RegisterUserInfoModel> getNewUserRequests() {
+  public List<RegisterUserInfoModelResponse> getNewUserRequests() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 
@@ -968,10 +972,10 @@ public class UsersTeamsControllerService {
       registerUserInfoList = manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
     }
 
-    List<RegisterUserInfoModel> registerUserInfoModels = new ArrayList<>();
-    RegisterUserInfoModel registerUserInfoModel;
+    List<RegisterUserInfoModelResponse> registerUserInfoModels = new ArrayList<>();
+    RegisterUserInfoModelResponse registerUserInfoModel;
     for (RegisterUserInfo registerUserInfo : registerUserInfoList) {
-      registerUserInfoModel = new RegisterUserInfoModel();
+      registerUserInfoModel = new RegisterUserInfoModelResponse();
       copyProperties(registerUserInfo, registerUserInfoModel);
       registerUserInfoModel.setTeam(
           manageDatabase.getTeamNameFromTeamId(tenantId, registerUserInfo.getTeamId()));
@@ -1011,8 +1015,6 @@ public class UsersTeamsControllerService {
       UserInfoModel userInfo = new UserInfoModel();
       userInfo.setUsername(username);
       userInfo.setFullname(registerUserInfo.getFullname());
-      userInfo.setTeam(
-          manageDatabase.getTeamNameFromTeamId(tenantId, registerUserInfo.getTeamId()));
       userInfo.setTeamId(registerUserInfo.getTeamId());
       userInfo.setRole(registerUserInfo.getRole());
       userInfo.setTenantId(tenantId);
@@ -1059,12 +1061,13 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public RegisterUserInfoModel getRegistrationInfoFromId(String registrationId, String status) {
+  public RegisterUserInfoModelResponse getRegistrationInfoFromId(
+      String registrationId, String status) {
     RegisterUserInfo registerUserInfo =
         manageDatabase.getHandleDbRequests().getRegistrationDetails(registrationId, status);
 
     if (registerUserInfo != null) {
-      RegisterUserInfoModel registerUserInfoModel = new RegisterUserInfoModel();
+      RegisterUserInfoModelResponse registerUserInfoModel = new RegisterUserInfoModelResponse();
       copyProperties(registerUserInfo, registerUserInfoModel);
       return registerUserInfoModel;
     } else {

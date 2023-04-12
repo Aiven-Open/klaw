@@ -1,11 +1,10 @@
-package io.aiven.klaw.model;
+package io.aiven.klaw.model.requests;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,16 +17,7 @@ public class UserInfoModel implements Serializable {
 
   @Size(min = 6, max = 300, message = "Username must be above 5 characters")
   @NotNull(message = "Username cannot be null")
-  //    @Pattern(message = "Invalid username", regexp = "^[A-Za-z0-9+_.-]+@(.+)$")
   private String username;
-
-  private String userPassword;
-
-  private String team;
-
-  private Integer teamId;
-
-  private String role;
 
   @NotNull(message = "Fullname cannot be null")
   @Size(min = 5, max = 50, message = "Name must be above 4 characters")
@@ -39,16 +29,17 @@ public class UserInfoModel implements Serializable {
   @Email(message = "Email should be valid")
   private String mailid;
 
-  private boolean switchTeams;
+  @NotNull private String role;
+
+  @NotNull private String userPassword;
+
+  @NotNull private Integer teamId;
+
+  @NotNull private boolean switchTeams;
 
   private Set<Integer> switchAllowedTeamIds;
 
   private Set<String> switchAllowedTeamNames;
 
-  private String tenantName;
-
   private int tenantId;
-
-  private String totalNoPages;
-  private List<String> allPageNos;
 }

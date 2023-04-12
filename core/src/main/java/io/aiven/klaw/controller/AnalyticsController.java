@@ -1,13 +1,14 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.model.charts.TeamOverview;
+import io.aiven.klaw.model.response.AclsCountPerEnv;
+import io.aiven.klaw.model.response.KwReport;
+import io.aiven.klaw.model.response.TopicsCountPerEnv;
 import io.aiven.klaw.service.AnalyticsControllerService;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +49,7 @@ public class AnalyticsController {
       value = "/getTopicsCountPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getTopicsCountPerEnv(
+  public ResponseEntity<TopicsCountPerEnv> getTopicsCountPerEnv(
       @RequestParam("sourceEnvSelected") String sourceEnvSelected) {
     return new ResponseEntity<>(
         chartsProcessor.getTopicsCountPerEnv(sourceEnvSelected), HttpStatus.OK);
@@ -58,7 +59,7 @@ public class AnalyticsController {
       value = "/getAclsCountPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getAclsCountPerEnv(
+  public ResponseEntity<AclsCountPerEnv> getAclsCountPerEnv(
       @RequestParam("sourceEnvSelected") String sourceEnvSelected) {
     return new ResponseEntity<>(
         chartsProcessor.getAclsCountPerEnv(sourceEnvSelected), HttpStatus.OK);
@@ -68,18 +69,16 @@ public class AnalyticsController {
       value = "/getKwReport",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getKwReport() {
-
+  public ResponseEntity<KwReport> getKwReport() {
     File file = chartsProcessor.generateReport();
-
     try {
       byte[] arr = FileUtils.readFileToByteArray(file);
       String str = Base64.getEncoder().encodeToString(arr);
-      Map<String, String> map = new HashMap<>();
-      map.put("data", str);
-      map.put("filename", file.getName());
+      KwReport kwReport = new KwReport();
+      kwReport.setData(str);
+      kwReport.setFilename(file.getName());
 
-      return new ResponseEntity<>(map, HttpStatus.OK);
+      return new ResponseEntity<>(kwReport, HttpStatus.OK);
     } catch (IOException e) {
       log.error("Exception:", e);
     }

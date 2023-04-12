@@ -10,6 +10,7 @@ import {
 } from "src/domain/requests/requests-types";
 import api from "src/services/api";
 import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
+import { convertQueryValuesToString } from "src/services/api-helper";
 
 const filterGetConnectorRequestParams = (
   params: KlawApiRequestQueryParameters<"getConnectorRequests">
@@ -39,25 +40,19 @@ const filterGetConnectorRequestParams = (
   });
 };
 
-const getConnectors = ({
-  currentPage,
-  environment = "ALL",
-  teamName,
-  connectorName,
-}: {
-  currentPage: number;
-  environment: string;
-  teamName?: string;
-  connectorName?: string;
-}) => {
-  const queryParams: KlawApiRequestQueryParameters<"getConnectors"> = {
-    pageNo: currentPage.toString(),
-    env: environment,
-    ...(teamName && { teamName: teamName }),
-    ...(connectorName && {
-      connectornamesearch: connectorName,
-    }),
-  };
+const getConnectors = (
+  params: KlawApiRequestQueryParameters<"getConnectors">
+) => {
+  const queryParams = convertQueryValuesToString({
+    env: params.env,
+    pageNo: params.pageNo,
+    ...(params.teamName && { teamName: params.teamName }),
+    ...(params.connectornamesearch &&
+      params.connectornamesearch.length > 0 && {
+        connectornamesearch: params.connectornamesearch,
+      }),
+  });
+
   return api
     .get<KlawApiResponse<"getConnectors">>(
       `/getConnectors?${new URLSearchParams(queryParams)}`
@@ -72,7 +67,7 @@ const getConnectorRequestsForApprover = (
 
   return api
     .get<KlawApiResponse<"getCreatedConnectorRequests">>(
-      `/getConnectorRequestsForApproval?${new URLSearchParams(filteredParams)}`
+      `/getConnectorRequestsForApprover?${new URLSearchParams(filteredParams)}`
     )
     .then(transformConnectorRequestApiResponse);
 };

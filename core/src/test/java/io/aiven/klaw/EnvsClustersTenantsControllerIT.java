@@ -6,12 +6,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.model.KwClustersModel;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
+import io.aiven.klaw.model.response.KwClustersModelResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -139,7 +140,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    List<KwClustersModelResponse> teamModel =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModel).hasSize(1);
     assertThat(teamModel.get(0).getBootstrapServers())
         .isEqualTo(kwClustersModel.getBootstrapServers());
@@ -200,7 +202,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<KwClustersModel> teamModel = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    List<KwClustersModelResponse> teamModel =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(teamModel).hasSize(1);
     assertThat(teamModel.get(0).getBootstrapServers())
         .isEqualTo(kwClustersModel.getBootstrapServers());
@@ -226,7 +229,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    KwClustersModel clusterModel = OBJECT_MAPPER.readValue(response, KwClustersModel.class);
+    KwClustersModelResponse clusterModel =
+        OBJECT_MAPPER.readValue(response, KwClustersModelResponse.class);
     assertThat(clusterModel.getClusterName()).contains("DEV_CLUSTER");
   }
 

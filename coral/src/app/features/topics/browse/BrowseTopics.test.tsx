@@ -76,6 +76,13 @@ describe("BrowseTopics.tsx", () => {
     mockIntersectionObserver();
   });
 
+  const defaultApiParams = {
+    pageNo: "1",
+    env: "ALL",
+    topicnamesearch: undefined,
+    teamId: undefined,
+  };
+
   describe("handles successful response with one page", () => {
     beforeAll(async () => {
       mockGetTeams.mockResolvedValue(mockGetTeamsResponse);
@@ -195,10 +202,8 @@ describe("BrowseTopics.tsx", () => {
       await userEvent.click(pageTwoButton);
 
       expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
-        currentPage: 3,
-        environment: "ALL",
-        searchTerm: "",
-        teamName: "ALL",
+        ...defaultApiParams,
+        pageNo: "3",
       });
     });
   });
@@ -252,10 +257,8 @@ describe("BrowseTopics.tsx", () => {
       await userEvent.selectOptions(select, option);
 
       expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
-        currentPage: 1,
-        environment: "1",
-        searchTerm: "",
-        teamName: "ALL",
+        ...defaultApiParams,
+        env: "1",
       });
     });
   });
@@ -300,7 +303,8 @@ describe("BrowseTopics.tsx", () => {
 
       await userEvent.selectOptions(select, option);
 
-      expect(select).toHaveValue("TEST_TEAM_02");
+      expect(select).toHaveDisplayValue("TEST_TEAM_02");
+      expect(select).toHaveValue("2");
     });
 
     it("fetches new data when user selects `TEST_TEAM_02`", async () => {
@@ -314,10 +318,8 @@ describe("BrowseTopics.tsx", () => {
       await userEvent.selectOptions(select, option);
 
       expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
-        currentPage: 1,
-        environment: "ALL",
-        searchTerm: "",
-        teamName: "TEST_TEAM_02",
+        ...defaultApiParams,
+        teamId: 2,
       });
     });
   });
@@ -347,10 +349,8 @@ describe("BrowseTopics.tsx", () => {
 
       await waitFor(() =>
         expect(mockGetTopics).toHaveBeenNthCalledWith(2, {
-          currentPage: 1,
-          environment: "ALL",
-          searchTerm: "Searched for topic",
-          teamName: "ALL",
+          ...defaultApiParams,
+          topicnamesearch: "Searched for topic",
         })
       );
     });

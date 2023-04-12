@@ -1,6 +1,7 @@
 import {
   getEnvironments,
   getSchemaRegistryEnvironments,
+  getSyncConnectorsEnvironments,
 } from "src/domain/environment/environment-api";
 import { mockGetEnvironments } from "src/domain/environment/environment-api.msw";
 import {
@@ -13,5 +14,6 @@ export {
   mockGetEnvironments,
   ALL_ENVIRONMENTS_VALUE,
   getSchemaRegistryEnvironments,
+  getSyncConnectorsEnvironments,
 };
 export type { Environment };

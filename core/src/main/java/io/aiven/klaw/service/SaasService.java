@@ -14,9 +14,10 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
-import io.aiven.klaw.model.RegisterSaasUserInfoModel;
-import io.aiven.klaw.model.RegisterUserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.requests.RegisterSaasUserInfoModel;
+import io.aiven.klaw.model.requests.RegisterUserInfoModel;
+import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,8 @@ public class SaasService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  public Map<String, String> approveUserSaas(RegisterUserInfoModel newUser) throws Exception {
+  public Map<String, String> approveUserSaas(RegisterUserInfoModelResponse newUser)
+      throws Exception {
     log.info("approveUserSaas {} / {}", newUser.getFullname(), newUser.getMailid());
     Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
 
@@ -268,7 +270,7 @@ public class SaasService {
     return false;
   }
 
-  private void updateStaticData(RegisterUserInfoModel newUserTarget, Integer tenantId) {
+  private void updateStaticData(RegisterUserInfoModelResponse newUserTarget, Integer tenantId) {
     manageDatabase
         .getHandleDbRequests()
         .insertDefaultKwProperties(
@@ -283,28 +285,27 @@ public class SaasService {
   }
 
   // approve users
-  public Map<String, String> getActivationInfo(String activationId) {
-    Map<String, String> resultMap = new HashMap<>();
-    RegisterUserInfoModel registerUserInfoModel =
+  public ApiResponse getActivationInfo(String activationId) {
+    RegisterUserInfoModelResponse registerUserInfoModel =
         usersTeamsControllerService.getRegistrationInfoFromId(activationId, "");
 
     if (registerUserInfoModel == null) {
-      resultMap.put("result", ApiResultStatus.FAILURE.value);
-      return resultMap;
+      return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
     } else if ("APPROVED".equals(registerUserInfoModel.getStatus())) {
-      resultMap.put("result", "already_activated");
-      return resultMap;
+      return ApiResponse.builder().success(true).message("already_activated").build();
     } else if ("PENDING".equals(registerUserInfoModel.getStatus())) {
       Map<String, String> result;
       try {
         result = approveUserSaas(registerUserInfoModel);
         if (ApiResultStatus.SUCCESS.value.equals(result.get("result"))) {
-          resultMap.put("result", ApiResultStatus.SUCCESS.value);
-        } else resultMap.put("result", "othererror");
+          return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+        } else {
+          return ApiResponse.builder().success(false).message("othererror").build();
+        }
       } catch (Exception e) {
         log.error("Exception:", e);
       }
     }
-    return resultMap;
+    return ApiResponse.builder().success(false).message("error").build();
   }
 }

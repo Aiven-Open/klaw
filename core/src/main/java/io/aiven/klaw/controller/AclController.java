@@ -2,7 +2,6 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.Order;
@@ -10,11 +9,12 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.OffsetDetails;
+import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -187,7 +187,7 @@ public class AclController {
       value = "/getConsumerOffsets",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<Map<String, String>>> getConsumerOffsets(
+  public ResponseEntity<List<OffsetDetails>> getConsumerOffsets(
       @RequestParam("env") String envId,
       @RequestParam("topicName") String topicName,
       @RequestParam(value = "consumerGroupId") String consumerGroupId) {

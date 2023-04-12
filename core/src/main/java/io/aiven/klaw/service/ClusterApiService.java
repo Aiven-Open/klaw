@@ -28,7 +28,6 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
@@ -40,7 +39,9 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.response.OffsetDetails;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
@@ -207,7 +208,7 @@ public class ClusterApiService {
     }
   }
 
-  public List<Map<String, String>> getConsumerOffsets(
+  public List<OffsetDetails> getConsumerOffsets(
       String bootstrapHost,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
@@ -217,7 +218,7 @@ public class ClusterApiService {
       throws KlawException {
     log.info("getConsumerOffsets {} {} {} {}", bootstrapHost, protocol, topic, consumerGroupId);
     getClusterApiProperties(tenantId);
-    List<Map<String, String>> offsetsMap;
+    List<OffsetDetails> offsetDetailsList;
     try {
       String url = URI_GET_CONSUMER_OFFSETS;
       url =
@@ -228,17 +229,17 @@ public class ClusterApiService {
               + String.join(
                   URL_DELIMITER, protocol.getName(), clusterIdentification, consumerGroupId, topic);
 
-      ResponseEntity<List<Map<String, String>>> resultBody =
+      ResponseEntity<List<OffsetDetails>> resultBody =
           getRestTemplate()
               .exchange(
                   url, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<>() {});
 
-      offsetsMap = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
+      offsetDetailsList = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
     } catch (Exception e) {
       log.error("Error from getConsumerOffsets ", e);
       throw new KlawException(CLUSTER_API_ERR_101);
     }
-    return offsetsMap;
+    return offsetDetailsList;
   }
 
   public Map<String, String> getTopicEvents(

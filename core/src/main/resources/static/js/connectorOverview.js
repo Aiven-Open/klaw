@@ -526,9 +526,9 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
             params: {'connectornamesearch' : topicSelected
              }
 		}).success(function(output) {
-		    if(output.connectorExists == true){
+		    if(output.connectorExists === true){
 		        $scope.resultBrowse = output.aclInfoList;
-            	$scope.connectorOverview = output.topicInfoList;
+            	$scope.connectorOverview = output.connectorInfoList;
             	$scope.promotionDetails = output.promotionDetails;
 
                 $scope.topicHistoryList = output.topicHistoryList;
