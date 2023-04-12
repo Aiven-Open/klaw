@@ -24,6 +24,7 @@ import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +40,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
@@ -265,6 +268,86 @@ public class TopicOverviewServiceTest {
     // MASKED DATA
     assertThat(aclList.get(0).getAcl_ip()).isEqualTo("Not Authorized to see this.");
     assertThat(aclList.get(0).getAcl_ssl()).isEqualTo("Not Authorized to see this.");
+  }
+
+  @ParameterizedTest
+  @Order(7)
+  @CsvSource({"IP", "TEAM", "ACL_TYPE", "ENV"})
+  public void givenARequestWithAnOrderEnsureItIsCorrectlyUsed(AclGroupBy groupBy) throws Exception {
+    stubUserInfo();
+    stubKafkaPromotion(TESTTOPIC, 1);
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
+
+    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
+    when(handleDbRequests.getTopicTeam(eq(TESTTOPIC), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC)));
+    when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC)));
+    when(handleDbRequests.getSyncAcls(anyString(), eq(TESTTOPIC), eq(101)))
+        .thenReturn(createAcls(20));
+    when(manageDatabase.getAllEnvList(eq(101)))
+        .thenReturn(createListOfEnvs(KafkaClustersType.KAFKA, 3));
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), anyInt()))
+        .thenReturn("Octopus")
+        .thenReturn("Town")
+        .thenReturn("Alias");
+
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusterMap());
+    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, groupBy);
+
+    if (AclGroupBy.IP.equals(groupBy)) {
+      String previousIP = returnedValue.getAclInfoList().get(0).getAcl_ip();
+      for (AclInfo info : returnedValue.getAclInfoList()) {
+        assertThat(previousIP).isLessThanOrEqualTo(info.getAcl_ip());
+      }
+    }
+
+    if (AclGroupBy.TEAM.equals(groupBy)) {
+      String previousTeam = returnedValue.getAclInfoList().get(0).getTeamname();
+      for (AclInfo info : returnedValue.getAclInfoList()) {
+        assertThat(previousTeam).isLessThanOrEqualTo(info.getTeamname());
+      }
+    }
+
+    if (AclGroupBy.ACL_TYPE.equals(groupBy)) {
+      String previousACLType = returnedValue.getAclInfoList().get(0).getTopictype();
+      for (AclInfo info : returnedValue.getAclInfoList()) {
+        assertThat(previousACLType).isLessThanOrEqualTo(info.getTopictype());
+      }
+    }
+
+    if (AclGroupBy.ENV.equals(groupBy)) {
+      String previousENV = returnedValue.getAclInfoList().get(0).getEnvironmentName();
+      for (AclInfo info : returnedValue.getAclInfoList()) {
+        assertThat(previousENV).isLessThanOrEqualTo(info.getEnvironmentName());
+      }
+    }
+  }
+
+  private static Map<Integer, KwClusters> getKwClusterMap() {
+    Map<Integer, KwClusters> clusterDetails = new HashMap<>();
+    KwClusters kwCluster = new KwClusters();
+    kwCluster.setClusterId(1);
+    kwCluster.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+    kwCluster.setTenantId(101);
+    clusterDetails.put(1, kwCluster);
+    return clusterDetails;
+  }
+
+  private List<Acl> createAcls(int number) {
+    List<Acl> acls = new ArrayList<>();
+    for (int i = 1; i <= number; i++) {
+      Acl acl = new Acl();
+      acl.setAclip("" + i);
+      acl.setEnvironment("" + 3 % i);
+      acl.setEnvironment("1");
+      acl.setTeamId(10);
+      acl.setTopicname(TESTTOPIC);
+      acl.setAclType((i % 2 == 0) ? AclType.PRODUCER.value : AclType.CONSUMER.value);
+      acls.add(acl);
+    }
+    return acls;
   }
 
   private Topic createTopic(String topicName) {
