@@ -1,22 +1,21 @@
-# This workflow is called on every merges to the main branch
-# Changes will not be applied to the main branch until the pull request
-# passes the pipeline checks and is merged  successfully.
-# change for new commit
-name: PR/Push to main pipeline
+# This workflow is called when a pull request  is approved
+# that targets the protected branch `main`.
+# The job `merge-to-main` is a required status check.
+# (https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28)
+# We can only merge to main when this job has run and is green.
+# The workflow can be triggered manually, too.
+name: Merge into main
 
 on:
   pull_request_review:
-    types: [submitted]
-    branches:
-      - fake-main
-  workflow_dispatch:
+    types: [ submitted ]
+    branches: [ fake-main ]
+  workflow_call:
 
 jobs:
-  coral-workflow-for-merge-to-main:
+  checkout-code:
     if: github.event.review.state == 'approved'
-    name: Run coral workflow before enabling merge to main
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
@@ -24,27 +23,23 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
-      - name: coral-workflow
-        uses: ./.github/workflows/coral-jobs.yaml
+  coral-workflow-for-merge-to-main:
+    if: github.event.review.state == 'approved'
+    name: Run coral workflow before enabling merge to main
+    needs: checkout-code
+    uses: ./.github/workflows/coral-jobs.yaml
+
 
   maven-workflow-for-merge-to-main:
     if: github.event.review.state == 'approved'
     name: Run maven workflow before enabling merge to main
-    runs-on: ubuntu-latest
+    needs: checkout-code
+    uses: ./.github/workflows/maven-jobs.yaml
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
-        with:
-          ref: ${{ github.ref }}
-          fetch-depth: 0
-
-      - name: maven-workflow
-        uses: ./.github/workflows/maven-jobs.yaml
 
   merge-to-main:
-    if: github.event.review.state == 'approved'
     name: Status check for enabling merging to main
+    if: github.event.review.state == 'approved'
     runs-on: ubuntu-latest
     needs: [ maven-workflow-for-merge-to-main, coral-workflow-for-merge-to-main ]
 
