@@ -637,8 +637,8 @@ export type components = {
       documentation: string;
     };
     ResetPasswordInfo: {
-      passwordSent?: string;
-      userFound?: string;
+      passwordSent: string;
+      userFound: string;
     };
     RequestVerdict: {
       reason?: string;
@@ -869,8 +869,8 @@ export type components = {
       tenantName?: string;
     };
     EnvUpdatedStatus: {
-      result?: string;
-      envstatus?: string;
+      result: string;
+      envstatus: string;
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -923,7 +923,7 @@ export type components = {
       editable?: boolean;
     };
     TopicDetailsPerEnv: {
-      topicExists?: boolean;
+      topicExists: boolean;
       error?: string;
       topicId?: string;
       topicContents?: components["schemas"]["TopicInfo"];
@@ -998,6 +998,8 @@ export type components = {
       connectorName: string;
       environmentId: string;
       teamName: string;
+      /** Format: int32 */
+      teamId: number;
       showEditConnector: boolean;
       showDeleteConnector: boolean;
       connectorDeletable: boolean;
@@ -1132,7 +1134,7 @@ export type components = {
       topicSuffix?: (string)[];
     };
     DbAuthInfo: {
-      dbauth?: string;
+      dbauth: string;
     };
     DashboardStats: {
       /** Format: int32 */
@@ -3218,7 +3220,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         connectornamesearch?: string;
-        teamName?: string;
+        teamId?: number;
       };
     };
     responses: {
