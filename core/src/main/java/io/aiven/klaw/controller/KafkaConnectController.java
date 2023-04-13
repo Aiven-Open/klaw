@@ -168,11 +168,11 @@ public class KafkaConnectController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "connectornamesearch", required = false) String topicNameSearch,
-      @RequestParam(value = "teamName", required = false) String teamName)
+      @RequestParam(value = "teamId", required = false) Integer teamId)
       throws Exception {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectors(
-            envId, pageNo, currentPage, topicNameSearch, teamName),
+            envId, pageNo, currentPage, topicNameSearch, teamId),
         HttpStatus.OK);
   }
 
