@@ -208,8 +208,6 @@ function ConnectorApprovals() {
       />
     ) : undefined;
 
-  console.log("connectorRequests", connectorRequests);
-
   return (
     <>
       {detailsModal.isOpen && (
