@@ -90,10 +90,10 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.selectAllEnvs(anyInt()))
         .thenReturn(
             List.of(
-                buildEnv("4", 101, "DEV", KafkaClustersType.KAFKA),
-                buildEnv("5", 101, "TST", KafkaClustersType.SCHEMA_REGISTRY)));
+                buildEnv("4", 101, "DEV", KafkaClustersType.KAFKA, 4),
+                buildEnv("5", 101, "TST", KafkaClustersType.SCHEMA_REGISTRY, 5)));
     when(manageDatabase.getKafkaEnvList(anyInt()))
-        .thenReturn(List.of(buildEnv("4", 101, "DEV", KafkaClustersType.KAFKA)));
+        .thenReturn(List.of(buildEnv("4", 101, "DEV", KafkaClustersType.KAFKA, 4)));
     ApiResponse response = service.addNewEnv(env);
     assertThat(response.getMessage())
         .contains("Failure. Please choose a different name. This environment name already exists.");
@@ -251,13 +251,15 @@ class EnvsClustersTenantsControllerServiceTest {
     return info;
   }
 
-  private Env buildEnv(String id, int tenantId, String name, KafkaClustersType type) {
+  private Env buildEnv(
+      String id, int tenantId, String name, KafkaClustersType type, int clusterId) {
     Env mapping = new Env();
     mapping.setId(id);
     mapping.setName(name);
     mapping.setTenantId(tenantId);
     mapping.setType(type.value);
     mapping.setEnvExists("true");
+    mapping.setClusterId(clusterId);
     return mapping;
   }
 }

@@ -4,6 +4,7 @@ import com.google.common.base.Strings;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.confluentcloud.AclObject;
 import io.aiven.klaw.clusterapi.models.confluentcloud.Config;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
@@ -61,7 +62,7 @@ public class ConfluentCloudApiService {
     this.clusterApiUtils = clusterApiUtils;
   }
 
-  public Set<Map<String, String>> listTopics(
+  public Set<TopicConfig> listTopics(
       String restApiHost, KafkaSupportedProtocol protocol, String clusterIdentification)
       throws Exception {
     RestTemplate restTemplate = getRestTemplate();
@@ -80,7 +81,7 @@ public class ConfluentCloudApiService {
           restTemplate.exchange(
               listTopicsUri, HttpMethod.GET, request, new ParameterizedTypeReference<>() {});
 
-      List<Map<String, String>> topicsListUpdated = processListTopicsResponse(responseEntity);
+      List<TopicConfig> topicsListUpdated = processListTopicsResponse(responseEntity);
 
       return new HashSet<>(topicsListUpdated);
     } catch (RestClientException e) {
@@ -478,15 +479,15 @@ public class ConfluentCloudApiService {
     return aclMap;
   }
 
-  private List<Map<String, String>> processListTopicsResponse(
+  private List<TopicConfig> processListTopicsResponse(
       ResponseEntity<ListTopicsResponse> responseEntity) {
     ListTopicsResponse topicsList = Objects.requireNonNull(responseEntity.getBody());
-    List<Map<String, String>> topicsListUpdated = new ArrayList<>();
+    List<TopicConfig> topicsListUpdated = new ArrayList<>();
     for (TopicObject topicObject : topicsList.data) {
-      Map<String, String> topicsMapUpdated = new HashMap<>();
-      topicsMapUpdated.put("topicName", topicObject.topic_name);
-      topicsMapUpdated.put("replicationFactor", "" + topicObject.replication_factor);
-      topicsMapUpdated.put("partitions", "" + topicObject.partitions_count);
+      TopicConfig topicsMapUpdated = new TopicConfig();
+      topicsMapUpdated.setTopicName(topicObject.topic_name);
+      topicsMapUpdated.setReplicationFactor("" + topicObject.replication_factor);
+      topicsMapUpdated.setPartitions("" + topicObject.partitions_count);
 
       topicsListUpdated.add(topicsMapUpdated);
     }

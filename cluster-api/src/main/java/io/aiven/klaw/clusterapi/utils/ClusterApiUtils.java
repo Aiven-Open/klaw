@@ -86,7 +86,7 @@ public class ClusterApiUtils {
   //        sslKeys.forEach(adminClientsMap::remove);
   //    }
 
-  private String getHash(String envHost) {
+  public String getHash(String envHost) {
     return new String(Base64.encodeBase64(messageDigest.digest(envHost.getBytes()), false));
   }
 

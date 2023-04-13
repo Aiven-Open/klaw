@@ -46,6 +46,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
@@ -1001,10 +1002,10 @@ public class TopicControllerService {
     }
   }
 
-  static class TopicNameSyncComparator implements Comparator<Map<String, String>> {
+  static class TopicNameSyncComparator implements Comparator<TopicConfig> {
     @Override
-    public int compare(Map<String, String> topic1, Map<String, String> topic2) {
-      return topic1.get("topicName").compareTo(topic2.get("topicName"));
+    public int compare(TopicConfig topic1, TopicConfig topic2) {
+      return topic1.getTopicName().compareTo(topic2.getTopicName());
     }
   }
 
@@ -1070,7 +1071,7 @@ public class TopicControllerService {
 
       // select all topics and then filter
       env = "ALL";
-      teamId = 0;
+      teamId = 1;
     }
 
     // Get Sync topics

@@ -480,7 +480,7 @@
 					<div class="form-group has-success">
 						<label class="control-label">Select Team</label>
 						<select class="form-control custom-select" ng-model="getConnectors.team"
-								ng-options="team as team for team in allTeams" ng-change="getConnectors(1,'true','grid')">
+								ng-options="team.teamId as team.teamname for team in allTeams" ng-change="getConnectors(1,'true','grid')">
 						</select>
 					</div>
 				</div>

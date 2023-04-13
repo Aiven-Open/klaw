@@ -3910,11 +3910,12 @@
             "type" : "string"
           }
         }, {
-          "name" : "teamName",
+          "name" : "teamId",
           "in" : "query",
           "required" : false,
           "schema" : {
-            "type" : "string"
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -6484,6 +6485,10 @@
           "teamName" : {
             "type" : "string"
           },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "showEditConnector" : {
             "type" : "boolean"
           },
@@ -6533,7 +6538,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "environmentId", "showDeleteConnector", "showEditConnector", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "environmentId", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {

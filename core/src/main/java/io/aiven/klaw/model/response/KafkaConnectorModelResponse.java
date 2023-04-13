@@ -17,6 +17,8 @@ public class KafkaConnectorModelResponse {
 
   @NotNull private String teamName;
 
+  @NotNull private int teamId;
+
   @NotNull private boolean showEditConnector;
 
   @NotNull private boolean showDeleteConnector;

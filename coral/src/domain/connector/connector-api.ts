@@ -46,7 +46,7 @@ const getConnectors = (
   const queryParams = convertQueryValuesToString({
     env: params.env,
     pageNo: params.pageNo,
-    ...(params.teamName && { teamName: params.teamName }),
+    ...(params.teamId && { teamId: params.teamId }),
     ...(params.connectornamesearch &&
       params.connectornamesearch.length > 0 && {
         connectornamesearch: params.connectornamesearch,

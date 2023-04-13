@@ -5,6 +5,7 @@ import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
@@ -92,13 +93,13 @@ public class ClusterApiController {
           "/getTopics/{bootstrapServers}/{protocol}/{clusterName}/topicsNativeType/{aclsNativeType}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Set<Map<String, String>>> getTopics(
+  public ResponseEntity<Set<TopicConfig>> getTopics(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterName,
       @PathVariable String aclsNativeType)
       throws Exception {
-    Set<Map<String, String>> topics;
+    Set<TopicConfig> topics;
     if (AclsNativeType.CONFLUENT_CLOUD.name().equals(aclsNativeType)) {
       topics = confluentCloudApiService.listTopics(bootstrapServers, protocol, clusterName);
     } else {

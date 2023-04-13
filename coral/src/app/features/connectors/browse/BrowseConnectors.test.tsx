@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import BrowseConnectors from "src/app/features/connectors/browse/BrowseConnectors";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { getConnectors } from "src/domain/connector";
+import { Connector, getConnectors } from "src/domain/connector";
 import { getSyncConnectorsEnvironments } from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
@@ -20,13 +20,14 @@ const mockGetSyncConnectorsEnvironments =
     typeof getSyncConnectorsEnvironments
   >;
 
-const mockConnectors = [
+const mockConnectors: Connector[] = [
   {
     sequence: 2,
     connectorId: 1001,
     connectorName: "test_connector_1",
     environmentId: "4",
     teamName: "Dev",
+    teamId: 1,
     allPageNos: ["1"],
     totalNoPages: "1",
     currentPage: "1",
@@ -42,6 +43,7 @@ const mockConnectors = [
     connectorName: "test_connector_2",
     environmentId: "4",
     teamName: "Ospo",
+    teamId: 2,
     allPageNos: ["1"],
     totalNoPages: "1",
     currentPage: "1",
@@ -57,6 +59,7 @@ const mockConnectors = [
     connectorName: "test_connector_3",
     environmentId: "4",
     teamName: "Infra",
+    teamId: 3,
     allPageNos: ["1"],
     totalNoPages: "1",
     currentPage: "1",

@@ -11,6 +11,7 @@ import io.aiven.klaw.clusterapi.UtilMethods;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListTopicsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.TopicCreateRequest;
@@ -66,15 +67,14 @@ public class ConfluentCloudApiServiceTest {
             any(),
             (ParameterizedTypeReference<ListTopicsResponse>) any()))
         .thenReturn(listTopicsResponseResponseEntity);
-    Set<Map<String, String>> listTopicsSet =
+    Set<TopicConfig> listTopicsSet =
         confluentCloudApiService.listTopics(
             "localhost:443", KafkaSupportedProtocol.SSL, CLUSTER_ID);
 
     assertThat(listTopicsSet).hasSize(2); // two topics
-    assertThat(listTopicsSet.stream().toList().get(0))
-        .hasSize(3); // topicName, partitions, replication factor
-    assertThat(listTopicsSet.stream().toList().get(0))
-        .containsKeys("topicName", "partitions", "replicationFactor");
+    assertThat(listTopicsSet.stream().toList().get(0).getTopicName()).isNotNull();
+    assertThat(listTopicsSet.stream().toList().get(0).getPartitions()).isNotNull();
+    assertThat(listTopicsSet.stream().toList().get(0).getReplicationFactor()).isNotNull();
   }
 
   @Test

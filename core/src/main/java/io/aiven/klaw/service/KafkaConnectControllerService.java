@@ -232,11 +232,11 @@ public class KafkaConnectControllerService {
   }
 
   public List<List<KafkaConnectorModelResponse>> getConnectors(
-      String env, String pageNo, String currentPage, String connectorNameSearch, String teamName)
+      String env, String pageNo, String currentPage, String connectorNameSearch, Integer teamId)
       throws Exception {
     log.debug("getConnectors {}", connectorNameSearch);
     List<KafkaConnectorModelResponse> topicListUpdated =
-        getConnectorsPaginated(env, pageNo, currentPage, connectorNameSearch, teamName);
+        getConnectorsPaginated(env, pageNo, currentPage, connectorNameSearch, teamId);
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
       updateTeamNamesForDisplay(topicListUpdated);
@@ -281,7 +281,7 @@ public class KafkaConnectControllerService {
   }
 
   private List<KafkaConnectorModelResponse> getConnectorsPaginated(
-      String env, String pageNo, String currentPage, String connectorNameSearch, String teamName) {
+      String env, String pageNo, String currentPage, String connectorNameSearch, Integer teamId) {
     if (connectorNameSearch != null) {
       connectorNameSearch = connectorNameSearch.trim();
     }
@@ -292,8 +292,7 @@ public class KafkaConnectControllerService {
     // Get Sync topics
 
     List<KwKafkaConnector> topicsFromSOT =
-        handleDbRequests.getSyncConnectors(
-            env, manageDatabase.getTeamIdFromTeamName(tenantId, teamName), tenantId);
+        handleDbRequests.getSyncConnectors(env, teamId, tenantId);
     topicsFromSOT = getFilteredConnectorsForTenant(topicsFromSOT);
     List<Env> listAllEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
     // tenant filtering
@@ -372,28 +371,30 @@ public class KafkaConnectControllerService {
     for (int i = 0; i < topicsFromSOT.size(); i++) {
       int counterInc = counterIncrement();
       if (i >= startVar && i < lastVar) {
-        KafkaConnectorModelResponse mp = new KafkaConnectorModelResponse();
-        mp.setSequence(counterInc);
+        KafkaConnectorModelResponse kafkaConnectorModelResponse = new KafkaConnectorModelResponse();
+        kafkaConnectorModelResponse.setSequence(counterInc);
         KwKafkaConnector topicSOT = topicsFromSOT.get(i);
 
         List<String> envList = topicSOT.getEnvironmentsList();
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
-        mp.setConnectorId(topicSOT.getConnectorId());
-        mp.setEnvironmentId(topicSOT.getEnvironment());
-        mp.setEnvironmentsList(getConvertedEnvs(listAllEnvs, envList));
-        mp.setConnectorName(topicSOT.getConnectorName());
-        mp.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
+        kafkaConnectorModelResponse.setConnectorId(topicSOT.getConnectorId());
+        kafkaConnectorModelResponse.setEnvironmentId(topicSOT.getEnvironment());
+        kafkaConnectorModelResponse.setEnvironmentsList(getConvertedEnvs(listAllEnvs, envList));
+        kafkaConnectorModelResponse.setConnectorName(topicSOT.getConnectorName());
+        kafkaConnectorModelResponse.setTeamName(
+            manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
+        kafkaConnectorModelResponse.setTeamId(topicSOT.getTeamId());
 
-        mp.setDescription(topicSOT.getDescription());
+        kafkaConnectorModelResponse.setDescription(topicSOT.getDescription());
 
-        mp.setTotalNoPages(totalPages + "");
-        mp.setCurrentPage(pageNo);
+        kafkaConnectorModelResponse.setTotalNoPages(totalPages + "");
+        kafkaConnectorModelResponse.setCurrentPage(pageNo);
 
-        mp.setAllPageNos(numList);
+        kafkaConnectorModelResponse.setAllPageNos(numList);
 
         if (topicsListMap != null) {
-          topicsListMap.add(mp);
+          topicsListMap.add(kafkaConnectorModelResponse);
         }
       }
     }

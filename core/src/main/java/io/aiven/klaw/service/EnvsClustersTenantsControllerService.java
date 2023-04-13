@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_109;
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_110;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_103;
@@ -668,12 +669,17 @@ public class EnvsClustersTenantsControllerService {
     newEnv.setName(newEnv.getName().toUpperCase());
     String envIdAlreadyExistsInDeleteStatus = "";
     List<Env> envActualList = manageDatabase.getHandleDbRequests().selectAllEnvs(tenantId);
+    List<Env> kafkaEnvs = manageDatabase.getKafkaEnvList(tenantId);
+    List<Env> schemaEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
+    List<Integer> kafkaClusterIds = kafkaEnvs.stream().map(Env::getClusterId).toList();
+    List<Integer> schemaClusterIds = schemaEnvs.stream().map(Env::getClusterId).toList();
 
     if (newEnv.getId() == null || newEnv.getId().length() == 0) {
-      List<Env> kafkaEnvs = manageDatabase.getKafkaEnvList(tenantId);
-      List<Env> schemaEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
-      List<Env> kafkaConnectEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
+      if (validateConnectedClusters(newEnv, kafkaClusterIds, schemaClusterIds)) {
+        return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_110).build();
+      }
 
+      List<Env> kafkaConnectEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
       List<Integer> idListInts = new ArrayList<>();
 
       kafkaEnvs.forEach(a -> idListInts.add(Integer.valueOf(a.getId())));
@@ -754,6 +760,20 @@ public class EnvsClustersTenantsControllerService {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
     }
+  }
+
+  private boolean validateConnectedClusters(
+      EnvModel newEnv, List<Integer> kafkaClusterIds, List<Integer> schemaClusterIds) {
+    if (newEnv.getType().equals(KafkaClustersType.KAFKA.value)) {
+      if (kafkaClusterIds.contains(newEnv.getClusterId())) {
+        // don't allow same cluster id be assigned to another kafka env, if regex is not defined
+        return newEnv.getTopicprefix() == null && newEnv.getTopicsuffix() == null;
+      }
+    } else if (newEnv.getType().equals(KafkaClustersType.SCHEMA_REGISTRY.value)) {
+      // don't allow same cluster id be assigned to another schema env
+      return schemaClusterIds.contains(newEnv.getClusterId());
+    }
+    return false;
   }
 
   public ApiResponse addNewCluster(KwClustersModel kwClustersModel) {
