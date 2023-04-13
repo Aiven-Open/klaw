@@ -1,0 +1,51 @@
+# This workflow is called when a pull request  is approved
+# that targets the protected branch `main`.
+# The job `merge-to-main` ("Status check for enabling merging to main")
+# is a required status check.
+# (https://docs.github.com/en/rest/commits/statuses?apiVersion=2022-11-28)
+# We can only merge to main when this job has run and is green.
+# The workflow can be triggered manually, too.
+name: Merge to main
+
+on:
+  pull_request_review:
+    types: [ submitted ]
+    #  @TODO update to `main` before actual merging!
+    branches: [ fake-main ]
+  workflow_call:
+
+jobs:
+  checkout-code:
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+  coral-workflow-for-merge-to-main:
+    if: github.event.review.state == 'approved'
+    name: Run coral workflow before enabling merge to main
+    needs: checkout-code
+    uses: ./.github/workflows/jobs-coral.yaml
+
+
+  maven-workflow-for-merge-to-main:
+    if: github.event.review.state == 'approved'
+    name: Run maven workflow before enabling merge to main
+    needs: checkout-code
+    uses: ./.github/workflows/jobs-maven.yaml
+
+
+  merge-to-main:
+    name: Status check for enabling merging to main
+    if: github.event.review.state == 'approved'
+    runs-on: ubuntu-latest
+    needs: [ maven-workflow-for-merge-to-main, coral-workflow-for-merge-to-main ]
+
+    steps:
+      - name: Confirm check
+        run: echo "🎉 this was successful"
+

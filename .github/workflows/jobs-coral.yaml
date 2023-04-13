@@ -1,4 +1,9 @@
-name: Coral PR Pipeline
+# This workflow is not automatically triggered, but needs to be
+# called from e.g. another workflow file. It enables us to
+# reuse the jobs run here in different workflows.
+# Please note that in order to run this jobs, the
+# code needs to be checked already out when using the job
+name: Coral related jobs
 
 on:
   workflow_call
