@@ -1,10 +1,20 @@
-# This workflow is called for every pull request
-# regardless which branch its targets
-
+# This workflow is called for every pull request regardless which branch its targets
+#
+# 'coral-workflow' runs the jobs for coral when
+# - a PR is opened, synchronize, or reopened
+# - & there are changes inside `coral` directory
+# -> it does _not_ differentiate between a PR that is ready for review or a draft
+#
+# 'coral-workflow' runs the jobs for coral when
+# - a PR is opened, synchronize, or reopened
+# - & there are changes detected outside `coral` directory
+# - & the PR is not in DRAFT status
+# - OR the PR is in draft status, but was marked as "Ready for review"
 name: Pull Request pipeline
 
 on:
-  pull_request
+  pull_request:
+  workflow_dispatch:
 
 jobs:
   check-changes:
@@ -34,7 +44,7 @@ jobs:
 
   maven-workflow:
     needs: check-changes
-    if: needs.check-changes.outputs.changes-maven == 'true'
+    if: ${{ !github.event.pull_request.draft || github.event.action == 'ready_for_review' }} && needs.check-changes.outputs.changes-maven == 'true'
     uses: ./.github/workflows/jobs-maven.yaml
   coral-workflow:
     needs: check-changes
