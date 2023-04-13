@@ -35,8 +35,8 @@ jobs:
   maven-workflow:
     needs: check-changes
     if: needs.check-changes.outputs.changes-maven == 'true'
-    uses: ./.github/workflows/maven-jobs.yaml
+    uses: ./.github/workflows/jobs-maven.yaml
   coral-workflow:
     needs: check-changes
     if: needs.check-changes.outputs.changes-coral == 'true'
-    uses: ./.github/workflows/coral-jobs.yaml
+    uses: ./.github/workflows/jobs-coral.yaml
