@@ -25,34 +25,8 @@ on:
   pull_request:
     paths:
       - 'openapi.yaml'
-    types:
-      - opened
-      - synchronize
 
 jobs:
-  check-for-changes-openapi:
-    runs-on: ubuntu-latest
-    outputs:
-      change_detected: ${{ steps.detect-openapi-changes.outputs.change_detected }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
-        with:
-          ref: ${{ github.event.pull_request.head.ref }}
-          repository: ${{ github.event.pull_request.head.repo.full_name }}
-          fetch-depth: 0
-          persist-credentials: true
-
-      - id: detect-openapi-changes
-        name: Check for changes to "openapi.yaml"
-        run: |
-          if git diff --name-only HEAD^ HEAD | grep -q 'openapi.yaml'; then
-            echo "OpenAPI changes detected. Will generate new TypeScript types now 🤖"
-            echo "change_detected=true" >> $GITHUB_OUTPUT
-          else
-            echo "No new changes to OpenAPI detected, will end workflow."     
-          fi
-
   detect-ts-changes:
     runs-on: ubuntu-latest
     needs: check-for-changes-openapi

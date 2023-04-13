@@ -1,10 +1,21 @@
-# This workflow is called for every pull request
-# regardless which branch its targets
-
+# This workflow is called for every pull request regardless which branch its targets
+#
+# 'coral-jobs' runs the jobs for coral when
+# - a PR is opened, synchronize, or reopened
+# - & there are changes inside `coral` directory
+# -> it does _not_ differentiate between a PR that is ready for review or a draft
+#
+# 'maven-jobs' runs the jobs for coral when
+# - a PR is opened, synchronize, or reopened
+# - & there are changes detected outside `coral` directory
+# - & the PR is not in DRAFT status
+# - OR the PR is in draft status, but was marked as "Ready for review"
 name: Pull Request pipeline
 
 on:
-  pull_request
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
 
 jobs:
   check-changes:
@@ -32,11 +43,20 @@ jobs:
           fi
 
 
-  maven-workflow:
+  run-maven-jobs:
     needs: check-changes
-    if: needs.check-changes.outputs.changes-maven == 'true'
+    # the condition makes sure that changes on a draft PR do not trigger the job, except it's a "ready_for_review" event
+    # in that case, the job will only run if there are actual changes relevant to maven
+    if: (github.event.pull_request.draft == false || github.event.action == 'ready_for_review') && needs.check-changes.outputs.changes-maven == 'true'
     uses: ./.github/workflows/jobs-maven.yaml
-  coral-workflow:
+
+  run-coral-jobs:
     needs: check-changes
-    if: needs.check-changes.outputs.changes-coral == 'true'
+    # since we're triggering the workflow for the "ready_for_review" event to avoid
+    # the maven jobs to run on a draft, this condition makes sure that the coral jobs
+    # are not triggered for "ready_for_review" as they are already running on drafts
+    # so the "ready_for_review" event is not relevant here.
+    # it also makes sure to only run the jobs when there are changes on the branch
+    # that relate to coral
+    if: needs.check-changes.outputs.changes-coral == 'true' && github.event.action != 'ready_for_review'
     uses: ./.github/workflows/jobs-coral.yaml
