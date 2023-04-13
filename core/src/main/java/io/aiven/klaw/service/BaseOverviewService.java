@@ -12,6 +12,7 @@ import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
+import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
@@ -85,9 +86,56 @@ public abstract class BaseOverviewService {
   }
 
   private List<AclInfo> sortAclInfo(List<AclInfo> aclInfo, AclGroupBy groupBy) {
+    // merge reduce
 
     Collections.sort(aclInfo, getComparator(groupBy));
     return aclInfo;
+  }
+
+  private List<AclInfo> mergeAclInfo(List<AclInfo> aclInfo) {
+    List<AclInfo> organisedList = new ArrayList<>();
+    List<AclInfo> team = new ArrayList<>();
+    int teamId = aclInfo.get(0).getTeamid();
+    for (AclInfo info : aclInfo) {
+      if (info.getTeamid() == teamId) {
+        team.add(info);
+        // remove from previous
+        aclInfo.remove(info);
+      }
+    }
+
+    return organisedList;
+  }
+
+  private List<AclInfo> mergeProducers(List<AclInfo> aclInfo) {
+    AclInfo producerIp = null, producerPrincipal = null;
+    AclInfo consumerIp = null, consumerPrincipal = null;
+
+    for (AclInfo info : aclInfo) {
+      if (info.getTopictype().equals(AclType.PRODUCER.value)) {
+        if (info.getAcl_ip() != null && info.getAcl_ip().isEmpty()) {
+          producerIp = setAclInfo(producerIp, info);
+        } else {
+          producerPrincipal = setAclInfo(producerPrincipal, info);
+        }
+      } else if (info.getTopictype().equals(AclType.CONSUMER.value)) {
+        if (info.getAcl_ip() != null && info.getAcl_ip().isEmpty()) {
+          consumerIp = setAclInfo(consumerIp, info);
+        } else {
+          consumerPrincipal = setAclInfo(consumerPrincipal, info);
+        }
+      }
+    }
+
+    return;
+  }
+
+  private void setAclInfo(AclInfo mergedIp, AclInfo mergedPrincipal, AclInfo info) {
+    if (info.getAcl_ip() != null && info.getAcl_ip().isEmpty()) {
+      mergedIp.getAcl_ips().add(info.getAcl_ip());
+    } else {
+      mergedPrincipal.getAcl_ssls().add(info.getAcl_ssl());
+    }
   }
 
   private static Comparator<AclInfo> getComparator(AclGroupBy groupBy) {
