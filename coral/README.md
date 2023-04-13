@@ -1,6 +1,5 @@
 # 🪸 Klaw's new frontend app
 
-test change
 
 - Please be aware of our [Code of Conduct](../CODE_OF_CONDUCT.md) ❤️
 
