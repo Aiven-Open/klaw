@@ -234,6 +234,9 @@ public class UsersTeamsControllerService {
       }
 
       String result = dbHandle.updateUser(existingUserInfo);
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.UPDATE);
+      }
       return ApiResponse.builder()
           .success(result.equals(ApiResultStatus.SUCCESS.value))
           .message(result)
@@ -248,7 +251,6 @@ public class UsersTeamsControllerService {
     log.debug("getTeamDetails {} {}", teamId, tenantName);
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
-
     Team teamDao = manageDatabase.getHandleDbRequests().selectTeamDetails(teamId, tenantId);
     if (teamDao != null) {
       TeamModelResponse teamModel = new TeamModelResponse();
@@ -530,7 +532,6 @@ public class UsersTeamsControllerService {
       } else {
         tenantId = newUser.getTenantId();
       }
-
       newUser.setTenantId(tenantId);
     }
 
@@ -581,6 +582,12 @@ public class UsersTeamsControllerService {
               commonUtilsService.getLoginUrl());
         }
       }
+
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        tenantId = commonUtilsService.getTenantId(getUserName());
+        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.CREATE);
+      }
+
       return ApiResponse.builder()
           .success(result.equals(ApiResultStatus.SUCCESS.value))
           .message(result)

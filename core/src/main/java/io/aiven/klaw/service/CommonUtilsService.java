@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
@@ -308,7 +307,9 @@ public class CommonUtilsService {
     }
     final MetadataOperationType operationType =
         MetadataOperationType.of(kwMetadataUpdates.getOperationType());
-    if (entityType == EntityType.TEAM) {
+    if (entityType == EntityType.USERS) {
+      manageDatabase.loadUsersForAllTenants();
+    } else if (entityType == EntityType.TEAM) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadTenantTeamsForOneTenant(null, kwMetadataUpdates.getTenantId());
     } else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.DELETE) {
@@ -334,12 +335,9 @@ public class CommonUtilsService {
       manageDatabase.loadRolesPermissionsOneTenant(null, kwMetadataUpdates.getTenantId());
     } else if (entityType == EntityType.PROPERTIES) {
       manageDatabase.loadKwPropsPerOneTenant(null, kwMetadataUpdates.getTenantId());
+    } else if (entityType == EntityType.TOPICS) {
+      manageDatabase.loadTopicsForOneTenant(kwMetadataUpdates.getTenantId());
     }
-  }
-
-  @Cacheable(cacheNames = "tenantsusernames", key = "#userId")
-  public int getTenantId(String userId) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userId).getTenantId();
   }
 
   public String getLoginUrl() {
@@ -428,12 +426,20 @@ public class CommonUtilsService {
         manageDatabase.getTeamsAndAllowedEnvs(getTeamId(userName), getTenantId(userName)));
   }
 
-  public Integer getTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
+  public int getTenantId(String userId) {
+    return manageDatabase.selectAllCachedUserInfo().stream()
+        .filter(userInfo -> userInfo.getUsername().equals(userId))
+        .findFirst()
+        .map(UserInfo::getTenantId)
+        .orElse(0);
   }
 
-  public boolean verifyIfTeamExists(int tenantId, String teamName) {
-    return manageDatabase.getTeamIdFromTeamName(tenantId, teamName) != null;
+  public Integer getTeamId(String userName) {
+    return manageDatabase.selectAllCachedUserInfo().stream()
+        .filter(userInfo -> userInfo.getUsername().equals(userName))
+        .findFirst()
+        .map(UserInfo::getTeamId)
+        .orElse(0);
   }
 
   public Object getPrincipal() {
@@ -529,5 +535,11 @@ public class CommonUtilsService {
     }
 
     return orderOfSchemaEnvs.toString();
+  }
+
+  public List<Topic> getTopicsForTopicName(String topicName, int tenantId) {
+    return manageDatabase.getTopicsForTenant(tenantId).stream()
+        .filter(topic -> topic.getTopicname().equals(topicName))
+        .toList();
   }
 }

@@ -96,7 +96,7 @@ public class ApacheKafkaTopicService {
 
   public synchronized ApiResponse createTopic(ClusterTopicRequest clusterTopicRequest)
       throws Exception {
-    log.info("createTopic {}", clusterTopicRequest);
+    log.info("createTopic {}", clusterTopicRequest.toString());
     AdminClient client =
         clusterApiUtils.getAdminClient(
             clusterTopicRequest.getEnv(),

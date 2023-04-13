@@ -43,6 +43,7 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.OffsetDetails;
+import io.aiven.klaw.model.response.ServiceAccountDetails;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -91,7 +92,6 @@ public class AclControllerService {
     aclRequestsModel.setRequestOperationType(RequestOperationType.CREATE);
     aclRequestsModel.setRequestor(currentUserName);
     int tenantId = commonUtilsService.getTenantId(currentUserName);
-
     aclRequestsModel.setRequestingteam(commonUtilsService.getTeamId(currentUserName));
 
     if (commonUtilsService.isNotAuthorizedUser(
@@ -231,8 +231,7 @@ public class AclControllerService {
   }
 
   private boolean verifyIfTopicExists(AclRequestsModel aclReq, int tenantId) {
-    List<Topic> topics =
-        manageDatabase.getHandleDbRequests().getTopics(aclReq.getTopicname(), tenantId);
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(aclReq.getTopicname(), tenantId);
     boolean topicFound = false;
 
     if (AclPatternType.LITERAL.value.equals(aclReq.getAclPatternType())) {
@@ -373,8 +372,7 @@ public class AclControllerService {
       List<String> approverRoles,
       String requester,
       int tenantId) {
-    List<Topic> topicTeamsList =
-        manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
+    List<Topic> topicTeamsList = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
     if (topicTeamsList.size() > 0) {
       Integer teamId =
           commonUtilsService.getFilteredTopicsForTenant(topicTeamsList).get(0).getTeamId();
@@ -865,7 +863,7 @@ public class AclControllerService {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
-  public ApiResponse getAivenServiceAccountDetails(
+  public ServiceAccountDetails getAivenServiceAccountDetails(
       String envId, String topicName, String serviceAccount, String aclReqNo) {
     String loggedInUser = getCurrentUserName();
     int tenantId = commonUtilsService.getTenantId(loggedInUser);
@@ -881,10 +879,7 @@ public class AclControllerService {
 
       // Verify if loggedInUser belongs to the same team as the Subscription owner team
       if (!Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(loggedInUser))) {
-        return ApiResponse.builder()
-            .success(false)
-            .message(ApiResultStatus.NOT_AUTHORIZED.value)
-            .build();
+        return new ServiceAccountDetails();
       }
 
       // Get details from Cluster Api
@@ -897,15 +892,15 @@ public class AclControllerService {
     } catch (Exception e) {
       log.error("Ignoring error while retrieving service account credentials {} ", e.toString());
     }
-    return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
+    return new ServiceAccountDetails();
   }
 
-  public ApiResponse getAivenServiceAccounts(String envId) {
+  public Set<String> getAivenServiceAccounts(String envId) {
     String loggedInUser = getCurrentUserName();
     int tenantId = commonUtilsService.getTenantId(loggedInUser);
     log.info("Retrieving service accounts for environment {}", envId);
+    Set<String> serviceAccountsOfTeam = new HashSet<>();
     try {
-      Set<String> serviceAccountsOfTeam = new HashSet<>();
       Optional<Team> optionalTeam =
           manageDatabase.getTeamObjForTenant(tenantId).stream()
               .filter(
@@ -915,14 +910,10 @@ public class AclControllerService {
       if (optionalTeam.isPresent() && optionalTeam.get().getServiceAccounts() != null) {
         serviceAccountsOfTeam = optionalTeam.get().getServiceAccounts().getServiceAccountsList();
       }
-      return ApiResponse.builder()
-          .success(true)
-          .message(ApiResultStatus.SUCCESS.value)
-          .data(serviceAccountsOfTeam)
-          .build();
+      return serviceAccountsOfTeam;
     } catch (Exception e) {
       log.error("Ignoring error while retrieving service accounts {} ", e.toString());
     }
-    return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
+    return serviceAccountsOfTeam;
   }
 }

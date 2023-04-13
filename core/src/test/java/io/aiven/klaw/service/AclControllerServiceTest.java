@@ -32,6 +32,7 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.ServiceAccountDetails;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -321,7 +322,7 @@ public class AclControllerServiceTest {
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
         .thenReturn(Collections.singletonList("USER"));
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(topicList);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
     when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(userList);
 
@@ -664,15 +665,11 @@ public class AclControllerServiceTest {
     String reqNo = "101";
     stubUserInfo();
     mockKafkaFlavor();
-    Map<String, String> serviceAccountInfoMap = new HashMap<>();
-    serviceAccountInfoMap.put("password", "password");
-    serviceAccountInfoMap.put("username", "username");
+    ServiceAccountDetails serviceAccountDetails = new ServiceAccountDetails();
+    serviceAccountDetails.setPassword("password");
+    serviceAccountDetails.setUsername("username");
+    serviceAccountDetails.setAccountFound(true);
 
-    ApiResponse apiResponse =
-        ApiResponse.builder()
-            .message(ApiResultStatus.SUCCESS.value)
-            .data(serviceAccountInfoMap)
-            .build();
     Acl acl = utilMethods.getAllAcls().get(1);
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
@@ -682,14 +679,12 @@ public class AclControllerServiceTest {
     when(handleDbRequests.selectSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
     when(clusterApiService.getAivenServiceAccountDetails(
             anyString(), anyString(), anyString(), anyInt()))
-        .thenReturn(apiResponse);
+        .thenReturn(serviceAccountDetails);
 
-    ApiResponse resultResp =
+    ServiceAccountDetails resultResp =
         aclControllerService.getAivenServiceAccountDetails("1", "testtopic", "service", reqNo);
-    Map<String, String> resultObj = (Map) resultResp.getData();
 
-    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(resultObj).hasSize(2);
+    assertThat(resultResp.isAccountFound()).isTrue();
   }
 
   @Test
@@ -698,13 +693,9 @@ public class AclControllerServiceTest {
     String reqNo = "101";
     stubUserInfo();
     mockKafkaFlavor();
-    Map<String, String> serviceAccountInfoMap = new HashMap<>();
+    ServiceAccountDetails serviceAccountDetails = new ServiceAccountDetails();
+    serviceAccountDetails.setAccountFound(false);
 
-    ApiResponse apiResponse =
-        ApiResponse.builder()
-            .message(ApiResultStatus.FAILURE.value)
-            .data(serviceAccountInfoMap)
-            .build();
     Acl acl = utilMethods.getAllAcls().get(1);
 
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
@@ -714,12 +705,12 @@ public class AclControllerServiceTest {
     when(handleDbRequests.selectSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
     when(clusterApiService.getAivenServiceAccountDetails(
             anyString(), anyString(), anyString(), anyInt()))
-        .thenReturn(apiResponse);
+        .thenReturn(serviceAccountDetails);
 
-    ApiResponse resultResp =
+    ServiceAccountDetails resultResp =
         aclControllerService.getAivenServiceAccountDetails("1", "testtopic", "service", reqNo);
 
-    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.FAILURE.value);
+    assertThat(resultResp.isAccountFound()).isFalse();
   }
 
   @Test
@@ -744,10 +735,7 @@ public class AclControllerServiceTest {
     when(clusterApiService.getAivenServiceAccounts(anyString(), anyString(), anyInt()))
         .thenReturn(apiResponse);
 
-    ApiResponse resultResp = aclControllerService.getAivenServiceAccounts("1");
-    Set<String> resultObj = (Set) resultResp.getData();
-
-    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    Set<String> resultObj = aclControllerService.getAivenServiceAccounts("1");
     assertThat(resultObj).hasSize(2);
   }
 
@@ -772,10 +760,7 @@ public class AclControllerServiceTest {
     when(clusterApiService.getAivenServiceAccounts(anyString(), anyString(), anyInt()))
         .thenReturn(apiResponse);
 
-    ApiResponse resultResp = aclControllerService.getAivenServiceAccounts("1");
-    Set<String> resultObj = (Set) resultResp.getData();
-
-    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    Set<String> resultObj = aclControllerService.getAivenServiceAccounts("1");
     assertThat(resultObj).hasSize(0);
   }
 

@@ -4510,7 +4510,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  },
+                  "uniqueItems" : true
                 }
               }
             }
@@ -4557,7 +4561,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
+                  "$ref" : "#/components/schemas/ServiceAccountDetails"
                 }
               }
             }
@@ -7341,6 +7345,19 @@
           },
           "value" : {
             "type" : "string"
+          }
+        }
+      },
+      "ServiceAccountDetails" : {
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "accountFound" : {
+            "type" : "boolean"
           }
         }
       },
