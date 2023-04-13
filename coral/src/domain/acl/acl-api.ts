@@ -12,7 +12,11 @@ import {
   RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
 import api from "src/services/api";
-import { KlawApiRequest, KlawApiResponse } from "types/utils";
+import {
+  KlawApiRequest,
+  KlawApiRequestQueryParameters,
+  KlawApiResponse,
+} from "types/utils";
 
 const createAclRequest = (
   aclParams:
@@ -106,6 +110,18 @@ const deleteAclRequest = ({ reqIds }: DeleteRequestParams) => {
   );
 };
 
+type GetAivenServiceAccountsParams =
+  KlawApiRequestQueryParameters<"getAivenServiceAccounts">;
+type GetAivenServiceAccountsResponse =
+  KlawApiResponse<"getAivenServiceAccounts">;
+function getAivenServiceAccounts(
+  params: GetAivenServiceAccountsParams
+): Promise<GetAivenServiceAccountsResponse> {
+  return api.get<GetAivenServiceAccountsResponse>(
+    `/getAivenServiceAccounts?${new URLSearchParams(params)}`
+  );
+}
+
 export {
   createAclRequest,
   getAclRequestsForApprover,
@@ -113,4 +129,5 @@ export {
   approveAclRequest,
   declineAclRequest,
   deleteAclRequest,
+  getAivenServiceAccounts,
 };
