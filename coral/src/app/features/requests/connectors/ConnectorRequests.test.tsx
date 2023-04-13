@@ -180,6 +180,7 @@ describe("ConnectorRequests", () => {
         pageNo: "100",
         search: "",
         env: "ALL",
+        isMyRequest: false,
       });
     });
 
@@ -195,6 +196,7 @@ describe("ConnectorRequests", () => {
         pageNo: "1",
         search: "",
         env: "ALL",
+        isMyRequest: false,
       });
     });
 
@@ -303,6 +305,7 @@ describe("ConnectorRequests", () => {
         pageNo: "2",
         search: "",
         env: "ALL",
+        isMyRequest: false,
       });
     });
   });
@@ -323,6 +326,7 @@ describe("ConnectorRequests", () => {
         pageNo: "1",
         search: "",
         env: "ALL",
+        isMyRequest: false,
       });
     });
 
@@ -342,6 +346,7 @@ describe("ConnectorRequests", () => {
           pageNo: "1",
           search: "abc",
           env: "ALL",
+          isMyRequest: false,
         });
       });
     });
@@ -375,6 +380,7 @@ describe("ConnectorRequests", () => {
         pageNo: "1",
         search: "",
         env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+        isMyRequest: false,
       });
     });
 
@@ -392,6 +398,67 @@ describe("ConnectorRequests", () => {
         pageNo: "1",
         search: "",
         env: mockedEnvironmentResponse[0].id,
+        isMyRequest: false,
+      });
+    });
+  });
+
+  describe("user can filter topic requests to only display users own requests", () => {
+    afterEach(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("populates the MyRequests filter from the url search parameters", () => {
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?showOnlyMyRequests=true",
+      });
+      expect(getConnectorRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        isMyRequest: true,
+        search: "",
+        env: "ALL",
+      });
+    });
+
+    it("applies the MyRequest filter by toggling the switch", async () => {
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+      const isMyRequestSwitch = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+      await userEvent.click(isMyRequestSwitch);
+      await waitFor(() => {
+        expect(getConnectorRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          isMyRequest: true,
+          search: "",
+          env: "ALL",
+        });
+      });
+    });
+
+    it("unapplies the MyRequest filter by untoggling the switch", async () => {
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?showOnlyMyRequests=true",
+      });
+      const isMyRequestSwitch = screen.getByRole("checkbox", {
+        name: "Show only my requests",
+      });
+      await userEvent.click(isMyRequestSwitch);
+      await waitFor(() => {
+        expect(getConnectorRequests).toHaveBeenLastCalledWith({
+          pageNo: "1",
+          isMyRequest: false,
+          search: "",
+          env: "ALL",
+        });
       });
     });
   });
