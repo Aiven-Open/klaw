@@ -49,7 +49,7 @@ const TopicProducerForm = ({
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const navigate = useNavigate();
-  const { aclIpPrincipleType, aclPatternType, topicname } =
+  const { aclIpPrincipleType, aclPatternType, topicname, environment } =
     topicProducerForm.getValues();
   const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
   const { current: initialAclPatternType } = useRef(aclPatternType);
@@ -185,6 +185,7 @@ const TopicProducerForm = ({
               <IpOrPrincipalField
                 aclIpPrincipleType={aclIpPrincipleType}
                 isAivenCluster={isAivenCluster}
+                environment={environment}
               />
             )}
           </GridItem>

@@ -20,9 +20,17 @@ const acl_ip = z
   .max(15, { message: "Maximum 15 elements allowed." })
   .optional();
 const acl_ssl = z
-  .array(z.string().min(3, { message: "Must be more than 2 characters." }))
+  .array(z.string())
   .min(1, { message: "Enter at least one element." })
   .max(5, { message: "Maximum 5 elements allowed." })
+  .refine(
+    (values) => {
+      return values.find((value) => value.length < 4) === undefined;
+    },
+    {
+      message: "Every element must be more than 3 characters.",
+    }
+  )
   .optional();
 const aclPatternType = z.union([z.literal("LITERAL"), z.literal("PREFIXED")]);
 const topicname = z.string().min(1, { message: "Please enter a prefix." });

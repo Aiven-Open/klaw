@@ -1,5 +1,4 @@
 import { Button } from "@aivenio/aquarium";
-import { render } from "@testing-library/react";
 import React from "react";
 import type { DeepPartial, FieldValues } from "react-hook-form";
 import {
@@ -8,6 +7,7 @@ import {
   SubmitHandler,
   useForm,
 } from "src/app/components/Form";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { ZodSchema } from "zod";
 
 type WrapperProps<T extends FieldValues> = {
@@ -46,7 +46,7 @@ export const renderForm = <T extends FieldValues>(
     onError: SubmitErrorHandler<T>;
   }
 ) => {
-  return render(
+  return customRender(
     <Wrapper<T>
       schema={schema}
       defaultValues={defaultValues}
@@ -55,6 +55,7 @@ export const renderForm = <T extends FieldValues>(
     >
       {children}
       <Button type="submit" title="Submit" />
-    </Wrapper>
+    </Wrapper>,
+    { queryClient: true }
   );
 };
