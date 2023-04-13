@@ -1297,6 +1297,11 @@ export type components = {
       key?: string;
       value?: string;
     };
+    ServiceAccountDetails: {
+      username?: string;
+      password?: string;
+      accountFound?: boolean;
+    };
     ActivityLog: {
       /** Format: int32 */
       req_no?: number;
@@ -3478,7 +3483,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"];
+          "application/json": (string)[];
         };
       };
     };
@@ -3496,7 +3501,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ServiceAccountDetails"];
         };
       };
     };
