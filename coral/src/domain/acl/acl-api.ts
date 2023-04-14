@@ -11,7 +11,7 @@ import {
   RequestVerdictDecline,
   RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
-import api from "src/services/api";
+import api, { API_PATHS } from "src/services/api";
 import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
@@ -19,13 +19,13 @@ import {
 } from "types/utils";
 
 const createAclRequest = (
-  aclParams:
+  aclPayload:
     | CreateAclRequestTopicTypeProducer
     | CreateAclRequestTopicTypeConsumer
 ): Promise<KlawApiResponse<"createAcl">> => {
   return api.post<KlawApiResponse<"createAcl">, KlawApiRequest<"createAcl">>(
-    "/createAcl",
-    aclParams
+    API_PATHS.createAcl,
+    aclPayload
   );
 };
 
@@ -61,7 +61,8 @@ const getAclRequestsForApprover = (
 
   return api
     .get<KlawApiResponse<"getAclRequestsForApprover">>(
-      `/getAclRequestsForApprover?${new URLSearchParams(filteredParams)}`
+      API_PATHS.getAclRequestsForApprover,
+      new URLSearchParams(filteredParams)
     )
     .then(transformAclRequestApiResponse);
 };
@@ -71,7 +72,8 @@ const getAclRequests = (params: GetCreatedAclRequestParameters) => {
 
   return api
     .get<KlawApiResponse<"getAclRequests">>(
-      `/getAclRequests?${new URLSearchParams(filteredParams)}`
+      API_PATHS.getAclRequests,
+      new URLSearchParams(filteredParams)
     )
     .then(transformAclRequestApiResponse);
 };
@@ -82,7 +84,7 @@ type ApproveRequestParams = {
 };
 const approveAclRequest = ({ reqIds }: ApproveRequestParams) => {
   return api.post<KlawApiResponse<"approveRequest">, ApproveAclRequestPayload>(
-    `/request/approve`,
+    API_PATHS.approveRequest,
     { requestEntityType: "ACL", reqIds }
   );
 };
@@ -94,7 +96,7 @@ type DeclineRequestParams = {
 };
 const declineAclRequest = ({ reqIds, reason }: DeclineRequestParams) => {
   return api.post<KlawApiResponse<"declineRequest">, DeclineAclRequestPayload>(
-    `/request/decline`,
+    API_PATHS.declineRequest,
     { requestEntityType: "ACL", reqIds, reason }
   );
 };
@@ -105,7 +107,7 @@ type DeleteRequestParams = {
 };
 const deleteAclRequest = ({ reqIds }: DeleteRequestParams) => {
   return api.post<KlawApiResponse<"deleteRequest">, DeleteAclRequestPayload>(
-    `/request/delete`,
+    API_PATHS.deleteRequest,
     { requestEntityType: "ACL", reqIds }
   );
 };
@@ -118,7 +120,8 @@ function getAivenServiceAccounts(
   params: GetAivenServiceAccountsParams
 ): Promise<GetAivenServiceAccountsResponse> {
   return api.get<GetAivenServiceAccountsResponse>(
-    `/getAivenServiceAccounts?${new URLSearchParams(params)}`
+    API_PATHS.getAivenServiceAccounts,
+    new URLSearchParams(params)
   );
 }
 

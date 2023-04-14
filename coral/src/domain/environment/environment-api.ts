@@ -1,30 +1,33 @@
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { Environment } from "src/domain/environment/environment-types";
-import api from "src/services/api";
+import api, { API_PATHS } from "src/services/api";
 import { KlawApiResponse } from "types/utils";
 
 const getEnvironments = async (): Promise<Environment[]> => {
   return api
-    .get<KlawApiResponse<"getEnvs">>("/getEnvs")
+    .get<KlawApiResponse<"getEnvs">>(API_PATHS.getEnvs)
     .then(transformEnvironmentApiResponse);
 };
 
 const getEnvironmentsForTeam = (): Promise<Environment[]> => {
-  const url = "/getEnvsBaseClusterFilteredForTeam";
   return api
-    .get<KlawApiResponse<"getEnvsBaseClusterFilteredForTeam">>(url)
+    .get<KlawApiResponse<"getEnvsBaseClusterFilteredForTeam">>(
+      API_PATHS.getEnvsBaseClusterFilteredForTeam
+    )
     .then(transformEnvironmentApiResponse);
 };
 
 const getSchemaRegistryEnvironments = (): Promise<Environment[]> => {
   return api
-    .get<KlawApiResponse<"getSchemaRegEnvs">>("/getSchemaRegEnvs")
+    .get<KlawApiResponse<"getSchemaRegEnvs">>(API_PATHS.getSchemaRegEnvs)
     .then(transformEnvironmentApiResponse);
 };
 
 const getSyncConnectorsEnvironments = (): Promise<Environment[]> => {
   return api
-    .get<KlawApiResponse<"getSyncConnectorsEnv">>("/getSyncConnectorsEnv")
+    .get<KlawApiResponse<"getSyncConnectorsEnv">>(
+      API_PATHS.getSyncConnectorsEnv
+    )
     .then(transformEnvironmentApiResponse);
 };
 
@@ -37,7 +40,8 @@ const getClusterInfo = async ({
 }): Promise<KlawApiResponse<"getClusterInfoFromEnv">> => {
   const params = new URLSearchParams({ envSelected, envType });
   return api.get<KlawApiResponse<"getClusterInfoFromEnv">>(
-    `/getClusterInfoFromEnv?${params}`
+    API_PATHS.getClusterInfoFromEnv,
+    params
   );
 };
 

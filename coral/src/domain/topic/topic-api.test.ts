@@ -8,6 +8,7 @@ import {
   mockGetTopicRequestsForApprover,
   mockRequestTopic,
 } from "src/domain/topic/topic-api.msw";
+import { KlawApiRequestQueryParameters } from "types/utils";
 
 describe("topic-api", () => {
   beforeAll(() => {
@@ -56,15 +57,20 @@ describe("topic-api", () => {
         },
       });
     });
-    it("calls api.get with correct URL", async () => {
+    it("calls api.get with correct arguments", async () => {
       const getSpy = jest.spyOn(api, "get");
-      await getTopicRequestsForApprover({
+      const params: Pick<
+        KlawApiRequestQueryParameters<"getTopicRequestsForApprover">,
+        "pageNo" | "requestStatus"
+      > = {
         pageNo: "1",
         requestStatus: "CREATED",
-      });
+      };
+      await getTopicRequestsForApprover(params);
       expect(getSpy).toHaveBeenCalledTimes(1);
       expect(getSpy).toHaveBeenCalledWith(
-        "/getTopicRequestsForApprover?pageNo=1&requestStatus=CREATED"
+        "/getTopicRequestsForApprover",
+        new URLSearchParams(params)
       );
     });
   });

@@ -14,7 +14,7 @@ import {
   TopicApiResponse,
   TopicRequestApiResponse,
 } from "src/domain/topic/topic-types";
-import api from "src/services/api";
+import api, { API_PATHS } from "src/services/api";
 import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
@@ -36,7 +36,8 @@ const getTopics = async (
 
   return api
     .get<KlawApiResponse<"getTopics">>(
-      `/getTopics?${new URLSearchParams(queryParams)}`
+      API_PATHS.getTopics,
+      new URLSearchParams(queryParams)
     )
     .then(transformTopicApiResponse);
 };
@@ -57,7 +58,8 @@ const getTopicNames = async ({
   };
 
   return api.get<KlawApiResponse<"getTopicsOnly">>(
-    `/getTopicsOnly?${new URLSearchParams(params)}`
+    API_PATHS.getTopicsOnly,
+    new URLSearchParams(params)
   );
 };
 
@@ -73,7 +75,8 @@ const getTopicTeam = async ({
   const params = { topicName, patternType };
 
   return api.get<KlawApiResponse<"getTopicTeam">>(
-    `/getTopicTeam?${new URLSearchParams(params)}`
+    API_PATHS.getTopicTeam,
+    new URLSearchParams(params)
   );
 };
 
@@ -81,7 +84,9 @@ const getTopicAdvancedConfigOptions = (): Promise<
   TopicAdvancedConfigurationOptions[]
 > =>
   api
-    .get<KlawApiResponse<"getAdvancedTopicConfigs">>("/getAdvancedTopicConfigs")
+    .get<KlawApiResponse<"getAdvancedTopicConfigs">>(
+      API_PATHS.getAdvancedTopicConfigs
+    )
     .then(transformGetTopicAdvancedConfigOptionsResponse);
 
 const requestTopic = (
@@ -90,7 +95,7 @@ const requestTopic = (
   return api.post<
     KlawApiResponse<"createTopicsCreateRequest">,
     KlawApiRequest<"createTopicsCreateRequest">
-  >("/createTopics", payload);
+  >(API_PATHS.createTopicsCreateRequest, payload);
 };
 
 const getTopicRequestsForApprover = (
@@ -112,7 +117,8 @@ const getTopicRequestsForApprover = (
 
   return api
     .get<KlawApiResponse<"getTopicRequestsForApprover">>(
-      `/getTopicRequestsForApprover?${new URLSearchParams(filteredParams)}`
+      API_PATHS.getTopicRequestsForApprover,
+      new URLSearchParams(filteredParams)
     )
     .then(transformGetTopicRequestsResponse);
 };
@@ -140,7 +146,8 @@ const getTopicRequests = (
 
   return api
     .get<KlawApiResponse<"getTopicRequests">>(
-      `/getTopicRequests?${new URLSearchParams(filteredParams)}`
+      API_PATHS.getTopicRequests,
+      new URLSearchParams(filteredParams)
     )
     .then(transformGetTopicRequestsResponse);
 };
@@ -153,7 +160,7 @@ const approveTopicRequest = ({
   return api.post<
     KlawApiResponse<"approveRequest">,
     RequestVerdictApproval<"TOPIC">
-  >(`/request/approve`, {
+  >(API_PATHS.approveRequest, {
     reqIds,
     requestEntityType: "TOPIC",
   });
@@ -166,7 +173,7 @@ const declineTopicRequest = ({
   return api.post<
     KlawApiResponse<"declineRequest">,
     RequestVerdictDecline<"TOPIC">
-  >(`/request/decline`, {
+  >(API_PATHS.declineRequest, {
     reqIds,
     reason,
     requestEntityType: "TOPIC",
@@ -179,7 +186,7 @@ const deleteTopicRequest = ({
   return api.post<
     KlawApiResponse<"deleteRequest">,
     RequestVerdictDelete<"TOPIC">
-  >(`/request/delete`, {
+  >(API_PATHS.deleteRequest, {
     reqIds,
     requestEntityType: "TOPIC",
   });
