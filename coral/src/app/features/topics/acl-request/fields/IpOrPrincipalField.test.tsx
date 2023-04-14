@@ -103,6 +103,31 @@ describe("IpOrPrincipalField", () => {
     expect(newOption).toBeEnabled();
   });
 
+  it("renders a textbox field for Service accounts when getAivenServiceAccounts errors (Aiven cluster)", async () => {
+    mockGetAivenServiceAccounts.mockRejectedValue("mock-error");
+
+    const result = renderForm(
+      <IpOrPrincipalField
+        aclIpPrincipleType={"PRINCIPAL"}
+        isAivenCluster={true}
+        environment={"1"}
+      />,
+      {
+        schema,
+        onSubmit,
+        onError,
+      }
+    );
+
+    await waitForElementToBeRemoved(screen.getByTestId("acl_ssl-skeleton"));
+
+    const multiInput = result.getByRole("textbox", {
+      name: "Service accounts *",
+    });
+    expect(multiInput).toBeVisible();
+    expect(multiInput).toBeEnabled();
+  });
+
   it("renders a field for SSL DN strings / Usernames (not Aiven cluster)", () => {
     const result = renderForm(
       <IpOrPrincipalField
