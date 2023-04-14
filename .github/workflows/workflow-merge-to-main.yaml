@@ -10,8 +10,7 @@ name: Checks enabling merge to main
 on:
   pull_request_review:
     types: [ submitted ]
-    #  @TODO update to `main` before actual merging!
-    branches: [ fake-main ]
+    branches: [ main ]
   workflow_call:
 
 jobs:
