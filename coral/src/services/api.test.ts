@@ -1,5 +1,4 @@
 import api, {
-  AbsolutePathname,
   HTTPMethod,
   isClientError,
   isServerError,
@@ -10,6 +9,7 @@ import api, {
 import { server } from "src/services/api-mocks/server";
 import { rest } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
+import { paths as ApiPaths } from "types/api";
 
 function apiUrl(path: string) {
   return `${getHTTPBaseAPIUrl()}${path}`;
@@ -75,34 +75,34 @@ describe("API client", () => {
   function generateScenarioForMethodWithData(
     name: HTTPMethod,
     func: (
-      url: AbsolutePathname,
+      url: keyof ApiPaths,
       data: Record<string, string>
     ) => Promise<unknown>
   ): HTTPScenario {
     const data = { not: "relevant" };
     return {
       functionName: name,
-      ok: () => func("/ok", data),
-      fakeOk: () => func("/fakeOk", data),
-      htmlResponse: () => func("/okButHTML", data),
-      unauthorized: () => func("/unauthorized", data),
-      badRequest: () => func("/clientError", data),
-      internalError: () => func("/serverError", data),
+      ok: () => func("/ok" as keyof ApiPaths, data),
+      fakeOk: () => func("/fakeOk" as keyof ApiPaths, data),
+      htmlResponse: () => func("/okButHTML" as keyof ApiPaths, data),
+      unauthorized: () => func("/unauthorized" as keyof ApiPaths, data),
+      badRequest: () => func("/clientError" as keyof ApiPaths, data),
+      internalError: () => func("/serverError" as keyof ApiPaths, data),
     };
   }
 
   function generateScenarioForMethod(
     name: HTTPMethod,
-    func: (url: AbsolutePathname) => Promise<unknown>
+    func: (pathname: keyof ApiPaths) => Promise<unknown>
   ): HTTPScenario {
     return {
       functionName: name,
-      ok: () => func("/ok"),
-      fakeOk: () => func("/fakeOk"),
-      htmlResponse: () => func("/okButHTML"),
-      unauthorized: () => func("/unauthorized"),
-      badRequest: () => func("/clientError"),
-      internalError: () => func("/serverError"),
+      ok: () => func("/ok" as keyof ApiPaths),
+      fakeOk: () => func("/fakeOk" as keyof ApiPaths),
+      htmlResponse: () => func("/okButHTML" as keyof ApiPaths),
+      unauthorized: () => func("/unauthorized" as keyof ApiPaths),
+      badRequest: () => func("/clientError" as keyof ApiPaths),
+      internalError: () => func("/serverError" as keyof ApiPaths),
     };
   }
 
