@@ -205,7 +205,7 @@ public class AclControllerTest {
   public void getAcls1() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(topicOverviewService.getTopicOverview("testtopic", AclGroupBy.TEAM))
+    when(topicOverviewService.getTopicOverview("testtopic", AclGroupBy.NONE))
         .thenReturn(topicOverview);
 
     mvcAcls
@@ -224,7 +224,7 @@ public class AclControllerTest {
   public void getAcls2() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(topicOverviewService.getTopicOverview(null, AclGroupBy.IP)).thenReturn(topicOverview);
+    when(topicOverviewService.getTopicOverview(null, AclGroupBy.NONE)).thenReturn(topicOverview);
 
     // TODO Consider returning an error response object (https://www.rfc-editor.org/rfc/rfc7807)
     // Just checking response code seems to be sufficient as the contentAsString() returns an empty

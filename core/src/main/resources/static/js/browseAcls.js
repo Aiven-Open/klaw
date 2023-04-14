@@ -595,14 +595,33 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         $scope.getSchemaOfTopic();
     }
 
+    $scope.showAclTeamHeader = function(teamname) {
+
+    if($scope.selectedGroupBy=='NONE' || $scope.selectedGroupBy==null || $scope.selectedGroupBy == undefined ){
+    return false;
+    }
+
+    if($scope.firstTeam == teamname) {
+    console.log($scope.firstTeam  + " : " + teamname + " : nochange");
+    return false;
+    } else {
+    console.log($scope.firstTeam  + " : " + teamname + " : change");
+    $scope.firstTeam = teamname;
+    return true;
+    }
+
+
+    }
+
 	$scope.getAcls = function() {
         $scope.firstPromote = "false";
         $scope.alertTopicDelete = null;
         $scope.alert = null;
+        $scope.firstTeam=null;
         if($scope.selectedGroupBy == undefined) {
-        $scope.selectedGroupBy = 'TEAM';
+        $scope.selectedGroupBy = 'NONE';
         }
-        $scope.groupBy = [{ 'id':'TEAM', 'name':'Team' },{'id':'IP','name':'IP'},{'id':'PRINCIPAL','name':'Principal'},{'id':'ACL_TYPE','name':'ACL Type'},{'id':'ENV','name':'Environment'}];
+        $scope.groupBy = [{ 'id':'TEAM', 'name':'Team' },{'id':'NONE','name':'None'}];
 
         var topicSelected;
 
@@ -620,7 +639,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         if(!topicSelected) {
             return;
         }
-        var groupAclBy = 'TEAM';
+        var groupAclBy = 'NONE';
         if($scope.selectedGroupBy){
         groupAclBy = $scope.selectedGroupBy;
         }

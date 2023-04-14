@@ -4699,8 +4699,8 @@
           "required" : false,
           "schema" : {
             "type" : "string",
-            "default" : "TEAM",
-            "enum" : [ "ACL_TYPE", "ENV", "TEAM", "IP", "PRINCIPAL" ]
+            "default" : "NONE",
+            "enum" : [ "NONE", "TEAM" ]
           }
         } ],
         "responses" : {
@@ -6268,10 +6268,10 @@
               "type" : "string"
             }
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },
@@ -6630,6 +6630,20 @@
           "acl_ssl" : {
             "type" : "string"
           },
+          "acl_ips" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          },
+          "acl_ssls" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          },
           "topicname" : {
             "type" : "string"
           },
@@ -6771,10 +6785,10 @@
           "schemaversion" : {
             "type" : "string"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },
@@ -7017,10 +7031,10 @@
           "approvingTeamId" : {
             "type" : "string"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },
@@ -7583,10 +7597,10 @@
           "aclResourceType" : {
             "type" : "string"
           },
-          "editable" : {
+          "deletable" : {
             "type" : "boolean"
           },
-          "deletable" : {
+          "editable" : {
             "type" : "boolean"
           }
         },

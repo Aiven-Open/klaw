@@ -176,7 +176,7 @@ public class AclController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<TopicOverview> getAcls(
       @RequestParam(value = "topicnamesearch") String topicNameSearch,
-      @RequestParam(value = "groupBy", required = false, defaultValue = "TEAM")
+      @RequestParam(value = "groupBy", required = false, defaultValue = "NONE")
           AclGroupBy groupBy) {
     return new ResponseEntity<>(
         topicOverviewService.getTopicOverview(topicNameSearch, groupBy), HttpStatus.OK);

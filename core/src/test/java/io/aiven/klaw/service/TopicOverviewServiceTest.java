@@ -127,7 +127,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     mockTenantConfig();
     List<AclInfo> aclList =
-        topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP).getAclInfoList();
+        topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 
@@ -166,7 +166,7 @@ public class TopicOverviewServiceTest {
     mockTenantConfig();
 
     List<AclInfo> aclList =
-        topicOverviewService.getTopicOverview(topicNameSearch, AclGroupBy.IP).getAclInfoList();
+        topicOverviewService.getTopicOverview(topicNameSearch, AclGroupBy.NONE).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 
@@ -186,7 +186,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP);
+    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
     assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
     assertThat(returnedValue.getTopicPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
@@ -205,7 +205,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS")))
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP);
+    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
     assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
     assertThat(returnedValue.getTopicPromotionDetails().get("status"))
@@ -223,14 +223,14 @@ public class TopicOverviewServiceTest {
 
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP);
+    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE);
     assertThat(returnedValue.getTopicPromotionDetails()).isNullOrEmpty();
     assertThat(returnedValue.isTopicExists()).isFalse();
   }
 
   @Test
   @Order(6)
-  public void getAclsSyncFalseMaskedData() throws KlawException {
+  public void getAclsSyncFalseMaskedData() {
     String env1 = "1";
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(userInfo.getTeamId()).thenReturn(110);
@@ -259,7 +259,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     mockTenantConfig();
     List<AclInfo> aclList =
-        topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.IP).getAclInfoList();
+        topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 
@@ -272,7 +272,7 @@ public class TopicOverviewServiceTest {
 
   @ParameterizedTest
   @Order(7)
-  @CsvSource({"IP", "TEAM", "ACL_TYPE", "ENV"})
+  @CsvSource({"TEAM", "NONE"})
   public void givenARequestWithAnOrderEnsureItIsCorrectlyUsed(AclGroupBy groupBy) throws Exception {
     stubUserInfo();
     stubKafkaPromotion(TESTTOPIC, 1);
@@ -296,32 +296,16 @@ public class TopicOverviewServiceTest {
         .thenReturn(getKwClusterMap());
     TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, groupBy);
 
-    if (AclGroupBy.IP.equals(groupBy)) {
-      String previousIP = returnedValue.getAclInfoList().get(0).getAcl_ip();
-      for (AclInfo info : returnedValue.getAclInfoList()) {
-        assertThat(previousIP).isLessThanOrEqualTo(info.getAcl_ip());
-      }
-    }
-
     if (AclGroupBy.TEAM.equals(groupBy)) {
       String previousTeam = returnedValue.getAclInfoList().get(0).getTeamname();
       for (AclInfo info : returnedValue.getAclInfoList()) {
         assertThat(previousTeam).isLessThanOrEqualTo(info.getTeamname());
       }
-    }
+    } else if (AclGroupBy.NONE.equals(groupBy)) {
 
-    if (AclGroupBy.ACL_TYPE.equals(groupBy)) {
-      String previousACLType = returnedValue.getAclInfoList().get(0).getTopictype();
-      for (AclInfo info : returnedValue.getAclInfoList()) {
-        assertThat(previousACLType).isLessThanOrEqualTo(info.getTopictype());
-      }
-    }
-
-    if (AclGroupBy.ENV.equals(groupBy)) {
-      String previousENV = returnedValue.getAclInfoList().get(0).getEnvironmentName();
-      for (AclInfo info : returnedValue.getAclInfoList()) {
-        assertThat(previousENV).isLessThanOrEqualTo(info.getEnvironmentName());
-      }
+    } else {
+      throw new UnsupportedOperationException(
+          "This is an unsupported Operation and should not occur.");
     }
   }
 
@@ -345,6 +329,7 @@ public class TopicOverviewServiceTest {
       acl.setTeamId(10);
       acl.setTopicname(TESTTOPIC);
       acl.setAclType((i % 2 == 0) ? AclType.PRODUCER.value : AclType.CONSUMER.value);
+      acl.setAclssl("aServiceName");
       acls.add(acl);
     }
     return acls;
