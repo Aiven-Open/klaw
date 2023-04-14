@@ -403,7 +403,7 @@ describe("ConnectorRequests", () => {
     });
   });
 
-  describe("user can filter topic requests to only display users own requests", () => {
+  describe("user can filter connector requests to only display users own requests", () => {
     afterEach(() => {
       cleanup();
       jest.resetAllMocks();
