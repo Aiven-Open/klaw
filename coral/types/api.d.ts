@@ -998,6 +998,8 @@ export type components = {
       connectorName: string;
       environmentId: string;
       teamName: string;
+      /** Format: int32 */
+      teamId: number;
       showEditConnector: boolean;
       showDeleteConnector: boolean;
       connectorDeletable: boolean;
@@ -1296,6 +1298,11 @@ export type components = {
       id?: string;
       key?: string;
       value?: string;
+    };
+    ServiceAccountDetails: {
+      username?: string;
+      password?: string;
+      accountFound?: boolean;
     };
     ActivityLog: {
       /** Format: int32 */
@@ -3220,7 +3227,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         connectornamesearch?: string;
-        teamName?: string;
+        teamId?: number;
       };
     };
     responses: {
@@ -3478,7 +3485,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"];
+          "application/json": (string)[];
         };
       };
     };
@@ -3496,7 +3503,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ServiceAccountDetails"];
         };
       };
     };

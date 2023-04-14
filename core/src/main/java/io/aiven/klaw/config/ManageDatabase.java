@@ -11,6 +11,7 @@ import io.aiven.klaw.dao.KwRolesPermissions;
 import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.ProductDetails;
 import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.KwConstants;
@@ -59,6 +60,10 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   private static Map<Integer, List<Team>> teamsPerTenant;
 
+  private static Map<Integer, List<UserInfo>> usersPerTenant;
+
+  private static List<UserInfo> allUsersAllTenants;
+
   private static Set<String> serviceAccounts;
 
   // key is tenant id, value is list of envs
@@ -101,9 +106,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   private static Map<Integer, KwTenantConfigModel> tenantConfig = new HashMap<>();
 
-  private static List<String> reqStatusList;
+  private static Map<Integer, List<Topic>> topicsPerTenant = new HashMap<>();
 
-  private static boolean isTrialLicense;
+  private static List<String> reqStatusList;
 
   @Autowired private DefaultDataService defaultDataService;
 
@@ -418,6 +423,10 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
   }
 
+  public List<UserInfo> selectAllCachedUserInfo() {
+    return allUsersAllTenants;
+  }
+
   private void loadEnvsForAllTenants() {
     envsOfTenantsMap = new HashMap<>(); // key is tenantid, value is list of envs
     for (Integer tenantId : tenantMap.keySet()) {
@@ -448,10 +457,13 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     envsOfTenantsMap.put(tenantId, envList1);
   }
 
-  private void loadTenantTeamsForAllTenants() {
+  private void loadTenantTeamsUsersForAllTenants() {
     teamsAndAllowedEnvsPerTenant = new HashMap<>();
     teamIdAndNamePerTenant = new HashMap<>();
     teamsPerTenant = new HashMap<>();
+    usersPerTenant = new HashMap<>();
+    allUsersAllTenants = new ArrayList<>();
+
     List<Team> allTeams;
 
     for (Integer tenantId : tenantMap.keySet()) {
@@ -459,6 +471,32 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       teamsPerTenant.put(tenantId, allTeams);
       loadTenantTeamsForOneTenant(allTeams, tenantId);
     }
+
+    loadUsersForAllTenants();
+  }
+
+  public void loadUsersForAllTenants() {
+    List<UserInfo> allUsers;
+    allUsersAllTenants = new ArrayList<>();
+    for (Integer tenantId : tenantMap.keySet()) {
+      allUsers = handleDbRequests.selectAllUsersInfo(tenantId);
+      usersPerTenant.put(tenantId, allUsers);
+      allUsersAllTenants.addAll(allUsers);
+    }
+  }
+
+  public void loadTopicsForAllTenants() {
+    for (Integer tenantId : tenantMap.keySet()) {
+      topicsPerTenant.put(tenantId, handleDbRequests.getAllTopics(tenantId));
+    }
+  }
+
+  public void loadTopicsForOneTenant(int tenantId) {
+    topicsPerTenant.put(tenantId, handleDbRequests.getAllTopics(tenantId));
+  }
+
+  public List<Topic> getTopicsForTenant(int tenantId) {
+    return topicsPerTenant.get(tenantId);
   }
 
   public void loadTenantTeamsForOneTenant(List<Team> allTeams, Integer tenantId) {
@@ -615,6 +653,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     loadEnvMapForOneTenant(tenantId);
     loadEnvsForOneTenant(tenantId);
     loadTenantTeamsForOneTenant(null, tenantId);
+    loadUsersForAllTenants();
+
+    loadTopicsForOneTenant(tenantId);
   }
 
   private void updateStaticDataToMemory() {
@@ -626,7 +667,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     loadRequestTypeStatuses();
     loadEnvironmentsMapForAllTenants();
     loadEnvsForAllTenants();
-    loadTenantTeamsForAllTenants();
+    loadTenantTeamsUsersForAllTenants();
+
+    loadTopicsForAllTenants();
   }
 
   private void loadRequestTypeStatuses() {
@@ -806,6 +849,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   // delete users from both users tables of tenant
   // delete teams of tenant
+  // delete users of tenant
   // delete envs of tenant
   // delete rolesperms
   // delete kwprops
@@ -814,6 +858,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   public String deleteTenant(int tenantId) {
     tenantMap.remove(tenantId);
     teamsAndAllowedEnvsPerTenant.remove(tenantId);
+    usersPerTenant.remove(tenantId);
     kwPropertiesMapPerTenant.remove(tenantId);
     rolesPermsMapPerTenant.remove(tenantId);
     envParamsMapPerTenant.remove(tenantId);
@@ -822,6 +867,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     kwSchemaRegClustersPertenant.remove(tenantId);
     kwKafkaConnectClustersPertenant.remove(tenantId);
     kwAllClustersPertenant.remove(tenantId);
+
     return ApiResultStatus.SUCCESS.value;
   }
 }

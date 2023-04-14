@@ -5,6 +5,7 @@ import {
   ComplexNativeSelect,
   FileInput,
   MultiInput,
+  MultiSelect,
   NativeSelect,
   NumberInput,
   PasswordInput,
@@ -636,6 +637,92 @@ describe("Form", () => {
     it("shows an error if user does not fill out required field and wants to submit", async () => {
       const errorMsgEmpty = "Required";
       const citiesInput = screen.getByRole<HTMLInputElement>("textbox");
+
+      expect(screen.queryByText(errorMsgEmpty)).not.toBeInTheDocument();
+      expect(citiesInput).toBeValid();
+
+      await user.click(citiesInput);
+      await user.tab();
+
+      await submit();
+
+      await waitFor(() => expect(citiesInput).toBeInvalid());
+      expect(screen.getByText(errorMsgEmpty)).toBeVisible();
+      expect(onSubmit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("<MultiSelect>", () => {
+    const schema = z.object({
+      cities: z.string().array(),
+    });
+    type Schema = z.infer<typeof schema>;
+
+    beforeEach(() => {
+      results = renderForm(
+        <MultiSelect<Schema, string>
+          name="cities"
+          labelText="Cities"
+          options={["Helsinki", "Paris", "Berlin"]}
+          noResults="No cities"
+          createOption={(newOption) => {
+            if (newOption === undefined) {
+              return;
+            }
+            return newOption;
+          }}
+        />,
+        { schema, onSubmit, onError }
+      );
+    });
+
+    it("should render a MultiSelect", () => {
+      expect(screen.getByRole("combobox", { name: "Cities" })).toBeVisible();
+    });
+
+    it("should render correct label", () => {
+      expect(screen.getByLabelText("Cities")).toBeVisible();
+    });
+
+    it("should sync value to form state when selecting an option in MultiSelect", async () => {
+      const citiesInput = screen.getByRole("combobox", { name: "Cities" });
+
+      await userEvent.click(citiesInput);
+      await userEvent.click(
+        screen.getByRole("option", {
+          name: "Berlin",
+        })
+      );
+
+      await user.tab();
+
+      expect(screen.getByRole("button", { name: "Berlin" })).toBeVisible();
+
+      expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
+
+      await submit();
+      assertSubmitted({ cities: ["Berlin"] });
+    });
+
+    it("should sync value to form state when entering a new option in MultiSelect", async () => {
+      const citiesInput = screen.getByRole("combobox", { name: "Cities" });
+
+      await user.type(citiesInput, "NYC");
+      await user.tab();
+
+      expect(screen.getByRole("button", { name: "NYC" })).toBeVisible();
+
+      expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
+
+      await submit();
+      assertSubmitted({ cities: ["NYC"] });
+    });
+
+    it("shows an error if user does not fill out required field and wants to submit", async () => {
+      const errorMsgEmpty = "Required";
+      const citiesInput = screen.getByRole("combobox", { name: "Cities" });
 
       expect(screen.queryByText(errorMsgEmpty)).not.toBeInTheDocument();
       expect(citiesInput).toBeValid();

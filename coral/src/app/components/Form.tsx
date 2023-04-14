@@ -3,34 +3,37 @@ import {
   InputProps as BaseInputProps,
   MultiInput as BaseMultiInput,
   MultiInputProps as BaseMultiInputProps,
+  MultiSelect as BaseMultiSelect,
+  MultiSelectProps as BaseMultiSelectProps,
   NativeSelect as BaseNativeSelect,
   NativeSelectProps as BaseNativeSelectProps,
-  Option,
-  OptionType,
-  PrimaryButton,
   RadioButton as BaseRadioButton,
   RadioButtonGroup as BaseRadioButtonGroup,
   RadioButtonGroupProps as BaseRadioButtonGroupProps,
   RadioButtonProps as BaseRadioButtonProps,
   Textarea as BaseTextarea,
   TextareaProps as BaseTextareaProps,
+  Option,
+  OptionType,
+  PrimaryButton,
 } from "@aivenio/aquarium";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { ChangeEvent, memo } from "react";
 import get from "lodash/get";
+import omit from "lodash/omit";
+import React, { ChangeEvent, memo } from "react";
 import type { FormState } from "react-hook-form";
 import {
-  Controller as _Controller,
   FieldError,
   FieldPath,
   FieldValues,
   FormProvider,
   SubmitErrorHandler,
   SubmitHandler,
+  UseFormReturn,
+  Controller as _Controller,
+  UseFormProps as _UseFormProps,
   useForm as _useForm,
   useFormContext,
-  UseFormProps as _UseFormProps,
-  UseFormReturn,
   useWatch,
 } from "react-hook-form";
 import {
@@ -42,7 +45,6 @@ import {
   FileInputProps as BaseFileInputProps,
 } from "src/app/components/FileInput";
 import { ZodSchema } from "zod";
-import omit from "lodash/omit";
 
 type FormInputProps<T extends FieldValues = FieldValues> = {
   name: FieldPath<T>;
@@ -330,6 +332,49 @@ export const MultiInput = <T extends FieldValues>(
 ): React.ReactElement<FormInputProps<T> & BaseMultiInputProps<T>> => {
   const ctx = useFormContext<T>();
   return <MultiInputMemo formContext={ctx} {...props} />;
+};
+
+MultiInput.Skeleton = BaseMultiInput.Skeleton;
+
+//
+// <MultiSelect>
+//
+function _MultiSelect<T extends FieldValues, FieldValue>({
+  name,
+  helperText,
+  formContext: form,
+  ...props
+}: BaseMultiSelectProps<FieldValue> &
+  FormInputProps<T> &
+  FormRegisterProps<T>) {
+  const error = parseFieldErrorMessage(form.formState, name);
+
+  return (
+    <BaseMultiSelect
+      {...props}
+      {...form.register(name)}
+      onChange={(values) => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        form.setValue(name, values as any, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }}
+      valid={error === undefined}
+      error={error}
+      helperText={helperText}
+    />
+  );
+}
+
+const MultiSelectMemo = memo(_MultiSelect) as typeof _MultiSelect;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const MultiSelect = <T extends FieldValues, FieldValue>(
+  props: FormInputProps<T> & BaseMultiSelectProps<FieldValue>
+): React.ReactElement<FormInputProps<T> & BaseMultiSelectProps<FieldValue>> => {
+  const ctx = useFormContext<T>();
+  return <MultiSelectMemo formContext={ctx} {...props} />;
 };
 
 MultiInput.Skeleton = BaseMultiInput.Skeleton;

@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -7,6 +8,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.AclInfo;
@@ -17,13 +19,12 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.ServiceAccountDetails;
 import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.AclSyncControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -257,29 +258,31 @@ public class AclControllerTest {
 
   @Test
   public void getAivenServiceAccount() throws Exception {
-    Map<String, String> serviceAccountInfoMap = new HashMap<>();
-    serviceAccountInfoMap.put("password", "password");
-    serviceAccountInfoMap.put("username", "username");
+    ServiceAccountDetails serviceAccountDetails = new ServiceAccountDetails();
+    serviceAccountDetails.setPassword("password");
+    serviceAccountDetails.setUsername("username");
+    serviceAccountDetails.setAccountFound(true);
 
-    ApiResponse apiResponse =
-        ApiResponse.builder()
-            .message(ApiResultStatus.SUCCESS.value)
-            .data(serviceAccountInfoMap)
-            .build();
     when(aclControllerService.getAivenServiceAccountDetails(
             anyString(), anyString(), anyString(), anyString()))
-        .thenReturn(apiResponse);
+        .thenReturn(serviceAccountDetails);
 
-    mvcAcls
-        .perform(
-            MockMvcRequestBuilders.get("/getAivenServiceAccount")
-                .param("env", "DEV")
-                .param("topicName", "testtopic")
-                .param("userName", "kwuser")
-                .param("aclReqNo", "101")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data", aMapWithSize(2)));
+    String response =
+        mvcAcls
+            .perform(
+                MockMvcRequestBuilders.get("/getAivenServiceAccount")
+                    .param("env", "DEV")
+                    .param("topicName", "testtopic")
+                    .param("userName", "kwuser")
+                    .param("aclReqNo", "101")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    ServiceAccountDetails serviceAccountDetails1 =
+        new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(serviceAccountDetails1.isAccountFound()).isTrue();
   }
 }

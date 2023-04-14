@@ -27,6 +27,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.response.SyncTopicsList;
+import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -166,8 +167,8 @@ public class TopicSyncControllerService {
       }
     }
 
-    List<Map<String, String>> topicFilteredList = getTopicsFromKafkaCluster(env, topicNameSearch);
-    List<Map<String, String>> topicsList;
+    List<TopicConfig> topicFilteredList = getTopicsFromKafkaCluster(env, topicNameSearch);
+    List<TopicConfig> topicsList;
 
     topicsList =
         topicFilteredList.stream()
@@ -200,7 +201,7 @@ public class TopicSyncControllerService {
   }
 
   private List<TopicRequestsResponseModel> getSyncTopicList(
-      List<Map<String, String>> topicsList,
+      List<TopicConfig> topicsList,
       List<TopicRequestsResponseModel> deletedTopicsFromClusterList,
       String pageNo,
       String currentPage,
@@ -278,7 +279,7 @@ public class TopicSyncControllerService {
   }
 
   private List<TopicRequestsResponseModel> getSyncTopicListRecon(
-      List<Map<String, String>> clusterTopicsList,
+      List<TopicConfig> clusterTopicsList,
       List<TopicRequestsResponseModel> deletedTopicsFromClusterList,
       String env,
       boolean isBulkOption,
@@ -331,22 +332,22 @@ public class TopicSyncControllerService {
   }
 
   private boolean createTopicRequest(
-      List<Map<String, String>> topicsList,
+      List<TopicConfig> topicsList,
       List<Topic> topicsFromSOT,
       List<String> teamList,
       int i,
       int counterInc,
       TopicRequest mp,
       int tenantId) {
-    Map<String, String> topicMap;
+    TopicConfig topicMap;
     mp.setSequence(counterInc + "");
 
     topicMap = topicsList.get(i);
-    final String tmpTopicName = topicMap.get("topicName");
+    final String tmpTopicName = topicMap.getTopicName();
 
     mp.setTopicname(tmpTopicName);
-    mp.setTopicpartitions(Integer.parseInt(topicMap.get("partitions")));
-    mp.setReplicationfactor(topicMap.get("replicationFactor"));
+    mp.setTopicpartitions(Integer.parseInt(topicMap.getPartitions()));
+    mp.setReplicationfactor(topicMap.getReplicationFactor());
 
     String teamUpdated = null;
 
@@ -381,7 +382,7 @@ public class TopicSyncControllerService {
   }
 
   private void updateClusterDeletedTopicsList(
-      List<Map<String, String>> clusterTopicsList,
+      List<TopicConfig> clusterTopicsList,
       List<TopicRequestsResponseModel> deletedTopicsFromClusterList,
       List<Topic> topicsFromSOT,
       List<String> teamList,
@@ -389,7 +390,7 @@ public class TopicSyncControllerService {
     try {
       List<String> clusterTopicStringList = new ArrayList<>();
       clusterTopicsList.forEach(
-          hashMapTopicObj -> clusterTopicStringList.add(hashMapTopicObj.get("topicName")));
+          hashMapTopicObj -> clusterTopicStringList.add(hashMapTopicObj.getTopicName()));
 
       Map<String, TopicRequestsResponseModel> sotTopics = new HashMap<>();
 
@@ -800,10 +801,10 @@ public class TopicSyncControllerService {
       }
     } else {
       try {
-        List<Map<String, String>> topicsMap =
+        List<TopicConfig> topicsMap =
             getTopicsFromKafkaCluster(
                 syncTopicsBulk.getSourceEnv(), syncTopicsBulk.getTopicSearchFilter());
-        for (Map<String, String> hashMap : topicsMap) {
+        for (TopicConfig hashMap : topicsMap) {
           invokeUpdateSyncAllTopics(syncTopicsBulk, logArray, hashMap);
         }
       } catch (Exception e) {
@@ -820,31 +821,31 @@ public class TopicSyncControllerService {
   }
 
   private void invokeUpdateSyncAllTopics(
-      SyncTopicsBulk syncTopicsBulk, List<String> logArray, Map<String, String> hashMap) {
+      SyncTopicsBulk syncTopicsBulk, List<String> logArray, TopicConfig hashMap) {
     SyncTopicUpdates syncTopicUpdates;
     List<SyncTopicUpdates> updatedSyncTopicsList = new ArrayList<>();
 
     syncTopicUpdates = new SyncTopicUpdates();
     syncTopicUpdates.setTeamSelected(syncTopicsBulk.getSelectedTeam());
-    syncTopicUpdates.setTopicName(hashMap.get("topicName"));
+    syncTopicUpdates.setTopicName(hashMap.getTopicName());
     syncTopicUpdates.setEnvSelected(syncTopicsBulk.getSourceEnv());
-    syncTopicUpdates.setPartitions(Integer.parseInt(hashMap.get("partitions")));
-    syncTopicUpdates.setReplicationFactor(hashMap.get("replicationFactor"));
+    syncTopicUpdates.setPartitions(Integer.parseInt(hashMap.getPartitions()));
+    syncTopicUpdates.setReplicationFactor(hashMap.getReplicationFactor());
 
     updatedSyncTopicsList.add(syncTopicUpdates);
     try {
       logArray.add(
           "Topic status :"
-              + hashMap.get("topicName")
+              + hashMap.getTopicName()
               + " "
               + updateSyncTopics(updatedSyncTopicsList).getMessage());
     } catch (Exception e) {
-      logArray.add(TOPICS_SYNC_ERR_102 + hashMap.get("topicName") + " " + e);
+      logArray.add(TOPICS_SYNC_ERR_102 + hashMap.getTopicName() + " " + e);
       log.error("Exception:", e);
     }
   }
 
-  private List<Map<String, String>> getTopicsFromKafkaCluster(String env, String topicNameSearch)
+  private List<TopicConfig> getTopicsFromKafkaCluster(String env, String topicNameSearch)
       throws Exception {
     if (topicNameSearch != null) {
       topicNameSearch = topicNameSearch.trim();
@@ -856,7 +857,7 @@ public class TopicSyncControllerService {
             .getClusters(KafkaClustersType.KAFKA, tenantId)
             .get(envSelected.getClusterId());
 
-    List<Map<String, String>> topicsList =
+    List<TopicConfig> topicsList =
         clusterApiService.getAllTopics(
             kwClusters.getBootstrapServers(),
             kwClusters.getProtocol(),
@@ -866,14 +867,14 @@ public class TopicSyncControllerService {
 
     topicCounter = 0;
 
-    List<Map<String, String>> topicFilteredList = topicsList;
+    List<TopicConfig> topicFilteredList = topicsList;
     // Filter topics on topic name for search
 
     if (topicNameSearch != null && topicNameSearch.length() > 0) {
       final String topicSearchFilter = topicNameSearch;
       topicFilteredList =
           topicsList.stream()
-              .filter(topic -> topic.get("topicName").contains(topicSearchFilter))
+              .filter(topic -> topic.getTopicName().contains(topicSearchFilter))
               .collect(Collectors.toList());
     }
     return topicFilteredList;
@@ -1117,7 +1118,7 @@ public class TopicSyncControllerService {
   }
 
   public List<Topic> getTopicFromName(String topicName, int tenantId) {
-    List<Topic> topics = manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
     topics = commonUtilsService.getFilteredTopicsForTenant(topics);

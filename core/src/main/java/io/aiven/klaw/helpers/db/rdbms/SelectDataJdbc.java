@@ -377,7 +377,7 @@ public class SelectDataJdbc {
         return topicRepo.findAllByTenantIdAndTopicnameIn(tenantId, topics);
       }
     } else {
-      if ("ALL".equals(env)) {
+      if (env == null || "ALL".equals(env)) {
         return topicRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
       } else {
         List<String> topics = topicRepo.findAllTopicNamesForEnvAndTeam(env, teamId, tenantId);
@@ -760,6 +760,11 @@ public class SelectDataJdbc {
     }
 
     return topicRequestList;
+  }
+
+  public List<Topic> getTopicsByTopicNameAndTeamId(String topicName, int teamId, int tenantId) {
+
+    return topicRepo.findAllByTopicnameAndTeamIdAndTenantId(topicName, teamId, tenantId);
   }
 
   /**
@@ -1397,7 +1402,7 @@ public class SelectDataJdbc {
         return kafkaConnectorRepo.findAllByEnvironmentAndTenantId(env, tenantId);
       }
     } else {
-      if ("ALL".equals(env)) {
+      if (env == null || "ALL".equals(env)) {
         return kafkaConnectorRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
       }
       return kafkaConnectorRepo.findAllByEnvironmentAndTeamIdAndTenantId(env, teamId, tenantId);

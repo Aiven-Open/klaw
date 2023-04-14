@@ -40,6 +40,7 @@ import io.aiven.klaw.model.response.RequestsCountOverview;
 import io.aiven.klaw.model.response.RequestsOperationTypeCount;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
@@ -184,20 +185,24 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
-  public List<Topic> getMultipleTopics(String topicPrefix, int size) {
+  public List<Topic> getMultipleTopics(String topicPrefix, int size, String env, int teamId) {
     List<Topic> listTopics = new ArrayList<>();
     Topic t;
+    if (env == null) {
+      env = "1";
+    }
+
+    if (teamId == 0) {
+      teamId = 101;
+    }
 
     for (int i = 0; i < size; i++) {
       t = new Topic();
 
-      if (i % 2 == 0) t.setTeamId(1);
-      else t.setTeamId(2);
-
       t.setTopicname(topicPrefix + i);
       t.setTopicid(i);
-      t.setEnvironment("1");
-      t.setTeamId(101);
+      t.setEnvironment(env);
+      t.setTeamId(teamId);
       t.setEnvironmentsList(new ArrayList<>());
 
       listTopics.add(t);
@@ -656,14 +661,14 @@ public class UtilMethods {
     return aclRequest;
   }
 
-  public List<Map<String, String>> getClusterApiTopics(String topicPrefix, int size) {
-    List<Map<String, String>> listTopics = new ArrayList<>();
-    HashMap<String, String> hashMap;
+  public List<TopicConfig> getClusterApiTopics(String topicPrefix, int size) {
+    List<TopicConfig> listTopics = new ArrayList<>();
+    TopicConfig hashMap;
     for (int i = 0; i < size; i++) {
-      hashMap = new HashMap<>();
-      hashMap.put("topicName", topicPrefix + i);
-      hashMap.put("replicationFactor", "1");
-      hashMap.put("partitions", "2");
+      hashMap = new TopicConfig();
+      hashMap.setTopicName(topicPrefix + i);
+      hashMap.setReplicationFactor("1");
+      hashMap.setPartitions("2");
       listTopics.add(hashMap);
     }
     return listTopics;

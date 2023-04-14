@@ -10,11 +10,13 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.OffsetDetails;
+import io.aiven.klaw.model.response.ServiceAccountDetails;
 import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -200,7 +202,7 @@ public class AclController {
       value = "/getAivenServiceAccount",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> getAivenServiceAccountDetails(
+  public ResponseEntity<ServiceAccountDetails> getAivenServiceAccountDetails(
       @RequestParam("env") String envId,
       @RequestParam("topicName") String topicName,
       @RequestParam(value = "userName") String userName,
@@ -215,7 +217,7 @@ public class AclController {
       value = "/getAivenServiceAccounts",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> getAivenServiceAccounts(@RequestParam("env") String envId) {
+  public ResponseEntity<Set<String>> getAivenServiceAccounts(@RequestParam("env") String envId) {
     return new ResponseEntity<>(aclControllerService.getAivenServiceAccounts(envId), HttpStatus.OK);
   }
 }

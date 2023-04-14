@@ -48,6 +48,9 @@ public interface HandleDbRequests {
 
   /*--------------------Select */
 
+  List<Topic> getAllTopicsByTopicNameAndTeamIdAndTenantId(
+      String topicName, int teamId, int tenantId);
+
   String getRegistrationId(String userName);
 
   RegisterUserInfo getRegistrationDetails(String registrationId, String status);

@@ -1,11 +1,13 @@
 package io.aiven.klaw;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_110;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -323,7 +325,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(apiResponse.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -341,9 +344,34 @@ public class EnvsClustersTenantsControllerIT {
     assertThat(clusterModels).hasSize(1);
   }
 
-  // modify env success
+  // add new env success
   @Test
   @Order(8)
+  public void addNewEnvFailureSameCluster() throws Exception {
+    EnvModel envModel = mockMethods.getEnvModel("TST");
+    envModel.setClusterId(2);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewEnv")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    ApiResponse apiResponse = new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(apiResponse.isSuccess()).isFalse();
+    assertThat(apiResponse.getMessage()).isEqualTo(ENV_CLUSTER_TNT_110);
+  }
+
+  // modify env success
+  @Test
+  @Order(9)
   public void modifyEnvSuccess() throws Exception {
 
     String response =
@@ -383,7 +411,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(apiResponse.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -404,11 +433,12 @@ public class EnvsClustersTenantsControllerIT {
 
   // modify env failure, submit already existing name TST
   @Test
-  @Order(9)
+  @Order(10)
   public void modifyEnvFailureSameName() throws Exception {
     // Add a new env PRD
     EnvModel envModel1 = mockMethods.getEnvModel("PRD");
     envModel1.setClusterId(2);
+    envModel1.setTopicprefix("topicprefix");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel1);
 
     String response =
@@ -422,8 +452,8 @@ public class EnvsClustersTenantsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(apiResponse.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -436,15 +466,14 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<Map<String, Object>> envModels =
-        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    Map<String, Object> envModel2 = new HashMap<>();
-    for (Map<String, Object> envModel : envModels) {
-      if (envModel.get("id").equals("2")) { // PRD id
+    List<EnvModelResponse> envModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    EnvModelResponse envModel2 = new EnvModelResponse();
+    for (EnvModelResponse envModel : envModels) {
+      if (envModel.getId().equals("2")) { // PRD id
         envModel2 = envModel;
       }
     }
-    String envId = (String) envModel2.get("id");
+    String envId = envModel2.getId();
     assertThat(envModels).hasSize(2);
 
     String otherParams =
@@ -472,23 +501,27 @@ public class EnvsClustersTenantsControllerIT {
         .contains("Failure. Please choose a different name. This environment name already exists.");
 
     // delete the environment PRD
-    mvc.perform(
-            MockMvcRequestBuilders.post("/deleteEnvironmentRequest")
-                .with(user(superAdmin).password(superAdminPwd))
-                .param("envId", "2")
-                .param("envType", KafkaClustersType.KAFKA.value)
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/deleteEnvironmentRequest")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("envId", "2")
+                    .param("envType", KafkaClustersType.KAFKA.value)
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    apiResponse = new ObjectMapper().readValue(response, new TypeReference<>() {});
+    assertThat(apiResponse.isSuccess()).isTrue();
   }
 
   // get envdetails success
   @Test
-  @Order(10)
+  @Order(11)
   public void getEnvDetailsSuccess() throws Exception {
     String response =
         mvc.perform(
@@ -509,7 +542,7 @@ public class EnvsClustersTenantsControllerIT {
 
   // delete env success
   @Test
-  @Order(11)
+  @Order(12)
   public void deleteEnvSuccess() throws Exception {
     EnvModel envModel = mockMethods.getEnvModel("ACC");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
@@ -539,9 +572,9 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    List<Map<String, Object>> clusterModels =
+    List<EnvModelResponse> envModelResponseList =
         OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    assertThat(clusterModels).hasSize(1);
+    assertThat(envModelResponseList).hasSize(1);
 
     response =
         mvc.perform(
@@ -562,7 +595,7 @@ public class EnvsClustersTenantsControllerIT {
 
   // get env params success
   @Test
-  @Order(12)
+  @Order(13)
   public void getEnvParamsSuccess() throws Exception {
 
     String response =
@@ -585,7 +618,7 @@ public class EnvsClustersTenantsControllerIT {
 
   // get standard env names success
   @Test
-  @Order(13)
+  @Order(14)
   public void getStandardEnvNames() throws Exception {
 
     String response =

@@ -90,7 +90,7 @@ public class TopicOverviewService extends BaseOverviewService {
     List<AclInfo> aclInfo = new ArrayList<>();
     List<AclInfo> prefixedAclsInfo = new ArrayList<>();
     List<Topic> topicsSearchList =
-        manageDatabase.getHandleDbRequests().getTopicTeam(topicNameSearch, tenantId);
+        commonUtilsService.getTopicsForTopicName(topicNameSearch, tenantId);
     // tenant filtering
     Integer topicOwnerTeamId =
         commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();

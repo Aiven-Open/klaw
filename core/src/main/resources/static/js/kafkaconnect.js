@@ -36,7 +36,7 @@ app.controller("kafkaConnectCtrl", function($scope, $http, $location, $window) {
         $scope.loadTeams = function() {
                 $http({
                     method: "GET",
-                    url: "getAllTeamsSUOnly",
+                    url: "getAllTeamsSU",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.allTeams = output;
@@ -283,7 +283,7 @@ app.controller("kafkaConnectCtrl", function($scope, $http, $location, $window) {
                 'pageNo' : pageNoSelected,
                 'currentPage' : $scope.currentPageSelected,
                  'connectornamesearch' : $scope.getConnectors.connectornamesearch,
-                 'teamName' : teamSel
+                 'teamId' : teamSel
                  }
 		}).success(function(output) {
 			$scope.resultBrowse = output;

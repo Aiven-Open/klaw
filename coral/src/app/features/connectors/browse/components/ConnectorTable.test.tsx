@@ -2,14 +2,16 @@ import { cleanup, screen, render, within } from "@testing-library/react";
 import ConnectorTable from "src/app/features/connectors/browse/components/ConnectorTable";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
+import { Connector } from "src/domain/connector";
 
-const mockConnectors = [
+const mockConnectors: Connector[] = [
   {
     sequence: 2,
     connectorId: 1001,
     connectorName: "test_connector_1",
     environmentId: "4",
     teamName: "Dev",
+    teamId: 1,
     allPageNos: ["1"],
     totalNoPages: "1",
     currentPage: "1",
@@ -25,6 +27,7 @@ const mockConnectors = [
     connectorName: "test_connector_2",
     environmentId: "4",
     teamName: "Ospo",
+    teamId: 2,
     allPageNos: ["1"],
     totalNoPages: "1",
     currentPage: "1",
@@ -40,6 +43,7 @@ const mockConnectors = [
     connectorName: "test_connector_3",
     environmentId: "4",
     teamName: "Infra",
+    teamId: 3,
     allPageNos: ["1"],
     totalNoPages: "1",
     currentPage: "1",
@@ -148,13 +152,16 @@ describe("ConnectorTable.tsx", () => {
           name: new RegExp(`${connector.connectorName}`, "i"),
         });
         const environmentList = within(row).getByRole("cell", {
-          name: connector.environmentsList.join(" "),
+          // environmentList could be undefined, but isn't in our usage here
+          // so this is needed to prevent type errors
+          name: (connector.environmentsList as string[]).join(" "),
         });
 
         expect(environmentList).toBeVisible();
       });
-
-      connector.environmentsList.forEach((env) => {
+      // environmentList could be undefined, but isn't in our usage here
+      // so this is needed to prevent type errors
+      (connector.environmentsList as string[]).forEach((env) => {
         it(`renders Environment ${env} for connector ${connector}`, () => {
           const table = screen.getByRole("table", {
             name: "Kafka Connectors overview, page 1 of 10",
@@ -163,7 +170,9 @@ describe("ConnectorTable.tsx", () => {
             name: new RegExp(`${connector.connectorName}`, "i"),
           });
           const environmentList = within(row).getByRole("cell", {
-            name: connector.environmentsList.join(" "),
+            // environmentList could be undefined, but isn't in our usage here
+            // so this is needed to prevent type errors
+            name: (connector.environmentsList as string[]).join(" "),
           });
 
           expect(environmentList).toBeVisible();

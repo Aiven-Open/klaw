@@ -24,6 +24,7 @@ import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.response.TopicConfig;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -180,7 +181,7 @@ public class ClusterApiServiceTest {
             (ParameterizedTypeReference<Object>) any()))
         .thenReturn(response);
 
-    List<Map<String, String>> result =
+    List<TopicConfig> result =
         clusterApiService.getAllTopics("", KafkaSupportedProtocol.PLAINTEXT, "", "", 1);
     assertThat(result).isEqualTo(new ArrayList<>(topicsList));
   }

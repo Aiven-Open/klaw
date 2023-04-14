@@ -2,6 +2,7 @@ package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
@@ -43,39 +44,36 @@ public class ApacheKafkaTopicService {
     this.schemaService = schemaService;
   }
 
-  public synchronized Set<Map<String, String>> loadTopics(
-      String environment, KafkaSupportedProtocol protocol, String clusterName) throws Exception {
+  public synchronized Set<TopicConfig> loadTopics(
+      String environment, KafkaSupportedProtocol protocol, String clusterIdentification)
+      throws Exception {
     log.info("loadTopics {} {}", environment, protocol);
-    AdminClient client = clusterApiUtils.getAdminClient(environment, protocol, clusterName);
-    Set<Map<String, String>> topics = new HashSet<>();
+    AdminClient client =
+        clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification);
+    Set<TopicConfig> topics = new HashSet<>();
     if (client == null) {
       throw new Exception("Cannot connect to cluster.");
     }
 
-    ListTopicsOptions listTopicsOptions = new ListTopicsOptions();
-    listTopicsOptions = listTopicsOptions.listInternal(false);
-
-    ListTopicsResult topicsResult = client.listTopics(listTopicsOptions);
-
     try {
-      DescribeTopicsResult s = client.describeTopics(new ArrayList<>(topicsResult.names().get()));
-      Map<String, TopicDescription> topicDesc =
-          s.all().get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
-      Set<String> keySet = topicDesc.keySet();
+      Map<String, TopicDescription> topicDescriptionsPerAdminClient =
+          loadTopicDescriptionsMap(client);
+
+      Set<String> keySet = topicDescriptionsPerAdminClient.keySet();
       keySet.remove("_schemas");
       List<String> lstK = new ArrayList<>(keySet);
-      Map<String, String> hashMap;
+      TopicConfig topicConfig;
       for (String topicName : lstK) {
-        if (topicName.startsWith("_confluent")) {
+        if (topicName.startsWith("_confluent") || topicName.startsWith("__connect")) {
           continue;
         }
-        hashMap = new HashMap<>();
-        hashMap.put("topicName", topicName);
-        hashMap.put(
-            "replicationFactor",
-            "" + topicDesc.get(topicName).partitions().get(0).replicas().size());
-        hashMap.put("partitions", "" + topicDesc.get(topicName).partitions().size());
-        topics.add(hashMap);
+        topicConfig = new TopicConfig();
+        topicConfig.setTopicName(topicName);
+        TopicDescription topicDescription = topicDescriptionsPerAdminClient.get(topicName);
+        topicConfig.setReplicationFactor(
+            "" + topicDescription.partitions().get(0).replicas().size());
+        topicConfig.setPartitions("" + topicDescription.partitions().size());
+        topics.add(topicConfig);
       }
 
     } catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -84,20 +82,30 @@ public class ApacheKafkaTopicService {
     return topics;
   }
 
+  private Map<String, TopicDescription> loadTopicDescriptionsMap(AdminClient client)
+      throws InterruptedException, ExecutionException, TimeoutException {
+    ListTopicsOptions listTopicsOptions = new ListTopicsOptions();
+    listTopicsOptions = listTopicsOptions.listInternal(false);
+
+    ListTopicsResult topicsResult = client.listTopics(listTopicsOptions);
+    DescribeTopicsResult describeTopicsResult =
+        client.describeTopics(new ArrayList<>(topicsResult.names().get()));
+
+    return describeTopicsResult.all().get(TIME_OUT_SECS_FOR_TOPICS, TimeUnit.SECONDS);
+  }
+
   public synchronized ApiResponse createTopic(ClusterTopicRequest clusterTopicRequest)
       throws Exception {
     log.info("createTopic {}", clusterTopicRequest);
-    AdminClient client;
+    AdminClient client =
+        clusterApiUtils.getAdminClient(
+            clusterTopicRequest.getEnv(),
+            clusterTopicRequest.getProtocol(),
+            clusterTopicRequest.getClusterName());
+    if (client == null) {
+      throw new Exception("Cannot connect to cluster.");
+    }
     try {
-      client =
-          clusterApiUtils.getAdminClient(
-              clusterTopicRequest.getEnv(),
-              clusterTopicRequest.getProtocol(),
-              clusterTopicRequest.getClusterName());
-      if (client == null) {
-        throw new Exception("Cannot connect to cluster.");
-      }
-
       NewTopic topic =
           new NewTopic(
                   clusterTopicRequest.getTopicName(),
@@ -128,6 +136,11 @@ public class ApacheKafkaTopicService {
             "Topic: {} already exists in {}",
             clusterTopicRequest.getTopicName(),
             clusterTopicRequest.getEnv());
+
+        if (checkIfTopicExistsWithSameConfig(clusterTopicRequest, client)) {
+          return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+        }
+
         return ApiResponse.builder().success(false).message(e.getMessage()).build();
       }
       throw e;
@@ -142,6 +155,20 @@ public class ApacheKafkaTopicService {
     }
 
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+  }
+
+  // check if topic exists with same configuration as request
+  private boolean checkIfTopicExistsWithSameConfig(
+      ClusterTopicRequest clusterTopicRequest, AdminClient adminClient)
+      throws ExecutionException, InterruptedException, TimeoutException {
+    DescribeTopicsResult describeTopicsResult =
+        adminClient.describeTopics(Collections.singletonList(clusterTopicRequest.getTopicName()));
+
+    TopicDescription topicDescription =
+        describeTopicsResult.all().get().get(clusterTopicRequest.getTopicName());
+    return topicDescription.partitions().size() == clusterTopicRequest.getPartitions()
+        && topicDescription.partitions().get(0).replicas().size()
+            == clusterTopicRequest.getReplicationFactor();
   }
 
   public synchronized ApiResponse updateTopic(ClusterTopicRequest clusterTopicRequest)

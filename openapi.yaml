@@ -3910,11 +3910,12 @@
             "type" : "string"
           }
         }, {
-          "name" : "teamName",
+          "name" : "teamId",
           "in" : "query",
           "required" : false,
           "schema" : {
-            "type" : "string"
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -4509,7 +4510,11 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  },
+                  "uniqueItems" : true
                 }
               }
             }
@@ -4556,7 +4561,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
+                  "$ref" : "#/components/schemas/ServiceAccountDetails"
                 }
               }
             }
@@ -6493,6 +6498,10 @@
           "teamName" : {
             "type" : "string"
           },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "showEditConnector" : {
             "type" : "boolean"
           },
@@ -6542,7 +6551,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "environmentId", "showDeleteConnector", "showEditConnector", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "environmentId", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {
@@ -7359,6 +7368,19 @@
           },
           "value" : {
             "type" : "string"
+          }
+        }
+      },
+      "ServiceAccountDetails" : {
+        "properties" : {
+          "username" : {
+            "type" : "string"
+          },
+          "password" : {
+            "type" : "string"
+          },
+          "accountFound" : {
+            "type" : "boolean"
           }
         }
       },

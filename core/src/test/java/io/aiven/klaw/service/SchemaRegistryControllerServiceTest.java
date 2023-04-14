@@ -297,7 +297,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(topic));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
@@ -317,7 +318,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.requestForSchema(any()))
         .thenThrow(new RuntimeException("Error from schema upload"));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(topic));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
     when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(buildValidationResponse(true));
@@ -344,7 +346,8 @@ public class SchemaRegistryControllerServiceTest {
   @Order(10)
   public void promoteSchemaCanNotFindSourceEnvironmentSchema() throws Exception {
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(createTopic()));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(createTopic()));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(createTopic()));
     when(commonUtilsService.getTeamId(any())).thenReturn(101);
     ApiResponse returnedValue =
         schemaRegistryControllerService.promoteSchema(buildPromoteSchemaRequest(false, "1"));
@@ -588,7 +591,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(topic));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
@@ -736,7 +740,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(List.of(topic));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(topic));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
     when(handleDbRequests.requestForSchema(any())).thenReturn(ApiResultStatus.SUCCESS.value);

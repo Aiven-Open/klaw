@@ -53,7 +53,8 @@ public class ExportImportDataServiceTest {
 
   @Test
   public void getKwData() {
-    when(handleDbRequests.getAllTopics()).thenReturn(utilMethods.getMultipleTopics("test", 10));
+    when(handleDbRequests.getAllTopics())
+        .thenReturn(utilMethods.getMultipleTopics("test", 10, null, 101));
     when(handleDbRequests.getAllConnectors())
         .thenReturn(Collections.singletonList(new KwKafkaConnector()));
     KwData kwData = exportImportDataService.getKwData(handleDbRequests, "");

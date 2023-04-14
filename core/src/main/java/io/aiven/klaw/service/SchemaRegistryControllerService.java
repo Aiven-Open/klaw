@@ -388,8 +388,7 @@ public class SchemaRegistryControllerService {
 
   private boolean userAndTopicOwnerAreOnTheSameTeam(
       String topicName, Integer userTeamId, Integer tenantId) {
-    List<Topic> topicsSearchList =
-        manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
+    List<Topic> topicsSearchList = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
     Integer topicOwnerTeam =

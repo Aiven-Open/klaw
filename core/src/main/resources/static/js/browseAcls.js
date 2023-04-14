@@ -811,7 +811,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 },
             }).success(function(output) {
                 $scope.serviceAccountInfo = output;
-                if(!output.success)
+                if(!output.accountFound)
                 {
                     swal({
                         title: "Failure:",
