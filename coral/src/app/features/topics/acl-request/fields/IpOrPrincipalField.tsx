@@ -21,7 +21,7 @@ const IpOrPrincipalField = ({
   environment,
 }: IpOrPrincipalFieldProps) => {
   const {
-    data = [],
+    data: aivenServiceAccounts = [],
     isLoading,
     isError,
   } = useQuery({
@@ -50,51 +50,45 @@ const IpOrPrincipalField = ({
     );
   }
 
-  if (isAivenCluster) {
-    // Fall back to default field if error during fetching
-    if (isError) {
-      return (
-        <MultiInput
-          key="acl_ssl"
-          name="acl_ssl"
-          labelText={sslLabelText}
-          placeholder={sslPlaceholder}
-          required
-        />
-      );
-    }
-
-    if (isLoading) {
-      return (
-        <div data-testid={"acl_ssl-skeleton"}>
-          <BaseMultiSelect.Skeleton />
-        </div>
-      );
-    }
-
+  if (isAivenCluster && isLoading) {
     return (
-      <MultiSelect<{ acl_ssl: string[] }, string>
+      <div data-testid={"acl_ssl-skeleton"}>
+        <BaseMultiSelect.Skeleton />
+      </div>
+    );
+  }
+
+  if (isAivenCluster && isError) {
+    // Fall back to default field if error when fetching aivenServiceAccounts
+    return (
+      <MultiInput
         key="acl_ssl"
         name="acl_ssl"
         labelText={sslLabelText}
-        placeholder={
-          "Select an existing account or enter a new one to create it"
-        }
-        options={data}
-        // Allow adding new service accounts
-        createOption={(newOption) => {
-          if (newOption === undefined) {
-            return;
-          }
-          return newOption;
-        }}
-        noResults={"No service account matches."}
+        placeholder={sslPlaceholder}
         required
       />
     );
   }
 
-  return (
+  return isAivenCluster ? (
+    <MultiSelect<{ acl_ssl: string[] }, string>
+      key="acl_ssl"
+      name="acl_ssl"
+      labelText={sslLabelText}
+      placeholder={"Select an existing account or enter a new one to create it"}
+      options={aivenServiceAccounts}
+      // Allow adding new service accounts
+      createOption={(newOption) => {
+        if (newOption === undefined) {
+          return;
+        }
+        return newOption;
+      }}
+      noResults={"No service account matches."}
+      required
+    />
+  ) : (
     <MultiInput
       key="acl_ssl"
       name="acl_ssl"
