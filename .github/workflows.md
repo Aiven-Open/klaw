@@ -12,7 +12,7 @@ Our directory structure is as follows:
 
 We have two types of files in the `/workflows` directory:
 -  📄 starting with `job_` are reusable jobs that are used in different workflows.
-  - they should (and can't) be used in isolation, as they don't take care of the code being checked out
+  - they shouldn't (and can't) be used in isolation, as they don't take care of the code being checked out
 -  📄 starting with `workflow_` indicate a collection of jobs that are automatically triggered by certain events or actions
 
 ## Pipelines 
