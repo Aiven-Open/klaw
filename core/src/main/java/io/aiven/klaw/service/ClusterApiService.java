@@ -42,6 +42,7 @@ import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.response.OffsetDetails;
+import io.aiven.klaw.model.response.ServiceAccountDetails;
 import io.aiven.klaw.model.response.TopicConfig;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -640,7 +641,7 @@ public class ClusterApiService {
     }
   }
 
-  public ApiResponse getAivenServiceAccountDetails(
+  public ServiceAccountDetails getAivenServiceAccountDetails(
       String projectName, String serviceName, String userName, int tenantId) throws KlawException {
     getClusterApiProperties(tenantId);
     try {
@@ -652,7 +653,7 @@ public class ClusterApiService {
               .replace("userName", userName);
 
       HttpEntity<String> entity = getHttpEntity();
-      ResponseEntity<ApiResponse> apiResponseResponseEntity =
+      ResponseEntity<ServiceAccountDetails> apiResponseResponseEntity =
           getRestTemplate()
               .exchange(
                   uriGetServiceAccountDetails,

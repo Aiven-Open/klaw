@@ -5,12 +5,14 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 @Slf4j
 public enum EntityType {
+  USERS,
   TEAM,
   ENVIRONMENT,
   CLUSTER,
   TENANT,
   ROLES_PERMISSIONS,
-  PROPERTIES;
+  PROPERTIES,
+  TOPICS;
 
   @Nullable
   public static EntityType of(@Nullable String value) {

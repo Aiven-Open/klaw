@@ -185,20 +185,24 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
-  public List<Topic> getMultipleTopics(String topicPrefix, int size) {
+  public List<Topic> getMultipleTopics(String topicPrefix, int size, String env, int teamId) {
     List<Topic> listTopics = new ArrayList<>();
     Topic t;
+    if (env == null) {
+      env = "1";
+    }
+
+    if (teamId == 0) {
+      teamId = 101;
+    }
 
     for (int i = 0; i < size; i++) {
       t = new Topic();
 
-      if (i % 2 == 0) t.setTeamId(1);
-      else t.setTeamId(2);
-
       t.setTopicname(topicPrefix + i);
       t.setTopicid(i);
-      t.setEnvironment("1");
-      t.setTeamId(101);
+      t.setEnvironment(env);
+      t.setTeamId(teamId);
       t.setEnvironmentsList(new ArrayList<>());
 
       listTopics.add(t);

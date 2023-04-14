@@ -110,7 +110,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopics(TESTTOPIC));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(TESTTOPIC));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(TESTTOPIC));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(TESTTOPIC));
@@ -147,7 +147,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopics(topicNameSearch));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(topicNameSearch));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
@@ -240,7 +240,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopics(TESTTOPIC));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(TESTTOPIC));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(TESTTOPIC));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(TESTTOPIC));

@@ -255,7 +255,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
@@ -283,7 +283,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
@@ -313,7 +313,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
@@ -340,7 +340,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
@@ -387,7 +387,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
@@ -445,7 +445,8 @@ public class TopicControllerServiceTest {
         .thenReturn(topicRequests);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(utilMethods.getTopics());
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
@@ -475,7 +476,8 @@ public class TopicControllerServiceTest {
         .thenReturn(topicRequests);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(utilMethods.getTopics());
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
 
     List<TopicRequestsResponseModel> listTopicRqs =
@@ -547,7 +549,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     List<Topic> topicList = utilMethods.getTopics();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt())).thenReturn(topicList);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
     TopicTeamResponse topicTeamMap =
@@ -690,7 +692,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
             anyString(),
@@ -727,7 +729,7 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.selectTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
             anyString(),
@@ -801,8 +803,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
 
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
-        .thenReturn(utilMethods.getTopics());
+    when(commonUtilsService.getTopics(any(), any(), anyInt())).thenReturn(utilMethods.getTopics());
 
     List<String> result = topicControllerService.getAllTopics(false, "DEV");
     assertThat(result).hasSize(1);
@@ -815,8 +816,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
 
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
-        .thenReturn(utilMethods.getTopics());
+    when(commonUtilsService.getTopics(any(), any(), anyInt())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTeamId(anyString())).thenReturn(3);
 
     List<String> result = topicControllerService.getAllTopics(true, "DEV");
@@ -830,7 +830,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     TopicInfo topicInfo = utilMethods.getTopicInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic("testtopic")));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTeamId(anyString())).thenReturn(3);
@@ -848,7 +848,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     TopicInfo topicInfo = utilMethods.getTopicInfo();
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic("testtopic")));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTeamId(anyString())).thenReturn(1);
@@ -919,7 +919,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
+    when(commonUtilsService.getTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
@@ -946,7 +946,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
+    when(commonUtilsService.getTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
@@ -977,7 +977,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
+    when(commonUtilsService.getTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
@@ -1013,7 +1013,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-    when(handleDbRequests.getSyncTopics(envSel, null, 1)).thenReturn(getSyncTopics("topic", 4));
+    when(commonUtilsService.getTopics(envSel, null, 1)).thenReturn(getSyncTopics("topic", 4));
 
     List<List<TopicInfo>> topicsList =
         topicControllerService.getTopics(envSel, pageNo, "", topicNameSearch, 0, null);
@@ -1063,7 +1063,7 @@ public class TopicControllerServiceTest {
   public void getTopicTeam() {
     String topicName = "testtopic";
     stubUserInfo();
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
@@ -1219,7 +1219,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(handleDbRequests.selectTopicRequests(anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));

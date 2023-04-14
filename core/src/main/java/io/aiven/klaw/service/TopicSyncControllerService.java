@@ -1118,7 +1118,7 @@ public class TopicSyncControllerService {
   }
 
   public List<Topic> getTopicFromName(String topicName, int tenantId) {
-    List<Topic> topics = manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
     topics = commonUtilsService.getFilteredTopicsForTenant(topics);

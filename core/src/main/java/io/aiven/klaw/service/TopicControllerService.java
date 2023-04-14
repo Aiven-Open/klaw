@@ -40,7 +40,9 @@ import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -471,7 +473,7 @@ public class TopicControllerService {
             manageDatabase.getTeamNameFromTeamId(tenantId, stringTeamsFound.iterator().next()));
       }
     } else {
-      topics = manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
+      topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
       // tenant filtering
       topics = commonUtilsService.getFilteredTopicsForTenant(topics);
 
@@ -735,6 +737,10 @@ public class TopicControllerService {
           invokeClusterApiForTopicRequest(userName, tenantId, topicRequest, dbHandle, topicConfig);
     }
 
+    if (updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
+      commonUtilsService.updateMetadata(tenantId, EntityType.TOPICS, MetadataOperationType.CREATE);
+    }
+
     return ApiResponse.builder()
         .success((updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)))
         .message(updateTopicReqStatus)
@@ -885,10 +891,10 @@ public class TopicControllerService {
   public List<String> getAllTopics(boolean isMyTeamTopics, String envSelected) {
     log.debug("getAllTopics {}, envSelected {}", isMyTeamTopics, envSelected);
     String userName = getUserName();
+
     List<Topic> topicsFromSOT =
-        manageDatabase
-            .getHandleDbRequests()
-            .getSyncTopics(envSelected, null, commonUtilsService.getTenantId(getUserName()));
+        commonUtilsService.getTopics(
+            envSelected, null, commonUtilsService.getTenantId(getUserName()));
 
     // tenant filtering
     topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
@@ -916,7 +922,7 @@ public class TopicControllerService {
     topic.setDocumentation(topicInfo.getDocumentation());
 
     List<Topic> topicsSearchList =
-        manageDatabase.getHandleDbRequests().getTopicTeam(topicInfo.getTopicName(), tenantId);
+        commonUtilsService.getTopicsForTopicName(topicInfo.getTopicName(), tenantId);
 
     try {
       // tenant filtering
@@ -1075,7 +1081,7 @@ public class TopicControllerService {
     }
 
     // Get Sync topics
-    List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env, teamId, tenantId);
+    List<Topic> topicsFromSOT = commonUtilsService.getTopics(env, teamId, tenantId);
     topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
 
     // tenant filtering
@@ -1334,7 +1340,7 @@ public class TopicControllerService {
   }
 
   public List<Topic> getTopicFromName(String topicName, int tenantId) {
-    List<Topic> topics = manageDatabase.getHandleDbRequests().getTopicTeam(topicName, tenantId);
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
     topics = commonUtilsService.getFilteredTopicsForTenant(topics);

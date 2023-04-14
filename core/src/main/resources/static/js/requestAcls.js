@@ -268,7 +268,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'env' : environment},
             }).success(function(output) {
-                $scope.serviceAccounts = output.data;
+                $scope.serviceAccounts = output;
             }).error(
                 function(error)
                 {
