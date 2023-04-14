@@ -1,5 +1,10 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
-import { cleanup, renderHook, screen } from "@testing-library/react";
+import {
+  cleanup,
+  renderHook,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { useForm } from "src/app/components/Form";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
 import TopicConsumerForm, {
@@ -8,8 +13,17 @@ import TopicConsumerForm, {
 import topicConsumerFormSchema, {
   TopicConsumerFormSchema,
 } from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
+import { getAivenServiceAccounts } from "src/domain/acl/acl-api";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+
+jest.mock("src/domain/acl/acl-api");
+
+const mockGetAivenServiceAccounts =
+  getAivenServiceAccounts as jest.MockedFunction<
+    typeof getAivenServiceAccounts
+  >;
+const mockedAivenServiceAccountsResponse = ["bsisko", "odo", "quark"];
 
 const baseProps = {
   topicNames: ["aiventopic1", "aiventopic2", "othertopic"],
@@ -162,6 +176,10 @@ describe("<TopicConsumerForm />", () => {
   // We mock it by passing the values of the form that would have changed as default values
   describe("renders correct fields in form with selected environment which is Aiven cluster", () => {
     beforeAll(() => {
+      mockGetAivenServiceAccounts.mockResolvedValue(
+        mockedAivenServiceAccountsResponse
+      );
+
       const { result } = renderHook(() =>
         useForm<TopicConsumerFormSchema>({
           schema: topicConsumerFormSchema,
@@ -241,17 +259,20 @@ describe("<TopicConsumerForm />", () => {
       expect(principalField).toBeChecked();
     });
 
-    it("renders only principals field in IpOrPrincipalField", () => {
-      const ipsField = screen.queryByRole("textbox", {
+    it("renders only Service accounts field in IpOrPrincipalField", async () => {
+      await waitForElementToBeRemoved(screen.getByTestId("acl_ssl-skeleton"));
+
+      const hiddenIpsField = screen.queryByRole("textbox", {
         name: "IP addresses *",
       });
-      const principalsField = screen.getByRole("textbox", {
+
+      const serviceAccountsField = screen.getByRole("combobox", {
         name: "Service accounts *",
       });
 
-      expect(ipsField).toBeNull();
-      expect(principalsField).toBeVisible();
-      expect(principalsField).toBeEnabled();
+      expect(hiddenIpsField).toBeNull();
+      expect(serviceAccountsField).toBeVisible();
+      expect(serviceAccountsField).toBeEnabled();
     });
 
     it("renders RemarksField", () => {

@@ -47,7 +47,7 @@ const TopicConsumerForm = ({
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const navigate = useNavigate();
-  const { aclIpPrincipleType } = topicConsumerForm.getValues();
+  const { aclIpPrincipleType, environment } = topicConsumerForm.getValues();
   const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
 
   // Reset values of acl_ip and acl_ssl when user switches between IP or Principal
@@ -169,6 +169,7 @@ const TopicConsumerForm = ({
               <IpOrPrincipalField
                 aclIpPrincipleType={aclIpPrincipleType}
                 isAivenCluster={isAivenCluster}
+                environment={environment}
               />
             )}
           </GridItem>
