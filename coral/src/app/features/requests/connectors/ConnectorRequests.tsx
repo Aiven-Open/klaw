@@ -7,6 +7,7 @@ import { getConnectorRequests } from "src/domain/connector";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import SearchFilter from "src/app/features/components/filters/SearchFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 
 function ConnectorRequests() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,13 +15,20 @@ function ConnectorRequests() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { search, environment } = useFiltersValues();
+  const { search, environment, showOnlyMyRequests } = useFiltersValues();
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["connectorRequests", currentPage, search, environment],
+    queryKey: [
+      "connectorRequests",
+      currentPage,
+      search,
+      environment,
+      showOnlyMyRequests,
+    ],
     queryFn: () =>
       getConnectorRequests({
         pageNo: String(currentPage),
+        isMyRequest: showOnlyMyRequests,
         env: environment,
         search,
       }),
@@ -49,6 +57,7 @@ function ConnectorRequests() {
           key="environment"
           environmentEndpoint="getSyncConnectorsEnvironments"
         />,
+        <MyRequestsFilter key={"isMyRequest"} />,
       ]}
       table={
         <ConnectorRequestsTable
