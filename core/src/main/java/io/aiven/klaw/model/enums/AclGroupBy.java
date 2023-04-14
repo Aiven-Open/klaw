@@ -2,8 +2,7 @@ package io.aiven.klaw.model.enums;
 
 public enum AclGroupBy {
   NONE("NONE"),
-  TEAM("TEAM"),
-  ;
+  TEAM("TEAM");
 
   public final String value;
 

@@ -1042,6 +1042,8 @@ export type components = {
       req_no?: string;
       acl_ip?: string;
       acl_ssl?: string;
+      acl_ips?: (string)[];
+      acl_ssls?: (string)[];
       topicname?: string;
       topictype?: string;
       consumergroup?: string;
@@ -3562,7 +3564,7 @@ export type operations = {
     parameters: {
       query: {
         topicnamesearch: string;
-        groupBy?: "ACL_TYPE" | "ENV" | "TEAM" | "IP" | "PRINCIPAL";
+        groupBy?: "NONE" | "TEAM";
       };
     };
     responses: {
