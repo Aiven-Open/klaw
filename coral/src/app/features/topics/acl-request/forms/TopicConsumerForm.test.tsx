@@ -23,11 +23,7 @@ const mockGetAivenServiceAccounts =
   getAivenServiceAccounts as jest.MockedFunction<
     typeof getAivenServiceAccounts
   >;
-const mockedAivenServiceAccountsResponse = {
-  success: true,
-  message: "success",
-  data: ["bsisko", "odo", "quark"] as unknown as Record<string, never>,
-};
+const mockedAivenServiceAccountsResponse = ["bsisko", "odo", "quark"];
 
 const baseProps = {
   topicNames: ["aiventopic1", "aiventopic2", "othertopic"],

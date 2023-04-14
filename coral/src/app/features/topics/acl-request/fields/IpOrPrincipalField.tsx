@@ -20,7 +20,11 @@ const IpOrPrincipalField = ({
   isAivenCluster,
   environment,
 }: IpOrPrincipalFieldProps) => {
-  const { data, isLoading, isError } = useQuery({
+  const {
+    data = [],
+    isLoading,
+    isError,
+  } = useQuery({
     queryKey: ["getAivenServiceAccounts", environment],
     queryFn: () =>
       getAivenServiceAccounts({
@@ -76,9 +80,7 @@ const IpOrPrincipalField = ({
         placeholder={
           "Select an existing account or enter a new one to create it"
         }
-        // TS gore necessary because data.data is of type Record<string, never>
-        // When it should be string[]
-        options={data?.data as unknown as string[]}
+        options={data}
         // Allow adding new service accounts
         createOption={(newOption) => {
           if (newOption === undefined) {

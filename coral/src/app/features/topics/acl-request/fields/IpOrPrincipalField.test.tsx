@@ -20,13 +20,7 @@ const mockGetAivenServiceAccounts =
   getAivenServiceAccounts as jest.MockedFunction<
     typeof getAivenServiceAccounts
   >;
-const mockedAivenServiceAccountsResponse = {
-  success: true,
-  message: "success",
-  data: ["bsisko", "odo", "quark"] as unknown as Record<string, never>,
-};
-
-const options = ["bsisko", "odo", "quark"];
+const mockedAivenServiceAccountsResponse = ["bsisko", "odo", "quark"];
 
 describe("IpOrPrincipalField", () => {
   const onSubmit = jest.fn();
@@ -66,7 +60,7 @@ describe("IpOrPrincipalField", () => {
 
     await userEvent.click(multiInput);
 
-    options.forEach((serviceAccount) => {
+    mockedAivenServiceAccountsResponse.forEach((serviceAccount) => {
       const option = screen.getByRole("option", {
         name: serviceAccount,
       });
