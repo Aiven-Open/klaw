@@ -7,7 +7,8 @@
 #
 # 'coral-workflow' runs the jobs for coral when
 # - a PR is opened, synchronize, or reopened
-# - & there are changes detected outside `coral` directory
+# - & there are changes detected in the directories cluster-api and core
+#     the file pom.xml
 # - & the PR is not in DRAFT status
 # - OR the PR is in draft status, but was marked as "Ready for review"
 name: Pull Request pipeline
@@ -36,15 +37,15 @@ jobs:
             echo "Changes detected in coral directory 🪸"
             echo "changes-coral=true" >> $GITHUB_OUTPUT
           fi
-          if git diff --name-only HEAD^ HEAD | grep -qv '^coral/'; then
-            echo "Changes detected for core/api"
+          if git diff --name-only HEAD^ HEAD | grep -qE '^cluster-api/|^core/|^pom.xml$'; then
+            echo "Changes detected for cluster-api/core or pom.xml"
             echo "changes-maven=true" >> $GITHUB_OUTPUT
           fi
 
 
   maven-workflow:
     needs: check-changes
-    if: ${{ !github.event.pull_request.draft || github.event.action == 'ready_for_review' }} && needs.check-changes.outputs.changes-maven == 'true'
+    if: (github.event.pull_request.draft == false || github.event.action == 'ready_for_review') && needs.check-changes.outputs.changes-maven == 'true'
     uses: ./.github/workflows/jobs-maven.yaml
   coral-workflow:
     needs: check-changes

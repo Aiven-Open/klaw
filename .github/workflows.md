@@ -21,7 +21,7 @@ We have two types of workflows triggered by Pull Requests:
 
 1. When a Pull Request is opened, we run selected jobs based on the location and changes made in the code. We have two sets of jobs:
    - if changes are made inside the `/coral` directory, we run all [coral jobs](./workflows/jobs-coral.yaml)
-   - if are made outside the `/coral` directory, we run all [maven jobs](./workflows/jobs-maven.yaml). This jobs are only run when the Pull Request is ready for review, excluding "Draft" PRs.
+   - if are made outside in `/core` or `/cluster-api` directories or `pom.xml`, we run all [maven jobs](./workflows/jobs-maven.yaml). This jobs are only run when the Pull Request is ready for review, excluding "Draft" PRs.
    
 2. When a Pull Request is approved, the [`workflow-merge-to-main`](./workflows/workflow-merge-to-main.yaml) is triggered.
    - This workflow runs all [coral jobs](./workflows/jobs-coral.yaml) and [maven jobs](./workflows/jobs-maven.yaml)
