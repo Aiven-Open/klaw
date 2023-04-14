@@ -58,37 +58,32 @@ const IpOrPrincipalField = ({
     );
   }
 
-  if (isAivenCluster && isError) {
-    // Fall back to default field if error when fetching aivenServiceAccounts
+  if (isAivenCluster && !isError) {
     return (
-      <MultiInput
+      <MultiSelect<{ acl_ssl: string[] }, string>
         key="acl_ssl"
         name="acl_ssl"
         labelText={sslLabelText}
-        placeholder={sslPlaceholder}
+        placeholder={
+          "Select an existing account or enter a new one to create it"
+        }
+        options={aivenServiceAccounts}
+        // Allow adding new service accounts
+        createOption={(newOption) => {
+          if (newOption === undefined) {
+            return;
+          }
+          return newOption;
+        }}
+        noResults={"No service account matches."}
         required
       />
     );
   }
 
-  return isAivenCluster ? (
-    <MultiSelect<{ acl_ssl: string[] }, string>
-      key="acl_ssl"
-      name="acl_ssl"
-      labelText={sslLabelText}
-      placeholder={"Select an existing account or enter a new one to create it"}
-      options={aivenServiceAccounts}
-      // Allow adding new service accounts
-      createOption={(newOption) => {
-        if (newOption === undefined) {
-          return;
-        }
-        return newOption;
-      }}
-      noResults={"No service account matches."}
-      required
-    />
-  ) : (
+  // Fall back to default field if error when fetching aivenServiceAccounts
+  // Or if isAivenCluster is false
+  return (
     <MultiInput
       key="acl_ssl"
       name="acl_ssl"
