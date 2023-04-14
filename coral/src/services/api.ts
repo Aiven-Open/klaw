@@ -1,9 +1,13 @@
-import { getHTTPBaseAPIUrl } from "src/config";
-import isPlainObject from "lodash/isPlainObject";
-import { components } from "types/api";
-import { objectHasProperty } from "src/services/type-utils";
-import { ResolveIntersectionTypes } from "types/utils";
 import isArray from "lodash/isArray";
+import isPlainObject from "lodash/isPlainObject";
+import { getHTTPBaseAPIUrl } from "src/config";
+import { objectHasProperty } from "src/services/type-utils";
+import {
+  operations as ApiOperations,
+  paths as ApiPaths,
+  components,
+} from "types/api";
+import { ResolveIntersectionTypes } from "types/utils";
 
 type KlawApiResponse = ResolveIntersectionTypes<
   components["schemas"]["ApiResponse"]
@@ -25,11 +29,164 @@ type SomeObject =
   | Record<string, never>
   | Array<unknown>;
 
-type AbsolutePathname = `/${string}`;
-
 const CONTENT_TYPE_JSON = "application/json" as const;
 
 const API_BASE_URL = getHTTPBaseAPIUrl();
+
+const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
+  validateSchema: "/validate/schema",
+  updateUserTeamFromSwitchTeams: "/user/updateTeam",
+  uploadSchema: "/uploadSchema",
+  updateUser: "/updateUser",
+  createTopicsUpdateRequest: "/updateTopics",
+  updateTeam: "/updateTeam",
+  updateSyncTopics: "/updateSyncTopics",
+  updateSyncTopicsBulk: "/updateSyncTopicsBulk",
+  updateSyncConnectors: "/updateSyncConnectors",
+  updateSyncBackTopics: "/updateSyncBackTopics",
+  updateSyncBackAcls: "/updateSyncBackAcls",
+  updateSyncAcls: "/updateSyncAcls",
+  updateProfile: "/updateProfile",
+  updatePermissions: "/updatePermissions",
+  updateKwCustomProperty: "/updateKwCustomProperty",
+  udpateTenant: "/udpateTenant",
+  udpateTenantExtension: "/udpateTenantExtension",
+  sendMessageToAdmin: "/sendMessageToAdmin",
+  saveTopicDocumentation: "/saveTopicDocumentation",
+  saveConnectorDocumentation: "/saveConnectorDocumentation",
+  resetPassword: "/resetPassword",
+  deleteRequest: "/request/delete",
+  declineRequest: "/request/decline",
+  approveRequest: "/request/approve",
+  registerUser: "/registerUser",
+  registerUserSaas: "/registerUserSaas",
+  promoteSchema: "/promote/schema",
+  logout: "/logout",
+  approveTopicRequests: "/execTopicRequests",
+  declineTopicRequests: "/execTopicRequestsDecline",
+  execSchemaRequests: "/execSchemaRequests",
+  execSchemaRequestsDecline: "/execSchemaRequestsDecline",
+  declineNewUserRequests: "/execNewUserRequestDecline",
+  approveNewUserRequests: "/execNewUserRequestApprove",
+  approveTopicRequests_1: "/execConnectorRequests",
+  declineConnectorRequests: "/execConnectorRequestsDecline",
+  approveAclRequests: "/execAclRequest",
+  declineAclRequests: "/execAclRequestDecline",
+  deleteUser: "/deleteUserRequest",
+  deleteTopicRequests: "/deleteTopicRequests",
+  deleteTenant: "/deleteTenant",
+  deleteTeam: "/deleteTeamRequest",
+  deleteSchemaRequests: "/deleteSchemaRequests",
+  deleteRole: "/deleteRole",
+  deleteEnvironment: "/deleteEnvironmentRequest",
+  deleteConnectorRequests: "/deleteConnectorRequests",
+  deleteCluster: "/deleteCluster",
+  deleteAclRequests: "/deleteAclRequests",
+  createTopicsCreateRequest: "/createTopics",
+  createTopicDeleteRequest: "/createTopicDeleteRequest",
+  deleteAclSubscriptionRequest: "/createDeleteAclSubscriptionRequest",
+  createConnectorRequest: "/createConnector",
+  createConnectorDeleteRequest: "/createConnectorDeleteRequest",
+  createClaimTopicRequest: "/createClaimTopicRequest",
+  createClaimConnectorRequest: "/createClaimConnectorRequest",
+  createAcl: "/createAcl",
+  changePwd: "/chPwd",
+  addTenantId: "/addTenantId",
+  addRoleId: "/addRoleId",
+  addNewUser: "/addNewUser",
+  addNewTeam: "/addNewTeam",
+  addNewEnv: "/addNewEnv",
+  addNewCluster: "/addNewCluster",
+  getSwitchTeams: "/user/{userId}/switchTeamsList",
+  testClusterApiConnection: "/testClusterApiConnection",
+  shutdownApp: "/shutdownContext",
+  showUsers: "/showUserList",
+  resetMemoryCache:
+    "/resetMemoryCache/{tenantName}/{entityType}/{operationType}",
+  resetCache: "/resetCache",
+  getRequestStatistics: "/requests/statistics",
+  getRegistrationInfoFromId: "/getUserInfoFromRegistrationId",
+  getUserDetails: "/getUserDetails",
+  getUpdateEnvStatus: "/getUpdateEnvStatus",
+  getTopics: "/getTopics",
+  getTopicsRowView: "/getTopicsRowView",
+  getTopicsOnly: "/getTopicsOnly",
+  getTopicsCountPerEnv: "/getTopicsCountPerEnv",
+  getTopicTeam: "/getTopicTeam",
+  getTopicRequests: "/getTopicRequests",
+  getTopicRequestsForApprover: "/getTopicRequestsForApprover",
+  getTopicEvents: "/getTopicEvents",
+  getTopicDetailsPerEnv: "/getTopicDetailsPerEnv",
+  getTenants: "/getTenants",
+  getTenantsInfo: "/getTenantsInfo",
+  getTeamsOverview: "/getTeamsOverview",
+  getTeamDetails: "/getTeamDetails",
+  getSyncTopics: "/getSyncTopics",
+  getSyncEnv: "/getSyncEnv",
+  getSyncTopics_1: "/getSyncConnectors",
+  getSyncConnectorsEnv: "/getSyncConnectorsEnv",
+  getSyncBackAcls: "/getSyncBackAcls",
+  getSyncAcls: "/getSyncAcls",
+  getStandardEnvNames: "/getStandardEnvNames",
+  getSchemaRequests: "/getSchemaRequests",
+  getSchemaRequestsForApprover: "/getSchemaRequestsForApprover",
+  getSchemaRegEnvs: "/getSchemaRegEnvs",
+  getSchemaOfTopic: "/getSchemaOfTopic",
+  getRoles: "/getRoles",
+  getRolesFromDb: "/getRolesFromDb",
+  getRequestTypeStatuses: "/getRequestTypeStatuses",
+  getPermissions: "/getPermissions",
+  getPermissionDescriptions: "/getPermissionDescriptions",
+  getNewUserRequests: "/getNewUserRequests",
+  getMyTenantInfo: "/getMyTenantInfo",
+  getMyProfileInfo: "/getMyProfileInfo",
+  getKwReport: "/getKwReport",
+  getKwPubkey: "/getKwPubkey",
+  getSupportedKafkaProtocols: "/getKafkaProtocols",
+  getKafkaConnectEnvs: "/getKafkaConnectEnvs",
+  getExtensionPeriods: "/getExtensionPeriods",
+  getEnvs: "/getEnvs",
+  getEnvsPaginated: "/getEnvsPaginated",
+  getRequestForSchemas: "/getEnvsForSchemaRequests",
+  getEnvsBaseCluster: "/getEnvsBaseCluster",
+  getEnvsBaseClusterFilteredForTeam: "/getEnvsBaseClusterFilteredForTeam",
+  getEnvParams: "/getEnvParams",
+  getEnvDetails: "/getEnvDetails",
+  getDbAuth: "/getDbAuth",
+  getDashboardStats: "/getDashboardStats",
+  getConsumerOffsets: "/getConsumerOffsets",
+  getConnectors: "/getConnectors",
+  getConnectorRequests: "/getConnectorRequests",
+  getCreatedConnectorRequests: "/getConnectorRequestsForApprover",
+  getConnectorOverview: "/getConnectorOverview",
+  getConnectorDetails: "/getConnectorDetails",
+  getConnectorDetailsPerEnv: "/getConnectorDetailsPerEnv",
+  getClusters: "/getClusters",
+  getClustersPaginated: "/getClustersPaginated",
+  getClusterInfoFromEnv: "/getClusterInfoFromEnv",
+  getClusterDetails: "/getClusterDetails",
+  getBrokerTopMetrics: "/getBrokerTopMetrics",
+  getBasicInfo: "/getBasicInfo",
+  getAuth: "/getAuth",
+  getAllTeamsSU: "/getAllTeamsSU",
+  getAllTeamsSUOnly: "/getAllTeamsSUOnly",
+  getAllTeamsSUFromRegisterUsers: "/getAllTeamsSUFromRegisterUsers",
+  getAllEditableProps: "/getAllServerEditableConfig",
+  getAllProperties: "/getAllServerConfig",
+  getAivenServiceAccounts: "/getAivenServiceAccounts",
+  getAivenServiceAccountDetails: "/getAivenServiceAccount",
+  getAdvancedTopicConfigs: "/getAdvancedTopicConfigs",
+  showActivityLog: "/getActivityLogPerEnv",
+  getActivityLogForTeamOverview: "/getActivityLogForTeamOverview",
+  getActivationInfo: "/getActivationInfo",
+  getAcls: "/getAcls",
+  getAclsCountPerEnv: "/getAclsCountPerEnv",
+  getAclRequests: "/getAclRequests",
+  getAclRequestsForApprover: "/getAclRequestsForApprover",
+  getAclCommand: "/getAclCommands",
+};
+
+type Params = URLSearchParams;
 
 type HTTPError = {
   status: number;
@@ -266,7 +423,8 @@ function handleError(
       }
 
       const httpError: HTTPError = {
-        data: bodyToCheck,
+        // bodycheck is unknown here, so we need to coerce its type to avoid TS errors
+        data: bodyToCheck as string | SomeObject,
         status: errorOrResponse.status,
         statusText: errorOrResponse.statusText,
         headers: errorOrResponse.headers,
@@ -294,7 +452,7 @@ function withPayloadAndVerb<
   TBody extends SomeObject | URLSearchParams
 >(
   method: HTTPMethod.POST | HTTPMethod.PUT | HTTPMethod.PATCH,
-  pathname: AbsolutePathname,
+  pathname: keyof ApiPaths,
   data: TBody
 ): Promise<TResponse> {
   return fetch(`${API_BASE_URL}${pathname}`, withPayload(method, data)).then(
@@ -304,21 +462,23 @@ function withPayloadAndVerb<
 
 function withoutPayloadAndWithVerb<TResponse extends SomeObject>(
   method: HTTPMethod.GET | HTTPMethod.DELETE | HTTPMethod.POST,
-  pathname: AbsolutePathname
+  pathname: keyof ApiPaths,
+  params?: Params
 ): Promise<TResponse> {
-  return fetch(`${API_BASE_URL}${pathname}`, withoutPayload(method)).then(
-    (response) => handleResponse<TResponse>(response)
-  );
+  return fetch(
+    `${API_BASE_URL}${pathname}?${params}`,
+    withoutPayload(method)
+  ).then((response) => handleResponse<TResponse>(response));
 }
 
-const get = <T extends SomeObject>(pathname: AbsolutePathname) =>
-  withoutPayloadAndWithVerb<T>(HTTPMethod.GET, pathname);
+const get = <T extends SomeObject>(pathname: keyof ApiPaths, params?: Params) =>
+  withoutPayloadAndWithVerb<T>(HTTPMethod.GET, pathname, params);
 
 const post = <
   TResponse extends SomeObject,
   TBody extends SomeObject | URLSearchParams | never
 >(
-  pathname: AbsolutePathname,
+  pathname: keyof ApiPaths,
   data?: TBody
 ): Promise<TResponse> => {
   if (data === undefined) {
@@ -328,16 +488,16 @@ const post = <
 };
 
 const put = <TBody extends SomeObject | URLSearchParams>(
-  pathname: AbsolutePathname,
+  pathname: keyof ApiPaths,
   data: TBody
 ) => withPayloadAndVerb(HTTPMethod.PUT, pathname, data);
 
 const patch = <TBody extends SomeObject | URLSearchParams>(
-  pathname: AbsolutePathname,
+  pathname: keyof ApiPaths,
   data: TBody
 ) => withPayloadAndVerb(HTTPMethod.PATCH, pathname, data);
 
-const delete_ = (pathname: AbsolutePathname) =>
+const delete_ = (pathname: keyof ApiPaths) =>
   withoutPayloadAndWithVerb(HTTPMethod.DELETE, pathname);
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -349,8 +509,9 @@ export default {
   delete: delete_,
 };
 
-export type { AbsolutePathname, HTTPError, KlawApiResponse, KlawApiError };
+export type { HTTPError, KlawApiResponse, KlawApiError };
 export {
+  API_PATHS,
   HTTPMethod,
   isUnauthorizedError,
   isServerError,

@@ -8,7 +8,7 @@ import {
   RequestVerdictDecline,
   RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
-import api from "src/services/api";
+import api, { API_PATHS } from "src/services/api";
 import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
 import { convertQueryValuesToString } from "src/services/api-helper";
 
@@ -55,7 +55,8 @@ const getConnectors = (
 
   return api
     .get<KlawApiResponse<"getConnectors">>(
-      `/getConnectors?${new URLSearchParams(queryParams)}`
+      API_PATHS.getConnectors,
+      new URLSearchParams(queryParams)
     )
     .then(transformConnectorApiResponse);
 };
@@ -67,7 +68,8 @@ const getConnectorRequestsForApprover = (
 
   return api
     .get<KlawApiResponse<"getCreatedConnectorRequests">>(
-      `/getConnectorRequestsForApprover?${new URLSearchParams(filteredParams)}`
+      API_PATHS.getCreatedConnectorRequests,
+      new URLSearchParams(filteredParams)
     )
     .then(transformConnectorRequestApiResponse);
 };
@@ -79,7 +81,8 @@ const getConnectorRequests = (
 
   return api
     .get<KlawApiResponse<"getConnectorRequests">>(
-      `/getConnectorRequests?${new URLSearchParams(filteredParams)}`
+      API_PATHS.getConnectorRequests,
+      new URLSearchParams(filteredParams)
     )
     .then(transformConnectorRequestApiResponse);
 };
@@ -92,7 +95,7 @@ const approveConnectorRequest = ({ reqIds }: ApproveRequestParams) => {
   return api.post<
     KlawApiResponse<"approveRequest">,
     ApproveConnectorRequestPayload
-  >(`/request/approve`, { requestEntityType: "CONNECTOR", reqIds });
+  >(API_PATHS.approveRequest, { requestEntityType: "CONNECTOR", reqIds });
 };
 
 type DeclineConnectorRequestPayload = RequestVerdictDecline<"CONNECTOR">;
@@ -104,7 +107,11 @@ const declineConnectorRequest = ({ reqIds, reason }: DeclineRequestParams) => {
   return api.post<
     KlawApiResponse<"declineRequest">,
     DeclineConnectorRequestPayload
-  >(`/request/decline`, { requestEntityType: "CONNECTOR", reqIds, reason });
+  >(API_PATHS.declineRequest, {
+    requestEntityType: "CONNECTOR",
+    reqIds,
+    reason,
+  });
 };
 
 type DeleteConnectorRequestPayload = RequestVerdictDelete<"CONNECTOR">;
@@ -115,7 +122,7 @@ const deleteConnectorRequest = ({ reqIds }: DeleteRequestParams) => {
   return api.post<
     KlawApiResponse<"deleteRequest">,
     DeleteConnectorRequestPayload
-  >(`/request/delete`, { requestEntityType: "CONNECTOR", reqIds });
+  >(API_PATHS.deleteRequest, { requestEntityType: "CONNECTOR", reqIds });
 };
 
 export {
