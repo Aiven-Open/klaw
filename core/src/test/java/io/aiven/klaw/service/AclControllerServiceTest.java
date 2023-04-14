@@ -136,7 +136,7 @@ public class AclControllerServiceTest {
     List<Topic> topicList = utilMethods.getTopics();
     Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
-    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
     stubUserInfo();
     mockKafkaFlavor();
@@ -154,7 +154,7 @@ public class AclControllerServiceTest {
     List<Topic> topicList = utilMethods.getTopics();
     Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
-    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
 
     mockKafkaFlavor();
@@ -171,7 +171,7 @@ public class AclControllerServiceTest {
     AclRequestsModel aclRequests = getAclRequestConsumer();
     copyProperties(aclRequests, aclRequestsDao);
     List<Topic> topicList = utilMethods.getTopics();
-    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any()))
         .thenThrow(new RuntimeException("Failure in creating request"));
     stubUserInfo();
@@ -237,7 +237,7 @@ public class AclControllerServiceTest {
     Acl acl = new Acl();
     acl.setConsumergroup(aclRequestsModel.getConsumergroup());
 
-    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.getUniqueConsumerGroups(anyInt()))
         .thenReturn(Collections.singletonList(acl));
     stubUserInfo();
@@ -261,7 +261,7 @@ public class AclControllerServiceTest {
     List<Topic> topicList = utilMethods.getTopics();
     Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
-    when(handleDbRequests.getTopics(anyString(), anyInt())).thenReturn(topicList);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
     stubUserInfo();
     mockKafkaFlavor();

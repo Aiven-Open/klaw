@@ -803,8 +803,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
 
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
-        .thenReturn(utilMethods.getTopics());
+    when(commonUtilsService.getTopics(any(), any(), anyInt())).thenReturn(utilMethods.getTopics());
 
     List<String> result = topicControllerService.getAllTopics(false, "DEV");
     assertThat(result).hasSize(1);
@@ -817,8 +816,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
 
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(utilMethods.getTopics());
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
-        .thenReturn(utilMethods.getTopics());
+    when(commonUtilsService.getTopics(any(), any(), anyInt())).thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getTeamId(anyString())).thenReturn(3);
 
     List<String> result = topicControllerService.getAllTopics(true, "DEV");
@@ -921,7 +919,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
+    when(commonUtilsService.getTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
@@ -948,7 +946,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
+    when(commonUtilsService.getTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
@@ -979,7 +977,7 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-    when(handleDbRequests.getSyncTopics(any(), any(), anyInt()))
+    when(commonUtilsService.getTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt()))
@@ -1015,7 +1013,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
-    when(handleDbRequests.getSyncTopics(envSel, null, 1)).thenReturn(getSyncTopics("topic", 4));
+    when(commonUtilsService.getTopics(envSel, null, 1)).thenReturn(getSyncTopics("topic", 4));
 
     List<List<TopicInfo>> topicsList =
         topicControllerService.getTopics(envSel, pageNo, "", topicNameSearch, 0, null);

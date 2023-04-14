@@ -538,8 +538,63 @@ public class CommonUtilsService {
   }
 
   public List<Topic> getTopicsForTopicName(String topicName, int tenantId) {
-    return manageDatabase.getTopicsForTenant(tenantId).stream()
-        .filter(topic -> topic.getTopicname().equals(topicName))
-        .toList();
+    if (topicName != null) {
+      return manageDatabase.getTopicsForTenant(tenantId).stream()
+          .filter(topic -> topic.getTopicname().equals(topicName))
+          .toList();
+    } else {
+      return manageDatabase.getTopicsForTenant(tenantId);
+    }
+  }
+
+  public List<Topic> getTopics(String env, Integer teamId, int tenantId) {
+    log.debug("getSyncTopics {} {}", env, teamId);
+    List<Topic> allTopicsList = manageDatabase.getTopicsForTenant(tenantId);
+    if (teamId == null || teamId.equals(1)) {
+      if (env == null || env.equals("ALL")) {
+        return allTopicsList;
+      } else {
+        Set<String> uniqueTopicNamesList =
+            new HashSet<>(
+                allTopicsList.stream()
+                    .filter(
+                        topic -> {
+                          return topic.getEnvironment().equals(env);
+                        })
+                    .map(Topic::getTopicname)
+                    .toList());
+        return getSubTopics(allTopicsList, uniqueTopicNamesList);
+      }
+    } else {
+      if (env == null || "ALL".equals(env)) {
+        return allTopicsList.stream().filter(topic -> topic.getTeamId().equals(teamId)).toList();
+      } else {
+        Set<String> uniqueTopicNamesList =
+            new HashSet<>(
+                allTopicsList.stream()
+                    .filter(
+                        topic -> {
+                          return topic.getEnvironment().equals(env)
+                              && topic.getTeamId().equals(teamId);
+                        })
+                    .map(Topic::getTopicname)
+                    .toList());
+        return getSubTopics(allTopicsList, uniqueTopicNamesList);
+      }
+    }
+  }
+
+  private List<Topic> getSubTopics(List<Topic> allTopicsList, Set<String> uniqueTopicNamesList) {
+    List<Topic> subTopicsList = new ArrayList<>();
+    uniqueTopicNamesList.forEach(
+        topicName -> {
+          allTopicsList.forEach(
+              topic -> {
+                if (topic.getTopicname().equals(topicName)) {
+                  subTopicsList.add(topic);
+                }
+              });
+        });
+    return subTopicsList;
   }
 }

@@ -891,10 +891,10 @@ public class TopicControllerService {
   public List<String> getAllTopics(boolean isMyTeamTopics, String envSelected) {
     log.debug("getAllTopics {}, envSelected {}", isMyTeamTopics, envSelected);
     String userName = getUserName();
+
     List<Topic> topicsFromSOT =
-        manageDatabase
-            .getHandleDbRequests()
-            .getSyncTopics(envSelected, null, commonUtilsService.getTenantId(getUserName()));
+        commonUtilsService.getTopics(
+            envSelected, null, commonUtilsService.getTenantId(getUserName()));
 
     // tenant filtering
     topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
@@ -1081,7 +1081,7 @@ public class TopicControllerService {
     }
 
     // Get Sync topics
-    List<Topic> topicsFromSOT = handleDbRequests.getSyncTopics(env, teamId, tenantId);
+    List<Topic> topicsFromSOT = commonUtilsService.getTopics(env, teamId, tenantId);
     topicsFromSOT = commonUtilsService.getFilteredTopicsForTenant(topicsFromSOT);
 
     // tenant filtering
