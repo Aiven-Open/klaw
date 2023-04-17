@@ -595,10 +595,33 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         $scope.getSchemaOfTopic();
     }
 
+    $scope.showAclTeamHeader = function(teamname) {
+
+    if($scope.selectedGroupBy=='NONE' || $scope.selectedGroupBy==null || $scope.selectedGroupBy == undefined ){
+    return false;
+    }
+
+    if($scope.firstTeam == teamname) {
+    console.log($scope.firstTeam  + " : " + teamname + " : nochange");
+    return false;
+    } else {
+    console.log($scope.firstTeam  + " : " + teamname + " : change");
+    $scope.firstTeam = teamname;
+    return true;
+    }
+
+
+    }
+
 	$scope.getAcls = function() {
         $scope.firstPromote = "false";
         $scope.alertTopicDelete = null;
         $scope.alert = null;
+        $scope.firstTeam=null;
+        if($scope.selectedGroupBy == undefined) {
+        $scope.selectedGroupBy = 'NONE';
+        }
+        $scope.groupBy = [{ 'id':'TEAM', 'name':'Team' },{'id':'NONE','name':'None'}];
 
         var topicSelected;
 
@@ -613,8 +636,13 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             }
         }
 
-        if(!topicSelected)
+        if(!topicSelected) {
             return;
+        }
+        var groupAclBy = 'NONE';
+        if($scope.selectedGroupBy){
+        groupAclBy = $scope.selectedGroupBy;
+        }
 
 		$scope.topicSelectedParam = topicSelected;
 		$scope.ShowSpinnerStatusTopics = true;
@@ -625,6 +653,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 			url: "getAcls",
             headers : { 'Content-Type' : 'application/json' },
             params: {'topicnamesearch' : topicSelected,
+                     'groupBy' : groupAclBy
              }
 		}).success(function(output) {
 		    $scope.ShowSpinnerStatusTopics = false;

@@ -9,6 +9,7 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ public class TopicOverviewService extends BaseOverviewService {
     super(mailService);
   }
 
-  public TopicOverview getTopicOverview(String topicNameSearch) {
+  public TopicOverview getTopicOverview(String topicNameSearch, AclGroupBy groupBy) {
     log.debug("getAcls {}", topicNameSearch);
 
     if (topicNameSearch != null) {
@@ -104,7 +105,8 @@ public class TopicOverviewService extends BaseOverviewService {
         prefixedAclsInfo,
         topicOwnerTeamId);
 
-    aclInfo = getAclInfoList(tenantId, topicOverview, topicInfoList, aclInfo, prefixedAclsInfo);
+    aclInfo =
+        getAclInfoList(tenantId, topicOverview, topicInfoList, aclInfo, prefixedAclsInfo, groupBy);
 
     updateTopicOverviewItems(
         topicNameSearch,
