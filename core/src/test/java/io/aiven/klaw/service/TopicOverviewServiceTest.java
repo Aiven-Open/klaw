@@ -273,9 +273,7 @@ public class TopicOverviewServiceTest {
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
 
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
-    when(handleDbRequests.getTopicTeam(eq(TESTTOPIC), eq(101)))
-        .thenReturn(List.of(createTopic(TESTTOPIC)));
-    when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
+    when(commonUtilsService.getTopicsForTopicName(eq(TESTTOPIC), eq(101)))
         .thenReturn(List.of(createTopic(TESTTOPIC)));
     when(handleDbRequests.getSyncAcls(anyString(), eq(TESTTOPIC), eq(101)))
         .thenReturn(createAcls(20));

@@ -199,8 +199,6 @@ public interface HandleDbRequests {
 
   List<Topic> getTopicsforTeam(Integer teamId, int tenantId);
 
-  List<Topic> getTopicTeam(String topicName, int tenantId);
-
   List<Acl> getConsumerGroupsforTeam(Integer teamId, int tenantId);
 
   List<Acl> getAllConsumerGroups(int tenantId);

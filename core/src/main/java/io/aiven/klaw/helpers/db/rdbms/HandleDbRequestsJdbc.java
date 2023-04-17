@@ -276,11 +276,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<Topic> getTopicTeam(String topicName, int tenantId) {
-    return jdbcSelectHelper.selectTopicDetails(topicName, tenantId);
-  }
-
-  @Override
   public List<Topic> getAllTopics(int tenantId) {
     return jdbcSelectHelper.getTopics("", true, tenantId);
   }
