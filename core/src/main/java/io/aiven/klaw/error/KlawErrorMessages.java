@@ -119,6 +119,12 @@ public class KlawErrorMessages {
   public static final String CLUSTER_API_ERR_117 =
       "CONFIGURE CLUSTER API SECRET FOR CLUSTER OPERATIONS. klaw.clusterapi.access.base64.secret";
 
+  public static final String CLUSTER_API_ERR_118 =
+      "There seems to be a connectivity issue with Cluster Api. Please contact your administrator !!";
+
+  public static final String CLUSTER_API_ERR_119 =
+      "There seems to be a connectivity issue with the cluster. Please contact your administrator !!";
+
   // Env clusters tenants service
   public static final String ENV_CLUSTER_TNT_ERR_101 =
       "Failure. Please choose a different name. This environment name already exists.";

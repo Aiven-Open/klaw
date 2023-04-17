@@ -701,7 +701,7 @@ public class AclControllerService {
         }
         updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
       } else {
-        updateAclReqStatus = ApiResultStatus.FAILURE.value;
+        updateAclReqStatus = Objects.requireNonNull(responseBody).getMessage();
       }
     } catch (Exception e) {
       log.error("Exception ", e);

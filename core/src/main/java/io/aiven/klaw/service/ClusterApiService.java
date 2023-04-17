@@ -1,22 +1,6 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_101;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_102;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_103;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_104;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_105;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_106;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_107;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_108;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_109;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_110;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_111;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_112;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_113;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_114;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_115;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_116;
-import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_117;
+import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -92,6 +76,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -447,6 +432,10 @@ public class ClusterApiService {
 
     } catch (Exception e) {
       log.error("approveConnectorRequests {} ", connectorName, e);
+      if (e.getMessage().contains("ClientHttpRequestFactory must not be null")
+          || e.getMessage().contains("Connection refused")) {
+        return CLUSTER_API_ERR_118;
+      }
       throw new KlawException(CLUSTER_API_ERR_105);
     }
   }
@@ -529,6 +518,16 @@ public class ClusterApiService {
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("approveTopicRequests {}", topicName, e);
+      if (e.getMessage().contains("ClientHttpRequestFactory must not be null")
+          || e.getMessage().contains("Connection refused")) {
+        return new ResponseEntity<>(
+            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      } else if (e.getMessage().contains("Cannot connect to cluster.")) {
+        return new ResponseEntity<>(
+            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_119).build(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
       throw new KlawException(CLUSTER_API_ERR_106);
     }
     return response;
@@ -637,6 +636,12 @@ public class ClusterApiService {
       return response;
     } catch (Exception e) {
       log.error("Error from approveAclRequests", e);
+      if (e.getMessage().contains("ClientHttpRequestFactory must not be null")
+          || e.getMessage().contains("Connection refused")) {
+        return new ResponseEntity<>(
+            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
       throw new KlawException(CLUSTER_API_ERR_108);
     }
   }
@@ -725,6 +730,12 @@ public class ClusterApiService {
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("Error from postSchema ", e);
+      if (e.getMessage().contains("ClientHttpRequestFactory must not be null")
+          || e.getMessage().contains("Connection refused")) {
+        return new ResponseEntity<>(
+            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
       throw new KlawException(CLUSTER_API_ERR_111);
     }
     return response;
