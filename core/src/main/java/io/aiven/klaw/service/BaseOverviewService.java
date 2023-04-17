@@ -37,6 +37,9 @@ import org.springframework.stereotype.Service;
 @Service
 public abstract class BaseOverviewService {
 
+  private static final Comparator<String> nullSafeStringComparator =
+      Comparator.nullsLast(String::compareToIgnoreCase);
+
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
@@ -92,9 +95,9 @@ public abstract class BaseOverviewService {
     if (groupBy.equals(AclGroupBy.TEAM)) {
       aclInfo = mergeReduceAclInfo(aclInfo);
       aclInfo.sort(
-          Comparator.comparing(AclInfo::getTeamname)
-              .thenComparing(AclInfo::getEnvironmentName)
-              .thenComparing(AclInfo::getConsumergroup));
+          Comparator.comparing(AclInfo::getTeamname, nullSafeStringComparator)
+              .thenComparing(AclInfo::getEnvironmentName, nullSafeStringComparator)
+              .thenComparing(AclInfo::getConsumergroup, nullSafeStringComparator));
     }
 
     return aclInfo;
@@ -113,10 +116,10 @@ public abstract class BaseOverviewService {
   }
 
   private List<AclInfo> mergeReduceByTeam(List<AclInfo> aclInfo) {
-    List<AclInfo> organisedList = new ArrayList();
+    List<AclInfo> organisedList = new ArrayList<>();
     Map<String, List<AclInfo>> teams = new HashMap<>();
 
-    aclInfo.stream().forEach(acl -> reduceAclByProperty(teams, acl.getTeamname(), acl));
+    aclInfo.forEach(acl -> reduceAclByProperty(teams, acl.getTeamname(), acl));
 
     // recursively merge and reduce By Environment.
     teams.values().forEach(acls -> organisedList.addAll(mergeReduceByEnv(acls)));
@@ -124,28 +127,26 @@ public abstract class BaseOverviewService {
   }
 
   private List<AclInfo> mergeReduceByEnv(List<AclInfo> aclInfo) {
-    List<AclInfo> organisedList = new ArrayList();
+    List<AclInfo> organisedList = new ArrayList<>();
     Map<String, List<AclInfo>> processedAcls = new HashMap<>();
 
-    aclInfo.stream()
-        .forEach(acl -> reduceAclByProperty(processedAcls, acl.getEnvironmentName(), acl));
+    aclInfo.forEach(acl -> reduceAclByProperty(processedAcls, acl.getEnvironmentName(), acl));
     // recursively  merge and reduce By ConsumerGroup
     processedAcls.values().forEach(acls -> organisedList.addAll(mergeReduceByConsumerGroups(acls)));
     return organisedList;
   }
 
   private List<AclInfo> mergeReduceByConsumerGroups(List<AclInfo> aclInfo) {
-    List<AclInfo> organisedList = new ArrayList();
+    List<AclInfo> organisedList = new ArrayList<>();
     Map<String, List<AclInfo>> processedAcls = new HashMap<>();
 
-    aclInfo.stream()
-        .forEach(acl -> reduceAclByProperty(processedAcls, acl.getConsumergroup(), acl));
+    aclInfo.forEach(acl -> reduceAclByProperty(processedAcls, acl.getConsumergroup(), acl));
     // Merge Reduce All ACls with the same Team/env/Consumer group together.
     processedAcls.values().forEach(acls -> organisedList.addAll(mergeReduceAcls(acls)));
     return organisedList;
   }
 
-  private static void reduceAclByProperty(
+  private void reduceAclByProperty(
       Map<String, List<AclInfo>> processedAcls, String aclProperty, AclInfo acl) {
     if (processedAcls.containsKey(aclProperty)) {
       processedAcls.get(aclProperty).add(acl);
