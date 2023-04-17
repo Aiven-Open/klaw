@@ -141,8 +141,6 @@ public class TopicOverviewServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(utilMethods.getTeams());
-    when(handleDbRequests.getTopics(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(topicNameSearch));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(topicNameSearch));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
