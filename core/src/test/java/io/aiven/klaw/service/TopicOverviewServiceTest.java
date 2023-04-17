@@ -290,6 +290,12 @@ public class TopicOverviewServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(eq(101), anyInt()))
         .thenReturn("Octopus")
         .thenReturn("Town")
+        .thenReturn("Alias")
+        .thenReturn("Octopus")
+        .thenReturn("Town")
+        .thenReturn("Alias")
+        .thenReturn("Octopus")
+        .thenReturn("Town")
         .thenReturn("Alias");
 
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
@@ -329,6 +335,7 @@ public class TopicOverviewServiceTest {
       acl.setTeamId(10);
       acl.setTopicname(TESTTOPIC);
       acl.setAclType((i % 2 == 0) ? AclType.PRODUCER.value : AclType.CONSUMER.value);
+      acl.setConsumergroup("-na-");
       acl.setAclssl("aServiceName");
       acls.add(acl);
     }

@@ -20,8 +20,8 @@ import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +73,7 @@ public abstract class BaseOverviewService {
       aclInfo2.setEnvironmentName(getEnvDetails(aclInfo2.getEnvironment(), tenantId).getName());
     }
 
-    topicOverview.setAclInfoList(aclInfo);
+    topicOverview.setAclInfoList(sortAclInfo(aclInfo, groupBy));
     if (prefixedAclsInfo.size() > 0) {
       topicOverview.setPrefixedAclInfoList(prefixedAclsInfo);
       topicOverview.setPrefixAclsExists(true);
@@ -84,67 +84,74 @@ public abstract class BaseOverviewService {
     }
 
     topicOverview.setTopicInfoList(topicInfoList);
-    sortAclInfo(aclInfo, groupBy);
+    return topicOverview.getAclInfoList();
+  }
+
+  private List<AclInfo> sortAclInfo(List<AclInfo> aclInfo, AclGroupBy groupBy) {
+    // merge reduce
+    if (groupBy.equals(AclGroupBy.TEAM)) {
+      aclInfo = mergeReduceAclInfo(aclInfo);
+      aclInfo.sort(
+          Comparator.comparing(AclInfo::getTeamname)
+              .thenComparing(AclInfo::getEnvironmentName)
+              .thenComparing(AclInfo::getConsumergroup));
+    }
+
     return aclInfo;
   }
 
-  private void sortAclInfo(List<AclInfo> aclInfo, AclGroupBy groupBy) {
-    // merge reduce
-    if (groupBy.equals(AclGroupBy.TEAM)) {
-      mergeAclInfo(aclInfo);
-      Collections.sort(aclInfo, Comparator.comparing(AclInfo::getTeamname));
-    }
+  /**
+   * mergeReduceAclInfo reduces the Acls to a smaller subset by merging Ips and proncipals by Team
+   * -> Env -> Consumer Group
+   *
+   * @param aclInfo List of AclInfo supplied to be reduced and merged
+   * @return The processed and reduced AclInfo List
+   */
+  private List<AclInfo> mergeReduceAclInfo(List<AclInfo> aclInfo) {
+    // recursively get Env Per Team
+    return mergeReduceByTeam(aclInfo);
   }
 
-  private void mergeAclInfo(List<AclInfo> aclInfo) {
-    List<AclInfo> organisedList = new ArrayList<>();
+  private List<AclInfo> mergeReduceByTeam(List<AclInfo> aclInfo) {
+    List<AclInfo> organisedList = new ArrayList();
+    Map<String, List<AclInfo>> teams = new HashMap<>();
 
-    while (aclInfo.size() > 0) {
-      List<AclInfo> team = new ArrayList<>();
-      List<AclInfo> unprocessable = new ArrayList<>();
-      String teamname = aclInfo.get(0).getTeamname();
-      for (AclInfo info : aclInfo) {
-        processAclToCorrectList(info.getTeamname(), teamname, team, info, unprocessable);
-      }
-      // remove from previous
-      removeProcessedAclsFromList(aclInfo, team, unprocessable);
-      organisedList.addAll(mergeReduceTeamAcls(team));
-    }
-    aclInfo.addAll(organisedList);
-  }
+    aclInfo.stream().forEach(acl -> reduceAclByProperty(teams, acl.getTeamname(), acl));
 
-  private List<AclInfo> mergeReduceTeamAcls(List<AclInfo> aclInfo) {
-    List<AclInfo> organisedList = new ArrayList<>();
-    while (aclInfo.size() > 0) {
-      String environmentName = aclInfo.get(0).getEnvironmentName();
-      List<AclInfo> envList = new ArrayList<>();
-      List<AclInfo> unprocessable = new ArrayList<>();
-      for (AclInfo acls : aclInfo) {
-        processAclToCorrectList(
-            acls.getEnvironmentName(), environmentName, envList, acls, unprocessable);
-      }
-      organisedList.addAll(mergeReduceAcls(envList));
-      removeProcessedAclsFromList(aclInfo, envList, unprocessable);
-    }
+    // recursively merge and reduce By Environment.
+    teams.values().forEach(acls -> organisedList.addAll(mergeReduceByEnv(acls)));
     return organisedList;
   }
 
-  private static void removeProcessedAclsFromList(
-      List<AclInfo> aclInfo, List<AclInfo> envList, List<AclInfo> unprocessable) {
-    aclInfo.removeAll(envList);
-    aclInfo.removeAll(unprocessable);
+  private List<AclInfo> mergeReduceByEnv(List<AclInfo> aclInfo) {
+    List<AclInfo> organisedList = new ArrayList();
+    Map<String, List<AclInfo>> processedAcls = new HashMap<>();
+
+    aclInfo.stream()
+        .forEach(acl -> reduceAclByProperty(processedAcls, acl.getEnvironmentName(), acl));
+    // recursively  merge and reduce By ConsumerGroup
+    processedAcls.values().forEach(acls -> organisedList.addAll(mergeReduceByConsumerGroups(acls)));
+    return organisedList;
   }
 
-  private static void processAclToCorrectList(
-      String acls,
-      String environmentName,
-      List<AclInfo> envList,
-      AclInfo acls1,
-      List<AclInfo> unprocessable) {
-    if (acls.equals(environmentName)) {
-      envList.add(acls1);
-    } else if (acls == null) {
-      unprocessable.add(acls1);
+  private List<AclInfo> mergeReduceByConsumerGroups(List<AclInfo> aclInfo) {
+    List<AclInfo> organisedList = new ArrayList();
+    Map<String, List<AclInfo>> processedAcls = new HashMap<>();
+
+    aclInfo.stream()
+        .forEach(acl -> reduceAclByProperty(processedAcls, acl.getConsumergroup(), acl));
+    // Merge Reduce All ACls with the same Team/env/Consumer group together.
+    processedAcls.values().forEach(acls -> organisedList.addAll(mergeReduceAcls(acls)));
+    return organisedList;
+  }
+
+  private static void reduceAclByProperty(
+      Map<String, List<AclInfo>> processedAcls, String aclProperty, AclInfo acl) {
+    if (processedAcls.containsKey(aclProperty)) {
+      processedAcls.get(aclProperty).add(acl);
+    } else {
+      processedAcls.put(aclProperty, new ArrayList<>());
+      processedAcls.get(aclProperty).add(acl);
     }
   }
 
