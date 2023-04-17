@@ -104,10 +104,8 @@ public class TopicOverviewServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
+    when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(utilMethods.getTeams());
-    when(handleDbRequests.getTopics(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(TESTTOPIC));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(TESTTOPIC));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
@@ -141,7 +139,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
+    when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(utilMethods.getTeams());
     when(handleDbRequests.getTopics(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
@@ -175,8 +173,8 @@ public class TopicOverviewServiceTest {
     stubUserInfo();
     stubKafkaPromotion(TESTTOPIC, 1);
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
-    when(handleDbRequests.getTopics(TESTTOPIC, 101))
-        .thenReturn(Arrays.asList(createTopic(TESTTOPIC)));
+    when(commonUtilsService.getTopicsForTopicName(TESTTOPIC, 101))
+        .thenReturn(List.of(createTopic(TESTTOPIC)));
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
@@ -192,7 +190,7 @@ public class TopicOverviewServiceTest {
     stubUserInfo();
     stubKafkaPromotion(TESTTOPIC, 15);
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
-    when(handleDbRequests.getTopics(TESTTOPIC, 101))
+    when(commonUtilsService.getTopicsForTopicName(TESTTOPIC, 101))
         .thenReturn(Arrays.asList(createTopic(TESTTOPIC)));
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS")))
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
@@ -234,10 +232,8 @@ public class TopicOverviewServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
+    when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(utilMethods.getTeams());
-    when(handleDbRequests.getTopics(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(TESTTOPIC));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(TESTTOPIC));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
@@ -316,7 +312,7 @@ public class TopicOverviewServiceTest {
     when(manageDatabase.getAllEnvList(101))
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs));
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(handleDbRequests.selectAllSchemaRegEnvs(101))
+    when(handleDbRequests.getAllSchemaRegEnvs(101))
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs));
     when(manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY, 101))
         .thenReturn(createClusterMap(numberOfEnvs));

@@ -217,7 +217,7 @@ public class SchemaOverviewServiceTest {
     List<Env> listOfEnvs = createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs);
     when(manageDatabase.getAllEnvList(101)).thenReturn(listOfEnvs);
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(handleDbRequests.selectAllSchemaRegEnvs(101)).thenReturn(listOfEnvs);
+    when(handleDbRequests.getAllSchemaRegEnvs(101)).thenReturn(listOfEnvs);
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(createClusterMap(numberOfEnvs));
     when(clusterApiService.getAvroSchema(any(), any(), any(), eq(testtopic), eq(101)))
@@ -254,10 +254,10 @@ public class SchemaOverviewServiceTest {
     schemaEnv2.setClusterId(1);
     schemaEnv2.setAssociatedEnv(new EnvTag("2", "TST"));
 
-    when(handleDbRequests.selectEnvDetails("1", 101)).thenReturn(kafkaEnv1);
-    when(handleDbRequests.selectEnvDetails("2", 101)).thenReturn(kafkaEnv2);
-    when(handleDbRequests.selectEnvDetails("3", 101)).thenReturn(schemaEnv1);
-    when(handleDbRequests.selectEnvDetails("4", 101)).thenReturn(schemaEnv2);
+    when(handleDbRequests.getEnvDetails("1", 101)).thenReturn(kafkaEnv1);
+    when(handleDbRequests.getEnvDetails("2", 101)).thenReturn(kafkaEnv2);
+    when(handleDbRequests.getEnvDetails("3", 101)).thenReturn(schemaEnv1);
+    when(handleDbRequests.getEnvDetails("4", 101)).thenReturn(schemaEnv2);
   }
 
   private void stubKafkaPromotion(String testtopic, int numberOfEnvs) throws Exception {

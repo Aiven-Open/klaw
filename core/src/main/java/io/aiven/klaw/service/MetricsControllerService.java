@@ -94,8 +94,7 @@ public class MetricsControllerService {
       metricsCountList =
           manageDatabase
               .getHandleDbRequests()
-              .selectAllMetrics(
-                  "kafka.server:type=BrokerTopicMetrics", "name=MessagesInPerSec", "1");
+              .getAllMetrics("kafka.server:type=BrokerTopicMetrics", "name=MessagesInPerSec", "1");
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
       metricsCountList = new ArrayList<>();

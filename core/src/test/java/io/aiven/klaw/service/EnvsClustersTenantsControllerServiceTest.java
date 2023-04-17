@@ -76,7 +76,7 @@ class EnvsClustersTenantsControllerServiceTest {
     EnvModel env = getTestEnvModel(null);
     Env SchemaEnv = generateKafkaEnv("9", "Schema");
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
-    when(handleDbRequestsJdbc.selectEnvDetails(anyString(), anyInt())).thenReturn(SchemaEnv);
+    when(handleDbRequestsJdbc.getEnvDetails(anyString(), anyInt())).thenReturn(SchemaEnv);
     ApiResponse response = service.addNewEnv(env);
     assertThat(response.getMessage()).contains("success");
   }
@@ -87,7 +87,7 @@ class EnvsClustersTenantsControllerServiceTest {
       authorities = {"ADMIN", "USER"})
   void addNewEnvNameAlreadyInUse() throws KlawException, KlawValidationException {
     EnvModel env = getTestEnvModel(null);
-    when(handleDbRequestsJdbc.selectAllEnvs(anyInt()))
+    when(handleDbRequestsJdbc.getAllEnvs(anyInt()))
         .thenReturn(
             List.of(
                 buildEnv("4", 101, "DEV", KafkaClustersType.KAFKA, 4),
@@ -107,7 +107,7 @@ class EnvsClustersTenantsControllerServiceTest {
     EnvModel env = getTestSchemaEnvModel(new EnvTag("1", "Kafka"));
     Env kafkaEnv = generateKafkaEnv("1", "Kafka");
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
-    when(handleDbRequestsJdbc.selectEnvDetails(eq("1"), eq(101)))
+    when(handleDbRequestsJdbc.getEnvDetails(eq("1"), eq(101)))
         .thenReturn(kafkaEnv)
         .thenReturn(null);
     ApiResponse response = service.addNewEnv(env);
@@ -133,10 +133,10 @@ class EnvsClustersTenantsControllerServiceTest {
 
     Env kafkaEnv = generateKafkaEnv("1", "Kafka");
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
-    when(handleDbRequestsJdbc.selectEnvDetails(eq("1"), eq(101)))
+    when(handleDbRequestsJdbc.getEnvDetails(eq("1"), eq(101)))
         .thenReturn(kafkaEnv)
         .thenReturn(SchemaEnv);
-    when(handleDbRequestsJdbc.selectEnvDetails(eq("2"), eq(101)))
+    when(handleDbRequestsJdbc.getEnvDetails(eq("2"), eq(101)))
         .thenReturn(generateKafkaEnv("2", "Kafka"));
     ApiResponse response = service.addNewEnv(env);
     kafkaEnv.setAssociatedEnv(env.getAssociatedEnv());
@@ -160,7 +160,7 @@ class EnvsClustersTenantsControllerServiceTest {
     SchemaEnv.setAssociatedEnv(new EnvTag("2", "Kafka"));
     Env kafkaEnv = generateKafkaEnv("1", "Kafka");
     kafkaEnv.setAssociatedEnv(new EnvTag("2", "TST_SCH"));
-    when(handleDbRequestsJdbc.selectEnvDetails(eq("1"), eq(101))).thenReturn(kafkaEnv);
+    when(handleDbRequestsJdbc.getEnvDetails(eq("1"), eq(101))).thenReturn(kafkaEnv);
 
     assertThatExceptionOfType(KlawValidationException.class)
         .isThrownBy(
@@ -178,7 +178,7 @@ class EnvsClustersTenantsControllerServiceTest {
     Env env1 = generateKafkaEnv("1", "Kafka");
     env1.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
 
-    when(handleDbRequestsJdbc.selectEnvDetails(eq("1"), eq(101))).thenReturn(env1).thenReturn(null);
+    when(handleDbRequestsJdbc.getEnvDetails(eq("1"), eq(101))).thenReturn(env1).thenReturn(null);
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse response = service.addNewEnv(env);
 
@@ -195,8 +195,8 @@ class EnvsClustersTenantsControllerServiceTest {
     Env env1 = generateKafkaEnv("1", "Kafka");
     env1.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
     env1.setAssociatedEnv(new EnvTag("2", "TST_SCH"));
-    when(handleDbRequestsJdbc.selectEnvDetails(eq("1"), eq(101))).thenReturn(env1);
-    when(handleDbRequestsJdbc.selectEnvDetails(eq("2"), eq(101)))
+    when(handleDbRequestsJdbc.getEnvDetails(eq("1"), eq(101))).thenReturn(env1);
+    when(handleDbRequestsJdbc.getEnvDetails(eq("2"), eq(101)))
         .thenReturn(generateKafkaEnv("2", "Kafka"));
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse response = service.addNewEnv(env);

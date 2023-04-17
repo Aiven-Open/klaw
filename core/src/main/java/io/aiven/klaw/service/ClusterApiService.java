@@ -455,7 +455,7 @@ public class ClusterApiService {
     ResponseEntity<ApiResponse> response;
     ClusterTopicRequest clusterTopicRequest;
     try {
-      Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(topicEnvId, tenantId);
+      Env envSelected = manageDatabase.getHandleDbRequests().getEnvDetails(topicEnvId, tenantId);
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
@@ -496,7 +496,7 @@ public class ClusterApiService {
           Env schemaEnvSelected =
               manageDatabase
                   .getHandleDbRequests()
-                  .selectEnvDetails(envSelected.getAssociatedEnv().getId(), tenantId);
+                  .getEnvDetails(envSelected.getAssociatedEnv().getId(), tenantId);
           KwClusters kwClustersSchemaEnv =
               manageDatabase
                   .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
@@ -544,7 +544,7 @@ public class ClusterApiService {
       String uri;
 
       ClusterAclRequest clusterAclRequest;
-      Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
+      Env envSelected = manageDatabase.getHandleDbRequests().getEnvDetails(env, tenantId);
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
@@ -707,7 +707,7 @@ public class ClusterApiService {
       boolean forceReg = Objects.requireNonNullElse(schemaRequest.getForceRegister(), false);
       String uri = clusterConnUrl + URI_POST_SCHEMA;
 
-      Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
+      Env envSelected = manageDatabase.getHandleDbRequests().getEnvDetails(env, tenantId);
       log.debug("forceRegister set to : {}", forceReg);
       KwClusters kwClusters =
           manageDatabase
@@ -749,7 +749,7 @@ public class ClusterApiService {
 
       String uri = clusterConnUrl + URI_VALIDATE_SCHEMA;
 
-      Env envSelected = manageDatabase.getHandleDbRequests().selectEnvDetails(env, tenantId);
+      Env envSelected = manageDatabase.getHandleDbRequests().getEnvDetails(env, tenantId);
 
       KwClusters kwClusters =
           manageDatabase

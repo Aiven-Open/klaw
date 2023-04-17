@@ -6,6 +6,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_104;
 import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_105;
 import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_106;
+import static io.aiven.klaw.helpers.KwConstants.CLUSTER_CONN_URL_KEY;
 import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -560,14 +561,20 @@ public class ServerConfigService {
     return hashMap;
   }
 
-  public Map<String, String> testClusterApiConnection(String clusterApiUrl) {
+  public Map<String, String> testClusterApiConnection(String clusterApiUrl) throws KlawException {
     Map<String, String> hashMap = new HashMap<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String clusterApiStatus = clusterApiService.getClusterApiStatus(clusterApiUrl, true, tenantId);
     if ("ONLINE".equals(clusterApiStatus)) {
-      clusterApiStatus = "successful.";
+      clusterApiStatus = ApiResultStatus.SUCCESS.value;
+      {
+        KwPropertiesModel kwPropertiesModel = new KwPropertiesModel();
+        kwPropertiesModel.setKwKey(CLUSTER_CONN_URL_KEY);
+        kwPropertiesModel.setKwValue(clusterApiUrl);
+        updateKwCustomProperty(kwPropertiesModel);
+      }
     } else {
-      clusterApiStatus = "failure.";
+      clusterApiStatus = ApiResultStatus.FAILURE.value;
     }
     hashMap.put("result", clusterApiStatus);
     return hashMap;

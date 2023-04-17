@@ -61,7 +61,7 @@ public class ServerConfigController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, String>> testClusterApiConnection(
-      @RequestParam("clusterApiUrl") String clusterApiUrl) {
+      @RequestParam("clusterApiUrl") String clusterApiUrl) throws KlawException {
     return new ResponseEntity<>(
         serverConfigService.testClusterApiConnection(clusterApiUrl), HttpStatus.OK);
   }

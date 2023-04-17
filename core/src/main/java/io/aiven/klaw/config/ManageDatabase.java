@@ -182,10 +182,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
     // add teams
     String infraTeam = "INFRATEAM", stagingTeam = "STAGINGTEAM";
-    Team team1 =
-        handleDbRequests.selectTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID);
+    Team team1 = handleDbRequests.getTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID);
     Team team2 =
-        handleDbRequests.selectTeamDetailsFromName(stagingTeam, KwConstants.DEFAULT_TENANT_ID);
+        handleDbRequests.getTeamDetailsFromName(stagingTeam, KwConstants.DEFAULT_TENANT_ID);
 
     if (team1 == null && team2 == null) {
       handleDbRequests.addNewTeam(
@@ -220,7 +219,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
                 superAdminDefaultPwd,
                 KwConstants.SUPERADMIN_ROLE,
                 handleDbRequests
-                    .selectTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
+                    .getTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
                     .getTeamId(),
                 kwAdminMailId,
                 superAdminDefaultUserName,
@@ -230,7 +229,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
     // add props
     List<KwProperties> kwProps =
-        handleDbRequests.selectAllKwPropertiesPerTenant(KwConstants.DEFAULT_TENANT_ID);
+        handleDbRequests.getAllKwPropertiesPerTenant(KwConstants.DEFAULT_TENANT_ID);
     List<KwRolesPermissions> kwRolesPerms =
         handleDbRequests.getRolesPermissionsPerTenant(KwConstants.DEFAULT_TENANT_ID);
     if (kwProps == null || kwProps.isEmpty()) {
@@ -247,7 +246,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
     // product details
     String productName = "Klaw";
-    Optional<ProductDetails> productDetails = handleDbRequests.selectProductDetails(productName);
+    Optional<ProductDetails> productDetails = handleDbRequests.getProductDetails(productName);
     if (productDetails.isPresent()) {
       if (!Objects.equals(productDetails.get().getVersion(), kwVersion)) {
         handleDbRequests.insertProductDetails(
@@ -261,7 +260,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   // verify if there is atleast one user with superadmin access in default tenant
   private boolean validateUsersBeforeAdding() {
-    List<UserInfo> allUsers = handleDbRequests.selectAllUsersInfo(KwConstants.DEFAULT_TENANT_ID);
+    List<UserInfo> allUsers = handleDbRequests.getAllUsersInfo(KwConstants.DEFAULT_TENANT_ID);
     return allUsers.stream()
         .anyMatch(userInfo -> userInfo.getRole().equals(KwConstants.SUPERADMIN_ROLE));
   }
@@ -275,7 +274,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   public List<UserInfo> selectAllUsersInfo() {
-    return handleDbRequests.selectAllUsersAllTenants();
+    return handleDbRequests.getAllUsersAllTenants();
   }
 
   public List<Env> getKafkaEnvListAllTenants(int tenantId) {
@@ -436,15 +435,15 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   public void loadEnvsForOneTenant(Integer tenantId) {
     List<Env> kafkaEnvList =
-        handleDbRequests.selectAllKafkaEnvs(tenantId).stream()
+        handleDbRequests.getAllKafkaEnvs(tenantId).stream()
             .filter(env -> "true".equals(env.getEnvExists()))
             .toList();
     List<Env> schemaEnvList =
-        handleDbRequests.selectAllSchemaRegEnvs(tenantId).stream()
+        handleDbRequests.getAllSchemaRegEnvs(tenantId).stream()
             .filter(env -> "true".equals(env.getEnvExists()))
             .toList();
     List<Env> kafkaConnectEnvList =
-        handleDbRequests.selectAllKafkaConnectEnvs(tenantId).stream()
+        handleDbRequests.getAllKafkaConnectEnvs(tenantId).stream()
             .filter(env -> "true".equals(env.getEnvExists()))
             .toList();
 
@@ -467,7 +466,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     List<Team> allTeams;
 
     for (Integer tenantId : tenantMap.keySet()) {
-      allTeams = handleDbRequests.selectAllTeams(tenantId);
+      allTeams = handleDbRequests.getAllTeams(tenantId);
       teamsPerTenant.put(tenantId, allTeams);
       loadTenantTeamsForOneTenant(allTeams, tenantId);
     }
@@ -479,7 +478,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     List<UserInfo> allUsers;
     allUsersAllTenants = new ArrayList<>();
     for (Integer tenantId : tenantMap.keySet()) {
-      allUsers = handleDbRequests.selectAllUsersInfo(tenantId);
+      allUsers = handleDbRequests.getAllUsersInfo(tenantId);
       usersPerTenant.put(tenantId, allUsers);
       allUsersAllTenants.addAll(allUsers);
     }
@@ -501,7 +500,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   public void loadTenantTeamsForOneTenant(List<Team> allTeams, Integer tenantId) {
     if (allTeams == null) {
-      allTeams = handleDbRequests.selectAllTeams(tenantId);
+      allTeams = handleDbRequests.getAllTeams(tenantId);
       teamsPerTenant.put(tenantId, allTeams);
     }
 
@@ -535,7 +534,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   private void loadKwPropertiesforAllTenants() {
     Map<Integer, Map<String, Map<String, String>>> kwPropertiesMap =
-        handleDbRequests.selectAllKwProperties();
+        handleDbRequests.getAllKwProperties();
     if (kwPropertiesMap.size() == 0) {
       log.info("Klaw Properties not loaded into database. Shutting down !!");
       shutdownApp();
@@ -549,7 +548,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   public void loadKwPropsPerOneTenant(
       Map<Integer, Map<String, Map<String, String>>> kwPropertiesMap, Integer tenantId) {
     if (kwPropertiesMap == null) {
-      kwPropertiesMap = handleDbRequests.selectAllKwProperties();
+      kwPropertiesMap = handleDbRequests.getAllKwProperties();
     }
 
     kwPropertiesMapPerTenant.put(tenantId, kwPropertiesMap.get(tenantId));
@@ -690,15 +689,15 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   public void loadEnvMapForOneTenant(Integer tenantId) {
     List<Env> kafkaEnvList =
-        handleDbRequests.selectAllKafkaEnvs(tenantId).stream()
+        handleDbRequests.getAllKafkaEnvs(tenantId).stream()
             .filter(env -> "true".equals(env.getEnvExists()))
             .collect(Collectors.toList());
     List<Env> schemaEnvList =
-        handleDbRequests.selectAllSchemaRegEnvs(tenantId).stream()
+        handleDbRequests.getAllSchemaRegEnvs(tenantId).stream()
             .filter(env -> "true".equals(env.getEnvExists()))
             .collect(Collectors.toList());
     List<Env> kafkaConnectEnvList =
-        handleDbRequests.selectAllKafkaConnectEnvs(tenantId).stream()
+        handleDbRequests.getAllKafkaConnectEnvs(tenantId).stream()
             .filter(env -> "true".equals(env.getEnvExists()))
             .collect(Collectors.toList());
     List<Env> allEnvList = new ArrayList<>();

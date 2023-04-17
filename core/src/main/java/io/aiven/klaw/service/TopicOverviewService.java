@@ -45,7 +45,7 @@ public class TopicOverviewService extends BaseOverviewService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
-    List<Topic> topics = handleDb.getTopics(topicNameSearch, tenantId);
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicNameSearch, tenantId);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);

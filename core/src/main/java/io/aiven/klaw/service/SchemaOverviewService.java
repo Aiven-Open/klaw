@@ -62,13 +62,13 @@ public class SchemaOverviewService extends BaseOverviewService {
       List<Env> schemaEnvs = new ArrayList<>();
       // Get first base kafka env
       Env kafkaEnv =
-          manageDatabase.getHandleDbRequests().selectEnvDetails(kafkaEnvIds.get(0), tenantId);
+          manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvIds.get(0), tenantId);
       EnvTag associatedSchemaEnv = kafkaEnv.getAssociatedEnv();
       if (associatedSchemaEnv != null) {
         Env schemaEnv =
             manageDatabase
                 .getHandleDbRequests()
-                .selectEnvDetails(associatedSchemaEnv.getId(), tenantId);
+                .getEnvDetails(associatedSchemaEnv.getId(), tenantId);
         schemaEnvs.add(schemaEnv);
       }
 
@@ -212,7 +212,7 @@ public class SchemaOverviewService extends BaseOverviewService {
     String kafkaEnvId =
         manageDatabase
             .getHandleDbRequests()
-            .selectEnvDetails(promotionDetails.get("targetEnvId"), tenantId)
+            .getEnvDetails(promotionDetails.get("targetEnvId"), tenantId)
             .getAssociatedEnv()
             .getId();
     return kafkaEnvIds.contains(kafkaEnvId);

@@ -379,7 +379,7 @@ public class AclControllerService {
 
       if (RequestOperationType.DELETE == requestOperationType) teamId = team;
       List<UserInfo> userList =
-          manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId);
+          manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(teamId, tenantId);
 
       StringBuilder approvingInfo =
           new StringBuilder(
@@ -579,7 +579,7 @@ public class AclControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     Acl acl =
-        dbHandle.selectSyncAclsFromReqNo(
+        dbHandle.getSyncAclsFromReqNo(
             Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
 
     // Verify if user raising request belongs to the same team as the Subscription owner team
@@ -619,7 +619,7 @@ public class AclControllerService {
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    AclRequests aclReq = dbHandle.selectAcl(Integer.parseInt(req_no), tenantId);
+    AclRequests aclReq = dbHandle.getAcl(Integer.parseInt(req_no), tenantId);
 
     ApiResponse aclValidationResponse = validateAclRequest(aclReq, userDetails);
     if (!aclValidationResponse.isSuccess()) {
@@ -701,7 +701,7 @@ public class AclControllerService {
         }
         updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
       } else {
-        updateAclReqStatus = Objects.requireNonNull(responseBody).getMessage();
+        updateAclReqStatus = ApiResultStatus.FAILURE.value;
       }
     } catch (Exception e) {
       log.error("Exception ", e);
@@ -771,7 +771,7 @@ public class AclControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq =
-        dbHandle.selectAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
+        dbHandle.getAcl(Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
 
     if (aclReq.getReq_no() == null) {
       return ApiResponse.builder().success(false).message(ACL_ERR_105).build();
@@ -874,7 +874,7 @@ public class AclControllerService {
     try {
       HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
       Acl acl =
-          dbHandle.selectSyncAclsFromReqNo(
+          dbHandle.getSyncAclsFromReqNo(
               Integer.parseInt(aclReqNo), commonUtilsService.getTenantId(loggedInUser));
 
       // Verify if loggedInUser belongs to the same team as the Subscription owner team

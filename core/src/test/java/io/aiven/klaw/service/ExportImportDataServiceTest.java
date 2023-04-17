@@ -42,8 +42,7 @@ public class ExportImportDataServiceTest {
 
   @Test
   public void getAdminConfig() {
-    when(handleDbRequests.selectAllUsersAllTenants())
-        .thenReturn(utilMethods.getUserInfoList("", ""));
+    when(handleDbRequests.getAllUsersAllTenants()).thenReturn(utilMethods.getUserInfoList("", ""));
     when(handleDbRequests.getClusters())
         .thenReturn(Collections.singletonList(utilMethods.getKwClusters()));
     KwAdminConfig kwAdminConfig = exportImportDataService.getAdminConfig(handleDbRequests, "");

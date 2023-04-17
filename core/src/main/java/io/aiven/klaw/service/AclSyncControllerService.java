@@ -162,7 +162,7 @@ public class AclSyncControllerService {
           Acl acl =
               manageDatabase
                   .getHandleDbRequests()
-                  .selectSyncAclsFromReqNo(Integer.parseInt(aclId), tenantId);
+                  .getSyncAclsFromReqNo(Integer.parseInt(aclId), tenantId);
           if (acl != null) {
             approveSyncBackAcls(syncBackAcls, resultMap, logArray, acl, tenantId);
           }
@@ -516,7 +516,7 @@ public class AclSyncControllerService {
             getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
       // tenant filtering
       int tenantId = commonUtilsService.getTenantId(getUserName());
-      List<Team> teams = manageDatabase.getHandleDbRequests().selectAllTeams(tenantId);
+      List<Team> teams = manageDatabase.getHandleDbRequests().getAllTeams(tenantId);
       teams =
           teams.stream()
               .filter(t -> Objects.equals(t.getTenantId(), tenantId))

@@ -138,16 +138,18 @@ app.controller("serverConfigCtrl", function($scope, $http, $location, $window) {
 
 
          $scope.testClusterApiConnection = function(kwkey, kwvalue){
+             var testClusterApiUrl = document.getElementById("klaw.clusterapi.url").value;
+
             $http({
                     method: "GET",
                     url: "testClusterApiConnection",
                     headers : { 'Content-Type' : 'application/json' },
-                    params: {'clusterApiUrl' : kwvalue}
+                    params: {'clusterApiUrl' : testClusterApiUrl}
                 }).success(function(output) {
-                    $scope.alert = "Cluster Api Connection Url " + kwvalue  + ", status: " + output.result;
+                    $scope.alert = "Cluster Api Connection Url " + testClusterApiUrl  + ", status: " + output.result;
                     swal({
                             title: "",
-                            text: "Cluster Api Connection " + kwvalue + ". Status: " + output.result,
+                            text: "Cluster Api Connection " + testClusterApiUrl + ". Status: " + output.result,
                             timer: 2000,
                             showConfirmButton: false
                         });
@@ -181,7 +183,6 @@ app.controller("serverConfigCtrl", function($scope, $http, $location, $window) {
                      method: "POST",
                      url: "updateKwCustomProperty",
                      headers : { 'Content-Type' : 'application/json' },
-                     params: {'kwPropertiesModel' : serviceInput },
                      data: serviceInput
                  }).success(function(output) {
                      $scope.alert = "Property ("+ output.data +") update status : " + output.message;

@@ -213,7 +213,7 @@ public class ClusterApiServiceTest {
     topicRequest.setEnvironment("DEV");
     topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
 
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
@@ -239,7 +239,7 @@ public class ClusterApiServiceTest {
     topicRequest.setEnvironment("DEV");
     topicRequest.setRequestOperationType(RequestOperationType.CREATE.value);
 
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
@@ -269,7 +269,7 @@ public class ClusterApiServiceTest {
     ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
@@ -301,7 +301,7 @@ public class ClusterApiServiceTest {
     ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
@@ -344,7 +344,7 @@ public class ClusterApiServiceTest {
     ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
@@ -372,7 +372,7 @@ public class ClusterApiServiceTest {
     ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(anyInt())).thenReturn(kwClusters);
@@ -404,7 +404,7 @@ public class ClusterApiServiceTest {
     ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(anyInt())).thenReturn(kwClusters);
@@ -433,7 +433,7 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
-    when(handleDbRequests.selectEnvDetails("DEV", 1)).thenReturn(this.env);
+    when(handleDbRequests.getEnvDetails("DEV", 1)).thenReturn(this.env);
     when(restTemplate.postForEntity(Mockito.anyString(), Mockito.any(), eq(String.class)))
         .thenThrow(new RuntimeException("error"));
 

@@ -96,14 +96,13 @@ public interface HandleDbRequests {
       RequestOperationType requestOperationType,
       String search);
 
-  TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId);
+  TopicRequest getTopicRequestsForTopic(int topicId, int tenantId);
 
-  KafkaConnectorRequest selectConnectorRequestsForConnector(int connectorId, int tenantId);
+  KafkaConnectorRequest getConnectorRequestsForConnector(int connectorId, int tenantId);
 
-  List<TopicRequest> selectTopicRequests(
-      String topicName, String envId, String status, int tenantId);
+  List<TopicRequest> getTopicRequests(String topicName, String envId, String status, int tenantId);
 
-  List<KafkaConnectorRequest> selectConnectorRequests(
+  List<KafkaConnectorRequest> getConnectorRequests(
       String connectorName, String envId, String status, int tenantId);
 
   List<Topic> getSyncTopics(String env, Integer teamId, int tenantId);
@@ -113,8 +112,6 @@ public interface HandleDbRequests {
   List<Topic> getTopics(String topicName, int tenantId);
 
   List<KwKafkaConnector> getConnectors(String connectorName, int tenantId);
-
-  List<Topic> getTopicDetailsPerEnv(String topicName, String envId, int tenantId);
 
   List<Topic> getTopicsFromEnv(String envId, int tenantId);
 
@@ -130,7 +127,7 @@ public interface HandleDbRequests {
 
   List<Acl> getUniqueConsumerGroups(int tenantId);
 
-  Acl selectSyncAclsFromReqNo(int reqNo, int tenantId);
+  Acl getSyncAclsFromReqNo(int reqNo, int tenantId);
 
   List<AclRequests> getAllAclRequests(
       boolean allReqs,
@@ -168,37 +165,35 @@ public interface HandleDbRequests {
       String search,
       boolean isMyRequest);
 
-  SchemaRequest selectSchemaRequest(int avroSchemaId, int tenantId);
+  SchemaRequest getSchemaRequest(int avroSchemaId, int tenantId);
 
-  List<Team> selectAllTeamsOfUsers(String username, int tenantId);
+  List<Team> getAllTeamsOfUsers(String username, int tenantId);
 
-  List<Team> selectAllTeams(int tenantId);
+  List<Team> getAllTeams(int tenantId);
 
-  Team selectTeamDetails(Integer teamId, int tenantId);
+  Team getTeamDetails(Integer teamId, int tenantId);
 
-  Team selectTeamDetailsFromName(String teamName, int defaultTenantId);
+  Team getTeamDetailsFromName(String teamName, int defaultTenantId);
 
   Map<String, String> getDashboardInfo(Integer teamId, int tenantId);
 
-  List<UserInfo> selectAllUsersInfo(int tenantId);
+  List<UserInfo> getAllUsersInfo(int tenantId);
 
-  List<UserInfo> selectAllUsersAllTenants();
+  List<UserInfo> getAllUsersAllTenants();
 
-  List<UserInfo> selectAllUsersInfoForTeam(Integer teamId, int tenantId);
+  List<UserInfo> getAllUsersInfoForTeam(Integer teamId, int tenantId);
 
-  List<RegisterUserInfo> selectAllRegisterUsersInfoForTenant(int tenantId);
+  List<RegisterUserInfo> getAllRegisterUsersInfoForTenant(int tenantId);
 
-  List<RegisterUserInfo> selectAllRegisterUsersInfo();
+  List<RegisterUserInfo> getAllRegisterUsersInformation();
 
-  List<RegisterUserInfo> selectAllStagingRegisterUsersInfo(String userId);
+  List<RegisterUserInfo> getAllStagingRegisterUsersInfo(String userId);
 
   UserInfo getUsersInfo(String username);
 
   RegisterUserInfo getRegisterUsersInfo(String username);
 
-  AclRequests selectAcl(int req_no, int tenantId);
-
-  List<Topic> getTopicTeam(String topicName, int tenantId);
+  AclRequests getAcl(int req_no, int tenantId);
 
   List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId);
 
@@ -208,21 +203,21 @@ public interface HandleDbRequests {
 
   List<Acl> getAllConsumerGroups(int tenantId);
 
-  List<Env> selectAllEnvs(int tenantId);
+  List<Env> getAllEnvs(int tenantId);
 
-  List<Env> selectAllKafkaEnvs(int tenantId);
+  List<Env> getAllKafkaEnvs(int tenantId);
 
-  List<Env> selectAllSchemaRegEnvs(int tenantId);
+  List<Env> getAllSchemaRegEnvs(int tenantId);
 
-  List<Env> selectAllKafkaConnectEnvs(int tenantId);
+  List<Env> getAllKafkaConnectEnvs(int tenantId);
 
-  Env selectEnvDetails(String env, int tenantId);
+  Env getEnvDetails(String env, int tenantId);
 
-  List<ActivityLog> selectActivityLog(String user, String env, boolean allReqs, int tenantId);
+  List<ActivityLog> getActivityLog(String user, String env, boolean allReqs, int tenantId);
 
-  Map<Integer, Map<String, Map<String, String>>> selectAllKwProperties();
+  Map<Integer, Map<String, Map<String, String>>> getAllKwProperties();
 
-  List<KwProperties> selectAllKwPropertiesPerTenant(int tenantId);
+  List<KwProperties> getAllKwPropertiesPerTenant(int tenantId);
 
   String insertDefaultKwProperties(List<KwProperties> kwPropertiesList);
 
@@ -250,27 +245,26 @@ public interface HandleDbRequests {
 
   DashboardStats getDashboardStats(Integer teamId, int tenantId);
 
-  List<Topic> selectAllTopicsByTopictypeAndTeamname(String topicType, Integer teamId, int tenantId);
+  List<Topic> getAllTopicsByTopictypeAndTeamname(String topicType, Integer teamId, int tenantId);
 
-  List<Map<String, String>> selectActivityLogForLastDays(
+  List<Map<String, String>> getActivityLogForLastDays(
       int numberOfDays, String[] envIdList, int tenantId);
 
-  List<Map<String, String>> selectActivityLogByTeam(Integer teamId, int numberOfDays, int tenantId);
+  List<Map<String, String>> getActivityLogByTeam(Integer teamId, int numberOfDays, int tenantId);
 
-  List<Map<String, String>> selectTopicsCountByTeams(Integer teamId, int tenantId);
+  List<Map<String, String>> getTopicsCountByTeams(Integer teamId, int tenantId);
 
-  List<Map<String, String>> selectTopicsCountByEnv(Integer tenantId);
+  List<Map<String, String>> getTopicsCountByEnv(Integer tenantId);
 
-  List<Map<String, String>> selectPartitionsCountByEnv(Integer teamId, Integer tenantId);
+  List<Map<String, String>> getPartitionsCountByEnv(Integer teamId, Integer tenantId);
 
-  List<Map<String, String>> selectAclsCountByEnv(Integer teamId, Integer tenantId);
+  List<Map<String, String>> getAclsCountByEnv(Integer teamId, Integer tenantId);
 
-  List<Map<String, String>> selectAclsCountByTeams(
-      String aclType, Integer teamId, Integer tenantId);
+  List<Map<String, String>> getAclsCountByTeams(String aclType, Integer teamId, Integer tenantId);
 
-  List<Map<String, String>> selectAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId);
+  List<Map<String, String>> getAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId);
 
-  List<Map<String, String>> selectAllMetrics(String metricsType, String metricsName, String env);
+  List<Map<String, String>> getAllMetrics(String metricsType, String metricsName, String env);
 
   /*--------------------Update */
   String updateTopicDocumentation(Topic topic);
@@ -320,8 +314,6 @@ public interface HandleDbRequests {
 
   String deleteAclRequest(int req_no, String userName, int tenantId);
 
-  String deleteAclSubscriptionRequest(int req_no, int tenantId);
-
   String deleteEnvironmentRequest(String envId, int tenantId);
 
   String deleteCluster(int clusterId, int tenantId);
@@ -348,27 +340,25 @@ public interface HandleDbRequests {
 
   String deleteTxnData(int tenantId);
 
-  String deleteTenant(int tenantId);
-
   String setTenantActivestatus(int tenantId, boolean status);
 
   String updateTenant(int tenantId, String organizationName);
 
   String disableTenant(int tenantId);
 
-  Optional<ProductDetails> selectProductDetails(String name);
+  Optional<ProductDetails> getProductDetails(String name);
 
-  int findAllKafkaComponentsCountForEnv(String env, int tenantId);
+  int getAllKafkaComponentsCountForEnv(String env, int tenantId);
 
-  int findAllConnectorComponentsCountForEnv(String env, int tenantId);
+  int getAllConnectorComponentsCountForEnv(String env, int tenantId);
 
-  int findAllSchemaComponentsCountForEnv(String env, int tenantId);
+  int getAllSchemaComponentsCountForEnv(String env, int tenantId);
 
-  int findAllComponentsCountForTeam(Integer teamId, int tenantId);
+  int getAllComponentsCountForTeam(Integer teamId, int tenantId);
 
   int getAllTopicsCountInAllTenants();
 
-  int findAllComponentsCountForUser(String userName, int tenantId);
+  int getAllComponentsCountForUser(String userName, int tenantId);
 
   List<Topic> getAllTopics();
 
@@ -384,17 +374,13 @@ public interface HandleDbRequests {
 
   List<SchemaRequest> getAllSchemaRequests();
 
-  List<MessageSchema> selectAllSchemas();
+  List<MessageSchema> getAllSchemas();
 
-  List<Team> selectTeams();
+  List<Team> getTeams();
 
-  List<RegisterUserInfo> getAllRegisterUsersInfo();
+  List<Env> getEnvs();
 
-  List<Env> selectEnvs();
-
-  List<ActivityLog> getAllActivityLog();
-
-  List<KwProperties> selectKwProperties();
+  List<KwProperties> getKwProperties();
 
   List<KwClusters> getClusters();
 }

@@ -184,7 +184,7 @@ public class KafkaConnectControllerService {
 
     if (manageDatabase
             .getHandleDbRequests()
-            .selectConnectorRequests(
+            .getConnectorRequests(
                 connectorRequestModel.getConnectorName(),
                 connectorRequestModel.getEnvironment(),
                 RequestStatus.CREATED.value,
@@ -537,7 +537,7 @@ public class KafkaConnectControllerService {
     KafkaConnectorRequest connectorRequest =
         manageDatabase
             .getHandleDbRequests()
-            .selectConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
+            .getConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
 
     String jsonConnectorConfig;
 
@@ -584,7 +584,7 @@ public class KafkaConnectControllerService {
       Env envSelected =
           manageDatabase
               .getHandleDbRequests()
-              .selectEnvDetails(connectorRequest.getEnvironment(), tenantId);
+              .getEnvDetails(connectorRequest.getEnvironment(), tenantId);
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA_CONNECT, tenantId)
@@ -689,7 +689,7 @@ public class KafkaConnectControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     KafkaConnectorRequest connectorRequest =
-        dbHandle.selectConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
+        dbHandle.getConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
 
     if (!RequestStatus.CREATED.value.equals(connectorRequest.getRequestStatus())) {
       return ApiResponse.builder().success(false).message(REQ_ERR_101).build();
@@ -765,7 +765,7 @@ public class KafkaConnectControllerService {
 
     if (manageDatabase
             .getHandleDbRequests()
-            .selectConnectorRequests(
+            .getConnectorRequests(
                 kafkaConnectorRequest.getConnectorName(),
                 kafkaConnectorRequest.getEnvironment(),
                 RequestStatus.CREATED.value,
@@ -875,7 +875,7 @@ public class KafkaConnectControllerService {
 
     if (manageDatabase
             .getHandleDbRequests()
-            .selectConnectorRequests(connectorName, envId, RequestStatus.CREATED.value, tenantId)
+            .getConnectorRequests(connectorName, envId, RequestStatus.CREATED.value, tenantId)
             .size()
         > 0) {
       return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_117).build();
@@ -884,7 +884,7 @@ public class KafkaConnectControllerService {
     List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);
     Integer topicOwnerTeam = topics.get(0).getTeamId();
     Optional<UserInfo> topicOwnerContact =
-        manageDatabase.getHandleDbRequests().selectAllUsersInfo(tenantId).stream()
+        manageDatabase.getHandleDbRequests().getAllUsersInfo(tenantId).stream()
             .filter(user -> Objects.equals(user.getTeamId(), topicOwnerTeam))
             .findFirst();
 
@@ -1113,7 +1113,7 @@ public class KafkaConnectControllerService {
     String loggedInUserTeam =
         manageDatabase
             .getHandleDbRequests()
-            .selectAllTeamsOfUsers(getUserName(), tenantId)
+            .getAllTeamsOfUsers(getUserName(), tenantId)
             .get(0)
             .getTeamname();
     if (!Objects.equals(loggedInUserTeam, connectorModel.getTeamName())) {
@@ -1218,7 +1218,7 @@ public class KafkaConnectControllerService {
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
     List<UserInfo> userList =
-        manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
+        manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(userTeamId, tenantId);
 
     for (KafkaConnectorRequest connectorRequest : topicsList) {
       kafkaConnectorRequestModel = new KafkaConnectorRequestsResponseModel();
@@ -1240,7 +1240,7 @@ public class KafkaConnectControllerService {
               updateApproverInfo(
                   manageDatabase
                       .getHandleDbRequests()
-                      .selectAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
+                      .getAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
                   manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
                   approverRoles,
                   kafkaConnectorRequestModel.getRequestor()));

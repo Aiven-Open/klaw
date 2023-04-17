@@ -125,7 +125,7 @@ public class UiConfigControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     List<EnvModelResponse> envsList = envsClustersTenantsControllerService.getSchemaRegEnvs();
 
     assertThat(envsList).isEmpty();
@@ -138,7 +138,7 @@ public class UiConfigControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("");
-    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     List<EnvModelResponse> envsList =
         envsClustersTenantsControllerService.getEnvsForSchemaRequests();
@@ -155,7 +155,7 @@ public class UiConfigControllerServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
         .thenReturn("DEV");
-    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(getSchemaRegistryClusters());
@@ -175,7 +175,7 @@ public class UiConfigControllerServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
         .thenReturn("DEV,sTT");
-    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(getSchemaRegistryClusters());
@@ -195,7 +195,7 @@ public class UiConfigControllerServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
         .thenReturn("DEV,TST");
-    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(getSchemaRegistryClusters());
@@ -216,7 +216,7 @@ public class UiConfigControllerServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST,UAT");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
         .thenReturn("DEV,TST,UAT");
-    when(handleDbRequests.selectAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
+    when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(getSchemaRegistryClusters());
