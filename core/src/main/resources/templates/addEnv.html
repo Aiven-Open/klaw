@@ -561,14 +561,14 @@
 
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group">
+											<div class="form-group" ng-show="addNewEnv.topicAdvancedConfig == false">
 												<label class="control-label">Topic prefix (optional)</label>
 												<input ng-model="addNewEnv.topicprefix" id="addNewEnv.topicprefix"
 													   type="text" maxlength="20" class="form-control">
 											</div>
 										</div>
 										<div class="col-md-6">
-											<div class="form-group">
+											<div class="form-group"  ng-show="addNewEnv.topicAdvancedConfig == false">
 												<label class="control-label">Topic suffix (optional)</label>
 												<input ng-model="addNewEnv.topicsuffix" id="addNewEnv.topicsuffix"
 													   type="text" maxlength="20" class="form-control">
@@ -594,7 +594,7 @@
 										<div class="col-md-6">
 											<div class="col-md-6">
 
-												<div class="form-group">
+												<div class="form-group" ng-show="addNewEnv.topicAdvancedConfig">
 													<label class="control-label">Topic Regex Pattern (optional)</label>
 													<a class="mytooltip" href="javascript:void(0)">
 														<span class="tooltip-content3">Exampe ensure 'Dev' is contained in all topics with: *Dev*</span>
@@ -605,8 +605,26 @@
 											</div>
 
 										</div>
-									</div>
 
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="col-md-6">
+
+												<div class="form-group">
+													<label class="switch">
+														Advanced Topic Name Config
+														<input type="checkbox" ng-model="addNewEnv.topicAdvancedConfig"  >
+														<span class="slider round"></span>
+													</label>
+												</div>
+											</div>
+
+										</div>
+										<div class="col-md-6">
+
+										</div>
+									</div>
 
 
 								</div>

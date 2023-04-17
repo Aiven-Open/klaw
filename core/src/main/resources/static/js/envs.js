@@ -95,6 +95,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.standardEnvNamesList = output;
+                $scope.addNewEnv.topicAdvanced=false;
             }).error(
                 function(error)
                 {
@@ -869,7 +870,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                 if($scope.addNewEnv.topicregex && $scope.addNewEnv.topicregex.length > 0) {
                     $scope.addNewEnv.topicregex = $scope.addNewEnv.topicregex.trim();
-
                 } else {
                     $scope.addNewEnv.topicregex = "";
                 }
@@ -915,7 +915,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                                          + ",max.replication.factor=" + $scope.addNewEnv.maxrepfctr
                                          + ",topic.prefix=" + $scope.addNewEnv.topicprefix
                                          + ",topic.suffix=" + $scope.addNewEnv.topicsuffix
-                                         + ",topic.regex=" + $scope.addNewEnv.topicregex;
+                                         + ",topic.regex=" + $scope.addNewEnv.topicregex
+                                         + ",topic.advanced.config=" + $scope.addNewEnv.topicAdvancedConfig;
 
 
                 $http({

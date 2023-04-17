@@ -160,7 +160,9 @@ public class EnvsClustersTenantsControllerService {
         defaultRf = "",
         maxRf = "",
         topicPrefix = "",
-        topicSuffix = "";
+        topicSuffix = "",
+        topicRegex = "";
+
     String otherParams = env.getOtherParams();
     String[] params;
     try {
@@ -180,7 +182,9 @@ public class EnvsClustersTenantsControllerService {
           } else if (param.startsWith("topic.suffix")) {
             topicSuffix = param.substring(param.indexOf("=") + 1);
           } else if (param.startsWith("topic.regex")) {
-            env.setTopicregex(param.substring(param.indexOf("=") + 1));
+            topicRegex = param.substring(param.indexOf("=") + 1);
+          } else if (param.startsWith("topic.advanced.config")) {
+            env.setTopicAdvancedConfig(Boolean.valueOf(param.substring(param.indexOf("=") + 1)));
           }
         }
         env.setDefaultPartitions(defPartns);
@@ -189,6 +193,7 @@ public class EnvsClustersTenantsControllerService {
         env.setMaxReplicationFactor(maxRf);
         env.setTopicprefix(topicPrefix);
         env.setTopicsuffix(topicSuffix);
+        env.setTopicregex(topicRegex);
       }
     } catch (Exception e) {
       log.error("Unable to set topic partitions, setting default from properties.", e);

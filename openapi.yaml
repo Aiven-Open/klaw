@@ -6596,6 +6596,12 @@
           "topicsuffix" : {
             "type" : "string"
           },
+          "topicregex" : {
+            "type" : "string"
+          },
+          "topicAdvancedConfig" : {
+            "type" : "boolean"
+          },
           "defaultPartitions" : {
             "type" : "string"
           },
@@ -6884,6 +6890,18 @@
             }
           },
           "topicSuffix" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "topicRegex" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "advancedTopicConfiguration" : {
             "type" : "array",
             "items" : {
               "type" : "string"

@@ -585,7 +585,8 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                  + ",max.replication.factor=" + $scope.envDetails.maxReplicationFactor
                  + ",topic.prefix=" + $scope.envDetails.topicprefix
                  + ",topic.suffix=" + $scope.envDetails.topicsuffix
-                 + ",topic.regex=" + $scope.envDetails.topicregex  ;
+                 + ",topic.regex=" + $scope.envDetails.topicregex
+                 + ",topic.advanced.config=" + $scope.addNewEnv.topicAdvancedConfig;
 
                 $http({
                     method: "POST",
