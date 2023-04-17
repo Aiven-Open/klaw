@@ -17,6 +17,8 @@ import { DeleteRequestDialog } from "src/app/features/requests/components/Delete
 import { Alert } from "@aivenio/aquarium";
 import { useState } from "react";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
+import { ConnectorRequestDetails } from "src/app/features/components/ConnectorDetailsModalContent";
 
 const defaultStatus = "ALL";
 const defaultType = "ALL";
@@ -54,8 +56,12 @@ function ConnectorRequests() {
     setModals({ open: "NONE", connectorId: null });
   }
 
+  const handleDetails = (connectorId: number) => {
+    setModals({ open: "DETAILS", connectorId });
+  };
+
   const handleDeleteRequest = (connectorId: number) => {
-    setModals({ open: "DELETE", connectorId: connectorId });
+    setModals({ open: "DELETE", connectorId });
   };
 
   const { data, isLoading, isError, error, isFetching } = useQuery({
@@ -94,8 +100,40 @@ function ConnectorRequests() {
       />
     ) : undefined;
 
+  const selectedRequest = data?.entries.find(
+    (request) => request.connectorId === modals.connectorId
+  );
+
   return (
     <>
+      {modals.open === "DETAILS" && (
+        <RequestDetailsModal
+          onClose={closeModal}
+          actions={{
+            primary: {
+              text: "Close",
+              onClick: () => {
+                if (modals.connectorId === null) {
+                  throw Error("connectorId can't be null");
+                }
+                closeModal();
+              },
+            },
+            secondary: {
+              text: "Delete",
+              onClick: () => {
+                if (modals.connectorId === null) {
+                  throw Error("connectorId can't be null");
+                }
+                handleDeleteRequest(modals.connectorId);
+              },
+            },
+          }}
+          isLoading={false}
+        >
+          <ConnectorRequestDetails request={selectedRequest} />
+        </RequestDetailsModal>
+      )}
       {modals.open === "DELETE" && (
         <DeleteRequestDialog
           deleteRequest={() => {
@@ -129,7 +167,7 @@ function ConnectorRequests() {
           <ConnectorRequestsTable
             ariaLabel="Connector requests"
             requests={data?.entries ?? []}
-            onDetails={() => null}
+            onDetails={handleDetails}
             onDelete={handleDeleteRequest}
           />
         }
