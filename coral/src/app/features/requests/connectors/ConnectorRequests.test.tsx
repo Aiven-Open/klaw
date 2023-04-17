@@ -16,6 +16,7 @@ import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/uti
 import { getConnectorRequests } from "src/domain/connector";
 import userEvent from "@testing-library/user-event";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/connector/connector-api.ts");
@@ -181,6 +182,7 @@ describe("ConnectorRequests", () => {
         search: "",
         env: "ALL",
         isMyRequest: false,
+        requestStatus: "ALL",
       });
     });
 
@@ -197,6 +199,7 @@ describe("ConnectorRequests", () => {
         search: "",
         env: "ALL",
         isMyRequest: false,
+        requestStatus: "ALL",
       });
     });
 
@@ -306,6 +309,7 @@ describe("ConnectorRequests", () => {
         search: "",
         env: "ALL",
         isMyRequest: false,
+        requestStatus: "ALL",
       });
     });
   });
@@ -327,6 +331,7 @@ describe("ConnectorRequests", () => {
         search: "",
         env: "ALL",
         isMyRequest: false,
+        requestStatus: "ALL",
       });
     });
 
@@ -347,6 +352,7 @@ describe("ConnectorRequests", () => {
           search: "abc",
           env: "ALL",
           isMyRequest: false,
+          requestStatus: "ALL",
         });
       });
     });
@@ -381,6 +387,7 @@ describe("ConnectorRequests", () => {
         search: "",
         env: "TEST_ENV_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
         isMyRequest: false,
+        requestStatus: "ALL",
       });
     });
 
@@ -399,6 +406,7 @@ describe("ConnectorRequests", () => {
         search: "",
         env: mockedEnvironmentResponse[0].id,
         isMyRequest: false,
+        requestStatus: "ALL",
       });
     });
   });
@@ -420,6 +428,7 @@ describe("ConnectorRequests", () => {
         isMyRequest: true,
         search: "",
         env: "ALL",
+        requestStatus: "ALL",
       });
     });
 
@@ -438,6 +447,7 @@ describe("ConnectorRequests", () => {
           isMyRequest: true,
           search: "",
           env: "ALL",
+          requestStatus: "ALL",
         });
       });
     });
@@ -458,7 +468,63 @@ describe("ConnectorRequests", () => {
           isMyRequest: false,
           search: "",
           env: "ALL",
+          requestStatus: "ALL",
         });
+      });
+    });
+  });
+
+  describe("user can filter connector requests by 'status'", () => {
+    beforeEach(async () => {
+      mockGetConnectorEnvironmentRequest.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequests.mockResolvedValue(
+        mockGetConnectorRequestsResponse
+      );
+
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath:
+          "/?status=TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        search: "",
+        isMyRequest: false,
+        requestStatus: "TEST_STATUS_THAT_CANNOT_BE_PART_OF_ANY_API_MOCK",
+        env: "ALL",
+      });
+    });
+
+    it("enables user to filter by 'status'", async () => {
+      const newStatus = "CREATED";
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by status",
+      });
+      const statusOption = screen.getByRole("option", {
+        name: requestStatusNameMap[newStatus],
+      });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(2, {
+        pageNo: "1",
+        search: "",
+        isMyRequest: false,
+        requestStatus: newStatus,
+        env: "ALL",
       });
     });
   });

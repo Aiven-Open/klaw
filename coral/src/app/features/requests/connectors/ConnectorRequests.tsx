@@ -8,6 +8,9 @@ import { useFiltersValues } from "src/app/features/components/filters/useFilters
 import SearchFilter from "src/app/features/components/filters/SearchFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+
+const defaultStatus = "ALL";
 
 function ConnectorRequests() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,7 +18,8 @@ function ConnectorRequests() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { search, environment, showOnlyMyRequests } = useFiltersValues();
+  const { search, environment, status, showOnlyMyRequests } =
+    useFiltersValues();
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [
@@ -24,6 +28,7 @@ function ConnectorRequests() {
       search,
       environment,
       showOnlyMyRequests,
+      status,
     ],
     queryFn: () =>
       getConnectorRequests({
@@ -31,6 +36,7 @@ function ConnectorRequests() {
         isMyRequest: showOnlyMyRequests,
         env: environment,
         search,
+        requestStatus: status,
       }),
     keepPreviousData: true,
   });
@@ -57,6 +63,7 @@ function ConnectorRequests() {
           key="environment"
           environmentEndpoint="getSyncConnectorsEnvironments"
         />,
+        <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
         <MyRequestsFilter key={"isMyRequest"} />,
       ]}
       table={
