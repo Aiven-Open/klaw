@@ -18,6 +18,9 @@ import {
   getSchemaRequestsForApprover,
 } from "src/domain/schema-request";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
+
+const defaultType = "ALL";
 
 function SchemaApprovals() {
   const queryClient = useQueryClient();
@@ -27,7 +30,7 @@ function SchemaApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, topic } = useFiltersValues({
+  const { environment, status, topic, requestType } = useFiltersValues({
     defaultStatus: "CREATED",
   });
 
@@ -60,13 +63,15 @@ function SchemaApprovals() {
       status,
       environment,
       topic,
+      requestType,
     ],
     queryFn: () =>
       getSchemaRequestsForApprover({
         requestStatus: status,
         pageNo: currentPage.toString(),
         env: environment,
-        topic,
+        search: topic,
+        operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -188,6 +193,9 @@ function SchemaApprovals() {
       onDecline={handleDeclineRequest}
       isBeingDeclined={handleIsBeingDeclined}
       isBeingApproved={handleIsBeingApproved}
+      ariaLabel={`Schema approval requests, page ${
+        schemaRequests?.currentPage ?? 0
+      } of ${schemaRequests?.totalPages ?? 0}`}
     />
   );
   const pagination =
@@ -260,9 +268,10 @@ function SchemaApprovals() {
         filters={[
           <EnvironmentFilter
             key={"environment"}
-            isSchemaRegistryEnvironments
+            environmentEndpoint={"getSchemaRegistryEnvironments"}
           />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
+          <RequestTypeFilter key={"requestType"} />,
           <TopicFilter key={"topic"} />,
         ]}
         table={table}

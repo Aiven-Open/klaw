@@ -1,15 +1,8 @@
-import api from "src/services/api";
-import { transformTeamNamesGetResponse } from "src/domain/team/team-transformer";
+import api, { API_PATHS } from "src/services/api";
 import { KlawApiResponse } from "types/utils";
 
-const getTeamNames = () => {
-  return api
-    .get<KlawApiResponse<"getAllTeamsSUOnly">>("/getAllTeamsSUOnly")
-    .then(transformTeamNamesGetResponse);
-};
-
 const getTeams = () => {
-  return api.get<KlawApiResponse<"getAllTeamsSU">>("/getAllTeamsSU");
+  return api.get<KlawApiResponse<"getAllTeamsSU">>(API_PATHS.getAllTeamsSU);
 };
 
-export { getTeamNames, getTeams };
+export { getTeams };

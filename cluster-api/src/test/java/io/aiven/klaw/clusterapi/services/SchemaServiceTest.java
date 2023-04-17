@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withRawStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withResourceNotFound;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -167,8 +168,7 @@ class SchemaServiceTest {
     this.mockRestServiceServer.expect(requestTo("/" + deleteSchemaUrl)).andRespond(withSuccess());
 
     ApiResponse apiResponse = schemaService.deleteSchema(clusterTopicRequest);
-    assertThat(apiResponse.getResult())
-        .isEqualTo("Schema deletion " + ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -192,7 +192,7 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getResult()).startsWith(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).startsWith(ApiResultStatus.SUCCESS.value);
 
     mockRestServiceServer.verify();
   }
@@ -220,7 +220,7 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getResult()).startsWith(ApiResultStatus.FAILURE.value);
+    assertThat(apiResponse.getMessage()).startsWith(ApiResultStatus.FAILURE.value);
 
     mockRestServiceServer.verify();
   }
@@ -238,7 +238,7 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getResult()).startsWith(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.isSuccess()).isTrue();
 
     mockRestServiceServer.verify();
   }
@@ -282,8 +282,35 @@ class SchemaServiceTest {
     ApiResponse apiResponse =
         schemaService.checkSchemaCompatibility(
             "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo(ApiResultStatus.FAILURE.value + " Unable to validate Schema Compatibility.");
+  }
+
+  @Test
+  public void checkSchemaCompatibility_InvalidAvroSchema() throws JsonProcessingException {
+    String topicName = "Octopus";
+    String dev = "Dev";
+
+    mockVersionsofSchema(topicName, dev, false);
+    // creating a different url so that the reqDetails is not created properly and causes an
+    // exception
+    String validationUrl =
+        dev + TOPIC_COMPATIBILITY_URI_TEMPLATE.replace("{topic_name}", topicName);
+    when(getAdminClient.getRequestDetails(eq(validationUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(validationUrl, restTemplate));
+    when(getAdminClient.createHeaders(eq("18"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
+        .thenReturn(new HttpHeaders());
+    this.mockRestServiceServer
+        .expect(requestTo("/" + validationUrl))
+        .andRespond(withRawStatus(422));
+
+    ApiResponse apiResponse =
+        schemaService.checkSchemaCompatibility(
+            "schema: {}", topicName, KafkaSupportedProtocol.PLAINTEXT, dev, "18");
+    assertThat(apiResponse.getMessage())
+        .isEqualTo(
+            ApiResultStatus.FAILURE.value
+                + " Invalid Schema. Unable to validate Schema Compatibility.");
   }
 
   private static ClusterTopicRequest deleteTopicRequest(String topicName) {

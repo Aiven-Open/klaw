@@ -1,5 +1,12 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_106;
+import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -19,15 +26,18 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.response.KwPropertiesResponse;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.WordUtils;
@@ -71,9 +81,7 @@ public class ServerConfigService {
 
   @PostConstruct
   public void getAllProperties() {
-
-    log.info("All server properties being loaded");
-
+    log.debug("All server properties being loaded");
     List<ServerConfigProperties> listProps = new ArrayList<>();
     List<String> allowedKeys = Arrays.asList("spring.", "klaw.");
 
@@ -90,7 +98,7 @@ public class ServerConfigService {
                 || key.contains("pwd")
                 || key.contains("cert")
                 || key.contains("secret")) {
-              props.setValue("*******");
+              props.setValue(MASKED_PWD);
             } else {
               props.setValue(WordUtils.wrap(propertySource.getProperty(key) + "", 125, "\n", true));
             }
@@ -127,14 +135,14 @@ public class ServerConfigService {
     return false;
   }
 
-  public List<Map<String, String>> getAllEditableProps() {
-    List<Map<String, String>> listMap = new ArrayList<>();
-    Map<String, String> resultMap = new HashMap<>();
+  public List<KwPropertiesResponse> getAllEditableProps() {
+    List<KwPropertiesResponse> listMap = new ArrayList<>();
+    KwPropertiesResponse propertiesResponse = new KwPropertiesResponse();
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
-      resultMap.put("result", ApiResultStatus.NOT_AUTHORIZED.value);
-      listMap.add(resultMap);
+      propertiesResponse.setResult(ApiResultStatus.NOT_AUTHORIZED.value);
+      listMap.add(propertiesResponse);
       return listMap;
     }
 
@@ -143,10 +151,10 @@ public class ServerConfigService {
     String kwVal, kwKey;
 
     for (Map.Entry<String, Map<String, String>> stringStringEntry : kwProps.entrySet()) {
-      resultMap = new HashMap<>();
+      KwPropertiesResponse kwPropertiesResponse = new KwPropertiesResponse();
       kwKey = stringStringEntry.getKey();
       kwVal = stringStringEntry.getValue().get("kwvalue");
-      resultMap.put("kwkey", kwKey);
+      kwPropertiesResponse.setKwkey(kwKey);
 
       if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey)) {
         TenantConfig dynamicObj;
@@ -155,28 +163,28 @@ public class ServerConfigService {
           dynamicObj = OBJECT_MAPPER.readValue(kwVal, TenantConfig.class);
           updateEnvNameValues(dynamicObj, tenantId);
           kwVal = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
-          resultMap.put("kwvalue", kwVal);
-          resultMap.put("kwdesc", stringStringEntry.getValue().get("kwdesc"));
+          kwPropertiesResponse.setKwvalue(kwVal);
+          kwPropertiesResponse.setKwdesc(stringStringEntry.getValue().get("kwdesc"));
 
-          listMap.add(resultMap);
+          listMap.add(kwPropertiesResponse);
         } catch (Exception ioe) {
           log.error("Error from getAllEditableProps {}", kwKey, ioe);
           log.error("No environments/clusters found. {}", kwKey);
           kwVal = "{}";
-          resultMap.put("kwvalue", kwVal);
-          resultMap.put("kwdesc", stringStringEntry.getValue().get("kwdesc"));
+          kwPropertiesResponse.setKwvalue(kwVal);
+          kwPropertiesResponse.setKwdesc(stringStringEntry.getValue().get("kwdesc"));
         }
       } else {
-        resultMap.put("kwvalue", kwVal);
-        resultMap.put("kwdesc", stringStringEntry.getValue().get("kwdesc"));
+        kwPropertiesResponse.setKwvalue(kwVal);
+        kwPropertiesResponse.setKwdesc(stringStringEntry.getValue().get("kwdesc"));
 
-        listMap.add(resultMap);
+        listMap.add(kwPropertiesResponse);
       }
     }
 
     if (tenantId != KwConstants.DEFAULT_TENANT_ID) {
       return listMap.stream()
-          .filter(item -> KwConstants.allowConfigForAdmins.contains(item.get("kwkey")))
+          .filter(item -> KwConstants.allowConfigForAdmins.contains(item.getKwkey()))
           .collect(Collectors.toList());
     } else {
       return listMap;
@@ -192,13 +200,19 @@ public class ServerConfigService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     // SUPERADMINS filter
     if (tenantId != KwConstants.DEFAULT_TENANT_ID) {
       if (!KwConstants.allowConfigForAdmins.contains(kwKey)) {
-        return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+        return ApiResponse.builder()
+            .success(false)
+            .message(ApiResultStatus.NOT_AUTHORIZED.value)
+            .build();
       }
     }
 
@@ -212,24 +226,33 @@ public class ServerConfigService {
             kwPropertiesModel.setKwValue(OBJECT_MAPPER.writeValueAsString(dynamicObj));
           } else {
             return ApiResponse.builder()
-                .result(
-                    "Failure. Invalid json / incorrect name values. Check tenant and env details.")
+                .success(false)
+                .message(SERVER_CONFIG_ERR_101)
+                .data(kwKey)
                 .build();
           }
         } catch (IOException e) {
           log.error("Exception:", e);
           return ApiResponse.builder()
-              .result("Failure. Invalid json values. Please check if tenant/environments exist.")
+              .success(false)
+              .message(SERVER_CONFIG_ERR_102)
+              .data(kwKey)
               .build();
         }
       }
     } catch (KlawException klawException) {
-      return ApiResponse.builder().result("Failure. " + klawException.getMessage()).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(klawException.getMessage())
+          .data(kwKey)
+          .build();
 
     } catch (Exception e) {
       log.error("Exception:", e);
       return ApiResponse.builder()
-          .result("Failure. Please check if the environment names exist.")
+          .success(false)
+          .message(SERVER_CONFIG_ERR_103)
+          .data(kwKey)
           .build();
     }
 
@@ -240,9 +263,13 @@ public class ServerConfigService {
       if (ApiResultStatus.SUCCESS.value.equals(res)) {
         commonUtilsService.updateMetadata(
             tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE);
-        return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).data(kwKey).build();
+        return ApiResponse.builder()
+            .success(true)
+            .message(ApiResultStatus.SUCCESS.value)
+            .data(kwKey)
+            .build();
       } else {
-        return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+        return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
       }
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
@@ -335,38 +362,34 @@ public class ServerConfigService {
     }
   }
 
-  private void updateEnvIdValues(TenantConfig dynamicObj) {
+  private void updateEnvIdValues(TenantConfig dynamicObj) throws KlawException {
     if (dynamicObj.getTenantModel() != null) {
       KwTenantConfigModel tenantModel = dynamicObj.getTenantModel();
 
       // syncClusterName update
+      Integer tenantId = getTenantIdFromName(tenantModel.getTenantName());
       if (tenantModel.getBaseSyncEnvironment() != null) {
         tenantModel.setBaseSyncEnvironment(
-            getEnvDetailsFromName(
-                    tenantModel.getBaseSyncEnvironment(),
-                    getTenantIdFromName(tenantModel.getTenantName()))
-                .getId());
+            getEnvDetailsFromName(tenantModel.getBaseSyncEnvironment(), tenantId).getId());
       }
 
       // syncClusterKafkaConnectName update
       if (tenantModel.getBaseSyncKafkaConnectCluster() != null) {
         tenantModel.setBaseSyncKafkaConnectCluster(
             getKafkaConnectEnvDetailsFromName(
-                    tenantModel.getBaseSyncKafkaConnectCluster(),
-                    getTenantIdFromName(tenantModel.getTenantName()))
+                    tenantModel.getBaseSyncKafkaConnectCluster(), tenantId)
                 .getId());
       }
 
       // kafka
       if (tenantModel.getOrderOfTopicPromotionEnvsList() != null) {
         List<String> tmpOrderList = new ArrayList<>();
-        tenantModel
-            .getOrderOfTopicPromotionEnvsList()
-            .forEach(
-                a ->
-                    tmpOrderList.add(
-                        getEnvDetailsFromName(a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+        List<String> topicPromotionEnvs = tenantModel.getOrderOfTopicPromotionEnvsList();
+        topicPromotionEnvs.forEach(
+            a -> tmpOrderList.add(getEnvDetailsFromName(a, tenantId).getId()));
+        if (!validateEnvsClusters(topicPromotionEnvs, tenantId)) {
+          throw new KlawException(SERVER_CONFIG_ERR_106);
+        }
         tenantModel.setOrderOfTopicPromotionEnvsList(tmpOrderList);
       }
 
@@ -376,11 +399,7 @@ public class ServerConfigService {
         tenantModel
             .getOrderOfConnectorsPromotionEnvsList()
             .forEach(
-                a ->
-                    tmpOrderList1.add(
-                        getKafkaConnectEnvDetailsFromName(
-                                a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+                a -> tmpOrderList1.add(getKafkaConnectEnvDetailsFromName(a, tenantId).getId()));
         tenantModel.setOrderOfConnectorsPromotionEnvsList(tmpOrderList1);
       }
 
@@ -389,11 +408,7 @@ public class ServerConfigService {
         List<String> tmpReqTopicList = new ArrayList<>();
         tenantModel
             .getRequestTopicsEnvironmentsList()
-            .forEach(
-                a ->
-                    tmpReqTopicList.add(
-                        getEnvDetailsFromName(a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+            .forEach(a -> tmpReqTopicList.add(getEnvDetailsFromName(a, tenantId).getId()));
         tenantModel.setRequestTopicsEnvironmentsList(tmpReqTopicList);
       }
 
@@ -403,11 +418,7 @@ public class ServerConfigService {
         tenantModel
             .getRequestConnectorsEnvironmentsList()
             .forEach(
-                a ->
-                    tmpReqTopicList1.add(
-                        getKafkaConnectEnvDetailsFromName(
-                                a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+                a -> tmpReqTopicList1.add(getKafkaConnectEnvDetailsFromName(a, tenantId).getId()));
         tenantModel.setRequestConnectorsEnvironmentsList(tmpReqTopicList1);
       }
 
@@ -416,31 +427,30 @@ public class ServerConfigService {
         List<String> tmpSchemaReqList = new ArrayList<>();
         tenantModel
             .getRequestSchemaEnvironmentsList()
-            .forEach(
-                a ->
-                    tmpSchemaReqList.add(
-                        getSchemaEnvDetailsFromName(
-                                a, getTenantIdFromName(tenantModel.getTenantName()))
-                            .getId()));
+            .forEach(a -> tmpSchemaReqList.add(getSchemaEnvDetailsFromName(a, tenantId).getId()));
         tenantModel.setRequestSchemaEnvironmentsList(tmpSchemaReqList);
       }
     }
+  }
+
+  // verify is same kafka clusters are configured for the topic promotion envs
+  private boolean validateEnvsClusters(List<String> topicPromotionEnvs, Integer tenantId) {
+    Set<Integer> uniqueClusterIds = new HashSet<>();
+    topicPromotionEnvs.forEach(
+        env -> uniqueClusterIds.add(getEnvDetailsFromName(env, tenantId).getClusterId()));
+    return uniqueClusterIds.size() == topicPromotionEnvs.size();
   }
 
   private boolean validateTenantConfig(TenantConfig dynamicObj, int tenantId) throws KlawException {
     Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
     List<Env> envList = manageDatabase.getKafkaEnvList(tenantId);
     List<Env> envKafkaConnectList = manageDatabase.getKafkaConnectEnvList(tenantId);
-    List<Env> schemaList = manageDatabase.getSchemaRegEnvList(tenantId);
 
     List<String> envListStr = new ArrayList<>();
     envList.forEach(a -> envListStr.add(a.getName()));
 
     List<String> envListKafkaConnectStr = new ArrayList<>();
     envKafkaConnectList.forEach(a -> envListKafkaConnectStr.add(a.getName()));
-
-    List<String> envListSchemaRegistryStr = new ArrayList<>();
-    schemaList.forEach(a -> envListSchemaRegistryStr.add(a.getName()));
 
     boolean tenantCheck;
     try {
@@ -474,10 +484,7 @@ public class ServerConfigService {
   private void isBaseSyncValid(String baseSync, List<String> existingResources)
       throws KlawException {
     if (baseSync != null && !existingResources.contains(baseSync)) {
-      throw new KlawException(
-          "Base Sync Resource "
-              + baseSync
-              + " must be created before being added to the Tenant Model");
+      throw new KlawException(String.format(SERVER_CONFIG_ERR_104, baseSync));
     }
   }
 
@@ -487,8 +494,7 @@ public class ServerConfigService {
     if (namedResources != null) {
       for (String res : namedResources) {
         if (!existingResources.contains(res)) {
-          throw new KlawException(
-              "Resource " + res + " must be created before being added to the Tenant Model");
+          throw new KlawException(String.format(SERVER_CONFIG_ERR_105, res));
         }
       }
     }

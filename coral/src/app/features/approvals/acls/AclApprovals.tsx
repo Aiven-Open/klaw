@@ -6,13 +6,14 @@ import { Pagination } from "src/app/components/Pagination";
 import AclApprovalsTable from "src/app/features/approvals/acls/components/AclApprovalsTable";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 import AclDetailsModalContent from "src/app/features/components/AclDetailsModalContent";
-import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import TopicFilter from "src/app/features/components/filters/TopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
   approveAclRequest,
   declineAclRequest,
@@ -20,6 +21,8 @@ import {
 } from "src/domain/acl/acl-api";
 import { AclRequestsForApprover } from "src/domain/acl/acl-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+
+const defaultType = "ALL";
 
 function AclApprovals() {
   const queryClient = useQueryClient();
@@ -29,9 +32,11 @@ function AclApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { aclType, environment, status, topic } = useFiltersValues({
-    defaultStatus: "CREATED",
-  });
+  const { aclType, environment, status, topic, requestType } = useFiltersValues(
+    {
+      defaultStatus: "CREATED",
+    }
+  );
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -59,14 +64,23 @@ function AclApprovals() {
     AclRequestsForApprover,
     Error
   >({
-    queryKey: ["aclRequests", currentPage, aclType, environment, status, topic],
+    queryKey: [
+      "aclRequests",
+      currentPage,
+      aclType,
+      environment,
+      status,
+      topic,
+      requestType,
+    ],
     queryFn: () =>
       getAclRequestsForApprover({
         pageNo: String(currentPage),
         env: environment,
         requestStatus: status,
         aclType,
-        topic,
+        search: topic,
+        operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -226,22 +240,27 @@ function AclApprovals() {
 
       <TableLayout
         filters={[
-          <EnvironmentFilter key={"environment"} />,
+          <EnvironmentFilter
+            key={"environment"}
+            environmentEndpoint={"getEnvironments"}
+          />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
+          <RequestTypeFilter key={"requestType"} />,
           <AclTypeFilter key={"aclType"} />,
           <TopicFilter key={"topic"} />,
         ]}
         table={
           <AclApprovalsTable
             aclRequests={data?.entries ?? []}
-            activePage={data?.currentPage ?? 1}
-            totalPages={data?.totalPages ?? 1}
             actionsDisabled={approveIsLoading || declineIsLoading}
             onDetails={handleViewRequest}
             onApprove={handleApproveRequest}
             onDecline={handleDeclineRequest}
             isBeingDeclined={handleIsBeingDeclined}
             isBeingApproved={handleIsBeingApproved}
+            ariaLabel={`ACL approval requests, page ${
+              data?.currentPage ?? 0
+            } of ${data?.totalPages ?? 0}`}
           />
         }
         pagination={pagination}

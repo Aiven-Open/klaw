@@ -6,18 +6,14 @@ import {
 } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import Topics from "src/app/pages/topics";
-import { mockGetEnvironments } from "src/domain/environment";
-import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
-import { mockedTeamResponse, mockGetTeams } from "src/domain/team/team-api.msw";
-import {
-  mockedResponseSinglePage,
-  mockedResponseTransformed,
-  mockTopicGetRequest,
-} from "src/domain/topic/topic-api.msw";
-import { server } from "src/services/api-mocks/server";
-import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { getEnvironments } from "src/domain/environment";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
+import { getTeams } from "src/domain/team";
+import { getTopics } from "src/domain/topic";
+import { TopicApiResponse } from "src/domain/topic/topic-types";
+import { mockedResponseTransformed } from "src/domain/topic/topic-api.msw";
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 const mockedNavigator = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -25,36 +21,34 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigator,
 }));
 
+jest.mock("src/domain/team/team-api.ts");
+jest.mock("src/domain/topic/topic-api.ts");
+jest.mock("src/domain/environment/environment-api.ts");
+
+const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
+const mockGetTopics = getTopics as jest.MockedFunction<typeof getTopics>;
+const mockGetEnvironments = getEnvironments as jest.MockedFunction<
+  typeof getEnvironments
+>;
+
+const mockGetTopicsResponse: TopicApiResponse = mockedResponseTransformed;
+
 describe("Topics", () => {
   beforeAll(() => {
-    server.listen();
     mockIntersectionObserver();
-  });
-
-  afterAll(() => {
-    server.close();
   });
 
   describe("renders default view with data from API", () => {
     beforeAll(async () => {
-      mockGetEnvironments({
-        mswInstance: server,
-        response: { data: mockedEnvironmentResponse },
-      });
-      mockGetTeams({
-        mswInstance: server,
-        response: { data: mockedTeamResponse },
-      });
-      mockTopicGetRequest({
-        mswInstance: server,
-        response: { status: 200, data: mockedResponseSinglePage },
-      });
+      mockGetTeams.mockResolvedValue([]);
+      mockGetEnvironments.mockResolvedValue([]);
+      mockGetTopics.mockResolvedValue(mockGetTopicsResponse);
+
       customRender(<Topics />, { memoryRouter: true, queryClient: true });
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
     afterAll(() => {
-      server.resetHandlers();
       cleanup();
     });
 

@@ -80,6 +80,7 @@ describe("TopicRequestsTable", () => {
         requests={mockedRequests}
         onDetails={jest.fn()}
         onDelete={jest.fn()}
+        ariaLabel={"Topic requests, page 1 of 10"}
         {...props}
       />
     );

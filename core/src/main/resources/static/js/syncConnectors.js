@@ -160,11 +160,11 @@ app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window)
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -267,7 +267,7 @@ app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window)
                     params: {'env' : $scope.getConnectors.envName,
                     'connectorName' : connectorName},
                 }).success(function(output) {
-                    $scope.connectorDetails = output.result;
+                    $scope.connectorDetails = output.message;
                     modal.style.display = "block";
                 }).error(
                     function(error)
@@ -342,13 +342,13 @@ app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window)
                             data:  $scope.updatedSyncArray
                         }).success(function(output) {
                             $scope.ShowSpinnerStatus = false;
-                            $scope.alert = "Connectors Sync Request : "+output.result;
+                            $scope.alert = "Connectors Sync Request : "+output.message;
                             $scope.updatedSyncArray = [];
 
-                             if(output.result == 'success'){
+                             if(output.success){
                               swal({
                             		   title: "",
-                            		   text: "Connectors Sync Request : "+output.result,
+                            		   text: "Connectors Sync Request : "+output.message,
                             		   timer: 2000,
                             		   showConfirmButton: false
                             	   });
@@ -574,17 +574,17 @@ app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window)
                             data:  serviceInput
                         }).success(function(output) {
                             $scope.ShowSpinnerStatus = false;
-                            $scope.alertbulk = "Topic Sync Bulk Request : "+output.result;
+                            $scope.alertbulk = "Topic Sync Bulk Request : "+output.message;
                             $scope.updatedSyncArray = [];
 
-                             if(output.result == 'success'){
+                             if(output.success){
                                 $scope.resetCheckBoxes();
                                 $scope.syncbulklog = output.data;
                                 $scope.alertbulk = $scope.alertbulk + ". Please verify logs below.";
 
                                 swal({
                                        title: "",
-                                       text: "Topic Sync Bulk Request : "+output.result,
+                                       text: "Topic Sync Bulk Request : "+output.message,
                                        timer: 2000,
                                        showConfirmButton: false
                                    });

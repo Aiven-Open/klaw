@@ -20,10 +20,10 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.KwTenantConfigModel;
-import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -110,7 +110,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopics(TESTTOPIC));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(TESTTOPIC));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(TESTTOPIC));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(TESTTOPIC));
@@ -147,7 +147,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTopics(topicNameSearch));
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(topicNameSearch));
-    when(handleDbRequests.getTopicTeam(anyString(), anyInt()))
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopics(topicNameSearch));
@@ -220,6 +220,47 @@ public class TopicOverviewServiceTest {
     TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC);
     assertThat(returnedValue.getTopicPromotionDetails()).isNullOrEmpty();
     assertThat(returnedValue.isTopicExists()).isFalse();
+  }
+
+  @Test
+  @Order(6)
+  public void getAclsSyncFalseMaskedData() throws KlawException {
+    String env1 = "1";
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(userInfo.getTeamId()).thenReturn(110);
+    when(mailService.getUserName(any())).thenReturn(TEAM_ID);
+    when(commonUtilsService.getTeamId(eq(TEAM_ID))).thenReturn(110);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(manageDatabase.getKwPropertyValue(anyString(), anyInt())).thenReturn("true");
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTeams());
+    when(handleDbRequests.getTopics(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopics(TESTTOPIC));
+    when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
+        .thenReturn(getAclsSOT(TESTTOPIC));
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopics(TESTTOPIC));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(utilMethods.getTopics(TESTTOPIC));
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(kwClustersHashMap);
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    when(manageDatabase.getAllEnvList(anyInt()))
+        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
+    mockTenantConfig();
+    List<AclInfo> aclList = topicOverviewService.getTopicOverview(TESTTOPIC).getAclInfoList();
+
+    assertThat(aclList).hasSize(1);
+
+    assertThat(aclList.get(0).getTopicname()).isEqualTo(TESTTOPIC);
+    assertThat(aclList.get(0).getConsumergroup()).isEqualTo("mygrp1");
+    // MASKED DATA
+    assertThat(aclList.get(0).getAcl_ip()).isEqualTo("Not Authorized to see this.");
+    assertThat(aclList.get(0).getAcl_ssl()).isEqualTo("Not Authorized to see this.");
   }
 
   private Topic createTopic(String topicName) {
@@ -346,6 +387,7 @@ public class TopicOverviewServiceTest {
     aclReq.setEnvironment("1");
     aclReq.setConsumergroup("mygrp1");
     aclReq.setAclType(AclType.CONSUMER.value);
+    aclReq.setTeamId(10);
 
     aclList.add(aclReq);
     return aclList;

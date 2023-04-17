@@ -240,12 +240,14 @@ describe("TopicApprovals", () => {
 
       expect(search).toBeVisible();
       expect(search).toHaveAccessibleDescription(
-        'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
       );
     });
 
     it("shows a table with all topic requests and a header row", () => {
-      const table = screen.getByRole("table", { name: "Topic requests" });
+      const table = screen.getByRole("table", {
+        name: "Topic approval requests, page 1 of 1",
+      });
       const rows = within(table).getAllByRole("row");
 
       expect(table).toBeVisible();
@@ -577,6 +579,31 @@ describe("TopicApprovals", () => {
           requestStatus: "DECLINED",
           search: "",
           teamId: undefined,
+        })
+      );
+    });
+
+    it("filters by Request type", async () => {
+      const select = screen.getByLabelText("Filter by request type");
+
+      const option = within(select).getByRole("option", {
+        name: "Create",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("Create");
+
+      await waitFor(() =>
+        expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          env: "ALL",
+          pageNo: "1",
+          requestStatus: "CREATED",
+          search: "",
+          teamId: undefined,
+          operationType: "CREATE",
         })
       );
     });

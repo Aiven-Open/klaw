@@ -6,6 +6,7 @@ import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +15,14 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.oauth2.client.endpoint.DefaultAuthorizationCodeTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AccessTokenResponseClient;
 import org.springframework.security.oauth2.client.endpoint.OAuth2AuthorizationCodeGrantRequest;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.reactive.function.client.ServletOAuth2AuthorizedClientExchangeFilterFunction;
 import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
+import org.springframework.security.oauth2.jwt.JwtDecoderFactory;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -75,5 +78,12 @@ public class SecurityConfigSSO {
   public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
     final Properties globalUsers = new Properties();
     return new InMemoryUserDetailsManager(globalUsers);
+  }
+
+  // Below code is only applicable for keycloak provider with legacy version (10.x)
+  @Bean
+  @ConditionalOnExpression("${klaw.sso.provider.keycloak.legacy:false}")
+  public JwtDecoderFactory<ClientRegistration> customJwtDecoderFactory() {
+    return new CustomJwtDecoder.CustomJwtDecoderFactory();
   }
 }

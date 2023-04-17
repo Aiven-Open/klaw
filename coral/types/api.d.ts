@@ -384,7 +384,7 @@ export type paths = {
   "/getConnectorRequests": {
     get: operations["getConnectorRequests"];
   };
-  "/getConnectorRequestsForApproval": {
+  "/getConnectorRequestsForApprover": {
     get: operations["getCreatedConnectorRequests"];
   };
   "/getConnectorOverview": {
@@ -486,32 +486,27 @@ export type components = {
       teamId?: number;
     };
     ApiResponse: {
-      /** @enum {string} */
-      status?: "100 CONTINUE" | "101 SWITCHING_PROTOCOLS" | "102 PROCESSING" | "103 EARLY_HINTS" | "103 CHECKPOINT" | "200 OK" | "201 CREATED" | "202 ACCEPTED" | "203 NON_AUTHORITATIVE_INFORMATION" | "204 NO_CONTENT" | "205 RESET_CONTENT" | "206 PARTIAL_CONTENT" | "207 MULTI_STATUS" | "208 ALREADY_REPORTED" | "226 IM_USED" | "300 MULTIPLE_CHOICES" | "301 MOVED_PERMANENTLY" | "302 FOUND" | "302 MOVED_TEMPORARILY" | "303 SEE_OTHER" | "304 NOT_MODIFIED" | "305 USE_PROXY" | "307 TEMPORARY_REDIRECT" | "308 PERMANENT_REDIRECT" | "400 BAD_REQUEST" | "401 UNAUTHORIZED" | "402 PAYMENT_REQUIRED" | "403 FORBIDDEN" | "404 NOT_FOUND" | "405 METHOD_NOT_ALLOWED" | "406 NOT_ACCEPTABLE" | "407 PROXY_AUTHENTICATION_REQUIRED" | "408 REQUEST_TIMEOUT" | "409 CONFLICT" | "410 GONE" | "411 LENGTH_REQUIRED" | "412 PRECONDITION_FAILED" | "413 PAYLOAD_TOO_LARGE" | "413 REQUEST_ENTITY_TOO_LARGE" | "414 URI_TOO_LONG" | "414 REQUEST_URI_TOO_LONG" | "415 UNSUPPORTED_MEDIA_TYPE" | "416 REQUESTED_RANGE_NOT_SATISFIABLE" | "417 EXPECTATION_FAILED" | "418 I_AM_A_TEAPOT" | "419 INSUFFICIENT_SPACE_ON_RESOURCE" | "420 METHOD_FAILURE" | "421 DESTINATION_LOCKED" | "422 UNPROCESSABLE_ENTITY" | "423 LOCKED" | "424 FAILED_DEPENDENCY" | "425 TOO_EARLY" | "426 UPGRADE_REQUIRED" | "428 PRECONDITION_REQUIRED" | "429 TOO_MANY_REQUESTS" | "431 REQUEST_HEADER_FIELDS_TOO_LARGE" | "451 UNAVAILABLE_FOR_LEGAL_REASONS" | "500 INTERNAL_SERVER_ERROR" | "501 NOT_IMPLEMENTED" | "502 BAD_GATEWAY" | "503 SERVICE_UNAVAILABLE" | "504 GATEWAY_TIMEOUT" | "505 HTTP_VERSION_NOT_SUPPORTED" | "506 VARIANT_ALSO_NEGOTIATES" | "507 INSUFFICIENT_STORAGE" | "508 LOOP_DETECTED" | "509 BANDWIDTH_LIMIT_EXCEEDED" | "510 NOT_EXTENDED" | "511 NETWORK_AUTHENTICATION_REQUIRED";
+      success: boolean;
+      errCode?: string;
+      message: string;
+      debugMessage?: string;
+      data?: Record<string, never>;
       /** Format: date-time */
       timestamp?: string;
-      message?: string;
-      debugMessage?: string;
-      result: string;
-      data?: Record<string, never>;
     };
     UserInfoModel: {
       username: string;
-      userPassword?: string;
-      team?: string;
-      /** Format: int32 */
-      teamId?: number;
-      role?: string;
       fullname: string;
       mailid?: string;
-      switchTeams?: boolean;
+      role: string;
+      userPassword: string;
+      /** Format: int32 */
+      teamId: number;
+      switchTeams: boolean;
       switchAllowedTeamIds?: (number)[];
       switchAllowedTeamNames?: (string)[];
-      tenantName?: string;
       /** Format: int32 */
       tenantId?: number;
-      totalNoPages?: string;
-      allPageNos?: (string)[];
     };
     TopicConfigEntry: {
       configKey?: string;
@@ -622,6 +617,8 @@ export type components = {
       description: string;
       noOfReplicas: string;
       teamname: string;
+      /** Format: int32 */
+      teamId: number;
       envId: string;
       environmentsList: (string)[];
       showEditTopic: boolean;
@@ -635,25 +632,13 @@ export type components = {
     };
     KafkaConnectorModel: {
       /** Format: int32 */
-      sequence?: number;
-      /** Format: int32 */
-      connectorId?: number;
-      connectorName?: string;
-      connectorConfig?: string;
-      environmentName?: string;
-      environmentId?: string;
-      teamName?: string;
-      possibleTeams?: (string)[];
-      allPageNos?: (string)[];
-      totalNoPages?: string;
-      currentPage?: string;
-      remarks?: string;
-      documentation?: string;
-      environmentsList?: (string)[];
-      description?: string;
-      showEditConnector?: boolean;
-      showDeleteConnector?: boolean;
-      connectorDeletable?: boolean;
+      connectorId: number;
+      connectorName: string;
+      documentation: string;
+    };
+    ResetPasswordInfo: {
+      passwordSent: string;
+      userFound: string;
     };
     RequestVerdict: {
       reason?: string;
@@ -806,10 +791,6 @@ export type components = {
       projectName?: string;
       serviceName?: string;
       publicKey?: string;
-      showDeleteCluster?: boolean;
-      clusterStatus?: string;
-      totalNoPages?: string;
-      allPageNos?: (string)[];
     };
     ServiceAccounts: {
       /** Format: int32 */
@@ -831,6 +812,23 @@ export type components = {
       teammail?: string;
       envList?: (string)[];
     };
+    UserInfoModelResponse: {
+      username: string;
+      fullname: string;
+      mailid: string;
+      role: string;
+      switchTeams: boolean;
+      team: string;
+      /** Format: int32 */
+      teamId: number;
+      /** Format: int32 */
+      tenantId: number;
+      userPassword?: string;
+      switchAllowedTeamIds?: (number)[];
+      switchAllowedTeamNames?: (string)[];
+      totalNoPages?: string;
+      allPageNos?: (string)[];
+    };
     RequestEntityStatusCount: {
       /** @enum {string} */
       requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
@@ -851,6 +849,32 @@ export type components = {
       requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       /** Format: int64 */
       count?: number;
+    };
+    RegisterUserInfoModelResponse: {
+      username: string;
+      fullname: string;
+      mailid?: string;
+      pwd?: string;
+      team?: string;
+      /** Format: int32 */
+      teamId?: number;
+      role?: string;
+      status?: string;
+      /** Format: date-time */
+      registeredTime?: string;
+      approver?: string;
+      registrationId?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      tenantName?: string;
+    };
+    EnvUpdatedStatus: {
+      result: string;
+      envstatus: string;
+    };
+    TopicsCountPerEnv: {
+      status?: string;
+      topicsCount?: string;
     };
     TopicTeamResponse: {
       team?: string;
@@ -898,6 +922,22 @@ export type components = {
       deletable?: boolean;
       editable?: boolean;
     };
+    TopicDetailsPerEnv: {
+      topicExists: boolean;
+      error?: string;
+      topicId?: string;
+      topicContents?: components["schemas"]["TopicInfo"];
+    };
+    TenantInfo: {
+      /** Format: int32 */
+      tenants?: number;
+      /** Format: int32 */
+      teams?: number;
+      /** Format: int32 */
+      clusters?: number;
+      /** Format: int32 */
+      topics?: number;
+    };
     ChartsJsOverview: {
       data?: (number)[];
       labels?: (string)[];
@@ -940,6 +980,39 @@ export type components = {
       type?: string;
       display?: boolean;
       position?: string;
+    };
+    SyncTopicsList: {
+      resultSet?: (components["schemas"]["TopicRequestsResponseModel"])[];
+      /** Format: int32 */
+      allTopicsCount?: number;
+    };
+    EnvIdInfo: {
+      id?: string;
+      name?: string;
+    };
+    KafkaConnectorModelResponse: {
+      /** Format: int32 */
+      sequence?: number;
+      /** Format: int32 */
+      connectorId: number;
+      connectorName: string;
+      environmentId: string;
+      teamName: string;
+      /** Format: int32 */
+      teamId: number;
+      showEditConnector: boolean;
+      showDeleteConnector: boolean;
+      connectorDeletable: boolean;
+      allPageNos?: (string)[];
+      totalNoPages?: string;
+      currentPage?: string;
+      environmentsList?: (string)[];
+      possibleTeams?: (string)[];
+      connectorConfig?: string;
+      environmentName?: string;
+      remarks?: string;
+      documentation?: string;
+      description?: string;
     };
     EnvModelResponse: {
       id: string;
@@ -1044,6 +1117,39 @@ export type components = {
           [key: string]: string | undefined;
         })[];
     };
+    KwReport: {
+      data?: string;
+      filename?: string;
+    };
+    SupportedProtocolInfo: {
+      name?: string;
+      value?: string;
+    };
+    EnvParams: {
+      defaultPartitions?: (string)[];
+      partitionsList?: (string)[];
+      defaultRepFactor?: (string)[];
+      replicationFactorList?: (string)[];
+      topicPrefix?: (string)[];
+      topicSuffix?: (string)[];
+    };
+    DbAuthInfo: {
+      dbauth: string;
+    };
+    DashboardStats: {
+      /** Format: int32 */
+      producerCount?: number;
+      /** Format: int32 */
+      consumerCount?: number;
+      /** Format: int32 */
+      teamMembersCount?: number;
+    };
+    OffsetDetails: {
+      topicPartitionId?: string;
+      currentOffset?: string;
+      endOffset?: string;
+      lag?: string;
+    };
     KafkaConnectorRequestsResponseModel: {
       environment: string;
       environmentName: string;
@@ -1079,7 +1185,7 @@ export type components = {
       editable?: boolean;
     };
     ConnectorOverview: {
-      topicInfoList?: (components["schemas"]["KafkaConnectorModel"])[];
+      connectorInfoList?: (components["schemas"]["KafkaConnectorModelResponse"])[];
       topicHistoryList?: (components["schemas"]["TopicHistory"])[];
       promotionDetails?: {
         [key: string]: string | undefined;
@@ -1097,6 +1203,31 @@ export type components = {
       approvedBy?: string;
       approvedTime?: string;
       remarks?: string;
+    };
+    ConnectorOverviewPerEnv: {
+      connectorExists?: boolean;
+      error?: string;
+      /** Format: int32 */
+      connectorId?: number;
+      connectorContents?: components["schemas"]["KafkaConnectorModelResponse"];
+    };
+    KwClustersModelResponse: {
+      /** Format: int32 */
+      clusterId: number;
+      clusterName: string;
+      bootstrapServers: string;
+      /** @enum {string} */
+      protocol: "PLAINTEXT" | "SSL" | "SASL_PLAIN" | "SASL_SSL_PLAIN_MECHANISM" | "SASL_SSL_GSSAPI_MECHANISM" | "SASL_SSL_SCRAM_MECHANISM_256" | "SASL_SSL_SCRAM_MECHANISM_512";
+      clusterType: string;
+      kafkaFlavor: string;
+      showDeleteCluster: boolean;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      clusterStatus?: string;
+      associatedServers?: string;
+      projectName?: string;
+      serviceName?: string;
+      publicKey?: string;
     };
     ClusterInfo: {
       aivenCluster: boolean;
@@ -1155,10 +1286,21 @@ export type components = {
       supportlink: string;
       myteamtopics: string;
     };
+    KwPropertiesResponse: {
+      result?: string;
+      kwkey?: string;
+      kwvalue?: string;
+      kwdesc?: string;
+    };
     ServerConfigProperties: {
       id?: string;
       key?: string;
       value?: string;
+    };
+    ServiceAccountDetails: {
+      username?: string;
+      password?: string;
+      accountFound?: boolean;
     };
     ActivityLog: {
       /** Format: int32 */
@@ -1197,6 +1339,10 @@ export type components = {
       topicDocumentation?: string;
       /** Format: int32 */
       topicIdForDocumentation?: number;
+    };
+    AclsCountPerEnv: {
+      status?: string;
+      aclsCount?: string;
     };
     AclRequestsResponseModel: {
       environment: string;
@@ -1240,6 +1386,11 @@ export type components = {
       aclResourceType?: string;
       deletable?: boolean;
       editable?: boolean;
+    };
+    AclCommands: {
+      result?: string;
+      aclCommandSsl?: string;
+      aclCommandPlaintext?: string;
     };
   };
   responses: never;
@@ -1564,9 +1715,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": {
-            [key: string]: string | undefined;
-          };
+          "*/*": components["schemas"]["ResetPasswordInfo"];
         };
       };
     };
@@ -2319,7 +2468,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["UserInfoModel"])[];
+          "application/json": (components["schemas"]["UserInfoModelResponse"])[];
         };
       };
     };
@@ -2381,7 +2530,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["RegisterUserInfoModel"];
+          "application/json": components["schemas"]["RegisterUserInfoModelResponse"];
         };
       };
     };
@@ -2396,7 +2545,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["UserInfoModel"];
+          "application/json": components["schemas"]["UserInfoModelResponse"];
         };
       };
     };
@@ -2411,9 +2560,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["EnvUpdatedStatus"];
         };
       };
     };
@@ -2425,7 +2572,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         topicnamesearch?: string;
-        teamName?: string;
+        teamId?: number;
         topicType?: string;
       };
     };
@@ -2445,7 +2592,7 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         topicnamesearch?: string;
-        teamName?: string;
+        teamId?: number;
         topicType?: string;
       };
     };
@@ -2484,9 +2631,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["TopicsCountPerEnv"];
         };
       };
     };
@@ -2537,6 +2682,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         teamId?: number;
         env?: string;
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
@@ -2581,9 +2727,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: unknown | undefined;
-          };
+          "application/json": components["schemas"]["TopicDetailsPerEnv"];
         };
       };
     };
@@ -2603,9 +2747,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: number | undefined;
-          };
+          "application/json": components["schemas"]["TenantInfo"];
         };
       };
     };
@@ -2651,9 +2793,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: unknown | undefined;
-          };
+          "application/json": components["schemas"]["SyncTopicsList"];
         };
       };
     };
@@ -2663,9 +2803,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ({
-              [key: string]: string | undefined;
-            })[];
+          "application/json": (components["schemas"]["EnvIdInfo"])[];
         };
       };
     };
@@ -2684,7 +2822,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KafkaConnectorModel"])[];
+          "application/json": (components["schemas"]["KafkaConnectorModelResponse"])[];
         };
       };
     };
@@ -2754,9 +2892,9 @@ export type operations = {
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         topic?: string;
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         env?: string;
         search?: string;
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
       };
@@ -2779,6 +2917,7 @@ export type operations = {
         topic?: string;
         env?: string;
         search?: string;
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
@@ -2879,7 +3018,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["RegisterUserInfoModel"])[];
+          "application/json": (components["schemas"]["RegisterUserInfoModelResponse"])[];
         };
       };
     };
@@ -2899,7 +3038,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["UserInfoModel"];
+          "application/json": components["schemas"]["UserInfoModelResponse"];
         };
       };
     };
@@ -2909,9 +3048,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["KwReport"];
         };
       };
     };
@@ -2921,9 +3058,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["KwReport"];
         };
       };
     };
@@ -2933,9 +3068,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ({
-              [key: string]: string | undefined;
-            })[];
+          "application/json": (components["schemas"]["SupportedProtocolInfo"])[];
         };
       };
     };
@@ -3027,9 +3160,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: (string)[] | undefined;
-          };
+          "application/json": components["schemas"]["EnvParams"];
         };
       };
     };
@@ -3055,9 +3186,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["DbAuthInfo"];
         };
       };
     };
@@ -3067,9 +3196,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["DashboardStats"];
         };
       };
     };
@@ -3086,9 +3213,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ({
-              [key: string]: string | undefined;
-            })[];
+          "application/json": (components["schemas"]["OffsetDetails"])[];
         };
       };
     };
@@ -3100,14 +3225,14 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         connectornamesearch?: string;
-        teamName?: string;
+        teamId?: number;
       };
     };
     responses: {
       /** @description OK */
       200: {
         content: {
-          "application/json": ((components["schemas"]["KafkaConnectorModel"])[])[];
+          "application/json": ((components["schemas"]["KafkaConnectorModelResponse"])[])[];
         };
       };
     };
@@ -3118,10 +3243,11 @@ export type operations = {
         pageNo: string;
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         search?: string;
+        isMyRequest?: boolean;
       };
     };
     responses: {
@@ -3141,6 +3267,7 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         search?: string;
       };
     };
@@ -3179,9 +3306,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -3197,9 +3322,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: unknown | undefined;
-          };
+          "application/json": components["schemas"]["ConnectorOverviewPerEnv"];
         };
       };
     };
@@ -3214,7 +3337,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KwClustersModel"])[];
+          "application/json": (components["schemas"]["KwClustersModelResponse"])[];
         };
       };
     };
@@ -3232,7 +3355,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": (components["schemas"]["KwClustersModel"])[];
+          "application/json": (components["schemas"]["KwClustersModelResponse"])[];
         };
       };
     };
@@ -3263,7 +3386,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["KwClustersModel"];
+          "application/json": components["schemas"]["KwClustersModelResponse"];
         };
       };
     };
@@ -3335,9 +3458,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": ({
-              [key: string]: string | undefined;
-            })[];
+          "application/json": (components["schemas"]["KwPropertiesResponse"])[];
         };
       };
     };
@@ -3362,7 +3483,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"];
+          "application/json": (string)[];
         };
       };
     };
@@ -3380,7 +3501,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ServiceAccountDetails"];
         };
       };
     };
@@ -3439,9 +3560,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -3471,9 +3590,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["AclsCountPerEnv"];
         };
       };
     };
@@ -3510,7 +3627,9 @@ export type operations = {
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         topic?: string;
         env?: string;
+        search?: string;
         aclType?: "PRODUCER" | "CONSUMER";
+        operationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
       };
     };
@@ -3528,9 +3647,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["AclCommands"];
         };
       };
     };

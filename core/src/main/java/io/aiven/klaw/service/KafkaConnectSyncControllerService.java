@@ -1,5 +1,12 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_SYNC_102;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_SYNC_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_SYNC_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_SYNC_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_ERR_101;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -10,14 +17,13 @@ import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.SyncConnectorUpdates;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -43,9 +49,7 @@ public class KafkaConnectSyncControllerService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  public Map<String, String> getConnectorDetails(String connectorName, String envId)
-      throws KlawException {
-    Map<String, String> response = new HashMap<>();
+  public ApiResponse getConnectorDetails(String connectorName, String envId) throws KlawException {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     KwClusters kwClusters =
         manageDatabase
@@ -62,14 +66,11 @@ public class KafkaConnectSyncControllerService {
 
     try {
       String schemaOfObj = OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(res);
-      response.put("result", schemaOfObj);
-      return response;
+      return ApiResponse.builder().success(true).message(schemaOfObj).build();
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
+      return ApiResponse.builder().success(false).message(e.getMessage()).build();
     }
-
-    response.put("result", res.toString());
-    return response;
   }
 
   public ApiResponse updateSyncConnectors(List<SyncConnectorUpdates> updatedSyncTopics)
@@ -78,7 +79,10 @@ public class KafkaConnectSyncControllerService {
     String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     // tenant filtering
@@ -108,7 +112,10 @@ public class KafkaConnectSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userName)
             .contains(topicUpdate.getEnvSelected())) {
-          return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+          return ApiResponse.builder()
+              .success(false)
+              .message(ApiResultStatus.NOT_AUTHORIZED.value)
+              .build();
         }
         existingTopics = getConnectorsFromName(topicUpdate.getConnectorName(), tenantId);
 
@@ -127,8 +134,7 @@ public class KafkaConnectSyncControllerService {
           }
         } else if (!Objects.equals(topicUpdate.getEnvSelected(), syncCluster)) {
           erroredTopicsExist.append(topicUpdate.getConnectorName()).append(" ");
-          if (checkInPromotionOrder(
-              topicUpdate.getConnectorName(), topicUpdate.getEnvSelected(), orderOfEnvs))
+          if (checkInPromotionOrder(topicUpdate.getEnvSelected(), orderOfEnvs))
             topicsDontExistInMainCluster = true;
         }
 
@@ -140,7 +146,8 @@ public class KafkaConnectSyncControllerService {
         } catch (KlawException | JsonProcessingException e) {
           log.error("Exception:", e);
           return ApiResponse.builder()
-              .result(topicUpdate.getConnectorName() + " Connector config could not be retrieved.")
+              .success(false)
+              .message(String.format(KAFKA_CONNECT_SYNC_ERR_101, topicUpdate.getConnectorName()))
               .build();
         }
 
@@ -155,7 +162,7 @@ public class KafkaConnectSyncControllerService {
           t.setEnvironment(topicUpdate.getEnvSelected());
           t.setTeamId(
               manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
-          t.setDescription("Connector description");
+          t.setDescription(KAFKA_CONNECT_SYNC_102);
           t.setExistingConnector(false);
           t.setTenantId(tenantId);
 
@@ -207,7 +214,7 @@ public class KafkaConnectSyncControllerService {
             t.setEnvironment(topicUpdate.getEnvSelected());
             t.setTeamId(
                 manageDatabase.getTeamIdFromTeamName(tenantId, topicUpdate.getTeamSelected()));
-            t.setDescription("Connector description");
+            t.setDescription(KAFKA_CONNECT_SYNC_102);
             t.setExistingConnector(false);
             t.setTenantId(tenantId);
 
@@ -218,14 +225,14 @@ public class KafkaConnectSyncControllerService {
     }
 
     if (updatedSyncTopics.size() == 0 && updatedSyncTopicsDelete.size() > 0) {
-      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     }
 
     if (topicsDontExistInMainCluster) {
       return ApiResponse.builder()
-          .result(
-              "Failure. Please sync up the team of the following connector(s) first in"
-                  + " main Sync cluster"
+          .success(false)
+          .message(
+              KAFKA_CONNECT_SYNC_ERR_102
                   + " :"
                   + syncCluster
                   + ". \n Topics : "
@@ -235,13 +242,9 @@ public class KafkaConnectSyncControllerService {
 
     if (topicsWithDiffTeams) {
       return ApiResponse.builder()
-          .result(
-              "Failure. The following connectors are being synchronized with"
-                  + " a different team, when compared to main Sync cluster"
-                  + " :"
-                  + syncCluster
-                  + ". \n Topics : "
-                  + erroredTopics)
+          .success(false)
+          .message(
+              KAFKA_CONNECT_SYNC_ERR_103 + " :" + syncCluster + ". \n Topics : " + erroredTopics)
           .build();
     }
 
@@ -249,12 +252,15 @@ public class KafkaConnectSyncControllerService {
       try {
         String result =
             manageDatabase.getHandleDbRequests().addToSyncConnectors(kafkaConnectorList);
-        return ApiResponse.builder().result(result).build();
+        return ApiResponse.builder()
+            .success((result.equals(ApiResultStatus.SUCCESS.value)))
+            .message(result)
+            .build();
       } catch (Exception e) {
         throw new KlawException(e.getMessage());
       }
     } else {
-      return ApiResponse.builder().result("No record updated.").build();
+      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
     }
   }
 
@@ -281,7 +287,7 @@ public class KafkaConnectSyncControllerService {
       List<SyncConnectorUpdates> updatedSyncTopics, List<Integer> updatedSyncTopicsDelete) {
     List<SyncConnectorUpdates> updatedSyncTopicsUpdated = new ArrayList<>();
     for (SyncConnectorUpdates updatedSyncTopic : updatedSyncTopics) {
-      if ("REMOVE FROM KLAW".equals(updatedSyncTopic.getTeamSelected())) {
+      if (SYNC_102.equals(updatedSyncTopic.getTeamSelected())) {
         updatedSyncTopicsDelete.add(Integer.parseInt(updatedSyncTopic.getSequence()));
       } else {
         updatedSyncTopicsUpdated.add(updatedSyncTopic);
@@ -298,18 +304,16 @@ public class KafkaConnectSyncControllerService {
     return updatedSyncTopicsUpdated;
   }
 
-  private boolean checkInPromotionOrder(String topicname, String envId, String orderOfEnvs) {
+  private boolean checkInPromotionOrder(String envId, String orderOfEnvs) {
     List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
     return orderedEnv.contains(envId);
   }
 
   public List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId) {
-    List<KwKafkaConnector> connectors =
-        manageDatabase.getHandleDbRequests().getConnectorsFromName(connectorName, tenantId);
-    return connectors;
+    return manageDatabase.getHandleDbRequests().getConnectorsFromName(connectorName, tenantId);
   }
 
-  public List<KafkaConnectorModel> getSyncConnectors(
+  public List<KafkaConnectorModelResponse> getSyncConnectors(
       String envId,
       String pageNo,
       String currentPage,
@@ -321,7 +325,7 @@ public class KafkaConnectSyncControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     // get from metastore
-    List<KafkaConnectorModel> kafkaConnectorModelSourceList =
+    List<KafkaConnectorModelResponse> kafkaConnectorModelSourceList =
         getSyncConnectorsList(envId, teamList, tenantId);
     if (connectorNameSearch != null && connectorNameSearch.length() > 0) {
       final String topicSearchFilter = connectorNameSearch;
@@ -331,12 +335,12 @@ public class KafkaConnectSyncControllerService {
               .collect(Collectors.toList());
     }
     List<String> allSyncConnectors = new ArrayList<>();
-    for (KafkaConnectorModel kafkaConnectorModel : kafkaConnectorModelSourceList) {
+    for (KafkaConnectorModelResponse kafkaConnectorModel : kafkaConnectorModelSourceList) {
       allSyncConnectors.add(kafkaConnectorModel.getConnectorName());
     }
 
     // get from cluster
-    List<KafkaConnectorModel> kafkaConnectorModelClusterList = new ArrayList<>();
+    List<KafkaConnectorModelResponse> kafkaConnectorModelClusterList = new ArrayList<>();
     KwClusters kwClusters =
         manageDatabase
             .getClusters(KafkaClustersType.KAFKA_CONNECT, tenantId)
@@ -359,7 +363,7 @@ public class KafkaConnectSyncControllerService {
       }
 
       for (String allConnector : allConnectors) {
-        KafkaConnectorModel kafkaConnectorModel = new KafkaConnectorModel();
+        KafkaConnectorModelResponse kafkaConnectorModel = new KafkaConnectorModelResponse();
         kafkaConnectorModel.setConnectorName(allConnector);
         kafkaConnectorModel.setEnvironmentId(envId);
         kafkaConnectorModel.setEnvironmentName(getKafkaConnectorEnvDetails(envId).getName());
@@ -374,15 +378,14 @@ public class KafkaConnectSyncControllerService {
 
       kafkaConnectorModelClusterList.addAll(kafkaConnectorModelSourceList);
 
-      for (KafkaConnectorModel kafkaConnectorModel : kafkaConnectorModelSourceList) {
+      for (KafkaConnectorModelResponse kafkaConnectorModel : kafkaConnectorModelSourceList) {
         if (!allConnectors.contains(kafkaConnectorModel.getConnectorName())) {
-          for (KafkaConnectorModel kafkaConnectorModelCluster : kafkaConnectorModelClusterList) {
+          for (KafkaConnectorModelResponse kafkaConnectorModelCluster :
+              kafkaConnectorModelClusterList) {
             if (Objects.equals(
                 kafkaConnectorModelCluster.getConnectorName(),
                 kafkaConnectorModel.getConnectorName())) {
               kafkaConnectorModelCluster.setRemarks("DELETED");
-              //                            kafkaConnectorModelCluster.setPossibleTeams(teamList);
-              //                            possibleTeams.add("REMOVE FROM KLAW");
             }
           }
         }
@@ -390,7 +393,7 @@ public class KafkaConnectSyncControllerService {
 
       // set sequence
       int i = 0;
-      for (KafkaConnectorModel kafkaConnectorModel : kafkaConnectorModelClusterList) {
+      for (KafkaConnectorModelResponse kafkaConnectorModel : kafkaConnectorModelClusterList) {
         kafkaConnectorModel.setSequence(i);
         i++;
 
@@ -413,16 +416,16 @@ public class KafkaConnectSyncControllerService {
     return new ArrayList<>();
   }
 
-  private List<KafkaConnectorModel> getSyncConnectorsList(
+  private List<KafkaConnectorModelResponse> getSyncConnectorsList(
       String envId, List<String> teamList, int tenantId) {
     //         Get Sync connectors
     List<KwKafkaConnector> connectorsFromSOT =
         manageDatabase.getHandleDbRequests().getSyncConnectors(envId, null, tenantId);
 
-    List<KafkaConnectorModel> kafkaConnectorModelSourceList = new ArrayList<>();
+    List<KafkaConnectorModelResponse> kafkaConnectorModelSourceList = new ArrayList<>();
 
     for (KwKafkaConnector kwKafkaConnector : connectorsFromSOT) {
-      KafkaConnectorModel kafkaConnectorModel = new KafkaConnectorModel();
+      KafkaConnectorModelResponse kafkaConnectorModel = new KafkaConnectorModelResponse();
       kafkaConnectorModel.setEnvironmentName(
           getKafkaConnectorEnvDetails(kwKafkaConnector.getEnvironment()).getName());
       kafkaConnectorModel.setEnvironmentId(kwKafkaConnector.getEnvironment());
@@ -437,10 +440,10 @@ public class KafkaConnectSyncControllerService {
     return kafkaConnectorModelSourceList;
   }
 
-  private ArrayList<KafkaConnectorModel> getConnectorsPaged(
-      List<KafkaConnectorModel> origActivityList, String pageNo, String currentPage) {
+  private ArrayList<KafkaConnectorModelResponse> getConnectorsPaged(
+      List<KafkaConnectorModelResponse> origActivityList, String pageNo, String currentPage) {
 
-    ArrayList<KafkaConnectorModel> newList = new ArrayList<>();
+    ArrayList<KafkaConnectorModelResponse> newList = new ArrayList<>();
 
     if (origActivityList != null && origActivityList.size() > 0) {
       int totalRecs = origActivityList.size();
@@ -456,7 +459,7 @@ public class KafkaConnectSyncControllerService {
       commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
 
       for (int i = 0; i < totalRecs; i++) {
-        KafkaConnectorModel activityLog = origActivityList.get(i);
+        KafkaConnectorModelResponse activityLog = origActivityList.get(i);
         if (i >= startVar && i < lastVar) {
           activityLog.setAllPageNos(numList);
           activityLog.setTotalNoPages("" + totalPages);

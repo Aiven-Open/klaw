@@ -6,21 +6,23 @@ const defaultEnvironmentDTO: KlawApiModel<"EnvModelResponse"> = {
   name: "DEV",
   type: "kafka",
   tenantId: 101,
-  topicprefix: undefined,
-  topicsuffix: undefined,
   clusterId: 1,
   tenantName: "default",
   clusterName: "DEV",
   envStatus: "ONLINE",
   otherParams:
     "default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix=",
+  showDeleteEnv: false,
+  totalNoPages: "1",
+  allPageNos: ["1"],
+  associatedEnv: undefined,
+  topicprefix: undefined,
+  topicsuffix: undefined,
   defaultPartitions: undefined,
   maxPartitions: undefined,
   defaultReplicationFactor: undefined,
   maxReplicationFactor: undefined,
-  showDeleteEnv: false,
-  totalNoPages: "1",
-  allPageNos: ["1"],
+  clusterType: "ALL",
 };
 
 function createMockEnvironmentDTO(

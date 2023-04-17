@@ -25,14 +25,17 @@ For the versions available, see the [tags on this repository](https://github.com
 - Topics (approval): Create, Update, Delete, Promote
   - React UI - New look and feel for Browse topics, Create topic Request
   - React UI - New look and feel for Approving topics, ACLs, Schemas
+  - React UI - New look and feel for viewing 'My team's Requests' for topics, ACLs and Schemas 
   
 - Acls (approval):  Create,Delete
   - React UI - Create Acl Request 
+  - Service accounts created for ACLs are assigned to the creating team
 - Connectors (approval): Create
   - Any connector can be created as long as the required plugin libraries are installed on the server.  
 - Avro Schemas (approval): Create
   - View all available versions of the subjects per topic
   - React UI - Create Schema Request
+  - Pre validation of Schemas compatibility on Schema request creation
 - Topic Overview :
   - Topic Config
   - Promote
@@ -58,6 +61,7 @@ For the versions available, see the [tags on this repository](https://github.com
 - Configure Clusters and Environments
   - Clusters can be created connecting to Apache Kafka clusters. (Cluster Management Api should be configured)
   - Environments are wrappers over clusters, enforcing flexible configs like prefix, suffix etc
+  - Kafka Rest Proxy can be added to the cluster to store the rest proxy url information.
 
 - Users, Teams & Authorizations
   - Configurable users, teams
@@ -165,4 +169,4 @@ Klaw (formerly Kafkawize) is maintained by, [Aiven](https://aiven.io/) open sour
 Recent contributors are listed on the GitHub project page,
 https://github.com/aiven/klaw/graphs/contributors
 
-Copyright (c) 2022 Aiven Oy and klaw project contributors.
+Copyright (c) 2023 Aiven Oy and klaw project contributors.

@@ -64,11 +64,13 @@ describe("useFiltersValues.tsx", () => {
         result: { current },
       } = renderHook(() => useFiltersValues(), {
         wrapper: ({ children }) => (
-          <MemoryRouter initialEntries={["/?team=1"]}>{children}</MemoryRouter>
+          <MemoryRouter initialEntries={["/?teamId=1"]}>
+            {children}
+          </MemoryRouter>
         ),
       });
 
-      expect(current.team).toBe("1");
+      expect(current.teamId).toBe("1");
     });
     it("gets the correct showOnlyMyRequests filter value", () => {
       const {
@@ -95,6 +97,20 @@ describe("useFiltersValues.tsx", () => {
       });
 
       expect(current.requestType).toBe("CLAIM");
+    });
+
+    it("gets the correct search filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => (
+          <MemoryRouter initialEntries={["/?search=abc"]}>
+            {children}
+          </MemoryRouter>
+        ),
+      });
+
+      expect(current.search).toBe("abc");
     });
 
     describe("should get correct filter values when default value is passed", () => {
@@ -147,7 +163,7 @@ describe("useFiltersValues.tsx", () => {
           wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
         });
 
-        expect(current.team).toBe("2");
+        expect(current.teamId).toBe("2");
       });
       it("gets the correct showOnlyMyRequests filter value", () => {
         const {
@@ -172,6 +188,15 @@ describe("useFiltersValues.tsx", () => {
         );
 
         expect(current.requestType).toBe("CREATE");
+      });
+      it("gets the correct search filter value", () => {
+        const {
+          result: { current },
+        } = renderHook(() => useFiltersValues({ defaultSearch: "abc" }), {
+          wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+        });
+
+        expect(current.search).toBe("abc");
       });
     });
   });
@@ -244,11 +269,11 @@ describe("useFiltersValues.tsx", () => {
       });
 
       current.setFilterValue({
-        name: "team",
+        name: "teamId",
         value: "2",
       });
 
-      expect(window.location.search).toBe("?team=2&page=1");
+      expect(window.location.search).toBe("?teamId=2&page=1");
     });
     it("sets the correct showOnlyMyRequests filter value", () => {
       const {
@@ -277,6 +302,20 @@ describe("useFiltersValues.tsx", () => {
       });
 
       expect(window.location.search).toBe("?requestType=CREATE&page=1");
+    });
+    it("sets the correct search filter value", () => {
+      const {
+        result: { current },
+      } = renderHook(() => useFiltersValues(), {
+        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      });
+
+      current.setFilterValue({
+        name: "search",
+        value: "abc",
+      });
+
+      expect(window.location.search).toBe("?search=abc&page=1");
     });
   });
 });

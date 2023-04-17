@@ -109,7 +109,7 @@ describe("SchemaApprovals", () => {
     pageNo: "1",
     requestStatus: "CREATED",
     env: "ALL",
-    topic: "",
+    search: "",
   };
   beforeAll(() => {
     mockIntersectionObserver();
@@ -217,12 +217,14 @@ describe("SchemaApprovals", () => {
 
       expect(search).toBeVisible();
       expect(search).toHaveAccessibleDescription(
-        'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
       );
     });
 
     it("shows a table with all schema requests and a header row", () => {
-      const table = screen.getByRole("table", { name: "Schema requests" });
+      const table = screen.getByRole("table", {
+        name: "Schema approval requests, page 1 of 4",
+      });
       const rows = within(table).getAllByRole("row");
 
       expect(table).toBeVisible();
@@ -440,7 +442,9 @@ describe("SchemaApprovals", () => {
     });
 
     it("user can approve a request by clicking a button in the modal", async () => {
-      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockApproveSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
       const firstRequest = mockedApiResponseSchemaRequests.entries[0];
@@ -464,7 +468,9 @@ describe("SchemaApprovals", () => {
     });
 
     it("user can decline a request by clicking a button in the modal", async () => {
-      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockApproveSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
       const firstRequest = mockedApiResponseSchemaRequests.entries[0];
@@ -542,6 +548,27 @@ describe("SchemaApprovals", () => {
       });
     });
 
+    it("enables user to filter by 'request type'", async () => {
+      const select = screen.getByLabelText("Filter by request type");
+
+      const option = within(select).getByRole("option", {
+        name: "Create",
+      });
+
+      expect(option).toBeEnabled();
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveDisplayValue("Create");
+
+      await waitFor(() =>
+        expect(mockGetSchemaRequestsForApprover).toHaveBeenCalledWith({
+          ...defaultApiParams,
+          operationType: "CREATE",
+        })
+      );
+    });
+
     it("enables user to filter by 'environment'", async () => {
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -575,7 +602,7 @@ describe("SchemaApprovals", () => {
       await waitFor(() => {
         expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(2, {
           ...defaultApiParams,
-          topic: "myTopic",
+          search: "myTopic",
         });
       });
     });
@@ -637,7 +664,9 @@ describe("SchemaApprovals", () => {
     });
 
     it("send a decline request api call if user declines a schema request", async () => {
-      mockDeclineSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeclineSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
 
       const declineButton = screen.getByRole("button", {
         name: `Decline schema request for ${testRequest.topicname}`,
@@ -666,7 +695,9 @@ describe("SchemaApprovals", () => {
     });
 
     it("updates the the data for the table if user declined a schema request", async () => {
-      mockDeclineSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeclineSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,
         defaultApiParams
@@ -774,7 +805,9 @@ describe("SchemaApprovals", () => {
     });
 
     it("send a approve request api call if user approves a schema request", async () => {
-      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockApproveSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
 
       const approveButton = screen.getByRole("button", {
         name: `Approve schema request for ${testRequest.topicname}`,
@@ -789,7 +822,9 @@ describe("SchemaApprovals", () => {
     });
 
     it("updates the the data for the table if user approves a schema request", async () => {
-      mockApproveSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockApproveSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,
         defaultApiParams

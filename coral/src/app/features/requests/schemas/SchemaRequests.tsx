@@ -62,7 +62,7 @@ function SchemaRequests() {
         pageNo: String(currentPage),
         env: environment,
         requestStatus: status !== defaultStatus ? status : undefined,
-        topic,
+        search: topic,
         isMyRequest: showOnlyMyRequests,
         operationType: requestType !== defaultType ? requestType : undefined,
       }),
@@ -166,7 +166,7 @@ function SchemaRequests() {
         filters={[
           <EnvironmentFilter
             key={"environments"}
-            isSchemaRegistryEnvironments
+            environmentEndpoint={"getSchemaRegistryEnvironments"}
           />,
           <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,
@@ -178,6 +178,9 @@ function SchemaRequests() {
             requests={schemaRequests?.entries || []}
             showDetails={openDetailsModal}
             showDeleteDialog={openDeleteModal}
+            ariaLabel={`Schema requests, page ${
+              schemaRequests?.currentPage ?? 0
+            } of ${schemaRequests?.totalPages ?? 0}`}
           />
         }
         pagination={pagination}

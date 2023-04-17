@@ -2,17 +2,18 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.ConnectorOverview;
-import io.aiven.klaw.model.KafkaConnectorModel;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.response.ConnectorOverview;
+import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
+import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import io.aiven.klaw.service.KafkaConnectControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -45,12 +46,14 @@ public class KafkaConnectController {
    * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or 'DELETED'
    * @param env The name of the environment you would like returned e.g. '1' or '4'
    * @param search A wildcard search term that searches topicNames.
+   * @param requestOperationType is a filter to only return requests of a certain operation type
+   *     e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param order allows the requestor to specify what order the pagination should be returned in *
    *     OLDEST_FIRST/NEWEST_FIRST
    * @return A List of Kafka Connector Requests filtered by the provided parameters.
    */
   @RequestMapping(
-      value = "/getConnectorRequestsForApproval",
+      value = "/getConnectorRequestsForApprover",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<KafkaConnectorRequestsResponseModel>> getCreatedConnectorRequests(
@@ -60,10 +63,12 @@ public class KafkaConnectController {
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
           Order order,
+      @RequestParam(value = "operationType", required = false)
+          RequestOperationType requestOperationType,
       @RequestParam(value = "search", required = false) String search) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getCreatedConnectorRequests(
-            pageNo, currentPage, requestStatus.value, env, order, search),
+            pageNo, currentPage, requestStatus.value, env, order, requestOperationType, search),
         HttpStatus.OK);
   }
 
@@ -114,14 +119,15 @@ public class KafkaConnectController {
    * @param currentPage Which Page are you currently on e.g. 1
    * @param requestStatus What type of requests are you looking for e.g. 'CREATED' or
    *     'DELETED' @Param operationType The RequestOperationType Create/Update/Promote/Claim/Delete
-   * @param requestOperationType is a filter to only return requests of a certain operation type
-   *     e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param env The name of the environment you would like returned e.g. '1' or '4' @Param search A
    *     wildcard search on the topic name allowing
    * @param order allows the requestor to specify what order the pagination should be returned in
    *     OLDEST_FIRST/NEWEST_FIRST @Param search A wildcard search that filters by a partial case
    *     insensitive match
+   * @param requestOperationType is a filter to only return requests of a certain operation type
+   *     e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param search A wildcard search term that searches topicNames.
+   * @param isMyRequest Only return requests created by the user calling the API
    * @return A list of Kafka Connector requests
    */
   @RequestMapping(
@@ -132,15 +138,24 @@ public class KafkaConnectController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
-      @RequestParam(value = "operationType", required = false)
-          RequestOperationType requestOperationType,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
           Order order,
-      @RequestParam(value = "search", required = false) String search) {
+      @RequestParam(value = "operationType", required = false)
+          RequestOperationType requestOperationType,
+      @RequestParam(value = "search", required = false) String search,
+      @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
+          boolean isMyRequest) {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorRequests(
-            pageNo, currentPage, requestStatus.value, requestOperationType, env, order, search),
+            pageNo,
+            currentPage,
+            requestStatus.value,
+            requestOperationType,
+            env,
+            order,
+            search,
+            isMyRequest),
         HttpStatus.OK);
   }
 
@@ -148,16 +163,16 @@ public class KafkaConnectController {
       value = "/getConnectors",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<List<KafkaConnectorModel>>> getConnectors(
+  public ResponseEntity<List<List<KafkaConnectorModelResponse>>> getConnectors(
       @RequestParam("env") String envId,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "connectornamesearch", required = false) String topicNameSearch,
-      @RequestParam(value = "teamName", required = false) String teamName)
+      @RequestParam(value = "teamId", required = false) Integer teamId)
       throws Exception {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectors(
-            envId, pageNo, currentPage, topicNameSearch, teamName),
+            envId, pageNo, currentPage, topicNameSearch, teamId),
         HttpStatus.OK);
   }
 
@@ -193,7 +208,7 @@ public class KafkaConnectController {
       value = "/getConnectorDetailsPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, Object>> getConnectorDetailsPerEnv(
+  public ResponseEntity<ConnectorOverviewPerEnv> getConnectorDetailsPerEnv(
       @RequestParam("envSelected") String envId,
       @RequestParam("connectorName") String connectorName) {
     return new ResponseEntity<>(

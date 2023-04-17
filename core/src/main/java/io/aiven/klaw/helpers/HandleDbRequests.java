@@ -5,6 +5,7 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.response.DashboardStats;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -47,6 +48,9 @@ public interface HandleDbRequests {
 
   /*--------------------Select */
 
+  List<Topic> getAllTopicsByTopicNameAndTeamIdAndTenantId(
+      String topicName, int teamId, int tenantId);
+
   String getRegistrationId(String userName);
 
   RegisterUserInfo getRegistrationDetails(String registrationId, String status);
@@ -80,7 +84,8 @@ public interface HandleDbRequests {
       RequestOperationType requestOperationType,
       String env,
       String wildcardSearch,
-      int tenantId);
+      int tenantId,
+      boolean isMyRequest);
 
   List<KafkaConnectorRequest> getCreatedConnectorRequests(
       String requestor,
@@ -88,6 +93,7 @@ public interface HandleDbRequests {
       boolean showRequestsOfAllTeams,
       int tenantId,
       String env,
+      RequestOperationType requestOperationType,
       String search);
 
   TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId);
@@ -144,8 +150,10 @@ public interface HandleDbRequests {
       String requestor,
       String status,
       boolean showRequestsOfAllTeams,
+      RequestOperationType requestOperationType,
       String topic,
       String environment,
+      String wildcardSearch,
       AclType aclType,
       int tenantId);
 
@@ -240,7 +248,7 @@ public interface HandleDbRequests {
 
   // Analytics - charts - dashboard
 
-  Map<String, String> getDashboardStats(Integer teamId, int tenantId);
+  DashboardStats getDashboardStats(Integer teamId, int tenantId);
 
   List<Topic> selectAllTopicsByTopictypeAndTeamname(String topicType, Integer teamId, int tenantId);
 
@@ -359,4 +367,34 @@ public interface HandleDbRequests {
   int findAllComponentsCountForTeam(Integer teamId, int tenantId);
 
   int getAllTopicsCountInAllTenants();
+
+  int findAllComponentsCountForUser(String userName, int tenantId);
+
+  List<Topic> getAllTopics();
+
+  List<TopicRequest> getAllTopicRequests();
+
+  List<KafkaConnectorRequest> getAllConnectorRequests();
+
+  List<KwKafkaConnector> getAllConnectors();
+
+  List<Acl> getAllSubscriptions();
+
+  List<AclRequests> getAllAclRequests();
+
+  List<SchemaRequest> getAllSchemaRequests();
+
+  List<MessageSchema> selectAllSchemas();
+
+  List<Team> selectTeams();
+
+  List<RegisterUserInfo> getAllRegisterUsersInfo();
+
+  List<Env> selectEnvs();
+
+  List<ActivityLog> getAllActivityLog();
+
+  List<KwProperties> selectKwProperties();
+
+  List<KwClusters> getClusters();
 }

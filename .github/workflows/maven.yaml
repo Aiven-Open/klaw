@@ -1,0 +1,43 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+env:
+  NODE_VERSION: 18
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java-version: [17, 19]
+        runs-on: [ubuntu-latest]
+    name: Jdk ${{ matrix.java-version }}, os ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+        with:
+          persist-credentials: false
+      - name: Setup node.js
+        uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install node.js uglify packages
+        run: npm install uglify-js -g && npm install uglifycss -g
+      - name: Set up JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@5ffc13f4174014e2d4d4572b3d74c3fa61aeb2c2 # v3.11.0
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: "temurin"
+          cache: maven
+      - name: Build and run tests with Maven
+        run: mvn --batch-mode --update-snapshots verify

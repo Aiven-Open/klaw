@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
@@ -210,18 +209,10 @@ public class CommonUtilsService {
 
   public String deriveCurrentPage(String pageNo, String currentPage, int totalPages) {
     switch (pageNo) {
-      case ">":
-        pageNo = (Integer.parseInt(currentPage) + 1) + "";
-        break;
-      case ">>":
-        pageNo = totalPages + "";
-        break;
-      case "<":
-        pageNo = (Integer.parseInt(currentPage) - 1) + "";
-        break;
-      case "<<":
-        pageNo = "1";
-        break;
+      case ">" -> pageNo = (Integer.parseInt(currentPage) + 1) + "";
+      case ">>" -> pageNo = totalPages + "";
+      case "<" -> pageNo = (Integer.parseInt(currentPage) - 1) + "";
+      case "<<" -> pageNo = "1";
     }
     return pageNo;
   }
@@ -316,7 +307,9 @@ public class CommonUtilsService {
     }
     final MetadataOperationType operationType =
         MetadataOperationType.of(kwMetadataUpdates.getOperationType());
-    if (entityType == EntityType.TEAM) {
+    if (entityType == EntityType.USERS) {
+      manageDatabase.loadUsersForAllTenants();
+    } else if (entityType == EntityType.TEAM) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadTenantTeamsForOneTenant(null, kwMetadataUpdates.getTenantId());
     } else if (entityType == EntityType.CLUSTER && operationType == MetadataOperationType.DELETE) {
@@ -342,12 +335,9 @@ public class CommonUtilsService {
       manageDatabase.loadRolesPermissionsOneTenant(null, kwMetadataUpdates.getTenantId());
     } else if (entityType == EntityType.PROPERTIES) {
       manageDatabase.loadKwPropsPerOneTenant(null, kwMetadataUpdates.getTenantId());
+    } else if (entityType == EntityType.TOPICS) {
+      manageDatabase.loadTopicsForOneTenant(kwMetadataUpdates.getTenantId());
     }
-  }
-
-  @Cacheable(cacheNames = "tenantsusernames", key = "#userId")
-  public int getTenantId(String userId) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userId).getTenantId();
   }
 
   public String getLoginUrl() {
@@ -436,12 +426,20 @@ public class CommonUtilsService {
         manageDatabase.getTeamsAndAllowedEnvs(getTeamId(userName), getTenantId(userName)));
   }
 
-  public Integer getTeamId(String userName) {
-    return manageDatabase.getHandleDbRequests().getUsersInfo(userName).getTeamId();
+  public int getTenantId(String userId) {
+    return manageDatabase.selectAllCachedUserInfo().stream()
+        .filter(userInfo -> userInfo.getUsername().equals(userId))
+        .findFirst()
+        .map(UserInfo::getTenantId)
+        .orElse(0);
   }
 
-  public boolean verifyIfTeamExists(int tenantId, String teamName) {
-    return manageDatabase.getTeamIdFromTeamName(tenantId, teamName) != null;
+  public Integer getTeamId(String userName) {
+    return manageDatabase.selectAllCachedUserInfo().stream()
+        .filter(userInfo -> userInfo.getUsername().equals(userName))
+        .findFirst()
+        .map(UserInfo::getTeamId)
+        .orElse(0);
   }
 
   public Object getPrincipal() {
@@ -527,10 +525,76 @@ public class CommonUtilsService {
         kafkaEnvsList.stream()
             .filter(env -> env.getId().equals(kafkaEnvId))
             .findFirst()
-            .ifPresent(env -> orderOfSchemaEnvs.append(env.getAssociatedEnv().getId()).append(","));
+            .ifPresent(
+                env -> {
+                  if (env.getAssociatedEnv() != null) {
+                    orderOfSchemaEnvs.append(env.getAssociatedEnv().getId()).append(",");
+                  }
+                });
       }
     }
 
     return orderOfSchemaEnvs.toString();
+  }
+
+  public List<Topic> getTopicsForTopicName(String topicName, int tenantId) {
+    if (topicName != null) {
+      return manageDatabase.getTopicsForTenant(tenantId).stream()
+          .filter(topic -> topic.getTopicname().equals(topicName))
+          .toList();
+    } else {
+      return manageDatabase.getTopicsForTenant(tenantId);
+    }
+  }
+
+  public List<Topic> getTopics(String env, Integer teamId, int tenantId) {
+    log.debug("getSyncTopics {} {}", env, teamId);
+    List<Topic> allTopicsList = manageDatabase.getTopicsForTenant(tenantId);
+    if (teamId == null || teamId.equals(1)) {
+      if (env == null || env.equals("ALL")) {
+        return allTopicsList;
+      } else {
+        Set<String> uniqueTopicNamesList =
+            new HashSet<>(
+                allTopicsList.stream()
+                    .filter(
+                        topic -> {
+                          return topic.getEnvironment().equals(env);
+                        })
+                    .map(Topic::getTopicname)
+                    .toList());
+        return getSubTopics(allTopicsList, uniqueTopicNamesList);
+      }
+    } else {
+      if (env == null || "ALL".equals(env)) {
+        return allTopicsList.stream().filter(topic -> topic.getTeamId().equals(teamId)).toList();
+      } else {
+        Set<String> uniqueTopicNamesList =
+            new HashSet<>(
+                allTopicsList.stream()
+                    .filter(
+                        topic -> {
+                          return topic.getEnvironment().equals(env)
+                              && topic.getTeamId().equals(teamId);
+                        })
+                    .map(Topic::getTopicname)
+                    .toList());
+        return getSubTopics(allTopicsList, uniqueTopicNamesList);
+      }
+    }
+  }
+
+  private List<Topic> getSubTopics(List<Topic> allTopicsList, Set<String> uniqueTopicNamesList) {
+    List<Topic> subTopicsList = new ArrayList<>();
+    uniqueTopicNamesList.forEach(
+        topicName -> {
+          allTopicsList.forEach(
+              topic -> {
+                if (topic.getTopicname().equals(topicName)) {
+                  subTopicsList.add(topic);
+                }
+              });
+        });
+    return subTopicsList;
   }
 }

@@ -4,14 +4,15 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicTeamResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
+import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
+import io.aiven.klaw.model.response.TopicTeamResponse;
 import io.aiven.klaw.service.TopicControllerService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -137,6 +138,8 @@ public class TopicController {
    * @param teamId The identifier of the team that created the request that you wish to filter the
    *     results by, e.g. 1,2,3
    * @param env The name of the environment you would like returned e.g. '1' or '4'
+   * @param requestOperationType is a filter to only return requests of a certain operation type *
+   *     e.g. CREATE/UPDATE/PROMOTE/CLAIM/DELETE
    * @param search A wildcard search term that searches topicNames.
    * @param order allows the requestor to specify what order the pagination should be returned in *
    *     OLDEST_FIRST/NEWEST_FIRST
@@ -152,12 +155,21 @@ public class TopicController {
       @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
       @RequestParam(value = "teamId", required = false) Integer teamId,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "operationType", required = false)
+          RequestOperationType requestOperationType,
       @RequestParam(value = "search", required = false) String search,
       @RequestParam(value = "order", required = false, defaultValue = "ASC_REQUESTED_TIME")
           Order order) {
     return new ResponseEntity<>(
         topicControllerService.getTopicRequestsForApprover(
-            pageNo, currentPage, requestStatus.value, teamId, env, search, order),
+            pageNo,
+            currentPage,
+            requestStatus.value,
+            teamId,
+            env,
+            requestOperationType,
+            search,
+            order),
         HttpStatus.OK);
   }
 
@@ -199,12 +211,12 @@ public class TopicController {
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
-      @RequestParam(value = "teamName", required = false) String teamName,
+      @RequestParam(value = "teamId", required = false) Integer teamId,
       @RequestParam(value = "topicType", required = false) String topicType) {
 
     return new ResponseEntity<>(
         topicControllerService.getTopics(
-            envId, pageNo, currentPage, topicNameSearch, teamName, topicType),
+            envId, pageNo, currentPage, topicNameSearch, teamId, topicType),
         HttpStatus.OK);
   }
 
@@ -224,7 +236,7 @@ public class TopicController {
       value = "/getTopicDetailsPerEnv",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, Object>> getTopicDetailsPerEnv(
+  public ResponseEntity<TopicDetailsPerEnv> getTopicDetailsPerEnv(
       @RequestParam("envSelected") String envId, @RequestParam("topicname") String topicName) {
     return new ResponseEntity<>(
         topicControllerService.getTopicDetailsPerEnv(envId, topicName), HttpStatus.OK);
@@ -238,6 +250,7 @@ public class TopicController {
   }
 
   // getTopic Events from kafka cluster
+  // <offsetId, content>
   @RequestMapping(
       value = "/getTopicEvents",
       method = RequestMethod.GET,

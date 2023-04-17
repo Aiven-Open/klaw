@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.BASE_OVERVIEW_101;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -9,10 +11,10 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -35,6 +37,7 @@ public abstract class BaseOverviewService {
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
+  private static final String MASKED_FOR_SECURITY = BASE_OVERVIEW_101;
   @Autowired protected ManageDatabase manageDatabase;
   @Autowired protected ClusterApiService clusterApiService;
   @Autowired protected CommonUtilsService commonUtilsService;
@@ -85,29 +88,37 @@ public abstract class BaseOverviewService {
     AclInfo mp;
 
     for (Acl aclSotItem : aclsFromSOT) {
-      mp = new AclInfo();
-      mp.setEnvironment(aclSotItem.getEnvironment());
-      Env envDetails = getEnvDetails(aclSotItem.getEnvironment(), tenantId);
-      mp.setEnvironmentName(envDetails.getName());
-      mp.setTopicname(aclSotItem.getTopicname());
-      mp.setAcl_ip(aclSotItem.getAclip());
-      mp.setAcl_ssl(aclSotItem.getAclssl());
-      mp.setTransactionalId(aclSotItem.getTransactionalId());
-      mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
-      mp.setConsumergroup(aclSotItem.getConsumergroup());
-      mp.setTopictype(aclSotItem.getAclType());
-      mp.setAclPatternType(aclSotItem.getAclPatternType());
-      mp.setReq_no(aclSotItem.getReq_no() + "");
-      mp.setKafkaFlavorType(
-          KafkaFlavors.of(
-              manageDatabase
-                  .getClusters(KafkaClustersType.KAFKA, tenantId)
-                  .get(envDetails.getClusterId())
-                  .getKafkaFlavor()));
-      if (aclSotItem.getTeamId() != null && aclSotItem.getTeamId().equals(loggedInUserTeam))
-        mp.setShowDeleteAcl(true);
+      if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) {
+        mp = new AclInfo();
+        mp.setEnvironment(aclSotItem.getEnvironment());
+        Env envDetails = getEnvDetails(aclSotItem.getEnvironment(), tenantId);
+        mp.setEnvironmentName(envDetails.getName());
+        mp.setTopicname(aclSotItem.getTopicname());
 
-      if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) aclList.add(mp);
+        mp.setTransactionalId(aclSotItem.getTransactionalId());
+        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
+        mp.setConsumergroup(aclSotItem.getConsumergroup());
+        mp.setTopictype(aclSotItem.getAclType());
+        mp.setAclPatternType(aclSotItem.getAclPatternType());
+        mp.setReq_no(aclSotItem.getReq_no() + "");
+        mp.setKafkaFlavorType(
+            KafkaFlavors.of(
+                manageDatabase
+                    .getClusters(KafkaClustersType.KAFKA, tenantId)
+                    .get(envDetails.getClusterId())
+                    .getKafkaFlavor()));
+        if (aclSotItem.getTeamId() != null && aclSotItem.getTeamId().equals(loggedInUserTeam)) {
+          mp.setShowDeleteAcl(true);
+          // Only add ACL info if it is the owning team that is requesting it
+          mp.setAcl_ip(aclSotItem.getAclip());
+          mp.setAcl_ssl(aclSotItem.getAclssl());
+        } else {
+          mp.setAcl_ip(MASKED_FOR_SECURITY);
+          mp.setAcl_ssl(MASKED_FOR_SECURITY);
+        }
+
+        aclList.add(mp);
+      }
     }
     return aclList;
   }
@@ -166,10 +177,9 @@ public abstract class BaseOverviewService {
 
   protected Env getEnvDetails(String envId, int tenantId) {
     Optional<Env> envFound =
-        envFound =
-            manageDatabase.getAllEnvList(tenantId).stream()
-                .filter(env -> Objects.equals(env.getId(), envId))
-                .findFirst();
+        manageDatabase.getAllEnvList(tenantId).stream()
+            .filter(env -> Objects.equals(env.getId(), envId))
+            .findFirst();
     return envFound.orElse(null);
   }
 }

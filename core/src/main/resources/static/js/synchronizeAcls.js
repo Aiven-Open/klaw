@@ -111,11 +111,11 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -246,14 +246,14 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                             data: $scope.updatedSyncArray
                         }).success(function(output) {
                             $scope.ShowSpinnerStatus = false;
-                            $scope.alert = "Acl Sync Request : "+output.result;
+                            $scope.alert = "Acl Sync Request : "+output.message;
                             $scope.updatedSyncArray = [];
 
 //                            $scope.getAcls(1);
-                             if(output.result === 'success'){
+                             if(output.success){
                               swal({
                             		   title: "",
-                            		   text: "Acl Sync Request : "+output.result,
+                            		   text: "Acl Sync Request : "+output.message,
                             		   timer: 2000,
                             		   showConfirmButton: false
                             	   });

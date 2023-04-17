@@ -1,50 +1,10 @@
 import { rest } from "msw";
 import { MswInstance } from "src/services/api-mocks/types";
 import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
-import {
-  createMockTopic,
-  createMockTopicApiResponse,
-} from "src/domain/topic/topic-test-helper";
+import { createMockTopicApiResponse } from "src/domain/topic/topic-test-helper";
 import { getHTTPBaseAPIUrl } from "src/config";
 import { KlawApiResponse, KlawApiModel } from "types/utils";
 import { TopicTeam, TopicNames } from "src/domain/topic";
-
-type MockedResponse = {
-  status?: number;
-  data: KlawApiResponse<"getTopics"> | { message: string };
-};
-
-type MockTopicGetRequestArgs =
-  | {
-      mswInstance: MswInstance;
-      response: MockedResponse;
-    }
-  | {
-      mswInstance: MswInstance;
-      responses: MockedResponse[];
-    };
-
-function mockTopicGetRequest({
-  mswInstance,
-  ...responseOrResponses
-}: MockTopicGetRequestArgs) {
-  const base = getHTTPBaseAPIUrl();
-  const responses =
-    "responses" in responseOrResponses
-      ? responseOrResponses.responses
-      : [responseOrResponses.response];
-
-  const handlers = responses.map((response) => {
-    return rest.get(`${base}/getTopics`, (_, res, ctx) => {
-      return res.once(
-        ctx.status(response.status ?? 200),
-        ctx.json(response.data)
-      );
-    });
-  });
-
-  mswInstance.use(...handlers);
-}
 
 function mockgetTopicAdvancedConfigOptions({
   mswInstance,
@@ -129,26 +89,6 @@ const mockedResponseMultiplePageTransformed = transformTopicApiResponse(
   mockedResponseMultiplePage
 );
 
-const mockedResponseTopicEnv: KlawApiResponse<"getTopics"> = [
-  [
-    createMockTopic({
-      topicName: "Topic 1",
-      topicId: 1,
-      environmentsList: ["DEV"],
-    }),
-    createMockTopic({
-      topicName: "Topic 2",
-      topicId: 2,
-      environmentsList: ["DEV"],
-    }),
-    createMockTopic({
-      topicName: "Topic 3",
-      topicId: 3,
-      environmentsList: ["DEV"],
-    }),
-  ],
-];
-
 // This mirrors the formatting formation used in the api call
 // for usage in tests that use the mock API
 const mockedResponseTransformed = transformTopicApiResponse(
@@ -179,10 +119,6 @@ const mockedResponseTopicNames: KlawApiResponse<"getTopicsOnly"> = [
   "topic-myteam",
 ];
 
-const mockedResponseTopicNamesMyTeamOnly: KlawApiResponse<"getTopicsOnly"> = [
-  "topic-myteam",
-];
-
 interface MockGetTopicTeamRequestArgs {
   mswInstance: MswInstance;
   response: TopicTeam;
@@ -208,11 +144,6 @@ const mockedResponseTopicTeamLiteral: KlawApiModel<"TopicTeamResponse"> = {
   team: "Ospo",
   teamId: 1,
 };
-const mockedResponseTopicTeamPrefixed: KlawApiModel<"TopicTeamResponse"> = {
-  status: true,
-  team: "prefixed-Ospo",
-  teamId: 2,
-};
 
 function mockGetTopicRequestsForApprover({
   mswInstance,
@@ -234,20 +165,16 @@ function mockGetTopicRequestsForApprover({
 }
 
 export {
-  mockTopicGetRequest,
   mockgetTopicAdvancedConfigOptions,
   mockRequestTopic,
   mockedResponseTransformed,
   mockedResponseMultiplePageTransformed,
   mockedResponseSinglePage,
   mockedResponseMultiplePage,
-  mockedResponseTopicEnv,
   defaultgetTopicAdvancedConfigOptionsResponse,
   mockGetTopicNames,
   mockedResponseTopicNames,
-  mockedResponseTopicNamesMyTeamOnly,
   mockGetTopicTeam,
   mockedResponseTopicTeamLiteral,
-  mockedResponseTopicTeamPrefixed,
   mockGetTopicRequestsForApprover,
 };

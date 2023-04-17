@@ -1,5 +1,23 @@
 package io.aiven.klaw.validation;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_108;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_109;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_110;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_111;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_112;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_113;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_115;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_116;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_117;
+
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
@@ -47,41 +65,35 @@ public class TopicRequestValidatorImpl
       // Verify if topic request type is Create/Promote
       if (RequestOperationType.CREATE != topicRequestModel.getRequestOperationType()
           && RequestOperationType.PROMOTE != topicRequestModel.getRequestOperationType()) {
-        updateConstraint(
-            constraintValidatorContext,
-            "Failure. Invalid Topic request type. Possible Value : Create/Promote");
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_101);
         return false;
       }
     } else if (permissionType.equals(PermissionType.REQUEST_EDIT_TOPICS)) {
       if (RequestOperationType.UPDATE != topicRequestModel.getRequestOperationType()) {
-        updateConstraint(
-            constraintValidatorContext,
-            "Failure. Invalid Topic request type. Possible Value : Update");
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_102);
         return false;
       }
     } else {
-      updateConstraint(constraintValidatorContext, "Failure. Invalid Permission Type for request.");
+      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_103);
       return false;
     }
 
     // tenant filtering
     if (!commonUtilsService.getEnvsFromUserId(userName).contains(topicRequestModel.getEnvironment())
         && RequestOperationType.PROMOTE != topicRequestModel.getRequestOperationType()) {
-      updateConstraint(
-          constraintValidatorContext,
-          "Failure. Not authorized to request topic for this environment.");
+      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_104);
       return false;
     }
 
     // check for null topic name
     if (topicRequestModel.getTopicname() == null) {
-      updateConstraint(constraintValidatorContext, "Failure. Please fill in topic name.");
+      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_105);
       return false;
     }
 
     // check for empty/whitespaces on topic name
     if (topicRequestModel.getTopicname().isBlank()) {
-      updateConstraint(constraintValidatorContext, "Failure. Please fill in a valid topic name.");
+      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_106);
       return false;
     }
 
@@ -92,16 +104,14 @@ public class TopicRequestValidatorImpl
       syncCluster = topicControllerService.getSyncCluster(tenantId);
     } catch (Exception e) {
       log.error("Tenant Configuration not found. " + tenantId, e);
-      updateConstraint(
-          constraintValidatorContext,
-          "Failure. Tenant configuration in Server config is missing. Please configure.");
+      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_107);
       return false;
     }
 
     // Verify if topic requesting team exists
     Integer teamId = commonUtilsService.getTeamId(userName);
     if (null == teamId || teamId == 0) {
-      updateConstraint(constraintValidatorContext, "Failure. Team doesn't exist.");
+      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_108);
       return false;
     }
 
@@ -116,8 +126,7 @@ public class TopicRequestValidatorImpl
                 // unique for tenant, getting the first element.
                 .getTeamId(),
             commonUtilsService.getTeamId(userName))) {
-      updateConstraint(
-          constraintValidatorContext, "Failure. This topic is owned by a different team.");
+      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_109);
       return false;
     }
 
@@ -130,7 +139,7 @@ public class TopicRequestValidatorImpl
     // Verify if topic request already exists
     if (topics != null) {
       if (!topicControllerService.getExistingTopicRequests(topicRequestModel, tenantId).isEmpty()) {
-        updateConstraint(constraintValidatorContext, "Failure. A topic request already exists.");
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_110);
         return false;
       }
     }
@@ -148,9 +157,7 @@ public class TopicRequestValidatorImpl
                             topicEx.getEnvironment(), topicRequestModel.getEnvironment()));
       }
       if (topicExists) {
-        updateConstraint(
-            constraintValidatorContext,
-            "Failure. This topic already exists in the selected cluster.");
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_111);
         return false;
       }
     }
@@ -179,14 +186,13 @@ public class TopicRequestValidatorImpl
                     .count();
         if (devTopicFound != 1) {
           if (topicControllerService.getEnvDetails(syncCluster) == null) {
-            updateConstraint(
-                constraintValidatorContext, "Failure. Base cluster is not configured.");
+            updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_112);
           } else {
             updateConstraint(
                 constraintValidatorContext,
-                "Failure. This topic does not exist in "
-                    + topicControllerService.getEnvDetails(syncCluster).getName()
-                    + " cluster.");
+                String.format(
+                    TOPICS_VLD_ERR_113,
+                    topicControllerService.getEnvDetails(syncCluster).getName()));
           }
           return false;
         }
@@ -195,9 +201,8 @@ public class TopicRequestValidatorImpl
       if (promotionOrderCheck) {
         updateConstraint(
             constraintValidatorContext,
-            "Failure. Please request for a topic first in "
-                + topicControllerService.getEnvDetails(syncCluster).getName()
-                + " cluster.");
+            String.format(
+                TOPICS_VLD_ERR_114, topicControllerService.getEnvDetails(syncCluster).getName()));
         return false;
       }
     }
@@ -236,7 +241,7 @@ public class TopicRequestValidatorImpl
             "Topic prefix {} does not match. {}", topicPrefix, topicRequestReq.getTopicname());
         updateConstraint(
             constraintValidatorContext,
-            "Topic prefix does not match. " + topicRequestReq.getTopicname());
+            String.format(TOPICS_VLD_ERR_115, topicRequestReq.getTopicname()));
         return false;
       }
 
@@ -247,13 +252,12 @@ public class TopicRequestValidatorImpl
             "Topic suffix {} does not match. {}", topicSuffix, topicRequestReq.getTopicname());
         updateConstraint(
             constraintValidatorContext,
-            "Topic suffix does not match. " + topicRequestReq.getTopicname());
+            String.format(TOPICS_VLD_ERR_116, topicRequestReq.getTopicname()));
         return false;
       }
     } catch (Exception e) {
       log.error("Unable to set topic partitions, setting default from properties.", e);
-      updateConstraint(
-          constraintValidatorContext, "Cluster default parameters config missing/incorrect.");
+      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_117);
       return false;
     }
 

@@ -26,6 +26,7 @@ interface TopicRequestTableRow {
 
 type TopicApprovalsTableProp = {
   requests: TopicRequest[];
+  ariaLabel: string;
   actionsDisabled?: boolean;
   onDetails: (req_no: number) => void;
   onApprove: (req_no: number) => void;
@@ -35,6 +36,7 @@ type TopicApprovalsTableProp = {
 };
 function TopicApprovalsTable({
   requests,
+  ariaLabel,
   actionsDisabled = false,
   onDetails,
   onApprove,
@@ -166,7 +168,7 @@ function TopicApprovalsTable({
 
   return (
     <DataTable
-      ariaLabel={"Topic requests"}
+      ariaLabel={ariaLabel}
       columns={columns}
       rows={rows}
       noWrap={false}

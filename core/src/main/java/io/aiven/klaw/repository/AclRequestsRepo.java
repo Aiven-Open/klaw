@@ -16,18 +16,23 @@ public interface AclRequestsRepo
   List<AclRequests> findAllByTenantId(int tenantId);
 
   @Query(
-      value =
-          "select count(*) from kwaclrequests where env = :envId and tenantid = :tenantId and topicstatus='created'",
+      value = "select count(*) from kwaclrequests where env = :envId and tenantid = :tenantId",
       nativeQuery = true)
   List<Object[]> findAllAclRequestsCountForEnv(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
-      value =
-          "select count(*) from kwaclrequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created'",
+      value = "select count(*) from kwaclrequests where teamid = :teamId and tenantid = :tenantId",
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+
+  @Query(
+      value =
+          "select count(*) from kwaclrequests where (requestor = :userId or approver = :userId) and tenantid = :tenantId",
+      nativeQuery = true)
+  List<Object[]> findAllRecordsCountForUserId(
+      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
   @Query(
       value = "select max(aclid) from kwaclrequests where tenantid = :tenantId",

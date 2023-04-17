@@ -5,24 +5,34 @@ import {
   Environment,
   getEnvironments,
   getSchemaRegistryEnvironments,
+  getSyncConnectorsEnvironments,
 } from "src/domain/environment";
 import { HTTPError } from "src/services/api";
 
+type EnvironmentEndpoint =
+  | "getEnvironments"
+  | "getSchemaRegistryEnvironments"
+  | "getSyncConnectorsEnvironments";
 interface EnvironmentFilterProps {
   isSchemaRegistryEnvironments?: boolean;
+  environmentEndpoint: EnvironmentEndpoint;
 }
 
-function EnvironmentFilter({
-  isSchemaRegistryEnvironments = false,
-}: EnvironmentFilterProps) {
+const environmentEndpointMap: {
+  [key in EnvironmentEndpoint]: () => Promise<Environment[]>;
+} = {
+  getEnvironments: getEnvironments,
+  getSchemaRegistryEnvironments: getSchemaRegistryEnvironments,
+  getSyncConnectorsEnvironments: getSyncConnectorsEnvironments,
+};
+
+function EnvironmentFilter({ environmentEndpoint }: EnvironmentFilterProps) {
   const { environment, setFilterValue } = useFiltersValues();
 
   const { data: environments } = useQuery<Environment[], HTTPError>(
     ["topic-environments"],
     {
-      queryFn: isSchemaRegistryEnvironments
-        ? getSchemaRegistryEnvironments
-        : getEnvironments,
+      queryFn: environmentEndpointMap[environmentEndpoint],
     }
   );
 

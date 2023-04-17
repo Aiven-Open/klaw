@@ -88,12 +88,12 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
                              params: {'tenantName' : $scope.addTenantId.tenantName, 'tenantDesc' : $scope.addTenantId.tenantDesc },
                              data: serviceInput
                          }).success(function(output) {
-                             $scope.alert = "Tenant add status : "+ output.result;
+                             $scope.alert = "Tenant add status : "+ output.message;
                              $scope.addTenantId.tenantName = "";
-                             if(output.result === 'success'){
+                             if(output.success){
                                  swal({
                                           title: "",
-                                          text: "Tenant add status : " + output.result,
+                                          text: "Tenant add status : " + output.message,
                                           timer: 2000,
                                           showConfirmButton: false
                                       });
@@ -140,12 +140,12 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
                              headers : { 'Content-Type' : 'application/json' },
                              params: {'roleId' : role }
                          }).success(function(output) {
-                             $scope.alert = "Role delete status : "+ output.result;
+                             $scope.alert = "Role delete status : "+ output.message;
                              $scope.getRolesFromDb();
-                             if(output.result == 'success'){
+                             if(output.success){
                                   swal({
                                            title: "",
-                                           text: "Role delete status : "+output.result,
+                                           text: "Role delete status : "+output.message,
                                            timer: 2000,
                                            showConfirmButton: true
                                        }).then(function(isConfirm){
@@ -193,12 +193,12 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
                       params: {'roleId' : $scope.addRoleId.roleId },
                       data: {'roleId' : $scope.addRoleId.roleId }
                   }).success(function(output) {
-                      $scope.alert = "Role add status : "+ output.result + ". You can now update permissions.";
+                      $scope.alert = "Role add status : "+ output.message + ". You can now update permissions.";
                       $scope.addRoleId.roleId = "";
-                      if(output.result == 'success'){
+                      if(output.success){
                           swal({
                                    title: "",
-                                   text: "Role add status : "+ output.result + ". You can now update permissions.",
+                                   text: "Role add status : "+ output.message + ". You can now update permissions.",
                                    timer: 2000,
                                    showConfirmButton: true
                                }).then(function(isConfirm){
@@ -267,13 +267,13 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
                     params: {'updatePermissionsRequest' : $scope.updatedPermissionsArray },
                     data:  $scope.updatedPermissionsArray
                 }).success(function(output) {
-                    $scope.alert = "Permissions update: "+output.result;
+                    $scope.alert = "Permissions update: "+output.message;
 
                     $scope.getPermissions();
-                     if(output.result == 'success'){
+                     if(output.success){
                       swal({
                                title: "",
-                               text: "Permissions update: "+output.result,
+                               text: "Permissions update: "+output.message,
                                timer: 2000,
                                showConfirmButton: true
                            }).then(function(isConfirm){
@@ -380,11 +380,11 @@ app.controller("rolesPermsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

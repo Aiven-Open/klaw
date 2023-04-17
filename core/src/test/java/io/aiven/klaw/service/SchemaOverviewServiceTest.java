@@ -18,10 +18,10 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.KwTenantConfigModel;
-import io.aiven.klaw.model.SchemaOverview;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.response.SchemaOverview;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -89,7 +89,10 @@ public class SchemaOverviewServiceTest {
   @Order(1)
   public void givenASchemaWithOnlyOneSchemaEnv_ReturnNoPromotion() throws Exception {
     stubUserInfo();
-
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
+    when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
+            eq(TESTTOPIC), eq(10), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 1);
 
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3");
@@ -111,9 +114,12 @@ public class SchemaOverviewServiceTest {
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
 
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
-
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
+    when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
+            eq(TESTTOPIC), eq(10), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
     SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", Collections.singletonList("1"));
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", List.of("1", "2"));
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").containsKey("status")).isTrue();
@@ -139,11 +145,30 @@ public class SchemaOverviewServiceTest {
     assertThat(returnedValue.isSchemaExists()).isFalse();
   }
 
-  private Topic createTopic(String topicName) {
+  @Test
+  @Order(4)
+  public void
+      getGivenASchemaWithManySchemaEnv_WithRequestorFromDifferentTeam_DoNotReturnNextInPromotion()
+          throws Exception {
+    stubUserInfo();
+
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
+
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(8);
+    when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
+    SchemaOverview returnedValue =
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", Collections.singletonList("1"));
+
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
+  }
+
+  private Topic createTopic(String topicName, String envName) {
     Topic t = new Topic();
     t.setTopicname(topicName);
     t.setTopicid(1);
-    t.setEnvironment("1");
+    t.setEnvironment(envName);
     t.setTeamId(10);
     return t;
   }
@@ -221,11 +246,13 @@ public class SchemaOverviewServiceTest {
     schemaEnv1.setId("3");
     schemaEnv1.setName("DEV");
     schemaEnv1.setClusterId(1);
+    schemaEnv1.setAssociatedEnv(new EnvTag("1", "DEV"));
 
     Env schemaEnv2 = new Env();
     schemaEnv2.setId("4");
     schemaEnv2.setName("TST");
     schemaEnv2.setClusterId(1);
+    schemaEnv2.setAssociatedEnv(new EnvTag("2", "TST"));
 
     when(handleDbRequests.selectEnvDetails("1", 101)).thenReturn(kafkaEnv1);
     when(handleDbRequests.selectEnvDetails("2", 101)).thenReturn(kafkaEnv2);
@@ -252,7 +279,7 @@ public class SchemaOverviewServiceTest {
 
     when(manageDatabase.getTeamNameFromTeamId(101, 10)).thenReturn(TEAM_1);
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(List.of(createTopic(TESTTOPIC)));
+        .thenReturn(List.of(createTopic(TESTTOPIC, "DEV")));
     when(manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY, 101))
         .thenReturn(createClusterMap(numberOfEnvs));
   }

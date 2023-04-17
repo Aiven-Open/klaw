@@ -5,7 +5,7 @@ import {
 } from "src/domain/requests/requests-types";
 import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
 import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
-import api from "src/services/api";
+import api, { API_PATHS } from "src/services/api";
 import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
@@ -33,7 +33,7 @@ const createSchemaRequest = (
   };
 
   return api.post<KlawApiResponse<"uploadSchema">, CreateSchemaRequestPayload>(
-    `/uploadSchema`,
+    API_PATHS.uploadSchema,
     payload
   );
 };
@@ -47,7 +47,7 @@ type GetSchemaRequestsForApproverQueryParams = ResolveIntersectionTypes<
   > &
     Pick<
       KlawApiRequestQueryParameters<"getSchemaRequestsForApprover">,
-      "pageNo" | "env" | "topic"
+      "pageNo" | "env" | "search" | "operationType"
     >
 >;
 
@@ -57,15 +57,17 @@ const getSchemaRequestsForApprover = (
   const queryObject: GetSchemaRequestsForApproverQueryParams = {
     pageNo: args.pageNo,
     requestStatus: args.requestStatus,
-    ...(args.topic && { topic: args.topic }),
+    ...(args.search && args.search !== "" && { search: args.search }),
     ...(args.env && args.env !== "ALL" && { env: args.env }),
+    ...(args.operationType !== undefined && {
+      operationType: args.operationType,
+    }),
   };
 
   return api
     .get<KlawApiResponse<"getSchemaRequestsForApprover">>(
-      `/getSchemaRequestsForApprover?${new URLSearchParams(
-        queryObject
-      ).toString()}`
+      API_PATHS.getSchemaRequestsForApprover,
+      new URLSearchParams(queryObject)
     )
     .then(transformGetSchemaRequests);
 };
@@ -75,7 +77,7 @@ type GetSchemaRequestsQueryParams = ResolveIntersectionTypes<
     KlawApiRequestQueryParameters<"getSchemaRequests">,
     | "pageNo"
     | "requestStatus"
-    | "topic"
+    | "search"
     | "env"
     | "isMyRequest"
     | "operationType"
@@ -91,7 +93,7 @@ const getSchemaRequests = (
     pageNo: args.pageNo,
     ...(args.operationType && { operationType: args.operationType }),
     ...(args.requestStatus && { requestStatus: args.requestStatus }),
-    ...(args.topic && { topic: args.topic }),
+    ...(args.search && args.search !== "" && { search: args.search }),
     ...(args.env && args.env !== "ALL" && { env: args.env }),
     ...(args.operationType !== undefined && { env: args.operationType }),
     ...(args.isMyRequest && { isMyRequest: String(Boolean(args.isMyRequest)) }),
@@ -99,7 +101,8 @@ const getSchemaRequests = (
 
   return api
     .get<KlawApiResponse<"getSchemaRequests">>(
-      `/getSchemaRequests?${new URLSearchParams(queryObject).toString()}`
+      API_PATHS.getSchemaRequests,
+      new URLSearchParams(queryObject)
     )
     .then(transformGetSchemaRequests);
 };
@@ -112,7 +115,7 @@ const approveSchemaRequest = ({
   return api.post<
     KlawApiResponse<"approveRequest">,
     RequestVerdictApproval<"SCHEMA">
-  >(`/request/approve`, {
+  >(API_PATHS.approveRequest, {
     reqIds,
     requestEntityType: "SCHEMA",
   });
@@ -125,7 +128,7 @@ const declineSchemaRequest = ({
   return api.post<
     KlawApiResponse<"declineRequest">,
     RequestVerdictDecline<"SCHEMA">
-  >(`/request/decline`, {
+  >(API_PATHS.declineRequest, {
     reqIds,
     reason,
     requestEntityType: "SCHEMA",
@@ -138,7 +141,7 @@ const deleteSchemaRequest = ({
   return api.post<
     KlawApiResponse<"deleteRequest">,
     RequestVerdictDelete<"SCHEMA">
-  >(`/request/delete`, {
+  >(API_PATHS.deleteRequest, {
     reqIds,
     requestEntityType: "SCHEMA",
   });

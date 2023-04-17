@@ -18,11 +18,11 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -93,7 +93,7 @@ public class AclSyncControllerServiceTest {
 
     ApiResponse resultResp =
         aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -104,7 +104,7 @@ public class AclSyncControllerServiceTest {
 
     ApiResponse resultResp =
         aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
-    assertThat(resultResp.getResult()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.NOT_AUTHORIZED.value);
   }
 
   @Test
@@ -132,7 +132,7 @@ public class AclSyncControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     ApiResponse resultResp = aclSyncControllerService.updateSyncAcls(updates);
-    assertThat(resultResp.getResult()).isEqualTo("No record updated.");
+    assertThat(resultResp.getMessage()).isEqualTo("No record updated.");
   }
 
   @Test

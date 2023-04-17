@@ -1,5 +1,22 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_108;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_109;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_110;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_111;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_112;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_113;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_115;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_116;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_117;
 import static io.aiven.klaw.helpers.KwConstants.*;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -11,7 +28,6 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.KafkaSupportedProtocol;
 import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
@@ -23,7 +39,11 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.response.OffsetDetails;
+import io.aiven.klaw.model.response.ServiceAccountDetails;
+import io.aiven.klaw.model.response.TopicConfig;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.annotation.PostConstruct;
@@ -190,7 +210,7 @@ public class ClusterApiService {
     }
   }
 
-  public List<Map<String, String>> getConsumerOffsets(
+  public List<OffsetDetails> getConsumerOffsets(
       String bootstrapHost,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
@@ -200,7 +220,7 @@ public class ClusterApiService {
       throws KlawException {
     log.info("getConsumerOffsets {} {} {} {}", bootstrapHost, protocol, topic, consumerGroupId);
     getClusterApiProperties(tenantId);
-    List<Map<String, String>> offsetsMap;
+    List<OffsetDetails> offsetDetailsList;
     try {
       String url = URI_GET_CONSUMER_OFFSETS;
       url =
@@ -211,17 +231,17 @@ public class ClusterApiService {
               + String.join(
                   URL_DELIMITER, protocol.getName(), clusterIdentification, consumerGroupId, topic);
 
-      ResponseEntity<List<Map<String, String>>> resultBody =
+      ResponseEntity<List<OffsetDetails>> resultBody =
           getRestTemplate()
               .exchange(
                   url, HttpMethod.GET, getHttpEntity(), new ParameterizedTypeReference<>() {});
 
-      offsetsMap = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
+      offsetDetailsList = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
     } catch (Exception e) {
       log.error("Error from getConsumerOffsets ", e);
-      throw new KlawException("Could not get consumer offsets");
+      throw new KlawException(CLUSTER_API_ERR_101);
     }
-    return offsetsMap;
+    return offsetDetailsList;
   }
 
   public Map<String, String> getTopicEvents(
@@ -260,7 +280,7 @@ public class ClusterApiService {
       eventsMap = new TreeMap<>(Objects.requireNonNull(resultBody.getBody()));
     } catch (Exception e) {
       log.error("Error from getTopicEvents {} ", topic, e);
-      throw new KlawException("Could not get events for Topic " + topic);
+      throw new KlawException(String.format(CLUSTER_API_ERR_102, topic));
     }
     return eventsMap;
   }
@@ -330,12 +350,12 @@ public class ClusterApiService {
       aclListOriginal = new ArrayList<>(Objects.requireNonNull(resultBody.getBody()));
     } catch (Exception e) {
       log.error("Error from getAcls", e);
-      throw new KlawException("Could not load topics/acls. Please contact Administrator.");
+      throw new KlawException(CLUSTER_API_ERR_103);
     }
     return aclListOriginal;
   }
 
-  public List<Map<String, String>> getAllTopics(
+  public List<TopicConfig> getAllTopics(
       String bootstrapHost,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
@@ -344,8 +364,9 @@ public class ClusterApiService {
       throws Exception {
     log.info("getAllTopics {} {}", bootstrapHost, protocol);
     getClusterApiProperties(tenantId);
-    List<Map<String, String>> topicsList;
+    List<TopicConfig> topicsList;
     String aclsNativeType = AclsNativeType.NATIVE.value;
+
     if (KafkaFlavors.CONFLUENT_CLOUD.value.equals(kafkaFlavors)) {
       aclsNativeType = AclsNativeType.CONFLUENT_CLOUD.value;
     }
@@ -363,14 +384,14 @@ public class ClusterApiService {
                   aclsNativeType);
 
       HttpEntity<String> entity = getHttpEntity();
-      ResponseEntity<Set<Map<String, String>>> s =
+      ResponseEntity<Set<TopicConfig>> s =
           getRestTemplate()
               .exchange(
                   uriGetTopicsFull, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
       topicsList = new ArrayList<>(Objects.requireNonNull(s.getBody()));
     } catch (Exception e) {
       log.error("Error from getAllTopics", e);
-      throw new KlawException("Could not load topics. Please contact Administrator.");
+      throw new KlawException(CLUSTER_API_ERR_104);
     }
 
     return topicsList;
@@ -426,7 +447,7 @@ public class ClusterApiService {
 
     } catch (Exception e) {
       log.error("approveConnectorRequests {} ", connectorName, e);
-      throw new KlawException("Could not approve connector request. Please contact Administrator.");
+      throw new KlawException(CLUSTER_API_ERR_105);
     }
   }
 
@@ -508,7 +529,7 @@ public class ClusterApiService {
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("approveTopicRequests {}", topicName, e);
-      throw new KlawException("Could not approve topic request. Please contact Administrator.");
+      throw new KlawException(CLUSTER_API_ERR_106);
     }
     return response;
   }
@@ -557,8 +578,7 @@ public class ClusterApiService {
                 clusterAclRequest.toBuilder().aivenAclKey(jsonObj.get(aivenAclKey)).build();
           } else {
             log.error("Error from approveAclRequests : AclId - aivenaclid not found");
-            throw new KlawException(
-                "Could not approve acl request. AclId - Aiven acl id not found.");
+            throw new KlawException(CLUSTER_API_ERR_107);
           }
         }
       } else if (Objects.equals(KafkaFlavors.CONFLUENT_CLOUD.value, kwClusters.getKafkaFlavor())) {
@@ -617,11 +637,11 @@ public class ClusterApiService {
       return response;
     } catch (Exception e) {
       log.error("Error from approveAclRequests", e);
-      throw new KlawException("Could not approve acl request. Please contact Administrator.");
+      throw new KlawException(CLUSTER_API_ERR_108);
     }
   }
 
-  public ApiResponse getAivenServiceAccountDetails(
+  public ServiceAccountDetails getAivenServiceAccountDetails(
       String projectName, String serviceName, String userName, int tenantId) throws KlawException {
     getClusterApiProperties(tenantId);
     try {
@@ -633,7 +653,7 @@ public class ClusterApiService {
               .replace("userName", userName);
 
       HttpEntity<String> entity = getHttpEntity();
-      ResponseEntity<ApiResponse> apiResponseResponseEntity =
+      ResponseEntity<ServiceAccountDetails> apiResponseResponseEntity =
           getRestTemplate()
               .exchange(
                   uriGetServiceAccountDetails,
@@ -643,8 +663,7 @@ public class ClusterApiService {
       return apiResponseResponseEntity.getBody();
     } catch (Exception e) {
       log.error("Error from getAivenServiceAccountDetails", e);
-      throw new KlawException(
-          "Could not retrieve service account details. Please contact Administrator.");
+      throw new KlawException(CLUSTER_API_ERR_109);
     }
   }
 
@@ -669,7 +688,7 @@ public class ClusterApiService {
       return apiResponseResponseEntity.getBody();
     } catch (Exception e) {
       log.error("Error from getAivenServiceAccounts", e);
-      throw new KlawException("Could not retrieve service accounts. Please contact Administrator.");
+      throw new KlawException(CLUSTER_API_ERR_110);
     }
   }
 
@@ -706,7 +725,7 @@ public class ClusterApiService {
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("Error from postSchema ", e);
-      throw new KlawException("Could not post schema. Please contact Administrator.");
+      throw new KlawException(CLUSTER_API_ERR_111);
     }
     return response;
   }
@@ -741,7 +760,7 @@ public class ClusterApiService {
       return getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("Error from Validating Schema. ", e);
-      throw new KlawException("Could not validate schema. Please contact Administrator.");
+      throw new KlawException(CLUSTER_API_ERR_112);
     }
   }
 
@@ -781,7 +800,7 @@ public class ClusterApiService {
       return allVersionSchemas;
     } catch (Exception e) {
       log.error("Error from getAvroSchema ", e);
-      throw new KlawException("Could not get schema.");
+      throw new KlawException(CLUSTER_API_ERR_113);
     }
   }
 
@@ -816,7 +835,7 @@ public class ClusterApiService {
       return s.getBody();
     } catch (Exception e) {
       log.error("Error from getConnectorDetails ", e);
-      throw new KlawException("Could not get Connector Details." + connectorName);
+      throw new KlawException(String.format(CLUSTER_API_ERR_114, connectorName));
     }
   }
 
@@ -841,7 +860,7 @@ public class ClusterApiService {
       return s.getBody();
     } catch (Exception e) {
       log.error("Error from getAllKafkaConnectors ", e);
-      throw new KlawException("Could not get KafkaConnectors.");
+      throw new KlawException(CLUSTER_API_ERR_115);
     }
   }
 
@@ -869,7 +888,7 @@ public class ClusterApiService {
 
     } catch (Exception e) {
       log.error("Error from  retrieveMetrics {} ", jmxUrl, e);
-      throw new KlawException("Could not get metrics.");
+      throw new KlawException(CLUSTER_API_ERR_116);
     }
   }
 
@@ -929,10 +948,8 @@ public class ClusterApiService {
 
   private String generateToken(String username) throws KlawException {
     if (clusterApiAccessBase64Secret.isBlank()) {
-      String errorTxt =
-          "CONFIGURE CLUSTER API SECRET FOR CLUSTER OPERATIONS. klaw.clusterapi.access.base64.secret";
-      log.error(errorTxt);
-      throw new KlawException(errorTxt);
+      log.error(CLUSTER_API_ERR_117);
+      throw new KlawException(CLUSTER_API_ERR_117);
     }
 
     Key hmacKey =

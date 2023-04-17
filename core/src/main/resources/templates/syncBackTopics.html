@@ -493,7 +493,7 @@
 					<div class="form-group has-success">
 						<label class="control-label">Select Team</label>
 						<select class="form-control custom-select" ng-model="getTopics.team"
-								ng-options="team as team for team in allTeams" ng-change="getTopics(1,'true','tabular')">
+								ng-options="team.teamId as team.teamname for team in allTeams" ng-change="getTopics(1,'true','tabular')">
 						</select>
 					</div>
 				</div>

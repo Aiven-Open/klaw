@@ -1,14 +1,15 @@
 import api, {
-  AbsolutePathname,
-  GenericApiResponse,
   HTTPMethod,
   isClientError,
   isServerError,
   isUnauthorizedError,
+  KlawApiError,
+  KlawApiResponse,
 } from "src/services/api";
 import { server } from "src/services/api-mocks/server";
 import { rest } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
+import { paths as ApiPaths } from "types/api";
 
 function apiUrl(path: string) {
   return `${getHTTPBaseAPIUrl()}${path}`;
@@ -24,25 +25,17 @@ type HTTPScenario = {
   internalError: () => Promise<unknown>;
 };
 
-// Klaw currently does not return ERRORs from the API but always a 200
-// An error is always following this patter:
-// {
-// status?: "100 CONTINUE" ...(etc._
-// timestamp?: string;
-// message?: string;
-// debugMessage?: string;
-// result: string;
-// data?: Record<string, never>;
-// };
-// to provide error messages for the user, we added this
-// temp fix. It can be removed once the API is updated
-const klawResponseResultWithHiddenError: GenericApiResponse = {
-  result: "Failure. A request already exists for this topic.",
-  status: "200 OK",
+const klawErrorResult: KlawApiError = {
+  success: false,
+  message: "This is an Error from the Klaw API",
 };
 
 describe("API client", () => {
-  const mockResponseData = { foo: "bar" };
+  const mockResponseData: KlawApiResponse = {
+    success: true,
+    data: {},
+    message: "",
+  };
   beforeAll(() => {
     server.listen();
   });
@@ -54,10 +47,7 @@ describe("API client", () => {
       }),
 
       rest.all(apiUrl("/fakeOk"), async (req, res, ctx) => {
-        return res.once(
-          ctx.status(200),
-          ctx.json(klawResponseResultWithHiddenError)
-        );
+        return res.once(ctx.status(200), ctx.json(klawErrorResult));
       }),
       rest.all(apiUrl("/okButHTML"), async (req, res, ctx) => {
         return res.once(
@@ -85,34 +75,34 @@ describe("API client", () => {
   function generateScenarioForMethodWithData(
     name: HTTPMethod,
     func: (
-      url: AbsolutePathname,
+      url: keyof ApiPaths,
       data: Record<string, string>
     ) => Promise<unknown>
   ): HTTPScenario {
     const data = { not: "relevant" };
     return {
       functionName: name,
-      ok: () => func("/ok", data),
-      fakeOk: () => func("/fakeOk", data),
-      htmlResponse: () => func("/okButHTML", data),
-      unauthorized: () => func("/unauthorized", data),
-      badRequest: () => func("/clientError", data),
-      internalError: () => func("/serverError", data),
+      ok: () => func("/ok" as keyof ApiPaths, data),
+      fakeOk: () => func("/fakeOk" as keyof ApiPaths, data),
+      htmlResponse: () => func("/okButHTML" as keyof ApiPaths, data),
+      unauthorized: () => func("/unauthorized" as keyof ApiPaths, data),
+      badRequest: () => func("/clientError" as keyof ApiPaths, data),
+      internalError: () => func("/serverError" as keyof ApiPaths, data),
     };
   }
 
   function generateScenarioForMethod(
     name: HTTPMethod,
-    func: (url: AbsolutePathname) => Promise<unknown>
+    func: (pathname: keyof ApiPaths) => Promise<unknown>
   ): HTTPScenario {
     return {
       functionName: name,
-      ok: () => func("/ok"),
-      fakeOk: () => func("/fakeOk"),
-      htmlResponse: () => func("/okButHTML"),
-      unauthorized: () => func("/unauthorized"),
-      badRequest: () => func("/clientError"),
-      internalError: () => func("/serverError"),
+      ok: () => func("/ok" as keyof ApiPaths),
+      fakeOk: () => func("/fakeOk" as keyof ApiPaths),
+      htmlResponse: () => func("/okButHTML" as keyof ApiPaths),
+      unauthorized: () => func("/unauthorized" as keyof ApiPaths),
+      badRequest: () => func("/clientError" as keyof ApiPaths),
+      internalError: () => func("/serverError" as keyof ApiPaths),
     };
   }
 
@@ -148,7 +138,7 @@ describe("API client", () => {
         describe("when request is successful", () => {
           it("resolves the response payload", async () => {
             const result = await ok();
-            expect(result).toEqual({ foo: "bar" });
+            expect(result).toEqual(mockResponseData);
           });
         });
 
@@ -205,15 +195,11 @@ describe("API client", () => {
           });
         });
 
-        describe("when response is an error hidden as success", () => {
-          it("should throw ClientError", async () => {
+        describe("when response returns an KlawError", () => {
+          it("should throw Klaw Error", async () => {
             const isExpectedError = await fakeOk().catch((error: Error) => {
-              if (isClientError(error)) {
-                expect(error.status).toBe(400);
-                expect(error.statusText).toBe("Bad Request");
-                return true;
-              }
-              return false;
+              expect(error.message).toBe("This is an Error from the Klaw API");
+              return true;
             });
             expect(isExpectedError).toBe(true);
           });

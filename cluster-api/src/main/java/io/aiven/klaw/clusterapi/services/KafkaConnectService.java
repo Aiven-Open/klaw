@@ -126,9 +126,9 @@ public class KafkaConnectService {
       throw new Exception(e.toString());
     }
     if (responseNew.getStatusCodeValue() == 201) {
-      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } else {
-      return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+      return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
     }
   }
 

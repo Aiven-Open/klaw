@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TOPIC_OVW_ERR_101;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Topic;
@@ -7,8 +9,8 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
-import io.aiven.klaw.model.TopicOverview;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -87,7 +89,7 @@ public class TopicOverviewService extends BaseOverviewService {
     List<AclInfo> aclInfo = new ArrayList<>();
     List<AclInfo> prefixedAclsInfo = new ArrayList<>();
     List<Topic> topicsSearchList =
-        manageDatabase.getHandleDbRequests().getTopicTeam(topicNameSearch, tenantId);
+        commonUtilsService.getTopicsForTopicName(topicNameSearch, tenantId);
     // tenant filtering
     Integer topicOwnerTeamId =
         commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
@@ -97,7 +99,6 @@ public class TopicOverviewService extends BaseOverviewService {
         handleDb,
         tenantId,
         loggedInUserTeam,
-        reqTopicsEnvsList,
         topicInfoList,
         aclInfo,
         prefixedAclsInfo,
@@ -123,7 +124,6 @@ public class TopicOverviewService extends BaseOverviewService {
       HandleDbRequests handleDb,
       int tenantId,
       Integer loggedInUserTeam,
-      Set<String> reqTopicsEnvsList,
       List<TopicInfo> topicInfoList,
       List<AclInfo> aclInfo,
       List<AclInfo> prefixedAclsInfo,
@@ -133,6 +133,7 @@ public class TopicOverviewService extends BaseOverviewService {
     List<Acl> allPrefixedAcls;
     List<AclInfo> tmpAclPrefixed;
     List<AclInfo> tmpAcl;
+
     for (TopicInfo topicInfo : topicInfoList) {
       aclsFromSOT.addAll(getAclsFromSOT(topicInfo.getEnvId(), topicNameSearch, false, tenantId));
 
@@ -227,12 +228,12 @@ public class TopicOverviewService extends BaseOverviewService {
         }
       } else {
         Map<String, String> hashMap = new HashMap<>();
-        hashMap.put("status", "not_authorized");
+        hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
         topicOverview.setTopicPromotionDetails(hashMap);
       }
     } catch (Exception e) {
       Map<String, String> hashMap = new HashMap<>();
-      hashMap.put("status", "not_authorized");
+      hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
       topicOverview.setTopicPromotionDetails(hashMap);
     }
   }
@@ -260,7 +261,7 @@ public class TopicOverviewService extends BaseOverviewService {
     } catch (Exception e) {
       log.error("getTopicPromotionEnv error ", e);
       hashMap.put("status", ApiResultStatus.FAILURE.value);
-      hashMap.put("error", "Topic does not exist in any environment.");
+      hashMap.put("error", TOPIC_OVW_ERR_101);
     }
 
     return hashMap;

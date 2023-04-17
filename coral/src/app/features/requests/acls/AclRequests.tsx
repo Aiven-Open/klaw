@@ -72,7 +72,7 @@ function AclRequests() {
     queryFn: () =>
       getAclRequests({
         pageNo: String(currentPage),
-        topic,
+        search: topic,
         env: environment,
         aclType,
         requestStatus: status,
@@ -169,7 +169,10 @@ function AclRequests() {
       )}
       <TableLayout
         filters={[
-          <EnvironmentFilter key="environment" />,
+          <EnvironmentFilter
+            key="environment"
+            environmentEndpoint={"getEnvironments"}
+          />,
           <AclTypeFilter key="aclType" />,
           <StatusFilter key="status" defaultStatus="ALL" />,
           <RequestTypeFilter key="operationType" />,
@@ -181,6 +184,9 @@ function AclRequests() {
             requests={data?.entries ?? []}
             onDetails={openDetailsModal}
             onDelete={openDeleteModal}
+            ariaLabel={`ACL requests, page ${data?.currentPage ?? 0} of ${
+              data?.totalPages ?? 0
+            }`}
           />
         }
         pagination={pagination}

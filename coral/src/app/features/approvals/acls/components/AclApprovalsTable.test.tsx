@@ -80,8 +80,7 @@ describe("AclApprovalsTable", () => {
     render(
       <AclApprovalsTable
         aclRequests={aclRequests}
-        activePage={1}
-        totalPages={10}
+        ariaLabel={"ACL approval requests, page 1 of 10"}
         isBeingApproved={jest.fn()}
         isBeingDeclined={jest.fn()}
         onApprove={jest.fn()}
@@ -110,7 +109,7 @@ describe("AclApprovalsTable", () => {
 
   it("describes the table content and pagination for screen readers", () => {
     renderFromProps();
-    screen.getByLabelText(`Acl requests, page 1 of 10`);
+    screen.getByLabelText(`ACL approval requests, page 1 of 10`);
   });
 
   it("has column to describe the topic", () => {
@@ -323,7 +322,9 @@ describe("AclApprovalsTable", () => {
     });
     afterEach(cleanup);
     it("disables approve action if request is not in created state", async () => {
-      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const table = screen.getByRole("table", {
+        name: /ACL approval requests/,
+      });
       const rows = within(table).getAllByRole("row");
       const approvedRequestRow = rows[2];
       const approve = within(approvedRequestRow).getByRole("button", {
@@ -332,7 +333,9 @@ describe("AclApprovalsTable", () => {
       expect(approve).toBeDisabled();
     });
     it("disables decline action if request is not in created state", async () => {
-      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const table = screen.getByRole("table", {
+        name: /ACL approval requests/,
+      });
       const rows = within(table).getAllByRole("row");
       const approvedRequestRow = rows[2];
       const decline = within(approvedRequestRow).getByRole("button", {
@@ -350,7 +353,9 @@ describe("AclApprovalsTable", () => {
     });
     afterEach(cleanup);
     it("disables approve action if request is already in progress", async () => {
-      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const table = screen.getByRole("table", {
+        name: /ACL approval requests/,
+      });
       const rows = within(table).getAllByRole("row");
       const createdRequestRow = rows[1];
       const approve = within(createdRequestRow).getByRole("button", {
@@ -359,7 +364,9 @@ describe("AclApprovalsTable", () => {
       expect(approve).toBeDisabled();
     });
     it("disables decline action if request is already in progress", async () => {
-      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const table = screen.getByRole("table", {
+        name: /ACL approval requests/,
+      });
       const rows = within(table).getAllByRole("row");
       const createdRequestRow = rows[1];
       const decline = within(createdRequestRow).getByRole("button", {
@@ -376,7 +383,9 @@ describe("AclApprovalsTable", () => {
     });
     afterAll(cleanup);
     it("triggers details action for the corresponding request when clicked", async () => {
-      const table = screen.getByRole("table", { name: /Acl requests/ });
+      const table = screen.getByRole("table", {
+        name: /ACL approval requests/,
+      });
       const rows = within(table).getAllByRole("row");
       const createdRequestRow = rows[1];
       await userEvent.click(

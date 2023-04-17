@@ -2,9 +2,9 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.response.DbAuthInfo;
 import io.aiven.klaw.service.UiConfigControllerService;
 import java.util.List;
-import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,7 +25,7 @@ public class UiConfigController {
       value = "/getDbAuth",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> getDbAuth() {
+  public ResponseEntity<DbAuthInfo> getDbAuth() {
     return new ResponseEntity<>(uiConfigControllerService.getDbAuth(), HttpStatus.OK);
   }
 

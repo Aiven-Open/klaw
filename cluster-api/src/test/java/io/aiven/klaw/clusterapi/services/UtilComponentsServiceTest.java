@@ -10,12 +10,12 @@ import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -201,22 +201,21 @@ public class UtilComponentsServiceTest {
     when(describeTopicsResult.all()).thenReturn(kafkaFutureTopicdesc);
     when(kafkaFutureTopicdesc.get(anyLong(), any(TimeUnit.class))).thenReturn(getTopicDescs());
 
-    Set<Map<String, String>> result =
+    Set<TopicConfig> result =
         apacheKafkaTopicService.loadTopics("localhost", KafkaSupportedProtocol.PLAINTEXT, "");
 
-    Map<String, String> hashMap = new HashMap<>();
-    hashMap.put("partitions", "2");
-    hashMap.put("replicationFactor", "1");
-    hashMap.put("topicName", "testtopic2");
+    TopicConfig topicConfig = new TopicConfig();
+    topicConfig.setPartitions("2");
+    topicConfig.setReplicationFactor("1");
+    topicConfig.setTopicName("testtopic2");
 
-    Map<String, String> hashMap1 = new HashMap<>();
-    hashMap1.put("partitions", "2");
-    hashMap1.put("replicationFactor", "1");
-    hashMap1.put("topicName", "testtopic1");
+    TopicConfig topicConfig1 = new TopicConfig();
+    topicConfig1.setPartitions("2");
+    topicConfig1.setReplicationFactor("1");
+    topicConfig1.setTopicName("testtopic1");
 
     assertThat(result).hasSize(2);
-    assertThat(hashMap).isEqualTo(new ArrayList<>(result).get(0));
-    assertThat(hashMap1).isEqualTo(new ArrayList<>(result).get(1));
+    assertThat(result).contains(topicConfig).contains(topicConfig1);
   }
 
   @Test
@@ -230,6 +229,7 @@ public class UtilComponentsServiceTest {
             .replicationFactor(Short.parseShort("1"))
             .clusterName("")
             .build();
+    Set<String> list = new HashSet<>();
 
     when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
@@ -238,7 +238,7 @@ public class UtilComponentsServiceTest {
     when(futureTocpiCreateResult.get(anyString())).thenReturn(kFutureVoid);
 
     ApiResponse result = apacheKafkaTopicService.createTopic(clusterTopicRequest);
-    assertThat(result.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   // TODO review test configuration, since an NPE is thrown, which is most likely not intended here.
@@ -367,7 +367,7 @@ public class UtilComponentsServiceTest {
   @Test
   public void postSchema1() {
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
-    ApiResponse apiResponse = ApiResponse.builder().result("Schema created id : 101").build();
+    ApiResponse apiResponse = ApiResponse.builder().message("Schema created id : 101").build();
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     when(clusterApiUtils.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
     when(clusterApiUtils.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
@@ -375,7 +375,7 @@ public class UtilComponentsServiceTest {
         .thenReturn(new ResponseEntity<>("Schema created id : 101", HttpStatus.OK));
 
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo("Schema created id : 101");
+    assertThat(resultResp.getMessage()).isEqualTo("Schema created id : 101");
   }
 
   @Test
@@ -388,7 +388,7 @@ public class UtilComponentsServiceTest {
             new ResponseEntity<>(
                 "Cannot retrieve SchemaRegistry Url", HttpStatus.INTERNAL_SERVER_ERROR));
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
-    assertThat(resultResp.getResult()).isEqualTo("Cannot retrieve SchemaRegistry Url");
+    assertThat(resultResp.getMessage()).isEqualTo("Cannot retrieve SchemaRegistry Url");
   }
 
   private Map<String, TopicDescription> getTopicDescs() {

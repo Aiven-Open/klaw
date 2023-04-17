@@ -8,6 +8,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
@@ -376,7 +377,7 @@ public class SelectDataJdbc {
         return topicRepo.findAllByTenantIdAndTopicnameIn(tenantId, topics);
       }
     } else {
-      if ("ALL".equals(env)) {
+      if (env == null || "ALL".equals(env)) {
         return topicRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
       } else {
         List<String> topics = topicRepo.findAllTopicNamesForEnvAndTeam(env, teamId, tenantId);
@@ -385,8 +386,8 @@ public class SelectDataJdbc {
     }
   }
 
-  public Map<String, String> getDashboardStats(Integer teamId, int tenantId) {
-    Map<String, String> dashboardMap = new HashMap<>();
+  public DashboardStats getDashboardStats(Integer teamId, int tenantId) {
+    DashboardStats dashboardStats = new DashboardStats();
     int countProducers = 0, countConsumers = 0;
     List<Acl> acls =
         aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.PRODUCER.value, teamId, tenantId);
@@ -395,7 +396,7 @@ public class SelectDataJdbc {
       acls.forEach(a -> topicList.add(a.getTopicname()));
       countProducers = (int) topicList.stream().distinct().count();
     }
-    dashboardMap.put("producerCount", "" + countProducers);
+    dashboardStats.setProducerCount(countProducers);
 
     acls = aclRepo.findAllByAclTypeAndTeamIdAndTenantId(AclType.CONSUMER.value, teamId, tenantId);
     List<String> topicListCons = new ArrayList<>();
@@ -403,12 +404,12 @@ public class SelectDataJdbc {
       acls.forEach(a -> topicListCons.add(a.getTopicname()));
       countConsumers = (int) topicListCons.stream().distinct().count();
     }
-    dashboardMap.put("consumerCount", "" + countConsumers);
+    dashboardStats.setConsumerCount(countConsumers);
 
     List<UserInfo> allUsers = userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
-    dashboardMap.put("teamMembersCount", "" + allUsers.size());
+    dashboardStats.setTeamMembersCount(allUsers.size());
 
-    return dashboardMap;
+    return dashboardStats;
   }
 
   public List<Topic> selectAllTopicsByTopictypeAndTeamname(
@@ -681,7 +682,8 @@ public class SelectDataJdbc {
       boolean showRequestsOfAllTeams,
       int tenantId,
       String env,
-      String search) {
+      String search,
+      boolean isMyRequest) {
     log.debug("selectConnectorRequestsByStatus {} {}", requestor, status);
     List<KafkaConnectorRequest> topicRequestList = new ArrayList<>();
 
@@ -700,7 +702,8 @@ public class SelectDataJdbc {
                   env,
                   status,
                   tenantId,
-                  String.valueOf(teamSelected)));
+                  String.valueOf(teamSelected),
+                  isMyRequest ? requestor : null));
 
       topicRequestListSub =
           Lists.newArrayList(
@@ -710,7 +713,8 @@ public class SelectDataJdbc {
                   env,
                   status,
                   tenantId,
-                  null));
+                  null,
+                  isMyRequest ? requestor : null));
 
       // Only execute just before adding the separate claim list as this will make sure only the
       // claim topics this team is able to approve will be returned.
@@ -735,10 +739,11 @@ public class SelectDataJdbc {
               findKafkaConnectorRequestsByExample(
                   requestOperationType != null ? requestOperationType.value : null,
                   showRequestsOfAllTeams ? null : teamSelected,
-                  null,
-                  null,
+                  env,
+                  status,
                   tenantId,
-                  null));
+                  null,
+                  isMyRequest ? requestor : null));
     }
 
     boolean wildcardSearch = search != null && !search.isEmpty();
@@ -750,11 +755,16 @@ public class SelectDataJdbc {
                 .format((row.getRequesttime()).getTime()));
       } catch (Exception ignored) {
       }
-      if (!wildcardSearch || row.getConnectorName().toLowerCase().contains(search))
+      if (!wildcardSearch || row.getConnectorName().toLowerCase().contains(search.toLowerCase()))
         topicRequestList.add(row); // no team filter
     }
 
     return topicRequestList;
+  }
+
+  public List<Topic> getTopicsByTopicNameAndTeamId(String topicName, int teamId, int tenantId) {
+
+    return topicRepo.findAllByTopicnameAndTeamIdAndTenantId(topicName, teamId, tenantId);
   }
 
   /**
@@ -775,7 +785,8 @@ public class SelectDataJdbc {
       String environment,
       String status,
       int tenantId,
-      String approvingTeam) {
+      String approvingTeam,
+      String requestor) {
 
     KafkaConnectorRequest request = new KafkaConnectorRequest();
     request.setTenantId(tenantId);
@@ -788,6 +799,10 @@ public class SelectDataJdbc {
     }
     if (teamId != null) {
       request.setTeamId(teamId);
+    }
+
+    if (requestor != null) {
+      request.setRequestor(requestor);
     }
 
     if (approvingTeam != null && !approvingTeam.isEmpty()) {
@@ -1387,7 +1402,7 @@ public class SelectDataJdbc {
         return kafkaConnectorRepo.findAllByEnvironmentAndTenantId(env, tenantId);
       }
     } else {
-      if ("ALL".equals(env)) {
+      if (env == null || "ALL".equals(env)) {
         return kafkaConnectorRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
       }
       return kafkaConnectorRepo.findAllByEnvironmentAndTeamIdAndTenantId(env, teamId, tenantId);
@@ -1441,6 +1456,18 @@ public class SelectDataJdbc {
             .intValue()
         + ((Long) aclRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue()
         + ((Long) aclRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+            .intValue();
+  }
+
+  public int findAllComponentsCountForUser(String userId, int tenantId) {
+    return ((Long) schemaRequestRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+            .intValue()
+        + ((Long)
+                kafkaConnectorRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+            .intValue()
+        + ((Long) topicRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+            .intValue()
+        + ((Long) aclRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
             .intValue();
   }
 
@@ -1633,5 +1660,61 @@ public class SelectDataJdbc {
 
   private static void updateMap(Map<String, Long> countsMap, List<Object[]> requestObjList) {
     requestObjList.forEach(reqObj -> countsMap.put((String) reqObj[0], (Long) reqObj[1]));
+  }
+
+  public List<KwClusters> getClusters() {
+    return Lists.newArrayList(kwClusterRepo.findAll());
+  }
+
+  public List<Env> selectEnvs() {
+    return Lists.newArrayList(envRepo.findAll());
+  }
+
+  public List<Team> selectTeams() {
+    return Lists.newArrayList(teamRepo.findAll());
+  }
+
+  public List<KwProperties> selectKwProperties() {
+    return Lists.newArrayList(kwPropertiesRepo.findAll());
+  }
+
+  public List<Topic> getAllTopics() {
+    return Lists.newArrayList(topicRepo.findAll());
+  }
+
+  public List<Acl> getAllSubscriptions() {
+    return Lists.newArrayList(aclRepo.findAll());
+  }
+
+  public List<MessageSchema> selectAllSchemas() {
+    return Lists.newArrayList(messageSchemaRepo.findAll());
+  }
+
+  public List<KwKafkaConnector> getAllConnectors() {
+    return Lists.newArrayList(kafkaConnectorRepo.findAll());
+  }
+
+  public List<ActivityLog> getAllActivityLog() {
+    return Lists.newArrayList(activityLogRepo.findAll());
+  }
+
+  public List<TopicRequest> getAllTopicRequests() {
+    return Lists.newArrayList(topicRequestsRepo.findAll());
+  }
+
+  public List<AclRequests> getAllAclRequests() {
+    return Lists.newArrayList(aclRequestsRepo.findAll());
+  }
+
+  public List<SchemaRequest> getAllSchemaRequests() {
+    return Lists.newArrayList(schemaRequestRepo.findAll());
+  }
+
+  public List<KafkaConnectorRequest> getAllConnectorRequests() {
+    return Lists.newArrayList(kafkaConnectorRequestsRepo.findAll());
+  }
+
+  public List<RegisterUserInfo> getAllRegisterUsersInfo() {
+    return Lists.newArrayList(registerInfoRepo.findAll());
   }
 }

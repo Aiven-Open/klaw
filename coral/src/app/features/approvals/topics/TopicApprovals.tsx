@@ -4,21 +4,24 @@ import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
-import TopicDetailsModalContent from "src/app/features/components/TopicDetailsModalContent";
 import { TopicApprovalsTable } from "src/app/features/approvals/topics/components/TopicApprovalsTable";
-import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
+import TopicDetailsModalContent from "src/app/features/components/TopicDetailsModalContent";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
 import TopicFilter from "src/app/features/components/filters/TopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
   approveTopicRequest,
   declineTopicRequest,
   getTopicRequestsForApprover,
 } from "src/domain/topic/topic-api";
 import { HTTPError } from "src/services/api";
+
+const defaultType = "ALL";
 
 function TopicApprovals() {
   const queryClient = useQueryClient();
@@ -29,7 +32,7 @@ function TopicApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, topic, team } = useFiltersValues({
+  const { environment, status, topic, teamId, requestType } = useFiltersValues({
     defaultStatus: "CREATED",
   });
 
@@ -66,16 +69,18 @@ function TopicApprovals() {
       currentPage,
       environment,
       status,
-      team,
+      teamId,
       topic,
+      requestType,
     ],
     queryFn: () =>
       getTopicRequestsForApprover({
         pageNo: String(currentPage),
         env: environment,
         requestStatus: status,
-        teamId: team === "ALL" ? undefined : Number(team),
+        teamId: teamId !== defaultType ? Number(teamId) : undefined,
         search: topic,
+        operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -198,6 +203,9 @@ function TopicApprovals() {
       onDecline={handleDeclineRequest}
       isBeingDeclined={handleIsBeingDeclined}
       isBeingApproved={handleIsBeingApproved}
+      ariaLabel={`Topic approval requests, page ${
+        topicRequests?.currentPage ?? 0
+      } of ${topicRequests?.totalPages ?? 0}`}
     />
   );
   const pagination =
@@ -275,8 +283,12 @@ function TopicApprovals() {
       )}
       <TableLayout
         filters={[
-          <EnvironmentFilter key={"environment"} />,
+          <EnvironmentFilter
+            key={"environment"}
+            environmentEndpoint={"getEnvironments"}
+          />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
+          <RequestTypeFilter key={"requestType"} />,
           <TeamFilter key={"team"} />,
           <TopicFilter key={"topic"} />,
         ]}

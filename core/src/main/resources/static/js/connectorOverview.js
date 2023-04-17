@@ -141,11 +141,11 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -256,17 +256,17 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                                            'env' : env},
                             }).success(function(output) {
 
-                                if(output.result === 'success'){
+                                if(output.success){
                                     swal({
                                          title: "",
-                                         text: "Connector Delete Request : "+output.result,
+                                         text: "Connector Delete Request : "+output.message,
                                          showConfirmButton: true
                                      }).then(function(isConfirm){
                                             $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=CREATED&deleteConnectorCreated=true";
                                         });
                                 }
                                 else{
-                                        $scope.alertTopicDelete = "Connector Delete Request : "+output.result;
+                                        $scope.alertTopicDelete = "Connector Delete Request : "+output.message;
                                         $scope.alertnote = $scope.alertTopicDelete;
                                         $scope.showSubmitFailed('','');
                                     }
@@ -307,18 +307,18 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                                                'env' : env},
                                 }).success(function(output) {
 
-                                    if(output.result == 'success'){
+                                    if(output.success){
                                         swal({
                                              title: "",
-                                             text: "Connector Claim Request : "+output.result,
+                                             text: "Connector Claim Request : "+output.message,
                                              showConfirmButton: true
                                          }).then(function(isConfirm){
                                                 $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=CREATED&claimConnectorCreated=true";
                                              });
                                     }
                                     else{
-                                            $scope.alertTopicDelete = "Connector Claim Request : "+output.result;
-                                            $scope.alertnote = "Connector Claim Request : "+output.result;
+                                            $scope.alertTopicDelete = "Connector Claim Request : "+output.message;
+                                            $scope.alertnote = "Connector Claim Request : "+output.message;
                                             $scope.showSubmitFailed('','');
                                         }
                                 }).error(
@@ -365,7 +365,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss != "cancel") {
+                        if (isConfirm.dismiss !== "cancel") {
                             $http({
                                     method: "POST",
                                     url: "createConnector",
@@ -373,17 +373,17 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                     params: {'addTopicRequest' : serviceInput },
                                     data: serviceInput
                                 }).success(function(output) {
-                                    if(output.result == 'success'){
+                                    if(output.success){
                                         swal({
                                              title: "",
-                                             text: "Connector Promotion Request : "+output.result,
+                                             text: "Connector Promotion Request : "+output.message,
                                              showConfirmButton: true
                                          }).then(function(isConfirm){
                                                 $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myConnectorRequests?reqsType=CREATED&connectorPromotionCreated=true";
                                           });
                                     }
                                     else{
-                                            $scope.alert = "Connector Promotion Request : "+output.result;
+                                            $scope.alert = "Connector Promotion Request : "+output.message;
                                             $scope.showSubmitFailed('','');
                                         }
                                 }).error(
@@ -454,17 +454,17 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss != "cancel") {
+                        if (isConfirm.dismiss !== "cancel") {
                             $http({
                                     method: "POST",
                                     url: "saveConnectorDocumentation",
                                     headers : { 'Content-Type' : 'application/json' },
                                     data: serviceInput,
                                 }).success(function(output) {
-                                    if(output.result == 'success'){
+                                    if(output.success){
                                         swal({
                                              title: "",
-                                             text: "Documentation Update Request : "+output.result,
+                                             text: "Documentation Update Request : "+output.message,
                                              timer: 2000,
                                              showConfirmButton: false
                                          });
@@ -473,7 +473,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                          document.getElementById("topicDocId").innerHTML = $scope.topicDocumentation;
                                     }
                                     else{
-                                            $scope.alertTopicDelete = "Documentation Update Request : "+output.result;
+                                            $scope.alertTopicDelete = "Documentation Update Request : "+output.message;
                                             $scope.alertnote = $scope.alertTopicDelete;
                                             $scope.showSubmitFailed('','');
                                         }
@@ -526,9 +526,9 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
             params: {'connectornamesearch' : topicSelected
              }
 		}).success(function(output) {
-		    if(output.connectorExists == true){
+		    if(output.connectorExists === true){
 		        $scope.resultBrowse = output.aclInfoList;
-            	$scope.connectorOverview = output.topicInfoList;
+            	$scope.connectorOverview = output.connectorInfoList;
             	$scope.promotionDetails = output.promotionDetails;
 
                 $scope.topicHistoryList = output.topicHistoryList;

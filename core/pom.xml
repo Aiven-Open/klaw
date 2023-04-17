@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.aiven</groupId>
         <artifactId>klaw-project</artifactId>
-        <version>2.1.0</version>
+        <version>2.2.0</version>
     </parent>
 
     <artifactId>klaw</artifactId>
@@ -33,7 +33,7 @@
         <pnpm.version>7.14.0</pnpm.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
-        <springdoc-openapi-ui.version>2.0.4</springdoc-openapi-ui.version>
+        <springdoc-openapi-ui.version>2.1.0</springdoc-openapi-ui.version>
         <!-- If the Integration Tests are timing out because the server is slow increase the number below. 120 attempts is equal to 60s each attempt gets a 500ms backoff -->
         <spring.integration.test.timeout>120</spring.integration.test.timeout>
     </properties>
@@ -266,7 +266,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true -Dserver.port=8097</jvmArguments>
+                    <jvmArguments>-Dspringdoc.writer-with-default-pretty-printer=true </jvmArguments>
                 </configuration>
                 <executions>
                     <execution>
@@ -286,7 +286,7 @@
                 <artifactId>springdoc-openapi-maven-plugin</artifactId>
                 <version>${springdoc-openapi-maven-plugin.version}</version>
                 <configuration>
-                    <apiDocsUrl>http://localhost:8097/v3/api-docs</apiDocsUrl>
+                    <apiDocsUrl>http://localhost:9097/v3/api-docs</apiDocsUrl>
                     <outputFileName>openapi.yaml</outputFileName>
                     <outputDir>${project.parent.basedir}</outputDir>
                     <skip>false</skip>

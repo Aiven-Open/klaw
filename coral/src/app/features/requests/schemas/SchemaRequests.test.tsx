@@ -43,7 +43,7 @@ describe("SchemaRequest", () => {
     pageNo: "1",
     operationType: undefined,
     requestStatus: undefined,
-    topic: "",
+    search: "",
     isMyRequest: false,
   };
 
@@ -159,7 +159,7 @@ describe("SchemaRequest", () => {
 
       expect(search).toBeVisible();
       expect(search).toHaveAccessibleDescription(
-        'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
       );
     });
 
@@ -172,7 +172,9 @@ describe("SchemaRequest", () => {
     });
 
     it("shows a table with all schema requests", () => {
-      const table = screen.getByRole("table", { name: "Schema requests" });
+      const table = screen.getByRole("table", {
+        name: "Schema requests, page 1 of 4",
+      });
       const rows = within(table).getAllByRole("row");
       const headerRow = 1;
 
@@ -501,7 +503,7 @@ describe("SchemaRequest", () => {
     it("populates the filter from the url search parameters", () => {
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(1, {
         ...defaultApiParams,
-        topic: "TEST_SEARCH_VALUE",
+        search: "TEST_SEARCH_VALUE",
       });
     });
 
@@ -516,7 +518,7 @@ describe("SchemaRequest", () => {
       await waitFor(() => {
         expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(2, {
           ...defaultApiParams,
-          topic: "myNiceTopic",
+          search: "myNiceTopic",
         });
       });
     });
@@ -621,7 +623,9 @@ describe("SchemaRequest", () => {
     });
 
     it("user can delete a request by clicking a button in the modal", async () => {
-      mockDeleteSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeleteSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
       const testRequest = mockedApiResponseSchemaRequests.entries[0];
@@ -683,7 +687,9 @@ describe("SchemaRequest", () => {
     });
 
     it("send a delete request api call if user deletes a schema request", async () => {
-      mockDeleteSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeleteSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
 
       const deleteButton = screen.getByRole("button", {
         name: `Delete schema request for ${testRequest.topicname}`,
@@ -705,7 +711,9 @@ describe("SchemaRequest", () => {
     });
 
     it("updates the the data for the table if user deletes a schema request", async () => {
-      mockDeleteSchemaRequest.mockResolvedValue([{ result: "success" }]);
+      mockDeleteSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         1,
         defaultApiParams

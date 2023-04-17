@@ -12,17 +12,18 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.UserInfoModelResponse;
 import io.aiven.klaw.service.EnvsClustersTenantsControllerService;
 import io.aiven.klaw.service.UiConfigControllerService;
 import io.aiven.klaw.service.UsersTeamsControllerService;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -102,7 +103,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(2)
   public void getSyncEnv() throws Exception {
-    List<Map<String, String>> envList = utilMethods.getSyncEnv();
+    List<EnvIdInfo> envList = utilMethods.getSyncEnv();
     when(envsClustersTenantsControllerService.getSyncEnvs()).thenReturn(envList);
 
     mvcEnvs
@@ -165,7 +166,7 @@ public class UiConfigControllerTest {
   public void addNewEnvName3Chars() throws Exception {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
 
     mvcEnvs
@@ -175,7 +176,7 @@ public class UiConfigControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -184,7 +185,7 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("ABCDEFGHIJ"); // 10 chars allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
 
     mvcEnvs
@@ -194,7 +195,7 @@ public class UiConfigControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -203,7 +204,7 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("ABCDEFGHIJKL"); // > 10 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
@@ -220,7 +221,7 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("A"); // < 2 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
@@ -237,7 +238,7 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setClusterId(null);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
@@ -251,7 +252,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(12)
   public void deleteEnv() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(envsClustersTenantsControllerService.deleteEnvironment(anyString(), anyString()))
         .thenReturn(apiResponse);
 
@@ -263,13 +264,13 @@ public class UiConfigControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   @Order(13)
   public void deleteTeam() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.deleteTeam(any())).thenReturn(apiResponse);
 
     mvcUserTeams
@@ -279,13 +280,13 @@ public class UiConfigControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   @Order(14)
   public void deleteUser() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.deleteUser(anyString(), anyBoolean())).thenReturn(apiResponse);
 
     mvcUserTeams
@@ -295,13 +296,13 @@ public class UiConfigControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   @Order(15)
   public void addNewUser() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfo);
     when(usersTeamsControllerService.addNewUser(any(), anyBoolean())).thenReturn(apiResponse);
@@ -313,7 +314,7 @@ public class UiConfigControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
@@ -321,7 +322,7 @@ public class UiConfigControllerTest {
   public void addNewTeam() throws Exception {
     Team team = utilMethods.getTeams().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(team);
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.addNewTeam(any(), anyBoolean())).thenReturn(apiResponse);
 
     mvcUserTeams
@@ -331,13 +332,13 @@ public class UiConfigControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   @Order(17)
   public void changePwd() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     when(usersTeamsControllerService.changePwd(any())).thenReturn(apiResponse);
 
     mvcUserTeams
@@ -347,13 +348,13 @@ public class UiConfigControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.result", is(ApiResultStatus.SUCCESS.value)));
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   @Order(18)
   public void showUsers() throws Exception {
-    List<UserInfoModel> userList = utilMethods.getUserInfoListModel("uiuser", "ADMIN");
+    List<UserInfoModelResponse> userList = utilMethods.getUserInfoListModel("uiuser", "ADMIN");
     when(usersTeamsControllerService.showUsers(any(), any(), any())).thenReturn(userList);
 
     mvcUserTeams
@@ -370,7 +371,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(19)
   public void getMyProfileInfo() throws Exception {
-    UserInfoModel userInfo = utilMethods.getUserInfoMock();
+    UserInfoModelResponse userInfo = utilMethods.getUserInfoMockResponse();
     when(usersTeamsControllerService.getMyProfileInfo()).thenReturn(userInfo);
 
     mvcUserTeams

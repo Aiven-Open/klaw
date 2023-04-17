@@ -1,11 +1,20 @@
-import { getHTTPBaseAPIUrl } from "src/config";
-import isPlainObject from "lodash/isPlainObject";
-import { components } from "types/api";
-import { objectHasProperty } from "src/services/type-utils";
-import { ResolveIntersectionTypes } from "types/utils";
 import isArray from "lodash/isArray";
+import isPlainObject from "lodash/isPlainObject";
+import { getHTTPBaseAPIUrl } from "src/config";
+import { objectHasProperty } from "src/services/type-utils";
+import {
+  operations as ApiOperations,
+  paths as ApiPaths,
+  components,
+} from "types/api";
+import { ResolveIntersectionTypes } from "types/utils";
 
-type GenericApiResponse = components["schemas"]["ApiResponse"];
+type KlawApiResponse = ResolveIntersectionTypes<
+  components["schemas"]["ApiResponse"]
+>;
+type KlawApiError = KlawApiResponse & {
+  success: false;
+};
 
 enum HTTPMethod {
   GET = "GET",
@@ -20,11 +29,164 @@ type SomeObject =
   | Record<string, never>
   | Array<unknown>;
 
-type AbsolutePathname = `/${string}`;
-
 const CONTENT_TYPE_JSON = "application/json" as const;
 
 const API_BASE_URL = getHTTPBaseAPIUrl();
+
+const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
+  validateSchema: "/validate/schema",
+  updateUserTeamFromSwitchTeams: "/user/updateTeam",
+  uploadSchema: "/uploadSchema",
+  updateUser: "/updateUser",
+  createTopicsUpdateRequest: "/updateTopics",
+  updateTeam: "/updateTeam",
+  updateSyncTopics: "/updateSyncTopics",
+  updateSyncTopicsBulk: "/updateSyncTopicsBulk",
+  updateSyncConnectors: "/updateSyncConnectors",
+  updateSyncBackTopics: "/updateSyncBackTopics",
+  updateSyncBackAcls: "/updateSyncBackAcls",
+  updateSyncAcls: "/updateSyncAcls",
+  updateProfile: "/updateProfile",
+  updatePermissions: "/updatePermissions",
+  updateKwCustomProperty: "/updateKwCustomProperty",
+  udpateTenant: "/udpateTenant",
+  udpateTenantExtension: "/udpateTenantExtension",
+  sendMessageToAdmin: "/sendMessageToAdmin",
+  saveTopicDocumentation: "/saveTopicDocumentation",
+  saveConnectorDocumentation: "/saveConnectorDocumentation",
+  resetPassword: "/resetPassword",
+  deleteRequest: "/request/delete",
+  declineRequest: "/request/decline",
+  approveRequest: "/request/approve",
+  registerUser: "/registerUser",
+  registerUserSaas: "/registerUserSaas",
+  promoteSchema: "/promote/schema",
+  logout: "/logout",
+  approveTopicRequests: "/execTopicRequests",
+  declineTopicRequests: "/execTopicRequestsDecline",
+  execSchemaRequests: "/execSchemaRequests",
+  execSchemaRequestsDecline: "/execSchemaRequestsDecline",
+  declineNewUserRequests: "/execNewUserRequestDecline",
+  approveNewUserRequests: "/execNewUserRequestApprove",
+  approveTopicRequests_1: "/execConnectorRequests",
+  declineConnectorRequests: "/execConnectorRequestsDecline",
+  approveAclRequests: "/execAclRequest",
+  declineAclRequests: "/execAclRequestDecline",
+  deleteUser: "/deleteUserRequest",
+  deleteTopicRequests: "/deleteTopicRequests",
+  deleteTenant: "/deleteTenant",
+  deleteTeam: "/deleteTeamRequest",
+  deleteSchemaRequests: "/deleteSchemaRequests",
+  deleteRole: "/deleteRole",
+  deleteEnvironment: "/deleteEnvironmentRequest",
+  deleteConnectorRequests: "/deleteConnectorRequests",
+  deleteCluster: "/deleteCluster",
+  deleteAclRequests: "/deleteAclRequests",
+  createTopicsCreateRequest: "/createTopics",
+  createTopicDeleteRequest: "/createTopicDeleteRequest",
+  deleteAclSubscriptionRequest: "/createDeleteAclSubscriptionRequest",
+  createConnectorRequest: "/createConnector",
+  createConnectorDeleteRequest: "/createConnectorDeleteRequest",
+  createClaimTopicRequest: "/createClaimTopicRequest",
+  createClaimConnectorRequest: "/createClaimConnectorRequest",
+  createAcl: "/createAcl",
+  changePwd: "/chPwd",
+  addTenantId: "/addTenantId",
+  addRoleId: "/addRoleId",
+  addNewUser: "/addNewUser",
+  addNewTeam: "/addNewTeam",
+  addNewEnv: "/addNewEnv",
+  addNewCluster: "/addNewCluster",
+  getSwitchTeams: "/user/{userId}/switchTeamsList",
+  testClusterApiConnection: "/testClusterApiConnection",
+  shutdownApp: "/shutdownContext",
+  showUsers: "/showUserList",
+  resetMemoryCache:
+    "/resetMemoryCache/{tenantName}/{entityType}/{operationType}",
+  resetCache: "/resetCache",
+  getRequestStatistics: "/requests/statistics",
+  getRegistrationInfoFromId: "/getUserInfoFromRegistrationId",
+  getUserDetails: "/getUserDetails",
+  getUpdateEnvStatus: "/getUpdateEnvStatus",
+  getTopics: "/getTopics",
+  getTopicsRowView: "/getTopicsRowView",
+  getTopicsOnly: "/getTopicsOnly",
+  getTopicsCountPerEnv: "/getTopicsCountPerEnv",
+  getTopicTeam: "/getTopicTeam",
+  getTopicRequests: "/getTopicRequests",
+  getTopicRequestsForApprover: "/getTopicRequestsForApprover",
+  getTopicEvents: "/getTopicEvents",
+  getTopicDetailsPerEnv: "/getTopicDetailsPerEnv",
+  getTenants: "/getTenants",
+  getTenantsInfo: "/getTenantsInfo",
+  getTeamsOverview: "/getTeamsOverview",
+  getTeamDetails: "/getTeamDetails",
+  getSyncTopics: "/getSyncTopics",
+  getSyncEnv: "/getSyncEnv",
+  getSyncTopics_1: "/getSyncConnectors",
+  getSyncConnectorsEnv: "/getSyncConnectorsEnv",
+  getSyncBackAcls: "/getSyncBackAcls",
+  getSyncAcls: "/getSyncAcls",
+  getStandardEnvNames: "/getStandardEnvNames",
+  getSchemaRequests: "/getSchemaRequests",
+  getSchemaRequestsForApprover: "/getSchemaRequestsForApprover",
+  getSchemaRegEnvs: "/getSchemaRegEnvs",
+  getSchemaOfTopic: "/getSchemaOfTopic",
+  getRoles: "/getRoles",
+  getRolesFromDb: "/getRolesFromDb",
+  getRequestTypeStatuses: "/getRequestTypeStatuses",
+  getPermissions: "/getPermissions",
+  getPermissionDescriptions: "/getPermissionDescriptions",
+  getNewUserRequests: "/getNewUserRequests",
+  getMyTenantInfo: "/getMyTenantInfo",
+  getMyProfileInfo: "/getMyProfileInfo",
+  getKwReport: "/getKwReport",
+  getKwPubkey: "/getKwPubkey",
+  getSupportedKafkaProtocols: "/getKafkaProtocols",
+  getKafkaConnectEnvs: "/getKafkaConnectEnvs",
+  getExtensionPeriods: "/getExtensionPeriods",
+  getEnvs: "/getEnvs",
+  getEnvsPaginated: "/getEnvsPaginated",
+  getRequestForSchemas: "/getEnvsForSchemaRequests",
+  getEnvsBaseCluster: "/getEnvsBaseCluster",
+  getEnvsBaseClusterFilteredForTeam: "/getEnvsBaseClusterFilteredForTeam",
+  getEnvParams: "/getEnvParams",
+  getEnvDetails: "/getEnvDetails",
+  getDbAuth: "/getDbAuth",
+  getDashboardStats: "/getDashboardStats",
+  getConsumerOffsets: "/getConsumerOffsets",
+  getConnectors: "/getConnectors",
+  getConnectorRequests: "/getConnectorRequests",
+  getCreatedConnectorRequests: "/getConnectorRequestsForApprover",
+  getConnectorOverview: "/getConnectorOverview",
+  getConnectorDetails: "/getConnectorDetails",
+  getConnectorDetailsPerEnv: "/getConnectorDetailsPerEnv",
+  getClusters: "/getClusters",
+  getClustersPaginated: "/getClustersPaginated",
+  getClusterInfoFromEnv: "/getClusterInfoFromEnv",
+  getClusterDetails: "/getClusterDetails",
+  getBrokerTopMetrics: "/getBrokerTopMetrics",
+  getBasicInfo: "/getBasicInfo",
+  getAuth: "/getAuth",
+  getAllTeamsSU: "/getAllTeamsSU",
+  getAllTeamsSUOnly: "/getAllTeamsSUOnly",
+  getAllTeamsSUFromRegisterUsers: "/getAllTeamsSUFromRegisterUsers",
+  getAllEditableProps: "/getAllServerEditableConfig",
+  getAllProperties: "/getAllServerConfig",
+  getAivenServiceAccounts: "/getAivenServiceAccounts",
+  getAivenServiceAccountDetails: "/getAivenServiceAccount",
+  getAdvancedTopicConfigs: "/getAdvancedTopicConfigs",
+  showActivityLog: "/getActivityLogPerEnv",
+  getActivityLogForTeamOverview: "/getActivityLogForTeamOverview",
+  getActivationInfo: "/getActivationInfo",
+  getAcls: "/getAcls",
+  getAclsCountPerEnv: "/getAclsCountPerEnv",
+  getAclRequests: "/getAclRequests",
+  getAclRequestsForApprover: "/getAclRequestsForApprover",
+  getAclCommand: "/getAclCommands",
+};
+
+type Params = URLSearchParams;
 
 type HTTPError = {
   status: number;
@@ -87,7 +249,7 @@ type ServerError = ResolveIntersectionTypes<
   }
 >;
 
-function hasHTTPErrorProperties(
+function isHTTPErrorProperties(
   value: Record<string, unknown>
 ): value is Record<keyof HTTPError, unknown> {
   return (
@@ -103,7 +265,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function isHTTPError(value: unknown): value is HTTPError {
-  if (isRecord(value) && hasHTTPErrorProperties(value)) {
+  if (isRecord(value) && isHTTPErrorProperties(value)) {
     return (
       typeof value.status === "number" &&
       typeof value.statusText === "string" &&
@@ -205,41 +367,14 @@ const checkStatus = (response: Response): Promise<Response> => {
   return Promise.resolve(response);
 };
 
-function isGenericApiResponse(
+function isKlawApiError(
   response: unknown | unknown[]
-): response is GenericApiResponse {
-  return objectHasProperty(response, "result");
-}
-
-// Klaw currently does not return ERRORs from the API but always a 200
-// An error is always following this patter:
-// {
-// status?: "100 CONTINUE" ...(etc._
-// timestamp?: string;
-// message?: string;
-// debugMessage?: string;
-// result: string;
-// data?: Record<string, never>;
-// };
-// to provide error messages for the user, we added this
-// temp fix. It can be removed once the API is updated
-
-async function checkForFailureHiddenAsSuccess<TResponse extends SomeObject>(
-  response: TResponse
-): Promise<TResponse> {
-  if (isGenericApiResponse(response)) {
-    const res: GenericApiResponse = response;
-    if (res.result?.toLowerCase().startsWith("failure")) {
-      const httpError: HTTPError = {
-        data: { message: res.result },
-        status: 400,
-        statusText: "Bad Request",
-        headers: new Headers(),
-      };
-      return Promise.reject(httpError);
-    }
-  }
-  return Promise.resolve(response);
+): response is KlawApiError {
+  return (
+    objectHasProperty(response, "message") &&
+    objectHasProperty(response, "success") &&
+    response.success === false
+  );
 }
 
 function parseResponseBody<T extends SomeObject>(
@@ -257,23 +392,39 @@ function parseResponseBody<T extends SomeObject>(
   }
 }
 
-function handleHTTPError(errorOrResponse: Error | Response): Promise<never> {
+function checkForKlawErrors<TResponse extends SomeObject>(
+  parsedResponse: TResponse
+): Promise<TResponse> {
+  if (isKlawApiError(parsedResponse)) {
+    return Promise.reject(parsedResponse);
+  }
+  return Promise.resolve(parsedResponse);
+}
+
+function handleError(
+  errorOrResponse: Error | Response | KlawApiError
+): Promise<never> {
+  // errorOrResponse is an Response when the api response
+  // was identified as an error `checkStatus` and we've
+  // not yet read the body stream
   if (errorOrResponse instanceof Response) {
     return parseResponseBody(errorOrResponse).then((body) => {
-      const bodyToReturn = isArray(body) ? body[0] : body;
       // We have api endpoints that return ApiResponse[]
       // these endpoints are all meant for enabling "batch" processing,
       // for example to delete multiple requests
       // this is currently not implemented as a feature.
       // If this endpoints contain an error, it will be contained
       // in the first (and only) entry of the ApiResponse[]
-      // which is why we return that entry as body in case the
-      // body is an array. This enables us to show the correct
-      // error message to users.
       // see more details: https://github.com/aiven/klaw/pull/921#issue-1641959704
+      const bodyToCheck = isArray(body) ? body[0] : body;
+      if (isKlawApiError(bodyToCheck)) {
+        const error: KlawApiError = bodyToCheck;
+        return Promise.reject(error);
+      }
 
       const httpError: HTTPError = {
-        data: bodyToReturn,
+        // bodycheck is unknown here, so we need to coerce its type to avoid TS errors
+        data: bodyToCheck as string | SomeObject,
         status: errorOrResponse.status,
         statusText: errorOrResponse.statusText,
         headers: errorOrResponse.headers,
@@ -281,7 +432,7 @@ function handleHTTPError(errorOrResponse: Error | Response): Promise<never> {
       return Promise.reject(httpError);
     });
   }
-  return Promise.reject(errorOrResponse);
+  return Promise.reject(errorOrResponse as Error);
 }
 
 function handleResponse<TResponse extends SomeObject>(
@@ -292,8 +443,8 @@ function handleResponse<TResponse extends SomeObject>(
     .then(transformHTTPRedirectToRootTo204)
     .then(checkStatus)
     .then((response) => parseResponseBody<TResponse>(response))
-    .then(checkForFailureHiddenAsSuccess)
-    .catch(handleHTTPError);
+    .then(checkForKlawErrors)
+    .catch(handleError);
 }
 
 function withPayloadAndVerb<
@@ -301,7 +452,7 @@ function withPayloadAndVerb<
   TBody extends SomeObject | URLSearchParams
 >(
   method: HTTPMethod.POST | HTTPMethod.PUT | HTTPMethod.PATCH,
-  pathname: AbsolutePathname,
+  pathname: keyof ApiPaths,
   data: TBody
 ): Promise<TResponse> {
   return fetch(`${API_BASE_URL}${pathname}`, withPayload(method, data)).then(
@@ -311,21 +462,23 @@ function withPayloadAndVerb<
 
 function withoutPayloadAndWithVerb<TResponse extends SomeObject>(
   method: HTTPMethod.GET | HTTPMethod.DELETE | HTTPMethod.POST,
-  pathname: AbsolutePathname
+  pathname: keyof ApiPaths,
+  params?: Params
 ): Promise<TResponse> {
-  return fetch(`${API_BASE_URL}${pathname}`, withoutPayload(method)).then(
-    (response) => handleResponse<TResponse>(response)
-  );
+  return fetch(
+    `${API_BASE_URL}${pathname}?${params}`,
+    withoutPayload(method)
+  ).then((response) => handleResponse<TResponse>(response));
 }
 
-const get = <T extends SomeObject>(pathname: AbsolutePathname) =>
-  withoutPayloadAndWithVerb<T>(HTTPMethod.GET, pathname);
+const get = <T extends SomeObject>(pathname: keyof ApiPaths, params?: Params) =>
+  withoutPayloadAndWithVerb<T>(HTTPMethod.GET, pathname, params);
 
 const post = <
   TResponse extends SomeObject,
   TBody extends SomeObject | URLSearchParams | never
 >(
-  pathname: AbsolutePathname,
+  pathname: keyof ApiPaths,
   data?: TBody
 ): Promise<TResponse> => {
   if (data === undefined) {
@@ -335,16 +488,16 @@ const post = <
 };
 
 const put = <TBody extends SomeObject | URLSearchParams>(
-  pathname: AbsolutePathname,
+  pathname: keyof ApiPaths,
   data: TBody
 ) => withPayloadAndVerb(HTTPMethod.PUT, pathname, data);
 
 const patch = <TBody extends SomeObject | URLSearchParams>(
-  pathname: AbsolutePathname,
+  pathname: keyof ApiPaths,
   data: TBody
 ) => withPayloadAndVerb(HTTPMethod.PATCH, pathname, data);
 
-const delete_ = (pathname: AbsolutePathname) =>
+const delete_ = (pathname: keyof ApiPaths) =>
   withoutPayloadAndWithVerb(HTTPMethod.DELETE, pathname);
 
 // eslint-disable-next-line import/no-anonymous-default-export
@@ -356,5 +509,12 @@ export default {
   delete: delete_,
 };
 
-export type { AbsolutePathname, HTTPError, GenericApiResponse };
-export { HTTPMethod, isUnauthorizedError, isServerError, isClientError };
+export type { HTTPError, KlawApiResponse, KlawApiError };
+export {
+  API_PATHS,
+  HTTPMethod,
+  isUnauthorizedError,
+  isServerError,
+  isClientError,
+  isKlawApiError,
+};

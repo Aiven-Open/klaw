@@ -152,7 +152,7 @@ describe("AclRequests", () => {
 
       expect(mockGetAclRequests).toHaveBeenCalledWith({
         pageNo: "100",
-        topic: "",
+        search: "",
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
@@ -171,7 +171,7 @@ describe("AclRequests", () => {
 
       expect(mockGetAclRequests).toHaveBeenCalledWith({
         pageNo: "1",
-        topic: "",
+        search: "",
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
@@ -280,7 +280,7 @@ describe("AclRequests", () => {
 
       expect(mockGetAclRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "2",
-        topic: "",
+        search: "",
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
@@ -304,7 +304,7 @@ describe("AclRequests", () => {
       });
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        topic: "abc",
+        search: "abc",
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
@@ -321,13 +321,13 @@ describe("AclRequests", () => {
       const search = screen.getByRole("search");
       expect(search).toBeEnabled();
       expect(search).toHaveAccessibleDescription(
-        'Search for an exact match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
+        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
       );
       await userEvent.type(search, "abc");
       await waitFor(() => {
         expect(getAclRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          topic: "abc",
+          search: "abc",
           env: "ALL",
           aclType: "ALL",
           requestStatus: "ALL",
@@ -362,7 +362,7 @@ describe("AclRequests", () => {
 
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        topic: "",
+        search: "",
         env: "1",
         aclType: "ALL",
         requestStatus: "ALL",
@@ -390,7 +390,7 @@ describe("AclRequests", () => {
       await waitFor(() => {
         expect(getAclRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          topic: "",
+          search: "",
           env: "1",
           aclType: "ALL",
           requestStatus: "ALL",
@@ -421,7 +421,7 @@ describe("AclRequests", () => {
 
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        topic: "",
+        search: "",
         env: "ALL",
         aclType: "CONSUMER",
         requestStatus: "ALL",
@@ -445,7 +445,7 @@ describe("AclRequests", () => {
       await waitFor(() => {
         expect(getAclRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          topic: "",
+          search: "",
           env: "ALL",
           aclType: "CONSUMER",
           requestStatus: "ALL",
@@ -476,7 +476,7 @@ describe("AclRequests", () => {
 
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        topic: "",
+        search: "",
         env: "ALL",
         aclType: "ALL",
         requestStatus: "APPROVED",
@@ -501,7 +501,7 @@ describe("AclRequests", () => {
       await waitFor(() => {
         expect(getAclRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          topic: "",
+          search: "",
           env: "ALL",
           aclType: "ALL",
           requestStatus: "APPROVED",
@@ -532,7 +532,7 @@ describe("AclRequests", () => {
 
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        topic: "",
+        search: "",
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
@@ -560,7 +560,7 @@ describe("AclRequests", () => {
       await waitFor(() => {
         expect(getAclRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          topic: "",
+          search: "",
           env: "ALL",
           aclType: "ALL",
           requestStatus: "ALL",
@@ -591,7 +591,7 @@ describe("AclRequests", () => {
 
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
-        topic: "",
+        search: "",
         env: "ALL",
         aclType: "ALL",
         requestStatus: "ALL",
@@ -617,7 +617,7 @@ describe("AclRequests", () => {
       await waitFor(() => {
         expect(getAclRequests).toHaveBeenLastCalledWith({
           pageNo: "1",
-          topic: "",
+          search: "",
           env: "ALL",
           aclType: "ALL",
           requestStatus: "ALL",
@@ -712,7 +712,7 @@ describe("AclRequests", () => {
     beforeEach(async () => {
       mockGetAclRequests.mockResolvedValue(mockGetAclRequestsResponse);
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentsResponse);
-      mockDeleteAclRequests.mockResolvedValue([{ result: "Success" }]);
+      mockDeleteAclRequests.mockResolvedValue([{ success: true, message: "" }]);
 
       customRender(<AclRequests />, {
         queryClient: true,

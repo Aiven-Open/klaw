@@ -36,7 +36,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
         $scope.loadTeams = function() {
                 $http({
                     method: "GET",
-                    url: "getAllTeamsSUOnly",
+                    url: "getAllTeamsSU",
                     headers : { 'Content-Type' : 'application/json' }
                 }).success(function(output) {
                     $scope.allTeams = output;
@@ -114,11 +114,11 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -292,7 +292,7 @@ app.controller("browseTopicsCtrl", function($scope, $http, $location, $window) {
                 'pageNo' : pageNoSelected,
                 'currentPage' : $scope.currentPageSelected,
                  'topicnamesearch' : $scope.getTopics.topicnamesearch,
-                 'teamName' : teamSel,
+                 'teamId' : teamSel,
                  'topicType' : topicType
                  }
 		}).success(function(output) {

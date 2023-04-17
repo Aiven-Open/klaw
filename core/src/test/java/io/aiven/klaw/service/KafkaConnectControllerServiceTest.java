@@ -125,7 +125,7 @@ public class KafkaConnectControllerServiceTest {
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(getConnectRequestModel());
-    assertThat(apiResponse.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
@@ -155,7 +155,7 @@ public class KafkaConnectControllerServiceTest {
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(kafkaConnectorRequestModel);
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo("Failure. Invalid config. topics/topics.regex is not configured");
   }
 
@@ -170,7 +170,7 @@ public class KafkaConnectControllerServiceTest {
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(kafkaConnectorRequestModel);
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo("Failure. Invalid config. topics and topics.regex both cannot be configured.");
   }
 
@@ -185,6 +185,9 @@ public class KafkaConnectControllerServiceTest {
     when(handleDbRequests.getConnectorsFromName(eq("ConnectorOne"), eq(101)))
         .thenReturn(List.of(getKwKafkaConnector()));
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(envListIds);
+    Map<String, String> res = new HashMap<>();
+    res.put("result", "success");
+    when(handleDbRequests.requestForConnector(any())).thenReturn(res);
     ApiResponse apiResponse =
         kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne", "1");
 
@@ -207,7 +210,7 @@ public class KafkaConnectControllerServiceTest {
     ApiResponse apiResponse =
         kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne", "1");
 
-    assertThat(apiResponse.getResult())
+    assertThat(apiResponse.getMessage())
         .isEqualTo("Failure. A request already exists for this connector.");
   }
 
@@ -221,7 +224,7 @@ public class KafkaConnectControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
-            anyString(), eq(null), eq(null), eq(null), eq(101)))
+            anyString(), eq(null), eq(null), eq(null), eq(101), eq(false)))
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -229,7 +232,14 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
-            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME, null);
+            "1",
+            "1",
+            "all",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
+            null,
+            false);
 
     assertThat(ordered_response).hasSize(10);
 
@@ -253,7 +263,7 @@ public class KafkaConnectControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
-            anyString(), eq(null), eq(null), eq(null), eq(101)))
+            anyString(), eq(null), eq(null), eq(null), eq(101), eq(false)))
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -261,7 +271,14 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
-            "1", "1", "all", null, null, io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME, null);
+            "1",
+            "1",
+            "all",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            null,
+            false);
 
     assertThat(ordered_response).hasSize(10);
 
@@ -273,6 +290,39 @@ public class KafkaConnectControllerServiceTest {
       assertThat(origReqTime.compareTo(req.getRequesttime()) <= 0).isTrue();
       origReqTime = req.getRequesttime();
     }
+  }
+
+  @Test
+  @Order(9)
+  public void getRequests_IsOnlyMyRequests() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+
+    when(handleDbRequests.getAllConnectorRequests(
+            anyString(), eq(null), eq(null), eq(null), eq(101), eq(true)))
+        .thenReturn(generateKafkaConnectorRequests(50));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    List<KafkaConnectorRequestsResponseModel> ordered_response =
+        kafkaConnectControllerService.getConnectorRequests(
+            "1",
+            "1",
+            "all",
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            null,
+            true);
+
+    assertThat(ordered_response).hasSize(10);
+
+    verify(handleDbRequests, times(1))
+        .getAllConnectorRequests(anyString(), eq(null), eq(null), eq(null), eq(101), eq(true));
   }
 
   private static List<KafkaConnectorRequest> generateKafkaConnectorRequests(int number) {

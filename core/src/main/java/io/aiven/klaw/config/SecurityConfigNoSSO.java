@@ -1,5 +1,7 @@
 package io.aiven.klaw.config;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SEC_CONFIG_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.SEC_CONFIG_ERR_102;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
@@ -138,12 +140,12 @@ public class SecurityConfigNoSSO {
       } catch (Exception e) {
         log.error("Please check if tables are created.", e);
         shutdownApp();
-        throw new Exception("Please check if tables are created.");
+        throw new Exception(SEC_CONFIG_ERR_102);
       }
 
       if (users.size() == 0) {
         shutdownApp();
-        throw new Exception("Please check if insert scripts are executed.");
+        throw new Exception(SEC_CONFIG_ERR_101);
       }
 
       Iterator<UserInfo> iter = users.iterator();

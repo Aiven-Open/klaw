@@ -5,6 +5,7 @@ import io.aiven.klaw.clusterapi.models.AivenAclStruct;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.confluentcloud.AclObject;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListTopicsResponse;
@@ -59,13 +60,13 @@ public class UtilMethods {
     return aclsSet;
   }
 
-  public Set<Map<String, String>> getTopics() {
-    Set<Map<String, String>> topicsSet = new HashSet<>();
-    Map<String, String> hashMap = new HashMap<>();
-    hashMap.put("topicName", "testtopic1");
+  public Set<TopicConfig> getTopics() {
+    Set<TopicConfig> topicsSet = new HashSet<>();
+    TopicConfig hashMap = new TopicConfig();
+    hashMap.setTopicName("testtopic1");
 
-    hashMap.put("partitions", "2");
-    hashMap.put("replicationFactor", "1");
+    hashMap.setPartitions("2");
+    hashMap.setReplicationFactor("1");
     topicsSet.add(hashMap);
     return topicsSet;
   }

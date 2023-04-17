@@ -3,9 +3,9 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.SchemaOverview;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.response.SchemaOverview;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,17 +27,19 @@ public class SchemaOverviewService extends BaseOverviewService {
 
   public SchemaOverview getSchemaOfTopic(
       String topicNameSearch, String schemaVersionSearch, List<String> kafkaEnvIds) {
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+
     SchemaOverview schemaOverview = new SchemaOverview();
     schemaOverview.setTopicExists(true);
     boolean retrieveSchemas = true;
     updateAvroSchema(
         topicNameSearch,
         schemaVersionSearch,
-        manageDatabase.getHandleDbRequests(),
         kafkaEnvIds,
         retrieveSchemas,
         schemaOverview,
+        userName,
         tenantId);
     return schemaOverview;
   }
@@ -45,10 +47,10 @@ public class SchemaOverviewService extends BaseOverviewService {
   private void updateAvroSchema(
       String topicNameSearch,
       String schemaVersionSearch,
-      HandleDbRequests handleDbRequests,
       List<String> kafkaEnvIds,
       boolean retrieveSchemas,
       SchemaOverview schemaOverview,
+      String userName,
       int tenantId) {
     if (schemaOverview.isTopicExists() && retrieveSchemas) {
       List<Map<String, String>> schemaDetails = new ArrayList<>();
@@ -69,6 +71,12 @@ public class SchemaOverviewService extends BaseOverviewService {
                 .selectEnvDetails(associatedSchemaEnv.getId(), tenantId);
         schemaEnvs.add(schemaEnv);
       }
+
+      List<Topic> topics =
+          manageDatabase
+              .getHandleDbRequests()
+              .getAllTopicsByTopicNameAndTeamIdAndTenantId(
+                  topicNameSearch, commonUtilsService.getTeamId(userName), tenantId);
 
       Object dynamicObj;
       Map<String, Object> hashMapSchemaObj;
@@ -152,9 +160,13 @@ public class SchemaOverviewService extends BaseOverviewService {
 
             schemaDetails.add(schemaMap);
             schemaOverview.setSchemaExists(true);
-            // Set Promotion Details
-            processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv, kafkaEnvIds);
-            log.info("Getting schema details for: " + topicNameSearch);
+            // A team owns a topic across all environments so we can assume if the search returned
+            // one or more topics it is owned by this users team.
+            if (topics.size() > 0) {
+              // Set Promotion Details
+              processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv, kafkaEnvIds);
+              log.info("Getting schema details for: " + topicNameSearch);
+            }
           }
         } catch (Exception e) {
           log.error("Error ", e);

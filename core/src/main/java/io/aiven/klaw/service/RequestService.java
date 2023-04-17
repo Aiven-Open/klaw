@@ -1,8 +1,13 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.REQ_SER_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.REQ_SER_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.REQ_SER_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.REQ_SER_ERR_104;
+
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.RequestVerdict;
 import io.aiven.klaw.model.enums.RequestEntityType;
+import io.aiven.klaw.model.requests.RequestVerdict;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -29,21 +34,18 @@ public class RequestService {
 
   private ApiResponse processApprovalRequests(String reqId, RequestEntityType requestEntityType) {
     try {
-      switch (requestEntityType) {
-        case TOPIC:
-          return topicControllerService.approveTopicRequests(reqId);
-        case ACL:
-          return aclControllerService.approveAclRequests(reqId);
-        case SCHEMA:
-          return schemaRegistryControllerService.execSchemaRequests(reqId);
-        case CONNECTOR:
-          return kafkaConnectControllerService.approveConnectorRequests(reqId);
-        default:
-          return undeterinableResource();
-      }
+      return switch (requestEntityType) {
+        case TOPIC -> topicControllerService.approveTopicRequests(reqId);
+        case ACL -> aclControllerService.approveAclRequests(reqId);
+        case SCHEMA -> schemaRegistryControllerService.execSchemaRequests(reqId);
+        case CONNECTOR -> kafkaConnectControllerService.approveConnectorRequests(reqId);
+        default -> undeterinableResource();
+      };
     } catch (Exception ex) {
-
-      return ApiResponse.builder().result("Failure unable to approve requestId " + reqId).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(String.format(REQ_SER_ERR_101, reqId))
+          .build();
     }
   }
 
@@ -64,47 +66,40 @@ public class RequestService {
 
   private ApiResponse processDeleteRequest(String reqId, RequestEntityType requestEntityType) {
     try {
-      switch (requestEntityType) {
-        case TOPIC:
-          return topicControllerService.deleteTopicRequests(reqId);
-        case ACL:
-          return aclControllerService.deleteAclRequests(reqId);
-        case SCHEMA:
-          return schemaRegistryControllerService.deleteSchemaRequests(reqId);
-        case CONNECTOR:
-          return kafkaConnectControllerService.deleteConnectorRequests(reqId);
-        default:
-          return undeterinableResource();
-      }
-
+      return switch (requestEntityType) {
+        case TOPIC -> topicControllerService.deleteTopicRequests(reqId);
+        case ACL -> aclControllerService.deleteAclRequests(reqId);
+        case SCHEMA -> schemaRegistryControllerService.deleteSchemaRequests(reqId);
+        case CONNECTOR -> kafkaConnectControllerService.deleteConnectorRequests(reqId);
+        default -> undeterinableResource();
+      };
     } catch (Exception ex) {
-      return ApiResponse.builder().result("Failure unable to delete requestId " + reqId).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(String.format(REQ_SER_ERR_102, reqId))
+          .build();
     }
   }
 
   private static ApiResponse undeterinableResource() {
-    return ApiResponse.builder().result("Failure Unable to determine target resource.").build();
+    return ApiResponse.builder().success(false).message(REQ_SER_ERR_103).build();
   }
 
   private ApiResponse processDeclineRequests(
       String reqId, String reason, RequestEntityType requestEntityType) {
     try {
-      switch (requestEntityType) {
-        case TOPIC:
-          return topicControllerService.declineTopicRequests(reqId, reason);
-        case ACL:
-          return aclControllerService.declineAclRequests(reqId, reason);
-        case SCHEMA:
-          return schemaRegistryControllerService.execSchemaRequestsDecline(reqId, reason);
-        case CONNECTOR:
-          return kafkaConnectControllerService.declineConnectorRequests(reqId, reason);
-        default:
-          return undeterinableResource();
-      }
-
+      return switch (requestEntityType) {
+        case TOPIC -> topicControllerService.declineTopicRequests(reqId, reason);
+        case ACL -> aclControllerService.declineAclRequests(reqId, reason);
+        case SCHEMA -> schemaRegistryControllerService.execSchemaRequestsDecline(reqId, reason);
+        case CONNECTOR -> kafkaConnectControllerService.declineConnectorRequests(reqId, reason);
+        default -> undeterinableResource();
+      };
     } catch (Exception ex) {
-
-      return ApiResponse.builder().result("Failure unable to decline requestId " + reqId).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(String.format(REQ_SER_ERR_104, reqId))
+          .build();
     }
   }
 }

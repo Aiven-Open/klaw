@@ -127,11 +127,11 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -268,7 +268,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'env' : environment},
             }).success(function(output) {
-                $scope.serviceAccounts = output.data;
+                $scope.serviceAccounts = output;
             }).error(
                 function(error)
                 {
@@ -546,17 +546,17 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 params: {'addAclRequest' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
-                if(output.result == 'success'){
+                if(output.success){
                         swal({
                                  title: "Awesome !",
-                                 text: "Subscription Request : "+output.result,
+                                 text: "Subscription Request : "+output.message,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
                                     $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myAclRequests?reqsType=CREATED&aclCreated=true";
                              });
                     }
                 else{
-                        $scope.alert = "Subscription Request : "+output.result,
+                        $scope.alert = "Subscription Request : "+output.message,
                         $scope.showSubmitFailed('','');
                     }
             }).error(

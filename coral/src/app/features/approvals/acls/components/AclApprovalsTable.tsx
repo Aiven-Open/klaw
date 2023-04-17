@@ -40,14 +40,13 @@ interface AclRequestTableRow {
 
 export default function AclApprovalsTable({
   aclRequests,
-  activePage,
-  totalPages,
   actionsDisabled = false,
   onDetails,
   onApprove,
   onDecline,
   isBeingApproved,
   isBeingDeclined,
+  ariaLabel,
 }: Props) {
   const getRows = (entries: AclRequest[]): AclRequestTableRow[] => {
     if (entries === undefined) {
@@ -270,7 +269,7 @@ export default function AclApprovalsTable({
 
   return (
     <DataTable
-      ariaLabel={`Acl requests, page ${activePage} of ${totalPages}`}
+      ariaLabel={ariaLabel}
       columns={columns}
       rows={rows}
       noWrap={false}
@@ -280,12 +279,11 @@ export default function AclApprovalsTable({
 
 export type Props = {
   aclRequests: AclRequest[];
-  activePage: number;
-  totalPages: number;
   actionsDisabled?: boolean;
   onDetails: (reqNo: number) => void;
   onApprove: (reqNo: number) => void;
   onDecline: (reqNo: number) => void;
   isBeingApproved: (reqNo: number) => boolean;
   isBeingDeclined: (reqNo: number) => boolean;
+  ariaLabel: string;
 };

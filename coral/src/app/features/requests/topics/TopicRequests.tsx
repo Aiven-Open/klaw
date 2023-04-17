@@ -52,8 +52,7 @@ function TopicRequests() {
     queryFn: () =>
       getTopicRequests({
         pageNo: String(currentPage),
-        // search is not yet implemented as a param to getTopicRequests
-        // search: topic,
+        search: topic,
         env: environment,
         requestStatus: status,
         isMyRequest: showOnlyMyRequests,
@@ -155,7 +154,10 @@ function TopicRequests() {
       )}
       <TableLayout
         filters={[
-          <EnvironmentFilter key="environments" />,
+          <EnvironmentFilter
+            key="environments"
+            environmentEndpoint={"getEnvironments"}
+          />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,
           <TopicFilter key={"topic"} />,
@@ -166,6 +168,9 @@ function TopicRequests() {
             requests={data?.entries ?? []}
             onDetails={handleDetails}
             onDelete={handleDeleteRequest}
+            ariaLabel={`Topic requests, page ${data?.currentPage ?? 0} of ${
+              data?.totalPages ?? 0
+            }`}
           />
         }
         pagination={pagination}

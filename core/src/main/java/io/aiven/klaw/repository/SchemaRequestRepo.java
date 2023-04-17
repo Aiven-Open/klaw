@@ -19,18 +19,24 @@ public interface SchemaRequestRepo
   Integer getNextSchemaRequestId(@Param("tenantId") Integer tenantId);
 
   @Query(
-      value =
-          "select count(*) from kwschemarequests where env = :envId and tenantid = :tenantId and topicstatus='created'",
+      value = "select count(*) from kwschemarequests where env = :envId and tenantid = :tenantId",
       nativeQuery = true)
   List<Object[]> findAllSchemaRequestsCountForEnv(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
       value =
-          "select count(*) from kwschemarequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created'",
+          "select count(*) from kwschemarequests where teamid = :teamId and tenantid = :tenantId",
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+
+  @Query(
+      value =
+          "select count(*) from kwschemarequests where (requestor = :userId or approver = :userId) and tenantid = :tenantId",
+      nativeQuery = true)
+  List<Object[]> findAllRecordsCountForUserId(
+      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
   List<SchemaRequest> findAllByTenantId(int tenantId);
 

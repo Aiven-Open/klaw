@@ -7,6 +7,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.response.DashboardStats;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -103,6 +104,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcInsertHelper.insertMetrics(kwMetrics);
   }
 
+  @Override
+  public List<Topic> getAllTopicsByTopicNameAndTeamIdAndTenantId(
+      String topicName, int teamId, int tenantId) {
+    return jdbcSelectHelper.getTopicsByTopicNameAndTeamId(topicName, teamId, tenantId);
+  }
+
   /*--------------------Select */
 
   public List<TopicRequest> getAllTopicRequests(
@@ -153,7 +160,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   public List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId) {
     return getCreatedTopicRequests(
-        requestor, status, showRequestsOfAllTeams, tenantId, null, null, null);
+        requestor, status, showRequestsOfAllTeams, tenantId, null, null, null, null);
   }
 
   public List<TopicRequest> getCreatedTopicRequests(
@@ -163,6 +170,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       int tenantId,
       Integer teamId,
       String env,
+      RequestOperationType requestOperationType,
       String wildcardSearch) {
     return jdbcSelectHelper.selectFilteredTopicRequests(
         true,
@@ -171,7 +179,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         showRequestsOfAllTeams,
         tenantId,
         teamId,
-        null,
+        requestOperationType,
         env,
         wildcardSearch,
         false);
@@ -182,7 +190,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       RequestOperationType requestOperationType,
       String env,
       String wildcardSearch,
-      int tenantId) {
+      int tenantId,
+      boolean isMyRequest) {
     return jdbcSelectHelper.selectFilteredKafkaConnectorRequests(
         false,
         requestor,
@@ -191,18 +200,29 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         false,
         tenantId,
         env,
-        wildcardSearch);
+        wildcardSearch,
+        isMyRequest);
   }
 
+  @Override
   public List<KafkaConnectorRequest> getCreatedConnectorRequests(
       String requestor,
       String status,
       boolean showRequestsOfAllTeams,
       int tenantId,
       String env,
+      RequestOperationType requestOperationType,
       String search) {
     return jdbcSelectHelper.selectFilteredKafkaConnectorRequests(
-        true, requestor, status, null, showRequestsOfAllTeams, tenantId, env, search);
+        true,
+        requestor,
+        status,
+        requestOperationType,
+        showRequestsOfAllTeams,
+        tenantId,
+        env,
+        search,
+        false);
   }
 
   public TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId) {
@@ -324,8 +344,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String requestor,
       String requestStatus,
       boolean showRequestsOfAllTeams,
+      RequestOperationType requestOperationType,
       String topic,
       String environment,
+      String wildcardSearch,
       AclType aclType,
       int tenantId) {
     return jdbcSelectHelper.selectFilteredAclRequests(
@@ -333,11 +355,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         requestor,
         "",
         requestStatus,
-        null,
+        requestOperationType,
         showRequestsOfAllTeams,
         topic,
         environment,
-        null,
+        wildcardSearch,
         aclType,
         false,
         tenantId);
@@ -570,7 +592,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public Map<String, String> getDashboardStats(Integer teamId, int tenantId) {
+  public DashboardStats getDashboardStats(Integer teamId, int tenantId) {
     return jdbcSelectHelper.getDashboardStats(teamId, tenantId);
   }
 
@@ -859,7 +881,82 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public int findAllComponentsCountForUser(String userId, int tenantId) {
+    return jdbcSelectHelper.findAllComponentsCountForUser(userId, tenantId);
+  }
+
+  @Override
   public int getAllTopicsCountInAllTenants() {
     return jdbcSelectHelper.getAllTopicsCountInAllTenants();
+  }
+
+  @Override
+  public List<TopicRequest> getAllTopicRequests() {
+    return jdbcSelectHelper.getAllTopicRequests();
+  }
+
+  @Override
+  public List<KafkaConnectorRequest> getAllConnectorRequests() {
+    return jdbcSelectHelper.getAllConnectorRequests();
+  }
+
+  @Override
+  public List<KwKafkaConnector> getAllConnectors() {
+    return jdbcSelectHelper.getAllConnectors();
+  }
+
+  @Override
+  public List<Topic> getAllTopics() {
+    return jdbcSelectHelper.getAllTopics();
+  }
+
+  @Override
+  public List<Acl> getAllSubscriptions() {
+    return jdbcSelectHelper.getAllSubscriptions();
+  }
+
+  @Override
+  public List<AclRequests> getAllAclRequests() {
+    return jdbcSelectHelper.getAllAclRequests();
+  }
+
+  @Override
+  public List<SchemaRequest> getAllSchemaRequests() {
+    return jdbcSelectHelper.getAllSchemaRequests();
+  }
+
+  @Override
+  public List<MessageSchema> selectAllSchemas() {
+    return jdbcSelectHelper.selectAllSchemas();
+  }
+
+  @Override
+  public List<Team> selectTeams() {
+    return jdbcSelectHelper.selectTeams();
+  }
+
+  @Override
+  public List<RegisterUserInfo> getAllRegisterUsersInfo() {
+    return jdbcSelectHelper.getAllRegisterUsersInfo();
+  }
+
+  @Override
+  public List<Env> selectEnvs() {
+    return jdbcSelectHelper.selectEnvs();
+  }
+
+  @Override
+  public List<ActivityLog> getAllActivityLog() {
+    return jdbcSelectHelper.getAllActivityLog();
+  }
+
+  @Override
+  public List<KwProperties> selectKwProperties() {
+    return jdbcSelectHelper.selectKwProperties();
+  }
+
+  @Override
+  public List<KwClusters> getClusters() {
+    return jdbcSelectHelper.getClusters();
   }
 }

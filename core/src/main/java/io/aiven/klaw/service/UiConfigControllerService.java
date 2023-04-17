@@ -8,6 +8,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.response.DbAuthInfo;
 import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -29,14 +30,14 @@ public class UiConfigControllerService {
 
   @Autowired ManageDatabase manageDatabase;
 
-  public Map<String, String> getDbAuth() {
-    Map<String, String> dbMap = new HashMap<>();
+  public DbAuthInfo getDbAuth() {
+    DbAuthInfo dbAuthInfo = new DbAuthInfo();
     if (DATABASE.value.equals(authenticationType)) {
-      dbMap.put("dbauth", "true");
+      dbAuthInfo.setDbauth("true");
     } else {
-      dbMap.put("dbauth", "false");
+      dbAuthInfo.setDbauth("false");
     }
-    return dbMap;
+    return dbAuthInfo;
   }
 
   private String getUserName() {
@@ -137,7 +138,7 @@ public class UiConfigControllerService {
         contactFormMessage,
         commonUtilsService.getTenantId(getUserName()),
         commonUtilsService.getLoginUrl());
-    return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
   public List<String> getRequestTypeStatuses() {

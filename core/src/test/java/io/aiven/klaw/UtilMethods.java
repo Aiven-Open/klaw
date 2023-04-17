@@ -19,6 +19,7 @@ import io.aiven.klaw.model.enums.AclPermissionType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -29,11 +30,20 @@ import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
+import io.aiven.klaw.model.response.RequestEntityStatusCount;
+import io.aiven.klaw.model.response.RequestStatusCount;
+import io.aiven.klaw.model.response.RequestsCountOverview;
+import io.aiven.klaw.model.response.RequestsOperationTypeCount;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.TopicConfig;
+import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
+import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -75,11 +85,23 @@ public class UtilMethods {
 
   public UserInfoModel getUserInfoMock() {
     UserInfoModel userInfo = new UserInfoModel();
+    userInfo.setUsername("kwusera");
+    userInfo.setTeamId(101);
+    userInfo.setTenantId(101);
+    userInfo.setRole("USER");
+    userInfo.setMailid("test@test.com");
+    userInfo.setFullname("My full name");
+    userInfo.setUserPassword("mypwadasdas");
+
+    return userInfo;
+  }
+
+  public UserInfoModelResponse getUserInfoMockResponse() {
+    UserInfoModelResponse userInfo = new UserInfoModelResponse();
     userInfo.setTeam("Seahorses");
     userInfo.setUsername("kwusera");
     userInfo.setTeamId(101);
     userInfo.setTenantId(101);
-    userInfo.setTenantName("default");
     userInfo.setRole("USER");
     userInfo.setMailid("test@test.com");
     userInfo.setFullname("My full name");
@@ -109,9 +131,9 @@ public class UtilMethods {
     return userInfoList;
   }
 
-  public List<UserInfoModel> getUserInfoListModel(String username, String role) {
-    List<UserInfoModel> userInfoList = new ArrayList<>();
-    UserInfoModel userInfo = new UserInfoModel();
+  public List<UserInfoModelResponse> getUserInfoListModel(String username, String role) {
+    List<UserInfoModelResponse> userInfoList = new ArrayList<>();
+    UserInfoModelResponse userInfo = new UserInfoModelResponse();
     userInfo.setTeam("Seahorses");
     userInfo.setUsername(username);
     userInfo.setRole(role);
@@ -161,6 +183,31 @@ public class UtilMethods {
     topicRequest.setTeamId(3);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
+  }
+
+  public List<Topic> getMultipleTopics(String topicPrefix, int size, String env, int teamId) {
+    List<Topic> listTopics = new ArrayList<>();
+    Topic t;
+    if (env == null) {
+      env = "1";
+    }
+
+    if (teamId == 0) {
+      teamId = 101;
+    }
+
+    for (int i = 0; i < size; i++) {
+      t = new Topic();
+
+      t.setTopicname(topicPrefix + i);
+      t.setTopicid(i);
+      t.setEnvironment(env);
+      t.setTeamId(teamId);
+      t.setEnvironmentsList(new ArrayList<>());
+
+      listTopics.add(t);
+    }
+    return listTopics;
   }
 
   public List<Acl> getAcls() {
@@ -559,18 +606,18 @@ public class UtilMethods {
     return envList;
   }
 
-  public List<Map<String, String>> getSyncEnv() {
-    List<Map<String, String>> envList = new ArrayList<>();
+  public List<EnvIdInfo> getSyncEnv() {
+    List<EnvIdInfo> envList = new ArrayList<>();
 
-    HashMap<String, String> hMap = new HashMap<>();
-    hMap.put("key", "1");
-    hMap.put("name", "DEV");
-    envList.add(hMap);
+    EnvIdInfo envIdInfo = new EnvIdInfo();
+    envIdInfo.setId("1");
+    envIdInfo.setName("DEV");
+    envList.add(envIdInfo);
 
-    HashMap<String, String> hMap1 = new HashMap<>();
-    hMap1.put("key", "2");
-    hMap1.put("name", "TST");
-    envList.add(hMap1);
+    EnvIdInfo envIdInfo1 = new EnvIdInfo();
+    envIdInfo1.setId("2");
+    envIdInfo1.setName("TST");
+    envList.add(envIdInfo1);
 
     return envList;
   }
@@ -614,14 +661,14 @@ public class UtilMethods {
     return aclRequest;
   }
 
-  public List<Map<String, String>> getClusterApiTopics(String topicPrefix, int size) {
-    List<Map<String, String>> listTopics = new ArrayList<>();
-    HashMap<String, String> hashMap;
+  public List<TopicConfig> getClusterApiTopics(String topicPrefix, int size) {
+    List<TopicConfig> listTopics = new ArrayList<>();
+    TopicConfig hashMap;
     for (int i = 0; i < size; i++) {
-      hashMap = new HashMap<>();
-      hashMap.put("topicName", topicPrefix + i);
-      hashMap.put("replicationFactor", "1");
-      hashMap.put("partitions", "2");
+      hashMap = new TopicConfig();
+      hashMap.setTopicName(topicPrefix + i);
+      hashMap.setReplicationFactor("1");
+      hashMap.setPartitions("2");
       listTopics.add(hashMap);
     }
     return listTopics;

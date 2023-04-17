@@ -63,7 +63,7 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
 
             $http({
                 method: "GET",
-                url: "getConnectorRequestsForApproval",
+                url: "getConnectorRequestsForApprover",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected,
@@ -126,12 +126,12 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
                                         data: {'connectorId' : topicId}
                                     }).success(function(output) {
 
-                                        $scope.alert = "Connector Approve Request : "+output.result;
+                                        $scope.alert = "Connector Approve Request : "+output.message;
                                         $scope.getMyConnectorRequests(1, false);
-                                        if(output.result === 'success'){
+                                        if(output.success){
                                             swal({
                                                  title: "",
-                                                 text: "Connector Approve Request : "+output.result,
+                                                 text: "Connector Approve Request : "+output.message,
                                                  timer: 2000,
                                                  showConfirmButton: false
                                              });
@@ -207,15 +207,15 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
                                         data: {'connectorId' : reqNo, 'reasonForDecline' : reason}
                                     }).success(function(output) {
 
-                                        $scope.alert = "Connector Decline Request : "+output.result;
+                                        $scope.alert = "Connector Decline Request : "+output.message;
                                         $scope.reasonForRejection = "";
                                         $scope.showDeclinePanel = "false";
                                         $scope.topicForDecline = "";
                                         $scope.getMyConnectorRequests(1, false);
-                                        if(output.result === 'success'){
+                                        if(output.success){
                                             swal({
                                                  title: "",
-                                                 text: "Connector Decline Request : "+output.result,
+                                                 text: "Connector Decline Request : "+output.message,
                                                  timer: 2000,
                                                  showConfirmButton: false
                                              });
@@ -295,11 +295,11 @@ app.controller("execConnectorsCtrl", function($scope, $http, $location, $window)
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

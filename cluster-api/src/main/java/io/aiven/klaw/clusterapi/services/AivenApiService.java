@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.models.AivenAclResponse;
 import io.aiven.klaw.clusterapi.models.AivenAclStruct;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
+import io.aiven.klaw.clusterapi.models.ServiceAccountDetails;
 import io.aiven.klaw.clusterapi.models.enums.AclAttributes;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import java.util.ArrayList;
@@ -115,8 +116,8 @@ public class AivenApiService {
           projectName,
           serviceName,
           clusterAclRequest.getTopicName());
-      if (getServiceAccountDetails(projectName, serviceName, clusterAclRequest.getUsername())
-          .isEmpty()) {
+      if (!getServiceAccountDetails(projectName, serviceName, clusterAclRequest.getUsername())
+          .isAccountFound()) {
         createServiceAccount(clusterAclRequest, resultMap);
       } else {
         resultMap.put("result", ApiResultStatus.SUCCESS.value);
@@ -160,7 +161,7 @@ public class AivenApiService {
   }
 
   // Get Aiven service account details
-  public Map<String, String> getServiceAccountDetails(
+  public ServiceAccountDetails getServiceAccountDetails(
       String projectName, String serviceName, String userName) {
     log.debug(
         "Service account for project :{} service : {} user : {}",
@@ -174,6 +175,8 @@ public class AivenApiService {
             .replace(SERVICE_NAME, serviceName)
             .replace("userName", userName);
     HttpEntity<Map<String, String>> request = new HttpEntity<>(headers);
+    ServiceAccountDetails serviceAccountDetails = new ServiceAccountDetails();
+    serviceAccountDetails.setAccountFound(false);
     try {
       ResponseEntity<Map<String, Map<String, String>>> response =
           getRestTemplate()
@@ -186,17 +189,18 @@ public class AivenApiService {
           // Not sending the full service account details.
           // Response enriched only with username and password. Certificates are removed from the
           // response.
-          Map<String, String> responseInnerMap = new HashMap<>();
+
           Map<String, String> resultMap = responseMap.get("user");
-          responseInnerMap.put("password", resultMap.get("password"));
-          responseInnerMap.put(USERNAME, resultMap.get(USERNAME));
-          return responseInnerMap;
+          serviceAccountDetails.setPassword(resultMap.get("password"));
+          serviceAccountDetails.setUsername(resultMap.get(USERNAME));
+          serviceAccountDetails.setAccountFound(true);
+          return serviceAccountDetails;
         }
       }
     } catch (Exception e) {
       log.error("Exception:", e);
     }
-    return new HashMap<>();
+    return serviceAccountDetails;
   }
 
   // Get Aiven service accounts
@@ -279,19 +283,13 @@ public class AivenApiService {
         Map<String, String> aclsMapUpdated = new HashMap<>();
         for (String keyAcls : aclsMap.keySet()) {
           switch (keyAcls) {
-            case "id":
-              aclsMapUpdated.put("aivenaclid", aclsMap.get(keyAcls));
-              break;
-            case "permission":
+            case "id" -> aclsMapUpdated.put("aivenaclid", aclsMap.get(keyAcls));
+            case "permission" -> {
               aclsMapUpdated.put("operation", aclsMap.get(keyAcls).toUpperCase());
               aclsMapUpdated.put("resourceType", "TOPIC");
-              break;
-            case "topic":
-              aclsMapUpdated.put("resourceName", aclsMap.get(keyAcls));
-              break;
-            case USERNAME:
-              aclsMapUpdated.put("principle", aclsMap.get(keyAcls));
-              break;
+            }
+            case "topic" -> aclsMapUpdated.put("resourceName", aclsMap.get(keyAcls));
+            case USERNAME -> aclsMapUpdated.put("principle", aclsMap.get(keyAcls));
           }
         }
         aclsMapUpdated.put("host", "*");

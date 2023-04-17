@@ -1,12 +1,9 @@
 import omitBy from "lodash/omitBy";
-import { ALL_ENVIRONMENTS_VALUE } from "src/domain/environment";
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
   RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
-import { Team } from "src/domain/team";
-import { ALL_TEAMS_VALUE } from "src/domain/team/team-types";
 import {
   transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsResponse,
@@ -17,40 +14,30 @@ import {
   TopicApiResponse,
   TopicRequestApiResponse,
 } from "src/domain/topic/topic-types";
-import api from "src/services/api";
+import api, { API_PATHS } from "src/services/api";
 import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
+import { convertQueryValuesToString } from "src/services/api-helper";
 
-const getTopics = async ({
-  currentPage = 1,
-  environment = "ALL",
-  teamName,
-  searchTerm,
-}: {
-  currentPage: number;
-  environment: string;
-  teamName: Team;
-  searchTerm?: string;
-}): Promise<TopicApiResponse> => {
-  // "ALL_TEAMS_VALUE" represents topic list without
-  // the optional team parameter
-  // where we still need a way to represent an
-  // option for "Select all teams" to users
-  const team = teamName !== ALL_TEAMS_VALUE && teamName;
-
-  const params: Record<string, string> = {
-    pageNo: currentPage.toString(),
-    env: environment || ALL_ENVIRONMENTS_VALUE,
-    ...(team && { teamName: team }),
-    ...(searchTerm && { topicnamesearch: searchTerm }),
-  };
+const getTopics = async (
+  params: KlawApiRequestQueryParameters<"getTopics">
+): Promise<TopicApiResponse> => {
+  const queryParams = convertQueryValuesToString({
+    pageNo: params.pageNo,
+    env: params.env,
+    ...(params.teamId && { teamId: params.teamId }),
+    ...(params.topicnamesearch && {
+      topicnamesearch: params.topicnamesearch,
+    }),
+  });
 
   return api
     .get<KlawApiResponse<"getTopics">>(
-      `/getTopics?${new URLSearchParams(params)}`
+      API_PATHS.getTopics,
+      new URLSearchParams(queryParams)
     )
     .then(transformTopicApiResponse);
 };
@@ -71,7 +58,8 @@ const getTopicNames = async ({
   };
 
   return api.get<KlawApiResponse<"getTopicsOnly">>(
-    `/getTopicsOnly?${new URLSearchParams(params)}`
+    API_PATHS.getTopicsOnly,
+    new URLSearchParams(params)
   );
 };
 
@@ -87,7 +75,8 @@ const getTopicTeam = async ({
   const params = { topicName, patternType };
 
   return api.get<KlawApiResponse<"getTopicTeam">>(
-    `/getTopicTeam?${new URLSearchParams(params)}`
+    API_PATHS.getTopicTeam,
+    new URLSearchParams(params)
   );
 };
 
@@ -95,7 +84,9 @@ const getTopicAdvancedConfigOptions = (): Promise<
   TopicAdvancedConfigurationOptions[]
 > =>
   api
-    .get<KlawApiResponse<"getAdvancedTopicConfigs">>("/getAdvancedTopicConfigs")
+    .get<KlawApiResponse<"getAdvancedTopicConfigs">>(
+      API_PATHS.getAdvancedTopicConfigs
+    )
     .then(transformGetTopicAdvancedConfigOptionsResponse);
 
 const requestTopic = (
@@ -104,7 +95,7 @@ const requestTopic = (
   return api.post<
     KlawApiResponse<"createTopicsCreateRequest">,
     KlawApiRequest<"createTopicsCreateRequest">
-  >("/createTopics", payload);
+  >(API_PATHS.createTopicsCreateRequest, payload);
 };
 
 const getTopicRequestsForApprover = (
@@ -117,14 +108,17 @@ const getTopicRequestsForApprover = (
       const omitSearch = property === "search" && value === "";
       const omitEnv =
         property === "env" && (value === "ALL" || value === undefined);
+      const omitOperationType =
+        property === "operationType" && value === undefined;
 
-      return omitTeamId || omitSearch || omitEnv;
+      return omitTeamId || omitSearch || omitEnv || omitOperationType;
     }
   );
 
   return api
     .get<KlawApiResponse<"getTopicRequestsForApprover">>(
-      `/getTopicRequestsForApprover?${new URLSearchParams(filteredParams)}`
+      API_PATHS.getTopicRequestsForApprover,
+      new URLSearchParams(filteredParams)
     )
     .then(transformGetTopicRequestsResponse);
 };
@@ -136,7 +130,8 @@ const getTopicRequests = (
     { ...params, isMyRequest: String(Boolean(params.isMyRequest)) },
     (value, property) => {
       const omitIsMyRequest = property === "isMyRequest" && value !== "true"; // Omit if anything else than true
-      const omitSearch = property === "search" && !value;
+      const omitSearch =
+        property === "search" && (value === "" || value === undefined);
       const omitEnv =
         property === "env" && (value === "ALL" || value === undefined);
       const omitRequestOperationType =
@@ -151,7 +146,8 @@ const getTopicRequests = (
 
   return api
     .get<KlawApiResponse<"getTopicRequests">>(
-      `/getTopicRequests?${new URLSearchParams(filteredParams)}`
+      API_PATHS.getTopicRequests,
+      new URLSearchParams(filteredParams)
     )
     .then(transformGetTopicRequestsResponse);
 };
@@ -164,7 +160,7 @@ const approveTopicRequest = ({
   return api.post<
     KlawApiResponse<"approveRequest">,
     RequestVerdictApproval<"TOPIC">
-  >(`/request/approve`, {
+  >(API_PATHS.approveRequest, {
     reqIds,
     requestEntityType: "TOPIC",
   });
@@ -177,7 +173,7 @@ const declineTopicRequest = ({
   return api.post<
     KlawApiResponse<"declineRequest">,
     RequestVerdictDecline<"TOPIC">
-  >(`/request/decline`, {
+  >(API_PATHS.declineRequest, {
     reqIds,
     reason,
     requestEntityType: "TOPIC",
@@ -190,7 +186,7 @@ const deleteTopicRequest = ({
   return api.post<
     KlawApiResponse<"deleteRequest">,
     RequestVerdictDelete<"TOPIC">
-  >(`/request/delete`, {
+  >(API_PATHS.deleteRequest, {
     reqIds,
     requestEntityType: "TOPIC",
   });

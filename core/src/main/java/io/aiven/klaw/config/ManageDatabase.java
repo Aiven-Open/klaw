@@ -11,6 +11,7 @@ import io.aiven.klaw.dao.KwRolesPermissions;
 import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.ProductDetails;
 import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.KwConstants;
@@ -21,6 +22,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.DefaultDataService;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,11 +54,15 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   @Autowired HandleDbRequestsJdbc handleDbRequests;
 
-  private static Map<Integer, Map<String, Map<String, List<String>>>> envParamsMapPerTenant;
+  private static Map<Integer, Map<String, EnvParams>> envParamsMapPerTenant;
 
   private static Map<Integer, Map<String, Map<String, String>>> kwPropertiesMapPerTenant;
 
   private static Map<Integer, List<Team>> teamsPerTenant;
+
+  private static Map<Integer, List<UserInfo>> usersPerTenant;
+
+  private static List<UserInfo> allUsersAllTenants;
 
   private static Set<String> serviceAccounts;
 
@@ -100,9 +106,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   private static Map<Integer, KwTenantConfigModel> tenantConfig = new HashMap<>();
 
-  private static List<String> reqStatusList;
+  private static Map<Integer, List<Topic>> topicsPerTenant = new HashMap<>();
 
-  private static boolean isTrialLicense;
+  private static List<String> reqStatusList;
 
   @Autowired private DefaultDataService defaultDataService;
 
@@ -321,14 +327,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return allEnvListPerTenant.get(tenantId);
   }
 
-  public void setIsTrialLicense(boolean isTrialLicensed) {
-    isTrialLicense = isTrialLicensed;
-  }
-
-  public boolean getIsTrialLicense() {
-    return isTrialLicense;
-  }
-
   private Integer getTenantIdFromName(String tenantName) {
     return tenantMap.entrySet().stream()
         .filter(obj -> Objects.equals(obj.getValue(), tenantName))
@@ -337,7 +335,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
         .getKey();
   }
 
-  public Map<String, Map<String, List<String>>> getEnvParamsMap(Integer tenantId) {
+  public Map<String, EnvParams> getEnvParamsMap(Integer tenantId) {
     return envParamsMapPerTenant.get(tenantId);
   }
 
@@ -371,8 +369,8 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
             });
   }
 
-  public Set<String> getTeamNamesForTenant(int tenantId) {
-    return teamsPerTenant.get(tenantId).stream().map(Team::getTeamname).collect(Collectors.toSet());
+  public List<String> getTeamNamesForTenant(int tenantId) {
+    return teamsPerTenant.get(tenantId).stream().map(Team::getTeamname).toList();
   }
 
   public Integer getTeamIdFromTeamName(int tenantId, String teamName) {
@@ -425,6 +423,10 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
   }
 
+  public List<UserInfo> selectAllCachedUserInfo() {
+    return allUsersAllTenants;
+  }
+
   private void loadEnvsForAllTenants() {
     envsOfTenantsMap = new HashMap<>(); // key is tenantid, value is list of envs
     for (Integer tenantId : tenantMap.keySet()) {
@@ -455,10 +457,13 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     envsOfTenantsMap.put(tenantId, envList1);
   }
 
-  private void loadTenantTeamsForAllTenants() {
+  private void loadTenantTeamsUsersForAllTenants() {
     teamsAndAllowedEnvsPerTenant = new HashMap<>();
     teamIdAndNamePerTenant = new HashMap<>();
     teamsPerTenant = new HashMap<>();
+    usersPerTenant = new HashMap<>();
+    allUsersAllTenants = new ArrayList<>();
+
     List<Team> allTeams;
 
     for (Integer tenantId : tenantMap.keySet()) {
@@ -466,6 +471,32 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       teamsPerTenant.put(tenantId, allTeams);
       loadTenantTeamsForOneTenant(allTeams, tenantId);
     }
+
+    loadUsersForAllTenants();
+  }
+
+  public void loadUsersForAllTenants() {
+    List<UserInfo> allUsers;
+    allUsersAllTenants = new ArrayList<>();
+    for (Integer tenantId : tenantMap.keySet()) {
+      allUsers = handleDbRequests.selectAllUsersInfo(tenantId);
+      usersPerTenant.put(tenantId, allUsers);
+      allUsersAllTenants.addAll(allUsers);
+    }
+  }
+
+  public void loadTopicsForAllTenants() {
+    for (Integer tenantId : tenantMap.keySet()) {
+      topicsPerTenant.put(tenantId, handleDbRequests.getAllTopics(tenantId));
+    }
+  }
+
+  public void loadTopicsForOneTenant(int tenantId) {
+    topicsPerTenant.put(tenantId, handleDbRequests.getAllTopics(tenantId));
+  }
+
+  public List<Topic> getTopicsForTenant(int tenantId) {
+    return topicsPerTenant.get(tenantId);
   }
 
   public void loadTenantTeamsForOneTenant(List<Team> allTeams, Integer tenantId) {
@@ -622,6 +653,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     loadEnvMapForOneTenant(tenantId);
     loadEnvsForOneTenant(tenantId);
     loadTenantTeamsForOneTenant(null, tenantId);
+    loadUsersForAllTenants();
+
+    loadTopicsForOneTenant(tenantId);
   }
 
   private void updateStaticDataToMemory() {
@@ -633,7 +667,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     loadRequestTypeStatuses();
     loadEnvironmentsMapForAllTenants();
     loadEnvsForAllTenants();
-    loadTenantTeamsForAllTenants();
+    loadTenantTeamsUsersForAllTenants();
+
+    loadTopicsForAllTenants();
   }
 
   private void loadRequestTypeStatuses() {
@@ -678,12 +714,11 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     List<Env> kafkaEnvTenantList =
         kafkaEnvList.stream()
             .filter(kafkaEnv -> Objects.equals(kafkaEnv.getTenantId(), tenantId))
-            .collect(Collectors.toList());
-    Map<String, Map<String, List<String>>> envParamsMap = new HashMap<>();
+            .toList();
+    Map<String, EnvParams> envParamsMap = new HashMap<>();
 
-    Map<String, List<String>> oneEnvParamsMap;
     for (Env env : kafkaEnvTenantList) {
-      oneEnvParamsMap = new HashMap<>();
+      EnvParams oneEnvParamsObj = new EnvParams();
       String envParams = env.getOtherParams();
 
       String[] params = envParams.split(",");
@@ -691,60 +726,58 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       for (String param : params) {
         if (param.startsWith("default.partitions")) {
           defaultPartitions = param.substring(param.indexOf("=") + 1);
-          List<String> defPartitionsList = new ArrayList<>();
-          defPartitionsList.add(defaultPartitions);
-          oneEnvParamsMap.put("defaultPartitions", defPartitionsList);
+          oneEnvParamsObj.setDefaultPartitions(getParamAsList(param));
         } else if (param.startsWith("max.partitions")) {
           String maxPartitions = param.substring(param.indexOf("=") + 1);
           int maxPartitionsInt = Integer.parseInt(maxPartitions);
           List<String> partitions = new ArrayList<>();
-
-          for (int i = 1; i < maxPartitionsInt + 1; i++) {
-            if (defaultPartitions != null && defaultPartitions.equals(i + "")) {
-              partitions.add(i + " (default)");
-            } else {
-              partitions.add(i + "");
-            }
-          }
-          oneEnvParamsMap.put("partitionsList", partitions);
+          createMaxEntry(defaultPartitions, maxPartitionsInt, partitions);
+          oneEnvParamsObj.setPartitionsList(partitions);
         } else if (param.startsWith("default.replication.factor")) {
           defaultRf = param.substring(param.indexOf("=") + 1);
-          List<String> repFactorList = new ArrayList<>();
-          repFactorList.add(defaultRf);
-          oneEnvParamsMap.put("defaultRepFactor", repFactorList);
+          oneEnvParamsObj.setDefaultRepFactor(getParamAsList(param));
         } else if (param.startsWith("max.replication.factor")) {
           String maxRf = param.substring(param.indexOf("=") + 1);
           int maxRfInt = Integer.parseInt(maxRf);
           List<String> rf = new ArrayList<>();
-
-          for (int i = 1; i < maxRfInt + 1; i++) {
-            if (defaultRf != null && defaultRf.equals(i + "")) {
-              rf.add(i + " (default)");
-            } else {
-              rf.add(i + "");
-            }
-          }
-
-          oneEnvParamsMap.put("replicationFactorList", rf);
+          createMaxEntry(defaultRf, maxRfInt, rf);
+          oneEnvParamsObj.setReplicationFactorList(rf);
         } else if (param.startsWith("topic.prefix")) {
-          setTopicNamingConstraint(param, oneEnvParamsMap, "topicPrefix");
+          oneEnvParamsObj.setTopicPrefix(getParamAsList(param));
         } else if (param.startsWith("topic.suffix")) {
-          setTopicNamingConstraint(param, oneEnvParamsMap, "topicSuffix");
+          oneEnvParamsObj.setTopicSuffix(getParamAsList(param));
         } else if (param.startsWith("topic.regex")) {
-          setTopicNamingConstraint(param, oneEnvParamsMap, "topicRegex");
+          oneEnvParamsObj.setTopicSuffix(getParamAsList(param));
+        } else if (param.startsWith("topic.advanced.config")) {
+          oneEnvParamsObj.setAdvancedTopicConfiguration(getParamAsList(param));
         }
       }
 
-      envParamsMap.put(env.getId(), oneEnvParamsMap);
+      envParamsMap.put(env.getId(), oneEnvParamsObj);
     }
     envParamsMapPerTenant.put(tenantId, envParamsMap);
   }
 
+  private static void createMaxEntry(String defaultEntry, int maxInt, List<String> listOfEntries) {
+    for (int i = 1; i < maxInt + 1; i++) {
+      if (defaultEntry != null && defaultEntry.equals(i + "")) {
+        listOfEntries.add(i + " (default)");
+      } else {
+        listOfEntries.add(i + "");
+      }
+    }
+  }
+
+  private static List<String> getParamAsList(String param) {
+    String paramPrefix = param.substring(param.indexOf("=") + 1);
+    List<String> paramList = new ArrayList<>();
+    paramList.add(paramPrefix);
+    return paramList;
+  }
+
   private static void setTopicNamingConstraint(
       String param, Map<String, List<String>> oneEnvParamsMap, String topicConventionName) {
-    String topicConvention = param.substring(param.indexOf("=") + 1);
-    List<String> topicConventionNamingList = new ArrayList<>();
-    topicConventionNamingList.add(topicConvention);
+    List<String> topicConventionNamingList = getParamAsList(param);
     oneEnvParamsMap.put(topicConventionName, topicConventionNamingList);
   }
 
@@ -768,9 +801,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
 
     List<KwRolesPermissions> rolesPermsList =
-        rolesPermissions.stream()
-            .filter(rolePerms -> rolePerms.getTenantId() == tenantId)
-            .collect(Collectors.toList());
+        rolesPermissions.stream().filter(rolePerms -> rolePerms.getTenantId() == tenantId).toList();
     List<String> tmpList;
     Map<String, List<String>> rolesPermsMap = new HashMap<>();
     for (KwRolesPermissions rolesPermission : rolesPermsList) {
@@ -820,6 +851,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   // delete users from both users tables of tenant
   // delete teams of tenant
+  // delete users of tenant
   // delete envs of tenant
   // delete rolesperms
   // delete kwprops
@@ -828,6 +860,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   public String deleteTenant(int tenantId) {
     tenantMap.remove(tenantId);
     teamsAndAllowedEnvsPerTenant.remove(tenantId);
+    usersPerTenant.remove(tenantId);
     kwPropertiesMapPerTenant.remove(tenantId);
     rolesPermsMapPerTenant.remove(tenantId);
     envParamsMapPerTenant.remove(tenantId);
@@ -836,6 +869,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     kwSchemaRegClustersPertenant.remove(tenantId);
     kwKafkaConnectClustersPertenant.remove(tenantId);
     kwAllClustersPertenant.remove(tenantId);
+
     return ApiResultStatus.SUCCESS.value;
   }
 }

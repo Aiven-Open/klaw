@@ -149,11 +149,11 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){
@@ -296,17 +296,17 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 'deleteAssociatedSchema' : deleteAssociatedSchema
             },
         }).success(function(output) {
-            if(output.result === 'success'){
+            if(output.success){
                 swal({
                     title: "",
-                    text: "Topic Delete Request : "+output.result,
+                    text: "Topic Delete Request : "+output.message,
                     showConfirmButton: true
                 }).then(function(isConfirm){
                     $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=CREATED&deleteTopicCreated=true";
                 });
             }
             else{
-                $scope.alertTopicDelete = "Topic Delete Request : "+output.result;
+                $scope.alertTopicDelete = "Topic Delete Request : "+output.message;
                 $scope.alertnote = $scope.alertTopicDelete;
                 $scope.showSubmitFailed('','');
             }
@@ -332,7 +332,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss != "cancel") {
+                        if (isConfirm.dismiss !== "cancel") {
                             $http({
                                     method: "POST",
                                     url: "createClaimTopicRequest",
@@ -343,18 +343,18 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                                                'env' : env},
                                 }).success(function(output) {
 
-                                    if(output.result == 'success'){
+                                    if(output.success){
                                         swal({
                                              title: "",
-                                             text: "Topic Claim Request : "+output.result,
+                                             text: "Topic Claim Request : "+output.message,
                                              showConfirmButton: true
                                          }).then(function(isConfirm){
                                                 $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath +  "/myTopicRequests?reqsType=CREATED&claimTopicCreated=true";
                                              });
                                     }
                                     else{
-                                            $scope.alertTopicDelete = "Topic Claim Request : "+output.result;
-                                            $scope.alertnote = "Topic Claim Request : "+output.result;
+                                            $scope.alertTopicDelete = "Topic Claim Request : "+output.message;
+                                            $scope.alertnote = "Topic Claim Request : "+output.message;
                                             $scope.showSubmitFailed('','');
                                         }
                                 }).error(
@@ -373,7 +373,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             $scope.alertTopicDelete = null;
             $scope.alert = null;
 
-            if($scope.teamname != teamAcl){
+            if($scope.teamname !== teamAcl){
                 $scope.alert = "Not authorized. You are part of a different team.";
                 $scope.alertnote = $scope.alert;
                 $scope.showAlertToast();
@@ -391,7 +391,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss != "cancel") {
+                        if (isConfirm.dismiss !== "cancel") {
                             $http({
                                     method: "POST",
                                     url: "createDeleteAclSubscriptionRequest",
@@ -399,15 +399,15 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                     params: {'req_no' : reqNo },
                                     data: {'req_no' : reqNo }
                                 }).success(function(output) {
-                                    if(output.result != 'success'){
-                                        $scope.alert = "Delete Request : "+output.result+ ". Please check if there is any pending request.";
+                                    if(!output.success){
+                                        $scope.alert = "Delete Request : "+output.message+ ". Please check if there is any pending request.";
                                         $scope.showSubmitFailed('','');
                                      }
                                     else{
-                                            $scope.alert = "Delete Subscription Request : "+output.result;
+                                            $scope.alert = "Delete Subscription Request : "+output.message;
                                             swal({
                                                  title: "",
-                                                 text: "Delete Subscription Request : "+output.result,
+                                                 text: "Delete Subscription Request : "+output.message,
                                                  showConfirmButton: true
                                              }).then(function(isConfirm){
                                                     $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myAclRequests?reqsType=CREATED&deleteAclCreated=true";
@@ -436,7 +436,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 // Add Latest to let the user know which schema version is the current latest schema version.
                   allSchemaVersions[schemaContent.env].forEach(function(part, index) {
                     schemaVersions[index] = this[index];
-                    if(this[index] == schemaContent.version) {
+                    if(this[index] === schemaContent.version) {
                     schemaVersions[index] = schemaVersions[index] + " (latest)";
                         }
                   }, allSchemaVersions[schemaContent.env]);
@@ -484,17 +484,17 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                 headers : { 'Content-Type' : 'application/json' },
                                 data: promoteSchemaReq
                             }).success(function(output) {
-                                if(output.result == 'success'){
+                                if(output.success){
                                     swal({
                                     	 title: "",
-                                    	 text: "Schema Promotion Request : " + output.result,
+                                    	 text: "Schema Promotion Request : " + output.message,
                                     	 showConfirmButton: true
                                      }).then(function(isConfirm){
                                            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/mySchemaRequests?reqsType=CREATED";
                                       });
                                 }
                                 else{
-                                        $scope.alert = "Schema Promotion Request : " + output.result;
+                                        $scope.alert = "Schema Promotion Request : " + output.message;
                                         $scope.showSubmitFailed('','');
                                     }
                             }).error(
@@ -523,7 +523,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
     $scope.saveDocs = function(){
 
-            if($scope.topicDocumentation == null || $scope.topicDocumentation.length==0)
+            if($scope.topicDocumentation == null || $scope.topicDocumentation.length===0)
                 {
                     $scope.alertnote = "Please add some documentation related to topic.";
                     $scope.showAlertToast();
@@ -531,7 +531,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 }else
                 {
                     $scope.topicDocumentation = $scope.topicDocumentation.trim();
-                    if($scope.topicDocumentation.length==0)
+                    if($scope.topicDocumentation.length===0)
                     {
                         $scope.alertnote = "Please add some documentation related to topic.";
                         $scope.showAlertToast();
@@ -555,17 +555,17 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         closeOnConfirm: true,
                         closeOnCancel: true
                     }).then(function(isConfirm){
-                        if (isConfirm.dismiss != "cancel") {
+                        if (isConfirm.dismiss !== "cancel") {
                             $http({
                                     method: "POST",
                                     url: "saveTopicDocumentation",
                                     headers : { 'Content-Type' : 'application/json' },
                                     data: serviceInput,
                                 }).success(function(output) {
-                                    if(output.result == 'success'){
+                                    if(output.success){
                                         swal({
                                              title: "",
-                                             text: "Documentation Update Request : "+output.result,
+                                             text: "Documentation Update Request : "+output.message,
                                              timer: 2000,
                                              showConfirmButton: false
                                          });
@@ -574,7 +574,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                          document.getElementById("topicDocId").innerHTML = $scope.topicDocumentation;
                                     }
                                     else{
-                                            $scope.alertTopicDelete = "Documentation Update Request : "+output.result;
+                                            $scope.alertTopicDelete = "Documentation Update Request : "+output.message;
                                             $scope.alertnote = $scope.alertTopicDelete;
                                             $scope.showSubmitFailed('','');
                                         }
@@ -607,7 +607,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         for (var i = 0; i < sURLVariables.length; i++)
         {
             var sParameterName = sURLVariables[i].split('=');
-            if (sParameterName[0] == "topicname")
+            if (sParameterName[0] === "topicname")
             {
                 topicSelected = sParameterName[1];
             }
@@ -705,9 +705,9 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 return;
             if(!$scope.contactFormMessage)
                 return;
-            if($scope.contactFormSubject.trim().length==0)
+            if($scope.contactFormSubject.trim().length===0)
                 return;
-            if($scope.contactFormMessage.trim().length==0)
+            if($scope.contactFormMessage.trim().length===0)
                 return;
 
             $http({
@@ -749,7 +749,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                   result += "Lag "+output[i].lag + "\n\n";
                 }
 
-                if(output.length == 0)
+                if(output.length === 0)
                 {
                     swal({
                         title: "Group Id: " + consumergroup,
@@ -782,7 +782,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 },
             }).success(function(output) {
                 $scope.serviceAccountInfo = output;
-                if(output.result === 'failure')
+                if(!output.accountFound)
                 {
                     swal({
                         title: "Failure:",
@@ -807,7 +807,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         $scope.showTopicEvents = function() {
                 $scope.topiccontents = null;
 
-                if(!$scope.topicEventsSelectedEnv || $scope.topicEventsSelectedEnv == ""){
+                if(!$scope.topicEventsSelectedEnv || $scope.topicEventsSelectedEnv === ""){
                     swal({
                          title: "",
                          text: "Please select an Environment !!",
@@ -818,7 +818,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 }
 
 
-                if(!$scope.topicOffsetsVal || $scope.topicOffsetsVal == ""){
+                if(!$scope.topicOffsetsVal || $scope.topicOffsetsVal === ""){
                     swal({
                          title: "",
                          text: "Please select an Offset Position !!",

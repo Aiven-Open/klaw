@@ -4,6 +4,9 @@ import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.ServiceAccountDetails;
+import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
@@ -91,13 +94,13 @@ public class ClusterApiController {
           "/getTopics/{bootstrapServers}/{protocol}/{clusterName}/topicsNativeType/{aclsNativeType}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Set<Map<String, String>>> getTopics(
+  public ResponseEntity<Set<TopicConfig>> getTopics(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterName,
       @PathVariable String aclsNativeType)
       throws Exception {
-    Set<Map<String, String>> topics;
+    Set<TopicConfig> topics;
     if (AclsNativeType.CONFLUENT_CLOUD.name().equals(aclsNativeType)) {
       topics = confluentCloudApiService.listTopics(bootstrapServers, protocol, clusterName);
     } else {
@@ -137,23 +140,13 @@ public class ClusterApiController {
       value = "/serviceAccountDetails/project/{projectName}/service/{serviceName}/user/{userName}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> getServiceAccountCredentials(
+  public ResponseEntity<ServiceAccountDetails> getServiceAccountCredentials(
       @PathVariable String projectName,
       @PathVariable String serviceName,
       @PathVariable String userName) {
-    Map<String, String> serviceDetailsMap =
-        aivenApiService.getServiceAccountDetails(projectName, serviceName, userName);
-    ApiResponse apiResponse;
-    if (serviceDetailsMap.isEmpty()) {
-      apiResponse = ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
-    } else {
-      apiResponse =
-          ApiResponse.builder()
-              .data(aivenApiService.getServiceAccountDetails(projectName, serviceName, userName))
-              .result(ApiResultStatus.SUCCESS.value)
-              .build();
-    }
-    return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    return new ResponseEntity<>(
+        aivenApiService.getServiceAccountDetails(projectName, serviceName, userName),
+        HttpStatus.OK);
   }
 
   /*
@@ -168,7 +161,8 @@ public class ClusterApiController {
     ApiResponse apiResponse =
         ApiResponse.builder()
             .data(aivenApiService.getServiceAccountUsers(projectName, serviceName))
-            .result(ApiResultStatus.SUCCESS.value)
+            .message(ApiResultStatus.SUCCESS.value)
+            .success(true)
             .build();
     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
   }
@@ -192,14 +186,14 @@ public class ClusterApiController {
           "/getConsumerOffsets/{bootstrapServers}/{protocol}/{clusterName}/{consumerGroupId}/{topicName}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<Map<String, String>>> getConsumerOffsets(
+  public ResponseEntity<List<OffsetDetails>> getConsumerOffsets(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterName,
       @PathVariable String consumerGroupId,
       @PathVariable String topicName)
       throws Exception {
-    List<Map<String, String>> consumerOffsetDetails =
+    List<OffsetDetails> consumerOffsetDetails =
         monitoringService.getConsumerGroupDetails(
             consumerGroupId, topicName, bootstrapServers, protocol, clusterName);
 
@@ -270,29 +264,44 @@ public class ClusterApiController {
         } else {
           result = apacheKafkaAclService.updateConsumerAcl(clusterAclRequest);
         }
-        return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
+        return new ResponseEntity<>(
+            ApiResponse.builder()
+                .success(result.equals(ApiResultStatus.SUCCESS.value))
+                .message(result)
+                .build(),
+            HttpStatus.OK);
       } else if (AclsNativeType.AIVEN.name().equals(clusterAclRequest.getAclNativeType())) {
         resultMap = aivenApiService.createAcls(clusterAclRequest);
+        String resultStatus = resultMap.get("result");
         return new ResponseEntity<>(
-            ApiResponse.builder().result(resultMap.get("result")).data(resultMap).build(),
+            ApiResponse.builder()
+                .success(resultStatus.equals(ApiResultStatus.SUCCESS.value))
+                .message(resultStatus)
+                .data(resultMap)
+                .build(),
             HttpStatus.OK);
       } else if (AclsNativeType.CONFLUENT_CLOUD
           .name()
           .equals(clusterAclRequest.getAclNativeType())) {
         resultMap = confluentCloudApiService.createAcls(clusterAclRequest);
+        String resultStatus = resultMap.get("result");
         return new ResponseEntity<>(
-            ApiResponse.builder().result(resultMap.get("result")).data(resultMap).build(),
+            ApiResponse.builder()
+                .success(resultStatus.equals(ApiResultStatus.SUCCESS.value))
+                .message(resultStatus)
+                .data(resultMap)
+                .build(),
             HttpStatus.OK);
       }
     } catch (Exception e) {
       resultMap.put("result", "failure " + e.getMessage());
       return new ResponseEntity<>(
-          ApiResponse.builder().result("failure " + e.getMessage()).build(),
+          ApiResponse.builder().success(false).message("failure " + e.getMessage()).build(),
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
     resultMap.put("result", "Not a valid request");
     return new ResponseEntity<>(
-        ApiResponse.builder().result("Not a valid request").build(),
+        ApiResponse.builder().success(false).message("Not a valid request").build(),
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
@@ -309,24 +318,39 @@ public class ClusterApiController {
           result = apacheKafkaAclService.updateConsumerAcl(clusterAclRequest);
         }
 
-        return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
+        return new ResponseEntity<>(
+            ApiResponse.builder()
+                .success(result.equals(ApiResultStatus.SUCCESS.value))
+                .message(result)
+                .build(),
+            HttpStatus.OK);
       } else if (AclsNativeType.AIVEN.name().equals(clusterAclRequest.getAclNativeType())) {
         result = aivenApiService.deleteAcls(clusterAclRequest);
 
-        return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
+        return new ResponseEntity<>(
+            ApiResponse.builder()
+                .success(result.equals(ApiResultStatus.SUCCESS.value))
+                .message(result)
+                .build(),
+            HttpStatus.OK);
       } else if (AclsNativeType.CONFLUENT_CLOUD
           .name()
           .equals(clusterAclRequest.getAclNativeType())) {
         result = confluentCloudApiService.deleteAcls(clusterAclRequest);
 
-        return new ResponseEntity<>(ApiResponse.builder().result(result).build(), HttpStatus.OK);
+        return new ResponseEntity<>(
+            ApiResponse.builder()
+                .success(result.equals(ApiResultStatus.SUCCESS.value))
+                .message(result)
+                .build(),
+            HttpStatus.OK);
       }
 
     } catch (Exception e) {
       return handleException(e);
     }
     return new ResponseEntity<>(
-        ApiResponse.builder().result("Not a valid request").build(),
+        ApiResponse.builder().success(false).message("Not a valid request").build(),
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
@@ -367,6 +391,7 @@ public class ClusterApiController {
   private static ResponseEntity<ApiResponse> handleException(Exception e) {
     log.error("Exception:", e);
     return new ResponseEntity<>(
-        ApiResponse.builder().result(e.getMessage()).build(), HttpStatus.INTERNAL_SERVER_ERROR);
+        ApiResponse.builder().success(false).message(e.getMessage()).build(),
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

@@ -2,6 +2,7 @@ import isString from "lodash/isString";
 
 enum Routes {
   TOPICS = "/topics",
+  CONNECTORS = "/connectors",
   TOPIC_REQUEST = "/topics/request",
   TOPIC_ACL_REQUEST = "/topic/:topicName/subscribe",
   TOPIC_SCHEMA_REQUEST = "/topic/:topicName/request-schema",

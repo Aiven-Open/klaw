@@ -25,6 +25,7 @@ interface SchemaRequestTableData {
 
 type SchemaApprovalsTableProps = {
   requests: SchemaRequest[];
+  ariaLabel: string;
   actionsDisabled?: boolean;
   onDetails: (req_no: number) => void;
   onApprove: (req_no: number) => void;
@@ -35,6 +36,7 @@ type SchemaApprovalsTableProps = {
 
 function SchemaApprovalsTable({
   requests,
+  ariaLabel,
   actionsDisabled = false,
   onDetails,
   onApprove,
@@ -167,7 +169,7 @@ function SchemaApprovalsTable({
 
   return (
     <DataTable
-      ariaLabel={"Schema requests"}
+      ariaLabel={ariaLabel}
       columns={columns}
       rows={rows}
       noWrap={false}

@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SERVER_CONFIG_ERR_106;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -22,6 +23,7 @@ import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.model.TenantConfig;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.response.KwPropertiesResponse;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -127,7 +129,7 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
     KwProperties property = propertyCaptor.getValue();
     assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
@@ -165,7 +167,7 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(propertyCaptor.capture(), eq(101));
     KwProperties property = propertyCaptor.getValue();
     assertThat(property.getKwKey()).isEqualTo(KLAW_TENANT_CONFIG);
@@ -194,13 +196,12 @@ public class ServerConfigServiceTest {
             "DEV",
             "TST",
             "UAT");
-    prop =
-        addKafkaConnInformation(
-            prop,
-            Arrays.asList("DEV_CONN", "TST_CONN", "UAT_CONN"),
-            "DEV_CONN",
-            "TST_CONN",
-            "UAT_CONN");
+    addKafkaConnInformation(
+        prop,
+        Arrays.asList("DEV_CONN", "TST_CONN", "UAT_CONN"),
+        "DEV_CONN",
+        "TST_CONN",
+        "UAT_CONN");
 
     prop.setTenantName("default");
     TenantConfig config = new TenantConfig();
@@ -211,7 +212,7 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(0)).updateKwProperty(any(), eq(101));
   }
 
@@ -230,13 +231,12 @@ public class ServerConfigServiceTest {
             "TST",
             "UAT");
 
-    prop =
-        addKafkaConnInformation(
-            prop,
-            Arrays.asList("DEV_CONN", "TST_CONN", "UAT_CONN"),
-            "DEV_CONN",
-            "TST_CONN",
-            "UAT_CONN");
+    addKafkaConnInformation(
+        prop,
+        Arrays.asList("DEV_CONN", "TST_CONN", "UAT_CONN"),
+        "DEV_CONN",
+        "TST_CONN",
+        "UAT_CONN");
     prop.setTenantName("default");
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
@@ -246,10 +246,10 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(0)).updateKwProperty(any(), eq(101));
-    assertThat(response.getResult())
-        .isEqualTo("Failure. Resource UTA must be created before being added to the Tenant Model");
+    assertThat(response.getMessage())
+        .isEqualTo("Resource UTA must be created before being added to the Tenant Model");
   }
 
   @Test
@@ -261,8 +261,8 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(response.getResult())
+    assertThat(response.getMessage()).isNotEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage())
         .isEqualTo("Failure. Please check if the environment names exist.");
   }
 
@@ -289,7 +289,7 @@ public class ServerConfigServiceTest {
     ApiResponse response = serverConfigService.updateKwCustomProperty(request);
 
     // verify
-    assertThat(response.getResult()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(handleDbRequests, times(1)).updateKwProperty(any(), eq(101));
   }
 
@@ -302,9 +302,8 @@ public class ServerConfigServiceTest {
     when(managedb.getKwPropertiesMap(101)).thenReturn(buildFullDbObject());
 
     // Execute
-    List<Map<String, String>> response = serverConfigService.getAllEditableProps();
-    TenantConfig tenantConfig =
-        mapper.readValue(response.get(0).get("kwvalue"), TenantConfig.class);
+    List<KwPropertiesResponse> response = serverConfigService.getAllEditableProps();
+    TenantConfig tenantConfig = mapper.readValue(response.get(0).getKwvalue(), TenantConfig.class);
     verify(managedb, times(1)).getKwPropertiesMap(101);
     // assert that the order is as specified in getJsonString
 
@@ -349,12 +348,32 @@ public class ServerConfigServiceTest {
     when(managedb.getKwPropertiesMap(101)).thenReturn(dbObject);
 
     // Execute
-    List<Map<String, String>> response = serverConfigService.getAllEditableProps();
-    TenantConfig tenantConfig =
-        mapper.readValue(response.get(0).get("kwvalue"), TenantConfig.class);
+    List<KwPropertiesResponse> response = serverConfigService.getAllEditableProps();
+    TenantConfig tenantConfig = mapper.readValue(response.get(0).getKwvalue(), TenantConfig.class);
     verify(managedb, times(1)).getKwPropertiesMap(101);
     // assert that the order is as specified in getJsonString
     assertThat(tenantConfig.getTenantModel()).isNull();
+  }
+
+  @Test
+  @Order(11)
+  public void givenValidTenantModelTopicsInvalidEnvsClustersOnly_returnFailure()
+      throws KlawException, JsonProcessingException {
+    stubValidateTests();
+    // Create Test Object
+    KwTenantConfigModel prop =
+        addKafkaTopicInformation(
+            new KwTenantConfigModel(), "DEV", Arrays.asList("DEV", "TST", "UAT"), "DEV", "PRE");
+    prop.setTenantName("default");
+    TenantConfig config = new TenantConfig();
+    config.setTenantModel(prop);
+    KwPropertiesModel request =
+        createKwPropertiesModel(KLAW_TENANT_CONFIG, mapper.writeValueAsString(config));
+    // Execute
+    ApiResponse response = serverConfigService.updateKwCustomProperty(request);
+
+    // verify
+    assertThat(response.getMessage()).isEqualTo(SERVER_CONFIG_ERR_106);
   }
 
   private Map<String, Map<String, String>> buildFullDbObject() throws JsonProcessingException {
@@ -362,13 +381,13 @@ public class ServerConfigServiceTest {
     KwTenantConfigModel prop =
         addKafkaTopicInformation(
             new KwTenantConfigModel(), "1", Arrays.asList("1", "2", "3"), "1", "3", "2");
-    prop = addKafkaConnInformation(prop, Arrays.asList("5", "6", "4"), "6", "5", "4");
+    addKafkaConnInformation(prop, Arrays.asList("5", "6", "4"), "6", "5", "4");
 
     prop.setTenantName("default");
     TenantConfig config = new TenantConfig();
     config.setTenantModel(prop);
     Map<String, Map<String, String>> dbObject = new HashMap<>();
-    Map<String, String> map = new HashMap();
+    Map<String, String> map = new HashMap<>();
 
     map.put("kwvalue", mapper.writeValueAsString(config));
     map.put("kwkey", KLAW_TENANT_CONFIG);
@@ -400,29 +419,30 @@ public class ServerConfigServiceTest {
     when(managedb.getKafkaEnvList(anyInt()))
         .thenReturn(
             List.of(
-                createEnv("DEV", "1", KafkaClustersType.KAFKA.value),
-                createEnv("TST", "2", KafkaClustersType.KAFKA.value),
-                createEnv("UAT", "3", KafkaClustersType.KAFKA.value)));
+                createEnv("DEV", "1", KafkaClustersType.KAFKA.value, 1),
+                createEnv("TST", "2", KafkaClustersType.KAFKA.value, 2),
+                createEnv("UAT", "3", KafkaClustersType.KAFKA.value, 3),
+                createEnv("PRE", "3", KafkaClustersType.KAFKA.value, 1)));
     when(managedb.getKafkaConnectEnvList(anyInt()))
         .thenReturn(
             List.of(
-                createEnv("DEV_CONN", "4", KafkaClustersType.KAFKA_CONNECT.value),
-                createEnv("TST_CONN", "5", KafkaClustersType.KAFKA_CONNECT.value),
-                createEnv("UAT_CONN", "6", KafkaClustersType.KAFKA_CONNECT.value)));
+                createEnv("DEV_CONN", "4", KafkaClustersType.KAFKA_CONNECT.value, 4),
+                createEnv("TST_CONN", "5", KafkaClustersType.KAFKA_CONNECT.value, 5),
+                createEnv("UAT_CONN", "6", KafkaClustersType.KAFKA_CONNECT.value, 6)));
 
     when(managedb.getSchemaRegEnvList(anyInt()))
         .thenReturn(
             List.of(
-                createEnv("DEV_SCH", "7", KafkaClustersType.SCHEMA_REGISTRY.value),
-                createEnv("TST_SCH", "8", KafkaClustersType.SCHEMA_REGISTRY.value),
-                createEnv("UAT_SCH", "9", KafkaClustersType.SCHEMA_REGISTRY.value)));
+                createEnv("DEV_SCH", "7", KafkaClustersType.SCHEMA_REGISTRY.value, 7),
+                createEnv("TST_SCH", "8", KafkaClustersType.SCHEMA_REGISTRY.value, 8),
+                createEnv("UAT_SCH", "9", KafkaClustersType.SCHEMA_REGISTRY.value, 9)));
 
     when(managedb.getHandleDbRequests()).thenReturn(handleDbRequests);
     when(handleDbRequests.updateKwProperty(any(), eq(101)))
         .thenReturn(ApiResultStatus.SUCCESS.value);
   }
 
-  private Env createEnv(String envName, String envId, String envType) {
+  private Env createEnv(String envName, String envId, String envType, int clusterId) {
     Env env = new Env();
     env.setName(envName);
     env.setTenantId(101);
@@ -430,6 +450,7 @@ public class ServerConfigServiceTest {
     env.setType(envType); // kafka,schemaregistry
     env.setEnvStatus("NOT_KNOWN");
     env.setEnvExists("true");
+    env.setClusterId(clusterId);
 
     return env;
   }

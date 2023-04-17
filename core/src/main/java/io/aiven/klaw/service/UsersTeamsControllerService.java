@@ -1,5 +1,24 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_108;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_109;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_110;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_111;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_112;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_113;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_115;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_116;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_117;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_118;
+import static io.aiven.klaw.error.KlawErrorMessages.TEAMS_ERR_119;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
@@ -15,15 +34,18 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.RegisterUserInfoModel;
-import io.aiven.klaw.model.UserInfoModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.requests.RegisterUserInfoModel;
 import io.aiven.klaw.model.requests.TeamModel;
+import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.RegisterUserInfoModelResponse;
+import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
+import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -88,8 +110,8 @@ public class UsersTeamsControllerService {
   // pattern for simple username
   private static final Pattern defaultPattern = Pattern.compile("^[a-zA-Z0-9]{3,}$");
 
-  public UserInfoModel getUserInfoDetails(String userId) {
-    UserInfoModel userInfoModel = new UserInfoModel();
+  public UserInfoModelResponse getUserInfoDetails(String userId) {
+    UserInfoModelResponse userInfoModel = new UserInfoModelResponse();
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
     if (userInfo != null) {
       copyProperties(userInfo, userInfoModel);
@@ -104,7 +126,10 @@ public class UsersTeamsControllerService {
   }
 
   private void updateSwitchTeamsList(
-      UserInfoModel userInfoModel, UserInfo userInfo, int tenantId, boolean updateTeamName) {
+      UserInfoModelResponse userInfoModel,
+      UserInfo userInfo,
+      int tenantId,
+      boolean updateTeamName) {
     if (userInfo.isSwitchTeams()) {
       Set<Integer> switchAllowedTeamIds = userInfo.getSwitchAllowedTeamIds();
       Set<String> switchAllowedTeamNames = new HashSet<>();
@@ -127,7 +152,11 @@ public class UsersTeamsControllerService {
     userInfo.setFullname(updateUserObj.getFullname());
     userInfo.setMailid(updateUserObj.getMailid());
     try {
-      return ApiResponse.builder().result(dbHandle.updateUser(userInfo)).build();
+      String result = dbHandle.updateUser(userInfo);
+      return ApiResponse.builder()
+          .success(result.equals(ApiResultStatus.SUCCESS.value))
+          .message(result)
+          .build();
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
@@ -138,11 +167,14 @@ public class UsersTeamsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getUserName(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     if (newUser.getTeamId() == null) {
-      return ApiResponse.builder().result("Team id cannot be empty.").build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_101).build();
     }
 
     UserInfo existingUserInfo =
@@ -154,9 +186,7 @@ public class UsersTeamsControllerService {
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
       if (!Objects.equals(
           getUserName(), newUser.getUsername())) { // should be able to update same user
-        return ApiResponse.builder()
-            .result("Not Authorized to update another SUPERADMIN user.")
-            .build();
+        return ApiResponse.builder().success(false).message(TEAMS_ERR_102).build();
       }
     }
 
@@ -200,10 +230,17 @@ public class UsersTeamsControllerService {
       existingUserInfo.setTenantId(tenantId);
       Pair<Boolean, String> switchTeamsCheck = validateSwitchTeams(newUser);
       if (switchTeamsCheck.getLeft()) {
-        return ApiResponse.builder().result(switchTeamsCheck.getRight()).build();
+        return ApiResponse.builder().success(false).message(switchTeamsCheck.getRight()).build();
       }
 
-      return ApiResponse.builder().result(dbHandle.updateUser(existingUserInfo)).build();
+      String result = dbHandle.updateUser(existingUserInfo);
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.UPDATE);
+      }
+      return ApiResponse.builder()
+          .success(result.equals(ApiResultStatus.SUCCESS.value))
+          .message(result)
+          .build();
     } catch (Exception e) {
       log.error("Error from updateUser ", e);
       throw new KlawException(e.getMessage());
@@ -214,7 +251,6 @@ public class UsersTeamsControllerService {
     log.debug("getTeamDetails {} {}", teamId, tenantName);
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
-
     Team teamDao = manageDatabase.getHandleDbRequests().selectTeamDetails(teamId, tenantId);
     if (teamDao != null) {
       TeamModelResponse teamModel = new TeamModelResponse();
@@ -247,17 +283,17 @@ public class UsersTeamsControllerService {
     return sb.toString();
   }
 
-  public Map<String, String> resetPassword(String username) {
+  public ResetPasswordInfo resetPassword(String username) {
     log.info("resetPassword {}", username);
-    Map<String, String> userMap = new HashMap<>();
-    UserInfoModel userInfoModel = getUserInfoDetails(username);
-    userMap.put("passwordSent", "false");
+    ResetPasswordInfo resetPasswordInfo = new ResetPasswordInfo();
+    UserInfoModelResponse userInfoModel = getUserInfoDetails(username);
+    resetPasswordInfo.setPasswordSent("false");
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     if (userInfoModel == null) {
-      userMap.put("userFound", "false");
+      resetPasswordInfo.setUserFound("false");
     } else {
-      userMap.put("userFound", "true");
+      resetPasswordInfo.setUserFound("true");
       String newGeneratedPwd = generateRandomWord(15);
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
@@ -266,7 +302,7 @@ public class UsersTeamsControllerService {
           updatePwdUserDetails, encoder.encode(newGeneratedPwd));
       String pwdUpdated = dbHandle.updatePassword(username, encodePwd(newGeneratedPwd));
       if (ApiResultStatus.SUCCESS.value.equals(pwdUpdated)) {
-        userMap.put("passwordSent", "true");
+        resetPasswordInfo.setPasswordSent("true");
         mailService.sendMailResetPwd(
             username,
             newGeneratedPwd,
@@ -275,7 +311,7 @@ public class UsersTeamsControllerService {
             commonUtilsService.getLoginUrl());
       }
     }
-    return userMap;
+    return resetPasswordInfo;
   }
 
   private List<TeamModelResponse> getTeamModels(List<Team> teams) {
@@ -322,8 +358,9 @@ public class UsersTeamsControllerService {
 
   public List<TeamModelResponse> getAllTeamsSU() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
+
     List<TeamModelResponse> teamModels =
-        getTeamModels(manageDatabase.getHandleDbRequests().selectAllTeams(tenantId));
+        getTeamModels(manageDatabase.getTeamObjForTenant(tenantId));
 
     if (!commonUtilsService.isNotAuthorizedUser(
         getUserName(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
@@ -376,19 +413,25 @@ public class UsersTeamsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
+    if (manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId).size()
+        > 0) {
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_103).build();
+    }
+
     if (manageDatabase.getHandleDbRequests().findAllComponentsCountForTeam(teamId, tenantId) > 0) {
-      return ApiResponse.builder()
-          .result("Not allowed to delete this team, as there are associated topics/acls/requests..")
-          .build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_104).build();
     }
 
     // own team cannot be deleted
     if (Objects.equals(commonUtilsService.getTeamId(userName), teamId)) {
-      return ApiResponse.builder().result("Team cannot be deleted.").build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_105).build();
     }
 
     try {
@@ -401,43 +444,54 @@ public class UsersTeamsControllerService {
         commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.DELETE);
       }
 
-      return ApiResponse.builder().result(result).build();
+      return ApiResponse.builder()
+          .success(result.equals(ApiResultStatus.SUCCESS.value))
+          .message(result)
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
     }
   }
 
-  public ApiResponse deleteUser(String userId, boolean isExternal) throws KlawException {
-    log.info("deleteUser {}", userId);
-    String userDetails = getUserName();
+  public ApiResponse deleteUser(String userIdToDelete, boolean isExternal) throws KlawException {
+    log.info("deleteUser {}", userIdToDelete);
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
-    UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userId);
+    UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userIdToDelete);
     List<String> permissions =
         manageDatabase
             .getRolesPermissionsPerTenant(commonUtilsService.getTenantId(getUserName()))
             .get(existingUserInfo.getRole());
     if (permissions != null
         && permissions.contains(PermissionType.FULL_ACCESS_USERS_TEAMS_ROLES.name())) {
-      return ApiResponse.builder()
-          .result("Not Authorized. Cannot delete a user with SUPERADMIN access.")
-          .build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_106).build();
     }
 
-    String envAddResult = "{\"result\":\"User cannot be deleted\"}";
-    if (Objects.equals(userDetails, userId) && isExternal) {
-      return ApiResponse.builder().result(envAddResult).build();
+    if (manageDatabase.getHandleDbRequests().findAllComponentsCountForUser(userIdToDelete, tenantId)
+        > 0) {
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_107).build();
+    }
+
+    if (Objects.equals(userName, userIdToDelete) && isExternal) {
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_108).build();
     }
 
     try {
-      inMemoryUserDetailsManager.deleteUser(userId);
+      inMemoryUserDetailsManager.deleteUser(userIdToDelete);
+      String result = manageDatabase.getHandleDbRequests().deleteUserRequest(userIdToDelete);
       return ApiResponse.builder()
-          .result(manageDatabase.getHandleDbRequests().deleteUserRequest(userId))
+          .success(result.equals(ApiResultStatus.SUCCESS.value))
+          .message(result)
           .build();
     } catch (Exception e) {
       log.error("Exception:", e);
@@ -465,10 +519,10 @@ public class UsersTeamsControllerService {
   }
 
   public ApiResponse addNewUser(UserInfoModel newUser, boolean isExternal) throws KlawException {
-    log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeam(), newUser.getRole());
+    log.info("addNewUser {} {} {}", newUser.getUsername(), newUser.getTeamId(), newUser.getRole());
     boolean userNamePatternCheck = userNamePatternValidation(newUser.getUsername());
     if (!userNamePatternCheck) {
-      return ApiResponse.builder().result("Invalid username/mail id").build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_109).build();
     }
 
     int tenantId;
@@ -478,18 +532,16 @@ public class UsersTeamsControllerService {
       } else {
         tenantId = newUser.getTenantId();
       }
-
       newUser.setTenantId(tenantId);
-
-      if (newUser.getTeamId() == null) {
-        newUser.setTeamId(manageDatabase.getTeamIdFromTeamName(tenantId, newUser.getTeam()));
-      }
     }
 
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     try {
@@ -510,7 +562,7 @@ public class UsersTeamsControllerService {
 
       Pair<Boolean, String> switchTeamsCheck = validateSwitchTeams(newUser);
       if (switchTeamsCheck.getLeft())
-        return ApiResponse.builder().result(switchTeamsCheck.getRight()).build();
+        return ApiResponse.builder().success(false).message(switchTeamsCheck.getRight()).build();
 
       userInfo.setPwd(newUser.getUserPassword());
       String result = dbHandle.addNewUser(userInfo);
@@ -530,7 +582,16 @@ public class UsersTeamsControllerService {
               commonUtilsService.getLoginUrl());
         }
       }
-      return ApiResponse.builder().result(result).build();
+
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        tenantId = commonUtilsService.getTenantId(getUserName());
+        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.CREATE);
+      }
+
+      return ApiResponse.builder()
+          .success(result.equals(ApiResultStatus.SUCCESS.value))
+          .message(result)
+          .build();
     } catch (Exception e) {
       try {
         if (inMemoryUserDetailsManager != null)
@@ -539,10 +600,10 @@ public class UsersTeamsControllerService {
         log.error("Try deleting user");
       }
       if (e.getMessage().contains("should not exist")) {
-        return ApiResponse.builder().result("Failure. User already exists.").build();
+        return ApiResponse.builder().success(false).message(TEAMS_ERR_110).build();
       } else {
         log.error("Error ", e);
-        throw new KlawException("Unable to create the user.");
+        throw new KlawException(TEAMS_ERR_111);
       }
     }
   }
@@ -553,9 +614,9 @@ public class UsersTeamsControllerService {
       if (switchAllowedTeamIds == null
           || switchAllowedTeamIds.isEmpty()
           || switchAllowedTeamIds.size() < 2) { // make sure atleast 2 teams are selected to switch
-        return Pair.of(Boolean.TRUE, "Please make sure atleast 2 teams are selected.");
+        return Pair.of(Boolean.TRUE, TEAMS_ERR_112);
       } else if (!switchAllowedTeamIds.contains(sourceUser.getTeamId())) {
-        return Pair.of(Boolean.TRUE, "Please select your own team, in the switch teams list.");
+        return Pair.of(Boolean.TRUE, TEAMS_ERR_113);
       }
     }
     return Pair.of(Boolean.FALSE, "");
@@ -567,7 +628,10 @@ public class UsersTeamsControllerService {
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     int tenantId;
@@ -576,6 +640,12 @@ public class UsersTeamsControllerService {
       newTeam.setTenantId(tenantId);
     } else {
       tenantId = newTeam.getTenantId();
+    }
+
+    // teamname check if already exists
+    if (manageDatabase.getTeamNamesForTenant(tenantId).stream()
+        .anyMatch(newTeam.getTeamname()::equalsIgnoreCase)) {
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_119).build();
     }
 
     Team team = new Team();
@@ -591,7 +661,10 @@ public class UsersTeamsControllerService {
       if (ApiResultStatus.SUCCESS.value.equals(res)) {
         commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.CREATE);
       }
-      return ApiResponse.builder().result(res).build();
+      return ApiResponse.builder()
+          .success(res.equals(ApiResultStatus.SUCCESS.value))
+          .message(res)
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -603,10 +676,21 @@ public class UsersTeamsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
+    // teamname check if already exists
+    if (manageDatabase.getTeamObjForTenant(tenantId).stream()
+        .filter(a -> !a.getTeamId().equals(updatedTeam.getTeamId()))
+        .map(Team::getTeamname)
+        .anyMatch(updatedTeam.getTeamname()::equalsIgnoreCase)) {
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_119).build();
+    }
+
     Team team = new Team();
     copyProperties(updatedTeam, team);
     team.setTenantId(tenantId);
@@ -620,7 +704,10 @@ public class UsersTeamsControllerService {
     try {
       String res = manageDatabase.getHandleDbRequests().updateTeam(team);
       commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.UPDATE);
-      return ApiResponse.builder().result(res).build();
+      return ApiResponse.builder()
+          .success(res.equals(ApiResultStatus.SUCCESS.value))
+          .message(res)
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -630,9 +717,7 @@ public class UsersTeamsControllerService {
   public ApiResponse changePwd(String changePwd) throws KlawException {
     if (LDAP.value.equals(authenticationType)
         || ACTIVE_DIRECTORY.value.equals(authenticationType)) {
-      return ApiResponse.builder()
-          .result("Password cannot be updated in ldap/ad authentication mode.")
-          .build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_114).build();
     }
     String userDetails = getUserName();
     GsonJsonParser jsonParser = new GsonJsonParser();
@@ -645,11 +730,11 @@ public class UsersTeamsControllerService {
       UserDetails updatePwdUserDetails = inMemoryUserDetailsManager.loadUserByUsername(userDetails);
       inMemoryUserDetailsManager.updatePassword(updatePwdUserDetails, encoder.encode(pwdChange));
 
+      String result =
+          manageDatabase.getHandleDbRequests().updatePassword(userDetails, encodePwd(pwdChange));
       return ApiResponse.builder()
-          .result(
-              manageDatabase
-                  .getHandleDbRequests()
-                  .updatePassword(userDetails, encodePwd(pwdChange)))
+          .success(result.equals(ApiResultStatus.SUCCESS.value))
+          .message(result)
           .build();
     } catch (Exception e) {
       log.error("Exception:", e);
@@ -657,9 +742,10 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public List<UserInfoModel> showUsers(String teamName, String userSearchStr, String pageNo) {
+  public List<UserInfoModelResponse> showUsers(
+      String teamName, String userSearchStr, String pageNo) {
 
-    List<UserInfoModel> userInfoModels = new ArrayList<>();
+    List<UserInfoModelResponse> userInfoModels = new ArrayList<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersInfo(tenantId);
 
@@ -672,7 +758,7 @@ public class UsersTeamsControllerService {
 
     userList.forEach(
         userListItem -> {
-          UserInfoModel userInfoModel = new UserInfoModel();
+          UserInfoModelResponse userInfoModel = new UserInfoModelResponse();
           copyProperties(userListItem, userInfoModel);
           updateSwitchTeamsList(userInfoModel, userListItem, tenantId, true);
           if (teamName != null && !teamName.equals("")) {
@@ -690,13 +776,14 @@ public class UsersTeamsControllerService {
           userInfoModel.setTeam(
               manageDatabase.getTeamNameFromTeamId(tenantId, userInfoModel.getTeamId()));
         });
-    userInfoModels.sort(Comparator.comparing(UserInfoModel::getTeam));
+    userInfoModels.sort(Comparator.comparing(UserInfoModelResponse::getTeam));
 
     return getPagedUsers(pageNo, userInfoModels);
   }
 
-  private List<UserInfoModel> getPagedUsers(String pageNo, List<UserInfoModel> userListMap) {
-    List<UserInfoModel> aclListMapUpdated = new ArrayList<>();
+  private List<UserInfoModelResponse> getPagedUsers(
+      String pageNo, List<UserInfoModelResponse> userListMap) {
+    List<UserInfoModelResponse> aclListMapUpdated = new ArrayList<>();
 
     int totalRecs = userListMap.size();
     int recsPerPage = 20;
@@ -711,7 +798,7 @@ public class UsersTeamsControllerService {
     for (int i = 0; i < totalRecs; i++) {
 
       if (i >= startVar && i < lastVar) {
-        UserInfoModel mp = userListMap.get(i);
+        UserInfoModelResponse mp = userListMap.get(i);
 
         mp.setTotalNoPages(totalPages + "");
         List<String> numList = new ArrayList<>();
@@ -725,9 +812,9 @@ public class UsersTeamsControllerService {
     return aclListMapUpdated;
   }
 
-  public UserInfoModel getMyProfileInfo() {
+  public UserInfoModelResponse getMyProfileInfo() {
     String userDetails = getUserName();
-    UserInfoModel userInfoModel = new UserInfoModel();
+    UserInfoModelResponse userInfoModel = new UserInfoModelResponse();
     UserInfo userInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userDetails);
     copyProperties(userInfo, userInfoModel);
     updateSwitchTeamsList(userInfoModel, userInfo, userInfo.getTenantId(), true);
@@ -752,7 +839,7 @@ public class UsersTeamsControllerService {
     teamModel.setContactperson(teamContactPerson);
 
     ApiResponse addTeamRes = addNewTeam(teamModel, false);
-    teamAddMap.put("team1result", addTeamRes.getResult());
+    teamAddMap.put("team1result", addTeamRes.getMessage());
 
     TeamModel teamModel1 = new TeamModel();
     teamModel1.setTenantId(tenantId);
@@ -761,7 +848,7 @@ public class UsersTeamsControllerService {
     teamModel1.setContactperson(teamContactPerson);
 
     ApiResponse addTeamRes2 = addNewTeam(teamModel1, false);
-    teamAddMap.put("team2result", addTeamRes2.getResult());
+    teamAddMap.put("team2result", addTeamRes2.getMessage());
     return teamAddMap;
   }
 
@@ -774,10 +861,10 @@ public class UsersTeamsControllerService {
     List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
     if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
-      return ApiResponse.builder().result("User already exists.").build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_115).build();
     } else if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getUsername()))) {
-      return ApiResponse.builder().result("User already exists.").build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_115).build();
     }
 
     // check if registration exists
@@ -785,10 +872,10 @@ public class UsersTeamsControllerService {
         manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
     if (registerUserInfoList.stream()
         .anyMatch(user -> user.getUsername().equals(newUser.getMailid()))) {
-      return ApiResponse.builder().result("User already exists.").build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_115).build();
     } else if (registerUserInfoList.stream()
         .anyMatch(user -> user.getUsername().equals(newUser.getUsername()))) {
-      return ApiResponse.builder().result("User already exists.").build();
+      return ApiResponse.builder().success(false).message(TEAMS_ERR_115).build();
     }
 
     // get the user details from db
@@ -856,14 +943,14 @@ public class UsersTeamsControllerService {
             }
           } catch (Exception e) {
             log.error("Exception:", e);
-            return ApiResponse.builder().result("Invalid tenant provided.").build();
+            return ApiResponse.builder().success(false).message(TEAMS_ERR_116).build();
           }
         }
       }
 
       String resultRegister = dbHandle.registerUser(registerUserInfo);
       if (resultRegister.contains("Failure")) {
-        return ApiResponse.builder().result("Registration already exists.").build();
+        return ApiResponse.builder().success(false).message(TEAMS_ERR_117).build();
       }
 
       if (isExternal) {
@@ -871,14 +958,17 @@ public class UsersTeamsControllerService {
             registerUserInfo, dbHandle, commonUtilsService.getLoginUrl());
       }
 
-      return ApiResponse.builder().result(resultRegister).build();
+      return ApiResponse.builder()
+          .success(resultRegister.equals(ApiResultStatus.SUCCESS.value))
+          .message(resultRegister)
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
-      throw new KlawException("Failure. Something went wrong. Please try later.");
+      throw new KlawException(TEAMS_ERR_118);
     }
   }
 
-  public List<RegisterUserInfoModel> getNewUserRequests() {
+  public List<RegisterUserInfoModelResponse> getNewUserRequests() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 
@@ -889,10 +979,10 @@ public class UsersTeamsControllerService {
       registerUserInfoList = manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
     }
 
-    List<RegisterUserInfoModel> registerUserInfoModels = new ArrayList<>();
-    RegisterUserInfoModel registerUserInfoModel;
+    List<RegisterUserInfoModelResponse> registerUserInfoModels = new ArrayList<>();
+    RegisterUserInfoModelResponse registerUserInfoModel;
     for (RegisterUserInfo registerUserInfo : registerUserInfoList) {
-      registerUserInfoModel = new RegisterUserInfoModel();
+      registerUserInfoModel = new RegisterUserInfoModelResponse();
       copyProperties(registerUserInfo, registerUserInfoModel);
       registerUserInfoModel.setTeam(
           manageDatabase.getTeamNameFromTeamId(tenantId, registerUserInfo.getTeamId()));
@@ -913,7 +1003,10 @@ public class UsersTeamsControllerService {
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -929,8 +1022,6 @@ public class UsersTeamsControllerService {
       UserInfoModel userInfo = new UserInfoModel();
       userInfo.setUsername(username);
       userInfo.setFullname(registerUserInfo.getFullname());
-      userInfo.setTeam(
-          manageDatabase.getTeamNameFromTeamId(tenantId, registerUserInfo.getTeamId()));
       userInfo.setTeamId(registerUserInfo.getTeamId());
       userInfo.setRole(registerUserInfo.getRole());
       userInfo.setTenantId(tenantId);
@@ -943,12 +1034,12 @@ public class UsersTeamsControllerService {
       userInfo.setMailid(registerUserInfo.getMailid());
 
       ApiResponse resultResp = addNewUser(userInfo, isExternal);
-      if (resultResp.getResult().contains(ApiResultStatus.SUCCESS.value)) {
+      if (resultResp.getMessage().contains(ApiResultStatus.SUCCESS.value)) {
         dbHandle.updateNewUserRequest(username, userDetails, true);
       } else {
-        return ApiResponse.builder().result(ApiResultStatus.FAILURE.value).build();
+        return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
       }
-      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -961,25 +1052,29 @@ public class UsersTeamsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     try {
       dbHandle.updateNewUserRequest(username, userDetails, false);
-      return ApiResponse.builder().result(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
     }
   }
 
-  public RegisterUserInfoModel getRegistrationInfoFromId(String registrationId, String status) {
+  public RegisterUserInfoModelResponse getRegistrationInfoFromId(
+      String registrationId, String status) {
     RegisterUserInfo registerUserInfo =
         manageDatabase.getHandleDbRequests().getRegistrationDetails(registrationId, status);
 
     if (registerUserInfo != null) {
-      RegisterUserInfoModel registerUserInfoModel = new RegisterUserInfoModel();
+      RegisterUserInfoModelResponse registerUserInfoModel = new RegisterUserInfoModelResponse();
       copyProperties(registerUserInfo, registerUserInfoModel);
       return registerUserInfoModel;
     } else {
@@ -1034,7 +1129,10 @@ public class UsersTeamsControllerService {
     boolean authorizedUser = true;
 
     if (!userInfo.isSwitchTeams()) {
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
     }
 
     Set<Integer> teamIds = userInfo.getSwitchAllowedTeamIds();
@@ -1049,10 +1147,16 @@ public class UsersTeamsControllerService {
     }
 
     if (!authorizedUser)
-      return ApiResponse.builder().result(ApiResultStatus.NOT_AUTHORIZED.value).build();
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
 
+    String result =
+        manageDatabase.getHandleDbRequests().updateUserTeam(userIdToBeUpdated, newTeamId);
     return ApiResponse.builder()
-        .result(manageDatabase.getHandleDbRequests().updateUserTeam(userIdToBeUpdated, newTeamId))
+        .success(result.equals(ApiResultStatus.SUCCESS.value))
+        .message(result)
         .build();
   }
 }

@@ -1,5 +1,7 @@
 package io.aiven.klaw.config;
 
+import static io.aiven.klaw.error.KlawErrorMessages.MIGRATION_ERR_101;
+
 import io.aiven.klaw.dao.DataVersion;
 import io.aiven.klaw.dao.migration.DataMigration;
 import io.aiven.klaw.dao.migration.MigrationRunner;
@@ -141,8 +143,7 @@ public class MigrationUtility implements InitializingBean {
 
           if (!status) {
             throw new KlawDataMigrationException(
-                "Unable to complete Migration instructions successfully from "
-                    + runner.getCanonicalName());
+                String.format(MIGRATION_ERR_101, runner.getCanonicalName()));
           } else {
             // update table that this version completed.
             updateDataVersionInDB(orderedMapOfMigrationInstructions.get(value).getLeft());

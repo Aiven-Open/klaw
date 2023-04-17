@@ -9,9 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.aiven.klaw.UtilMethods;
-import io.aiven.klaw.model.RequestsCountOverview;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.response.AuthenticationInfo;
+import io.aiven.klaw.model.response.RequestsCountOverview;
 import io.aiven.klaw.service.RequestStatisticsService;
 import io.aiven.klaw.service.UtilControllerService;
 import java.nio.charset.StandardCharsets;

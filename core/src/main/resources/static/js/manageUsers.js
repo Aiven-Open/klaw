@@ -140,11 +140,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                             params: {'changePwd' : serviceInput },
                             data: {'changePwd' : serviceInput}
                         }).success(function(output) {
-                            $scope.alert = "Password changed : "+output.result;
-                            if(output.result === 'success'){
+                            $scope.alert = "Password changed : "+output.message;
+                            if(output.success){
                                 swal({
                                      title: "",
-                                     text: "Password changed : "+output.result,
+                                     text: "Password changed : "+output.message,
                                      timer: 2000,
                                      showConfirmButton: false
                                  });
@@ -184,11 +184,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                             data: {'teamId' : idval}
                         }).success(function(output) {
 
-                            $scope.alert = "Delete Team Request : "+output.result;
-                            if(output.result === 'success'){
+                            $scope.alert = "Delete Team Request : "+output.message;
+                            if(output.success){
                                 swal({
                                      title: "",
-                                     text: "Delete Team Request : "+output.result,
+                                     text: "Delete Team Request : "+output.message,
                                      timer: 2000,
                                      showConfirmButton: false
                                  });
@@ -228,11 +228,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         params: {'userId' : idval },
                         data: {'userId' : idval}
                     }).success(function(output) {
-                        $scope.alert = "Delete User Request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "Delete User Request : "+output.message;
+                        if(output.success){
                             swal({
                                  title: "",
-                                 text: "Delete User Request : "+output.result,
+                                 text: "Delete User Request : "+output.message,
                                  timer: 2000,
                                  showConfirmButton: false
                              });
@@ -278,11 +278,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                 params: {'updateProfile' : serviceInput },
                 data: serviceInput
             }).success(function(output) {
-                $scope.alert = "Update User Request : "+output.result;
-                if(output.result === 'success'){
+                $scope.alert = "Update User Request : "+output.message;
+                if(output.success){
                         swal({
                              title: "",
-                             text: "Update User Request : "+output.result,
+                             text: "Update User Request : "+output.message,
                              timer: 2000,
                              showConfirmButton: false
                          });
@@ -400,7 +400,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             serviceInput['username'] = $scope.addNewUser.username;
             serviceInput['fullname'] = $scope.addNewUser.fullname;
             serviceInput['userPassword'] = $scope.addNewUser.pwd;
-            serviceInput['team'] = $scope.addNewUser.team.teamname;
+            serviceInput['teamId'] = $scope.addNewUser.team;
             serviceInput['role'] = $scope.addNewUser.role;
             serviceInput['mailid'] = $scope.addNewUser.emailid;
             serviceInput['switchTeams'] = $scope.addNewUser.canswitchteams;
@@ -485,9 +485,10 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
             serviceInput['username'] = $scope.addNewUser.username;
             serviceInput['fullname'] = $scope.addNewUser.fullname;
             serviceInput['userPassword'] = $scope.addNewUser.pwd;
-            serviceInput['team'] = $scope.addNewUser.team.teamname;
+            serviceInput['teamId'] = $scope.addNewUser.team;
             serviceInput['role'] = $scope.addNewUser.role;
             serviceInput['mailid'] = $scope.addNewUser.username;
+            serviceInput['switchTeams'] = $scope.addNewUser.canswitchteams;
 
             $scope.addUserHttpCall(serviceInput);
         };
@@ -500,16 +501,16 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     params: {'addNewUser' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
-                    $scope.alert = "New User Request : "+output.result;
+                    $scope.alert = "New User Request : "+output.message;
                     $scope.addNewUser.username = "";
                     $scope.addNewUser.fullname = "";
                     $scope.addNewUser.pwd = "";
                     $scope.addNewUser.reppwd = "";
                     $scope.addNewUser.emailid = "";
-                    if(output.result === 'success'){
+                    if(output.success){
                             swal({
                                  title: "",
-                                 text: "New User Request : "+output.result,
+                                 text: "New User Request : "+output.message,
                                  timer: 2000,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
@@ -571,14 +572,14 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         params: {'addNewUser' : serviceInput },
                         data: serviceInput
                     }).success(function(output) {
-                        $scope.alert = "New User Request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "New User Request : "+output.message;
+                        if(output.success){
                             $scope.addNewUser.username = "";
                             $scope.addNewUser.fullname = "";
                             $scope.addNewUser.emailid = "";
                             swal({
                                  title: "",
-                                 text: "New User Request : "+output.result,
+                                 text: "New User Request : "+output.message,
                                  timer: 2000,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
@@ -661,11 +662,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     headers : { 'Content-Type' : 'application/json' },
                     data: serviceInput
                 }).success(function(output) {
-                    $scope.alert = "New Team added : "+output.result;
-                    if(output.result === 'success'){
+                    $scope.alert = "New Team added : "+output.message;
+                    if(output.success){
                         swal({
                              title: "",
-                             text: "New Team added : "+output.result,
+                             text: "New Team added : "+output.message,
                              timer: 2000,
                              showConfirmButton: true
                          }).then(function(isConfirm){
@@ -854,11 +855,11 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

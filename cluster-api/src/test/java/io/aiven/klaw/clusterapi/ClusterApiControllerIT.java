@@ -2,11 +2,11 @@ package io.aiven.klaw.clusterapi;
 
 import static io.aiven.klaw.clusterapi.models.enums.ClusterStatus.ONLINE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
@@ -160,6 +160,33 @@ public class ClusterApiControllerIT {
 
   @Test
   @Order(4)
+  public void createTopicsExistingTopicSameConfigSuccess() throws Exception {
+    String topicName = "testtopic";
+    ClusterTopicRequest clusterTopicRequest = createTopicRequest(topicName);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
+    String url = "/topics/createTopics";
+    MockHttpServletResponse response = executeCreateTopicRequest(jsonReq, url);
+    ApiResponse apiResponse =
+        new ObjectMapper().readValue(response.getContentAsString(), new TypeReference<>() {});
+    assertThat(apiResponse.isSuccess()).isTrue();
+  }
+
+  @Test
+  @Order(5)
+  public void createTopicsExistingTopicDifferentConfigFailure() throws Exception {
+    String topicName = "testtopic";
+    ClusterTopicRequest clusterTopicRequest = createTopicRequest(topicName);
+    clusterTopicRequest.setReplicationFactor((short) 4);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
+    String url = "/topics/createTopics";
+    MockHttpServletResponse response = executeCreateTopicRequest(jsonReq, url);
+    ApiResponse apiResponse =
+        new ObjectMapper().readValue(response.getContentAsString(), new TypeReference<>() {});
+    assertThat(apiResponse.getMessage()).contains("TopicExistsException");
+  }
+
+  @Test
+  @Order(6)
   public void createAclProducerIPAddress() throws Exception {
     String topicName = "testtopic";
     String ipHost = "11.12.13.14";
@@ -201,7 +228,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(5)
+  @Order(7)
   public void createAclConsumerIPAddress() throws Exception {
     String topicName = "testtopic";
     String ipHost = "11.12.13.14";
@@ -266,7 +293,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(6)
+  @Order(8)
   public void createAclProducerPrincipal() throws Exception {
     String topicName = "testtopic";
     String principle = "CN=host,OU=dept";
@@ -311,7 +338,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(7)
+  @Order(9)
   public void createAclConsumerPrincipal() throws Exception {
     String topicName = "testtopic";
     String principle = "CN=host,OU=dept";
@@ -382,37 +409,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(8)
-  public void createTopicsWhenTopicAlreadyExists() throws Exception {
-    String topicName = "testtopic";
-    ClusterTopicRequest clusterTopicRequest = createTopicRequest(topicName);
-    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
-    String url = "/topics/createTopics";
-    // ensure Topic has already been created in this integration test
-    executeCreateTopicRequest(jsonReq, url);
-    // attempt to create a topic that already exists.
-    MockHttpServletResponse returnedValue = executeCreateTopicRequest(jsonReq, url);
-
-    assertTrue(returnedValue.getContentAsString().contains("TopicExistsException"));
-    // verify that the response is in the correct part of the API Response otherwise it will not be
-    // found in handling by receiving clients.
-    ApiResponse apiResponse =
-        mapper.readValue(returnedValue.getContentAsString(), ApiResponse.class);
-    assertTrue(apiResponse.getResult().contains("TopicExistsException"));
-
-    embeddedKafkaBroker.doWithAdmin(
-        adminClient -> {
-          try {
-            Set<String> topicsSet = adminClient.listTopics().names().get();
-            assertThat(topicsSet).contains(topicName);
-          } catch (InterruptedException | ExecutionException e) {
-            log.error("Error : ", e);
-          }
-        });
-  }
-
-  @Test
-  @Order(9)
+  @Order(10)
   public void deleteTopics() throws Exception {
     // Create a topic
     String topicName = "testtopic-todelete";
@@ -438,7 +435,7 @@ public class ClusterApiControllerIT {
     when(schemaService.deleteSchema(any()))
         .thenReturn(
             ApiResponse.builder()
-                .result("Schema deletion " + ApiResultStatus.SUCCESS.value)
+                .message("Schema deletion " + ApiResultStatus.SUCCESS.value)
                 .build());
     MockHttpServletResponse response = executeCreateTopicRequest(jsonReq, url);
 

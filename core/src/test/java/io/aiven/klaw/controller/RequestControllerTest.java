@@ -10,9 +10,9 @@ import static org.mockito.Mockito.when;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.RequestVerdict;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestEntityType;
+import io.aiven.klaw.model.requests.RequestVerdict;
 import io.aiven.klaw.service.*;
 import io.aiven.klaw.service.SchemaRegistryControllerService;
 import java.util.Arrays;
@@ -63,7 +63,7 @@ class RequestControllerTest {
   @Test
   public void givenARequestToApproveCallCorrectServiceAndReturnSuccessOK() throws KlawException {
     when(topicControllerService.approveTopicRequests(eq("1001")))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(createRequestVerdict(RequestEntityType.TOPIC, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
@@ -75,7 +75,7 @@ class RequestControllerTest {
   public void givenARequestToApproveMulitpleCallTOPICCorrectServiceAndReturnSuccessOK()
       throws KlawException {
     when(topicControllerService.approveTopicRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.TOPIC, null, "1001", "2001"));
@@ -89,8 +89,8 @@ class RequestControllerTest {
       givenARequestToApproveMulitpleCallCorrectTOPICServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException {
     when(topicControllerService.approveTopicRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.TOPIC, null, "1001", "2001"));
@@ -103,7 +103,7 @@ class RequestControllerTest {
   public void givenARequestToApproveCallCorrectTOPICServiceAndReturnISEResponse()
       throws KlawException {
     when(topicControllerService.approveTopicRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(createRequestVerdict(RequestEntityType.TOPIC, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
@@ -115,7 +115,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToApproveCallCorrectTOPICServiceAndReturnISEResponse()
       throws KlawException {
     when(topicControllerService.approveTopicRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.TOPIC, null, "1001", "2001"));
@@ -128,7 +128,7 @@ class RequestControllerTest {
   public void givenARequestToApproveMulitpleCallCorrectSCHEMAServiceAndReturnSuccessOK()
       throws KlawException {
     when(schemaRegistryControllerService.execSchemaRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
@@ -142,8 +142,8 @@ class RequestControllerTest {
       givenARequestToApproveMulitpleCallCorrectSCHEMAServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException {
     when(schemaRegistryControllerService.execSchemaRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
@@ -156,7 +156,7 @@ class RequestControllerTest {
   public void givenARequestToApproveCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException {
     when(schemaRegistryControllerService.execSchemaRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(createRequestVerdict(RequestEntityType.SCHEMA, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
@@ -168,7 +168,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToApproveCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException {
     when(schemaRegistryControllerService.execSchemaRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
@@ -181,7 +181,7 @@ class RequestControllerTest {
   public void givenARequestToApproveMulitpleCallCorrectCONNECTORServiceAndReturnSuccessOK()
       throws KlawException {
     when(kafkaConnectControllerService.approveConnectorRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, null, "1001", "2001"));
@@ -195,8 +195,8 @@ class RequestControllerTest {
       givenARequestToApproveMulitpleCallCorrectCONNECTORServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException {
     when(kafkaConnectControllerService.approveConnectorRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, null, "1001", "2001"));
@@ -209,7 +209,7 @@ class RequestControllerTest {
   public void givenARequestToApproveCallCorrectCONNECTORServiceAndReturnISEResponse()
       throws KlawException {
     when(kafkaConnectControllerService.approveConnectorRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(createRequestVerdict(RequestEntityType.CONNECTOR, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
@@ -221,7 +221,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToApproveCallCorrectCONNECTORServiceAndReturnISEResponse()
       throws KlawException {
     when(kafkaConnectControllerService.approveConnectorRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, null, "1001", "2001"));
@@ -234,7 +234,7 @@ class RequestControllerTest {
   public void givenARequestToApproveMulitpleCallCorrectACLServiceAndReturnSuccessOK()
       throws KlawException {
     when(aclControllerService.approveAclRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.ACL, null, "1001", "2001"));
@@ -248,8 +248,8 @@ class RequestControllerTest {
       givenARequestToApproveMulitpleCallCorrectACLServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException {
     when(aclControllerService.approveAclRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.ACL, null, "1001", "2001"));
@@ -262,7 +262,7 @@ class RequestControllerTest {
   public void givenARequestToApproveCallCorrectACLServiceAndReturnISEResponse()
       throws KlawException {
     when(aclControllerService.approveAclRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(createRequestVerdict(RequestEntityType.ACL, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
@@ -274,7 +274,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToApproveCallCorrectACLServiceAndReturnISEResponse()
       throws KlawException {
     when(aclControllerService.approveAclRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(
             createRequestVerdict(RequestEntityType.ACL, null, "1001", "2001"));
@@ -302,7 +302,7 @@ class RequestControllerTest {
   public void givenARequestToDeclineCCallCorrectServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(topicControllerService.declineTopicRequests(eq("1001"), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.TOPIC, "TopicName Must Conform.", "1001"));
@@ -315,7 +315,7 @@ class RequestControllerTest {
   public void givenMultipleRequestsToDeclineCallCorrectServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(
@@ -330,8 +330,8 @@ class RequestControllerTest {
       givenARequestToDeclineCMulitpleCallCorrectTOPICServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(
@@ -345,7 +345,7 @@ class RequestControllerTest {
   public void givenARequestToDeclineCCallCorrectTOPICServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.TOPIC, "TopicName Must Conform.", "1001"));
@@ -358,7 +358,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToDeclineCCallCorrectTOPICServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(
@@ -372,7 +372,7 @@ class RequestControllerTest {
   public void givenARequestToDeclineCMulitpleCallCorrectSCHEMAServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(schemaRegistryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, "Schema is Invalid", "1001", "2001"));
@@ -387,8 +387,8 @@ class RequestControllerTest {
       givenARequestToDeclineCMulitpleCallCorrectSCHEMAServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
     when(schemaRegistryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, "Schema is Invalid", "1001", "2001"));
@@ -402,7 +402,7 @@ class RequestControllerTest {
   public void givenARequestToDeclineCCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(schemaRegistryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, "Schema is Invalid", "1001"));
@@ -416,7 +416,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToDeclineCCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(schemaRegistryControllerService.execSchemaRequestsDecline(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, "Schema is Invalid", "1001", "2001"));
@@ -430,7 +430,7 @@ class RequestControllerTest {
   public void givenARequestToDeclineCMulitpleCallCorrectCONNECTORServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.declineConnectorRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, "What?", "1001", "2001"));
@@ -445,8 +445,8 @@ class RequestControllerTest {
       givenARequestToDeclineCMulitpleCallCorrectCONNECTORServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.declineConnectorRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, "What?", "1001", "2001"));
@@ -460,7 +460,7 @@ class RequestControllerTest {
   public void givenARequestToDeclineCCallCorrectCONNECTORServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.declineConnectorRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, "What?", "1001"));
@@ -474,7 +474,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToDeclineCCallCorrectCONNECTORServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.declineConnectorRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, "What?", "1001", "2001"));
@@ -488,7 +488,7 @@ class RequestControllerTest {
   public void givenARequestToDeclineCMulitpleCallCorrectACLServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(aclControllerService.declineAclRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.ACL, "No Access for you!", "1001", "2001"));
@@ -502,8 +502,8 @@ class RequestControllerTest {
       givenARequestToDeclineCMulitpleCallCorrectACLServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
     when(aclControllerService.declineAclRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.ACL, "No Access for you!", "1001", "2001"));
@@ -516,7 +516,7 @@ class RequestControllerTest {
   public void givenARequestToDeclineCCallCorrectACLServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(aclControllerService.declineAclRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.ACL, "No Access for you!", "1001"));
@@ -529,7 +529,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToDeclineCCallCorrectACLServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(aclControllerService.declineAclRequests(anyString(), anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.declineRequest(
             createRequestVerdict(RequestEntityType.ACL, "No Access for you!", "1001", "2001"));
@@ -559,7 +559,7 @@ class RequestControllerTest {
   public void givenARequestToDeleteCallCorrectServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(topicControllerService.deleteTopicRequests(eq("1001")))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(createRequestVerdict(RequestEntityType.TOPIC, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
@@ -571,7 +571,7 @@ class RequestControllerTest {
   public void givenMultipleRequestsToDeleteCallCorrectServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(topicControllerService.deleteTopicRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.TOPIC, null, "1001", "2002"));
@@ -585,8 +585,8 @@ class RequestControllerTest {
       givenARequestToDeleteCMulitpleCallCorrectTOPICServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
     when(topicControllerService.deleteTopicRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.TOPIC, null, "1001", "2001"));
@@ -599,7 +599,7 @@ class RequestControllerTest {
   public void givenARequestToDeleteCallCorrectTOPICServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(topicControllerService.deleteTopicRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(createRequestVerdict(RequestEntityType.TOPIC, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
@@ -611,7 +611,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToDeleteCallCorrectTOPICServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(topicControllerService.deleteTopicRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.TOPIC, null, "1001", "2001"));
@@ -624,7 +624,7 @@ class RequestControllerTest {
   public void givenARequestToDeleteMulitpleCallCorrectSCHEMAServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(schemaRegistryControllerService.deleteSchemaRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
@@ -638,8 +638,8 @@ class RequestControllerTest {
       givenARequestToDeleteMulitpleCallCorrectSCHEMAServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
     when(schemaRegistryControllerService.deleteSchemaRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
@@ -652,7 +652,7 @@ class RequestControllerTest {
   public void givenARequestToDeleteCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(schemaRegistryControllerService.deleteSchemaRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(createRequestVerdict(RequestEntityType.SCHEMA, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
@@ -664,7 +664,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToDeleteCallCorrectSCHEMAServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(schemaRegistryControllerService.deleteSchemaRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.SCHEMA, null, "1001", "2001"));
@@ -677,7 +677,7 @@ class RequestControllerTest {
   public void givenARequestToDeleteMulitpleCallCorrectCONNECTORServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.deleteConnectorRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, null, "1001", "2001"));
@@ -691,8 +691,8 @@ class RequestControllerTest {
       givenARequestToDeleteMulitpleCallCorrectCONNECTORServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.deleteConnectorRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, null, "1001", "2001"));
@@ -705,7 +705,7 @@ class RequestControllerTest {
   public void givenARequestToDeleteCallCorrectCONNECTORServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.deleteConnectorRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(createRequestVerdict(RequestEntityType.CONNECTOR, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
@@ -717,7 +717,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToDeleteCallCorrectCONNECTORServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.deleteConnectorRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(
             createRequestVerdict(RequestEntityType.CONNECTOR, null, "1001", "2001"));
@@ -730,7 +730,7 @@ class RequestControllerTest {
   public void givenARequestToDeleteMulitpleCallCorrectACLServiceAndReturnSuccessOK()
       throws KlawException, KlawRestException {
     when(aclControllerService.deleteAclRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(createRequestVerdict(RequestEntityType.ACL, null, "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(200));
@@ -743,8 +743,8 @@ class RequestControllerTest {
       givenARequestToDeleteMulitpleCallCorrectACLServiceAndReturnSuccessMultiStatusResponse()
           throws KlawException, KlawRestException {
     when(aclControllerService.deleteAclRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(createRequestVerdict(RequestEntityType.ACL, null, "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(207));
@@ -756,7 +756,7 @@ class RequestControllerTest {
   public void givenARequestToDeleteCallCorrectACLServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(aclControllerService.deleteAclRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(createRequestVerdict(RequestEntityType.ACL, null, "1001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
@@ -768,7 +768,7 @@ class RequestControllerTest {
   public void givenMultipleRequestToDeleteCallCorrectACLServiceAndReturnISEResponse()
       throws KlawException, KlawRestException {
     when(aclControllerService.deleteAclRequests(anyString()))
-        .thenReturn(getApiResponse(ApiResultStatus.FAILURE));
+        .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
         controller.deleteRequest(createRequestVerdict(RequestEntityType.ACL, null, "1001", "2001"));
     assertThat(result.getStatusCode()).isEqualTo(HttpStatusCode.valueOf(500));
@@ -799,7 +799,7 @@ class RequestControllerTest {
     return verdict;
   }
 
-  private ApiResponse getApiResponse(ApiResultStatus status) {
-    return ApiResponse.builder().result(status.value).build();
+  private ApiResponse getApiResponse(ApiResultStatus status, boolean isSuccess) {
+    return ApiResponse.builder().success(isSuccess).message(status.value).build();
   }
 }

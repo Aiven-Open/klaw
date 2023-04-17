@@ -323,17 +323,17 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     params: {'addTopicRequest' : serviceInput },
                     data: serviceInput
                 }).success(function(output) {
-                    if(output.result === 'success'){
+                    if(output.success){
                         swal({
                                  title: "Awesome !",
-                                 text: "Topic Request : "+output.result,
+                                 text: "Topic Request : "+output.message,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
                                     $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=CREATED&topicCreated=true";
                              });
                     }
                     else{
-                            $scope.alert = "Topic Request : "+output.result;
+                            $scope.alert = "Topic Request : "+output.message;
                             $scope.showSubmitFailed('','');
                         }
                 }).error(
@@ -351,17 +351,17 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                             headers : { 'Content-Type' : 'application/json' },
                             data: serviceInput
                         }).success(function(output) {
-                            if(output.result === 'success'){
+                            if(output.success){
                                 swal({
                                          title: "Awesome !",
-                                         text: "Topic Request : "+output.result,
+                                         text: "Topic Request : "+output.message,
                                          showConfirmButton: true
                                      }).then(function(isConfirm){
                                             $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=CREATED&topicCreated=true";
                                      });
                             }
                             else{
-                                    $scope.alert = "Topic Request : "+output.result;
+                                    $scope.alert = "Topic Request : "+output.message;
                                     $scope.showSubmitFailed('','');
                                 }
                         }).error(
@@ -513,11 +513,11 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                         headers : { 'Content-Type' : 'application/json' },
                         data: serviceInput
                     }).success(function (output) {
-                        $scope.alert = "User team update request : "+output.result;
-                        if(output.result === 'success'){
+                        $scope.alert = "User team update request : "+output.message;
+                        if(output.success){
                             swal({
                                 title: "",
-                                text: "User team update request : "+output.result,
+                                text: "User team update request : "+output.message,
                                 timer: 2000,
                                 showConfirmButton: true
                             }).then(function(isConfirm){

@@ -19,6 +19,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AuthenticationInfo;
+import io.aiven.klaw.model.response.DashboardStats;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
@@ -79,7 +80,7 @@ public class UtilControllerService {
 
   @Autowired private ConfigurableApplicationContext context;
 
-  public Map<String, String> getDashboardStats() {
+  public DashboardStats getDashboardStats() {
     log.debug("getDashboardInfo");
     String userName = getUserName();
     HandleDbRequests reqsHandle = manageDatabase.getHandleDbRequests();
@@ -88,7 +89,7 @@ public class UtilControllerService {
           commonUtilsService.getTeamId(userName), commonUtilsService.getTenantId(getUserName()));
     }
 
-    return new HashMap<>();
+    return new DashboardStats();
   }
 
   private String getUserName() {
@@ -151,7 +152,7 @@ public class UtilControllerService {
               requestor, RequestStatus.CREATED.value, false, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.CREATED.value, false, tenantId, null, null);
+              requestor, RequestStatus.CREATED.value, false, tenantId, null, null, null);
     } else {
       allAclReqs =
           reqsHandle.getAllAclRequests(
@@ -172,7 +173,7 @@ public class UtilControllerService {
               requestor, RequestStatus.CREATED.value, true, tenantId);
       allConnectorReqs =
           reqsHandle.getCreatedConnectorRequests(
-              requestor, RequestStatus.CREATED.value, true, tenantId, null, null);
+              requestor, RequestStatus.CREATED.value, true, tenantId, null, null, null);
     }
 
     try {
@@ -517,7 +518,7 @@ public class UtilControllerService {
 
       String companyInfo = manageDatabase.getTenantFullConfig(tenantId).getOrgName();
       if (companyInfo == null || companyInfo.equals("")) {
-        companyInfo = "Our Organization";
+        companyInfo = ENV_CLUSTER_TNT_109;
       }
 
       authenticationInfo.setSupportlink("https://github.com/aiven/klaw/issues");
@@ -637,13 +638,16 @@ public class UtilControllerService {
    */
   private Map<String, String> buildSSOProviderDetails() {
     Map<String, String> ssoProviders = new HashMap<>();
-    registration
-        .keySet()
-        .forEach(
-            k -> {
-              String providerName = k.substring(0, k.indexOf("."));
-              ssoProviders.put(providerName, registration.get(providerName + IMAGE_URI));
-            });
+    if (registration != null) {
+      registration
+          .keySet()
+          .forEach(
+              k -> {
+                String providerName = k.substring(0, k.indexOf("."));
+                String imageUri = registration.get(providerName + IMAGE_URI);
+                ssoProviders.put(providerName, imageUri == null ? "" : imageUri);
+              });
+    }
 
     return ssoProviders;
   }

@@ -10,6 +10,7 @@ import { Topic } from "src/domain/topic";
 
 type TopicListProps = {
   topics: Topic[];
+  ariaLabel: string;
 };
 
 interface TopicsTableRow {
@@ -20,7 +21,7 @@ interface TopicsTableRow {
 }
 
 function TopicTable(props: TopicListProps) {
-  const { topics } = props;
+  const { topics, ariaLabel } = props;
 
   const columns: Array<DataTableColumn<TopicsTableRow>> = [
     {
@@ -79,7 +80,7 @@ function TopicTable(props: TopicListProps) {
 
   return (
     <DataTable
-      ariaLabel={"Topics overview"}
+      ariaLabel={ariaLabel}
       columns={columns}
       rows={rows}
       noWrap={false}

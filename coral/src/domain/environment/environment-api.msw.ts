@@ -4,7 +4,6 @@ import { createMockEnvironmentDTO } from "src/domain/environment/environment-tes
 import { getHTTPBaseAPIUrl } from "src/config";
 import { KlawApiResponse } from "types/utils";
 import { operations } from "types/api";
-import { ClusterInfo } from "src/domain/environment/environment-types";
 
 type MockApi<T extends keyof operations> = {
   mswInstance: MswInstance;
@@ -28,18 +27,6 @@ function mockGetEnvironmentsForTeam({
   response,
 }: MockApi<"getEnvsBaseClusterFilteredForTeam">) {
   const url = `${getHTTPBaseAPIUrl()}/getEnvsBaseClusterFilteredForTeam`;
-  mswInstance.use(
-    rest.get(url, async (req, res, ctx) => {
-      return res(ctx.status(response.status ?? 200), ctx.json(response.data));
-    })
-  );
-}
-
-function mockGetSchemaRegistryEnvironments({
-  mswInstance,
-  response,
-}: MockApi<"getSchemaRegEnvs">) {
-  const url = `${getHTTPBaseAPIUrl()}/getSchemaRegEnvs`;
   mswInstance.use(
     rest.get(url, async (req, res, ctx) => {
       return res(ctx.status(response.status ?? 200), ctx.json(response.data));
@@ -72,14 +59,13 @@ function mockGetClusterInfoFromEnv({
 
 const getMockedResponseGetClusterInfoFromEnv = (
   isAivenCluster: boolean
-): ClusterInfo => ({
+): KlawApiResponse<"getClusterInfoFromEnv"> => ({
   aivenCluster: isAivenCluster,
 });
 
 export {
   mockGetEnvironments,
   mockGetEnvironmentsForTeam,
-  mockGetSchemaRegistryEnvironments,
   mockedEnvironmentResponse,
   mockGetClusterInfoFromEnv,
   getMockedResponseGetClusterInfoFromEnv,
