@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.BASE_OVERVIEW_101;
+import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +12,8 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.enums.AclGroupBy;
+import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
@@ -18,6 +21,8 @@ import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,6 +36,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public abstract class BaseOverviewService {
+
+  private static final Comparator<String> nullSafeStringComparator =
+      Comparator.nullsLast(String::compareToIgnoreCase);
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
@@ -52,7 +60,8 @@ public abstract class BaseOverviewService {
       TopicOverview topicOverview,
       List<TopicInfo> topicInfoList,
       List<AclInfo> aclInfo,
-      List<AclInfo> prefixedAclsInfo) {
+      List<AclInfo> prefixedAclsInfo,
+      AclGroupBy groupBy) {
     aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
     List<AclInfo> transactionalAcls =
         aclInfo.stream()
@@ -67,7 +76,7 @@ public abstract class BaseOverviewService {
       aclInfo2.setEnvironmentName(getEnvDetails(aclInfo2.getEnvironment(), tenantId).getName());
     }
 
-    topicOverview.setAclInfoList(aclInfo);
+    topicOverview.setAclInfoList(sortAclInfo(aclInfo, groupBy));
     if (prefixedAclsInfo.size() > 0) {
       topicOverview.setPrefixedAclInfoList(prefixedAclsInfo);
       topicOverview.setPrefixAclsExists(true);
@@ -78,7 +87,135 @@ public abstract class BaseOverviewService {
     }
 
     topicOverview.setTopicInfoList(topicInfoList);
+    return topicOverview.getAclInfoList();
+  }
+
+  private List<AclInfo> sortAclInfo(List<AclInfo> aclInfo, AclGroupBy groupBy) {
+    // merge reduce
+    if (groupBy.equals(AclGroupBy.TEAM)) {
+      aclInfo = mergeReduceAclInfo(aclInfo);
+      aclInfo.sort(
+          Comparator.comparing(AclInfo::getTeamname, nullSafeStringComparator)
+              .thenComparing(AclInfo::getEnvironmentName, nullSafeStringComparator)
+              .thenComparing(AclInfo::getConsumergroup, nullSafeStringComparator));
+    }
+
     return aclInfo;
+  }
+
+  /**
+   * mergeReduceAclInfo reduces the Acls to a smaller subset by merging Ips and proncipals by Team
+   * -> Env -> Consumer Group
+   *
+   * @param aclInfo List of AclInfo supplied to be reduced and merged
+   * @return The processed and reduced AclInfo List
+   */
+  private List<AclInfo> mergeReduceAclInfo(List<AclInfo> aclInfo) {
+    // recursively get Env Per Team
+    return mergeReduceByTeam(aclInfo);
+  }
+
+  private List<AclInfo> mergeReduceByTeam(List<AclInfo> aclInfo) {
+    List<AclInfo> organisedList = new ArrayList<>();
+    Map<String, List<AclInfo>> teams = new HashMap<>();
+
+    aclInfo.forEach(acl -> reduceAclByProperty(teams, acl.getTeamname(), acl));
+
+    // recursively merge and reduce By Environment.
+    teams.values().forEach(acls -> organisedList.addAll(mergeReduceByEnv(acls)));
+    return organisedList;
+  }
+
+  private List<AclInfo> mergeReduceByEnv(List<AclInfo> aclInfo) {
+    List<AclInfo> organisedList = new ArrayList<>();
+    Map<String, List<AclInfo>> processedAcls = new HashMap<>();
+
+    aclInfo.forEach(acl -> reduceAclByProperty(processedAcls, acl.getEnvironmentName(), acl));
+    // recursively  merge and reduce By ConsumerGroup
+    processedAcls.values().forEach(acls -> organisedList.addAll(mergeReduceByConsumerGroups(acls)));
+    return organisedList;
+  }
+
+  private List<AclInfo> mergeReduceByConsumerGroups(List<AclInfo> aclInfo) {
+    List<AclInfo> organisedList = new ArrayList<>();
+    Map<String, List<AclInfo>> processedAcls = new HashMap<>();
+
+    aclInfo.forEach(acl -> reduceAclByProperty(processedAcls, acl.getConsumergroup(), acl));
+    // Merge Reduce All ACls with the same Team/env/Consumer group together.
+    processedAcls.values().forEach(acls -> organisedList.addAll(mergeReduceAcls(acls)));
+    return organisedList;
+  }
+
+  private void reduceAclByProperty(
+      Map<String, List<AclInfo>> processedAcls, String aclProperty, AclInfo acl) {
+    if (processedAcls.containsKey(aclProperty)) {
+      processedAcls.get(aclProperty).add(acl);
+    } else {
+      processedAcls.put(aclProperty, new ArrayList<>());
+      processedAcls.get(aclProperty).add(acl);
+    }
+  }
+
+  private List<AclInfo> mergeReduceAcls(List<AclInfo> aclInfo) {
+    AclInfo producerIp = null, producerPrincipal = null;
+    AclInfo consumerIp = null, consumerPrincipal = null;
+
+    for (AclInfo info : aclInfo) {
+      if (info.getTopictype().equals(AclType.PRODUCER.value)) {
+        if (info.getAcl_ip() != null && !info.getAcl_ip().isEmpty()) {
+          producerIp = initializeAclInfo(producerIp, info);
+          producerIp.getAcl_ips().add(info.getAcl_ip());
+        } else if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
+          producerPrincipal = initializeAclInfo(producerPrincipal, info);
+          producerPrincipal.getAcl_ssls().add(info.getAcl_ssl());
+        }
+      } else if (info.getTopictype().equals(AclType.CONSUMER.value)) {
+        if (info.getAcl_ip() != null && !info.getAcl_ip().isEmpty()) {
+          consumerIp = initializeAclInfo(consumerIp, info);
+          consumerIp.getAcl_ips().add(info.getAcl_ip());
+        } else if (info.getAcl_ssl() != null && !info.getAcl_ssl().isEmpty()) {
+          consumerPrincipal = initializeAclInfo(consumerPrincipal, info);
+          consumerPrincipal.getAcl_ssls().add(info.getAcl_ssl());
+        }
+      }
+    }
+
+    return addToListIfNotNull(producerIp, producerPrincipal, consumerIp, consumerPrincipal);
+  }
+
+  private List<AclInfo> addToListIfNotNull(
+      AclInfo producerIp,
+      AclInfo producerPrincipal,
+      AclInfo consumerIp,
+      AclInfo consumerPrincipal) {
+    List<AclInfo> buildList = new ArrayList<>();
+    if (producerIp != null) {
+      buildList.add(producerIp);
+    }
+    if (consumerIp != null) {
+      buildList.add(consumerIp);
+    }
+    if (producerPrincipal != null) {
+      buildList.add(producerPrincipal);
+    }
+    if (consumerPrincipal != null) {
+      buildList.add(consumerPrincipal);
+    }
+    return buildList;
+  }
+
+  private AclInfo initializeAclInfo(AclInfo newAcl, AclInfo info) {
+    if (newAcl == null) {
+      newAcl = new AclInfo();
+      copyProperties(info, newAcl);
+      newAcl.setAcl_ips(new HashSet<>());
+      newAcl.setAcl_ssls(new HashSet<>());
+      // remove old information from the copy properties that is no longer needed to avoid
+      // confusion.
+      newAcl.setAcl_ip(null);
+      newAcl.setAcl_ssl(null);
+    }
+    return newAcl;
   }
 
   protected List<AclInfo> applyFiltersAclsForSOT(

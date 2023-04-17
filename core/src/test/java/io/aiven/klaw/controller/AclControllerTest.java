@@ -14,6 +14,7 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
+import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
@@ -205,7 +206,8 @@ public class AclControllerTest {
   public void getAcls1() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(topicOverviewService.getTopicOverview("testtopic")).thenReturn(topicOverview);
+    when(topicOverviewService.getTopicOverview("testtopic", AclGroupBy.NONE))
+        .thenReturn(topicOverview);
 
     mvcAcls
         .perform(
@@ -223,7 +225,7 @@ public class AclControllerTest {
   public void getAcls2() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(topicOverviewService.getTopicOverview(null)).thenReturn(topicOverview);
+    when(topicOverviewService.getTopicOverview(null, AclGroupBy.NONE)).thenReturn(topicOverview);
 
     // TODO Consider returning an error response object (https://www.rfc-editor.org/rfc/rfc7807)
     // Just checking response code seems to be sufficient as the contentAsString() returns an empty

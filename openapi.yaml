@@ -4698,6 +4698,15 @@
           "schema" : {
             "type" : "string"
           }
+        }, {
+          "name" : "groupBy",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "NONE",
+            "enum" : [ "NONE", "TEAM" ]
+          }
         } ],
         "responses" : {
           "200" : {
@@ -6629,6 +6638,20 @@
           },
           "acl_ssl" : {
             "type" : "string"
+          },
+          "acl_ips" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          },
+          "acl_ssls" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
           },
           "topicname" : {
             "type" : "string"
