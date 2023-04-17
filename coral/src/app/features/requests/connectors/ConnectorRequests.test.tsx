@@ -17,6 +17,7 @@ import { getConnectorRequests } from "src/domain/connector";
 import userEvent from "@testing-library/user-event";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
+import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/connector/connector-api.ts");
@@ -525,6 +526,64 @@ describe("ConnectorRequests", () => {
         isMyRequest: false,
         requestStatus: newStatus,
         env: "ALL",
+      });
+    });
+  });
+
+  describe("user can filter connector requests by operation type", () => {
+    const originalConsoleError = console.error;
+    beforeEach(async () => {
+      mockGetConnectorEnvironmentRequest.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequests.mockResolvedValue(
+        mockGetConnectorRequestsResponse
+      );
+
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/?requestType=DELETE",
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("populates the filter from the url search parameters", () => {
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        isMyRequest: false,
+        operationType: "DELETE",
+        requestStatus: "ALL",
+        env: "ALL",
+        search: "",
+      });
+    });
+
+    it("enables user to filter by 'status'", async () => {
+      const newType = "PROMOTE";
+
+      const statusFilter = screen.getByRole("combobox", {
+        name: "Filter by request type",
+      });
+      const statusOption = screen.getByRole("option", {
+        name: requestOperationTypeNameMap[newType],
+      });
+      await userEvent.selectOptions(statusFilter, statusOption);
+
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(2, {
+        pageNo: "1",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        operationType: newType,
+        env: "ALL",
+        search: "",
       });
     });
   });
