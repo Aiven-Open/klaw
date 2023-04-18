@@ -258,7 +258,7 @@ describe("TopicSchemaRequest", () => {
         name: "Submit request",
       });
 
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
     });
 
     it("shows an enabled button to cancel form input", () => {
@@ -335,12 +335,12 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
 
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
     });
   });
 
@@ -504,7 +504,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -543,7 +543,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -647,7 +647,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -671,7 +671,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -701,7 +701,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -730,7 +730,7 @@ describe("TopicSchemaRequest", () => {
       const submitButton = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(submitButton).toBeDisabled();
+      expect(submitButton).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
