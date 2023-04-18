@@ -432,8 +432,8 @@ public class ClusterApiService {
 
     } catch (Exception e) {
       log.error("approveConnectorRequests {} ", connectorName, e);
-      if (e.getMessage().contains("ClientHttpRequestFactory must not be null")
-          || e.getMessage().contains("Connection refused")) {
+      if (e.getMessage().contains(CLUSTER_API_ERR_120)
+          || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return CLUSTER_API_ERR_118;
       }
       throw new KlawException(CLUSTER_API_ERR_105);
@@ -518,8 +518,8 @@ public class ClusterApiService {
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("approveTopicRequests {}", topicName, e);
-      if (e.getMessage().contains("ClientHttpRequestFactory must not be null")
-          || e.getMessage().contains("Connection refused")) {
+      if (e.getMessage().contains(CLUSTER_API_ERR_120)
+          || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return new ResponseEntity<>(
             ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
             HttpStatus.INTERNAL_SERVER_ERROR);
@@ -636,8 +636,8 @@ public class ClusterApiService {
       return response;
     } catch (Exception e) {
       log.error("Error from approveAclRequests", e);
-      if (e.getMessage().contains("ClientHttpRequestFactory must not be null")
-          || e.getMessage().contains("Connection refused")) {
+      if (e.getMessage().contains(CLUSTER_API_ERR_120)
+          || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return new ResponseEntity<>(
             ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
             HttpStatus.INTERNAL_SERVER_ERROR);
@@ -730,8 +730,8 @@ public class ClusterApiService {
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("Error from postSchema ", e);
-      if (e.getMessage().contains("ClientHttpRequestFactory must not be null")
-          || e.getMessage().contains("Connection refused")) {
+      if (e.getMessage().contains(CLUSTER_API_ERR_120)
+          || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return new ResponseEntity<>(
             ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
             HttpStatus.INTERNAL_SERVER_ERROR);

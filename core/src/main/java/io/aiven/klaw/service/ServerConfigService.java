@@ -567,12 +567,10 @@ public class ServerConfigService {
     String clusterApiStatus = clusterApiService.getClusterApiStatus(clusterApiUrl, true, tenantId);
     if ("ONLINE".equals(clusterApiStatus)) {
       clusterApiStatus = ApiResultStatus.SUCCESS.value;
-      {
-        KwPropertiesModel kwPropertiesModel = new KwPropertiesModel();
-        kwPropertiesModel.setKwKey(CLUSTER_CONN_URL_KEY);
-        kwPropertiesModel.setKwValue(clusterApiUrl);
-        updateKwCustomProperty(kwPropertiesModel);
-      }
+      KwPropertiesModel kwPropertiesModel = new KwPropertiesModel();
+      kwPropertiesModel.setKwKey(CLUSTER_CONN_URL_KEY);
+      kwPropertiesModel.setKwValue(clusterApiUrl);
+      updateKwCustomProperty(kwPropertiesModel);
     } else {
       clusterApiStatus = ApiResultStatus.FAILURE.value;
     }

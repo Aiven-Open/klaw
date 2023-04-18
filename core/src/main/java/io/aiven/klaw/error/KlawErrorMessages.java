@@ -125,6 +125,10 @@ public class KlawErrorMessages {
   public static final String CLUSTER_API_ERR_119 =
       "There seems to be a connectivity issue with the cluster. Please contact your administrator !!";
 
+  public static final String CLUSTER_API_ERR_120 = "ClientHttpRequestFactory must not be null";
+
+  public static final String CLUSTER_API_ERR_121 = "Connection refused";
+
   // Env clusters tenants service
   public static final String ENV_CLUSTER_TNT_ERR_101 =
       "Failure. Please choose a different name. This environment name already exists.";
