@@ -89,19 +89,18 @@ public class ExportImportDataService {
   public KwAdminConfig getAdminConfig(HandleDbRequests handleDbRequests, String timeStamp) {
     log.info(
         "Selecting Kw Admin Config (tenants, clusters, environments, roles, permissions, teams, users, properties) --- STARTED");
-    List<UserInfo> userList = getUpdatedUserList(handleDbRequests.selectAllUsersAllTenants());
+    List<UserInfo> userList = getUpdatedUserList(handleDbRequests.getAllUsersAllTenants());
 
     KwAdminConfig kwMetadata =
         KwAdminConfig.builder()
             .tenants(handleDbRequests.getTenants())
             .clusters(handleDbRequests.getClusters())
-            .environments(handleDbRequests.selectEnvs())
+            .environments(handleDbRequests.getEnvs())
             .rolesPermissions(handleDbRequests.getRolesPermissions())
-            .teams(handleDbRequests.selectTeams())
+            .teams(handleDbRequests.getTeams())
             .users(userList)
-            .properties(handleDbRequests.selectKwProperties())
-            .productDetails(
-                handleDbRequests.selectProductDetails("Klaw").orElse(new ProductDetails()))
+            .properties(handleDbRequests.getKwProperties())
+            .productDetails(handleDbRequests.getProductDetails("Klaw").orElse(new ProductDetails()))
             .klawVersion(klawVersion)
             .createdTime(timeStamp)
             .build();
@@ -125,7 +124,7 @@ public class ExportImportDataService {
         KwData.builder()
             .topics(handleDbRequests.getAllTopics())
             .subscriptions(handleDbRequests.getAllSubscriptions())
-            .schemas(handleDbRequests.selectAllSchemas())
+            .schemas(handleDbRequests.getAllSchemas())
             .kafkaConnectors(handleDbRequests.getAllConnectors())
             .klawVersion(klawVersion)
             .createdTime(timeStamp)

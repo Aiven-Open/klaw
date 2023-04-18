@@ -251,7 +251,7 @@ public class UsersTeamsControllerService {
     log.debug("getTeamDetails {} {}", teamId, tenantName);
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    Team teamDao = manageDatabase.getHandleDbRequests().selectTeamDetails(teamId, tenantId);
+    Team teamDao = manageDatabase.getHandleDbRequests().getTeamDetails(teamId, tenantId);
     if (teamDao != null) {
       TeamModelResponse teamModel = new TeamModelResponse();
       copyProperties(teamDao, teamModel);
@@ -347,7 +347,7 @@ public class UsersTeamsControllerService {
   public List<TeamModelResponse> getAllTeamsSUFromRegisterUsers() {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<TeamModelResponse> teamModels =
-        getTeamModels(manageDatabase.getHandleDbRequests().selectAllTeams(tenantId));
+        getTeamModels(manageDatabase.getHandleDbRequests().getAllTeams(tenantId));
 
     teamModels.forEach(
         teamModel ->
@@ -369,7 +369,7 @@ public class UsersTeamsControllerService {
             teamModel.setShowDeleteTeam(
                 manageDatabase
                         .getHandleDbRequests()
-                        .findAllComponentsCountForTeam(teamModel.getTeamId(), tenantId)
+                        .getAllComponentsCountForTeam(teamModel.getTeamId(), tenantId)
                     <= 0);
           });
     }
@@ -388,7 +388,7 @@ public class UsersTeamsControllerService {
     String myTeamName =
         manageDatabase
             .getHandleDbRequests()
-            .selectAllTeamsOfUsers(userDetails, tenantId)
+            .getAllTeamsOfUsers(userDetails, tenantId)
             .get(0)
             .getTeamname();
 
@@ -420,12 +420,11 @@ public class UsersTeamsControllerService {
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    if (manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(teamId, tenantId).size()
-        > 0) {
+    if (manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(teamId, tenantId).size() > 0) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_103).build();
     }
 
-    if (manageDatabase.getHandleDbRequests().findAllComponentsCountForTeam(teamId, tenantId) > 0) {
+    if (manageDatabase.getHandleDbRequests().getAllComponentsCountForTeam(teamId, tenantId) > 0) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_104).build();
     }
 
@@ -477,7 +476,7 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_106).build();
     }
 
-    if (manageDatabase.getHandleDbRequests().findAllComponentsCountForUser(userIdToDelete, tenantId)
+    if (manageDatabase.getHandleDbRequests().getAllComponentsCountForUser(userIdToDelete, tenantId)
         > 0) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_107).build();
     }
@@ -747,7 +746,7 @@ public class UsersTeamsControllerService {
 
     List<UserInfoModelResponse> userInfoModels = new ArrayList<>();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersInfo(tenantId);
+    List<UserInfo> userList = manageDatabase.getHandleDbRequests().getAllUsersInfo(tenantId);
 
     if (userSearchStr != null && !userSearchStr.equals("")) {
       userList =
@@ -858,7 +857,7 @@ public class UsersTeamsControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     // check if user exists
-    List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
+    List<UserInfo> userList = manageDatabase.getHandleDbRequests().getAllUsersAllTenants();
     if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_115).build();
@@ -869,7 +868,7 @@ public class UsersTeamsControllerService {
 
     // check if registration exists
     List<RegisterUserInfo> registerUserInfoList =
-        manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
+        manageDatabase.getHandleDbRequests().getAllRegisterUsersInformation();
     if (registerUserInfoList.stream()
         .anyMatch(user -> user.getUsername().equals(newUser.getMailid()))) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_115).build();
@@ -880,9 +879,7 @@ public class UsersTeamsControllerService {
 
     // get the user details from db
     List<RegisterUserInfo> stagingRegisterUsersInfo =
-        manageDatabase
-            .getHandleDbRequests()
-            .selectAllStagingRegisterUsersInfo(newUser.getUsername());
+        manageDatabase.getHandleDbRequests().getAllStagingRegisterUsersInfo(newUser.getUsername());
 
     // enrich user info
     if (!stagingRegisterUsersInfo.isEmpty()) {
@@ -974,9 +971,9 @@ public class UsersTeamsControllerService {
 
     if (SAAS.equals(kwInstallationType)) {
       registerUserInfoList =
-          manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfoForTenant(tenantId);
+          manageDatabase.getHandleDbRequests().getAllRegisterUsersInfoForTenant(tenantId);
     } else {
-      registerUserInfoList = manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
+      registerUserInfoList = manageDatabase.getHandleDbRequests().getAllRegisterUsersInformation();
     }
 
     List<RegisterUserInfoModelResponse> registerUserInfoModels = new ArrayList<>();

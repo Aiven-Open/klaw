@@ -142,9 +142,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(List.of(""));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt()))
-        .thenReturn(List.of(userInfo));
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 
@@ -205,7 +204,7 @@ public class SchemaRegistryControllerServiceTest {
     schemaRequest.setTopicname("topic");
 
     stubUserInfo();
-    when(handleDbRequests.selectSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);
+    when(handleDbRequests.getSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);
     when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt()))
         .thenReturn(response);
     when(handleDbRequests.updateSchemaRequest(any(), anyString()))
@@ -233,7 +232,7 @@ public class SchemaRegistryControllerServiceTest {
     schemaRequest.setTopicname("topic");
 
     stubUserInfo();
-    when(handleDbRequests.selectSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);
+    when(handleDbRequests.getSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);
     when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt()))
         .thenReturn(response);
     when(handleDbRequests.updateSchemaRequest(any(), anyString()))
@@ -262,7 +261,7 @@ public class SchemaRegistryControllerServiceTest {
     schemaRequest.setTopicname("topic");
 
     stubUserInfo();
-    when(handleDbRequests.selectSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);
+    when(handleDbRequests.getSchemaRequest(anyInt(), anyInt())).thenReturn(schemaRequest);
     try {
       when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt()))
           .thenReturn(response);
@@ -647,9 +646,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(List.of(""));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt()))
-        .thenReturn(List.of(userInfo));
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 
@@ -695,9 +693,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(List.of(""));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt()))
-        .thenReturn(List.of(userInfo));
-    when(handleDbRequests.selectEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 

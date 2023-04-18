@@ -132,7 +132,7 @@ public class EnvsClustersTenantsControllerService {
       }
     }
 
-    Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envSelected, tenantId);
+    Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envSelected, tenantId);
     if (env != null && "false".equals(env.getEnvExists())) {
       return null;
     }
@@ -393,7 +393,7 @@ public class EnvsClustersTenantsControllerService {
             envModel.setShowDeleteEnv(
                 manageDatabase
                         .getHandleDbRequests()
-                        .findAllKafkaComponentsCountForEnv(envModel.getId(), tenantId)
+                        .getAllKafkaComponentsCountForEnv(envModel.getId(), tenantId)
                     <= 0);
           });
     }
@@ -567,7 +567,7 @@ public class EnvsClustersTenantsControllerService {
             envModel.setShowDeleteEnv(
                 manageDatabase
                         .getHandleDbRequests()
-                        .findAllConnectorComponentsCountForEnv(envModel.getId(), tenantId)
+                        .getAllConnectorComponentsCountForEnv(envModel.getId(), tenantId)
                     <= 0);
           });
     }
@@ -645,7 +645,7 @@ public class EnvsClustersTenantsControllerService {
             envModel.setShowDeleteEnv(
                 manageDatabase
                         .getHandleDbRequests()
-                        .findAllConnectorComponentsCountForEnv(envModel.getId(), tenantId)
+                        .getAllConnectorComponentsCountForEnv(envModel.getId(), tenantId)
                     <= 0);
           });
     }
@@ -668,7 +668,7 @@ public class EnvsClustersTenantsControllerService {
 
     newEnv.setName(newEnv.getName().toUpperCase());
     String envIdAlreadyExistsInDeleteStatus = "";
-    List<Env> envActualList = manageDatabase.getHandleDbRequests().selectAllEnvs(tenantId);
+    List<Env> envActualList = manageDatabase.getHandleDbRequests().getAllEnvs(tenantId);
     List<Env> kafkaEnvs = manageDatabase.getKafkaEnvList(tenantId);
     List<Env> schemaEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
     List<Integer> kafkaClusterIds = kafkaEnvs.stream().map(Env::getClusterId).toList();
@@ -931,7 +931,7 @@ public class EnvsClustersTenantsControllerService {
 
     switch (envType) {
       case "kafka":
-        if (manageDatabase.getHandleDbRequests().findAllKafkaComponentsCountForEnv(envId, tenantId)
+        if (manageDatabase.getHandleDbRequests().getAllKafkaComponentsCountForEnv(envId, tenantId)
             > 0) {
           return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_105).build();
         }
@@ -939,13 +939,13 @@ public class EnvsClustersTenantsControllerService {
       case "kafkaconnect":
         if (manageDatabase
                 .getHandleDbRequests()
-                .findAllConnectorComponentsCountForEnv(envId, tenantId)
+                .getAllConnectorComponentsCountForEnv(envId, tenantId)
             > 0) {
           return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_106).build();
         }
         break;
       case "schemaregistry":
-        if (manageDatabase.getHandleDbRequests().findAllSchemaComponentsCountForEnv(envId, tenantId)
+        if (manageDatabase.getHandleDbRequests().getAllSchemaComponentsCountForEnv(envId, tenantId)
             > 0) {
           return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_107).build();
         }
@@ -974,12 +974,12 @@ public class EnvsClustersTenantsControllerService {
 
     if (KafkaClustersType.KAFKA.value.equals(envType)
         || KafkaClustersType.SCHEMA_REGISTRY.value.equals(envType)) {
-      Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
+      Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envId, tenantId);
       if (env.getAssociatedEnv() != null) {
         Env linkedEnv =
             manageDatabase
                 .getHandleDbRequests()
-                .selectEnvDetails(env.getAssociatedEnv().getId(), tenantId);
+                .getEnvDetails(env.getAssociatedEnv().getId(), tenantId);
         linkedEnv.setAssociatedEnv(null);
         manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
       }
@@ -1011,14 +1011,14 @@ public class EnvsClustersTenantsControllerService {
 
   private EnvTag getKafkaAssociation(EnvTag KafkaEnvTag, String kafkaEnvId, int tenantId) {
     if (KafkaEnvTag == null) {
-      Env existing = manageDatabase.getHandleDbRequests().selectEnvDetails(kafkaEnvId, tenantId);
+      Env existing = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
       KafkaEnvTag = existing != null ? existing.getAssociatedEnv() : KafkaEnvTag;
     }
     return KafkaEnvTag;
   }
 
   private void removeAssociationWithKafkaEnv(EnvTag envTag, String envId, int tenantId) {
-    Env existingEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
+    Env existingEnv = manageDatabase.getHandleDbRequests().getEnvDetails(envId, tenantId);
     // envTag is equal to null we don't need to check if the associated env is the same as the
     // passed env tag because this is actualy an operation to remove an association.
     if (existingEnv != null
@@ -1027,7 +1027,7 @@ public class EnvsClustersTenantsControllerService {
       Env linkedEnv =
           manageDatabase
               .getHandleDbRequests()
-              .selectEnvDetails(existingEnv.getAssociatedEnv().getId(), tenantId);
+              .getEnvDetails(existingEnv.getAssociatedEnv().getId(), tenantId);
       linkedEnv.setAssociatedEnv(null);
       manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
     }
@@ -1035,7 +1035,7 @@ public class EnvsClustersTenantsControllerService {
 
   private void associateWithKafkaEnv(EnvTag envTag, String envId, String envName, int tenantId)
       throws KlawValidationException {
-    Env linkedEnv = manageDatabase.getHandleDbRequests().selectEnvDetails(envTag.getId(), tenantId);
+    Env linkedEnv = manageDatabase.getHandleDbRequests().getEnvDetails(envTag.getId(), tenantId);
 
     if (linkedEnv.getAssociatedEnv() != null
         && !linkedEnv.getAssociatedEnv().getId().equals(envId)) {
@@ -1062,7 +1062,7 @@ public class EnvsClustersTenantsControllerService {
       List<KwTenants> tenants = dbHandle.getTenants();
       List<KwTenantModel> tenantModels = new ArrayList<>();
 
-      List<UserInfo> allUsers = dbHandle.selectAllUsersAllTenants();
+      List<UserInfo> allUsers = dbHandle.getAllUsersAllTenants();
 
       KwTenantModel kwTenantModel;
       for (KwTenants tenant : tenants) {
@@ -1248,7 +1248,7 @@ public class EnvsClustersTenantsControllerService {
     }
     String tenantName = manageDatabase.getTenantMap().get(tenantId);
 
-    List<UserInfo> allUsers = manageDatabase.getHandleDbRequests().selectAllUsersInfo(tenantId);
+    List<UserInfo> allUsers = manageDatabase.getHandleDbRequests().getAllUsersInfo(tenantId);
     for (UserInfo userInfo : allUsers) {
       try {
         usersTeamsControllerService.deleteUser(userInfo.getUsername(), false); // internal delete
@@ -1368,7 +1368,7 @@ public class EnvsClustersTenantsControllerService {
   public EnvUpdatedStatus getUpdateEnvStatus(String envId) throws KlawException {
     EnvUpdatedStatus envUpdatedStatus = new EnvUpdatedStatus();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envId, tenantId);
+    Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envId, tenantId);
 
     String status;
     try {
@@ -1422,7 +1422,7 @@ public class EnvsClustersTenantsControllerService {
       }
     }
 
-    Env env = manageDatabase.getHandleDbRequests().selectEnvDetails(envSelected, tenantId);
+    Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envSelected, tenantId);
     KwClusters kwClusters =
         manageDatabase.getHandleDbRequests().getClusterDetails(env.getClusterId(), tenantId);
 

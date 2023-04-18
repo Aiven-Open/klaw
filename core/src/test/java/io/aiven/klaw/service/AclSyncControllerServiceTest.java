@@ -162,7 +162,7 @@ public class AclSyncControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(clusterApiService.getAcls(anyString(), any(), any(KafkaSupportedProtocol.class), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
+    when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
     when(handleDbRequests.getSyncAcls(anyString(), anyInt())).thenReturn(getAclsSOT0());
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
@@ -188,7 +188,7 @@ public class AclSyncControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(clusterApiService.getAcls(anyString(), any(), any(KafkaSupportedProtocol.class), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
-    when(handleDbRequests.selectAllTeamsOfUsers(anyString(), anyInt()))
+    when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
     when(handleDbRequests.getSyncAcls(anyString(), anyInt())).thenReturn(getAclsSOT0());
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))

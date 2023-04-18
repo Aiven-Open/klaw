@@ -54,12 +54,12 @@ public class UiConfigControllerService {
       origActivityList =
           manageDatabase
               .getHandleDbRequests()
-              .selectActivityLog(userName, env, false, tenantId); // only your team reqs
+              .getActivityLog(userName, env, false, tenantId); // only your team reqs
     } else {
       origActivityList =
           manageDatabase
               .getHandleDbRequests()
-              .selectActivityLog(userName, env, true, tenantId); // all teams reqs
+              .getActivityLog(userName, env, true, tenantId); // all teams reqs
     }
 
     return getActivityLogsPaginated(pageNo, origActivityList, currentPage, tenantId);

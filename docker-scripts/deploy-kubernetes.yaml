@@ -1,0 +1,96 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: klaw-core
+spec:
+  selector:
+    app: klaw-core
+  ports:
+    - name: http
+      port: 9097
+      targetPort: 9097
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klaw-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: klaw-core
+  template:
+    metadata:
+      labels:
+        app: klaw-core
+    spec:
+      containers:
+        - name: klaw-core
+          image: aivenoy/klaw-core:latest
+          env:
+            - name: KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET
+              value: "dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ=="
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:h2:file:/klaw/klawprodb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;"
+          volumeMounts:
+            - name: klaw-data
+              mountPath: /klaw
+      volumes:
+        - name: klaw-data
+          persistentVolumeClaim:
+            claimName: klaw-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: klaw-cluster-api
+spec:
+  selector:
+    app: klaw-cluster-api
+  ports:
+    - name: http
+      port: 9343
+      targetPort: 9343
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: klaw-cluster-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: klaw-cluster-api
+  template:
+    metadata:
+      labels:
+        app: klaw-cluster-api
+    spec:
+      containers:
+        - name: klaw-cluster-api
+          image: aivenoy/klaw-cluster-api:latest
+          env:
+            - name: KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET
+              value: "dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ=="
+          volumeMounts:
+            - name: klaw-data
+              mountPath: /klaw
+      volumes:
+        - name: klaw-data
+          persistentVolumeClaim:
+            claimName: klaw-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: klaw-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: kops-csi-1-21
+

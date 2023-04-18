@@ -204,7 +204,7 @@ public class KafkaConnectControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(handleDbRequests.selectConnectorRequests(
+    when(handleDbRequests.getConnectorRequests(
             "ConnectorOne", "1", RequestStatus.CREATED.value, 101))
         .thenReturn(List.of(new KafkaConnectorRequest()));
     ApiResponse apiResponse =

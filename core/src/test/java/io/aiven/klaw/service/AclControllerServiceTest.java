@@ -324,7 +324,7 @@ public class AclControllerServiceTest {
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topicList);
-    when(handleDbRequests.selectAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(userList);
+    when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(userList);
 
     List<AclRequestsResponseModel> aclReqs =
         aclControllerService.getAclRequests(
@@ -483,7 +483,7 @@ public class AclControllerServiceTest {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
 
     ApiResponse apiResponse =
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
@@ -504,7 +504,7 @@ public class AclControllerServiceTest {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
 
     Map<String, String> dataObj = new HashMap<>();
     String aivenAclIdKey = "aivenaclid";
@@ -542,7 +542,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     AclRequests aclReq = getAclRequestDao();
     aclReq.setRequestor("kwusera");
-    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.getMessage())
         .isEqualTo("You are not allowed to approve your own subscription requests.");
@@ -556,7 +556,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
 
     ApiResponse apiResponse = ApiResponse.builder().message("failure").build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
@@ -573,11 +573,12 @@ public class AclControllerServiceTest {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse =
+        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
@@ -595,7 +596,7 @@ public class AclControllerServiceTest {
     aclReq.setRequestStatus(RequestStatus.APPROVED.value);
 
     stubUserInfo();
-    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
 
@@ -610,7 +611,7 @@ public class AclControllerServiceTest {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.declineAclRequest(any(), any()))
@@ -627,7 +628,7 @@ public class AclControllerServiceTest {
     AclRequests aclReq = getAclRequestDao();
 
     stubUserInfo();
-    when(handleDbRequests.selectAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
@@ -650,7 +651,7 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.selectSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
+    when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
     Map<String, String> hashMap = new HashMap<>();
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
@@ -676,7 +677,7 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.selectSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
+    when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
     when(clusterApiService.getAivenServiceAccountDetails(
             anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(serviceAccountDetails);
@@ -702,7 +703,7 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.selectSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
+    when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
     when(clusterApiService.getAivenServiceAccountDetails(
             anyString(), anyString(), anyString(), anyInt()))
         .thenReturn(serviceAccountDetails);

@@ -189,7 +189,7 @@ public class TopicControllerService {
 
     // check if already a delete topic request exists
     if (!dbHandle
-        .selectTopicRequests(topicName, envId, RequestStatus.CREATED.value, tenantId)
+        .getTopicRequests(topicName, envId, RequestStatus.CREATED.value, tenantId)
         .isEmpty()) {
       return ApiResponse.builder().success(false).message(TOPICS_ERR_103).build();
     }
@@ -269,7 +269,7 @@ public class TopicControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     if (!dbHandle
-        .selectTopicRequests(topicName, envId, RequestStatus.CREATED.value, tenantId)
+        .getTopicRequests(topicName, envId, RequestStatus.CREATED.value, tenantId)
         .isEmpty()) {
       return ApiResponse.builder().success(false).message(TOPICS_ERR_107).build();
     }
@@ -277,7 +277,7 @@ public class TopicControllerService {
     List<Topic> topics = getTopicFromName(topicName, tenantId);
     Integer topicOwnerTeamId = topics.get(0).getTeamId();
     Optional<UserInfo> topicOwnerContact =
-        dbHandle.selectAllUsersInfo(tenantId).stream()
+        dbHandle.getAllUsersInfo(tenantId).stream()
             .filter(user -> Objects.equals(user.getTeamId(), topicOwnerTeamId))
             .findFirst();
 
@@ -570,7 +570,7 @@ public class TopicControllerService {
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("TOPICS", tenantId);
     List<UserInfo> userList =
-        manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
+        manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(userTeamId, tenantId);
 
     for (TopicRequest topicReq : topicsList) {
       topicRequestModel = new TopicRequestsResponseModel();
@@ -593,7 +593,7 @@ public class TopicControllerService {
               updateApproverInfo(
                   manageDatabase
                       .getHandleDbRequests()
-                      .selectAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
+                      .getAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
                   manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
                   approverRoles,
                   topicRequestModel.getRequestor()));
@@ -697,7 +697,7 @@ public class TopicControllerService {
     TopicRequest topicRequest =
         manageDatabase
             .getHandleDbRequests()
-            .selectTopicRequestsForTopic(Integer.parseInt(topicId), tenantId);
+            .getTopicRequestsForTopic(Integer.parseInt(topicId), tenantId);
 
     ApiResponse validationResponse = validateTopicRequest(topicRequest, userName);
     if (!validationResponse.isSuccess()) {
@@ -852,7 +852,7 @@ public class TopicControllerService {
     String userName = getUserName();
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequest =
-        dbHandle.selectTopicRequestsForTopic(
+        dbHandle.getTopicRequestsForTopic(
             Integer.parseInt(topicId), commonUtilsService.getTenantId(userName));
 
     if (!RequestStatus.CREATED.value.equals(topicRequest.getRequestStatus())) {
@@ -950,7 +950,7 @@ public class TopicControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     TopicInfo topicInfo = new TopicInfo();
-    List<Topic> topics = manageDatabase.getHandleDbRequests().getTopics(topicName, tenantId);
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
@@ -1069,7 +1069,7 @@ public class TopicControllerService {
     if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))
         && teamId != 0) {
       producerConsumerTopics =
-          handleDbRequests.selectAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
+          handleDbRequests.getAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
 
       // tenant filtering, not really necessary though, as based on team is searched.
       producerConsumerTopics =
@@ -1328,7 +1328,7 @@ public class TopicControllerService {
       TopicRequestModel topicRequestModel, int tenantId) {
     return manageDatabase
         .getHandleDbRequests()
-        .selectTopicRequests(
+        .getTopicRequests(
             topicRequestModel.getTopicname(),
             topicRequestModel.getEnvironment(),
             RequestStatus.CREATED.value,

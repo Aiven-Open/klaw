@@ -225,22 +225,22 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         false);
   }
 
-  public TopicRequest selectTopicRequestsForTopic(int topicId, int tenantId) {
+  public TopicRequest getTopicRequestsForTopic(int topicId, int tenantId) {
     return jdbcSelectHelper.selectTopicRequestsForTopic(topicId, tenantId);
   }
 
-  public KafkaConnectorRequest selectConnectorRequestsForConnector(int connectorId, int tenantId) {
+  public KafkaConnectorRequest getConnectorRequestsForConnector(int connectorId, int tenantId) {
     return jdbcSelectHelper.selectConnectorRequestsForConnector(connectorId, tenantId);
   }
 
   @Override
-  public List<TopicRequest> selectTopicRequests(
+  public List<TopicRequest> getTopicRequests(
       String topicName, String envId, String status, int tenantId) {
     return jdbcSelectHelper.selectTopicRequests(topicName, envId, status, tenantId);
   }
 
   @Override
-  public List<KafkaConnectorRequest> selectConnectorRequests(
+  public List<KafkaConnectorRequest> getConnectorRequests(
       String connectorName, String envId, String status, int tenantId) {
     return jdbcSelectHelper.selectConnectorRequests(connectorName, envId, status, tenantId);
   }
@@ -263,11 +263,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public List<KwKafkaConnector> getConnectors(String topicName, int tenantId) {
     return jdbcSelectHelper.getConnectors(topicName, false, tenantId);
-  }
-
-  @Override
-  public List<Topic> getTopicDetailsPerEnv(String topicName, String envId, int tenantId) {
-    return jdbcSelectHelper.getTopicDetailsPerEnv(topicName, envId, tenantId);
   }
 
   @Override
@@ -306,7 +301,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public Acl selectSyncAclsFromReqNo(int reqNo, int tenantId) {
+  public Acl getSyncAclsFromReqNo(int reqNo, int tenantId) {
     return jdbcSelectHelper.selectSyncAclsFromReqNo(reqNo, tenantId);
   }
 
@@ -389,27 +384,27 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public SchemaRequest selectSchemaRequest(int avroSchemaId, int tenantId) {
+  public SchemaRequest getSchemaRequest(int avroSchemaId, int tenantId) {
     return jdbcSelectHelper.selectSchemaRequest(avroSchemaId, tenantId);
   }
 
   @Override
-  public List<Team> selectAllTeamsOfUsers(String username, int tenantId) {
+  public List<Team> getAllTeamsOfUsers(String username, int tenantId) {
     return jdbcSelectHelper.selectTeamsOfUsers(username, tenantId);
   }
 
   @Override
-  public List<Team> selectAllTeams(int tenantId) {
+  public List<Team> getAllTeams(int tenantId) {
     return jdbcSelectHelper.selectAllTeams(tenantId);
   }
 
   @Override
-  public Team selectTeamDetails(Integer teamId, int tenantId) {
+  public Team getTeamDetails(Integer teamId, int tenantId) {
     return jdbcSelectHelper.selectTeamDetails(teamId, tenantId);
   }
 
   @Override
-  public Team selectTeamDetailsFromName(String teamName, int tenantId) {
+  public Team getTeamDetailsFromName(String teamName, int tenantId) {
     return jdbcSelectHelper.selectTeamDetailsFromName(teamName, tenantId);
   }
 
@@ -419,32 +414,32 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<UserInfo> selectAllUsersInfo(int tenantId) {
+  public List<UserInfo> getAllUsersInfo(int tenantId) {
     return jdbcSelectHelper.selectAllUsersInfo(tenantId);
   }
 
   @Override
-  public List<UserInfo> selectAllUsersAllTenants() {
+  public List<UserInfo> getAllUsersAllTenants() {
     return jdbcSelectHelper.selectAllUsersAllTenants();
   }
 
   @Override
-  public List<UserInfo> selectAllUsersInfoForTeam(Integer teamId, int tenantId) {
+  public List<UserInfo> getAllUsersInfoForTeam(Integer teamId, int tenantId) {
     return jdbcSelectHelper.selectAllUsersInfoForTeam(teamId, tenantId);
   }
 
   @Override
-  public List<RegisterUserInfo> selectAllRegisterUsersInfoForTenant(int tenantId) {
+  public List<RegisterUserInfo> getAllRegisterUsersInfoForTenant(int tenantId) {
     return jdbcSelectHelper.selectAllRegisterUsersInfoForTenant(tenantId);
   }
 
   @Override
-  public List<RegisterUserInfo> selectAllRegisterUsersInfo() {
+  public List<RegisterUserInfo> getAllRegisterUsersInformation() {
     return jdbcSelectHelper.selectAllRegisterUsersInfo();
   }
 
   @Override
-  public List<RegisterUserInfo> selectAllStagingRegisterUsersInfo(String userName) {
+  public List<RegisterUserInfo> getAllStagingRegisterUsersInfo(String userName) {
     return jdbcSelectHelper.selectAllStagingRegisterUsersInfo(userName);
   }
 
@@ -458,13 +453,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public AclRequests selectAcl(int req_no, int tenantId) {
+  public AclRequests getAcl(int req_no, int tenantId) {
     return jdbcSelectHelper.selectAcl(req_no, tenantId);
-  }
-
-  @Override
-  public List<Topic> getTopicTeam(String topicName, int tenantId) {
-    return jdbcSelectHelper.selectTopicDetails(topicName, tenantId);
   }
 
   public List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId) {
@@ -487,42 +477,41 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<Env> selectAllEnvs(int tenantId) {
+  public List<Env> getAllEnvs(int tenantId) {
     return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.ALL, tenantId);
   }
 
   @Override
-  public List<Env> selectAllKafkaEnvs(int tenantId) {
+  public List<Env> getAllKafkaEnvs(int tenantId) {
     return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA, tenantId);
   }
 
   @Override
-  public List<Env> selectAllSchemaRegEnvs(int tenantId) {
+  public List<Env> getAllSchemaRegEnvs(int tenantId) {
     return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.SCHEMA_REGISTRY, tenantId);
   }
 
   @Override
-  public List<Env> selectAllKafkaConnectEnvs(int tenantId) {
+  public List<Env> getAllKafkaConnectEnvs(int tenantId) {
     return jdbcSelectHelper.selectAllEnvs(KafkaClustersType.KAFKA_CONNECT, tenantId);
   }
 
   @Override
-  public Env selectEnvDetails(String env, int tenantId) {
+  public Env getEnvDetails(String env, int tenantId) {
     return jdbcSelectHelper.selectEnvDetails(env, tenantId);
   }
 
-  public List<ActivityLog> selectActivityLog(
-      String user, String env, boolean allReqs, int tenantId) {
+  public List<ActivityLog> getActivityLog(String user, String env, boolean allReqs, int tenantId) {
     return jdbcSelectHelper.selectActivityLog(user, env, allReqs, tenantId);
   }
 
   @Override
-  public Map<Integer, Map<String, Map<String, String>>> selectAllKwProperties() {
+  public Map<Integer, Map<String, Map<String, String>>> getAllKwProperties() {
     return jdbcSelectHelper.selectAllKwProperties();
   }
 
   @Override
-  public List<KwProperties> selectAllKwPropertiesPerTenant(int tenantId) {
+  public List<KwProperties> getAllKwPropertiesPerTenant(int tenantId) {
     return jdbcSelectHelper.selectAllKwPropertiesPerTenant(tenantId);
   }
 
@@ -597,56 +586,56 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<Topic> selectAllTopicsByTopictypeAndTeamname(
+  public List<Topic> getAllTopicsByTopictypeAndTeamname(
       String topicType, Integer teamId, int tenantId) {
     return jdbcSelectHelper.selectAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> selectActivityLogForLastDays(
+  public List<Map<String, String>> getActivityLogForLastDays(
       int numberOfDays, String[] envId, int tenantId) {
     return jdbcSelectHelper.selectActivityLogForLastDays(numberOfDays, envId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> selectActivityLogByTeam(
+  public List<Map<String, String>> getActivityLogByTeam(
       Integer teamId, int numberOfDays, int tenantId) {
     return jdbcSelectHelper.selectActivityLogByTeam(teamId, numberOfDays, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> selectTopicsCountByTeams(Integer teamId, int tenantId) {
+  public List<Map<String, String>> getTopicsCountByTeams(Integer teamId, int tenantId) {
     return jdbcSelectHelper.selectTopicsCountByTeams(teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> selectTopicsCountByEnv(Integer tenantId) {
+  public List<Map<String, String>> getTopicsCountByEnv(Integer tenantId) {
     return jdbcSelectHelper.selectTopicsCountByEnv(tenantId);
   }
 
   @Override
-  public List<Map<String, String>> selectPartitionsCountByEnv(Integer teamId, Integer tenantId) {
+  public List<Map<String, String>> getPartitionsCountByEnv(Integer teamId, Integer tenantId) {
     return jdbcSelectHelper.selectPartitionsCountByEnv(teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> selectAclsCountByEnv(Integer teamId, Integer tenantId) {
+  public List<Map<String, String>> getAclsCountByEnv(Integer teamId, Integer tenantId) {
     return jdbcSelectHelper.selectAclsCountByEnv(teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> selectAclsCountByTeams(
+  public List<Map<String, String>> getAclsCountByTeams(
       String aclType, Integer teamId, Integer tenantId) {
     return jdbcSelectHelper.selectAclsCountByTeams(aclType, teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> selectAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId) {
+  public List<Map<String, String>> getAllTopicsForTeamGroupByEnv(Integer teamId, int tenantId) {
     return jdbcSelectHelper.selectAllTopicsForTeamGroupByEnv(teamId, tenantId);
   }
 
   @Override
-  public List<Map<String, String>> selectAllMetrics(
+  public List<Map<String, String>> getAllMetrics(
       String metricsType, String metricsName, String env) {
     return jdbcSelectHelper.selectAllMetrics(metricsType, metricsName, env);
   }
@@ -766,11 +755,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteAclSubscriptionRequest(int req_no, int tenantId) {
-    return jdbcDeleteHelper.deleteAclSubscriptionRequest(req_no, tenantId);
-  }
-
-  @Override
   public String deleteEnvironmentRequest(String envId, int tenantId) {
     return jdbcDeleteHelper.deleteEnvironment(envId, tenantId);
   }
@@ -836,11 +820,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String deleteTenant(int tenantId) {
-    return jdbcDeleteHelper.deleteTenant(tenantId);
-  }
-
-  @Override
   public String setTenantActivestatus(int tenantId, boolean status) {
     return jdbcUpdateHelper.setTenantActivestatus(tenantId, status);
   }
@@ -856,32 +835,32 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public Optional<ProductDetails> selectProductDetails(String name) {
+  public Optional<ProductDetails> getProductDetails(String name) {
     return jdbcSelectHelper.selectProductDetails(name);
   }
 
   @Override
-  public int findAllKafkaComponentsCountForEnv(String env, int tenantId) {
+  public int getAllKafkaComponentsCountForEnv(String env, int tenantId) {
     return jdbcSelectHelper.findAllKafkaComponentsCountForEnv(env, tenantId);
   }
 
   @Override
-  public int findAllConnectorComponentsCountForEnv(String env, int tenantId) {
+  public int getAllConnectorComponentsCountForEnv(String env, int tenantId) {
     return jdbcSelectHelper.findAllConnectorComponentsCountForEnv(env, tenantId);
   }
 
   @Override
-  public int findAllSchemaComponentsCountForEnv(String env, int tenantId) {
+  public int getAllSchemaComponentsCountForEnv(String env, int tenantId) {
     return jdbcSelectHelper.findAllSchemaComponentsCountForEnv(env, tenantId);
   }
 
   @Override
-  public int findAllComponentsCountForTeam(Integer teamId, int tenantId) {
+  public int getAllComponentsCountForTeam(Integer teamId, int tenantId) {
     return jdbcSelectHelper.findAllComponentsCountForTeam(teamId, tenantId);
   }
 
   @Override
-  public int findAllComponentsCountForUser(String userId, int tenantId) {
+  public int getAllComponentsCountForUser(String userId, int tenantId) {
     return jdbcSelectHelper.findAllComponentsCountForUser(userId, tenantId);
   }
 
@@ -926,32 +905,22 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<MessageSchema> selectAllSchemas() {
+  public List<MessageSchema> getAllSchemas() {
     return jdbcSelectHelper.selectAllSchemas();
   }
 
   @Override
-  public List<Team> selectTeams() {
+  public List<Team> getTeams() {
     return jdbcSelectHelper.selectTeams();
   }
 
   @Override
-  public List<RegisterUserInfo> getAllRegisterUsersInfo() {
-    return jdbcSelectHelper.getAllRegisterUsersInfo();
-  }
-
-  @Override
-  public List<Env> selectEnvs() {
+  public List<Env> getEnvs() {
     return jdbcSelectHelper.selectEnvs();
   }
 
   @Override
-  public List<ActivityLog> getAllActivityLog() {
-    return jdbcSelectHelper.getAllActivityLog();
-  }
-
-  @Override
-  public List<KwProperties> selectKwProperties() {
+  public List<KwProperties> getKwProperties() {
     return jdbcSelectHelper.selectKwProperties();
   }
 

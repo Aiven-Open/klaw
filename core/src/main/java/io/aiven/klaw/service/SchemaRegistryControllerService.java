@@ -102,7 +102,7 @@ public class SchemaRegistryControllerService {
 
     Integer userTeamId = commonUtilsService.getTeamId(userName);
     List<UserInfo> userList =
-        manageDatabase.getHandleDbRequests().selectAllUsersInfoForTeam(userTeamId, tenantId);
+        manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(userTeamId, tenantId);
 
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
@@ -115,7 +115,7 @@ public class SchemaRegistryControllerService {
         schemaReq.setEnvironmentName(
             manageDatabase
                 .getHandleDbRequests()
-                .selectEnvDetails(schemaReq.getEnvironment(), tenantId)
+                .getEnvDetails(schemaReq.getEnvironment(), tenantId)
                 .getName());
         copyProperties(schemaReq, schemaRequestModel);
         schemaRequestModel.setRequestStatus(RequestStatus.of(schemaReq.getRequestStatus()));
@@ -255,7 +255,7 @@ public class SchemaRegistryControllerService {
     SchemaRequest schemaRequest =
         manageDatabase
             .getHandleDbRequests()
-            .selectSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
+            .getSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
 
     if (Objects.equals(schemaRequest.getRequestor(), userDetails))
       return ApiResponse.builder().success(false).message(SCHEMA_ERR_101).build();
@@ -319,7 +319,7 @@ public class SchemaRegistryControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     SchemaRequest schemaRequest =
-        dbHandle.selectSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
+        dbHandle.getSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
     if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {

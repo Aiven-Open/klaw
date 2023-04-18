@@ -59,7 +59,7 @@ public class SaasService {
     resultMap.put("result", ApiResultStatus.FAILURE.value);
 
     // check if user exists
-    List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
+    List<UserInfo> userList = manageDatabase.getHandleDbRequests().getAllUsersAllTenants();
     if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
       resultMap.put("error", SAAS_ERR_101);
@@ -246,7 +246,7 @@ public class SaasService {
     }
 
     // check if user exists
-    List<UserInfo> userList = manageDatabase.getHandleDbRequests().selectAllUsersAllTenants();
+    List<UserInfo> userList = manageDatabase.getHandleDbRequests().getAllUsersAllTenants();
     if (userList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
       resultMap.put("error", SAAS_ERR_101);
@@ -254,7 +254,7 @@ public class SaasService {
     }
 
     List<RegisterUserInfo> registerUserInfoList =
-        manageDatabase.getHandleDbRequests().selectAllRegisterUsersInfo();
+        manageDatabase.getHandleDbRequests().getAllRegisterUsersInformation();
     if (registerUserInfoList.stream()
         .anyMatch(user -> Objects.equals(user.getUsername(), newUser.getMailid()))) {
       resultMap.put("error", SAAS_ERR_104);

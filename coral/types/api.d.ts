@@ -812,6 +812,10 @@ export type components = {
       teammail?: string;
       envList?: (string)[];
     };
+    ConnectivityStatus: {
+      clusterType?: string;
+      connectionStatus?: string;
+    };
     UserInfoModelResponse: {
       username: string;
       fullname: string;
@@ -2445,9 +2449,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["ConnectivityStatus"];
         };
       };
     };

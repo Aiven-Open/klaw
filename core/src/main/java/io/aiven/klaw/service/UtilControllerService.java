@@ -209,7 +209,7 @@ public class UtilControllerService {
       allConnectorReqs = new ArrayList<>();
     }
 
-    List<RegisterUserInfo> allUserReqs = reqsHandle.selectAllRegisterUsersInfoForTenant(tenantId);
+    List<RegisterUserInfo> allUserReqs = reqsHandle.getAllRegisterUsersInfoForTenant(tenantId);
 
     countList.put("topics", allTopicReqs.size() + "");
     countList.put("acls", allAclReqs.size() + "");

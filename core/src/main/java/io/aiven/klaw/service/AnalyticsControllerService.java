@@ -83,7 +83,7 @@ public class AnalyticsControllerService {
     int tenantId = commonUtilsService.getTenantId(getCurrentUserName());
 
     List<Map<String, String>> aclsPerEnvList =
-        manageDatabase.getHandleDbRequests().selectAclsCountByEnv(null, tenantId);
+        manageDatabase.getHandleDbRequests().getAclsCountByEnv(null, tenantId);
     AclsCountPerEnv aclsCountPerEnv = new AclsCountPerEnv();
 
     // tenant filtering
@@ -114,7 +114,7 @@ public class AnalyticsControllerService {
     List<Map<String, String>> topicsCountList =
         manageDatabase
             .getHandleDbRequests()
-            .selectTopicsCountByEnv(commonUtilsService.getTenantId(getCurrentUserName()));
+            .getTopicsCountByEnv(commonUtilsService.getTenantId(getCurrentUserName()));
 
     TopicsCountPerEnv topicsCountPerEnv = new TopicsCountPerEnv();
     // tenant filtering
@@ -144,7 +144,7 @@ public class AnalyticsControllerService {
     List<Map<String, String>> producerAclsPerTeamList =
         manageDatabase
             .getHandleDbRequests()
-            .selectAclsCountByTeams(AclType.PRODUCER.value, teamId, tenantId);
+            .getAclsCountByTeams(AclType.PRODUCER.value, teamId, tenantId);
 
     String title = ANALYTICS_101;
     if (teamId != null) {
@@ -161,7 +161,7 @@ public class AnalyticsControllerService {
     List<Map<String, String>> consumerAclsPerTeamList =
         manageDatabase
             .getHandleDbRequests()
-            .selectAclsCountByTeams(AclType.CONSUMER.value, teamId, tenantId);
+            .getAclsCountByTeams(AclType.CONSUMER.value, teamId, tenantId);
 
     String title = ANALYTICS_102;
     if (teamId != null) {
@@ -177,7 +177,7 @@ public class AnalyticsControllerService {
   public ChartsJsOverview getTopicsTeamsOverview(Integer teamId, Integer tenantId) {
 
     List<Map<String, String>> teamCountList =
-        manageDatabase.getHandleDbRequests().selectTopicsCountByTeams(teamId, tenantId);
+        manageDatabase.getHandleDbRequests().getTopicsCountByTeams(teamId, tenantId);
     String title = ANALYTICS_103;
     if (teamId != null) {
       title += " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
@@ -191,7 +191,7 @@ public class AnalyticsControllerService {
 
   public ChartsJsOverview getTopicsEnvOverview(Integer tenantId, PermissionType permissionType) {
     List<Map<String, String>> teamCountList =
-        manageDatabase.getHandleDbRequests().selectTopicsCountByEnv(tenantId);
+        manageDatabase.getHandleDbRequests().getTopicsCountByEnv(tenantId);
 
     // tenant filtering
     try {
@@ -220,9 +220,7 @@ public class AnalyticsControllerService {
     List<Map<String, String>> teamCountList = null;
     if (currentUserName != null) {
       teamCountList =
-          manageDatabase
-              .getHandleDbRequests()
-              .selectAllTopicsForTeamGroupByEnv(userTeamId, tenantId);
+          manageDatabase.getHandleDbRequests().getAllTopicsForTeamGroupByEnv(userTeamId, tenantId);
     }
 
     String title =
@@ -235,7 +233,7 @@ public class AnalyticsControllerService {
   public ChartsJsOverview getPartitionsEnvOverview(Integer teamId, Integer tenantId) {
 
     List<Map<String, String>> partitionsCountList =
-        manageDatabase.getHandleDbRequests().selectPartitionsCountByEnv(teamId, tenantId);
+        manageDatabase.getHandleDbRequests().getPartitionsCountByEnv(teamId, tenantId);
     String title = ANALYTICS_105;
     if (teamId != null) {
       title += " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
@@ -270,7 +268,7 @@ public class AnalyticsControllerService {
   public ChartsJsOverview getAclsEnvOverview(Integer teamId, Integer tenantId) {
 
     List<Map<String, String>> aclsPerEnvList =
-        manageDatabase.getHandleDbRequests().selectAclsCountByEnv(teamId, tenantId);
+        manageDatabase.getHandleDbRequests().getAclsCountByEnv(teamId, tenantId);
     String title = ANALYTICS_106;
     if (teamId != null) {
       title += " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
@@ -303,9 +301,7 @@ public class AnalyticsControllerService {
 
     if (teamId != null) {
       activityCountList =
-          manageDatabase
-              .getHandleDbRequests()
-              .selectActivityLogByTeam(teamId, numberOfDays, tenantId);
+          manageDatabase.getHandleDbRequests().getActivityLogByTeam(teamId, numberOfDays, tenantId);
       title = title + " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
     } else {
       // tenant filtering
@@ -315,7 +311,7 @@ public class AnalyticsControllerService {
         activityCountList =
             manageDatabase
                 .getHandleDbRequests()
-                .selectActivityLogForLastDays(
+                .getActivityLogForLastDays(
                     numberOfDays, allowedEnvIdList.toArray(new String[0]), tenantId);
       } catch (Exception e) {
         log.error("No environments/clusters found.", e);

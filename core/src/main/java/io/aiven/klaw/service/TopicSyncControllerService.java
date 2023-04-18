@@ -441,7 +441,7 @@ public class TopicSyncControllerService {
             getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
       // tenant filtering
       int tenantId = commonUtilsService.getTenantId(getUserName());
-      List<Team> teams = manageDatabase.getHandleDbRequests().selectAllTeams(tenantId);
+      List<Team> teams = manageDatabase.getHandleDbRequests().getAllTeams(tenantId);
       List<String> teamListUpdated = new ArrayList<>();
       for (Team teamsItem : teams) {
         teamListUpdated.add(teamsItem.getTeamname());
@@ -612,7 +612,7 @@ public class TopicSyncControllerService {
     if ((AclType.PRODUCER.value.equals(topicType) || AclType.CONSUMER.value.equals(topicType))
         && teamId != 0) {
       producerConsumerTopics =
-          handleDbRequests.selectAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
+          handleDbRequests.getAllTopicsByTopictypeAndTeamname(topicType, teamId, tenantId);
 
       // tenant filtering, not really necessary though, as based on team is searched.
       producerConsumerTopics =

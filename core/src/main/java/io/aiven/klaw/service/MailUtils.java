@@ -347,7 +347,7 @@ public class MailUtils {
             }
 
             try {
-              List<Team> allTeams = dbHandle.selectAllTeamsOfUsers(username, tenantId);
+              List<Team> allTeams = dbHandle.getAllTeamsOfUsers(username, tenantId);
               if (!allTeams.isEmpty()) emailIdTeam = allTeams.get(0).getTeammail();
             } catch (Exception e) {
               log.error("Exception :", e);

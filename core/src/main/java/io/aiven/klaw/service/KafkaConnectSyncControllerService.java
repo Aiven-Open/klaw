@@ -476,7 +476,7 @@ public class KafkaConnectSyncControllerService {
     if (!commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
       // tenant filtering
       int tenantId = commonUtilsService.getTenantId(getUserName());
-      List<Team> teams = manageDatabase.getHandleDbRequests().selectAllTeams(tenantId);
+      List<Team> teams = manageDatabase.getHandleDbRequests().getAllTeams(tenantId);
 
       List<String> teamListUpdated = new ArrayList<>();
       for (Team teamsItem : teams) {
