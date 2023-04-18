@@ -206,13 +206,13 @@ public class AclControllerTest {
   public void getAcls1() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(topicOverviewService.getTopicOverview("testtopic", AclGroupBy.NONE))
+    when(topicOverviewService.getTopicOverview("testtopic", "", AclGroupBy.NONE))
         .thenReturn(topicOverview);
 
     mvcAcls
         .perform(
-            MockMvcRequestBuilders.get("/getAcls")
-                .param("topicnamesearch", "testtopic")
+            MockMvcRequestBuilders.get("/getTopicOverview")
+                .param("topicName", "testtopic")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -225,14 +225,15 @@ public class AclControllerTest {
   public void getAcls2() throws Exception {
     TopicOverview topicOverview = utilMethods.getTopicOverview();
 
-    when(topicOverviewService.getTopicOverview(null, AclGroupBy.NONE)).thenReturn(topicOverview);
+    when(topicOverviewService.getTopicOverview(null, "1", AclGroupBy.NONE))
+        .thenReturn(topicOverview);
 
     // TODO Consider returning an error response object (https://www.rfc-editor.org/rfc/rfc7807)
     // Just checking response code seems to be sufficient as the contentAsString() returns an empty
     // String.
     mvcAcls
         .perform(
-            MockMvcRequestBuilders.get("/getAcls")
+            MockMvcRequestBuilders.get("/getTopicOverview")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isBadRequest());

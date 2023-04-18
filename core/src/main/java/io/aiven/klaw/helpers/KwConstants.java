@@ -81,6 +81,10 @@ public class KwConstants {
   public static final String MAIL_SMTP_TLS = "true";
   public static final String MAIL_DEBUG = "false";
 
+  public static final String REQUEST_TOPICS_OF_ENVS = "REQUEST_TOPICS_OF_ENVS";
+
+  public static final String ORDER_OF_TOPIC_ENVS = "ORDER_OF_ENVS";
+
   public static final int DAYS_EXPIRY_DEFAULT_TENANT = 365 * 10;
   public static final int DAYS_TRIAL_PERIOD = 7;
 

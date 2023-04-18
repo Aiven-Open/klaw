@@ -810,9 +810,9 @@ public class TopicAclControllerIT {
 
     String res =
         mvc.perform(
-                get("/getAcls")
+                get("/getTopicOverview")
                     .with(user(user3).password(PASSWORD))
-                    .param("topicnamesearch", topicName + topicId1)
+                    .param("topicName", topicName + topicId1)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())

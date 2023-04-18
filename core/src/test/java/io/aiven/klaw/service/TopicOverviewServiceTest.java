@@ -125,7 +125,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     mockTenantConfig();
     List<AclInfo> aclList =
-        topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE).getAclInfoList();
+        topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 
@@ -162,7 +162,9 @@ public class TopicOverviewServiceTest {
     mockTenantConfig();
 
     List<AclInfo> aclList =
-        topicOverviewService.getTopicOverview(topicNameSearch, AclGroupBy.NONE).getAclInfoList();
+        topicOverviewService
+            .getTopicOverview(topicNameSearch, "1", AclGroupBy.NONE)
+            .getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 
@@ -182,7 +184,8 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE);
+    TopicOverview returnedValue =
+        topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
     assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
     assertThat(returnedValue.getTopicPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
@@ -201,7 +204,8 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS")))
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE);
+    TopicOverview returnedValue =
+        topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
     assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
     assertThat(returnedValue.getTopicPromotionDetails().get("status"))
@@ -219,7 +223,8 @@ public class TopicOverviewServiceTest {
 
     when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
 
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE);
+    TopicOverview returnedValue =
+        topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(returnedValue.getTopicPromotionDetails()).isNullOrEmpty();
     assertThat(returnedValue.isTopicExists()).isFalse();
   }
@@ -253,7 +258,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
     mockTenantConfig();
     List<AclInfo> aclList =
-        topicOverviewService.getTopicOverview(TESTTOPIC, AclGroupBy.NONE).getAclInfoList();
+        topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 
@@ -292,7 +297,7 @@ public class TopicOverviewServiceTest {
 
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusterMap());
-    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, groupBy);
+    TopicOverview returnedValue = topicOverviewService.getTopicOverview(TESTTOPIC, "1", groupBy);
 
     if (AclGroupBy.TEAM.equals(groupBy)) {
       String previousTeam = returnedValue.getAclInfoList().get(0).getTeamname();
