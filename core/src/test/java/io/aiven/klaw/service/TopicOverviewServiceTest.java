@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+import static io.aiven.klaw.service.BaseOverviewService.NO_PROMOTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -58,6 +60,7 @@ public class TopicOverviewServiceTest {
   public static final String TESTTOPIC = "testtopic";
   public static final String TEAM_1 = "Team-1";
   public static final String TEAM_ID = "kwusera";
+  public static final int TEAMID = 10;
   private UtilMethods utilMethods;
   @Mock private UserDetails userDetails;
   @Mock private HandleDbRequestsJdbc handleDbRequests;
@@ -188,7 +191,7 @@ public class TopicOverviewServiceTest {
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
     assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getTopicPromotionDetails().get("status")).isEqualTo("NO_PROMOTION");
+    assertThat(returnedValue.getTopicPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
   }
 
   @Test
@@ -312,6 +315,47 @@ public class TopicOverviewServiceTest {
     }
   }
 
+  @Test
+  @Order(8)
+  public void getTopicOverview() {
+    stubUserInfo();
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
+    when(commonUtilsService.getEnvProperty(eq(0), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    when(manageDatabase.getAllEnvList(anyInt()))
+        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+
+    TopicOverview topicOverview =
+        topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(3);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().get("status"))
+        .isEqualTo(ApiResultStatus.SUCCESS.value);
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+  }
+
   private static Map<Integer, KwClusters> getKwClusterMap() {
     Map<Integer, KwClusters> clusterDetails = new HashMap<>();
     KwClusters kwCluster = new KwClusters();
@@ -329,7 +373,7 @@ public class TopicOverviewServiceTest {
       acl.setAclip("" + i);
       acl.setEnvironment("" + 3 % i);
       acl.setEnvironment("1");
-      acl.setTeamId(10);
+      acl.setTeamId(TEAMID);
       acl.setTopicname(TESTTOPIC);
       acl.setAclType((i % 2 == 0) ? AclType.PRODUCER.value : AclType.CONSUMER.value);
       acl.setConsumergroup("-na-");
@@ -344,7 +388,7 @@ public class TopicOverviewServiceTest {
     t.setTopicname(topicName);
     t.setTopicid(1);
     t.setEnvironment("1");
-    t.setTeamId(10);
+    t.setTeamId(TEAMID);
     return t;
   }
 
@@ -418,7 +462,7 @@ public class TopicOverviewServiceTest {
 
     mockTenantConfig();
 
-    when(manageDatabase.getTeamNameFromTeamId(101, 10)).thenReturn(TEAM_1);
+    when(manageDatabase.getTeamNameFromTeamId(101, TEAMID)).thenReturn(TEAM_1);
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(createTopic(TESTTOPIC)));
     when(manageDatabase.getClusters(KafkaClustersType.SCHEMA_REGISTRY, 101))
@@ -463,7 +507,7 @@ public class TopicOverviewServiceTest {
     aclReq.setEnvironment("1");
     aclReq.setConsumergroup("mygrp1");
     aclReq.setAclType(AclType.CONSUMER.value);
-    aclReq.setTeamId(10);
+    aclReq.setTeamId(TEAMID);
 
     aclList.add(aclReq);
     return aclList;
@@ -471,8 +515,8 @@ public class TopicOverviewServiceTest {
 
   private void stubUserInfo() {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(userInfo.getTeamId()).thenReturn(10);
+    when(userInfo.getTeamId()).thenReturn(TEAMID);
     when(mailService.getUserName(any())).thenReturn(TEAM_ID);
-    when(commonUtilsService.getTeamId(eq(TEAM_ID))).thenReturn(10);
+    when(commonUtilsService.getTeamId(eq(TEAM_ID))).thenReturn(TEAMID);
   }
 }

@@ -185,6 +185,20 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
+  public List<Topic> getTopicInMultipleEnvs(String topicName, int teamId, int sizeOfTopics) {
+    List<Topic> topicList = new ArrayList<>();
+    for (int i = 0; i < sizeOfTopics; i++) {
+      Topic topic1 = new Topic();
+      topic1.setEnvironment(i + 1 + "");
+      topic1.setTopicname(topicName);
+
+      topic1.setTeamId(teamId);
+      topicList.add(topic1);
+    }
+
+    return topicList;
+  }
+
   public List<Topic> getMultipleTopics(String topicPrefix, int size, String env, int teamId) {
     List<Topic> listTopics = new ArrayList<>();
     Topic t;

@@ -308,7 +308,7 @@ public class TopicOverviewService extends BaseOverviewService {
           String targetEnvId = hashMap.get("targetEnvId");
           if (!((envOrderList.indexOf(targetEnvId) - envOrderList.indexOf(environmentId)) == 1)
               || !envOrderList.contains(environmentId)) {
-            hashMap = new HashMap<>();
+            hashMap.put("status", NO_PROMOTION);
           }
         }
 
