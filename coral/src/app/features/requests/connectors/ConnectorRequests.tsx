@@ -33,8 +33,8 @@ function ConnectorRequests() {
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";
-    req_no: number | null;
-  }>({ open: "NONE", req_no: null });
+    connectorId: number | null;
+  }>({ open: "NONE", connectorId: null });
   const [errorQuickActions, setErrorQuickActions] = useState("");
 
   const { mutate: deleteRequest, isLoading: deleteRequestIsLoading } =
@@ -51,11 +51,11 @@ function ConnectorRequests() {
     });
 
   function closeModal() {
-    setModals({ open: "NONE", req_no: null });
+    setModals({ open: "NONE", connectorId: null });
   }
 
-  const handleDeleteRequest = (topicId: number) => {
-    setModals({ open: "DELETE", req_no: topicId });
+  const handleDeleteRequest = (connectorId: number) => {
+    setModals({ open: "DELETE", connectorId: connectorId });
   };
 
   const { data, isLoading, isError, error, isFetching } = useQuery({
@@ -99,10 +99,10 @@ function ConnectorRequests() {
       {modals.open === "DELETE" && (
         <DeleteRequestDialog
           deleteRequest={() => {
-            if (modals.req_no === null) {
-              throw Error("req_no can't be null");
+            if (modals.connectorId === null) {
+              throw Error("connectorId can't be null");
             } else {
-              deleteRequest({ reqIds: [modals.req_no.toString()] });
+              deleteRequest({ reqIds: [modals.connectorId.toString()] });
             }
           }}
           isLoading={deleteRequestIsLoading || isFetching}
