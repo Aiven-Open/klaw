@@ -167,7 +167,7 @@ describe("<TopicProducerForm />", () => {
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
-      expect(submitButton).not.toBeEnabled();
+      expect(submitButton).toBeEnabled();
       expect(cancelButton).toBeVisible();
       expect(cancelButton).toBeEnabled();
     });
@@ -303,7 +303,7 @@ describe("<TopicProducerForm />", () => {
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
-      expect(submitButton).not.toBeEnabled();
+      expect(submitButton).toBeEnabled();
       expect(cancelButton).toBeVisible();
       expect(cancelButton).toBeEnabled();
     });
@@ -431,7 +431,7 @@ describe("<TopicProducerForm />", () => {
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
-      expect(submitButton).not.toBeEnabled();
+      expect(submitButton).toBeEnabled();
       expect(cancelButton).toBeVisible();
       expect(cancelButton).toBeEnabled();
     });
