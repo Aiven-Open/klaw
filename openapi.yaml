@@ -1979,10 +1979,7 @@
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/ConnectivityStatus"
                 }
               }
             }
@@ -5969,6 +5966,16 @@
           }
         },
         "required" : [ "contactperson", "showDeleteTeam", "teamId", "teamname", "teamphone", "tenantId", "tenantName" ]
+      },
+      "ConnectivityStatus" : {
+        "properties" : {
+          "clusterType" : {
+            "type" : "string"
+          },
+          "connectionStatus" : {
+            "type" : "string"
+          }
+        }
       },
       "UserInfoModelResponse" : {
         "properties" : {

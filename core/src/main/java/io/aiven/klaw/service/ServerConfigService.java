@@ -27,6 +27,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.response.ConnectivityStatus;
 import io.aiven.klaw.model.response.KwPropertiesResponse;
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
@@ -561,8 +562,8 @@ public class ServerConfigService {
     return hashMap;
   }
 
-  public Map<String, String> testClusterApiConnection(String clusterApiUrl) throws KlawException {
-    Map<String, String> hashMap = new HashMap<>();
+  public ConnectivityStatus testClusterApiConnection(String clusterApiUrl) throws KlawException {
+    ConnectivityStatus connectivityStatus = new ConnectivityStatus();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String clusterApiStatus = clusterApiService.getClusterApiStatus(clusterApiUrl, true, tenantId);
     if ("ONLINE".equals(clusterApiStatus)) {
@@ -574,8 +575,8 @@ public class ServerConfigService {
     } else {
       clusterApiStatus = ApiResultStatus.FAILURE.value;
     }
-    hashMap.put("result", clusterApiStatus);
-    return hashMap;
+    connectivityStatus.setConnectionStatus(clusterApiStatus);
+    return connectivityStatus;
   }
 
   private Object getPrincipal() {

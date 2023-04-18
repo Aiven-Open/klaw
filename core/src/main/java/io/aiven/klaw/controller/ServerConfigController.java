@@ -4,6 +4,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwPropertiesModel;
 import io.aiven.klaw.model.ServerConfigProperties;
+import io.aiven.klaw.model.response.ConnectivityStatus;
 import io.aiven.klaw.model.response.KwPropertiesResponse;
 import io.aiven.klaw.service.ServerConfigService;
 import java.util.List;
@@ -60,7 +61,7 @@ public class ServerConfigController {
       value = "/testClusterApiConnection",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> testClusterApiConnection(
+  public ResponseEntity<ConnectivityStatus> testClusterApiConnection(
       @RequestParam("clusterApiUrl") String clusterApiUrl) throws KlawException {
     return new ResponseEntity<>(
         serverConfigService.testClusterApiConnection(clusterApiUrl), HttpStatus.OK);

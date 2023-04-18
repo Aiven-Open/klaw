@@ -146,10 +146,10 @@ app.controller("serverConfigCtrl", function($scope, $http, $location, $window) {
                     headers : { 'Content-Type' : 'application/json' },
                     params: {'clusterApiUrl' : testClusterApiUrl}
                 }).success(function(output) {
-                    $scope.alert = "Cluster Api Connection Url " + testClusterApiUrl  + ", status: " + output.result;
+                    $scope.alert = "Cluster Api Connection Url " + testClusterApiUrl  + ", status: " + output.connectionStatus;
                     swal({
                             title: "",
-                            text: "Cluster Api Connection " + testClusterApiUrl + ". Status: " + output.result,
+                            text: "Cluster Api Connection " + testClusterApiUrl + ". Status: " + output.connectionStatus,
                             timer: 2000,
                             showConfirmButton: false
                         });
