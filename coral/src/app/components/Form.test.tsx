@@ -16,7 +16,6 @@ import {
 } from "src/app/components/Form";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
-import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
 describe("Form", () => {
   const onSubmit = jest.fn();
@@ -168,7 +167,6 @@ describe("Form", () => {
       await user.clear(input);
 
       await user.type(input, "20{tab}");
-      await waitForElementToBeRemoved(screen.getByText(errorMsgValidation));
 
       expect(screen.queryByText(errorMsgEmpty)).not.toBeInTheDocument();
       expect(screen.queryByText(errorMsgValidation)).not.toBeInTheDocument();

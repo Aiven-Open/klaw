@@ -74,7 +74,7 @@ export const useForm = <T extends FieldValues = FieldValues>({
 }: UseFormProps<T>): UseFormReturn<T> => {
   return _useForm<T>({
     ...props,
-    mode: "onBlur",
+    mode: "onTouched",
     defaultValues,
     resolver: schema && zodResolver(schema),
   });
@@ -241,19 +241,6 @@ export const Textarea = <T extends FieldValues>(
 };
 
 Textarea.Skeleton = BaseTextarea.Skeleton;
-
-type ButtonProps = React.ComponentProps<typeof PrimaryButton>;
-
-function _SubmitButton<T extends FieldValues>({
-  formContext: {
-    formState: { isDirty, isValid },
-  },
-  ...props
-}: ButtonProps & FormRegisterProps<T>) {
-  return (
-    <PrimaryButton {...props} type="submit" disabled={!isDirty || !isValid} />
-  );
-}
 
 //
 // <MultiInput>
@@ -452,6 +439,16 @@ export const NativeSelect = <T extends FieldValues>(
 
 NativeSelect.Skeleton = BaseNativeSelect.Skeleton;
 
+type ButtonProps = React.ComponentProps<typeof PrimaryButton>;
+function _SubmitButton<T extends FieldValues>({
+  formContext: {
+    formState: { isSubmitting },
+  },
+  ...props
+}: ButtonProps & FormRegisterProps<T>) {
+  return <PrimaryButton {...props} loading={isSubmitting} type="submit" />;
+}
+
 const SubmitButtonMemo = memo(
   _SubmitButton,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -459,6 +456,14 @@ const SubmitButtonMemo = memo(
     return false;
   }
 ) as typeof _SubmitButton;
+
+// eslint-disable-next-line import/exports-last,import/group-exports
+export const SubmitButton = <T extends FieldValues>(
+  props: ButtonProps
+): React.ReactElement<ButtonProps> => {
+  const ctx = useFormContext<T>();
+  return <SubmitButtonMemo formContext={ctx} {...props} />;
+};
 
 //
 // <RadioButton>
@@ -509,6 +514,7 @@ function _RadioButtonGroup<T extends FieldValues>({
               });
             }}
             error={error?.message}
+            valid={error === undefined}
           />
         );
       }}
@@ -530,14 +536,6 @@ export const RadioButtonGroup = <T extends FieldValues>(
 };
 
 RadioButtonGroup.Skeleton = BaseRadioButtonGroup.Skeleton;
-
-// eslint-disable-next-line import/exports-last,import/group-exports
-export const SubmitButton = <T extends FieldValues>(
-  props: ButtonProps
-): React.ReactElement<ButtonProps> => {
-  const ctx = useFormContext<T>();
-  return <SubmitButtonMemo formContext={ctx} {...props} />;
-};
 
 function parseFieldErrorsArray<T extends FieldValues>(
   { errors }: FormState<T>,
