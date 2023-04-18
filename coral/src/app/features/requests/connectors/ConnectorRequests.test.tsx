@@ -3,6 +3,7 @@ import {
   screen,
   waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import { transformConnectorRequestApiResponse } from "src/domain/connector/connector-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
@@ -13,7 +14,10 @@ import {
   getSyncConnectorsEnvironments,
 } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/utils/mocked-api-responses";
-import { getConnectorRequests } from "src/domain/connector";
+import {
+  deleteConnectorRequest,
+  getConnectorRequests,
+} from "src/domain/connector";
 import userEvent from "@testing-library/user-event";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
@@ -33,6 +37,9 @@ const mockGetSyncConnectorsEnvironments =
   getSyncConnectorsEnvironments as jest.MockedFunction<
     typeof getSyncConnectorsEnvironments
   >;
+
+const mockDeleteConnectorRequest =
+  deleteConnectorRequest as jest.MockedFunction<typeof deleteConnectorRequest>;
 
 const mockGetConnectorRequestsResponse = transformConnectorRequestApiResponse([
   {
@@ -585,6 +592,167 @@ describe("ConnectorRequests", () => {
         env: "ALL",
         search: "",
       });
+    });
+  });
+
+  describe("enables user to delete a request", () => {
+    const originalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetConnectorEnvironmentRequest.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequests.mockResolvedValue(
+        mockGetConnectorRequestsResponse
+      );
+
+      customRender(<ConnectorRequests />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a delete request api call if user deletes a Connector request", async () => {
+      mockDeleteConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const deleteButton = screen.getByRole("button", {
+        name: "Delete connector request for test-connector-1",
+      });
+
+      await userEvent.click(deleteButton);
+      const dialog = screen.getByRole("dialog");
+
+      const confirmDeclineButton = within(dialog).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeclineButton);
+
+      expect(mockDeleteConnectorRequest).toHaveBeenCalledWith({
+        reqIds: ["1000"],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("updates the the data for the table if user deletes a Connector request", async () => {
+      mockDeleteConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        search: "",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+
+      const deleteButton = screen.getByRole("button", {
+        name: "Delete connector request for test-connector-1",
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDelete = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDelete);
+
+      expect(mockDeleteConnectorRequest).toHaveBeenCalledWith({
+        reqIds: ["1000"],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(2, {
+        pageNo: "1",
+        search: "",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if deleting request was not successful", async () => {
+      mockDeleteConnectorRequest.mockRejectedValue({ message: "OH NO" });
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        search: "",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+
+      const deleteButton = screen.getByRole("button", {
+        name: `Delete connector request for test-connector-1`,
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeleteButton = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeleteButton);
+
+      expect(mockDeleteConnectorRequest).toHaveBeenCalledWith({
+        reqIds: ["1000"],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetConnectorRequests).not.toHaveBeenCalledTimes(2);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith({ message: "OH NO" });
+    });
+
+    it("informs user about error if deleting request was not successful and error is hidden in success", async () => {
+      mockDeleteConnectorRequest.mockRejectedValue("OH NO");
+      expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(1, {
+        pageNo: "1",
+        search: "",
+        isMyRequest: false,
+        requestStatus: "ALL",
+        env: "ALL",
+      });
+
+      const deleteButton = screen.getByRole("button", {
+        name: `Delete connector request for test-connector-1`,
+      });
+
+      await userEvent.click(deleteButton);
+      const modal = screen.getByRole("dialog");
+
+      const confirmDeleteButton = within(modal).getByRole("button", {
+        name: "Delete request",
+      });
+
+      await userEvent.click(confirmDeleteButton);
+
+      expect(mockDeleteConnectorRequest).toHaveBeenCalledWith({
+        reqIds: ["1000"],
+      });
+
+      await waitForElementToBeRemoved(modal);
+      expect(mockGetConnectorRequests).not.toHaveBeenCalledTimes(2);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
     });
   });
 });
