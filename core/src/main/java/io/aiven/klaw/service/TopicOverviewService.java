@@ -1,9 +1,11 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.TOPIC_OVW_ERR_101;
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.AclInfo;
@@ -11,17 +13,19 @@ import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -32,11 +36,12 @@ public class TopicOverviewService extends BaseOverviewService {
     super(mailService);
   }
 
-  public TopicOverview getTopicOverview(String topicNameSearch, AclGroupBy groupBy) {
-    log.debug("getAcls {}", topicNameSearch);
+  public TopicOverview getTopicOverview(
+      String topicName, String environmentId, AclGroupBy groupBy) {
+    log.debug("getTopicOverview {}", topicName);
 
-    if (topicNameSearch != null) {
-      topicNameSearch = topicNameSearch.trim();
+    if (topicName != null) {
+      topicName = topicName.trim();
     } else {
       return null;
     }
@@ -46,7 +51,7 @@ public class TopicOverviewService extends BaseOverviewService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
-    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicNameSearch, tenantId);
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
@@ -55,6 +60,7 @@ public class TopicOverviewService extends BaseOverviewService {
             .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
             .collect(Collectors.toList());
 
+    List<Topic> originalSetTopics = new ArrayList<>(topics);
     TopicOverview topicOverview = new TopicOverview();
 
     if (topics.size() == 0) {
@@ -64,23 +70,17 @@ public class TopicOverviewService extends BaseOverviewService {
       topicOverview.setTopicExists(true);
     }
 
+    Pair<String, List<Topic>> topicsPair =
+        filterByEnvIdParameter(environmentId, tenantId, topics, topicOverview);
+    environmentId = topicsPair.getKey();
+    topics = topicsPair.getValue();
+
     String syncCluster;
-    String[] reqTopicsEnvs;
-    Set<String> reqTopicsEnvsList = new HashSet<>();
     try {
       syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
     } catch (Exception exception) {
       log.error("Exception while getting syncCluster. Ignored. ", exception);
       syncCluster = null;
-    }
-
-    try {
-      String requestTopicsEnvs =
-          commonUtilsService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
-      reqTopicsEnvs = requestTopicsEnvs.split(",");
-      reqTopicsEnvsList = new HashSet<>(Arrays.asList(reqTopicsEnvs));
-    } catch (Exception exception) {
-      log.error("Error in getting req topic envs", exception);
     }
 
     List<TopicInfo> topicInfoList = new ArrayList<>();
@@ -89,14 +89,13 @@ public class TopicOverviewService extends BaseOverviewService {
         tenantId, topics, topicOverview, syncCluster, topicInfoList, topicHistoryList);
     List<AclInfo> aclInfo = new ArrayList<>();
     List<AclInfo> prefixedAclsInfo = new ArrayList<>();
-    List<Topic> topicsSearchList =
-        commonUtilsService.getTopicsForTopicName(topicNameSearch, tenantId);
+    List<Topic> topicsSearchList = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
     // tenant filtering
     Integer topicOwnerTeamId =
         commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
 
     enrichTopicInfoList(
-        topicNameSearch,
+        topicName,
         handleDb,
         tenantId,
         loggedInUserTeam,
@@ -109,16 +108,64 @@ public class TopicOverviewService extends BaseOverviewService {
         getAclInfoList(tenantId, topicOverview, topicInfoList, aclInfo, prefixedAclsInfo, groupBy);
 
     updateTopicOverviewItems(
-        topicNameSearch,
+        topicName,
         tenantId,
         loggedInUserTeam,
-        topics,
+        originalSetTopics,
         topicOverview,
         topicInfoList,
         aclInfo,
-        topicOwnerTeamId);
+        topicOwnerTeamId,
+        environmentId);
 
     return topicOverview;
+  }
+
+  private Pair<String, List<Topic>> filterByEnvIdParameter(
+      String environmentId, int tenantId, List<Topic> topics, TopicOverview topicOverview) {
+    List<EnvIdInfo> availableEnvs = new ArrayList<>();
+    List<EnvIdInfo> availableEnvsNotInPromotionOrder = new ArrayList<>();
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
+    List<String> orderOfEnvsArrayList = getOrderedEnvsList(orderOfEnvs);
+    topics.forEach(
+        topic -> {
+          EnvIdInfo envIdInfo = new EnvIdInfo();
+          envIdInfo.setId(topic.getEnvironment());
+          envIdInfo.setName(
+              manageDatabase.getKafkaEnvList(tenantId).stream()
+                  .filter(env -> env.getId().equals(topic.getEnvironment()))
+                  .map(Env::getName)
+                  .findFirst()
+                  .orElse("ENV_NOT_FOUND"));
+          if (orderOfEnvsArrayList.contains(envIdInfo.getId())) {
+            availableEnvs.add(envIdInfo);
+          } else {
+            availableEnvsNotInPromotionOrder.add(envIdInfo);
+          }
+        });
+
+    availableEnvs.sort(
+        Comparator.comparingInt(
+            topicEnv -> Objects.requireNonNull(orderOfEnvs).indexOf(topicEnv.getId())));
+    availableEnvs.addAll(availableEnvsNotInPromotionOrder);
+    topicOverview.setAvailableEnvironments(availableEnvs);
+
+    if (Objects.equals(environmentId, "")) {
+      environmentId = availableEnvs.get(0).getId();
+    }
+    String finalEnvironmentId = environmentId;
+    topics =
+        topics.stream().filter(topic -> topic.getEnvironment().equals(finalEnvironmentId)).toList();
+    return Pair.of(environmentId, topics);
+  }
+
+  private static List<String> getOrderedEnvsList(String orderOfEnvs) {
+    List<String> orderOfEnvsArrayList = new ArrayList<>();
+    if (orderOfEnvs != null && !orderOfEnvs.equals("")) {
+      String[] orderOfEnvsList = orderOfEnvs.split(",");
+      orderOfEnvsArrayList = Arrays.asList(orderOfEnvsList);
+    }
+    return orderOfEnvsArrayList;
   }
 
   private void enrichTopicInfoList(
@@ -210,23 +257,24 @@ public class TopicOverviewService extends BaseOverviewService {
       String topicNameSearch,
       int tenantId,
       Integer loggedInUserTeam,
-      List<Topic> topics,
+      List<Topic> originalSetTopics,
       TopicOverview topicOverview,
       List<TopicInfo> topicInfoList,
       List<AclInfo> aclInfo,
-      Integer topicOwnerTeam) {
+      Integer topicOwnerTeam,
+      String environmentId) {
     try {
       if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
         topicOverview.setTopicPromotionDetails(
-            getTopicPromotionEnv(topicNameSearch, topics, tenantId));
+            getTopicPromotionEnv(topicNameSearch, originalSetTopics, tenantId, environmentId));
 
         if (topicInfoList.size() > 0) {
           TopicInfo lastItem = topicInfoList.get(topicInfoList.size() - 1);
           lastItem.setTopicDeletable(
               aclInfo.stream()
                   .noneMatch(
-                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getEnvName())));
-          lastItem.setShowDeleteTopic(true);
+                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getEnvId())));
+          lastItem.setShowDeleteTopic(lastItem.isTopicDeletable());
         }
       } else {
         Map<String, String> hashMap = new HashMap<>();
@@ -241,23 +289,31 @@ public class TopicOverviewService extends BaseOverviewService {
   }
 
   private Map<String, String> getTopicPromotionEnv(
-      String topicSearch, List<Topic> topics, int tenantId) {
+      String topicSearch, List<Topic> topics, int tenantId, String environmentId) {
     Map<String, String> hashMap = new HashMap<>();
     try {
       if (topics == null) {
         topics = manageDatabase.getHandleDbRequests().getTopics(topicSearch, tenantId);
       }
-
       hashMap.put("topicName", topicSearch);
+      String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
+      List<String> envOrderList = getOrderedEnvsList(orderEnvs);
 
       if (topics != null && topics.size() > 0) {
         List<String> envList =
             topics.stream().map(Topic::getEnvironment).collect(Collectors.toList());
-        generatePromotionDetails(
-            tenantId,
-            hashMap,
-            envList,
-            commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS"));
+
+        generatePromotionDetails(tenantId, hashMap, envList, orderEnvs);
+        // Ex : If topic exists in D, T, then promotion to A is displayed when topic overview is for
+        // T env
+        if (hashMap.containsKey("targetEnvId")) {
+          String targetEnvId = hashMap.get("targetEnvId");
+          if (!((envOrderList.indexOf(targetEnvId) - envOrderList.indexOf(environmentId)) == 1)
+              || !envOrderList.contains(environmentId)) {
+            hashMap.put("status", NO_PROMOTION);
+          }
+        }
+
         return hashMap;
       }
     } catch (Exception e) {

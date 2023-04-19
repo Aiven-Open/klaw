@@ -179,7 +179,7 @@ const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
   showActivityLog: "/getActivityLogPerEnv",
   getActivityLogForTeamOverview: "/getActivityLogForTeamOverview",
   getActivationInfo: "/getActivationInfo",
-  getAcls: "/getAcls",
+  getTopicOverview: "/getTopicOverview",
   getAclsCountPerEnv: "/getAclsCountPerEnv",
   getAclRequests: "/getAclRequests",
   getAclRequestsForApprover: "/getAclRequestsForApprover",

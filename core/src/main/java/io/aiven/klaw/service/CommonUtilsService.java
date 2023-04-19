@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
@@ -514,7 +516,7 @@ public class CommonUtilsService {
   }
 
   protected String getSchemaPromotionEnvsFromKafkaEnvs(int tenantId) {
-    String kafkaEnvs = getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String kafkaEnvs = getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
     String[] kafkaEnvIdsList = kafkaEnvs.split(",");
     StringBuilder orderOfSchemaEnvs = new StringBuilder();
 

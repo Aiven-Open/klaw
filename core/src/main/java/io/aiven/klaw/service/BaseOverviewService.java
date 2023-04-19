@@ -46,6 +46,7 @@ public abstract class BaseOverviewService {
   public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
   private static final String MASKED_FOR_SECURITY = BASE_OVERVIEW_101;
+  public static final String NO_PROMOTION = "NO_PROMOTION";
   @Autowired protected ManageDatabase manageDatabase;
   @Autowired protected ClusterApiService clusterApiService;
   @Autowired protected CommonUtilsService commonUtilsService;
@@ -96,7 +97,6 @@ public abstract class BaseOverviewService {
       aclInfo = mergeReduceAclInfo(aclInfo);
       aclInfo.sort(
           Comparator.comparing(AclInfo::getTeamname, nullSafeStringComparator)
-              .thenComparing(AclInfo::getEnvironmentName, nullSafeStringComparator)
               .thenComparing(AclInfo::getConsumergroup, nullSafeStringComparator));
     }
 
@@ -287,19 +287,27 @@ public abstract class BaseOverviewService {
       int tenantId, Map<String, String> hashMap, List<String> envList, String orderOfEnvs) {
     if (envList != null && envList.size() > 0) {
       // tenant filtering
-      envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
+      if (orderOfEnvs == null || orderOfEnvs.equals("")) {
+        hashMap.put("status", NO_PROMOTION);
+        return;
+      }
+      envList.sort(Comparator.comparingInt(Objects.requireNonNull(orderOfEnvs)::indexOf));
 
       String lastEnv = envList.get(envList.size() - 1);
-      List<String> orderedEnvs = Arrays.asList(orderOfEnvs.split(","));
+      List<String> orderedEnvsList = Arrays.asList(orderOfEnvs.split(","));
 
-      if (orderedEnvs.indexOf(lastEnv) == orderedEnvs.size() - 1) {
-        hashMap.put("status", "NO_PROMOTION"); // PRD
+      if (orderedEnvsList.indexOf(lastEnv) == orderedEnvsList.size() - 1) {
+        hashMap.put("status", NO_PROMOTION);
       } else {
-        hashMap.put("status", ApiResultStatus.SUCCESS.value);
-        hashMap.put("sourceEnv", lastEnv);
-        String targetEnv = orderedEnvs.get(orderedEnvs.indexOf(lastEnv) + 1);
-        hashMap.put("targetEnv", getEnvDetails(targetEnv, tenantId).getName());
-        hashMap.put("targetEnvId", targetEnv);
+        if (orderedEnvsList.size() > 0) {
+          hashMap.put("status", ApiResultStatus.SUCCESS.value);
+          hashMap.put("sourceEnv", lastEnv);
+          String targetEnv = orderedEnvsList.get(orderedEnvsList.indexOf(lastEnv) + 1);
+          hashMap.put("targetEnv", getEnvDetails(targetEnv, tenantId).getName());
+          hashMap.put("targetEnvId", targetEnv);
+        } else {
+          hashMap.put("status", NO_PROMOTION);
+        }
       }
     }
   }

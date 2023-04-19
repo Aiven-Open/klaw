@@ -173,15 +173,16 @@ public class AclController {
   }
 
   @RequestMapping(
-      value = "/getAcls",
+      value = "/getTopicOverview",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<TopicOverview> getAcls(
-      @RequestParam(value = "topicnamesearch") String topicNameSearch,
+  public ResponseEntity<TopicOverview> getTopicOverview(
+      @RequestParam(value = "topicName") String topicName,
+      @RequestParam(value = "environmentId", defaultValue = "") String environmentId,
       @RequestParam(value = "groupBy", required = false, defaultValue = "NONE")
           AclGroupBy groupBy) {
     return new ResponseEntity<>(
-        topicOverviewService.getTopicOverview(topicNameSearch, groupBy), HttpStatus.OK);
+        topicOverviewService.getTopicOverview(topicName, environmentId, groupBy), HttpStatus.OK);
   }
 
   // getConsumerOffsets from kafka cluster

@@ -2618,6 +2618,49 @@
         }
       }
     },
+    "/getTopicOverview" : {
+      "get" : {
+        "tags" : [ "acl-controller" ],
+        "operationId" : "getTopicOverview",
+        "parameters" : [ {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "environmentId",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        }, {
+          "name" : "groupBy",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "NONE",
+            "enum" : [ "NONE", "TEAM" ]
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TopicOverview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/getTopicEvents" : {
       "get" : {
         "tags" : [ "topic-controller" ],
@@ -3300,7 +3343,7 @@
         "tags" : [ "schema-registry-controller" ],
         "operationId" : "getSchemaOfTopic",
         "parameters" : [ {
-          "name" : "topicnamesearch",
+          "name" : "topicName",
           "in" : "query",
           "required" : true,
           "schema" : {
@@ -4677,41 +4720,6 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getAcls" : {
-      "get" : {
-        "tags" : [ "acl-controller" ],
-        "operationId" : "getAcls",
-        "parameters" : [ {
-          "name" : "topicnamesearch",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "groupBy",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string",
-            "default" : "NONE",
-            "enum" : [ "NONE", "TEAM" ]
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/TopicOverview"
                 }
               }
             }
@@ -6289,6 +6297,195 @@
         },
         "required" : [ "advancedTopicConfigEntries", "allPageNos", "approvingTeamDetails", "currentPage", "deleteAssociatedSchema", "description", "environment", "environmentName", "replicationfactor", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicid", "topicname", "topicpartitions", "totalNoPages" ]
       },
+      "AclInfo" : {
+        "properties" : {
+          "sequence" : {
+            "type" : "string"
+          },
+          "req_no" : {
+            "type" : "string"
+          },
+          "acl_ip" : {
+            "type" : "string"
+          },
+          "acl_ssl" : {
+            "type" : "string"
+          },
+          "acl_ips" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          },
+          "acl_ssls" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          },
+          "topicname" : {
+            "type" : "string"
+          },
+          "topictype" : {
+            "type" : "string"
+          },
+          "consumergroup" : {
+            "type" : "string"
+          },
+          "environment" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "teamname" : {
+            "type" : "string"
+          },
+          "teamid" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "operation" : {
+            "type" : "string"
+          },
+          "permission" : {
+            "type" : "string"
+          },
+          "transactionalId" : {
+            "type" : "string"
+          },
+          "aclPatternType" : {
+            "type" : "string"
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "possibleTeams" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "showDeleteAcl" : {
+            "type" : "boolean"
+          },
+          "kafkaFlavorType" : {
+            "type" : "string",
+            "enum" : [ "APACHE_KAFKA", "AIVEN_FOR_APACHE_KAFKA", "CONFLUENT", "CONFLUENT_CLOUD", "OTHERS" ]
+          }
+        }
+      },
+      "EnvIdInfo" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TopicHistory" : {
+        "properties" : {
+          "environmentName" : {
+            "type" : "string"
+          },
+          "teamName" : {
+            "type" : "string"
+          },
+          "requestedBy" : {
+            "type" : "string"
+          },
+          "requestedTime" : {
+            "type" : "string"
+          },
+          "approvedBy" : {
+            "type" : "string"
+          },
+          "approvedTime" : {
+            "type" : "string"
+          },
+          "remarks" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TopicOverview" : {
+        "properties" : {
+          "topicExists" : {
+            "type" : "boolean"
+          },
+          "schemaExists" : {
+            "type" : "boolean"
+          },
+          "prefixAclsExists" : {
+            "type" : "boolean"
+          },
+          "txnAclsExists" : {
+            "type" : "boolean"
+          },
+          "topicInfoList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TopicInfo"
+            }
+          },
+          "aclInfoList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AclInfo"
+            }
+          },
+          "prefixedAclInfoList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AclInfo"
+            }
+          },
+          "transactionalAclInfoList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AclInfo"
+            }
+          },
+          "topicHistoryList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TopicHistory"
+            }
+          },
+          "topicPromotionDetails" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "availableEnvironments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EnvIdInfo"
+            }
+          },
+          "topicDocumentation" : {
+            "type" : "string"
+          },
+          "topicIdForDocumentation" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
       "TopicDetailsPerEnv" : {
         "properties" : {
           "topicExists" : {
@@ -6476,16 +6673,6 @@
           }
         }
       },
-      "EnvIdInfo" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        }
-      },
       "KafkaConnectorModelResponse" : {
         "properties" : {
           "sequence" : {
@@ -6631,95 +6818,6 @@
           }
         },
         "required" : [ "allPageNos", "clusterId", "clusterName", "envStatus", "id", "name", "otherParams", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
-      },
-      "AclInfo" : {
-        "properties" : {
-          "sequence" : {
-            "type" : "string"
-          },
-          "req_no" : {
-            "type" : "string"
-          },
-          "acl_ip" : {
-            "type" : "string"
-          },
-          "acl_ssl" : {
-            "type" : "string"
-          },
-          "acl_ips" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            },
-            "uniqueItems" : true
-          },
-          "acl_ssls" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            },
-            "uniqueItems" : true
-          },
-          "topicname" : {
-            "type" : "string"
-          },
-          "topictype" : {
-            "type" : "string"
-          },
-          "consumergroup" : {
-            "type" : "string"
-          },
-          "environment" : {
-            "type" : "string"
-          },
-          "environmentName" : {
-            "type" : "string"
-          },
-          "teamname" : {
-            "type" : "string"
-          },
-          "teamid" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "operation" : {
-            "type" : "string"
-          },
-          "permission" : {
-            "type" : "string"
-          },
-          "transactionalId" : {
-            "type" : "string"
-          },
-          "aclPatternType" : {
-            "type" : "string"
-          },
-          "totalNoPages" : {
-            "type" : "string"
-          },
-          "allPageNos" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "possibleTeams" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "currentPage" : {
-            "type" : "string"
-          },
-          "showDeleteAcl" : {
-            "type" : "boolean"
-          },
-          "kafkaFlavorType" : {
-            "type" : "string",
-            "enum" : [ "APACHE_KAFKA", "AIVEN_FOR_APACHE_KAFKA", "CONFLUENT", "CONFLUENT_CLOUD", "OTHERS" ]
-          }
-        }
       },
       "SchemaRequestsResponseModel" : {
         "properties" : {
@@ -7088,31 +7186,6 @@
           }
         }
       },
-      "TopicHistory" : {
-        "properties" : {
-          "environmentName" : {
-            "type" : "string"
-          },
-          "teamName" : {
-            "type" : "string"
-          },
-          "requestedBy" : {
-            "type" : "string"
-          },
-          "requestedTime" : {
-            "type" : "string"
-          },
-          "approvedBy" : {
-            "type" : "string"
-          },
-          "approvedTime" : {
-            "type" : "string"
-          },
-          "remarks" : {
-            "type" : "string"
-          }
-        }
-      },
       "ConnectorOverviewPerEnv" : {
         "properties" : {
           "connectorExists" : {
@@ -7444,65 +7517,6 @@
             "items" : {
               "type" : "string"
             }
-          }
-        }
-      },
-      "TopicOverview" : {
-        "properties" : {
-          "topicExists" : {
-            "type" : "boolean"
-          },
-          "schemaExists" : {
-            "type" : "boolean"
-          },
-          "prefixAclsExists" : {
-            "type" : "boolean"
-          },
-          "txnAclsExists" : {
-            "type" : "boolean"
-          },
-          "topicInfoList" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TopicInfo"
-            }
-          },
-          "aclInfoList" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/AclInfo"
-            }
-          },
-          "prefixedAclInfoList" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/AclInfo"
-            }
-          },
-          "transactionalAclInfoList" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/AclInfo"
-            }
-          },
-          "topicHistoryList" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TopicHistory"
-            }
-          },
-          "topicPromotionDetails" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          },
-          "topicDocumentation" : {
-            "type" : "string"
-          },
-          "topicIdForDocumentation" : {
-            "type" : "integer",
-            "format" : "int32"
           }
         }
       },

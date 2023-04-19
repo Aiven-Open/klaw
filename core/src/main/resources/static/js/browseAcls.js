@@ -17,6 +17,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 	//$http.defaults.headers.common['Accept'] = 'application/json';
 	$scope.envSelectedParam;
 
+    $scope.groupBy = [{ 'id':'TEAM', 'name':'Team' },{'id':'NONE','name':'None'}];
+
 	$scope.showSubmitFailed = function(title, text){
 		swal({
 			 title: "",
@@ -596,21 +598,15 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
     }
 
     $scope.showAclTeamHeader = function(teamname) {
-
-    if($scope.selectedGroupBy=='NONE' || $scope.selectedGroupBy==null || $scope.selectedGroupBy == undefined ){
-    return false;
-    }
-
-    if($scope.firstTeam == teamname) {
-    console.log($scope.firstTeam  + " : " + teamname + " : nochange");
-    return false;
-    } else {
-    console.log($scope.firstTeam  + " : " + teamname + " : change");
-    $scope.firstTeam = teamname;
-    return true;
-    }
-
-
+        if($scope.selectedGroupBy==='NONE' || $scope.selectedGroupBy===null || $scope.selectedGroupBy === undefined ){
+            return false;
+        }
+        if($scope.firstTeam === teamname) {
+            return false;
+        } else {
+            $scope.firstTeam = teamname;
+            return true;
+        }
     }
 
 	$scope.getAcls = function() {
@@ -618,10 +614,9 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         $scope.alertTopicDelete = null;
         $scope.alert = null;
         $scope.firstTeam=null;
-        if($scope.selectedGroupBy == undefined) {
-        $scope.selectedGroupBy = 'NONE';
+        if($scope.selectedGroupBy === undefined) {
+            $scope.selectedGroupBy = 'NONE';
         }
-        $scope.groupBy = [{ 'id':'TEAM', 'name':'Team' },{'id':'NONE','name':'None'}];
 
         var topicSelected;
 
@@ -648,12 +643,15 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		$scope.ShowSpinnerStatusTopics = true;
         $scope.schemaDetails = null;
         $scope.firstSchemaPromote = 'false';
+
 		$http({
 			method: "GET",
-			url: "getAcls",
+			url: "getTopicOverview",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'topicnamesearch' : topicSelected,
-                     'groupBy' : groupAclBy
+            params: {
+                'topicName' : topicSelected,
+                'environmentId' : $scope.topicOverviewEnvId,
+                'groupBy' : groupAclBy
              }
 		}).success(function(output) {
 		    $scope.ShowSpinnerStatusTopics = false;
@@ -663,7 +661,11 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		        $scope.resultBrowseTxnId = output.transactionalAclInfoList;
             	$scope.topicOverview = output.topicInfoList;
             	$scope.topicPromotionDetails = output.topicPromotionDetails;
-            	$scope.schemaDetails = output.schemaDetails;
+                $scope.topicPromotionDetails = output.topicPromotionDetails;
+            	$scope.availableEnvironments = output.availableEnvironments;
+                if(!$scope.topicOverviewEnvId){
+                    $scope.topicOverviewEnvId = $scope.availableEnvironments[0].id;
+                }
 
             	$scope.schemaExists = output.schemaExists;
             	$scope.prefixAclsExists = output.prefixAclsExists;
@@ -696,17 +698,15 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
         $scope.ShowSpinnerStatusSchemas = true;
 
         const kafkaEnvIdsList = [];
-        if($scope.topicOverview){
-            for(let i=0; i<$scope.topicOverview.length; i++){
-                kafkaEnvIdsList.push($scope.topicOverview[i].envId);
-            }
+        if($scope.availableEnvironments){
+            kafkaEnvIdsList.push($scope.topicOverviewEnvId);
         }
 
             $http({
                 method: "GET",
                 url: "getSchemaOfTopic",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'topicnamesearch' : $scope.topicSelectedParam,
+                params: {'topicName' : $scope.topicSelectedParam,
                     'schemaVersionSearch' : $scope.newSchemaVersion,
                     'kafkaEnvIds' : kafkaEnvIdsList
                 }

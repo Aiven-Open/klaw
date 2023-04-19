@@ -451,7 +451,9 @@
 						<div class="card-body">
 							<table width="100%">
 								<tr>
-									<td align="left"><h4 class="card-title">Topic : {{ topicSelectedParam }}</h4></td>
+									<td align="left">
+										<h4 class="card-title">Topic : {{ topicSelectedParam }}</h4>
+									</td>
 									<td align="right" width="15%">
 										<button ng-show="topicOverview[0].teamname != teamname && dashboardDetails.requestItems=='Authorized'" type="button" ng-click="onClaimTopic(topicSelectedParam, topicOverview[0].clusterId);"
 												class="btn waves-effect waves-light btn-rounded btn-sm btn-info">Claim Topic</button>
@@ -465,7 +467,15 @@
 									</td>
 								</tr>
 								<tr>
-									<td align="left"><span class="badge badge-warning">{{ topicOverview[0].teamname}}</span></td>
+									<td style="width: 5%;alignment:left">
+										<span class="badge badge-warning">{{ topicOverview[0].teamname}}</span>
+									</td>
+
+									<td style="alignment:left">
+										<select style="width: 20%" class="form-control custom-select" ng-change="getAcls();"
+												ng-model="topicOverviewEnvId" ng-options="env.id as env.name for env in availableEnvironments">
+										</select>
+									</td>
 									<td></td>
 								</tr>
 							</table>
@@ -637,12 +647,9 @@
 							<div class="tab-content">
 								<div class="tab-pane active" id="topicsubscriptions" role="tabpanel">
 									<div>
-
-											<label> Group ACLs By </label>
+											<label class="control-label"> Group ACLs By </label>
 											<select ng-model="selectedGroupBy" ng-options="group.id as group.name for group in groupBy"  ng-change="getAcls()">
-
 											</select>
-
 									</div>
 									<div class="ribbon-wrapper card" ng-show="resultBrowse.length==0">
 										<div class="ribbon ribbon-warning">Notification</div>
@@ -652,18 +659,21 @@
 									<div ng-show="resultBrowse!=null && resultBrowse.length!=0" ng-repeat="aclRequest in resultBrowse">
 
 										<div class="row">
-											<h5 ng-show="showAclTeamHeader(aclRequest.teamname)" style="float:center;"> {{aclRequest.teamname}}</h5>
+											<div ng-if="selectedGroupBy == 'TEAM'" class="card-body">
+												<div class="d-flex flex-row">
+													<h5 ng-show="showAclTeamHeader(aclRequest.teamname)">
+														{{aclRequest.teamname}}
+													</h5>
+												</div>
+											</div>
 											<div class="col-md-12">
 												<div class="card">
 													<div class="card-body">
-
 														<div class="d-flex flex-row">
-
 															<div ng-show="aclRequest.topictype == 'Producer'" style="width:15%" class="p-2 pl-0 border-right">
 																<h6 class="text-primary">AclType</h6><b>
 																<span class="badge badge-info">{{ aclRequest.topictype }}</span></b>
 															</div>
-
 															<div ng-show="aclRequest.topictype == 'Consumer'" style="width:15%" class="p-2 pl-0 border-right">
 																<h6 class="text-primary">AclType</h6><b>
 																<span class="badge badge-primary">{{ aclRequest.topictype }}</span></b>

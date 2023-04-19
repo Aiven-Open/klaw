@@ -15,6 +15,7 @@ public class TopicOverview extends ResourceOverviewAttributes {
   List<AclInfo> transactionalAclInfoList;
   private List<TopicHistory> topicHistoryList;
   Map<String, String> topicPromotionDetails;
+  List<EnvIdInfo> availableEnvironments;
 
   String topicDocumentation;
   Integer topicIdForDocumentation;
