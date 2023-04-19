@@ -253,8 +253,8 @@ public class TopicRequestValidatorImpl
           }
         } else {
           if (topicRegex != null
-              && !topicPrefix.isBlank()
-              && !isRegexAMatch(topicRequestReq, topicPrefix)) {
+              && !topicRegex.isBlank()
+              && !isRegexAMatch(topicRequestReq, topicRegex)) {
 
             log.error(
                 "Topic Regex {} does not match. {}", topicRegex, topicRequestReq.getTopicname());
@@ -275,9 +275,11 @@ public class TopicRequestValidatorImpl
   }
 
   // TODO Review rej and see if this would provide a better experience for Klaw.
-  private boolean isRegexAMatch(TopicRequestModel topicRequestReq, String topicPrefix) {
-    Pattern p = Pattern.compile(topicPrefix);
+  private boolean isRegexAMatch(TopicRequestModel topicRequestReq, String topicRegex) {
+    log.info("Regex : {}", topicRegex);
+    Pattern p = Pattern.compile(topicRegex);
     Matcher m = p.matcher(topicRequestReq.getTopicname());
+    log.info("Regex matches: {} v regex find {}", m.matches(), m.find());
     return m.matches();
   }
 

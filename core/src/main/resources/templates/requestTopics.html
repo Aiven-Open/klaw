@@ -503,9 +503,7 @@
 												<input ng-show="requestType == 'EditTopic' || requestType == 'PromoteTopic'" disabled type="text" class="form-control" ng-model="addTopic.topicname" required>
 												<small ng-show="topicPrefix != null && topicPrefix != ''  && advancedTopicConfiguration == false" class="form-control-feedback">Ex: <b>{{topicPrefix}}</b>mortgagetopic  (With prefix)</small>
 												<small ng-show="topicSuffix != null && topicSuffix != ''  && advancedTopicConfiguration == false" class="form-control-feedback">Ex: mortgagetopic<b>{{topicSuffix}}</b>  (With suffix)</small>
-												<small ng-show="topicRegex != null && advancedTopicConfigurationuration == true" class="form-control-feedback" name="regexValidation" ng-pattern="topicRegex">{{topicRegex}}<i ng-if="form.regexValidation.$valid && !!form.regexValidation" class="fa-sharp fa-solid fa-shield-check"></i> <i class="fa fa-times" ng-show="form.regexValidation.$error.pattern" style="color: red;">
-                    Topic does not match Regex {{topicRegex}}
-                </i></small>
+												<small ng-show="topicRegex != null && advancedTopicConfiguration == true" class="form-control-feedback" name="regexValidation" ng-pattern="topicRegex">Topic Regex : {{topicRegex}}</small>
 												<small ng-show="(topicPrefix == null || topicPrefix == '') && (topicRegex == null || topicRegex == '') && (topicSuffix == null || topicSuffix == '')" class="form-control-feedback">Ex: mortgagetopic </small>
 											</div>
 										</div>

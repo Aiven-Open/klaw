@@ -901,7 +901,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 }
 
                 var serviceInput = {};
-                console.log("Testing serviceInput.");
+
                 serviceInput['name'] = $scope.addNewEnv.envname;
                 serviceInput['clusterId'] = $scope.addNewEnv.cluster;
                 serviceInput['type'] = 'kafka';

@@ -580,7 +580,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 else
                     $scope.envDetails.topicSuffix = "";
 
-                console.log("topicRegex : " + $scope.envDetails.topicRegex)
+
                 if($scope.envDetails.topicRegex && $scope.envDetails.topicRegex.length > 0) {
                     $scope.envDetails.topicRegex = $scope.envDetails.topicRegex.trim();
                 } else {

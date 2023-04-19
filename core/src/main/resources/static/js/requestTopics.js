@@ -47,6 +47,14 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
                 }
 
+         $scope.applyRegex = function (topicName) {
+         $scope.addTopic.validatedRegex=false;
+         if(topicRegex.test(topicName)) {
+         $scope.addTopic.validatedRegex=true;
+         }
+
+         }
+
          $scope.getEnvTopicPartitions = function(envSelected){
                 $scope.topicPrefix = null;
                 $scope.topicSuffix = null;
@@ -63,18 +71,10 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                             $scope.topicPrefix = output.topicPrefix[0];
                             $scope.topicSuffix = output.topicSuffix[0];
                             $scope.topicRegex = output.topicRegex[0];
-                            $scope.advancedTopicConfiguration = output.advancedTopicConfiguration[0];
-                            if(!$scope.topicRegex.startsWith('^')) {
-                               $scope.topicRegex = '^' + $scope.topicRegex;
+                            $scope.advancedTopicConfiguration = JSON.parse(output.advancedTopicConfiguration[0]);
+
                             }
-                            if(!$scope.topicRegex.endsWith('$')) {
-                               $scope.topicRegex = $scope.topicRegex + '$';
-                            }
-                            console.log("pre" + $scope.topicPrefix + "" + $scope.topicSuffix+ " regex" +$scope.topicRegex );
-                            $scope.topicRegex = new RegExp(RegExp.quote( $scope.topicRegex));
-                            console.log("pre" + $scope.topicPrefix + "" + $scope.topicSuffix+ " regex" +$scope.topicRegex );
-                            }
-                            console.log("pre" + $scope.topicPrefix + "" + $scope.topicSuffix+ " regex" +$scope.topicRegex );
+
                         }).error(
                             function(error)
                             {
