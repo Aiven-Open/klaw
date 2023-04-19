@@ -8,13 +8,18 @@ import { Connector, getConnectors } from "src/domain/connector";
 import { getSyncConnectorsEnvironments } from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
+import { getTeams } from "src/domain/team";
 
 jest.mock("src/domain/connector/connector-api.ts");
+jest.mock("src/domain/team/team-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetConnectors = getConnectors as jest.MockedFunction<
   typeof getConnectors
 >;
+
+const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
+
 const mockGetSyncConnectorsEnvironments =
   getSyncConnectorsEnvironments as jest.MockedFunction<
     typeof getSyncConnectorsEnvironments
@@ -83,6 +88,33 @@ const defaultApiParams = {
   connectornamesearch: undefined,
 };
 
+const mockTeams = [
+  {
+    teamname: "Ospo",
+    teammail: "ospo@aiven.io",
+    teamphone: "003157843623",
+    contactperson: "Ospo Office",
+    tenantId: 101,
+    teamId: 1003,
+    app: "",
+    showDeleteTeam: false,
+    tenantName: "default",
+    envList: ["ALL"],
+  },
+  {
+    teamname: "DevRel",
+    teammail: "devrel@aiven.io",
+    teamphone: "003146237478",
+    contactperson: "Dev Rel",
+    tenantId: 101,
+    teamId: 1004,
+    app: "",
+    showDeleteTeam: false,
+    tenantName: "default",
+    envList: ["ALL"],
+  },
+];
+
 const mockEnvironments = [
   createEnvironment({
     id: "1",
@@ -101,6 +133,7 @@ describe("BrowseConnectors.tsx", () => {
 
   describe("handles successful response with one page", () => {
     beforeAll(async () => {
+      mockGetTeams.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue(mockResponseDefault);
 
@@ -147,6 +180,7 @@ describe("BrowseConnectors.tsx", () => {
 
   describe("handles successful response with three pages", () => {
     beforeAll(async () => {
+      mockGetTeams.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue({
         ...mockResponseDefault,
@@ -186,6 +220,7 @@ describe("BrowseConnectors.tsx", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
+      mockGetTeams.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue({
         ...mockResponseDefault,
@@ -229,10 +264,72 @@ describe("BrowseConnectors.tsx", () => {
     });
   });
 
+  describe("handles user filtering connectors by Team", () => {
+    const filterByTeamLabel = "Filter by team";
+
+    beforeEach(async () => {
+      mockGetTeams.mockResolvedValue(mockTeams);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetConnectors.mockResolvedValue(mockResponseDefault);
+
+      customRender(<BrowseConnectors />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows a select element for Team with `ALL` preselected", async () => {
+      const select = await screen.findByRole("combobox", {
+        name: filterByTeamLabel,
+      });
+
+      expect(select).toHaveValue("ALL");
+      expect(select).toHaveDisplayValue("All teams");
+    });
+
+    it("changes active selected option when user selects `Ospo`", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByTeamLabel,
+      });
+      const option = within(select).getByRole("option", {
+        name: "Ospo",
+      });
+      expect(select).toHaveValue("ALL");
+
+      await userEvent.selectOptions(select, option);
+
+      expect(select).toHaveValue("1003");
+      expect(select).toHaveDisplayValue("Ospo");
+    });
+
+    it("fetches new data when user selects `Ospo`", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterByTeamLabel,
+      });
+      const option = within(select).getByRole("option", {
+        name: "Ospo",
+      });
+
+      await userEvent.selectOptions(select, option);
+
+      expect(mockGetConnectors).toHaveBeenNthCalledWith(2, {
+        ...defaultApiParams,
+        teamId: 1003,
+      });
+    });
+  });
+
   describe("handles user filtering connectors by Environment", () => {
     const filterByEnvironmentLabel = "Filter by Environment";
 
     beforeEach(async () => {
+      mockGetTeams.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue(mockEnvironments);
       mockGetConnectors.mockResolvedValue(mockResponseDefault);
 
@@ -292,6 +389,7 @@ describe("BrowseConnectors.tsx", () => {
   describe("handles user searching by connector name with search input", () => {
     const testSearchInput = "My search name";
     beforeEach(async () => {
+      mockGetTeams.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue(mockResponseDefault);
       customRender(<BrowseConnectors />, {

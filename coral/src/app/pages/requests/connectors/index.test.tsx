@@ -4,10 +4,13 @@ import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { getEnvironments } from "src/domain/environment";
 import { getConnectorRequests } from "src/domain/connector/connector-api";
 import ConnectorRequestsPage from "src/app/pages/requests/connectors/index";
+import { getTeams } from "src/domain/team";
 
+jest.mock("src/domain/team/team-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/connector/connector-api.ts");
 
+const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 const mockGetEnvironments = getEnvironments as jest.MockedFunction<
   typeof getEnvironments
 >;
@@ -17,6 +20,7 @@ const mockGetConnectorRequests = getConnectorRequests as jest.MockedFunction<
 
 describe("ConnectorRequestsPage", () => {
   beforeAll(async () => {
+    mockGetTeams.mockResolvedValue([]);
     mockGetEnvironments.mockResolvedValue([]);
     mockGetConnectorRequests.mockResolvedValue({
       entries: [],
