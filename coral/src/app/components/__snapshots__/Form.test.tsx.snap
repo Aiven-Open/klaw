@@ -8,8 +8,8 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
     >
       <label
         class="w-full"
-        for="input-1175"
-        id="input-1175-label"
+        for="input-1183"
+        id="input-1183-label"
       >
         <span
           class="inline-block mb-2 typography-small-strong text-grey-60"
@@ -21,7 +21,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
         >
           <input
             class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
-            id="input-1175"
+            id="input-1183"
             name="password"
             type="password"
           />
@@ -50,8 +50,8 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
     >
       <label
         class="w-full"
-        for="input-13"
-        id="input-13-label"
+        for="input-21"
+        id="input-21-label"
       >
         <span
           class="inline-block mb-2 typography-small-strong text-grey-60"
@@ -63,7 +63,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
         >
           <input
             class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
-            id="input-13"
+            id="input-21"
             name="formFieldsCustomName"
             type="text"
           />

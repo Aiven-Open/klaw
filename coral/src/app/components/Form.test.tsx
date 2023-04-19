@@ -81,6 +81,20 @@ describe("Form", () => {
         formFieldsCustomName: { message: "error" },
       });
     });
+
+    it("should not call onSubmit() after submit if there are validation errors", async () => {
+      await user.type(screen.getByLabelText("TextInput"), "a");
+      await submit();
+      await waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
+    });
+
+    it("should render enabled Submit button even if there are validation errors", async () => {
+      await user.type(screen.getByLabelText("TextInput"), "a");
+
+      const submitButton = screen.getByRole("button", { name: "Submit" });
+
+      expect(submitButton).toBeEnabled();
+    });
   });
 
   describe("<TextInput>", () => {
