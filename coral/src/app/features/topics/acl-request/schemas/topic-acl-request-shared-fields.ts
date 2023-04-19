@@ -58,7 +58,7 @@ const aclPatternType = z.union([
 ]);
 const topicname = z.string().min(1, { message: "Please enter a prefix." });
 const environment = z.string({
-  errorMap: () => ({ message: "Please  select an environment." }),
+  errorMap: () => ({ message: "Please select an environment." }),
 });
 
 const teamId = z.number();
