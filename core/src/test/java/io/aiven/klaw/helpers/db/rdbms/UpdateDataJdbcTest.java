@@ -7,10 +7,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
+import io.aiven.klaw.repository.KwKafkaConnectorRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
@@ -29,6 +31,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class UpdateDataJdbcTest {
 
   @Mock private TopicRequestsRepo topicRequestsRepo;
+
+  @Mock private KwKafkaConnectorRepo kafkaConnectorRepo;
 
   @Mock private AclRequestsRepo aclRequestsRepo;
 
@@ -59,6 +63,7 @@ public class UpdateDataJdbcTest {
     utilMethods = new UtilMethods();
     ReflectionTestUtils.setField(updateData, "deleteDataJdbcHelper", deleteDataJdbcHelper);
     ReflectionTestUtils.setField(updateData, "topicRepo", topicRepo);
+    ReflectionTestUtils.setField(updateData, "kafkaConnectorRepo", kafkaConnectorRepo);
   }
 
   @Test
@@ -148,5 +153,15 @@ public class UpdateDataJdbcTest {
     String result =
         updateData.updateSchemaRequest(utilMethods.getSchemaRequestsDao().get(0), "uiuser1");
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void updateConnectorDocumentation() {
+    KwKafkaConnector kwKafkaConnector = utilMethods.getKwKafkaConnector();
+    when(kafkaConnectorRepo.findById(any())).thenReturn(Optional.of(kwKafkaConnector));
+    kwKafkaConnector.setDocumentation("new docs");
+
+    String status = updateData.updateConnectorDocumentation(kwKafkaConnector);
+    assertThat(status).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 }

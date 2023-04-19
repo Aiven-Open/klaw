@@ -5,6 +5,7 @@ import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.ServiceAccounts;
@@ -523,6 +524,16 @@ public class UtilMethods {
     schemaRequest.setTenantId(101);
     schemaList.add(schemaRequest);
     return schemaList;
+  }
+
+  public KwKafkaConnector getKwKafkaConnector() {
+    KwKafkaConnector kwKafkaConnector = new KwKafkaConnector();
+    kwKafkaConnector.setConnectorConfig("config");
+    kwKafkaConnector.setConnectorId(101);
+    kwKafkaConnector.setConnectorName("testconn");
+    kwKafkaConnector.setTenantId(101);
+    kwKafkaConnector.setTeamId(1003);
+    return kwKafkaConnector;
   }
 
   public List<AclRequestsResponseModel> getAclRequestsModel() {
