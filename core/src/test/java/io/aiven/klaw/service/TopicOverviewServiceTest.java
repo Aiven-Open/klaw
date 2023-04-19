@@ -318,10 +318,12 @@ public class TopicOverviewServiceTest {
   @Test
   @Order(8)
   public void getTopicOverview() {
+    mockTenantConfig();
     stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
-    when(commonUtilsService.getEnvProperty(eq(0), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
@@ -338,6 +340,8 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(3);
     assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
     assertThat(topicOverview.getTopicPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
+        .isTrue(); // topic can be deleted
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
@@ -350,10 +354,18 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicPromotionDetails().get("status"))
         .isEqualTo(ApiResultStatus.SUCCESS.value);
 
+    when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
+        .thenReturn(getAclsSOT(TESTTOPIC));
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(kwClustersHashMap);
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
     assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
     assertThat(topicOverview.getTopicPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
+        .isFalse(); // topic can't be deleted
   }
 
   private static Map<Integer, KwClusters> getKwClusterMap() {

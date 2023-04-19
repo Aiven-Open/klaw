@@ -97,7 +97,6 @@ public abstract class BaseOverviewService {
       aclInfo = mergeReduceAclInfo(aclInfo);
       aclInfo.sort(
           Comparator.comparing(AclInfo::getTeamname, nullSafeStringComparator)
-              .thenComparing(AclInfo::getEnvironmentName, nullSafeStringComparator)
               .thenComparing(AclInfo::getConsumergroup, nullSafeStringComparator));
     }
 

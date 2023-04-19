@@ -273,8 +273,8 @@ public class TopicOverviewService extends BaseOverviewService {
           lastItem.setTopicDeletable(
               aclInfo.stream()
                   .noneMatch(
-                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getEnvName())));
-          lastItem.setShowDeleteTopic(true);
+                      aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getEnvId())));
+          lastItem.setShowDeleteTopic(lastItem.isTopicDeletable());
         }
       } else {
         Map<String, String> hashMap = new HashMap<>();
@@ -304,6 +304,8 @@ public class TopicOverviewService extends BaseOverviewService {
             topics.stream().map(Topic::getEnvironment).collect(Collectors.toList());
 
         generatePromotionDetails(tenantId, hashMap, envList, orderEnvs);
+        // Ex : If topic exists in D, T, then promotion to A is displayed when topic overview is for
+        // T env
         if (hashMap.containsKey("targetEnvId")) {
           String targetEnvId = hashMap.get("targetEnvId");
           if (!((envOrderList.indexOf(targetEnvId) - envOrderList.indexOf(environmentId)) == 1)
