@@ -9,7 +9,7 @@ const ConnectorsPage = () => {
   return (
     <AuthenticationRequiredBoundary>
       <Layout>
-        <PreviewBanner linkTarget={"/browseTopics"} />
+        <PreviewBanner linkTarget={"/kafkaConnectors"} />
         <PageHeader
           title={"All Kafka Connectors"}
           primaryAction={{
