@@ -62,11 +62,12 @@ describe("<TopicRequest />", () => {
         cleanup();
       });
 
-      it("shows a select element for 'Environment'", async () => {
+      it("shows a required select element for 'Environment'", async () => {
         const select = await screen.findByRole("combobox", {
           name: "Environment *",
         });
         expect(select).toBeEnabled();
+        expect(select).toBeRequired();
       });
 
       it("shows an placeholder text for the select", async () => {
@@ -87,6 +88,14 @@ describe("<TopicRequest />", () => {
           "TST",
           "PROD",
         ]);
+      });
+
+      it("renders an enabled Submit button", () => {
+        const submitButton = screen.getByRole("button", {
+          name: "Submit request",
+        });
+
+        expect(submitButton).toBeEnabled();
       });
     });
 
@@ -808,6 +817,25 @@ describe("<TopicRequest />", () => {
           remarks: "",
           requestOperationType: "CREATE",
         });
+      });
+
+      it("errors and does not create a new topic request when input was invalid", async () => {
+        const spyPost = jest.spyOn(api, "post");
+
+        await user.clear(screen.getByLabelText("Topic name*"));
+
+        await user.click(
+          screen.getByRole("button", { name: "Submit request" })
+        );
+
+        await waitFor(() =>
+          expect(screen.getByText("Topic name can not be empty")).toBeVisible()
+        );
+
+        expect(spyPost).not.toHaveBeenCalled();
+        expect(
+          screen.getByRole("button", { name: "Submit request" })
+        ).toBeEnabled();
       });
 
       it("shows a dialog informing user that request was successful", async () => {

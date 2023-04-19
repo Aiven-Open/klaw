@@ -91,22 +91,24 @@ describe("<TopicConsumerForm />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders EnvironmentField", () => {
+    it("renders required EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
         name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
       expect(environmentField).toBeEnabled();
+      expect(environmentField).toBeRequired();
     });
 
-    it("renders TopicNameField", () => {
+    it("renders required TopicNameField", () => {
       const topicNameField = screen.getByRole("combobox", {
         name: "Topic name *",
       });
 
       expect(topicNameField).toBeVisible();
       expect(topicNameField).toBeEnabled();
+      expect(topicNameField).toBeRequired();
       expect(topicNameField).toHaveDisplayValue("aiventopic1");
     });
 
@@ -118,13 +120,14 @@ describe("<TopicConsumerForm />", () => {
       expect(consumergroupField).toBeNull();
     });
 
-    it("renders TopicNameField", () => {
+    it("renders required TopicNameField", () => {
       const topicNameField = screen.getByRole("combobox", {
         name: "Topic name *",
       });
 
       expect(topicNameField).toBeVisible();
       expect(topicNameField).toBeEnabled();
+      expect(topicNameField).toBeRequired();
       expect(topicNameField).toHaveDisplayValue("aiventopic1");
     });
 
@@ -159,7 +162,7 @@ describe("<TopicConsumerForm />", () => {
       expect(remarksField).toBeEnabled();
     });
 
-    it("renders Submit and Cancel buttons", () => {
+    it("renders enabled Submit and Cancel buttons", () => {
       const submitButton = screen.getByRole("button", {
         name: "Submit request",
       });

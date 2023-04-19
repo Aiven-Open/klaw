@@ -87,13 +87,14 @@ describe("<TopicProducerForm />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders EnvironmentField", () => {
+    it("renders required EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
         name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
       expect(environmentField).toBeEnabled();
+      expect(environmentField).toBeRequired();
     });
 
     it("renders aclPatternType field", () => {
