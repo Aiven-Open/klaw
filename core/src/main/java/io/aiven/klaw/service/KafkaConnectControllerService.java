@@ -1182,12 +1182,10 @@ public class KafkaConnectControllerService {
 
   public ApiResponse saveConnectorDocumentation(KafkaConnectorModel topicInfo) {
     String userName = getUserName();
-    int tenantId = commonUtilsService.getTenantId(userName);
 
-    KwKafkaConnector kwKafkaConnector = new KwKafkaConnector();
-    kwKafkaConnector.setConnectorId(topicInfo.getConnectorId());
-    kwKafkaConnector.setDocumentation(topicInfo.getDocumentation());
-    kwKafkaConnector.setTenantId(tenantId);
+    KwKafkaConnector topic = new KwKafkaConnector();
+    topic.setConnectorId(topicInfo.getConnectorId());
+    topic.setDocumentation(topicInfo.getDocumentation());
 
     List<KwKafkaConnector> topicsSearchList =
         manageDatabase
@@ -1202,8 +1200,7 @@ public class KafkaConnectControllerService {
     if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
       return ApiResponse.builder()
           .success(true)
-          .message(
-              manageDatabase.getHandleDbRequests().updateConnectorDocumentation(kwKafkaConnector))
+          .message(manageDatabase.getHandleDbRequests().updateConnectorDocumentation(topic))
           .build();
     } else {
       return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
