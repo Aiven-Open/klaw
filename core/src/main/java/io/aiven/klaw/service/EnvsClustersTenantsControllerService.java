@@ -532,6 +532,7 @@ public class EnvsClustersTenantsControllerService {
     EnvModelResponse envModel;
     KwClusters kwCluster;
     for (Env listEnv : listEnvs) {
+      log.info("Params {} for env {}", listEnv.getParams(), listEnv.getName());
       kwCluster = manageDatabase.getClusters(clusterType, tenantId).get(listEnv.getClusterId());
       if (kwCluster != null) {
         envModel = new EnvModelResponse();

@@ -1,6 +1,7 @@
 package io.aiven.klaw.model.requests;
 
 import io.aiven.klaw.dao.EnvTag;
+import io.aiven.klaw.model.response.EnvParams;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -44,4 +45,6 @@ public class EnvModel implements Serializable {
   private EnvTag associatedEnv;
 
   private Integer tenantId;
+
+  private EnvParams params;
 }

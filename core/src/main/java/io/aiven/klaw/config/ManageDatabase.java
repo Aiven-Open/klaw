@@ -718,54 +718,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     Map<String, EnvParams> envParamsMap = new HashMap<>();
 
     for (Env env : kafkaEnvTenantList) {
-      EnvParams oneEnvParamsObj = new EnvParams();
-      String envParams = env.getOtherParams();
-
-      String[] params = envParams.split(",");
-      String defaultPartitions = null, defaultRf = null;
-      for (String param : params) {
-        if (param.startsWith("default.partitions")) {
-          defaultPartitions = param.substring(param.indexOf("=") + 1);
-          oneEnvParamsObj.setDefaultPartitions(getParamAsList(param));
-        } else if (param.startsWith("max.partitions")) {
-          String maxPartitions = param.substring(param.indexOf("=") + 1);
-          int maxPartitionsInt = Integer.parseInt(maxPartitions);
-          List<String> partitions = new ArrayList<>();
-          createMaxEntry(defaultPartitions, maxPartitionsInt, partitions);
-          oneEnvParamsObj.setPartitionsList(partitions);
-        } else if (param.startsWith("default.replication.factor")) {
-          defaultRf = param.substring(param.indexOf("=") + 1);
-          oneEnvParamsObj.setDefaultRepFactor(getParamAsList(param));
-        } else if (param.startsWith("max.replication.factor")) {
-          String maxRf = param.substring(param.indexOf("=") + 1);
-          int maxRfInt = Integer.parseInt(maxRf);
-          List<String> rf = new ArrayList<>();
-          createMaxEntry(defaultRf, maxRfInt, rf);
-          oneEnvParamsObj.setReplicationFactorList(rf);
-        } else if (param.startsWith("topic.prefix")) {
-          oneEnvParamsObj.setTopicPrefix(getParamAsList(param));
-        } else if (param.startsWith("topic.suffix")) {
-          oneEnvParamsObj.setTopicSuffix(getParamAsList(param));
-        } else if (param.startsWith("topic.regex")) {
-          oneEnvParamsObj.setTopicSuffix(getParamAsList(param));
-        } else if (param.startsWith("topic.advanced.config")) {
-          oneEnvParamsObj.setAdvancedTopicConfiguration(getParamAsList(param));
-        }
-      }
-
-      envParamsMap.put(env.getId(), oneEnvParamsObj);
+      envParamsMap.put(env.getId(), env.getParams());
     }
     envParamsMapPerTenant.put(tenantId, envParamsMap);
-  }
-
-  private static void createMaxEntry(String defaultEntry, int maxInt, List<String> listOfEntries) {
-    for (int i = 1; i < maxInt + 1; i++) {
-      if (defaultEntry != null && defaultEntry.equals(i + "")) {
-        listOfEntries.add(i + " (default)");
-      } else {
-        listOfEntries.add(i + "");
-      }
-    }
   }
 
   private static List<String> getParamAsList(String param) {
@@ -773,12 +728,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     List<String> paramList = new ArrayList<>();
     paramList.add(paramPrefix);
     return paramList;
-  }
-
-  private static void setTopicNamingConstraint(
-      String param, Map<String, List<String>> oneEnvParamsMap, String topicConventionName) {
-    List<String> topicConventionNamingList = getParamAsList(param);
-    oneEnvParamsMap.put(topicConventionName, topicConventionNamingList);
   }
 
   public Map<String, List<String>> getRolesPermissionsPerTenant(int tenantId) {

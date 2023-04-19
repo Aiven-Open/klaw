@@ -554,21 +554,49 @@
 
 										</div>
 									</div>
-
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group">
+
+											<div class="form-group" >
+												<label class="control-label">Advanced Topic Name Config</label>
+												<br>
+												<label class="switch">
+													<input type="checkbox" ng-model="envDetails.advancedTopicConfiguration" >
+													<span class="slide-check"></span>
+												</label><br><br>
+											</div>
+
+										</div>
+										<div class="col-md-6">
+
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group" ng-show="envDetails.advancedTopicConfiguration == false">
 												<label class="control-label">Topic prefix (optional)</label>
-												<input ng-model="envDetails.topicprefix" id="envDetails.topicprefix"
+												<input ng-model="envDetails.topicPrefix" id="envDetails.topicPrefix"
 													   maxlength="15" type="text" class="form-control">
 											</div>
 										</div>
 										<div class="col-md-6">
-											<div class="form-group">
+											<div class="form-group" ng-show="envDetails.advancedTopicConfiguration == false">
 												<label class="control-label">Topic suffix (optional)</label>
-												<input ng-model="envDetails.topicsuffix" id="envDetails.topicsuffix"
+												<input ng-model="envDetails.topicSuffix" id="envDetails.topicSuffix"
 													   maxlength="15" type="text" class="form-control">
 											</div>
+										</div>
+										<div class="col-md-6">
+
+											<div class="form-group" ng-show="envDetails.advancedTopicConfiguration == true">
+												<label class="control-label">Topic Regex Pattern (optional)</label>
+												<a class="mytooltip" href="javascript:void(0)">
+													<span class="tooltip-content3">Exampe ensure 'Dev' is contained in all topics with: *Dev*</span>
+													<input ng-model="envDetails.topicRegex" id="envDetails.topicRegex"
+														   type="text" maxlength="20" class="form-control">
+												</a>
+											</div>
+
 										</div>
 									</div>
 
@@ -583,16 +611,7 @@
 										</div>
 										<div class="col-md-6">
 
-												<div class="form-group">
-													<label class="control-label">Topic Regex Pattern (optional)</label>
-													<a class="mytooltip" href="javascript:void(0)">
-														<span class="tooltip-content3">Exampe ensure 'Dev' is contained in all topics with: *Dev*</span>
-													<input ng-model="envDetails.topicregex" id="envDetails.topicregex"
-														   type="text" maxlength="20" class="form-control">
-													</a>
-												</div>
-
-										</div>
+							            </div>
 									</div>
 
 								</div>

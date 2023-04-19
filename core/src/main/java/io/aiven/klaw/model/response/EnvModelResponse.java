@@ -56,6 +56,8 @@ public class EnvModelResponse implements Serializable {
 
   private String maxReplicationFactor;
 
+  @NotNull private EnvParams params;
+
   public void setClusterType(KafkaClustersType type) {
     this.type = type.value;
   }

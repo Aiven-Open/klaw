@@ -1,6 +1,8 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.helpers.EnvParamsConverter;
 import io.aiven.klaw.helpers.EnvTagConverter;
+import io.aiven.klaw.model.response.EnvParams;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -52,4 +54,8 @@ public class Env implements Serializable {
   @Convert(converter = EnvTagConverter.class)
   @Column(name = "associatedenv")
   private EnvTag associatedEnv;
+
+  @Convert(converter = EnvParamsConverter.class)
+  @Column(name = "envparams")
+  private EnvParams params;
 }

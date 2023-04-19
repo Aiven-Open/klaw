@@ -50,6 +50,8 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
          $scope.getEnvTopicPartitions = function(envSelected){
                 $scope.topicPrefix = null;
                 $scope.topicSuffix = null;
+                $scope.topicRegex = null;
+                $scope.advancedTopicConfiguration = null;
              	    $http({
                             method: "GET",
                             url: "getEnvParams",
@@ -57,20 +59,22 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                              params: {'envSelected' : envSelected }
                         }).success(function(output) {
                             $scope.envTopicMap = output;
-                            if(output.topicPrefix != null)
-                                $scope.topicPrefix = output.topicPrefix[0];
-                            if(output.topicSuffix != null)
-                                $scope.topicSuffix = output.topicSuffix[0];
-                            if(output.topicRegex != null) {
+                            if(output !=null) {
+                            $scope.topicPrefix = output.topicPrefix[0];
+                            $scope.topicSuffix = output.topicSuffix[0];
                             $scope.topicRegex = output.topicRegex[0];
-                                if(!$scope.topicRegex.startsWith('^')) {
-                                   $scope.topicRegex = '^' + $scope.topicRegex;
-                                }
-                                if(!$scope.topicRegex.endsWith('$')) {
-                                   $scope.topicRegex = $scope.topicRegex + '$';
-                                }
-                            $scope.topicRegex = new RegExp(RegExp.quote( $scope.topicRegex));
+                            $scope.advancedTopicConfiguration = output.advancedTopicConfiguration[0];
+                            if(!$scope.topicRegex.startsWith('^')) {
+                               $scope.topicRegex = '^' + $scope.topicRegex;
                             }
+                            if(!$scope.topicRegex.endsWith('$')) {
+                               $scope.topicRegex = $scope.topicRegex + '$';
+                            }
+                            console.log("pre" + $scope.topicPrefix + "" + $scope.topicSuffix+ " regex" +$scope.topicRegex );
+                            $scope.topicRegex = new RegExp(RegExp.quote( $scope.topicRegex));
+                            console.log("pre" + $scope.topicPrefix + "" + $scope.topicSuffix+ " regex" +$scope.topicRegex );
+                            }
+                            console.log("pre" + $scope.topicPrefix + "" + $scope.topicSuffix+ " regex" +$scope.topicRegex );
                         }).error(
                             function(error)
                             {

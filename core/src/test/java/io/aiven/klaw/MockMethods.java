@@ -9,7 +9,9 @@ import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.requests.KwRolesPermissionsModel;
 import io.aiven.klaw.model.requests.TeamModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.EnvParams;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MockMethods {
@@ -108,9 +110,13 @@ public class MockMethods {
     envModel.setTenantId(101);
     envModel.setClusterId(1);
     envModel.setType(KafkaClustersType.KAFKA.value);
-    envModel.setOtherParams(
-        "default.partitions=2,max.partitions=2,replication.factor=1,topic.prefix=,topic.suffix=");
 
+    EnvParams params = new EnvParams();
+    params.setDefaultPartitions(List.of("2"));
+    params.setPartitionsList(List.of("1 (default)", "2"));
+    params.setDefaultRepFactor(List.of("1"));
+    params.setReplicationFactorList(List.of("1", "2"));
+    envModel.setParams(params);
     return envModel;
   }
 

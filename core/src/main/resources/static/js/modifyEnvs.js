@@ -158,7 +158,21 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     data: {'envSelected' : envId, 'envType' : envType}
                 }).success(function(output) {
                     if(output != null && output !== ""){
-                        $scope.envDetails = output;
+
+                        $scope.envDetails = output.params;
+
+                        $scope.envDetails.topicRegex = output.params.topicRegex[0];
+                        $scope.envDetails.topicSuffix = output.params.topicSuffix[0];
+                        $scope.envDetails.topicPrefix = output.params.topicPrefix[0];
+
+                        $scope.envDetails.defaultPartitions = output.params.defaultPartitions[0];
+                        $scope.envDetails.maxPartitions = output.params.partitionsList.length;
+                        $scope.envDetails.defaultReplicationFactor = output.params.defaultRepFactor[0];
+                        $scope.envDetails.maxReplicationFactor = output.params.replicationFactorList.length;
+                        $scope.envDetails.advancedTopicConfiguration = JSON.parse(output.params.advancedTopicConfiguration[0]);
+                        $scope.envDetails.name= output.name;
+                        $scope.envDetails.clusterId= output.clusterId;
+
                         $scope.onChangeCluster(output.clusterId);
                     }else
                         $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/envs";
@@ -556,20 +570,21 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
-                if($scope.envDetails.topicprefix && $scope.envDetails.topicprefix.length > 0)
-                    $scope.envDetails.topicprefix = $scope.envDetails.topicprefix.trim();
+                if($scope.envDetails.topicPrefix && $scope.envDetails.topicPrefix.length > 0)
+                    $scope.envDetails.topicPrefix = $scope.envDetails.topicPrefix.trim();
                 else
-                    $scope.envDetails.topicprefix = "";
+                    $scope.envDetails.topicPrefix = "";
 
-                if($scope.envDetails.topicsuffix && $scope.envDetails.topicsuffix.length > 0)
-                    $scope.envDetails.topicsuffix = $scope.envDetails.topicsuffix.trim();
+                if($scope.envDetails.topicSuffix && $scope.envDetails.topicSuffix.length > 0)
+                    $scope.envDetails.topicSuffix = $scope.envDetails.topicSuffix.trim();
                 else
-                    $scope.envDetails.topicsuffix = "";
+                    $scope.envDetails.topicSuffix = "";
 
-                if($scope.envDetails.topicregex && $scope.envDetails.topicregex.length > 0) {
-                    $scope.envDetails.topicregex = $scope.envDetails.topicregex.trim();
+                console.log("topicRegex : " + $scope.envDetails.topicRegex)
+                if($scope.envDetails.topicRegex && $scope.envDetails.topicRegex.length > 0) {
+                    $scope.envDetails.topicRegex = $scope.envDetails.topicRegex.trim();
                 } else {
-                    $scope.envDetails.topicregex = "";
+                    $scope.envDetails.topicRegex = "";
                 }
 
                 var serviceInput = {};
@@ -579,14 +594,16 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['clusterId'] = $scope.envDetails.clusterId;
                 serviceInput['tenantId'] = $scope.envDetails.tenantId;
                 serviceInput['type'] = 'kafka';
-                serviceInput['otherParams'] = "default.partitions=" + $scope.envDetails.defaultPartitions
-                 + ",max.partitions=" + $scope.envDetails.maxPartitions
-                 + ",default.replication.factor=" + $scope.envDetails.defaultReplicationFactor
-                 + ",max.replication.factor=" + $scope.envDetails.maxReplicationFactor
-                 + ",topic.prefix=" + $scope.envDetails.topicprefix
-                 + ",topic.suffix=" + $scope.envDetails.topicsuffix
-                 + ",topic.regex=" + $scope.envDetails.topicregex
-                 + ",topic.advanced.config=" + $scope.addNewEnv.topicAdvancedConfig;
+                serviceInput['params'] ={
+                       'defaultPartitions': [$scope.envDetails.defaultPartitions],
+                       'partitionsList': $scope.buildParamterListWithDefault($scope.envDetails.defaultPartitions, $scope.envDetails.maxPartitions),
+                       'defaultRepFactor': [$scope.envDetails.defaultReplicationFactor],
+                       'replicationFactorList': $scope.buildParamterListWithDefault($scope.envDetails.defaultReplicationFactor, $scope.envDetails.maxReplicationFactor),
+                       'topicPrefix': [$scope.envDetails.topicPrefix],
+                       'topicSuffix': [$scope.envDetails.topicSuffix],
+                       'topicRegex': [$scope.envDetails.topicRegex],
+                       'advancedTopicConfiguration': [$scope.envDetails.advancedTopicConfiguration]
+                     };
 
                 $http({
                     method: "POST",
@@ -614,6 +631,18 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 );
 
             };
+
+            $scope.buildParamterListWithDefault = function(defaultNumber, maxNumber) {
+                        var parameterList=[];
+                            for (let i=0;i<maxNumber;i++) {
+                                if((i+1)===defaultNumber) {
+                                    parameterList[i]= "" +(i +1) + " (default)";
+                                } else {
+                                    parameterList[i]= "" +(i +1);
+                                }
+                            }
+                        return parameterList;
+                    }
 
            $scope.editSchemaEnv = function() {
 

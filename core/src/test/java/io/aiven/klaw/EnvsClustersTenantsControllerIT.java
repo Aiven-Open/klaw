@@ -613,7 +613,7 @@ public class EnvsClustersTenantsControllerIT {
     HashMap<String, ArrayList<String>> clusterModels =
         OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     ArrayList<String> defaultPartitions = clusterModels.get("defaultPartitions");
-    assertThat(defaultPartitions.get(0)).isEqualTo("4");
+    assertThat(defaultPartitions.get(0)).isEqualTo("2");
   }
 
   // get standard env names success

@@ -5848,9 +5848,64 @@
           "tenantId" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "params" : {
+            "$ref" : "#/components/schemas/EnvParams"
           }
         },
         "required" : [ "clusterId", "name", "type" ]
+      },
+      "EnvParams" : {
+        "properties" : {
+          "defaultPartitions" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "partitionsList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "defaultRepFactor" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "replicationFactorList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "topicPrefix" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "topicSuffix" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "topicRegex" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "advancedTopicConfiguration" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          }
+        }
       },
       "EnvTag" : {
         "properties" : {
@@ -6614,13 +6669,16 @@
           "maxReplicationFactor" : {
             "type" : "string"
           },
+          "params" : {
+            "$ref" : "#/components/schemas/EnvParams"
+          },
           "clusterType" : {
             "type" : "string",
             "enum" : [ "ALL", "KAFKA", "SCHEMA_REGISTRY", "KAFKA_CONNECT" ],
             "writeOnly" : true
           }
         },
-        "required" : [ "allPageNos", "clusterId", "clusterName", "envStatus", "id", "name", "otherParams", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
+        "required" : [ "allPageNos", "clusterId", "clusterName", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
       },
       "AclInfo" : {
         "properties" : {
@@ -6854,58 +6912,6 @@
           },
           "value" : {
             "type" : "string"
-          }
-        }
-      },
-      "EnvParams" : {
-        "properties" : {
-          "defaultPartitions" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "partitionsList" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "defaultRepFactor" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "replicationFactorList" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "topicPrefix" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "topicSuffix" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "topicRegex" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "advancedTopicConfiguration" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
           }
         }
       },

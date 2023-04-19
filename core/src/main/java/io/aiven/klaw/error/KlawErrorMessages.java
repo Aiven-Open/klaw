@@ -355,6 +355,8 @@ public class KlawErrorMessages {
   public static final String TOPICS_VLD_ERR_117 =
       "Cluster default parameters config missing/incorrect.";
 
+  public static final String TOPICS_VLD_ERR_118 = "Topic regex does not match. %s";
+
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";
 
