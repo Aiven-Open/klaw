@@ -258,6 +258,9 @@ export type paths = {
   "/getTopicRequestsForApprover": {
     get: operations["getTopicRequestsForApprover"];
   };
+  "/getTopicOverview": {
+    get: operations["getTopicOverview"];
+  };
   "/getTopicEvents": {
     get: operations["getTopicEvents"];
   };
@@ -449,9 +452,6 @@ export type paths = {
   };
   "/getActivationInfo": {
     get: operations["getActivationInfo"];
-  };
-  "/getAcls": {
-    get: operations["getAcls"];
   };
   "/getAclsCountPerEnv": {
     get: operations["getAclsCountPerEnv"];
@@ -926,6 +926,64 @@ export type components = {
       deletable?: boolean;
       editable?: boolean;
     };
+    AclInfo: {
+      sequence?: string;
+      req_no?: string;
+      acl_ip?: string;
+      acl_ssl?: string;
+      acl_ips?: (string)[];
+      acl_ssls?: (string)[];
+      topicname?: string;
+      topictype?: string;
+      consumergroup?: string;
+      environment?: string;
+      environmentName?: string;
+      teamname?: string;
+      /** Format: int32 */
+      teamid?: number;
+      operation?: string;
+      permission?: string;
+      transactionalId?: string;
+      aclPatternType?: string;
+      totalNoPages?: string;
+      allPageNos?: (string)[];
+      possibleTeams?: (string)[];
+      currentPage?: string;
+      showDeleteAcl?: boolean;
+      /** @enum {string} */
+      kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
+    };
+    EnvIdInfo: {
+      id?: string;
+      name?: string;
+    };
+    TopicHistory: {
+      environmentName?: string;
+      teamName?: string;
+      requestedBy?: string;
+      requestedTime?: string;
+      approvedBy?: string;
+      approvedTime?: string;
+      remarks?: string;
+    };
+    TopicOverview: {
+      topicExists?: boolean;
+      schemaExists?: boolean;
+      prefixAclsExists?: boolean;
+      txnAclsExists?: boolean;
+      topicInfoList?: (components["schemas"]["TopicInfo"])[];
+      aclInfoList?: (components["schemas"]["AclInfo"])[];
+      prefixedAclInfoList?: (components["schemas"]["AclInfo"])[];
+      transactionalAclInfoList?: (components["schemas"]["AclInfo"])[];
+      topicHistoryList?: (components["schemas"]["TopicHistory"])[];
+      topicPromotionDetails?: {
+        [key: string]: string | undefined;
+      };
+      availableEnvironments?: (components["schemas"]["EnvIdInfo"])[];
+      topicDocumentation?: string;
+      /** Format: int32 */
+      topicIdForDocumentation?: number;
+    };
     TopicDetailsPerEnv: {
       topicExists: boolean;
       error?: string;
@@ -990,10 +1048,6 @@ export type components = {
       /** Format: int32 */
       allTopicsCount?: number;
     };
-    EnvIdInfo: {
-      id?: string;
-      name?: string;
-    };
     KafkaConnectorModelResponse: {
       /** Format: int32 */
       sequence?: number;
@@ -1042,33 +1096,6 @@ export type components = {
       maxReplicationFactor?: string;
       /** @enum {string} */
       clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
-    };
-    AclInfo: {
-      sequence?: string;
-      req_no?: string;
-      acl_ip?: string;
-      acl_ssl?: string;
-      acl_ips?: (string)[];
-      acl_ssls?: (string)[];
-      topicname?: string;
-      topictype?: string;
-      consumergroup?: string;
-      environment?: string;
-      environmentName?: string;
-      teamname?: string;
-      /** Format: int32 */
-      teamid?: number;
-      operation?: string;
-      permission?: string;
-      transactionalId?: string;
-      aclPatternType?: string;
-      totalNoPages?: string;
-      allPageNos?: (string)[];
-      possibleTeams?: (string)[];
-      currentPage?: string;
-      showDeleteAcl?: boolean;
-      /** @enum {string} */
-      kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
     };
     SchemaRequestsResponseModel: {
       environment: string;
@@ -1201,15 +1228,6 @@ export type components = {
       /** Format: int32 */
       topicIdForDocumentation?: number;
     };
-    TopicHistory: {
-      environmentName?: string;
-      teamName?: string;
-      requestedBy?: string;
-      requestedTime?: string;
-      approvedBy?: string;
-      approvedTime?: string;
-      remarks?: string;
-    };
     ConnectorOverviewPerEnv: {
       connectorExists?: boolean;
       error?: string;
@@ -1328,23 +1346,6 @@ export type components = {
       totalNoPages?: string;
       currentPage?: string;
       allPageNos?: (string)[];
-    };
-    TopicOverview: {
-      topicExists?: boolean;
-      schemaExists?: boolean;
-      prefixAclsExists?: boolean;
-      txnAclsExists?: boolean;
-      topicInfoList?: (components["schemas"]["TopicInfo"])[];
-      aclInfoList?: (components["schemas"]["AclInfo"])[];
-      prefixedAclInfoList?: (components["schemas"]["AclInfo"])[];
-      transactionalAclInfoList?: (components["schemas"]["AclInfo"])[];
-      topicHistoryList?: (components["schemas"]["TopicHistory"])[];
-      topicPromotionDetails?: {
-        [key: string]: string | undefined;
-      };
-      topicDocumentation?: string;
-      /** Format: int32 */
-      topicIdForDocumentation?: number;
     };
     AclsCountPerEnv: {
       status?: string;
@@ -2700,6 +2701,23 @@ export type operations = {
       };
     };
   };
+  getTopicOverview: {
+    parameters: {
+      query: {
+        topicName: string;
+        environmentId?: string;
+        groupBy?: "NONE" | "TEAM";
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicOverview"];
+        };
+      };
+    };
+  };
   getTopicEvents: {
     parameters: {
       query: {
@@ -2947,7 +2965,7 @@ export type operations = {
   getSchemaOfTopic: {
     parameters: {
       query: {
-        topicnamesearch: string;
+        topicName: string;
         schemaVersionSearch?: string;
         kafkaEnvIds: (string)[];
       };
@@ -3565,22 +3583,6 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["ApiResponse"];
-        };
-      };
-    };
-  };
-  getAcls: {
-    parameters: {
-      query: {
-        topicnamesearch: string;
-        groupBy?: "NONE" | "TEAM";
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": components["schemas"]["TopicOverview"];
         };
       };
     };
