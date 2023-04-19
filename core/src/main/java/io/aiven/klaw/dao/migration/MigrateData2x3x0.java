@@ -51,36 +51,40 @@ public class MigrateData2x3x0 {
     for (Env env : envs) {
       try {
         numberOfRequests++;
-        EnvParams params = new EnvParams();
-        String envParams = env.getOtherParams();
+        // Only migrate data that doesn't already have the parameters set.
+        if (env.getParams() == null) {
+          EnvParams params = new EnvParams();
+          String envParams = env.getOtherParams();
 
-        String[] stringParams = envParams.split(",");
-        String defaultPartitions = null, defaultRf = null;
-        for (String param : stringParams) {
-          if (param.startsWith("default.partitions")) {
-            defaultPartitions = param.substring(param.indexOf("=") + 1);
-            params.setDefaultPartitions(getValueAsList(param));
-          } else if (param.startsWith("max.partitions")) {
-            List<String> partitions = generateMaxList(defaultPartitions, param);
-            params.setPartitionsList(partitions);
-          } else if (param.startsWith("default.replication.factor")) {
-            defaultRf = param.substring(param.indexOf("=") + 1);
-            params.setDefaultRepFactor(getValueAsList(param));
-          } else if (param.startsWith("max.replication.factor")) {
-            List<String> rf = generateMaxList(defaultRf, param);
-            params.setReplicationFactorList(rf);
-          } else if (param.startsWith("topic.prefix")) {
+          String[] stringParams = envParams.split(",");
+          String defaultPartitions = null, defaultRf = null;
+          for (String param : stringParams) {
+            if (param.startsWith("default.partitions")) {
+              defaultPartitions = param.substring(param.indexOf("=") + 1);
+              params.setDefaultPartitions(getValueAsList(param));
+            } else if (param.startsWith("max.partitions")) {
+              List<String> partitions = generateMaxList(defaultPartitions, param);
+              params.setPartitionsList(partitions);
+            } else if (param.startsWith("default.replication.factor")) {
+              defaultRf = param.substring(param.indexOf("=") + 1);
+              params.setDefaultRepFactor(getValueAsList(param));
+            } else if (param.startsWith("max.replication.factor")) {
+              List<String> rf = generateMaxList(defaultRf, param);
+              params.setReplicationFactorList(rf);
+            } else if (param.startsWith("topic.prefix")) {
 
-            params.setTopicPrefix(getValueAsList(param));
-          } else if (param.startsWith("topic.suffix")) {
+              params.setTopicPrefix(getValueAsList(param));
+            } else if (param.startsWith("topic.suffix")) {
 
-            params.setTopicSuffix(getValueAsList(param));
+              params.setTopicSuffix(getValueAsList(param));
+            }
           }
+          params.setTopicRegex(Collections.EMPTY_LIST);
+          params.setAdvancedTopicConfiguration(List.of("false"));
+          env.setParams(params);
+          insertDataJdbc.addNewEnv(env);
+          numberOfRequestsUpdated++;
         }
-
-        env.setParams(params);
-        insertDataJdbc.addNewEnv(env);
-        numberOfRequestsUpdated++;
       } catch (Exception ex) {
         log.error(
             String.format(

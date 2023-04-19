@@ -41,6 +41,7 @@ class MigrationUtilityTest {
   @Mock private DataVersionRepo versionRepo;
 
   private static final String KLAW_VERSION = "2.2.0";
+
   private static final String PACKAGE_TO_SCAN = "io.aiven.klaw.dao.test";
 
   private static final String PROD_PACKAGE_TO_SCAN = "io.aiven.klaw.dao.migration";
@@ -63,7 +64,7 @@ class MigrationUtilityTest {
 
   @Test
   public void VersionIsAlreadyAtLatest_NoMigration() throws Exception {
-    when(versionRepo.findTopByOrderByIdDesc()).thenReturn(getDataVersion(KLAW_VERSION));
+    when(versionRepo.findTopByOrderByIdDesc()).thenReturn(getDataVersion("2.4.0"));
 
     utility.afterPropertiesSet();
     verify(versionRepo, times(0)).save(any());
