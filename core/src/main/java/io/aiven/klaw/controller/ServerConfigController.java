@@ -50,7 +50,9 @@ public class ServerConfigController {
     return new ResponseEntity<>(serverConfigService.resetCache(), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updateKwCustomProperty")
+  @PostMapping(
+      value = "/updateKwCustomProperty",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateKwCustomProperty(
       @RequestBody KwPropertiesModel kwPropertiesModel) throws KlawException {
     return new ResponseEntity<>(

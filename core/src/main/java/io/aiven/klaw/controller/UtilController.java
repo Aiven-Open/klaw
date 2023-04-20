@@ -58,7 +58,9 @@ public class UtilController {
     return new ResponseEntity<>(utilControllerService.getBasicInfo(), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/logout")
+  @PostMapping(
+      value = "/logout",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, String>> logout(
       HttpServletRequest request, HttpServletResponse response) {
     utilControllerService.getLogoutPage(request, response);

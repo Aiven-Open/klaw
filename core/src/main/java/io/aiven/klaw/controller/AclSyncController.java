@@ -26,7 +26,9 @@ public class AclSyncController {
 
   @Autowired AclSyncControllerService aclSyncControllerService;
 
-  @PostMapping(value = "/updateSyncAcls")
+  @PostMapping(
+      value = "/updateSyncAcls",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateSyncAcls(
       @RequestBody List<SyncAclUpdates> syncAclUpdates) throws KlawException {
     return new ResponseEntity<>(
@@ -49,7 +51,9 @@ public class AclSyncController {
         HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updateSyncBackAcls")
+  @PostMapping(
+      value = "/updateSyncBackAcls",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateSyncBackAcls(@RequestBody SyncBackAcls syncBackAcls)
       throws KlawException {
     return new ResponseEntity<>(

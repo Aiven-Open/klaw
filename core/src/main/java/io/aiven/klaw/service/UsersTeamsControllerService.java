@@ -1151,6 +1151,9 @@ public class UsersTeamsControllerService {
 
     String result =
         manageDatabase.getHandleDbRequests().updateUserTeam(userIdToBeUpdated, newTeamId);
+    if (result.equals(ApiResultStatus.SUCCESS.value)) {
+      manageDatabase.loadUsersForAllTenants();
+    }
     return ApiResponse.builder()
         .success(result.equals(ApiResultStatus.SUCCESS.value))
         .message(result)
