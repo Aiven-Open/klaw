@@ -15,27 +15,27 @@ public class EnvParamsConverter implements AttributeConverter<EnvParams, String>
 
   @Override
   public String convertToDatabaseColumn(EnvParams envParams) {
-    String EnvParamsStr = null;
+    String envParamsStr = null;
     try {
       if (envParams != null) {
-        EnvParamsStr = mapper.writeValueAsString(envParams);
+        envParamsStr = mapper.writeValueAsString(envParams);
       }
     } catch (JsonProcessingException e) {
       log.error("Exception converting object to json: {}", e.getMessage());
     }
-    return EnvParamsStr;
+    return envParamsStr;
   }
 
   @Override
   public EnvParams convertToEntityAttribute(String envParamsStr) {
-    EnvParams tag = null;
+    EnvParams params = null;
     try {
       if (envParamsStr != null) {
-        tag = mapper.readValue(envParamsStr, EnvParams.class);
+        params = mapper.readValue(envParamsStr, EnvParams.class);
       }
     } catch (JsonProcessingException e) {
       log.error("Exception converting json to object: {}", e.getMessage());
     }
-    return tag;
+    return params;
   }
 }
