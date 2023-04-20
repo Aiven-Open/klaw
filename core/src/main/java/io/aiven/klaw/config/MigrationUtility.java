@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,9 +54,9 @@ public class MigrationUtility implements InitializingBean {
     }
 
     // Find all DataMigration annotated classes.// Migrate each one
-    Reflections reflections = new Reflections(packageToScan);
+    Reflections reflections =
+        new Reflections(new ConfigurationBuilder().forPackages(packageToScan));
     Set<Class<?>> classes = reflections.getTypesAnnotatedWith(DataMigration.class);
-    log.info("Classes by reflection {} with packaged scanned {}", classes, packageToScan);
     SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions =
         orderApplicableMigrationInstructions(latestDataVersion, classes);
 

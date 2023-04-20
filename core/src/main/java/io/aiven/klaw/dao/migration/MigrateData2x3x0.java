@@ -52,7 +52,7 @@ public class MigrateData2x3x0 {
       try {
         numberOfRequests++;
         // Only migrate data that doesn't already have the parameters set.
-        if (env.getParams() == null) {
+        if (env.getParams() == null && env.getOtherParams() != null) {
           EnvParams params = new EnvParams();
           String envParams = env.getOtherParams();
 
