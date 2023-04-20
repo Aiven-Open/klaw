@@ -107,10 +107,9 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(
-            response.contains(ApiResultStatus.SUCCESS.value)
-                || response.contains("User already exists"))
-        .isTrue();
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+
+    assertThat(response1.isSuccess() || response.contains("User already exists")).isTrue();
 
     userInfoModel = mockMethods.getUserInfoModel(user2, role, INFRATEAM);
     jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
@@ -127,10 +126,9 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(
-            response.contains(ApiResultStatus.SUCCESS.value)
-                || response.contains("User already exists"))
-        .isTrue();
+    response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+
+    assertThat(response1.isSuccess() || response.contains("User already exists")).isTrue();
     userInfoModel = mockMethods.getUserInfoModel(user3, role, INFRATEAM);
     jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfoModel);
     response =
@@ -144,10 +142,8 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(
-            response.contains(ApiResultStatus.SUCCESS.value)
-                || response.contains("User already exists"))
-        .isTrue();
+    response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess() || response.contains("User already exists")).isTrue();
   }
 
   @Test
@@ -168,7 +164,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -205,7 +202,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -242,7 +240,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -279,7 +278,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -327,7 +327,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // Create topic requests
@@ -348,7 +349,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // Query topic requests in created state
@@ -419,7 +421,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // decline topic - topic in cluster
@@ -441,7 +444,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -456,7 +460,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // get team of topic
@@ -496,8 +501,8 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -511,7 +516,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // get topics from cluster
@@ -625,8 +631,8 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // Get created acl requests again
@@ -702,8 +708,8 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(res).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // Request for a acl
@@ -725,7 +731,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // Decline acl request
@@ -761,8 +768,8 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(resNew).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(resNew, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // delete acl requests
@@ -795,8 +802,8 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(responseNew).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(responseNew, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   // getacls with topic search filter
@@ -906,7 +913,8 @@ public class TopicAclControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     String res =
         mvc.perform(
@@ -950,8 +958,8 @@ public class TopicAclControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
     getAclResAgainAndApprove(); // approve acl request
 
     response =

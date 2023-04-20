@@ -1076,7 +1076,7 @@ public class TopicSyncControllerService {
     if (listTopics.size() > 0) {
       try {
         return ApiResponse.builder()
-            .success(false)
+            .success(true)
             .message(manageDatabase.getHandleDbRequests().addToSynctopics(listTopics))
             .build();
       } catch (Exception e) {

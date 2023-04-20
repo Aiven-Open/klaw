@@ -116,7 +116,8 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -201,8 +202,8 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -262,8 +263,8 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -277,7 +278,8 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response2 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response2.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -332,7 +334,8 @@ public class UsersTeamsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -390,7 +393,8 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   @Test
@@ -503,7 +507,8 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -585,7 +590,8 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
   }
 
   @Test

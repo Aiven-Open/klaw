@@ -215,7 +215,7 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     ApiResponse resultResp = schemaRegistryControllerService.execSchemaRequests("" + schemaReqId);
-    assertThat(resultResp.getMessage()).contains(ApiResultStatus.SUCCESS.value);
+    assertThat(resultResp.isSuccess()).isTrue();
   }
 
   @Test
