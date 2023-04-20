@@ -1010,7 +1010,10 @@ describe("<TopicAclRequest />", () => {
       beforeEach(async () => {
         mockCreateAclRequest({
           mswInstance: server,
-          response: { data: { status: "200 OK" } },
+          response: {
+            status: 200,
+            data: { success: true, message: "success" },
+          },
         });
       });
 
@@ -1366,7 +1369,10 @@ describe("<TopicAclRequest />", () => {
       beforeEach(async () => {
         mockCreateAclRequest({
           mswInstance: server,
-          response: { data: { status: "200 OK" } },
+          response: {
+            status: 200,
+            data: { success: true, message: "success" },
+          },
         });
       });
 

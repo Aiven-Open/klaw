@@ -1436,7 +1436,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1466,7 +1466,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1481,7 +1481,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1496,7 +1496,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1511,7 +1511,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1526,7 +1526,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1541,7 +1541,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1556,7 +1556,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1571,7 +1571,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1586,7 +1586,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1601,7 +1601,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1616,7 +1616,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1631,7 +1631,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1646,7 +1646,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1661,7 +1661,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1692,7 +1692,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1707,7 +1707,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1722,7 +1722,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ResetPasswordInfo"];
+          "application/json": components["schemas"]["ResetPasswordInfo"];
         };
       };
     };
@@ -1848,7 +1848,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1863,7 +1863,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1888,7 +1888,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": {
+          "application/json": {
             [key: string]: string | undefined;
           };
         };
@@ -1967,7 +1967,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -1982,7 +1982,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2028,7 +2028,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2044,7 +2044,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2059,7 +2059,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2084,7 +2084,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2099,7 +2099,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2129,7 +2129,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2145,7 +2145,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2175,7 +2175,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2205,7 +2205,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2237,7 +2237,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2252,7 +2252,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2315,7 +2315,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2330,7 +2330,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2345,7 +2345,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2360,7 +2360,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2375,7 +2375,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2390,7 +2390,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2405,7 +2405,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2420,7 +2420,7 @@ export type operations = {
       /** @description OK */
       200: {
         content: {
-          "*/*": components["schemas"]["ApiResponse"];
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };

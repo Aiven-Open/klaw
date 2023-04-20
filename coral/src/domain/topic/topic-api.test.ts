@@ -24,9 +24,8 @@ describe("topic-api", () => {
       mockRequestTopic({
         mswInstance: server,
         response: {
-          data: {
-            status: "200 OK",
-          },
+          status: 200,
+          data: { success: true, message: "success" },
         },
       });
     });
