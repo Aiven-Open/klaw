@@ -30,7 +30,7 @@ function EnvironmentFilter({ environmentEndpoint }: EnvironmentFilterProps) {
   const { environment, setFilterValue } = useFiltersValues();
 
   const { data: environments } = useQuery<Environment[], HTTPError>(
-    ["topic-environments"],
+    [environmentEndpoint],
     {
       queryFn: environmentEndpointMap[environmentEndpoint],
     }
