@@ -169,7 +169,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         $scope.envDetails.maxPartitions = output.params.partitionsList.length;
                         $scope.envDetails.defaultReplicationFactor = output.params.defaultRepFactor[0];
                         $scope.envDetails.maxReplicationFactor = output.params.replicationFactorList.length;
-                        $scope.envDetails.advancedTopicConfiguration = output.params.advancedTopicConfiguration;
+                        $scope.envDetails.applyRegex = output.params.applyRegex;
 
                         $scope.onChangeCluster(output.clusterId);
                     }else
@@ -600,7 +600,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                        'topicPrefix': [$scope.envDetails.topicPrefix],
                        'topicSuffix': [$scope.envDetails.topicSuffix],
                        'topicRegex': [$scope.envDetails.topicRegex],
-                       'advancedTopicConfiguration': $scope.envDetails.advancedTopicConfiguration
+                       'applyRegex': $scope.envDetails.applyRegex
                      };
 
                 $http({

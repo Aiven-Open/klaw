@@ -558,10 +558,10 @@
 										<div class="col-md-6">
 
 											<div class="form-group" >
-												<label class="control-label">Advanced Topic Name Config</label>
+												<label class="control-label">Apply Regex</label>
 												<br>
 												<label class="switch">
-													<input type="checkbox" ng-model="envDetails.advancedTopicConfiguration" >
+													<input type="checkbox" ng-model="envDetails.applyRegex" >
 													<span class="slide-check"></span>
 												</label><br><br>
 											</div>
@@ -573,14 +573,14 @@
 									</div>
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group" ng-show="envDetails.advancedTopicConfiguration == false">
+											<div class="form-group" ng-show="envDetails.applyRegex == false">
 												<label class="control-label">Topic prefix (optional)</label>
 												<input ng-model="envDetails.topicPrefix" id="envDetails.topicPrefix"
 													   maxlength="15" type="text" class="form-control">
 											</div>
 										</div>
 										<div class="col-md-6">
-											<div class="form-group" ng-show="envDetails.advancedTopicConfiguration == false">
+											<div class="form-group" ng-show="envDetails.applyRegex == false">
 												<label class="control-label">Topic suffix (optional)</label>
 												<input ng-model="envDetails.topicSuffix" id="envDetails.topicSuffix"
 													   maxlength="15" type="text" class="form-control">
@@ -588,12 +588,13 @@
 										</div>
 										<div class="col-md-6">
 
-											<div class="form-group" ng-show="envDetails.advancedTopicConfiguration == true">
+											<div class="form-group" ng-show="envDetails.applyRegex == true">
 												<label class="control-label">Topic Regex Pattern (optional)</label>
 												<a class="mytooltip" href="javascript:void(0)">
 													<span class="tooltip-content3">Exampe ensure 'Dev' is contained in all topics with: *Dev*</span>
 													<input ng-model="envDetails.topicRegex" id="envDetails.topicRegex"
 														   type="text" maxlength="20" class="form-control">
+													<label class="control-label">Note: Only the Regex will be applied to topic name creation, even if a prefix or suffix are present</label>
 												</a>
 											</div>
 

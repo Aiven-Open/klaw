@@ -225,7 +225,7 @@ public class TopicRequestValidatorImpl
       String topicRegex = getValueOrDefault(params.getTopicRegex(), "");
 
       try {
-        if (!params.isAdvancedTopicConfiguration()) {
+        if (!params.isApplyRegex()) {
           if (topicPrefix != null
               && !topicPrefix.isBlank()
               && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {

@@ -243,7 +243,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
         }
 
         $scope.initNewEnv = function() {
-        $scope.addNewEnv.advancedTopicConfiguration=false;
+        $scope.addNewEnv.applyRegex=false;
         }
 
         $scope.getSchemaRegEnvs = function() {
@@ -911,7 +911,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                    'topicPrefix': [$scope.addNewEnv.topicprefix],
                    'topicSuffix': [$scope.addNewEnv.topicsuffix],
                    'topicRegex': [$scope.addNewEnv.topicregex],
-                   'advancedTopicConfiguration': $scope.addNewEnv.advancedTopicConfiguration
+                   'applyRegex': $scope.addNewEnv.applyRegex
                  };
 
                 $http({

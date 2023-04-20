@@ -777,7 +777,7 @@ export type components = {
       topicPrefix?: (string)[];
       topicSuffix?: (string)[];
       topicRegex?: (string)[];
-      advancedTopicConfiguration?: boolean;
+      applyRegex?: boolean;
     };
     EnvTag: {
       id?: string;

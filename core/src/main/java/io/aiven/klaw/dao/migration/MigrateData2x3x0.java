@@ -86,7 +86,7 @@ public class MigrateData2x3x0 {
             }
           }
           params.setTopicRegex(Collections.EMPTY_LIST);
-          params.setAdvancedTopicConfiguration(false);
+          params.setApplyRegex(false);
           env.setParams(params);
           insertDataJdbc.addNewEnv(env);
           numberOfRequestsUpdated++;

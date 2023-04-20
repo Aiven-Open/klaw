@@ -51,7 +51,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 $scope.topicPrefix = null;
                 $scope.topicSuffix = null;
                 $scope.topicRegex = null;
-                $scope.advancedTopicConfiguration = null;
+                $scope.applyRegex = null;
              	    $http({
                             method: "GET",
                             url: "getEnvParams",
@@ -63,7 +63,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                             $scope.topicPrefix = output.topicPrefix[0];
                             $scope.topicSuffix = output.topicSuffix[0];
                             $scope.topicRegex = output.topicRegex[0];
-                            $scope.advancedTopicConfiguration = output.advancedTopicConfiguration;
+                            $scope.applyRegex = output.applyRegex;
 
                             }
 
