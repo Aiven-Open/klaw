@@ -159,7 +159,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 }).success(function(output) {
                     if(output != null && output !== ""){
 
-                        $scope.envDetails = output.params;
+                        $scope.envDetails = output;
 
                         $scope.envDetails.topicRegex = output.params.topicRegex[0];
                         $scope.envDetails.topicSuffix = output.params.topicSuffix[0];
@@ -170,9 +170,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         $scope.envDetails.defaultReplicationFactor = output.params.defaultRepFactor[0];
                         $scope.envDetails.maxReplicationFactor = output.params.replicationFactorList.length;
                         $scope.envDetails.advancedTopicConfiguration = JSON.parse(output.params.advancedTopicConfiguration[0]);
-                        $scope.envDetails.name= output.name;
-                        $scope.envDetails.clusterId= output.clusterId;
-
+                       
                         $scope.onChangeCluster(output.clusterId);
                     }else
                         $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/envs";

@@ -47,14 +47,6 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
                 }
 
-         $scope.applyRegex = function (topicName) {
-         $scope.addTopic.validatedRegex=false;
-         if(topicRegex.test(topicName)) {
-         $scope.addTopic.validatedRegex=true;
-         }
-
-         }
-
          $scope.getEnvTopicPartitions = function(envSelected){
                 $scope.topicPrefix = null;
                 $scope.topicSuffix = null;
@@ -437,10 +429,6 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     $scope.alert = error;
                 }
             );
-        }
-
-        RegExp.quote = function(str) {
-             return str.replace(/([.?*+^$[\]\\(){}|-])/g, "\\$1");
         }
 
         $scope.refreshPage = function(){

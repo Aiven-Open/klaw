@@ -723,13 +723,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     envParamsMapPerTenant.put(tenantId, envParamsMap);
   }
 
-  private static List<String> getParamAsList(String param) {
-    String paramPrefix = param.substring(param.indexOf("=") + 1);
-    List<String> paramList = new ArrayList<>();
-    paramList.add(paramPrefix);
-    return paramList;
-  }
-
   public Map<String, List<String>> getRolesPermissionsPerTenant(int tenantId) {
     return rolesPermsMapPerTenant.get(tenantId);
   }

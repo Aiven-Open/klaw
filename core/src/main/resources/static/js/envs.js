@@ -95,7 +95,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.standardEnvNamesList = output;
-                $scope.addNewEnv.topicAdvanced=false;
             }).error(
                 function(error)
                 {
@@ -244,7 +243,6 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
         }
 
         $scope.initNewEnv = function() {
-//        $scope.addNewEnv={};
         $scope.addNewEnv.advancedTopicConfiguration=false;
         }
 

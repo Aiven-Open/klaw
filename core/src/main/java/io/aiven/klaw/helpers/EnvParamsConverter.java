@@ -14,11 +14,11 @@ public class EnvParamsConverter implements AttributeConverter<EnvParams, String>
   ObjectMapper mapper = new ObjectMapper();
 
   @Override
-  public String convertToDatabaseColumn(EnvParams EnvParams) {
+  public String convertToDatabaseColumn(EnvParams envParams) {
     String EnvParamsStr = null;
     try {
-      if (EnvParams != null) {
-        EnvParamsStr = mapper.writeValueAsString(EnvParams);
+      if (envParams != null) {
+        EnvParamsStr = mapper.writeValueAsString(envParams);
       }
     } catch (JsonProcessingException e) {
       log.error("Exception converting object to json: {}", e.getMessage());
@@ -27,11 +27,11 @@ public class EnvParamsConverter implements AttributeConverter<EnvParams, String>
   }
 
   @Override
-  public EnvParams convertToEntityAttribute(String EnvParamsStr) {
+  public EnvParams convertToEntityAttribute(String envParamsStr) {
     EnvParams tag = null;
     try {
-      if (EnvParamsStr != null) {
-        tag = mapper.readValue(EnvParamsStr, EnvParams.class);
+      if (envParamsStr != null) {
+        tag = mapper.readValue(envParamsStr, EnvParams.class);
       }
     } catch (JsonProcessingException e) {
       log.error("Exception converting json to object: {}", e.getMessage());

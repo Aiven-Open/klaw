@@ -56,7 +56,7 @@ public class TopicRequestValidatorImpl
   @Override
   public boolean isValid(
       TopicRequestModel topicRequestModel, ConstraintValidatorContext constraintValidatorContext) {
-    log.info("Triggered Validation of topic request");
+
     String userName = topicControllerService.getUserName();
     // Verify if user has access to request for topics
     if (commonUtilsService.isNotAuthorizedUser(
@@ -137,9 +137,9 @@ public class TopicRequestValidatorImpl
     // validation on promotion of a topic
     if (!checkIfPromotionOfTopic(
         topics, tenantId, topicRequestModel, syncCluster, constraintValidatorContext)) return false;
-    log.info("validateTopicConfigParameters Validation of topic request");
+
     if (!validateTopicConfigParameters(topicRequestModel, constraintValidatorContext)) return false;
-    log.info("validateTopicConfigParameters completed");
+
     // Verify if topic request already exists
     if (topics != null) {
       if (!topicControllerService.getExistingTopicRequests(topicRequestModel, tenantId).isEmpty()) {
@@ -216,7 +216,6 @@ public class TopicRequestValidatorImpl
 
   private boolean validateTopicConfigParameters(
       TopicRequestModel topicRequestReq, ConstraintValidatorContext constraintValidatorContext) {
-    log.info("Into validateTopicConfigParameters");
 
     String topicPrefix = null, topicSuffix = null, topicRegex = null;
     EnvParams params =
@@ -227,7 +226,7 @@ public class TopicRequestValidatorImpl
       topicRegex = getValueOrDefault(params.getTopicRegex(), "");
       boolean advancedTopicConfig =
           Boolean.valueOf(getValueOrDefault(params.getAdvancedTopicConfiguration(), "false"));
-      log.info("{} {} {} {}", advancedTopicConfig, topicPrefix, topicSuffix, topicRegex);
+
       try {
         if (!advancedTopicConfig) {
           if (topicPrefix != null
@@ -276,10 +275,8 @@ public class TopicRequestValidatorImpl
 
   // TODO Review rej and see if this would provide a better experience for Klaw.
   private boolean isRegexAMatch(TopicRequestModel topicRequestReq, String topicRegex) {
-    log.info("Regex : {}", topicRegex);
     Pattern p = Pattern.compile(topicRegex);
     Matcher m = p.matcher(topicRequestReq.getTopicname());
-    log.info("Regex matches: {} v regex find {}", m.matches(), m.find());
     return m.matches();
   }
 

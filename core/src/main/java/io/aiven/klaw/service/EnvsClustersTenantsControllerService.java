@@ -147,57 +147,10 @@ public class EnvsClustersTenantsControllerService {
               .getClusterName());
       envModel.setTenantName(manageDatabase.getTenantMap().get(envModel.getTenantId()));
 
-      extractKwEnvParameters(envModel);
       log.debug("Return env model {}", envModel);
       return envModel;
     }
     return null;
-  }
-
-  private void extractKwEnvParameters(EnvModelResponse env) {
-    String defPartns = "",
-        defMaxPartns = "",
-        defaultRf = "",
-        maxRf = "",
-        topicPrefix = "",
-        topicSuffix = "",
-        topicRegex = "";
-
-    String otherParams = env.getOtherParams();
-    String[] params;
-    try {
-      if (otherParams != null) {
-        params = otherParams.split(",");
-        for (String param : params) {
-          if (param.startsWith("default.partitions")) {
-            defPartns = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("max.partitions")) {
-            defMaxPartns = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("default.replication.factor")) {
-            defaultRf = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("max.replication.factor")) {
-            maxRf = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("topic.prefix")) {
-            topicPrefix = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("topic.suffix")) {
-            topicSuffix = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("topic.regex")) {
-            topicRegex = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("topic.advanced.config")) {
-            env.setTopicAdvancedConfig(Boolean.valueOf(param.substring(param.indexOf("=") + 1)));
-          }
-        }
-        env.setDefaultPartitions(defPartns);
-        env.setMaxPartitions(defMaxPartns);
-        env.setDefaultReplicationFactor(defaultRf);
-        env.setMaxReplicationFactor(maxRf);
-        env.setTopicprefix(topicPrefix);
-        env.setTopicsuffix(topicSuffix);
-        env.setTopicregex(topicRegex);
-      }
-    } catch (Exception e) {
-      log.error("Unable to set topic partitions, setting default from properties.", e);
-    }
   }
 
   public UserInfoModel getUserDetails(String userId) {
@@ -532,7 +485,7 @@ public class EnvsClustersTenantsControllerService {
     EnvModelResponse envModel;
     KwClusters kwCluster;
     for (Env listEnv : listEnvs) {
-      log.info("Params {} for env {}", listEnv.getParams(), listEnv.getName());
+      log.debug("Params {} for env {}", listEnv.getParams(), listEnv.getName());
       kwCluster = manageDatabase.getClusters(clusterType, tenantId).get(listEnv.getClusterId());
       if (kwCluster != null) {
         envModel = new EnvModelResponse();
