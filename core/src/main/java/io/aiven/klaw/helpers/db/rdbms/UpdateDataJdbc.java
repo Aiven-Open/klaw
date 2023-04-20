@@ -463,14 +463,14 @@ public class UpdateDataJdbc {
     return ApiResultStatus.FAILURE.value;
   }
 
-  public String updateConnectorDocumentation(KwKafkaConnector topic) {
+  public String updateConnectorDocumentation(KwKafkaConnector kwKafkaConnector) {
     KwKafkaConnectorID kwKafkaConnectorID = new KwKafkaConnectorID();
-    kwKafkaConnectorID.setConnectorId(topic.getConnectorId());
-    kwKafkaConnectorID.setTenantId(topic.getTenantId());
+    kwKafkaConnectorID.setConnectorId(kwKafkaConnector.getConnectorId());
+    kwKafkaConnectorID.setTenantId(kwKafkaConnector.getTenantId());
 
     Optional<KwKafkaConnector> optTopic = kafkaConnectorRepo.findById(kwKafkaConnectorID);
     if (optTopic.isPresent()) {
-      optTopic.get().setDocumentation(topic.getDocumentation());
+      optTopic.get().setDocumentation(kwKafkaConnector.getDocumentation());
       kafkaConnectorRepo.save(optTopic.get());
       return ApiResultStatus.SUCCESS.value;
     }
