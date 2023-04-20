@@ -38,7 +38,9 @@ public class AclController {
 
   @Autowired TopicOverviewService topicOverviewService;
 
-  @PostMapping(value = "/createAcl")
+  @PostMapping(
+      value = "/createAcl",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createAcl(@Valid @RequestBody AclRequestsModel addAclRequest)
       throws KlawException {
     return new ResponseEntity<>(aclControllerService.createAcl(addAclRequest), HttpStatus.OK);
@@ -150,20 +152,26 @@ public class AclController {
     return new ResponseEntity<>(aclControllerService.deleteAclRequests(req_no), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/execAclRequest")
+  @PostMapping(
+      value = "/execAclRequest",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> approveAclRequests(@RequestParam("req_no") String req_no)
       throws KlawException {
     return new ResponseEntity<>(aclControllerService.approveAclRequests(req_no), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/createDeleteAclSubscriptionRequest")
+  @PostMapping(
+      value = "/createDeleteAclSubscriptionRequest",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteAclSubscriptionRequest(
       @RequestParam("req_no") String req_no) throws KlawException {
     return new ResponseEntity<>(
         aclControllerService.createDeleteAclSubscriptionRequest(req_no), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/execAclRequestDecline")
+  @PostMapping(
+      value = "/execAclRequestDecline",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> declineAclRequests(
       @RequestParam("req_no") String req_no,
       @RequestParam("reasonForDecline") String reasonForDecline)

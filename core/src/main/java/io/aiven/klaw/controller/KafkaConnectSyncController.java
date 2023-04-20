@@ -23,7 +23,9 @@ public class KafkaConnectSyncController {
 
   @Autowired KafkaConnectSyncControllerService kafkaConnectControllerService;
 
-  @PostMapping(value = "/updateSyncConnectors")
+  @PostMapping(
+      value = "/updateSyncConnectors",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateSyncConnectors(
       @RequestBody List<SyncConnectorUpdates> syncConnectorUpdates) throws KlawException {
     return new ResponseEntity<>(

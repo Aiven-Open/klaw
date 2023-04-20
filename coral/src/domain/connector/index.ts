@@ -5,14 +5,21 @@ import {
   getConnectorRequestsForApprover,
   deleteConnectorRequest,
   getConnectors,
+  createConnectorRequest,
 } from "src/domain/connector/connector-api";
 import {
   ConnectorRequest,
   ConnectorRequestsForApprover,
   Connector,
+  CreateConnectorRequestPayload,
 } from "src/domain/connector/connector-types";
 
-export type { Connector, ConnectorRequestsForApprover, ConnectorRequest };
+export type {
+  Connector,
+  ConnectorRequestsForApprover,
+  ConnectorRequest,
+  CreateConnectorRequestPayload,
+};
 export {
   getConnectorRequestsForApprover,
   getConnectorRequests,
@@ -20,4 +27,5 @@ export {
   approveConnectorRequest,
   declineConnectorRequest,
   deleteConnectorRequest,
+  createConnectorRequest,
 };

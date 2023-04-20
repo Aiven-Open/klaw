@@ -57,20 +57,26 @@ public class RolesPermissionsController {
         rolesPermissionsControllerService.getPermissions(true), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/deleteRole")
+  @PostMapping(
+      value = "/deleteRole",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteRole(@RequestParam("roleId") String roleId)
       throws KlawException {
     return new ResponseEntity<>(
         rolesPermissionsControllerService.deleteRole(roleId), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/addRoleId")
+  @PostMapping(
+      value = "/addRoleId",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> addRoleId(@RequestParam("roleId") String roleId)
       throws KlawException {
     return new ResponseEntity<>(rolesPermissionsControllerService.addRoleId(roleId), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updatePermissions")
+  @PostMapping(
+      value = "/updatePermissions",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updatePermissions(
       @RequestBody KwRolesPermissionsModel[] kwRolesPermissionsModels) throws KlawException {
     return new ResponseEntity<>(

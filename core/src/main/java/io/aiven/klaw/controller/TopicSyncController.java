@@ -26,14 +26,18 @@ public class TopicSyncController {
 
   @Autowired private TopicSyncControllerService topicSyncControllerService;
 
-  @PostMapping(value = "/updateSyncTopics")
+  @PostMapping(
+      value = "/updateSyncTopics",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateSyncTopics(
       @RequestBody List<SyncTopicUpdates> syncTopicUpdates) throws KlawException {
     return new ResponseEntity<>(
         topicSyncControllerService.updateSyncTopics(syncTopicUpdates), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updateSyncTopicsBulk")
+  @PostMapping(
+      value = "/updateSyncTopicsBulk",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateSyncTopicsBulk(
       @RequestBody SyncTopicsBulk syncTopicsBulk) throws KlawException {
     return new ResponseEntity<>(
@@ -58,7 +62,9 @@ public class TopicSyncController {
         HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updateSyncBackTopics")
+  @PostMapping(
+      value = "/updateSyncBackTopics",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateSyncBackTopics(
       @RequestBody SyncBackTopics syncBackTopics) {
     return new ResponseEntity<>(

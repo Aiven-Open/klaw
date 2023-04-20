@@ -33,7 +33,9 @@ public class KafkaConnectController {
 
   @Autowired KafkaConnectControllerService kafkaConnectControllerService;
 
-  @PostMapping(value = "/createConnector")
+  @PostMapping(
+      value = "/createConnector",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createConnectorRequest(
       @Valid @RequestBody KafkaConnectorRequestModel addTopicRequest) throws KlawException {
     return new ResponseEntity<>(
@@ -197,7 +199,9 @@ public class KafkaConnectController {
         HttpStatus.OK);
   }
 
-  @PostMapping(value = "/saveConnectorDocumentation")
+  @PostMapping(
+      value = "/saveConnectorDocumentation",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> saveConnectorDocumentation(
       @RequestBody KafkaConnectorModel topicInfo) {
     return new ResponseEntity<>(

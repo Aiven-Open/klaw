@@ -9,7 +9,11 @@ import {
   RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
 import api, { API_PATHS } from "src/services/api";
-import { KlawApiRequestQueryParameters, KlawApiResponse } from "types/utils";
+import {
+  KlawApiRequest,
+  KlawApiRequestQueryParameters,
+  KlawApiResponse,
+} from "types/utils";
 import { convertQueryValuesToString } from "src/services/api-helper";
 
 const filterGetConnectorRequestParams = (
@@ -125,6 +129,15 @@ const deleteConnectorRequest = ({ reqIds }: DeleteRequestParams) => {
   >(API_PATHS.deleteRequest, { requestEntityType: "CONNECTOR", reqIds });
 };
 
+const createConnectorRequest = (
+  connectorPayload: KlawApiRequest<"createConnectorRequest">
+) => {
+  return api.post<
+    KlawApiResponse<"createConnectorRequest">,
+    KlawApiRequest<"createConnectorRequest">
+  >(API_PATHS.createConnectorRequest, connectorPayload);
+};
+
 export {
   getConnectorRequestsForApprover,
   getConnectorRequests,
@@ -132,4 +145,5 @@ export {
   declineConnectorRequest,
   deleteConnectorRequest,
   getConnectors,
+  createConnectorRequest,
 };

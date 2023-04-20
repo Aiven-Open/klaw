@@ -780,7 +780,10 @@ describe("<TopicRequest />", () => {
       beforeEach(async () => {
         mockRequestTopic({
           mswInstance: server,
-          response: { data: { status: "200 OK" } },
+          response: {
+            status: 200,
+            data: { success: true, message: "success" },
+          },
         });
       });
 

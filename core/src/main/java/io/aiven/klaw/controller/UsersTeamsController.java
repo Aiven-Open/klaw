@@ -59,48 +59,62 @@ public class UsersTeamsController {
     return new ResponseEntity<>(usersTeamsControllerService.getAllTeamsSUOnly(), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/deleteTeamRequest")
+  @PostMapping(
+      value = "/deleteTeamRequest",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteTeam(@RequestParam("teamId") Integer teamId)
       throws KlawException {
     return new ResponseEntity<>(usersTeamsControllerService.deleteTeam(teamId), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/deleteUserRequest")
+  @PostMapping(
+      value = "/deleteUserRequest",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteUser(@RequestParam("userId") String userId)
       throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.deleteUser(userId, true), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updateUser")
+  @PostMapping(
+      value = "/updateUser",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateUser(@Valid @RequestBody UserInfoModel updateUserObj)
       throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.updateUser(updateUserObj), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updateProfile")
+  @PostMapping(
+      value = "/updateProfile",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateProfile(@Valid @RequestBody UserInfoModel updateUserObj)
       throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.updateProfile(updateUserObj), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/addNewUser")
+  @PostMapping(
+      value = "/addNewUser",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> addNewUser(@Valid @RequestBody UserInfoModel newUser)
       throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.addNewUser(newUser, true), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/registerUser")
+  @PostMapping(
+      value = "/registerUser",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> registerUser(@Valid @RequestBody RegisterUserInfoModel newUser)
       throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.registerUser(newUser, true), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/registerUserSaas")
+  @PostMapping(
+      value = "/registerUserSaas",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> registerUserSaas(
       @Valid @RequestBody RegisterSaasUserInfoModel newUser) throws Exception {
     return new ResponseEntity<>(saasService.registerUserSaas(newUser), HttpStatus.OK);
@@ -134,28 +148,36 @@ public class UsersTeamsController {
         HttpStatus.OK);
   }
 
-  @PostMapping(value = "/execNewUserRequestApprove")
+  @PostMapping(
+      value = "/execNewUserRequestApprove",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> approveNewUserRequests(
       @RequestParam("username") String username) throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.approveNewUserRequests(username, true, 0, ""), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/execNewUserRequestDecline")
+  @PostMapping(
+      value = "/execNewUserRequestDecline",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> declineNewUserRequests(
       @RequestParam("username") String username) throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.declineNewUserRequests(username), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/addNewTeam")
+  @PostMapping(
+      value = "/addNewTeam",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> addNewTeam(@Valid @RequestBody TeamModel newTeam)
       throws KlawException {
     return new ResponseEntity<>(
         usersTeamsControllerService.addNewTeam(newTeam, true), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updateTeam")
+  @PostMapping(
+      value = "/updateTeam",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateTeam(@Valid @RequestBody TeamModel updateTeam)
       throws KlawException {
     return new ResponseEntity<>(usersTeamsControllerService.updateTeam(updateTeam), HttpStatus.OK);
@@ -172,7 +194,9 @@ public class UsersTeamsController {
         usersTeamsControllerService.getTeamDetails(teamId, tenantName), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/chPwd")
+  @PostMapping(
+      value = "/chPwd",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> changePwd(@RequestParam("changePwd") String changePwd)
       throws KlawException {
     return new ResponseEntity<>(usersTeamsControllerService.changePwd(changePwd), HttpStatus.OK);
@@ -208,7 +232,9 @@ public class UsersTeamsController {
         usersTeamsControllerService.getUserInfoDetails(userId), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/resetPassword")
+  @PostMapping(
+      value = "/resetPassword",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ResetPasswordInfo> resetPassword(
       @RequestParam("username") String username) {
     return new ResponseEntity<>(usersTeamsControllerService.resetPassword(username), HttpStatus.OK);
@@ -230,7 +256,9 @@ public class UsersTeamsController {
   Update base team for a user.
   Base team should be one of the switch teams.
    */
-  @PostMapping(value = "/user/updateTeam")
+  @PostMapping(
+      value = "/user/updateTeam",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateUserTeamFromSwitchTeams(
       @RequestBody UserInfoModel userInfoModel) {
     return new ResponseEntity<>(

@@ -91,14 +91,18 @@ public class EnvsClustersTenantsController {
         HttpStatus.OK);
   }
 
-  @PostMapping(value = "/deleteCluster")
+  @PostMapping(
+      value = "/deleteCluster",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteCluster(@RequestParam("clusterId") String clusterId)
       throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.deleteCluster(clusterId), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/addNewCluster")
+  @PostMapping(
+      value = "/addNewCluster",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> addNewCluster(
       @Valid @RequestBody KwClustersModel kwClustersModel) {
     return new ResponseEntity<>(
@@ -191,14 +195,18 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.getKafkaConnectEnvs(), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/addNewEnv")
+  @PostMapping(
+      value = "/addNewEnv",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> addNewEnv(@Valid @RequestBody EnvModel newEnv)
       throws KlawException, KlawValidationException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.addNewEnv(newEnv), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/deleteEnvironmentRequest")
+  @PostMapping(
+      value = "/deleteEnvironmentRequest",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteEnvironment(
       @RequestParam("envId") String envId, @RequestParam("envType") String envType)
       throws KlawException {
@@ -224,20 +232,26 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.getExtensionPeriods(), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/addTenantId")
+  @PostMapping(
+      value = "/addTenantId",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> addTenantId(@Valid @RequestBody KwTenantModel kwTenantModel)
       throws KlawException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.addTenantId(kwTenantModel, true), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/deleteTenant")
+  @PostMapping(
+      value = "/deleteTenant",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteTenant() throws KlawException {
     return new ResponseEntity<>(envsClustersTenantsControllerService.deleteTenant(), HttpStatus.OK);
   }
 
   // Pattern a-zA-z and/or spaces.
-  @PostMapping(value = "/udpateTenant")
+  @PostMapping(
+      value = "/udpateTenant",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> udpateTenant(
       @RequestParam("orgName") @Pattern(message = "Invalid Organization.", regexp = "^[a-zA-z ]*$")
           String orgName)
@@ -246,7 +260,9 @@ public class EnvsClustersTenantsController {
         envsClustersTenantsControllerService.updateTenant(orgName), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/udpateTenantExtension")
+  @PostMapping(
+      value = "/udpateTenantExtension",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> udpateTenantExtension(
       @RequestParam("selectedTenantExtensionPeriod") String selectedTenantExtensionPeriod) {
     return new ResponseEntity<>(

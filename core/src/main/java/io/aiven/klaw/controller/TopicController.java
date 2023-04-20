@@ -36,7 +36,9 @@ public class TopicController {
 
   @Autowired private TopicControllerService topicControllerService;
 
-  @PostMapping(value = "/createTopics")
+  @PostMapping(
+      value = "/createTopics",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createTopicsCreateRequest(
       @Valid @RequestBody TopicCreateRequestModel addTopicRequest)
       throws KlawException, KlawNotAuthorizedException {
@@ -44,7 +46,9 @@ public class TopicController {
         topicControllerService.createTopicsCreateRequest(addTopicRequest), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/updateTopics")
+  @PostMapping(
+      value = "/updateTopics",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createTopicsUpdateRequest(
       @Valid @RequestBody TopicUpdateRequestModel addTopicRequest)
       throws KlawException, KlawNotAuthorizedException {
@@ -242,7 +246,9 @@ public class TopicController {
         topicControllerService.getTopicDetailsPerEnv(envId, topicName), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/saveTopicDocumentation")
+  @PostMapping(
+      value = "/saveTopicDocumentation",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> saveTopicDocumentation(@RequestBody TopicInfo topicInfo)
       throws KlawException {
     return new ResponseEntity<>(
