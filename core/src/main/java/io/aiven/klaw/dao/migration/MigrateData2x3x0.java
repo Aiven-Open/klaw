@@ -1,5 +1,6 @@
 package io.aiven.klaw.dao.migration;
 
+import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.InsertDataJdbc;
@@ -24,11 +25,15 @@ public class MigrateData2x3x0 {
 
   @Autowired private InsertDataJdbc insertDataJdbc;
 
+  @Autowired private ManageDatabase manageDatabase;
+
   public MigrateData2x3x0() {}
 
-  public MigrateData2x3x0(SelectDataJdbc selectDataJdbc, InsertDataJdbc insertDataJdbc) {
+  public MigrateData2x3x0(
+      SelectDataJdbc selectDataJdbc, InsertDataJdbc insertDataJdbc, ManageDatabase manageDatabase) {
     this.selectDataJdbc = selectDataJdbc;
     this.insertDataJdbc = insertDataJdbc;
+    this.manageDatabase = manageDatabase;
   }
 
   @MigrationRunner()
@@ -39,6 +44,7 @@ public class MigrateData2x3x0 {
 
     for (int tenantId : tenantIds) {
       migrateKafkaEnvironments(tenantId);
+      manageDatabase.loadEnvMapForOneTenant(tenantId);
     }
 
     return true;
@@ -80,7 +86,7 @@ public class MigrateData2x3x0 {
             }
           }
           params.setTopicRegex(Collections.EMPTY_LIST);
-          params.setAdvancedTopicConfiguration(List.of("false"));
+          params.setAdvancedTopicConfiguration(false);
           env.setParams(params);
           insertDataJdbc.addNewEnv(env);
           numberOfRequestsUpdated++;

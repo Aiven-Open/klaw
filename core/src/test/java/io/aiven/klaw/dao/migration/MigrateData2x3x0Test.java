@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.Team;
@@ -41,6 +42,8 @@ class MigrateData2x3x0Test {
 
   @Mock private InsertDataJdbc insertDataJdbc;
 
+  @Mock private ManageDatabase manageDatabase;
+
   @Bean
   public MigrationTestData2x1x0 MigrateTestData2x1x0() {
     return new MigrationTestData2x1x0();
@@ -55,7 +58,7 @@ class MigrateData2x3x0Test {
 
   @BeforeEach
   public void setUp() {
-    migrateData2x3x0 = new MigrateData2x3x0(selectDataJdbc, insertDataJdbc);
+    migrateData2x3x0 = new MigrateData2x3x0(selectDataJdbc, insertDataJdbc, manageDatabase);
   }
 
   @Test
@@ -68,7 +71,8 @@ class MigrateData2x3x0Test {
     // No other calls made
     verify(insertDataJdbc, times(0)).addNewEnv(any(Env.class));
     verify(selectDataJdbc, times(0)).selectAllEnvs(any(KafkaClustersType.class), anyInt());
-
+    //    called once per tenant
+    verify(manageDatabase, times(0)).loadEnvMapForOneTenant(anyInt());
     assertThat(success).isTrue();
   }
 
@@ -87,7 +91,8 @@ class MigrateData2x3x0Test {
     verify(selectDataJdbc, times(1)).selectAllEnvs(any(KafkaClustersType.class), anyInt());
 
     verify(insertDataJdbc, times(0)).addNewEnv(any(Env.class));
-
+    //    called once per tenant
+    verify(manageDatabase, times(1)).loadEnvMapForOneTenant(anyInt());
     assertThat(success).isTrue();
   }
 
@@ -105,6 +110,8 @@ class MigrateData2x3x0Test {
     verify(selectDataJdbc, times(1)).selectAllEnvs(any(KafkaClustersType.class), anyInt());
 
     verify(insertDataJdbc, times(2)).addNewEnv(any(Env.class));
+    //    called once per tenant
+    verify(manageDatabase, times(1)).loadEnvMapForOneTenant(anyInt());
     assertThat(success).isTrue();
   }
 
@@ -127,7 +134,8 @@ class MigrateData2x3x0Test {
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
 
     verify(insertDataJdbc, times(0)).addNewEnv(any(Env.class));
-
+    //    called once per tenant
+    verify(manageDatabase, times(1)).loadEnvMapForOneTenant(anyInt());
     assertThat(success).isTrue();
   }
 
@@ -153,7 +161,8 @@ class MigrateData2x3x0Test {
     assertThat(env.getParams().getDefaultPartitions().get(0)).isEqualTo("1");
     assertThat(env.getParams().getPartitionsList().size()).isEqualTo(2);
     assertThat(env.getParams().getReplicationFactorList().size()).isEqualTo(8);
-
+    //    called once per tenant
+    verify(manageDatabase, times(1)).loadEnvMapForOneTenant(anyInt());
     assertThat(success).isTrue();
   }
 
@@ -176,6 +185,8 @@ class MigrateData2x3x0Test {
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(2)).selectAllEnvs(any(), anyInt());
     verify(insertDataJdbc, times(2)).addNewEnv(any(Env.class));
+    //    called once per tenant
+    verify(manageDatabase, times(2)).loadEnvMapForOneTenant(anyInt());
     assertThat(success).isTrue();
   }
 
@@ -199,6 +210,8 @@ class MigrateData2x3x0Test {
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(3)).selectAllEnvs(any(), anyInt());
     verify(insertDataJdbc, times(4)).addNewEnv(any(Env.class));
+    //    called once per tenant
+    verify(manageDatabase, times(3)).loadEnvMapForOneTenant(anyInt());
     assertThat(success).isTrue();
   }
 

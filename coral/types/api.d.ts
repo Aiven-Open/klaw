@@ -762,14 +762,8 @@ export type components = {
       type: string;
       /** Format: int32 */
       clusterId: number;
-      topicprefix?: string;
-      topicsuffix?: string;
       otherParams?: string;
       id?: string;
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      defaultReplicationFactor?: string;
-      maxReplicationFactor?: string;
       associatedEnv?: components["schemas"]["EnvTag"];
       /** Format: int32 */
       tenantId?: number;
@@ -783,7 +777,7 @@ export type components = {
       topicPrefix?: (string)[];
       topicSuffix?: (string)[];
       topicRegex?: (string)[];
-      advancedTopicConfiguration?: (string)[];
+      advancedTopicConfiguration?: boolean;
     };
     EnvTag: {
       id?: string;
@@ -1041,14 +1035,6 @@ export type components = {
       totalNoPages: string;
       allPageNos: (string)[];
       associatedEnv?: components["schemas"]["EnvTag"];
-      topicprefix?: string;
-      topicsuffix?: string;
-      topicregex?: string;
-      topicAdvancedConfig?: boolean;
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      defaultReplicationFactor?: string;
-      maxReplicationFactor?: string;
       params: components["schemas"]["EnvParams"];
       /** @enum {string} */
       clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";

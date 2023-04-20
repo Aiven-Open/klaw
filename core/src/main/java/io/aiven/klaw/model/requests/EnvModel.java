@@ -24,23 +24,9 @@ public class EnvModel implements Serializable {
 
   @NotNull private Integer clusterId;
 
-  @Pattern(message = "Invalid prefix", regexp = "^$|^[a-zA-Z0-9_.-]{3,}$")
-  private String topicprefix;
-
-  @Pattern(message = "Invalid suffix", regexp = "^$|^[a-zA-Z0-9_.-]{3,}$")
-  private String topicsuffix;
-
   private String otherParams;
 
   private String id;
-
-  private String defaultPartitions;
-
-  private String maxPartitions;
-
-  private String defaultReplicationFactor;
-
-  private String maxReplicationFactor;
 
   private EnvTag associatedEnv;
 

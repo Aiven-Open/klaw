@@ -5816,30 +5816,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicprefix" : {
-            "type" : "string",
-            "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
-          },
-          "topicsuffix" : {
-            "type" : "string",
-            "pattern" : "^$|^[a-zA-Z0-9_.-]{3,}$"
-          },
           "otherParams" : {
             "type" : "string"
           },
           "id" : {
-            "type" : "string"
-          },
-          "defaultPartitions" : {
-            "type" : "string"
-          },
-          "maxPartitions" : {
-            "type" : "string"
-          },
-          "defaultReplicationFactor" : {
-            "type" : "string"
-          },
-          "maxReplicationFactor" : {
             "type" : "string"
           },
           "associatedEnv" : {
@@ -5900,10 +5880,7 @@
             }
           },
           "advancedTopicConfiguration" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
+            "type" : "boolean"
           }
         }
       },
@@ -6644,30 +6621,6 @@
           },
           "associatedEnv" : {
             "$ref" : "#/components/schemas/EnvTag"
-          },
-          "topicprefix" : {
-            "type" : "string"
-          },
-          "topicsuffix" : {
-            "type" : "string"
-          },
-          "topicregex" : {
-            "type" : "string"
-          },
-          "topicAdvancedConfig" : {
-            "type" : "boolean"
-          },
-          "defaultPartitions" : {
-            "type" : "string"
-          },
-          "maxPartitions" : {
-            "type" : "string"
-          },
-          "defaultReplicationFactor" : {
-            "type" : "string"
-          },
-          "maxReplicationFactor" : {
-            "type" : "string"
           },
           "params" : {
             "$ref" : "#/components/schemas/EnvParams"

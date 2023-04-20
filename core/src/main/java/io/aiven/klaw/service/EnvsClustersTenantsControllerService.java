@@ -728,7 +728,8 @@ public class EnvsClustersTenantsControllerService {
     if (newEnv.getType().equals(KafkaClustersType.KAFKA.value)) {
       if (kafkaClusterIds.contains(newEnv.getClusterId())) {
         // don't allow same cluster id be assigned to another kafka env, if regex is not defined
-        return newEnv.getTopicprefix() == null && newEnv.getTopicsuffix() == null;
+        return newEnv.getParams().getTopicPrefix() == null
+            && newEnv.getParams().getTopicSuffix() == null;
       }
     } else if (newEnv.getType().equals(KafkaClustersType.SCHEMA_REGISTRY.value)) {
       // don't allow same cluster id be assigned to another schema env

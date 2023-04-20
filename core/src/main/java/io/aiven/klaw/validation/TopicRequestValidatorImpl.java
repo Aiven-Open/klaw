@@ -217,18 +217,15 @@ public class TopicRequestValidatorImpl
   private boolean validateTopicConfigParameters(
       TopicRequestModel topicRequestReq, ConstraintValidatorContext constraintValidatorContext) {
 
-    String topicPrefix = null, topicSuffix = null, topicRegex = null;
     EnvParams params =
         topicControllerService.getEnvDetails(topicRequestReq.getEnvironment()).getParams();
     if (params != null) {
-      topicPrefix = getValueOrDefault(params.getTopicPrefix(), "");
-      topicSuffix = getValueOrDefault(params.getTopicSuffix(), "");
-      topicRegex = getValueOrDefault(params.getTopicRegex(), "");
-      boolean advancedTopicConfig =
-          Boolean.valueOf(getValueOrDefault(params.getAdvancedTopicConfiguration(), "false"));
+      String topicPrefix = getValueOrDefault(params.getTopicPrefix(), "");
+      String topicSuffix = getValueOrDefault(params.getTopicSuffix(), "");
+      String topicRegex = getValueOrDefault(params.getTopicRegex(), "");
 
       try {
-        if (!advancedTopicConfig) {
+        if (!params.isAdvancedTopicConfiguration()) {
           if (topicPrefix != null
               && !topicPrefix.isBlank()
               && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {

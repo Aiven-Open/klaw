@@ -21,7 +21,7 @@ public class EnvParamsConverter implements AttributeConverter<EnvParams, String>
         envParamsStr = mapper.writeValueAsString(envParams);
       }
     } catch (JsonProcessingException e) {
-      log.error("Exception converting object to json: {}", e.getMessage());
+      log.error("Exception converting object: {} to json: {}", envParams, e.getMessage());
     }
     return envParamsStr;
   }
@@ -34,7 +34,7 @@ public class EnvParamsConverter implements AttributeConverter<EnvParams, String>
         params = mapper.readValue(envParamsStr, EnvParams.class);
       }
     } catch (JsonProcessingException e) {
-      log.error("Exception converting json to object: {}", e.getMessage());
+      log.error("Exception converting json: {} to object: {}", envParamsStr, e.getMessage());
     }
     return params;
   }

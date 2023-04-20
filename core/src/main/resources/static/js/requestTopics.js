@@ -63,7 +63,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                             $scope.topicPrefix = output.topicPrefix[0];
                             $scope.topicSuffix = output.topicSuffix[0];
                             $scope.topicRegex = output.topicRegex[0];
-                            $scope.advancedTopicConfiguration = JSON.parse(output.advancedTopicConfiguration[0]);
+                            $scope.advancedTopicConfiguration = output.advancedTopicConfiguration;
 
                             }
 

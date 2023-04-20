@@ -911,7 +911,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                    'topicPrefix': [$scope.addNewEnv.topicprefix],
                    'topicSuffix': [$scope.addNewEnv.topicsuffix],
                    'topicRegex': [$scope.addNewEnv.topicregex],
-                   'advancedTopicConfiguration': [$scope.addNewEnv.advancedTopicConfiguration]
+                   'advancedTopicConfiguration': $scope.addNewEnv.advancedTopicConfiguration
                  };
 
                 $http({

@@ -14,9 +14,8 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
+import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
@@ -438,7 +437,7 @@ public class EnvsClustersTenantsControllerIT {
     // Add a new env PRD
     EnvModel envModel1 = mockMethods.getEnvModel("PRD");
     envModel1.setClusterId(2);
-    envModel1.setTopicprefix("topicprefix");
+    envModel1.getParams().setTopicPrefix(List.of("topicprefix"));
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel1);
 
     String response =
@@ -610,9 +609,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    HashMap<String, ArrayList<String>> clusterModels =
-        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    ArrayList<String> defaultPartitions = clusterModels.get("defaultPartitions");
+    EnvParams clusterModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    List<String> defaultPartitions = clusterModels.getDefaultPartitions();
     assertThat(defaultPartitions.get(0)).isEqualTo("2");
   }
 

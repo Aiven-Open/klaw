@@ -12,5 +12,5 @@ public class EnvParams {
   private List<String> topicPrefix;
   private List<String> topicSuffix;
   private List<String> topicRegex;
-  private List<String> advancedTopicConfiguration;
+  private boolean advancedTopicConfiguration;
 }
