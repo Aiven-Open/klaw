@@ -1111,7 +1111,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
         $scope.buildParamterListWithDefault = function(defaultNumber, maxNumber) {
             var parameterList=[];
                 for (let i=0;i<maxNumber;i++) {
-                    if((i+1)===defaultNumber) {
+                    if((i+1)==defaultNumber) {
                         parameterList[i]= "" +(i +1) + " (default)";
                     } else {
                         parameterList[i]= "" +(i +1);

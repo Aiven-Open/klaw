@@ -170,7 +170,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         $scope.envDetails.defaultReplicationFactor = output.params.defaultRepFactor[0];
                         $scope.envDetails.maxReplicationFactor = output.params.replicationFactorList.length;
                         $scope.envDetails.advancedTopicConfiguration = JSON.parse(output.params.advancedTopicConfiguration[0]);
-                       
+
                         $scope.onChangeCluster(output.clusterId);
                     }else
                         $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/envs";
@@ -633,7 +633,7 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
             $scope.buildParamterListWithDefault = function(defaultNumber, maxNumber) {
                         var parameterList=[];
                             for (let i=0;i<maxNumber;i++) {
-                                if((i+1)===defaultNumber) {
+                                if((i+1)==defaultNumber) {
                                     parameterList[i]= "" +(i +1) + " (default)";
                                 } else {
                                     parameterList[i]= "" +(i +1);
