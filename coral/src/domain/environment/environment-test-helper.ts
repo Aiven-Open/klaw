@@ -23,6 +23,7 @@ const defaultEnvironmentDTO: KlawApiModel<"EnvModelResponse"> = {
   defaultReplicationFactor: undefined,
   maxReplicationFactor: undefined,
   clusterType: "ALL",
+  params: {},
 };
 
 function createMockEnvironmentDTO(

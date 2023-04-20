@@ -17,6 +17,7 @@ describe("environment-test-helper.ts", () => {
         name: nameToTest,
         otherParams:
           "default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix=",
+        params: {},
         showDeleteEnv: false,
         tenantId: 101,
         tenantName: "default",
