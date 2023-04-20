@@ -26,6 +26,11 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigate,
 }));
 
+jest.mock("src/domain/acl/acl-api", () => ({
+  ...jest.requireActual("src/domain/acl/acl-api"),
+  getAivenServiceAccounts: jest.fn().mockReturnValue(["account"]),
+}));
+
 const dataSetup = ({ isAivenCluster }: { isAivenCluster: boolean }) => {
   mockGetEnvironments({
     mswInstance: server,
@@ -157,7 +162,7 @@ describe("<TopicAclRequest />", () => {
       expect(ipField).toBeDisabled();
       expect(ipField).not.toBeChecked();
 
-      const principalsField = await screen.findByRole("textbox", {
+      const principalsField = await screen.findByRole("combobox", {
         name: "Service accounts *",
       });
 
@@ -971,7 +976,7 @@ describe("<TopicAclRequest />", () => {
           screen.getByRole("radio", { name: "Service account" })
         );
 
-        const principalsField = await screen.findByRole("textbox", {
+        const principalsField = await screen.findByRole("combobox", {
           name: "Service accounts *",
         });
 
@@ -1044,7 +1049,7 @@ describe("<TopicAclRequest />", () => {
           screen.getByRole("radio", { name: "Service account" })
         );
 
-        const principalsField = await screen.findByRole("textbox", {
+        const principalsField = await screen.findByRole("combobox", {
           name: "Service accounts *",
         });
 
@@ -1087,7 +1092,7 @@ describe("<TopicAclRequest />", () => {
           screen.getByRole("radio", { name: "Service account" })
         );
 
-        const principalsField = await screen.findByRole("textbox", {
+        const principalsField = await screen.findByRole("combobox", {
           name: "Service accounts *",
         });
 
@@ -1120,7 +1125,7 @@ describe("<TopicAclRequest />", () => {
           screen.getByRole("radio", { name: "Service account" })
         );
 
-        const principalsField = await screen.findByRole("textbox", {
+        const principalsField = await screen.findByRole("combobox", {
           name: "Service accounts *",
         });
 
@@ -1159,7 +1164,7 @@ describe("<TopicAclRequest />", () => {
           screen.getByRole("radio", { name: "Service account" })
         );
 
-        const principalsField = await screen.findByRole("textbox", {
+        const principalsField = await screen.findByRole("combobox", {
           name: "Service accounts *",
         });
 
