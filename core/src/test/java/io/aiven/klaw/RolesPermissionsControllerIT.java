@@ -6,7 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.ApiResponse;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +61,8 @@ public class RolesPermissionsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -117,7 +118,8 @@ public class RolesPermissionsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -156,7 +158,8 @@ public class RolesPermissionsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(

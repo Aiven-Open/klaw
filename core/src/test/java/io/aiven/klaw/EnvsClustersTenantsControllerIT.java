@@ -9,7 +9,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
@@ -92,7 +91,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -128,7 +128,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -189,8 +190,8 @@ public class EnvsClustersTenantsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -254,8 +255,8 @@ public class EnvsClustersTenantsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -286,8 +287,8 @@ public class EnvsClustersTenantsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response2 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response2.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -558,8 +559,8 @@ public class EnvsClustersTenantsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
-
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
 
     response =
         mvc.perform(
@@ -590,7 +591,8 @@ public class EnvsClustersTenantsControllerIT {
             .getResponse()
             .getContentAsString();
 
-    assertThat(response).contains(ApiResultStatus.SUCCESS.value);
+    ApiResponse response2 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response2.isSuccess()).isTrue();
   }
 
   // get env params success
