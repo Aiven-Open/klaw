@@ -1,18 +1,18 @@
+import * as ReactQuery from "@tanstack/react-query";
+import { waitFor, within } from "@testing-library/react";
 import {
   cleanup,
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react/pure";
-import { waitFor, within } from "@testing-library/react";
-import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
-import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import * as ReactQuery from "@tanstack/react-query";
 import userEvent from "@testing-library/user-event";
+import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
 import { getSchemaRegistryEnvironments } from "src/domain/environment";
-import { createSchemaRequest } from "src/domain/schema-request";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
+import { createSchemaRequest } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
@@ -258,7 +258,7 @@ describe("TopicSchemaRequest", () => {
         name: "Submit request",
       });
 
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
     });
 
     it("shows an enabled button to cancel form input", () => {
@@ -324,7 +324,7 @@ describe("TopicSchemaRequest", () => {
       expect(fileRequiredError).toHaveLength(2);
     });
 
-    it("does not enable button if user does not fill out all fields", async () => {
+    it("renders enabled Submit even if user does not fill out all fields", async () => {
       const form = getForm();
       const select = within(form).getByRole("combobox", {
         name: /Environment/i,
@@ -335,12 +335,12 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
 
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
     });
   });
 
@@ -504,7 +504,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -543,7 +543,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -647,7 +647,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -671,7 +671,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -684,6 +684,26 @@ describe("TopicSchemaRequest", () => {
         schemafull: "{}",
         topicname: "my-awesome-topic",
       });
+    });
+
+    it("does not submit on button click if user did not fill all required inputs", async () => {
+      const form = getForm();
+
+      const fileInput =
+        within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
+
+      const button = within(form).getByRole("button", {
+        name: "Submit request",
+      });
+      expect(button).toBeEnabled();
+
+      await userEvent.upload(fileInput, testFile);
+
+      expect(button).toBeEnabled();
+      await userEvent.click(button);
+      await userEvent.tab();
+
+      expect(mockCreateSchemaRequest).not.toHaveBeenCalled();
     });
 
     it("shows a dialog informing user that schema request was successful", async () => {
@@ -701,7 +721,7 @@ describe("TopicSchemaRequest", () => {
       const button = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();
@@ -730,7 +750,7 @@ describe("TopicSchemaRequest", () => {
       const submitButton = within(form).getByRole("button", {
         name: "Submit request",
       });
-      expect(submitButton).toBeDisabled();
+      expect(submitButton).toBeEnabled();
 
       await userEvent.selectOptions(select, option);
       await userEvent.tab();

@@ -1,6 +1,7 @@
 import {
   remarks,
   aclIpPrincipleType,
+  aclPatternType,
   acl_ip,
   acl_ssl,
   topicname,
@@ -13,7 +14,6 @@ import {
 } from "src/app/features/topics/acl-request/schemas/validation";
 import { z } from "zod";
 
-const aclPatternType = z.union([z.literal("LITERAL"), z.literal("PREFIXED")]);
 const aclType = z.literal("PRODUCER");
 const transactionalId = z
   .string()
@@ -37,16 +37,26 @@ const topicProducerFormSchema = z
     teamId,
   })
   // We check if the user has entered valid values for acl_ssl or acl_ip
-  .refine(({ aclIpPrincipleType, acl_ssl, acl_ip }) => {
-    if (aclIpPrincipleType === "IP_ADDRESS") {
-      return validateAclPrincipleValue(acl_ip);
-    }
-    if (aclIpPrincipleType === "PRINCIPAL") {
-      return validateAclPrincipleValue(acl_ssl);
-    }
-
-    return false;
-  });
+  // We need two different refine fns because we need to specify the path for the message to be dispalyed correctly
+  // And we can't know which path is relevant if we do both checks in the same refine
+  .refine(
+    ({ aclIpPrincipleType, acl_ip }) => {
+      if (aclIpPrincipleType === "IP_ADDRESS") {
+        return validateAclPrincipleValue(acl_ip);
+      }
+      return true;
+    },
+    { message: "Enter at least one element.", path: ["acl_ip"] }
+  )
+  .refine(
+    ({ aclIpPrincipleType, acl_ssl }) => {
+      if (aclIpPrincipleType === "PRINCIPAL") {
+        return validateAclPrincipleValue(acl_ssl);
+      }
+      return true;
+    },
+    { message: "Enter at least one element.", path: ["acl_ssl"] }
+  );
 
 export type TopicProducerFormSchema = z.infer<typeof topicProducerFormSchema>;
 export default topicProducerFormSchema;

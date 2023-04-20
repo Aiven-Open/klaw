@@ -1,23 +1,17 @@
-import {
-  cleanup,
-  screen,
-  waitFor,
-  within,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
 import { Context as AquariumContext } from "@aivenio/aquarium";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
-import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-api.msw";
-import { server } from "src/services/api-mocks/server";
 import TopicRequest from "src/app/features/topics/request/TopicRequest";
+import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-api.msw";
+import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import {
   defaultgetTopicAdvancedConfigOptionsResponse,
-  mockgetTopicAdvancedConfigOptions,
   mockRequestTopic,
+  mockgetTopicAdvancedConfigOptions,
 } from "src/domain/topic/topic-api.msw";
 import api from "src/services/api";
+import { server } from "src/services/api-mocks/server";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -68,16 +62,17 @@ describe("<TopicRequest />", () => {
         cleanup();
       });
 
-      it("shows a select element for 'Environment'", async () => {
+      it("shows a required select element for 'Environment'", async () => {
         const select = await screen.findByRole("combobox", {
-          name: "Environment",
+          name: "Environment *",
         });
         expect(select).toBeEnabled();
+        expect(select).toBeRequired();
       });
 
       it("shows an placeholder text for the select", async () => {
         const select = await screen.findByRole("combobox", {
-          name: "Environment",
+          name: "Environment *",
         });
 
         expect(select).toHaveDisplayValue("-- Please select --");
@@ -93,6 +88,14 @@ describe("<TopicRequest />", () => {
           "TST",
           "PROD",
         ]);
+      });
+
+      it("renders an enabled Submit button", () => {
+        const submitButton = screen.getByRole("button", {
+          name: "Submit request",
+        });
+
+        expect(submitButton).toBeEnabled();
       });
     });
 
@@ -124,7 +127,7 @@ describe("<TopicRequest />", () => {
       describe("when 'PROD' option is clicked", () => {
         it("selects 'PROD' value when user chooses the option", async () => {
           const select = await screen.findByRole("combobox", {
-            name: "Environment",
+            name: "Environment *",
           });
           expect(select).toHaveDisplayValue("-- Please select --");
 
@@ -140,7 +143,7 @@ describe("<TopicRequest />", () => {
 
         it("disabled the placeholder value", async () => {
           const select = await screen.findByRole("combobox", {
-            name: "Environment",
+            name: "Environment *",
           });
 
           const options = within(select).getAllByRole("option");
@@ -198,7 +201,7 @@ describe("<TopicRequest />", () => {
       it("validates that topic name starts with environment topic prefix", async () => {
         const expectedErrorMsg = 'Topic name must start with "test-".';
         const select = await screen.findByRole("combobox", {
-          name: "Environment",
+          name: "Environment *",
         });
 
         await user.selectOptions(select, "EnvWithTopicPrefix");
@@ -212,7 +215,7 @@ describe("<TopicRequest />", () => {
         await user.clear(topicNameInput);
         await user.type(topicNameInput, "test-foobar{tab}");
 
-        await waitForElementToBeRemoved(errorMessage);
+        expect(errorMessage).not.toBeVisible();
       });
     });
 
@@ -251,7 +254,7 @@ describe("<TopicRequest />", () => {
       it("validates that topic name ends with environment topic suffix", async () => {
         const expectedErrorMsg = 'Topic name must end with "-test".';
         const select = await screen.findByRole("combobox", {
-          name: "Environment",
+          name: "Environment *",
         });
 
         await user.selectOptions(select, "EnvWithTopicSuffix");
@@ -265,7 +268,7 @@ describe("<TopicRequest />", () => {
         await user.clear(topicNameInput);
         await user.type(topicNameInput, "foobar-test{tab}");
 
-        await waitForElementToBeRemoved(errorMessage);
+        expect(errorMessage).not.toBeVisible();
       });
     });
   });
@@ -320,7 +323,7 @@ describe("<TopicRequest />", () => {
       describe("input components", () => {
         it('should render <select /> when "maxReplicationFactor" is defined', async () => {
           const environmentSelect = await screen.findByRole("combobox", {
-            name: "Environment",
+            name: "Environment *",
           });
 
           await user.selectOptions(environmentSelect, "PROD");
@@ -333,7 +336,7 @@ describe("<TopicRequest />", () => {
 
         it('should render <input type="number" /> when "maxReplicationFactor" not defined', async () => {
           const environmentSelect = await screen.findByRole("combobox", {
-            name: "Environment",
+            name: "Environment *",
           });
           await user.selectOptions(environmentSelect, "DEV");
 
@@ -393,7 +396,7 @@ describe("<TopicRequest />", () => {
 
       it('changes replication factor value to environment "defaultPartitions"', async () => {
         const selectEnvironment = await screen.findByRole("combobox", {
-          name: "Environment",
+          name: "Environment *",
         });
         const inputReplicationFactor = await screen.findByLabelText(
           "Replication factor*"
@@ -408,7 +411,7 @@ describe("<TopicRequest />", () => {
 
       it('changes replication factor value to environment "maxPartitions" when exceeded it is and no default', async () => {
         const selectEnvironment = await screen.findByRole("combobox", {
-          name: "Environment",
+          name: "Environment *",
         });
         await user.selectOptions(selectEnvironment, "DEV");
 
@@ -441,7 +444,7 @@ describe("<TopicRequest />", () => {
 
       it('keeps topic replication factor value if not default and value does not exceeded "maxPartitions"', async () => {
         const selectEnvironment = await screen.findByRole("combobox", {
-          name: "Environment",
+          name: "Environment *",
         });
         await user.selectOptions(selectEnvironment, "PROD");
 
@@ -509,7 +512,7 @@ describe("<TopicRequest />", () => {
     describe("input components", () => {
       it('should render <select /> when "maxPartitions" is defined', async () => {
         const selectEnvironment = await screen.findByRole("combobox", {
-          name: "Environment",
+          name: "Environment *",
         });
         await user.selectOptions(selectEnvironment, "PROD");
 
@@ -521,7 +524,7 @@ describe("<TopicRequest />", () => {
 
       it('should render <input type="number" /> when "maxPartitions" is not defined', async () => {
         const selectEnvironment = await screen.findByRole("combobox", {
-          name: "Environment",
+          name: "Environment *",
         });
         await user.selectOptions(selectEnvironment, "DEV");
 
@@ -578,7 +581,7 @@ describe("<TopicRequest />", () => {
 
     it('changes topic partitions value to 4 when environment has "defaultPartitions"', async () => {
       const selectEnvironment = await screen.findByRole("combobox", {
-        name: "Environment",
+        name: "Environment *",
       });
       await user.selectOptions(selectEnvironment, "WITH_DEFAULT_PARTITIONS");
 
@@ -590,7 +593,7 @@ describe("<TopicRequest />", () => {
 
     it('changes topic partitions value to environment "maxPartitions" when current value exceeds', async () => {
       const selectEnvironment = await screen.findByRole("combobox", {
-        name: "Environment",
+        name: "Environment *",
       });
       await user.selectOptions(selectEnvironment, "DEV");
 
@@ -618,7 +621,7 @@ describe("<TopicRequest />", () => {
 
     it('keeps topic partitions value if not default and value does not exceeded "maxPartitions"', async () => {
       const selectEnvironment = await screen.findByRole("combobox", {
-        name: "Environment",
+        name: "Environment *",
       });
       await user.selectOptions(selectEnvironment, "PROD");
 
@@ -707,7 +710,9 @@ describe("<TopicRequest />", () => {
       );
 
       // Wait all API calls to resolve, which are required for the render
-      await screen.findByLabelText("Environment");
+      await screen.findByRole("combobox", {
+        name: "Environment *",
+      });
       await screen.findByRole("option", { name: "DEV" });
     });
 
@@ -717,7 +722,12 @@ describe("<TopicRequest />", () => {
 
     beforeEach(async () => {
       // Fill form with valid data
-      await user.selectOptions(screen.getByLabelText("Environment"), "DEV");
+      await user.selectOptions(
+        screen.getByRole("combobox", {
+          name: "Environment *",
+        }),
+        "DEV"
+      );
       await user.clear(screen.getByLabelText("Topic name*"));
       await user.clear(screen.getByLabelText("Topic partitions*"));
       await user.clear(screen.getByLabelText("Replication factor*"));
@@ -812,6 +822,25 @@ describe("<TopicRequest />", () => {
         });
       });
 
+      it("errors and does not create a new topic request when input was invalid", async () => {
+        const spyPost = jest.spyOn(api, "post");
+
+        await user.clear(screen.getByLabelText("Topic name*"));
+
+        await user.click(
+          screen.getByRole("button", { name: "Submit request" })
+        );
+
+        await waitFor(() =>
+          expect(screen.getByText("Topic name can not be empty")).toBeVisible()
+        );
+
+        expect(spyPost).not.toHaveBeenCalled();
+        expect(
+          screen.getByRole("button", { name: "Submit request" })
+        ).toBeEnabled();
+      });
+
       it("shows a dialog informing user that request was successful", async () => {
         const spyPost = jest.spyOn(api, "post");
 
@@ -890,7 +919,9 @@ describe("<TopicRequest />", () => {
       );
 
       // Wait all API calls to resolve, which are required for the render
-      await screen.findByLabelText("Environment");
+      await screen.findByRole("combobox", {
+        name: "Environment *",
+      });
       await screen.findByRole("option", { name: "DEV" });
     });
 

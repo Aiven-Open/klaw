@@ -411,7 +411,7 @@ describe("<TopicAclRequest />", () => {
       );
     });
 
-    it("does errors when entering a wrong value in Transactional ID field", async () => {
+    it("does not error when entering a correct value in Transactional ID field", async () => {
       await assertSkeleton();
 
       const transactionalIdInput = screen.getByLabelText("Transactional ID");
@@ -420,6 +420,19 @@ describe("<TopicAclRequest />", () => {
       await userEvent.tab();
 
       await waitFor(() => expect(transactionalIdInput).toBeValid());
+    });
+
+    it("renders an enabled Submit button when there is an error", async () => {
+      await assertSkeleton();
+
+      const transactionalIdInput = screen.getByLabelText("Transactional ID");
+      const tooLong = new Array(152).join("a");
+      await userEvent.type(transactionalIdInput, tooLong);
+      await userEvent.tab();
+
+      expect(
+        screen.getByRole("button", { name: "Submit request" })
+      ).toBeEnabled();
     });
 
     it("renders correct fields when selecting Literal or Prefixed in aclPatternType fields", async () => {
@@ -1061,6 +1074,38 @@ describe("<TopicAclRequest />", () => {
         });
       });
 
+      it("renders errors and does not submit when input was invalid", async () => {
+        const spyPost = jest.spyOn(api, "post");
+        await assertSkeleton();
+        const submitButton = screen.getByRole("button", {
+          name: "Submit request",
+        });
+
+        await selectTestEnvironment();
+        await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
+        await userEvent.click(
+          screen.getByRole("radio", { name: "Service account" })
+        );
+
+        const principalsField = await screen.findByRole("textbox", {
+          name: "Service accounts *",
+        });
+
+        expect(principalsField).toBeVisible();
+        expect(principalsField).toBeEnabled();
+
+        await waitFor(() => expect(submitButton).toBeEnabled());
+        await userEvent.click(submitButton);
+
+        await waitFor(() => expect(principalsField).not.toBeValid());
+        await waitFor(() =>
+          expect(screen.getByText("Enter at least one element.")).toBeVisible()
+        );
+
+        expect(spyPost).not.toHaveBeenCalled();
+        expect(submitButton).toBeEnabled();
+      });
+
       it("shows a dialog informing user that request was successful", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
@@ -1435,6 +1480,36 @@ describe("<TopicAclRequest />", () => {
           teamId: 1,
           consumergroup: "group",
         });
+      });
+
+      it("renders errors and does not submit when input was invalid", async () => {
+        const spyPost = jest.spyOn(api, "post");
+        await assertSkeleton();
+        const submitButton = screen.getByRole("button", {
+          name: "Submit request",
+        });
+
+        await selectTestEnvironment();
+        await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
+        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
+
+        const principalsField = await screen.findByRole("textbox", {
+          name: "SSL DN strings / Usernames *",
+        });
+
+        expect(principalsField).toBeVisible();
+        expect(principalsField).toBeEnabled();
+
+        await waitFor(() => expect(submitButton).toBeEnabled());
+        await userEvent.click(submitButton);
+
+        await waitFor(() => expect(principalsField).not.toBeValid());
+        await waitFor(() =>
+          expect(screen.getByText("Enter at least one element.")).toBeVisible()
+        );
+
+        expect(spyPost).not.toHaveBeenCalled();
+        expect(submitButton).toBeEnabled();
       });
 
       it("shows a dialog informing user that request was successful", async () => {

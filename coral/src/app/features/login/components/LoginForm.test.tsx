@@ -45,9 +45,9 @@ describe("Login", () => {
       expect(input).toBeEnabled();
     });
 
-    it("shows a disabled submit button for the form", () => {
+    it("shows an enabled submit button for the form", () => {
       const button = screen.getByRole("button", { name: "Submit" });
-      expect(button).toBeDisabled();
+      expect(button).toBeEnabled();
     });
   });
 

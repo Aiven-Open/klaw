@@ -121,6 +121,7 @@ function TopicRequest() {
                 options={environments}
                 identifierValue={"id"}
                 identifierName={"name"}
+                required
               />
             ) : (
               <NativeSelect.Skeleton></NativeSelect.Skeleton>

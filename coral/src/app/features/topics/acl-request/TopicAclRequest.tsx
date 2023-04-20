@@ -102,12 +102,18 @@ const TopicAclRequest = () => {
       selectedEnvironment.isAivenCluster
     ) {
       if (aclType === "PRODUCER") {
-        topicProducerForm.setValue("aclPatternType", "LITERAL");
-        topicProducerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
+        topicProducerForm.setValue("aclPatternType", "LITERAL", {
+          shouldValidate: true,
+        });
+        topicProducerForm.setValue("aclIpPrincipleType", "PRINCIPAL", {
+          shouldValidate: true,
+        });
         topicProducerForm.resetField("transactionalId");
       }
       if (aclType === "CONSUMER") {
-        topicConsumerForm.setValue("aclIpPrincipleType", "PRINCIPAL");
+        topicConsumerForm.setValue("aclIpPrincipleType", "PRINCIPAL", {
+          shouldValidate: true,
+        });
       }
     }
   }, [selectedEnvironment]);

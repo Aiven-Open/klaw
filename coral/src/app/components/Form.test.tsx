@@ -16,7 +16,6 @@ import {
 } from "src/app/components/Form";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
-import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 
 describe("Form", () => {
   const onSubmit = jest.fn();
@@ -81,6 +80,20 @@ describe("Form", () => {
       expect(onError.mock.calls[0][0]).toMatchObject({
         formFieldsCustomName: { message: "error" },
       });
+    });
+
+    it("should not call onSubmit() after submit if there are validation errors", async () => {
+      await user.type(screen.getByLabelText("TextInput"), "a");
+      await submit();
+      await waitFor(() => expect(onSubmit).not.toHaveBeenCalled());
+    });
+
+    it("should render enabled Submit button even if there are validation errors", async () => {
+      await user.type(screen.getByLabelText("TextInput"), "a");
+
+      const submitButton = screen.getByRole("button", { name: "Submit" });
+
+      expect(submitButton).toBeEnabled();
     });
   });
 
@@ -168,7 +181,6 @@ describe("Form", () => {
       await user.clear(input);
 
       await user.type(input, "20{tab}");
-      await waitForElementToBeRemoved(screen.getByText(errorMsgValidation));
 
       expect(screen.queryByText(errorMsgEmpty)).not.toBeInTheDocument();
       expect(screen.queryByText(errorMsgValidation)).not.toBeInTheDocument();

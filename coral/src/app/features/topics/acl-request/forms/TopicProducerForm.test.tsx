@@ -87,13 +87,14 @@ describe("<TopicProducerForm />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders EnvironmentField", () => {
+    it("renders required EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
         name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
       expect(environmentField).toBeEnabled();
+      expect(environmentField).toBeRequired();
     });
 
     it("renders aclPatternType field", () => {
@@ -167,7 +168,7 @@ describe("<TopicProducerForm />", () => {
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
-      expect(submitButton).not.toBeEnabled();
+      expect(submitButton).toBeEnabled();
       expect(cancelButton).toBeVisible();
       expect(cancelButton).toBeEnabled();
     });
@@ -303,7 +304,7 @@ describe("<TopicProducerForm />", () => {
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
-      expect(submitButton).not.toBeEnabled();
+      expect(submitButton).toBeEnabled();
       expect(cancelButton).toBeVisible();
       expect(cancelButton).toBeEnabled();
     });
@@ -431,7 +432,7 @@ describe("<TopicProducerForm />", () => {
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
       expect(submitButton).toBeVisible();
-      expect(submitButton).not.toBeEnabled();
+      expect(submitButton).toBeEnabled();
       expect(cancelButton).toBeVisible();
       expect(cancelButton).toBeEnabled();
     });
