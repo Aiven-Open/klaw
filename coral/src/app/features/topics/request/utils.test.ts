@@ -10,10 +10,13 @@ describe("TopicRequest utils", () => {
         environment: {
           id: "1",
           name: "DEV",
-          defaultPartitions: 2,
-          maxPartitions: 6,
-          defaultReplicationFactor: 3,
-          maxReplicationFactor: 3,
+          type: "kafka",
+          params: {
+            defaultPartitions: 2,
+            maxPartitions: 6,
+            defaultRepFactor: 3,
+            maxRepFactor: 3,
+          },
         },
         remarks: "please approve this topic asap",
         replicationfactor: "2",

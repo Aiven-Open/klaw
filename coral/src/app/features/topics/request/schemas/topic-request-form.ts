@@ -2,6 +2,7 @@ import z, { RefinementCtx } from "zod";
 import isNumber from "lodash/isNumber";
 import { UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
+import { Environment } from "src/domain/environment";
 
 const topicNameField = z
   .string()
@@ -12,15 +13,18 @@ const topicPartitionsField = z.string();
 
 const replicationFactorField = z.string();
 
-const environmentField = z.object({
+const environmentField: z.ZodType<Environment> = z.object({
   name: z.string(),
   id: z.string(),
-  maxReplicationFactor: z.number().optional(),
-  maxPartitions: z.number().optional(),
-  defaultPartitions: z.number().optional(),
-  defaultReplicationFactor: z.number().optional(),
-  topicNamePrefix: z.string().optional(),
-  topicNameSuffix: z.string().optional(),
+  type: z.string(),
+  params: z.object({
+    maxRepFactor: z.number().optional(),
+    maxPartitions: z.number().optional(),
+    defaultPartitions: z.number().optional(),
+    defaultRepFactor: z.number().optional(),
+    topicPrefix: z.array(z.string()).optional(),
+    topicSuffix: z.array(z.string()).optional(),
+  }),
 });
 
 const advancedConfigurationField = z.string().optional();
@@ -47,20 +51,22 @@ function validateReplicationFactor(
   ctx: RefinementCtx
 ) {
   const {
-    environment: { maxReplicationFactor },
+    environment: {
+      params: { maxRepFactor },
+    },
     replicationfactor,
   } = val;
   if (
-    isNumber(maxReplicationFactor) &&
-    parseInt(replicationfactor, 10) > maxReplicationFactor
+    isNumber(maxRepFactor) &&
+    parseInt(replicationfactor, 10) > maxRepFactor
   ) {
     ctx.addIssue({
       code: z.ZodIssueCode.too_big,
       inclusive: true,
-      maximum: maxReplicationFactor,
+      maximum: maxRepFactor,
       type: "number",
       path: ["replicationfactor"],
-      message: `${replicationfactor} can not be bigger than ${maxReplicationFactor}`,
+      message: `${replicationfactor} can not be bigger than ${maxRepFactor}`,
     });
   }
 }
@@ -73,7 +79,9 @@ function validateTopicPartitions(
   ctx: RefinementCtx
 ) {
   const {
-    environment: { maxPartitions },
+    environment: {
+      params: { maxPartitions },
+    },
     topicpartitions,
   } = val;
   if (
@@ -99,22 +107,28 @@ function validateTopicName(
   ctx: RefinementCtx
 ) {
   const {
-    environment: { topicNamePrefix, topicNameSuffix },
+    environment: {
+      params: { topicPrefix, topicSuffix },
+    },
     topicname,
   } = val;
-  if (topicNamePrefix !== undefined && !topicname.startsWith(topicNamePrefix)) {
+
+  const prefixToCheck = topicPrefix?.[0];
+  if (prefixToCheck !== undefined && !topicname.startsWith(prefixToCheck)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       fatal: true,
-      message: `Topic name must start with "${topicNamePrefix}".`,
+      message: `Topic name must start with "${prefixToCheck}".`,
       path: ["topicname"],
     });
   }
-  if (topicNameSuffix !== undefined && !topicname.endsWith(topicNameSuffix)) {
+
+  const suffixToCheck = topicSuffix?.[0];
+  if (suffixToCheck !== undefined && !topicname.endsWith(suffixToCheck)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       fatal: true,
-      message: `Topic name must end with "${topicNameSuffix}".`,
+      message: `Topic name must end with "${suffixToCheck}".`,
       path: ["topicname"],
     });
   }
@@ -136,8 +150,8 @@ const useExtendedFormValidationAndTriggers = (
     if (isInitialized && environment !== undefined) {
       const nextTopicPartitions = findNextValue({
         currentValue: topicPartitions,
-        environmentMax: environment.maxPartitions,
-        environmentDefault: environment.defaultPartitions,
+        environmentMax: environment.params.maxPartitions,
+        environmentDefault: environment.params.defaultPartitions,
         fallbackDefault: 2,
       });
       form.setValue("topicpartitions", nextTopicPartitions.toString(), {
@@ -146,8 +160,8 @@ const useExtendedFormValidationAndTriggers = (
 
       const nextReplicationFactorValue = findNextValue({
         currentValue: replicationFactor,
-        environmentMax: environment.maxReplicationFactor,
-        environmentDefault: environment.defaultReplicationFactor,
+        environmentMax: environment.params.maxRepFactor,
+        environmentDefault: environment.params.defaultRepFactor,
         fallbackDefault: 1,
       });
       form.setValue(
@@ -185,8 +199,10 @@ const useExtendedFormValidationAndTriggers = (
 
 type FoobarArgs = {
   currentValue: string;
-  environmentMax: z.infer<typeof environmentField>["maxPartitions"];
-  environmentDefault: z.infer<typeof environmentField>["defaultPartitions"];
+  environmentMax: z.infer<typeof environmentField>["params"]["maxPartitions"];
+  environmentDefault: z.infer<
+    typeof environmentField
+  >["params"]["defaultPartitions"];
   fallbackDefault: number;
 };
 function findNextValue({

@@ -1,5 +1,6 @@
 import { KlawApiModel } from "types/utils";
 
+type EnvironmentParams = KlawApiModel<"EnvParams">;
 // KlawApiModel<"EnvModel">
 // is only relevant when creating a new Environment and reserved to that usage
 // we're not using that right now, that's why it's commented out
@@ -14,13 +15,17 @@ import { KlawApiModel } from "types/utils";
 type Environment = {
   name: KlawApiModel<"EnvModelResponse">["name"];
   id: KlawApiModel<"EnvModelResponse">["id"];
-  defaultPartitions: number | undefined;
-  defaultReplicationFactor: number | undefined;
-  maxPartitions: number | undefined;
-  maxReplicationFactor: number | undefined;
-  topicNamePrefix: string | undefined;
-  topicNameSuffix: string | undefined;
   type: KlawApiModel<"EnvModelResponse">["type"];
+  params: {
+    // will be changed to Integer in BE at some point
+    // and we need it best as a number
+    defaultPartitions?: number;
+    defaultRepFactor?: number;
+    maxPartitions?: number;
+    maxRepFactor?: number;
+    topicPrefix?: EnvironmentParams["topicPrefix"];
+    topicSuffix?: EnvironmentParams["topicSuffix"];
+  };
 };
 
 const ALL_ENVIRONMENTS_VALUE = "ALL";
