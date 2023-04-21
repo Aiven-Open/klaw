@@ -4,8 +4,10 @@ import {
   EmptyState,
   Flexbox,
   StatusChip,
+  InlineIcon,
 } from "@aivenio/aquarium";
 import { Connector } from "src/domain/connector";
+import link from "@aivenio/aquarium/dist/src/icons/link";
 
 type ConnectorTableProps = {
   connectors: Connector[];
@@ -29,7 +31,7 @@ function ConnectorTable(props: ConnectorTableProps) {
       headerName: "Connector",
       UNSAFE_render: ({ connectorName }: ConnectorTableRow) => (
         <a href={`/connectorOverview?connectorName=${connectorName}`}>
-          {connectorName}
+          {connectorName} <InlineIcon icon={link} />
         </a>
       ),
     },
