@@ -235,11 +235,9 @@ public class ApacheKafkaTopicService {
       String schemaDeletionStatus = "";
       if (clusterTopicRequest.getDeleteAssociatedSchema()) {
         schemaDeletionStatus = schemaService.deleteSchema(clusterTopicRequest).getMessage();
+        log.info("Schema deletion status : {}", schemaDeletionStatus);
       }
-      return ApiResponse.builder()
-          .success((schemaDeletionStatus.equals(ApiResultStatus.SUCCESS.value)))
-          .message(schemaDeletionStatus)
-          .build();
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } catch (KafkaException e) {
       log.error("Invalid properties: ", e);
       throw e;
@@ -250,6 +248,9 @@ public class ApacheKafkaTopicService {
       } else {
         Thread.currentThread().interrupt();
         errorMessage = e.getMessage();
+      }
+      if ((e.getMessage().contains("UnknownTopicOrPartition"))) {
+        return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
       }
       log.error("Unable to delete topic {}, {}", clusterTopicRequest.getTopicName(), errorMessage);
       throw e;

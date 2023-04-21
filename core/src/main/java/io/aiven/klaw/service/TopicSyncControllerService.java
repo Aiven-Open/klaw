@@ -1056,6 +1056,7 @@ public class TopicSyncControllerService {
     }
 
     if (updatedSyncTopics.size() == 0 && updatedSyncTopicsDelete.size() > 0) {
+      manageDatabase.loadTopicsForOneTenant(tenantId);
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     }
 
@@ -1075,10 +1076,9 @@ public class TopicSyncControllerService {
 
     if (listTopics.size() > 0) {
       try {
-        return ApiResponse.builder()
-            .success(true)
-            .message(manageDatabase.getHandleDbRequests().addToSynctopics(listTopics))
-            .build();
+        String statusSync = manageDatabase.getHandleDbRequests().addToSynctopics(listTopics);
+        manageDatabase.loadTopicsForOneTenant(tenantId);
+        return ApiResponse.builder().success(true).message(statusSync).build();
       } catch (Exception e) {
         log.error(e.getMessage());
         throw new KlawException(e.getMessage());
