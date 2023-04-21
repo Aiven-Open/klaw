@@ -717,63 +717,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     Map<String, EnvParams> envParamsMap = new HashMap<>();
 
     for (Env env : kafkaEnvTenantList) {
-      EnvParams oneEnvParamsObj = new EnvParams();
-      String envParams = env.getOtherParams();
-
-      String[] params = envParams.split(",");
-      String defaultPartitions = null, defaultRf = null;
-      for (String param : params) {
-        if (param.startsWith("default.partitions")) {
-          defaultPartitions = param.substring(param.indexOf("=") + 1);
-          List<String> defPartitionsList = new ArrayList<>();
-          defPartitionsList.add(defaultPartitions);
-          oneEnvParamsObj.setDefaultPartitions(defPartitionsList);
-        } else if (param.startsWith("max.partitions")) {
-          String maxPartitions = param.substring(param.indexOf("=") + 1);
-          int maxPartitionsInt = Integer.parseInt(maxPartitions);
-          List<String> partitions = new ArrayList<>();
-
-          for (int i = 1; i < maxPartitionsInt + 1; i++) {
-            if (defaultPartitions != null && defaultPartitions.equals(i + "")) {
-              partitions.add(i + " (default)");
-            } else {
-              partitions.add(i + "");
-            }
-          }
-          oneEnvParamsObj.setPartitionsList(partitions);
-        } else if (param.startsWith("default.replication.factor")) {
-          defaultRf = param.substring(param.indexOf("=") + 1);
-          List<String> repFactorList = new ArrayList<>();
-          repFactorList.add(defaultRf);
-          oneEnvParamsObj.setDefaultRepFactor(repFactorList);
-        } else if (param.startsWith("max.replication.factor")) {
-          String maxRf = param.substring(param.indexOf("=") + 1);
-          int maxRfInt = Integer.parseInt(maxRf);
-          List<String> rf = new ArrayList<>();
-
-          for (int i = 1; i < maxRfInt + 1; i++) {
-            if (defaultRf != null && defaultRf.equals(i + "")) {
-              rf.add(i + " (default)");
-            } else {
-              rf.add(i + "");
-            }
-          }
-
-          oneEnvParamsObj.setReplicationFactorList(rf);
-        } else if (param.startsWith("topic.prefix")) {
-          String topicPrefix = param.substring(param.indexOf("=") + 1);
-          List<String> topicPrefixList = new ArrayList<>();
-          topicPrefixList.add(topicPrefix);
-          oneEnvParamsObj.setTopicPrefix(topicPrefixList);
-        } else if (param.startsWith("topic.suffix")) {
-          String topicSuffix = param.substring(param.indexOf("=") + 1);
-          List<String> topicSuffixList = new ArrayList<>();
-          topicSuffixList.add(topicSuffix);
-          oneEnvParamsObj.setTopicSuffix(topicSuffixList);
-        }
-      }
-
-      envParamsMap.put(env.getId(), oneEnvParamsObj);
+      envParamsMap.put(env.getId(), env.getParams());
     }
     envParamsMapPerTenant.put(tenantId, envParamsMap);
   }

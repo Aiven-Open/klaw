@@ -504,7 +504,21 @@
 										</td>
 										<td>{{ allenv.tenantName }}</td>
 
-										<td style="word-wrap: break-word;">{{ allenv.otherParams }}</td>
+										<td style="word-wrap: break-word;" ng-show="!allenv.params.applyRegex">Default Partitions {{ allenv.params.defaultPartitions }}<br>
+											Max Partitions : {{ allenv.params.maxPartitions }}<br>
+											Default Replication : {{ allenv.params.defaultRepFactor }}<br>
+											Max Replication : {{ allenv.params.maxRepFactor }}<br>
+											Topic Prefix : {{ allenv.params.topicPrefix[0] }}<br>
+											Topic Suffix : {{ allenv.params.topicSuffix[0] }}<br>
+
+										</td>
+										<td style="word-wrap: break-word;" ng-show="allenv.params.applyRegex" >Default Partitions {{ allenv.params.defaultPartitions }}<br>
+											Max Partitions : {{ allenv.params.maxPartitions }}<br>
+											Default Replication : {{ allenv.params.defaultRepFactor }}<br>
+											Max Replication : {{ allenv.params.maxRepFactor }}<br>
+											Topic Regex : {{ allenv.params.topicRegex[0] }}<br>
+											Apply Regex : {{ allenv.params.applyRegex }}
+										</td>
 
 										<td ng-show="allenv.envStatus != 'ONLINE'">
 											<button ng-click="getUpdateEnvStatus(allenv.id);" class="btn btn-circle btn-danger" type="button">

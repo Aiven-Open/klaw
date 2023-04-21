@@ -15,6 +15,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
+import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.CommonUtilsService;
 import io.aiven.klaw.service.MailUtils;
 import io.aiven.klaw.service.TopicControllerService;
@@ -206,8 +207,9 @@ public class TopicRequestValidatorImplIT {
     Integer tenantId = 101;
     Env env = utilMethods.getEnvLists().get(0);
     String topicPrefixSuffix = "devkafka";
-    env.setOtherParams("topic.prefix=" + topicPrefixSuffix);
-
+    //    env.setOtherParams("topic.prefix=" + topicPrefixSuffix);
+    env.setParams(new EnvParams());
+    env.getParams().setTopicPrefix(List.of(topicPrefixSuffix));
     TopicCreateRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(topicControllerService.getUserName()).thenReturn("superadmin");
@@ -223,6 +225,8 @@ public class TopicRequestValidatorImplIT {
         .contains("Topic prefix does not match. " + addTopicRequest.getTopicname());
 
     env.setOtherParams("topic.suffix=" + topicPrefixSuffix);
+    env.getParams().setTopicPrefix(null);
+    env.getParams().setTopicSuffix(List.of(topicPrefixSuffix));
     when(topicControllerService.getEnvDetails(anyString())).thenReturn(env);
 
     violations = validator.validate(addTopicRequest);

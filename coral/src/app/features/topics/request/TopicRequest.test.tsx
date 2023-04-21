@@ -165,7 +165,7 @@ describe("<TopicRequest />", () => {
   });
 
   describe("Topic name", () => {
-    describe("when environment has topicprefix defined", () => {
+    describe("when environment params have topicPrefix defined", () => {
       beforeAll(() => {
         mockGetEnvironmentsForTeam({
           mswInstance: server,
@@ -174,7 +174,7 @@ describe("<TopicRequest />", () => {
               createMockEnvironmentDTO({
                 name: "EnvWithTopicPrefix",
                 id: "4",
-                topicprefix: "test-",
+                params: { topicPrefix: ["test-"] },
               }),
             ],
           },
@@ -219,7 +219,7 @@ describe("<TopicRequest />", () => {
       });
     });
 
-    describe("when environment has topicsuffix defined", () => {
+    describe("when environment params have topicSuffix defined", () => {
       beforeAll(() => {
         mockGetEnvironmentsForTeam({
           mswInstance: server,
@@ -228,7 +228,9 @@ describe("<TopicRequest />", () => {
               createMockEnvironmentDTO({
                 name: "EnvWithTopicSuffix",
                 id: "4",
-                topicsuffix: "-test",
+                params: {
+                  topicSuffix: ["-test"],
+                },
               }),
             ],
           },
@@ -284,19 +286,25 @@ describe("<TopicRequest />", () => {
               createMockEnvironmentDTO({
                 name: "TST",
                 id: "2",
-                maxPartitions: "8",
-                maxReplicationFactor: "2",
+                params: {
+                  maxPartitions: "8",
+                  maxRepFactor: "2",
+                },
               }),
               createMockEnvironmentDTO({
                 name: "PROD",
                 id: "3",
-                maxPartitions: "16",
-                maxReplicationFactor: "4",
+                params: {
+                  maxPartitions: "16",
+                  maxRepFactor: "4",
+                },
               }),
               createMockEnvironmentDTO({
                 name: "WITH_DEFAULT_PARTITIONS",
                 id: "4",
-                defaultReplicationFactor: "4",
+                params: {
+                  defaultRepFactor: "4",
+                },
               }),
             ],
           },
@@ -358,19 +366,25 @@ describe("<TopicRequest />", () => {
               createMockEnvironmentDTO({
                 name: "TST",
                 id: "2",
-                maxPartitions: "8",
-                maxReplicationFactor: "2",
+                params: {
+                  maxPartitions: "8",
+                  maxRepFactor: "2",
+                },
               }),
               createMockEnvironmentDTO({
                 name: "PROD",
                 id: "3",
-                maxPartitions: "16",
-                maxReplicationFactor: "4",
+                params: {
+                  maxPartitions: "16",
+                  maxRepFactor: "4",
+                },
               }),
               createMockEnvironmentDTO({
                 name: "WITH_DEFAULT_PARTITIONS",
                 id: "4",
-                defaultReplicationFactor: "4",
+                params: {
+                  defaultRepFactor: "4",
+                },
               }),
             ],
           },
@@ -394,7 +408,7 @@ describe("<TopicRequest />", () => {
         cleanup();
       });
 
-      it('changes replication factor value to environment "defaultPartitions"', async () => {
+      it('changes replication factor value to environment params "defaultPartitions"', async () => {
         const selectEnvironment = await screen.findByRole("combobox", {
           name: "Environment *",
         });
@@ -409,7 +423,7 @@ describe("<TopicRequest />", () => {
         expect(inputReplicationFactor).toHaveDisplayValue("4");
       });
 
-      it('changes replication factor value to environment "maxPartitions" when exceeded it is and no default', async () => {
+      it('changes replication factor value to environment params "maxPartitions" when exceeded it is and no default', async () => {
         const selectEnvironment = await screen.findByRole("combobox", {
           name: "Environment *",
         });
@@ -428,6 +442,7 @@ describe("<TopicRequest />", () => {
         expect(inputReplicationFactorInput).toHaveDisplayValue("100");
 
         await user.selectOptions(selectEnvironment, "TST");
+
         expect(inputReplicationFactorInput).not.toBeInTheDocument();
 
         const inputReplicationFactorSelect = await screen.findByRole(
@@ -476,19 +491,25 @@ describe("<TopicRequest />", () => {
             createMockEnvironmentDTO({
               name: "TST",
               id: "2",
-              maxPartitions: "8",
-              maxReplicationFactor: "2",
+              params: {
+                maxPartitions: "8",
+                maxRepFactor: "2",
+              },
             }),
             createMockEnvironmentDTO({
               name: "PROD",
               id: "3",
-              maxPartitions: "16",
-              maxReplicationFactor: "4",
+              params: {
+                maxPartitions: "16",
+                maxRepFactor: "4",
+              },
             }),
             createMockEnvironmentDTO({
               name: "WITH_DEFAULT_PARTITIONS",
               id: "4",
-              defaultPartitions: "4",
+              params: {
+                defaultPartitions: "4",
+              },
             }),
           ],
         },
@@ -546,19 +567,25 @@ describe("<TopicRequest />", () => {
             createMockEnvironmentDTO({
               name: "TST",
               id: "2",
-              maxPartitions: "8",
-              maxReplicationFactor: "2",
+              params: {
+                maxPartitions: "8",
+                maxRepFactor: "2",
+              },
             }),
             createMockEnvironmentDTO({
               name: "PROD",
               id: "3",
-              maxPartitions: "16",
-              maxReplicationFactor: "4",
+              params: {
+                maxPartitions: "16",
+                maxRepFactor: "4",
+              },
             }),
             createMockEnvironmentDTO({
               name: "WITH_DEFAULT_PARTITIONS",
               id: "4",
-              defaultPartitions: "4",
+              params: {
+                defaultPartitions: "4",
+              },
             }),
           ],
         },
@@ -579,7 +606,7 @@ describe("<TopicRequest />", () => {
     });
     afterEach(cleanup);
 
-    it('changes topic partitions value to 4 when environment has "defaultPartitions"', async () => {
+    it('changes topic partitions value to 4 when environment params have "defaultPartitions"', async () => {
       const selectEnvironment = await screen.findByRole("combobox", {
         name: "Environment *",
       });
@@ -591,7 +618,7 @@ describe("<TopicRequest />", () => {
       expect(topicPartitionsInput).toHaveDisplayValue("4");
     });
 
-    it('changes topic partitions value to environment "maxPartitions" when current value exceeds', async () => {
+    it('changes topic partitions value to environment params "maxPartitions" when current value exceeds', async () => {
       const selectEnvironment = await screen.findByRole("combobox", {
         name: "Environment *",
       });

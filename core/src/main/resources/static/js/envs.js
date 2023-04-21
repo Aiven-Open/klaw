@@ -242,6 +242,10 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 );
         }
 
+        $scope.initNewEnv = function() {
+        $scope.addNewEnv.applyRegex=false;
+        }
+
         $scope.getSchemaRegEnvs = function() {
                     $http({
                             method: "GET",
@@ -867,6 +871,12 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 else
                     $scope.addNewEnv.topicsuffix = "";
 
+                if($scope.addNewEnv.topicregex && $scope.addNewEnv.topicregex.length > 0) {
+                    $scope.addNewEnv.topicregex = $scope.addNewEnv.topicregex.trim();
+                } else {
+                    $scope.addNewEnv.topicregex = "";
+                }
+
                 if($scope.addNewEnv.envname == undefined || !$scope.addNewEnv.envname)
                 {
                     $scope.alertnote = "Please fill in a name for environment";
@@ -888,27 +898,21 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                     return;
                 }
 
-//                if(!$scope.addNewEnv.tenant)
-//                {
-//                    $scope.alertnote = "Please select a tenant.";
-//                    $scope.showAlertToast();
-//                    return;
-//                }
-
                 var serviceInput = {};
 
                 serviceInput['name'] = $scope.addNewEnv.envname;
                 serviceInput['clusterId'] = $scope.addNewEnv.cluster;
-//                serviceInput['tenantId'] = $scope.addNewEnv.tenant;
                 serviceInput['type'] = 'kafka';
-
-                serviceInput['otherParams'] = "default.partitions=" + $scope.addNewEnv.defparts
-                                         + ",max.partitions=" + $scope.addNewEnv.defmaxparts
-                                         + ",default.replication.factor=" + $scope.addNewEnv.defrepfctr
-                                         + ",max.replication.factor=" + $scope.addNewEnv.maxrepfctr
-                                         + ",topic.prefix=" + $scope.addNewEnv.topicprefix
-                                         + ",topic.suffix=" + $scope.addNewEnv.topicsuffix;
-
+                serviceInput['params'] ={
+                   'defaultPartitions': $scope.addNewEnv.defparts,
+                   'maxPartitions': $scope.addNewEnv.defmaxparts,
+                   'defaultRepFactor': $scope.addNewEnv.defrepfctr,
+                   'maxRepFactor': $scope.addNewEnv.maxrepfctr,
+                   'topicPrefix': [$scope.addNewEnv.topicprefix],
+                   'topicSuffix': [$scope.addNewEnv.topicsuffix],
+                   'topicRegex': [$scope.addNewEnv.topicregex],
+                   'applyRegex': $scope.addNewEnv.applyRegex
+                 };
 
                 $http({
                     method: "POST",
@@ -1103,6 +1107,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             $scope.alert = "Copied cluster id to clipboard: " + copyText.value.toLowerCase();
             $scope.showSuccessToast();
         }
+
+
 
         $scope.getKafkaSupportedProtocols = function() {
             $http({

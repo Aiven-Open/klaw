@@ -501,9 +501,10 @@
 												<label>Topic name</label>
 												<input ng-show="requestType == 'CreateTopic'" type="text" class="form-control" ng-model="addTopic.topicname" required>
 												<input ng-show="requestType == 'EditTopic' || requestType == 'PromoteTopic'" disabled type="text" class="form-control" ng-model="addTopic.topicname" required>
-												<small ng-show="topicPrefix != null && topicPrefix != ''" class="form-control-feedback">Ex: <b>{{topicPrefix}}</b>mortgagetopic  (With prefix)</small>
-												<small ng-show="topicSuffix != null && topicSuffix != ''" class="form-control-feedback">Ex: mortgagetopic<b>{{topicSuffix}}</b>  (With suffix)</small>
-												<small ng-show="(topicPrefix == null || topicPrefix == '') && (topicSuffix == null || topicSuffix == '')" class="form-control-feedback">Ex: mortgagetopic </small>
+												<small ng-show="topicPrefix != null && topicPrefix != ''  && applyRegex == false" class="form-control-feedback">Ex: <b>{{topicPrefix}}</b>mortgagetopic  (With prefix)</small>
+												<small ng-show="topicSuffix != null && topicSuffix != ''  && applyRegex == false" class="form-control-feedback">Ex: mortgagetopic<b>{{topicSuffix}}</b>  (With suffix)</small>
+												<small ng-show="topicRegex != null && applyRegex == true" class="form-control-feedback" name="regexValidation" ng-pattern="topicRegex">Topic Regex : {{topicRegex}}</small>
+												<small ng-show="(topicPrefix == null || topicPrefix == '') && (topicRegex == null || topicRegex == '') && (topicSuffix == null || topicSuffix == '')" class="form-control-feedback">Ex: mortgagetopic </small>
 											</div>
 										</div>
 										<!--/span-->

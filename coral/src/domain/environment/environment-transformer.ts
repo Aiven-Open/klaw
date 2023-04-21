@@ -13,16 +13,18 @@ function transformEnvironmentApiResponse(
     const rv: Environment = {
       name: environment.name,
       id: environment.id,
-      defaultPartitions: parseNumberOrUndefined(environment?.defaultPartitions),
-      defaultReplicationFactor: parseNumberOrUndefined(
-        environment?.defaultReplicationFactor
-      ),
-      maxPartitions: parseNumberOrUndefined(environment?.maxPartitions),
-      maxReplicationFactor: parseNumberOrUndefined(
-        environment?.maxReplicationFactor
-      ),
-      topicNamePrefix: environment?.topicprefix ?? undefined,
-      topicNameSuffix: environment?.topicsuffix ?? undefined,
+      params: {
+        defaultPartitions: parseNumberOrUndefined(
+          environment.params.defaultPartitions
+        ),
+        defaultRepFactor: parseNumberOrUndefined(
+          environment.params.defaultRepFactor
+        ),
+        maxPartitions: parseNumberOrUndefined(environment.params.maxPartitions),
+        maxRepFactor: parseNumberOrUndefined(environment.params.maxRepFactor),
+        topicPrefix: environment.params.topicPrefix,
+        topicSuffix: environment.params.topicSuffix,
+      },
       type: environment?.type,
     };
     return rv;

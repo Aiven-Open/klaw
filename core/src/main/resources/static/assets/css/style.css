@@ -11972,3 +11972,46 @@ form p:last-child {
   animation: ripple 0.2s linear forwards; }
 
 
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 45px;
+  height: 35px;
+  border-radius: 10px;
+}
+
+.slide-check {
+  position: absolute;
+  border-radius: 10px;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #EDF1F2;
+  -webkit-transition: .5s;
+  transition: .5ss;
+}
+
+.slide-check:before {
+  position: absolute;
+  border-radius: 10px;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .5s;
+  transition: .5s;
+}
+
+input:checked + .slide-check {
+  background-color:  #32CD32;
+}
+
+input:checked + .slide-check:before {
+  -webkit-transform: translateX(11px);
+  -ms-transform: translateX(11px);
+  transform: translateX(11px);
+}

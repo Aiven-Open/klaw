@@ -762,17 +762,24 @@ export type components = {
       type: string;
       /** Format: int32 */
       clusterId: number;
-      topicprefix?: string;
-      topicsuffix?: string;
       otherParams?: string;
       id?: string;
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      defaultReplicationFactor?: string;
-      maxReplicationFactor?: string;
       associatedEnv?: components["schemas"]["EnvTag"];
       /** Format: int32 */
       tenantId?: number;
+      params?: components["schemas"]["EnvParams"];
+    };
+    EnvParams: {
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      partitionsList?: (string)[];
+      defaultRepFactor?: string;
+      maxRepFactor?: string;
+      replicationFactorList?: (string)[];
+      topicPrefix?: (string)[];
+      topicSuffix?: (string)[];
+      topicRegex?: (string)[];
+      applyRegex?: boolean;
     };
     EnvTag: {
       id?: string;
@@ -1088,12 +1095,7 @@ export type components = {
       totalNoPages: string;
       allPageNos: (string)[];
       associatedEnv?: components["schemas"]["EnvTag"];
-      topicprefix?: string;
-      topicsuffix?: string;
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      defaultReplicationFactor?: string;
-      maxReplicationFactor?: string;
+      params: components["schemas"]["EnvParams"];
       /** @enum {string} */
       clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
     };
@@ -1157,14 +1159,6 @@ export type components = {
     SupportedProtocolInfo: {
       name?: string;
       value?: string;
-    };
-    EnvParams: {
-      defaultPartitions?: (string)[];
-      partitionsList?: (string)[];
-      defaultRepFactor?: (string)[];
-      replicationFactorList?: (string)[];
-      topicPrefix?: (string)[];
-      topicSuffix?: (string)[];
     };
     DbAuthInfo: {
       dbauth: string;

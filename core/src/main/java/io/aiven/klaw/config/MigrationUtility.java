@@ -17,6 +17,7 @@ import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,18 +45,18 @@ public class MigrationUtility implements InitializingBean {
 
     // Find the latest version in DB
     String latestDataVersion = getLatestDataVersion();
-    if (!isVersionGreaterThenOrEqualToCurrentVersion(latestDataVersion, currentKlawVersion)) {
+    if (!isVersionGreaterThenCurrentVersion(latestDataVersion, currentKlawVersion)) {
       log.info(
-          "Current Data Version {} is greater than or equal to the Klaw version {}, no action needed.",
+          "Current Data Version {} is greater than the Klaw version {}, no action needed.",
           latestDataVersion,
           currentKlawVersion);
       return;
     }
 
     // Find all DataMigration annotated classes.// Migrate each one
-    Reflections reflections = new Reflections(packageToScan);
+    Reflections reflections =
+        new Reflections(new ConfigurationBuilder().forPackages(packageToScan));
     Set<Class<?>> classes = reflections.getTypesAnnotatedWith(DataMigration.class);
-
     SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions =
         orderApplicableMigrationInstructions(latestDataVersion, classes);
 
@@ -64,8 +65,7 @@ public class MigrationUtility implements InitializingBean {
 
     // Update the database with the version if there was no
     String postMigrationDataVersion = getLatestDataVersion();
-    if (!isVersionGreaterThenOrEqualToCurrentVersion(
-        postMigrationDataVersion, currentKlawVersion)) {
+    if (!isVersionGreaterThenCurrentVersion(postMigrationDataVersion, currentKlawVersion)) {
       updateDataVersionInDB(currentKlawVersion);
     }
   }
@@ -105,8 +105,7 @@ public class MigrationUtility implements InitializingBean {
     classes.forEach(
         migrate -> {
           DataMigration migration = migrate.getAnnotation(DataMigration.class);
-          if (isVersionGreaterThenOrEqualToCurrentVersion(
-              currentDataVersion, migration.version())) {
+          if (isVersionGreaterThenCurrentVersion(currentDataVersion, migration.version())) {
             // successfully run data migration.
             Pair<String, Class<?>> pair = Pair.of(migration.version(), migrate);
 
@@ -178,11 +177,15 @@ public class MigrationUtility implements InitializingBean {
   /**
    * @param currentVersion The Current Data Version that Klaw has in the database.
    * @param comparedVersion The version of the migration instructions which have been found.
-   * @return true if the compared version is greater then or equal to the current version. false if
-   *     it is less then the current version.
+   * @return false if the compared version is greater than the current version. true if it is less
+   *     than or equal to the current version.
    */
-  private boolean isVersionGreaterThenOrEqualToCurrentVersion(
+  private boolean isVersionGreaterThenCurrentVersion(
       String currentVersion, String comparedVersion) {
+
+    if (currentVersion.equals(comparedVersion)) {
+      return true;
+    }
 
     String[] currentVersionParts = currentVersion.split("\\.");
     String[] compareVersionParts = comparedVersion.split("\\.");

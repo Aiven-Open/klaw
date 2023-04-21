@@ -50,6 +50,8 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
          $scope.getEnvTopicPartitions = function(envSelected){
                 $scope.topicPrefix = null;
                 $scope.topicSuffix = null;
+                $scope.topicRegex = null;
+                $scope.applyRegex = null;
              	    $http({
                             method: "GET",
                             url: "getEnvParams",
@@ -57,10 +59,14 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                              params: {'envSelected' : envSelected }
                         }).success(function(output) {
                             $scope.envTopicMap = output;
-                            if(output.topicPrefix != null)
-                                $scope.topicPrefix = output.topicPrefix[0];
-                            if(output.topicSuffix != null)
-                                $scope.topicSuffix = output.topicSuffix[0];
+                            if(output !=null) {
+                            $scope.topicPrefix = output.topicPrefix[0];
+                            $scope.topicSuffix = output.topicSuffix[0];
+                            $scope.topicRegex = output.topicRegex[0];
+                            $scope.applyRegex = output.applyRegex;
+
+                            }
+
                         }).error(
                             function(error)
                             {
@@ -425,7 +431,6 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             );
         }
 
-
         $scope.refreshPage = function(){
                 $window.location.reload();
             }
@@ -623,4 +628,5 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     );
             }
 }
+
 );

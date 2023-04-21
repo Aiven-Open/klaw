@@ -142,7 +142,7 @@ function TopicRequest() {
                 <SelectOrNumberInput
                   name={"topicpartitions"}
                   label={"Topic partitions"}
-                  max={selectedEnvironment?.maxPartitions}
+                  max={selectedEnvironment?.params?.maxPartitions}
                   required={true}
                 />
               </Box>
@@ -150,7 +150,7 @@ function TopicRequest() {
                 <SelectOrNumberInput
                   name={"replicationfactor"}
                   label={"Replication factor"}
-                  max={selectedEnvironment?.maxReplicationFactor}
+                  max={selectedEnvironment?.params?.maxRepFactor}
                   required={true}
                 />
               </Box>

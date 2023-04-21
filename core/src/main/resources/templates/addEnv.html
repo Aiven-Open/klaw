@@ -459,7 +459,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-init="getKafkaClusters();getStandardEnvNames();">
+			<div class="row" ng-init="getKafkaClusters();getStandardEnvNames();initNewEnv();">
 				<div ng-if="dashboardDetails.addDeleteEditEnvs=='Authorized'" class="col-lg-12">
 					<div class="card card-outline-success">
 						<div class="card-body">
@@ -558,20 +558,49 @@
 										</div>
 										<!--/span-->
 									</div>
-
 									<div class="row">
 										<div class="col-md-6">
-											<div class="form-group">
+
+											<div class="form-group" >
+												<label class="control-label">Apply Regex</label>
+												<br>
+												<label class="switch">
+													<input type="checkbox" ng-model="addNewEnv.applyRegex" >
+													<span class="slide-check"></span>
+												</label><br><br>
+											</div>
+
+										</div>
+										<div class="col-md-6">
+
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-md-6">
+
+											<div class="form-group" ng-show="addNewEnv.applyRegex == false">
 												<label class="control-label">Topic prefix (optional)</label>
 												<input ng-model="addNewEnv.topicprefix" id="addNewEnv.topicprefix"
 													   type="text" maxlength="20" class="form-control">
 											</div>
 										</div>
 										<div class="col-md-6">
-											<div class="form-group">
+											<div class="form-group"  ng-show="addNewEnv.applyRegex == false">
 												<label class="control-label">Topic suffix (optional)</label>
 												<input ng-model="addNewEnv.topicsuffix" id="addNewEnv.topicsuffix"
 													   type="text" maxlength="20" class="form-control">
+											</div>
+										</div>
+										<div class="col-md-6">
+
+											<div class="form-group" ng-show="addNewEnv.applyRegex">
+												<label class="control-label">Topic Regex Pattern (optional)</label>
+												<a class="mytooltip" href="javascript:void(0)">
+													<span class="tooltip-content3">Exampe ensure 'Dev-' starts all topic names with: Dev-.*</span>
+													<input ng-model="addNewEnv.topicregex" id="addNewEnv.topicregex"
+														   type="text" maxlength="20" class="form-control">
+													<label class="control-label">Note: Only the Regex will be applied to topic name creation, even if a prefix or suffix are present</label>
+												</a>
 											</div>
 										</div>
 									</div>
@@ -595,6 +624,7 @@
 
 
 										</div>
+
 									</div>
 
 

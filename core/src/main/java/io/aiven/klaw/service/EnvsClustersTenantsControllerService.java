@@ -147,50 +147,10 @@ public class EnvsClustersTenantsControllerService {
               .getClusterName());
       envModel.setTenantName(manageDatabase.getTenantMap().get(envModel.getTenantId()));
 
-      extractKwEnvParameters(envModel);
       log.debug("Return env model {}", envModel);
       return envModel;
     }
     return null;
-  }
-
-  private void extractKwEnvParameters(EnvModelResponse env) {
-    String defPartns = "",
-        defMaxPartns = "",
-        defaultRf = "",
-        maxRf = "",
-        topicPrefix = "",
-        topicSuffix = "";
-    String otherParams = env.getOtherParams();
-    String[] params;
-    try {
-      if (otherParams != null) {
-        params = otherParams.split(",");
-        for (String param : params) {
-          if (param.startsWith("default.partitions")) {
-            defPartns = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("max.partitions")) {
-            defMaxPartns = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("default.replication.factor")) {
-            defaultRf = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("max.replication.factor")) {
-            maxRf = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("topic.prefix")) {
-            topicPrefix = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("topic.suffix")) {
-            topicSuffix = param.substring(param.indexOf("=") + 1);
-          }
-        }
-        env.setDefaultPartitions(defPartns);
-        env.setMaxPartitions(defMaxPartns);
-        env.setDefaultReplicationFactor(defaultRf);
-        env.setMaxReplicationFactor(maxRf);
-        env.setTopicprefix(topicPrefix);
-        env.setTopicsuffix(topicSuffix);
-      }
-    } catch (Exception e) {
-      log.error("Unable to set topic partitions, setting default from properties.", e);
-    }
   }
 
   public UserInfoModel getUserDetails(String userId) {
@@ -525,6 +485,7 @@ public class EnvsClustersTenantsControllerService {
     EnvModelResponse envModel;
     KwClusters kwCluster;
     for (Env listEnv : listEnvs) {
+      log.debug("Params {} for env {}", listEnv.getParams(), listEnv.getName());
       kwCluster = manageDatabase.getClusters(clusterType, tenantId).get(listEnv.getClusterId());
       if (kwCluster != null) {
         envModel = new EnvModelResponse();
@@ -667,6 +628,20 @@ public class EnvsClustersTenantsControllerService {
     newEnv.setTenantId(tenantId);
 
     newEnv.setName(newEnv.getName().toUpperCase());
+    if (KafkaClustersType.KAFKA.value.equalsIgnoreCase(newEnv.getType())) {
+      newEnv
+          .getParams()
+          .setPartitionsList(
+              buildListWithDefault(
+                  newEnv.getParams().getDefaultPartitions(),
+                  newEnv.getParams().getMaxPartitions()));
+      newEnv
+          .getParams()
+          .setReplicationFactorList(
+              buildListWithDefault(
+                  newEnv.getParams().getDefaultRepFactor(), newEnv.getParams().getMaxRepFactor()));
+    }
+
     String envIdAlreadyExistsInDeleteStatus = "";
     List<Env> envActualList = manageDatabase.getHandleDbRequests().getAllEnvs(tenantId);
     List<Env> kafkaEnvs = manageDatabase.getKafkaEnvList(tenantId);
@@ -762,12 +737,27 @@ public class EnvsClustersTenantsControllerService {
     }
   }
 
+  private List<String> buildListWithDefault(String defaultNumber, String maxNumber) {
+    int defaultNum = Integer.parseInt(defaultNumber);
+    int maxNum = Integer.parseInt(maxNumber);
+    List<String> parameterList = new ArrayList();
+    for (int i = 0; i < maxNum; i++) {
+      if ((i + 1) == defaultNum) {
+        parameterList.add(i, String.valueOf(i + 1) + " (default)");
+      } else {
+        parameterList.add(i, String.valueOf(i + 1));
+      }
+    }
+    return parameterList;
+  }
+
   private boolean validateConnectedClusters(
       EnvModel newEnv, List<Integer> kafkaClusterIds, List<Integer> schemaClusterIds) {
     if (newEnv.getType().equals(KafkaClustersType.KAFKA.value)) {
       if (kafkaClusterIds.contains(newEnv.getClusterId())) {
         // don't allow same cluster id be assigned to another kafka env, if regex is not defined
-        return newEnv.getTopicprefix() == null && newEnv.getTopicsuffix() == null;
+        return newEnv.getParams().getTopicPrefix() == null
+            && newEnv.getParams().getTopicSuffix() == null;
       }
     } else if (newEnv.getType().equals(KafkaClustersType.SCHEMA_REGISTRY.value)) {
       // don't allow same cluster id be assigned to another schema env

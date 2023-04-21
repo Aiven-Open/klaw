@@ -40,17 +40,7 @@ public class EnvModelResponse implements Serializable {
 
   private EnvTag associatedEnv;
 
-  private String topicprefix;
-
-  private String topicsuffix;
-
-  private String defaultPartitions;
-
-  private String maxPartitions;
-
-  private String defaultReplicationFactor;
-
-  private String maxReplicationFactor;
+  @NotNull private EnvParams params;
 
   public void setClusterType(KafkaClustersType type) {
     this.type = type.value;

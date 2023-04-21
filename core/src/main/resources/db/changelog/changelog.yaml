@@ -1033,3 +1033,13 @@ databaseChangeLog:
                 - column:
                     name: associatedservers
                     type: VARCHAR(250)
+    - changeSet:
+        id: 18-04-23 New Column to store environment parameters as json
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              tableName: kwenv
+              columns:
+                - column:
+                    name: envparams
+                    type: CLOB

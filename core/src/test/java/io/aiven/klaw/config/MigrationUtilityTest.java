@@ -41,6 +41,7 @@ class MigrationUtilityTest {
   @Mock private DataVersionRepo versionRepo;
 
   private static final String KLAW_VERSION = "2.2.0";
+
   private static final String PACKAGE_TO_SCAN = "io.aiven.klaw.dao.test";
 
   private static final String PROD_PACKAGE_TO_SCAN = "io.aiven.klaw.dao.migration";
@@ -63,7 +64,7 @@ class MigrationUtilityTest {
 
   @Test
   public void VersionIsAlreadyAtLatest_NoMigration() throws Exception {
-    when(versionRepo.findTopByOrderByIdDesc()).thenReturn(getDataVersion(KLAW_VERSION));
+    when(versionRepo.findTopByOrderByIdDesc()).thenReturn(getDataVersion("2.4.0"));
 
     utility.afterPropertiesSet();
     verify(versionRepo, times(0)).save(any());
@@ -106,7 +107,7 @@ class MigrationUtilityTest {
     Reflections reflections = new Reflections(PROD_PACKAGE_TO_SCAN);
     Set<Class<?>> classes = reflections.getTypesAnnotatedWith(DataMigration.class);
     // When adding a new package you will need to increment this by 1.
-    assertThat(classes.size()).isEqualTo(1);
+    assertThat(classes.size()).isEqualTo(2);
     Set<Integer> uniqueOrder = new HashSet<>();
     // Check Order Numbers are correctly assigned
     classes.forEach(

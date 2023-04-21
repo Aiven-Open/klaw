@@ -17,12 +17,14 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_114;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_116;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_117;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_118;
 
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.CommonUtilsService;
 import io.aiven.klaw.service.MailUtils;
 import io.aiven.klaw.service.TopicControllerService;
@@ -31,6 +33,8 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -212,56 +216,69 @@ public class TopicRequestValidatorImpl
 
   private boolean validateTopicConfigParameters(
       TopicRequestModel topicRequestReq, ConstraintValidatorContext constraintValidatorContext) {
-    log.debug("Into validateTopicConfigParameters");
 
-    String topicPrefix = null, topicSuffix = null;
-    String otherParams =
-        topicControllerService.getEnvDetails(topicRequestReq.getEnvironment()).getOtherParams();
-    String[] params;
-    try {
-      if (otherParams != null) {
-        params = otherParams.split(",");
-        for (String param : params) {
-          if (param.startsWith("topic.prefix")) {
-            topicPrefix = param.substring(param.indexOf("=") + 1);
-          } else if (param.startsWith("topic.suffix")) {
-            topicSuffix = param.substring(param.indexOf("=") + 1);
+    EnvParams params =
+        topicControllerService.getEnvDetails(topicRequestReq.getEnvironment()).getParams();
+    if (params != null) {
+      String topicPrefix = getValueOrDefault(params.getTopicPrefix(), "");
+      String topicSuffix = getValueOrDefault(params.getTopicSuffix(), "");
+      String topicRegex = getValueOrDefault(params.getTopicRegex(), "");
+
+      try {
+        if (!params.isApplyRegex()) {
+          if (topicPrefix != null
+              && !topicPrefix.isBlank()
+              && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {
+            log.error(
+                "Topic prefix {} does not match. {}", topicPrefix, topicRequestReq.getTopicname());
+            updateConstraint(
+                constraintValidatorContext,
+                String.format(TOPICS_VLD_ERR_115, topicRequestReq.getTopicname()));
+            return false;
+          }
+
+          if (topicSuffix != null
+              && !topicSuffix.isBlank()
+              && !topicRequestReq.getTopicname().endsWith(topicSuffix)) {
+            log.error(
+                "Topic suffix {} does not match. {}", topicSuffix, topicRequestReq.getTopicname());
+            updateConstraint(
+                constraintValidatorContext,
+                String.format(TOPICS_VLD_ERR_116, topicRequestReq.getTopicname()));
+            return false;
+          }
+        } else {
+          if (topicRegex != null
+              && !topicRegex.isBlank()
+              && !isRegexAMatch(topicRequestReq, topicRegex)) {
+
+            log.error(
+                "Topic Regex {} does not match. {}", topicRegex, topicRequestReq.getTopicname());
+            updateConstraint(
+                constraintValidatorContext,
+                String.format(TOPICS_VLD_ERR_118, topicRequestReq.getTopicname()));
+            return false;
           }
         }
-      }
-    } catch (Exception e) {
-      log.error("Unable to set topic partitions, setting default from properties.", e);
-    }
 
-    try {
-      if (topicPrefix != null
-          && !topicPrefix.isBlank()
-          && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {
-        log.error(
-            "Topic prefix {} does not match. {}", topicPrefix, topicRequestReq.getTopicname());
-        updateConstraint(
-            constraintValidatorContext,
-            String.format(TOPICS_VLD_ERR_115, topicRequestReq.getTopicname()));
+      } catch (Exception e) {
+        log.error("Unable to set topic partitions, setting default from properties.", e);
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_117);
         return false;
       }
-
-      if (topicSuffix != null
-          && !topicSuffix.isBlank()
-          && !topicRequestReq.getTopicname().endsWith(topicSuffix)) {
-        log.error(
-            "Topic suffix {} does not match. {}", topicSuffix, topicRequestReq.getTopicname());
-        updateConstraint(
-            constraintValidatorContext,
-            String.format(TOPICS_VLD_ERR_116, topicRequestReq.getTopicname()));
-        return false;
-      }
-    } catch (Exception e) {
-      log.error("Unable to set topic partitions, setting default from properties.", e);
-      updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_117);
-      return false;
     }
-
     return true;
+  }
+
+  // TODO Review rej and see if this would provide a better experience for Klaw.
+  private boolean isRegexAMatch(TopicRequestModel topicRequestReq, String topicRegex) {
+    Pattern p = Pattern.compile(topicRegex);
+    Matcher m = p.matcher(topicRequestReq.getTopicname());
+    return m.matches();
+  }
+
+  private static String getValueOrDefault(List<String> params, String defaultValue) {
+    return (params != null && params.size() > 0) ? params.get(0) : defaultValue;
   }
 
   private void updateConstraint(
