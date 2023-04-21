@@ -135,7 +135,12 @@ const createConnectorRequest = (
   return api.post<
     KlawApiResponse<"createConnectorRequest">,
     KlawApiRequest<"createConnectorRequest">
-  >(API_PATHS.createConnectorRequest, connectorPayload);
+  >(API_PATHS.createConnectorRequest, {
+    ...connectorPayload,
+    // This is a required property despite being typed as optional in openapi.yaml
+    // Will be fixed in the backend
+    requestOperationType: "CREATE",
+  });
 };
 
 export {
