@@ -445,7 +445,7 @@ describe("ConnectorApprovalsTable", () => {
     const requestsWithStatusCreated = [
       mockedConnectorRequests[0],
       {
-        ...mockedConnectorRequests[0],
+        ...mockedConnectorRequests[1],
         connectorName: "Additional-topic",
         req_no: 1234,
       },
