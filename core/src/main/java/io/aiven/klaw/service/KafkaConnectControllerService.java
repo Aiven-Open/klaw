@@ -615,7 +615,6 @@ public class KafkaConnectControllerService {
                 kafkaConnectHost,
                 kwClusters.getClusterName() + kwClusters.getClusterId(),
                 tenantId);
-
       }
 
       if (Objects.equals(updateTopicReqStatus, ApiResultStatus.SUCCESS.value)) {
