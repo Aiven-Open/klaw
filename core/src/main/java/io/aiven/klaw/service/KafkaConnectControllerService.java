@@ -605,6 +605,7 @@ public class KafkaConnectControllerService {
                 kwClusters.getClusterName() + kwClusters.getClusterId(),
                 tenantId);
       } else {
+
         updateTopicReqStatus =
             clusterApiService.approveConnectorRequests(
                 connectorRequest.getConnectorName(),
@@ -615,6 +616,7 @@ public class KafkaConnectControllerService {
                 kwClusters.getClusterName() + kwClusters.getClusterId(),
                 tenantId);
       }
+
       if (Objects.equals(updateTopicReqStatus, ApiResultStatus.SUCCESS.value)) {
         setConnectorHistory(connectorRequest, userDetails, tenantId);
         updateTopicReqStatus = dbHandle.updateConnectorRequest(connectorRequest, userDetails);
@@ -630,7 +632,7 @@ public class KafkaConnectControllerService {
     }
 
     return ApiResponse.builder()
-        .success((updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)))
+        .success(ApiResultStatus.SUCCESS.value.equalsIgnoreCase(updateTopicReqStatus))
         .message(updateTopicReqStatus)
         .build();
   }
