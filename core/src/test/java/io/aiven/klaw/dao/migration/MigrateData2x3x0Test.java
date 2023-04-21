@@ -157,8 +157,8 @@ class MigrateData2x3x0Test {
     verify(insertDataJdbc, times(1)).addNewEnv(envCaptor.capture());
     Env env = envCaptor.getValue();
     // verify data is correct
-    assertThat(env.getParams().getDefaultPartitions().get(0)).isEqualTo("1");
-    assertThat(env.getParams().getDefaultPartitions().get(0)).isEqualTo("1");
+    assertThat(env.getParams().getDefaultPartitions()).isEqualTo("1");
+    assertThat(env.getParams().getDefaultPartitions()).isEqualTo("1");
     assertThat(env.getParams().getPartitionsList().size()).isEqualTo(2);
     assertThat(env.getParams().getReplicationFactorList().size()).isEqualTo(8);
     //    called once per tenant

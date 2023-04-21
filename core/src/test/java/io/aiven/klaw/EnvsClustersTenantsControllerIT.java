@@ -610,8 +610,8 @@ public class EnvsClustersTenantsControllerIT {
             .getContentAsString();
 
     EnvParams clusterModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    List<String> defaultPartitions = clusterModels.getDefaultPartitions();
-    assertThat(defaultPartitions.get(0)).isEqualTo("2");
+    String defaultPartitions = clusterModels.getDefaultPartitions();
+    assertThat(defaultPartitions).isEqualTo("2");
   }
 
   // get standard env names success

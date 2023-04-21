@@ -112,9 +112,11 @@ public class MockMethods {
     envModel.setType(KafkaClustersType.KAFKA.value);
 
     EnvParams params = new EnvParams();
-    params.setDefaultPartitions(List.of("2"));
+    params.setDefaultPartitions("2");
+    params.setMaxPartitions("2");
     params.setPartitionsList(List.of("1 (default)", "2"));
-    params.setDefaultRepFactor(List.of("1"));
+    params.setDefaultRepFactor("1");
+    params.setMaxRepFactor("2");
     params.setReplicationFactorList(List.of("1", "2"));
     envModel.setParams(params);
     return envModel;

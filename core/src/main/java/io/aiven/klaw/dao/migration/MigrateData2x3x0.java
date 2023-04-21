@@ -67,16 +67,18 @@ public class MigrateData2x3x0 {
           for (String param : stringParams) {
             if (param.startsWith("default.partitions")) {
               defaultPartitions = param.substring(param.indexOf("=") + 1);
-              params.setDefaultPartitions(getValueAsList(param));
+              params.setDefaultPartitions(getValueAsString(param));
             } else if (param.startsWith("max.partitions")) {
               List<String> partitions = generateMaxList(defaultPartitions, param);
               params.setPartitionsList(partitions);
+              params.setMaxPartitions(getValueAsString(param));
             } else if (param.startsWith("default.replication.factor")) {
               defaultRf = param.substring(param.indexOf("=") + 1);
-              params.setDefaultRepFactor(getValueAsList(param));
+              params.setDefaultRepFactor(getValueAsString(param));
             } else if (param.startsWith("max.replication.factor")) {
               List<String> rf = generateMaxList(defaultRf, param);
               params.setReplicationFactorList(rf);
+              params.setMaxRepFactor(getValueAsString(param));
             } else if (param.startsWith("topic.prefix")) {
 
               params.setTopicPrefix(getValueAsList(param));
@@ -125,5 +127,9 @@ public class MigrateData2x3x0 {
     List<String> paramList = new ArrayList<>();
     paramList.add(paramName);
     return paramList;
+  }
+
+  private static String getValueAsString(String param) {
+    return param.substring(param.indexOf("=") + 1);
   }
 }

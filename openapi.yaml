@@ -5838,10 +5838,10 @@
       "EnvParams" : {
         "properties" : {
           "defaultPartitions" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
+            "type" : "string"
+          },
+          "maxPartitions" : {
+            "type" : "string"
           },
           "partitionsList" : {
             "type" : "array",
@@ -5850,10 +5850,10 @@
             }
           },
           "defaultRepFactor" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
+            "type" : "string"
+          },
+          "maxRepFactor" : {
+            "type" : "string"
           },
           "replicationFactorList" : {
             "type" : "array",

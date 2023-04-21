@@ -165,9 +165,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                         $scope.envDetails.topicSuffix = output.params.topicSuffix[0];
                         $scope.envDetails.topicPrefix = output.params.topicPrefix[0];
 
-                        $scope.envDetails.defaultPartitions = output.params.defaultPartitions[0];
+                        $scope.envDetails.defaultPartitions = output.params.defaultPartitions;
+                        $scope.envDetails.maxPartitions = output.params.maxPartitions;
                         $scope.envDetails.maxPartitions = output.params.partitionsList.length;
-                        $scope.envDetails.defaultReplicationFactor = output.params.defaultRepFactor[0];
+                        $scope.envDetails.defaultReplicationFactor = output.params.defaultRepFactor;
+                        $scope.envDetails.maxReplicationFactor = output.params.maxRepFactor;
                         $scope.envDetails.maxReplicationFactor = output.params.replicationFactorList.length;
                         $scope.envDetails.applyRegex = output.params.applyRegex;
 
@@ -593,9 +595,11 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['tenantId'] = $scope.envDetails.tenantId;
                 serviceInput['type'] = 'kafka';
                 serviceInput['params'] ={
-                       'defaultPartitions': [$scope.envDetails.defaultPartitions],
+                       'defaultPartitions': $scope.envDetails.defaultPartitions,
+                       'maxPartitions': $scope.envDetails.maxPartitions,
                        'partitionsList': $scope.buildParamterListWithDefault($scope.envDetails.defaultPartitions, $scope.envDetails.maxPartitions),
-                       'defaultRepFactor': [$scope.envDetails.defaultReplicationFactor],
+                       'defaultRepFactor': $scope.envDetails.defaultReplicationFactor,
+                       'maxRepFactor': $scope.envDetails.maxReplicationFactor,
                        'replicationFactorList': $scope.buildParamterListWithDefault($scope.envDetails.defaultReplicationFactor, $scope.envDetails.maxReplicationFactor),
                        'topicPrefix': [$scope.envDetails.topicPrefix],
                        'topicSuffix': [$scope.envDetails.topicSuffix],

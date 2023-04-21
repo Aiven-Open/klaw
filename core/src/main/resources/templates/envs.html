@@ -504,18 +504,18 @@
 										</td>
 										<td>{{ allenv.tenantName }}</td>
 
-										<td style="word-wrap: break-word;" ng-show="!allenv.params.applyRegex">Default Partitions {{ allenv.params.defaultPartitions[0] }}<br>
-											Max Partitions : {{ allenv.params.partitionsList.length }}<br>
-											Default Replication : {{ allenv.params.defaultRepFactor[0] }}<br>
-											Max Replication : {{ allenv.params.replicationFactorList.length }}<br>
+										<td style="word-wrap: break-word;" ng-show="!allenv.params.applyRegex">Default Partitions {{ allenv.params.defaultPartitions }}<br>
+											Max Partitions : {{ allenv.params.maxPartitions }}<br>
+											Default Replication : {{ allenv.params.defaultRepFactor }}<br>
+											Max Replication : {{ allenv.params.maxRepFactor }}<br>
 											Topic Prefix : {{ allenv.params.topicPrefix[0] }}<br>
 											Topic Suffix : {{ allenv.params.topicSuffix[0] }}<br>
 
 										</td>
-										<td style="word-wrap: break-word;" ng-show="allenv.params.applyRegex" >Default Partitions {{ allenv.params.defaultPartitions[0] }}<br>
-											Max Partitions : {{ allenv.params.partitionsList.length }}<br>
-											Default Replication : {{ allenv.params.defaultRepFactor[0] }}<br>
-											Max Replication : {{ allenv.params.replicationFactorList.length }}<br>
+										<td style="word-wrap: break-word;" ng-show="allenv.params.applyRegex" >Default Partitions {{ allenv.params.defaultPartitions }}<br>
+											Max Partitions : {{ allenv.params.maxPartitions }}<br>
+											Default Replication : {{ allenv.params.defaultRepFactor }}<br>
+											Max Replication : {{ allenv.params.maxRepFactor }}<br>
 											Topic Regex : {{ allenv.params.topicRegex[0] }}<br>
 											Apply Regex : {{ allenv.params.applyRegex }}
 										</td>

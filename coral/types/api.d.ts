@@ -770,9 +770,11 @@ export type components = {
       params?: components["schemas"]["EnvParams"];
     };
     EnvParams: {
-      defaultPartitions?: (string)[];
+      defaultPartitions?: string;
+      maxPartitions?: string;
       partitionsList?: (string)[];
-      defaultRepFactor?: (string)[];
+      defaultRepFactor?: string;
+      maxRepFactor?: string;
       replicationFactorList?: (string)[];
       topicPrefix?: (string)[];
       topicSuffix?: (string)[];

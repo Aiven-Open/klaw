@@ -904,9 +904,11 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['clusterId'] = $scope.addNewEnv.cluster;
                 serviceInput['type'] = 'kafka';
                 serviceInput['params'] ={
-                   'defaultPartitions': [$scope.addNewEnv.defparts],
+                   'defaultPartitions': $scope.addNewEnv.defparts,
+                   'maxPartitions': $scope.addNewEnv.defmaxparts,
                    'partitionsList': $scope.buildParamterListWithDefault($scope.addNewEnv.defparts, $scope.addNewEnv.defmaxparts),
-                   'defaultRepFactor': [$scope.addNewEnv.defrepfctr],
+                   'defaultRepFactor': $scope.addNewEnv.defrepfctr,
+                   'maxRepFactor': $scope.addNewEnv.maxrepfctr,
                    'replicationFactorList': $scope.buildParamterListWithDefault($scope.addNewEnv.defrepfctr, $scope.addNewEnv.maxrepfctr),
                    'topicPrefix': [$scope.addNewEnv.topicprefix],
                    'topicSuffix': [$scope.addNewEnv.topicsuffix],
