@@ -424,7 +424,7 @@ public class ClusterApiService {
               .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
 
       if (ApiResultStatus.SUCCESS.value.equals(
-          Objects.requireNonNull(response.getBody()).get("result"))) {
+          Objects.requireNonNull(response.getBody()).get("message"))) {
         return ApiResultStatus.SUCCESS.value;
       } else {
         return response.getBody().get("errorText");
