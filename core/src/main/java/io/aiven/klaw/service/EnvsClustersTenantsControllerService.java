@@ -628,6 +628,17 @@ public class EnvsClustersTenantsControllerService {
     newEnv.setTenantId(tenantId);
 
     newEnv.setName(newEnv.getName().toUpperCase());
+    newEnv
+        .getParams()
+        .setPartitionsList(
+            buildListWithDefault(
+                newEnv.getParams().getDefaultPartitions(), newEnv.getParams().getMaxPartitions()));
+    newEnv
+        .getParams()
+        .setReplicationFactorList(
+            buildListWithDefault(
+                newEnv.getParams().getDefaultRepFactor(), newEnv.getParams().getMaxRepFactor()));
+
     String envIdAlreadyExistsInDeleteStatus = "";
     List<Env> envActualList = manageDatabase.getHandleDbRequests().selectAllEnvs(tenantId);
     List<Env> kafkaEnvs = manageDatabase.getKafkaEnvList(tenantId);
@@ -721,6 +732,20 @@ public class EnvsClustersTenantsControllerService {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
     }
+  }
+
+  private List<String> buildListWithDefault(String defaultNumber, String maxNumber) {
+    int defaultNum = Integer.parseInt(defaultNumber);
+    int maxNum = Integer.parseInt(maxNumber);
+    List<String> parameterList = new ArrayList();
+    for (int i = 0; i < maxNum; i++) {
+      if ((i + 1) == defaultNum) {
+        parameterList.add(i, String.valueOf(i + 1) + " (default)");
+      } else {
+        parameterList.add(i, String.valueOf(i + 1));
+      }
+    }
+    return parameterList;
   }
 
   private boolean validateConnectedClusters(

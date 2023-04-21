@@ -597,10 +597,8 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['params'] ={
                        'defaultPartitions': $scope.envDetails.defaultPartitions,
                        'maxPartitions': $scope.envDetails.maxPartitions,
-                       'partitionsList': $scope.buildParamterListWithDefault($scope.envDetails.defaultPartitions, $scope.envDetails.maxPartitions),
                        'defaultRepFactor': $scope.envDetails.defaultReplicationFactor,
                        'maxRepFactor': $scope.envDetails.maxReplicationFactor,
-                       'replicationFactorList': $scope.buildParamterListWithDefault($scope.envDetails.defaultReplicationFactor, $scope.envDetails.maxReplicationFactor),
                        'topicPrefix': [$scope.envDetails.topicPrefix],
                        'topicSuffix': [$scope.envDetails.topicSuffix],
                        'topicRegex': [$scope.envDetails.topicRegex],
@@ -634,17 +632,6 @@ app.controller("modifyEnvsCtrl", function($scope, $http, $location, $window) {
 
             };
 
-            $scope.buildParamterListWithDefault = function(defaultNumber, maxNumber) {
-                        var parameterList=[];
-                            for (let i=0;i<maxNumber;i++) {
-                                if((i+1)==defaultNumber) {
-                                    parameterList[i]= "" +(i +1) + " (default)";
-                                } else {
-                                    parameterList[i]= "" +(i +1);
-                                }
-                            }
-                        return parameterList;
-                    }
 
            $scope.editSchemaEnv = function() {
 

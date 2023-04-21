@@ -906,10 +906,8 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
                 serviceInput['params'] ={
                    'defaultPartitions': $scope.addNewEnv.defparts,
                    'maxPartitions': $scope.addNewEnv.defmaxparts,
-                   'partitionsList': $scope.buildParamterListWithDefault($scope.addNewEnv.defparts, $scope.addNewEnv.defmaxparts),
                    'defaultRepFactor': $scope.addNewEnv.defrepfctr,
                    'maxRepFactor': $scope.addNewEnv.maxrepfctr,
-                   'replicationFactorList': $scope.buildParamterListWithDefault($scope.addNewEnv.defrepfctr, $scope.addNewEnv.maxrepfctr),
                    'topicPrefix': [$scope.addNewEnv.topicprefix],
                    'topicSuffix': [$scope.addNewEnv.topicsuffix],
                    'topicRegex': [$scope.addNewEnv.topicregex],
@@ -1110,17 +1108,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
             $scope.showSuccessToast();
         }
 
-        $scope.buildParamterListWithDefault = function(defaultNumber, maxNumber) {
-            var parameterList=[];
-                for (let i=0;i<maxNumber;i++) {
-                    if((i+1)==defaultNumber) {
-                        parameterList[i]= "" +(i +1) + " (default)";
-                    } else {
-                        parameterList[i]= "" +(i +1);
-                    }
-                }
-            return parameterList;
-        }
+
 
         $scope.getKafkaSupportedProtocols = function() {
             $http({
