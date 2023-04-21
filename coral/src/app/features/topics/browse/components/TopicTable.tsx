@@ -4,9 +4,11 @@ import {
   EmptyState,
   Flexbox,
   StatusChip,
+  InlineIcon,
 } from "@aivenio/aquarium";
 import { createTopicOverviewLink } from "src/app/features/topics/browse/utils/create-topic-overview-link";
 import { Topic } from "src/domain/topic";
+import link from "@aivenio/aquarium/dist/src/icons/link";
 
 type TopicListProps = {
   topics: Topic[];
@@ -29,7 +31,9 @@ function TopicTable(props: TopicListProps) {
       field: "topicName",
       headerName: "Topic",
       UNSAFE_render: ({ topicName }: TopicsTableRow) => (
-        <a href={createTopicOverviewLink(topicName)}>{topicName}</a>
+        <a href={createTopicOverviewLink(topicName)}>
+          {topicName} <InlineIcon icon={link} />
+        </a>
       ),
     },
     {
