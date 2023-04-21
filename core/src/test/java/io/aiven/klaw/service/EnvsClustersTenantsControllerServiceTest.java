@@ -22,6 +22,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.response.EnvParams;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -221,6 +222,12 @@ class EnvsClustersTenantsControllerServiceTest {
     env.setType(KafkaClustersType.KAFKA.value);
     env.setTenantId(101);
     env.setAssociatedEnv(envTag);
+    EnvParams params = new EnvParams();
+    params.setMaxPartitions("3");
+    params.setDefaultPartitions("1");
+    params.setDefaultRepFactor("1");
+    params.setMaxRepFactor("2");
+    env.setParams(params);
     return env;
   }
 

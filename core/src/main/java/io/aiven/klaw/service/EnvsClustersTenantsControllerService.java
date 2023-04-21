@@ -628,16 +628,19 @@ public class EnvsClustersTenantsControllerService {
     newEnv.setTenantId(tenantId);
 
     newEnv.setName(newEnv.getName().toUpperCase());
-    newEnv
-        .getParams()
-        .setPartitionsList(
-            buildListWithDefault(
-                newEnv.getParams().getDefaultPartitions(), newEnv.getParams().getMaxPartitions()));
-    newEnv
-        .getParams()
-        .setReplicationFactorList(
-            buildListWithDefault(
-                newEnv.getParams().getDefaultRepFactor(), newEnv.getParams().getMaxRepFactor()));
+    if (KafkaClustersType.KAFKA.value.equalsIgnoreCase(newEnv.getType())) {
+      newEnv
+          .getParams()
+          .setPartitionsList(
+              buildListWithDefault(
+                  newEnv.getParams().getDefaultPartitions(),
+                  newEnv.getParams().getMaxPartitions()));
+      newEnv
+          .getParams()
+          .setReplicationFactorList(
+              buildListWithDefault(
+                  newEnv.getParams().getDefaultRepFactor(), newEnv.getParams().getMaxRepFactor()));
+    }
 
     String envIdAlreadyExistsInDeleteStatus = "";
     List<Env> envActualList = manageDatabase.getHandleDbRequests().selectAllEnvs(tenantId);
