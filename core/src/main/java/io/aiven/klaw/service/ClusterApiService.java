@@ -509,6 +509,9 @@ public class ClusterApiService {
                   .schemaEnv(kwClustersSchemaEnv.getBootstrapServers())
                   .schemaEnvProtocol(kwClustersSchemaEnv.getProtocol())
                   .build();
+        } else {
+          clusterTopicRequest =
+              clusterTopicRequest.toBuilder().deleteAssociatedSchema(false).build();
         }
       }
 

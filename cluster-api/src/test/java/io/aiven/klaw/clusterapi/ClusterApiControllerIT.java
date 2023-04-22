@@ -434,9 +434,7 @@ public class ClusterApiControllerIT {
     url = "/topics/deleteTopics";
     when(schemaService.deleteSchema(any()))
         .thenReturn(
-            ApiResponse.builder()
-                .message("Schema deletion " + ApiResultStatus.SUCCESS.value)
-                .build());
+            ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build());
     MockHttpServletResponse response = executeCreateTopicRequest(jsonReq, url);
 
     embeddedKafkaBroker.doWithAdmin(
@@ -450,8 +448,7 @@ public class ClusterApiControllerIT {
         });
 
     ApiResponse apiResponse = mapper.readValue(response.getContentAsString(), ApiResponse.class);
-    assertThat(apiResponse.getMessage())
-        .isEqualTo("Schema deletion " + ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   private MockHttpServletResponse executeCreateTopicRequest(String jsonReq, String url)
