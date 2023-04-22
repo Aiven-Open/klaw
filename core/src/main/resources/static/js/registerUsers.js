@@ -426,18 +426,6 @@ app.controller("registerUsersCtrl", function($scope, $http, $location, $window) 
                 return;
             }
 
-           // var tenantName = "";
-           // if($scope.registerUser.tenantName)
-           //  {
-           //     var tenantName =  $scope.registerUser.tenantName.trim();
-           //     if(tenantName.length < 12)
-           //     {
-           //         $scope.alertnote = "Please enter a valid tenant.";
-           //         $scope.showAlertToast();
-           //         return;
-           //     }
-           //  }
-
             $scope.registrationStarted = 'true';
             serviceInput['username'] = $scope.registerUser.username;
             serviceInput['fullname'] = $scope.registerUser.usernamefull;
