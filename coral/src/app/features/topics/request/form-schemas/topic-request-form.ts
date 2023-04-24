@@ -102,6 +102,28 @@ function validateTopicName(
 ) {
   const { environment, topicname } = val;
 
+  if (topicname.length < 3) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      fatal: true,
+      message: "Topic name must contain at least 3 characters.",
+      path: ["topicname"],
+    });
+    return;
+  }
+
+  const defaultTopicNamePattern = /^[a-zA-Z0-9._-]{3,}$/;
+  if (!defaultTopicNamePattern.test(topicname)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      fatal: true,
+      message:
+        "Topic name can only contain letters, digits, period, underscore, hyphen.",
+      path: ["topicname"],
+    });
+    return;
+  }
+
   const prefixToCheck = environment.params?.topicPrefix?.[0];
   if (prefixToCheck !== undefined && !topicname.startsWith(prefixToCheck)) {
     ctx.addIssue({

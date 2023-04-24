@@ -165,6 +165,278 @@ describe("<TopicRequest />", () => {
   });
 
   describe("Topic name", () => {
+    describe("informs user about valid input with placeholder per default", () => {
+      beforeAll(() => {
+        mockGetEnvironmentsForTeam({
+          mswInstance: server,
+          response: {
+            data: [
+              createMockEnvironmentDTO({
+                name: "DEV",
+                id: "4",
+                params: {
+                  applyRegex: false,
+                  topicRegex: [".*Dev.*"],
+                },
+              }),
+            ],
+          },
+        });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+      });
+
+      it("shows the default placeholder value", async () => {
+        const select = await screen.findByRole("combobox", {
+          name: "Environment *",
+        });
+        await user.selectOptions(select, "DEV");
+
+        const topicNameInput = screen.getByRole("textbox", {
+          name: /Topic name/,
+        });
+
+        expect(topicNameInput).toHaveAttribute(
+          "placeholder",
+          "Allowed characters: letter, digit, period, underscore, and hyphen."
+        );
+      });
+    });
+
+    describe("informs user about valid input with placeholder when regex should be applied", () => {
+      beforeAll(() => {
+        mockGetEnvironmentsForTeam({
+          mswInstance: server,
+          response: {
+            data: [
+              createMockEnvironmentDTO({
+                name: "DEV",
+                id: "4",
+                params: {
+                  applyRegex: true,
+                  topicRegex: [".*Dev.*"],
+                },
+              }),
+            ],
+          },
+        });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+      });
+
+      it("shows the allowes pattern in placeholder", async () => {
+        const select = await screen.findByRole("combobox", {
+          name: "Environment *",
+        });
+        await user.selectOptions(select, "DEV");
+
+        const topicNameInput = screen.getByRole("textbox", {
+          name: /Topic name/,
+        });
+
+        expect(topicNameInput).toHaveAttribute(
+          "placeholder",
+          'Name has to follow pattern ".*Dev.*". Allowed characters: letter, digit, period, underscore, and hyphen.'
+        );
+      });
+    });
+
+    describe("when topic name does not have enough characters", () => {
+      beforeAll(() => {
+        mockGetEnvironmentsForTeam({
+          mswInstance: server,
+          response: {
+            data: [
+              createMockEnvironmentDTO({
+                name: "EnvWithTopicPrefix",
+                id: "4",
+              }),
+            ],
+          },
+        });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+      });
+
+      it("validates that topic name has more then 3 characters", async () => {
+        const expectedErrorMsg =
+          "Topic name must contain at least 3 characters.";
+        const select = await screen.findByRole("combobox", {
+          name: "Environment *",
+        });
+
+        await user.selectOptions(select, "EnvWithTopicPrefix");
+
+        const topicNameInput = screen.getByLabelText(/Topic name/);
+        await user.type(topicNameInput, "fo{tab}");
+
+        const errorMessage = await screen.findByText(expectedErrorMsg);
+        expect(errorMessage).toBeVisible();
+
+        await user.clear(topicNameInput);
+        await user.type(topicNameInput, "test-foobar{tab}");
+
+        expect(errorMessage).not.toBeVisible();
+      });
+    });
+
+    describe("when topic name does not match the default pattern", () => {
+      beforeAll(() => {
+        mockGetEnvironmentsForTeam({
+          mswInstance: server,
+          response: {
+            data: [
+              createMockEnvironmentDTO({
+                name: "EnvWithTopicPrefix",
+                id: "4",
+              }),
+            ],
+          },
+        });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+      });
+
+      it("validates that topic name matches the default pattern '^[a-zA-Z0-9._-]{3,}$'", async () => {
+        const expectedErrorMsg =
+          "Topic name can only contain letters, digits, period, underscore, hyphen.";
+        const select = await screen.findByRole("combobox", {
+          name: "Environment *",
+        });
+
+        await user.selectOptions(select, "EnvWithTopicPrefix");
+
+        const topicNameInput = screen.getByLabelText(/Topic name/);
+        await user.type(topicNameInput, "topic!name{tab}");
+
+        const errorMessage = await screen.findByText(expectedErrorMsg);
+        expect(errorMessage).toBeVisible();
+
+        await user.clear(topicNameInput);
+        await user.type(topicNameInput, "test-foobar{tab}");
+
+        expect(errorMessage).not.toBeVisible();
+      });
+    });
+
+    // describe("when topic name regex from BE should be applied", () => {
+    //   beforeAll(() => {
+    //     mockGetEnvironmentsForTeam({
+    //       mswInstance: server,
+    //       response: {
+    //         data: [
+    //           createMockEnvironmentDTO({
+    //             name: "EnvWithTopicPrefix",
+    //             id: "4",
+    //             params: {
+    //               applyRegex: true,
+    //               topicRegex: [".*Dev.*"],
+    //             },
+    //           }),
+    //         ],
+    //       },
+    //     });
+    //     mockgetTopicAdvancedConfigOptions({
+    //       mswInstance: server,
+    //       response: {
+    //         data: defaultgetTopicAdvancedConfigOptionsResponse,
+    //       },
+    //     });
+    //
+    //     customRender(
+    //       <AquariumContext>
+    //         <TopicRequest />
+    //       </AquariumContext>,
+    //       { queryClient: true }
+    //     );
+    //   });
+    //
+    //   afterAll(() => {
+    //     cleanup();
+    //   });
+    //
+    //   it("validates that topic name matches the defined regex", async () => {
+    //     const expectedErrorMsg =
+    //       "Topic name can only contain letters, digits, period, underscore, hyphen.";
+    //     const select = await screen.findByRole("combobox", {
+    //       name: "Environment *",
+    //     });
+    //
+    //     await user.selectOptions(select, "EnvWithTopicPrefix");
+    //
+    //     const topicNameInput = screen.getByLabelText(/Topic name/);
+    //     await user.type(topicNameInput, "topic_name{tab}");
+    //
+    //     const errorMessage = await screen.findByText(expectedErrorMsg);
+    //     expect(errorMessage).toBeVisible();
+    //
+    //     await user.clear(topicNameInput);
+    //     await user.type(topicNameInput, "dev-topic-name{tab}");
+    //
+    //     expect(errorMessage).not.toBeVisible();
+    //   });
+    // });
+
     describe("when environment params have topicPrefix defined", () => {
       beforeAll(() => {
         mockGetEnvironmentsForTeam({

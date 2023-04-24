@@ -85,6 +85,21 @@ function TopicRequest() {
     navigate(-1);
   }
 
+  function getTopicNamePlaceholder({
+    applyRegex,
+    regex,
+  }: {
+    applyRegex: boolean | undefined;
+    regex: string | undefined;
+  }) {
+    const defaultPlaceholder =
+      "Allowed characters: letter, digit, period, underscore, and hyphen.";
+    if (applyRegex && regex) {
+      return `Name has to follow pattern "${regex}". ${defaultPlaceholder}`;
+    }
+    return defaultPlaceholder;
+  }
+
   return (
     <>
       {successModalOpen && (
@@ -134,9 +149,13 @@ function TopicRequest() {
             <TextInput<Schema>
               name={"topicname"}
               labelText="Topic name"
-              placeholder="e.g. my-topic"
+              placeholder={getTopicNamePlaceholder({
+                applyRegex: selectedEnvironment?.params?.applyRegex,
+                regex: selectedEnvironment?.params?.topicRegex?.[0],
+              })}
               required={true}
             />
+            <span>Please enter a topic name</span>
             <Box component={Flexbox} gap={"l1"}>
               <Box component={FlexboxItem} grow={1} width={"1/2"}>
                 <SelectOrNumberInput
