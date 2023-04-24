@@ -25,11 +25,11 @@ function transformEnvironmentApiResponse(
             environment.params.maxPartitions
           ),
           maxRepFactor: parseNumberOrUndefined(environment.params.maxRepFactor),
+          applyRegex: environment.params.applyRegex,
           topicPrefix: environment.params.topicPrefix,
           topicSuffix: environment.params.topicSuffix,
-        },
-      }),
-
+          topicRegex: environment.params.topicRegex,
+      },}),
       type: environment?.type,
     };
     return rv;

@@ -98,6 +98,8 @@ describe("environment-transformer.ts", () => {
             maxRepFactor: 4,
             topicPrefix: ["pre_"],
             topicSuffix: ["_suffix"],
+            topicRegex: ["\\bjon snow\\b"],
+            applyRegex: false,
           },
         },
       ];

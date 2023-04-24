@@ -27,6 +27,8 @@ type Environment = {
     defaultRepFactor?: number;
     maxPartitions?: number;
     maxRepFactor?: number;
+    applyRegex?: EnvironmentParams["applyRegex"];
+    topicRegex?: EnvironmentParams["topicRegex"];
     topicPrefix?: EnvironmentParams["topicPrefix"];
     topicSuffix?: EnvironmentParams["topicSuffix"];
   };
