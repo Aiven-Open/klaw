@@ -328,34 +328,41 @@ MultiInput.Skeleton = BaseMultiInput.Skeleton;
 //
 function _MultiSelect<T extends FieldValues, FieldValue>({
   name,
-  helperText,
   formContext: form,
   ...props
 }: BaseMultiSelectProps<FieldValue> &
   FormInputProps<T> &
   FormRegisterProps<T>) {
-  const error = parseFieldErrorMessage(form.formState, name);
-
   return (
-    <BaseMultiSelect
-      {...props}
-      {...form.register(name)}
-      onChange={(values) => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        form.setValue(name, values as any, {
-          shouldValidate: true,
-          shouldDirty: true,
-        });
+    <_Controller
+      name={name}
+      control={form.control}
+      render={({ field: { name } }) => {
+        const { isSubmitting } = form.formState;
+        const error = parseFieldErrorMessage(form.formState, name);
+        return (
+          <BaseMultiSelect
+            {...props}
+            name={name}
+            disabled={props.disabled || isSubmitting}
+            onChange={(values) => {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              form.setValue(name, values as any, {
+                shouldValidate: true,
+                shouldDirty: true,
+              });
+            }}
+            valid={error === undefined}
+            helperText={error}
+            // If we do not explicitly pass value to the component
+            // It will not display values stored in the form object
+            // If they are set before the component is rendered
+            // This is because we are rendering BaseMultiSelect without a Controller
+            // But its value still needs to be controlled
+            // value={form.getValues(name)}
+          />
+        );
       }}
-      valid={error === undefined}
-      error={error}
-      helperText={helperText}
-      // If we do not explicitly pass value to the component
-      // It will not display values stored in the form object
-      // If they are set before the component is rendered
-      // This is because we are rendering BaseMultiSelect without a Controller
-      // But its value still needs to be controlled
-      value={form.getValues(name)}
     />
   );
 }
