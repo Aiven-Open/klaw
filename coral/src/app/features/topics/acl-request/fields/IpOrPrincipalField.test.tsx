@@ -26,10 +26,16 @@ describe("IpOrPrincipalField", () => {
   const onSubmit = jest.fn();
   const onError = jest.fn();
 
+  const originalConsoleError = console.error;
+  beforeEach(() => {
+    console.error = jest.fn();
+  });
+
   afterEach(() => {
     cleanup();
     onSubmit.mockClear();
     onError.mockClear();
+    console.error = originalConsoleError;
   });
 
   it("renders a field for Service accounts with options for existing service accounts (Aiven cluster)", async () => {
@@ -67,6 +73,7 @@ describe("IpOrPrincipalField", () => {
 
       expect(option).toBeEnabled();
     });
+    expect(console.error).not.toHaveBeenCalled();
   });
 
   it("renders a field for Service accounts which allows adding new service accounts (Aiven cluster)", async () => {
@@ -101,6 +108,7 @@ describe("IpOrPrincipalField", () => {
     const newOption = screen.getByRole("button", { name: "hello" });
     expect(newOption).toBeVisible();
     expect(newOption).toBeEnabled();
+    expect(console.error).not.toHaveBeenCalled();
   });
 
   it("renders a textbox field for Service accounts when getAivenServiceAccounts errors (Aiven cluster)", async () => {
@@ -126,6 +134,7 @@ describe("IpOrPrincipalField", () => {
     });
     expect(multiInput).toBeVisible();
     expect(multiInput).toBeEnabled();
+    expect(console.error).toHaveBeenCalledWith("mock-error");
   });
 
   it("renders a field for SSL DN strings / Usernames (not Aiven cluster)", () => {
@@ -144,6 +153,7 @@ describe("IpOrPrincipalField", () => {
     const multiInput = result.getByLabelText("SSL DN strings / Usernames*");
     expect(multiInput).toBeVisible();
     expect(multiInput).toBeEnabled();
+    expect(console.error).not.toHaveBeenCalled();
   });
 
   it("renders a field for IP addresses (Aiven cluster)", () => {
@@ -162,6 +172,7 @@ describe("IpOrPrincipalField", () => {
     const multiInput = result.getByLabelText("IP addresses*");
     expect(multiInput).toBeVisible();
     expect(multiInput).toBeEnabled();
+    expect(console.error).not.toHaveBeenCalled();
   });
 
   it("renders a field for IP addresses (not Aiven cluster)", () => {
@@ -180,5 +191,6 @@ describe("IpOrPrincipalField", () => {
     const multiInput = result.getByLabelText("IP addresses*");
     expect(multiInput).toBeVisible();
     expect(multiInput).toBeEnabled();
+    expect(console.error).not.toHaveBeenCalled();
   });
 });
