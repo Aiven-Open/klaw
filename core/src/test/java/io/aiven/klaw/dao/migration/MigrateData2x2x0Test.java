@@ -15,12 +15,15 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.dao.test.MigrationTestData2x1x0;
 import io.aiven.klaw.dao.test.MigrationTestData2x2x0;
+import io.aiven.klaw.error.KlawDataMigrationException;
 import io.aiven.klaw.helpers.db.rdbms.SelectDataJdbc;
 import io.aiven.klaw.helpers.db.rdbms.UpdateDataJdbc;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RolesType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,8 +56,8 @@ class MigrateData2x2x0Test {
   }
 
   @Test
-  public void givenNoTenantsDoNotMigrateAnyData() {
-
+  public void givenNoTenantsDoNotMigrateAnyData() throws KlawDataMigrationException {
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(0));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(0));
 
@@ -89,8 +92,10 @@ class MigrateData2x2x0Test {
   }
 
   @Test
-  public void givenOneTenantButNoClaimsRequestsDoNotMigrateData() {
+  public void givenOneTenantButNoClaimsRequestsDoNotMigrateData()
+      throws KlawDataMigrationException {
     // Setup
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
     when(selectDataJdbc.selectFilteredTopicRequests(
@@ -121,6 +126,7 @@ class MigrateData2x2x0Test {
     boolean success = migrateData2x2x0.migrate();
 
     // Verify
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(1))
         .selectFilteredTopicRequests(
@@ -152,8 +158,10 @@ class MigrateData2x2x0Test {
   }
 
   @Test
-  public void givenOneTenantWithReqeuestsButNoClaimsRequestsDoNotMigrateData() {
+  public void givenOneTenantWithReqeuestsButNoClaimsRequestsDoNotMigrateData()
+      throws KlawDataMigrationException {
     // Setup
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
     when(selectDataJdbc.selectFilteredTopicRequests(
@@ -215,8 +223,10 @@ class MigrateData2x2x0Test {
   }
 
   @Test
-  public void givenOneTenantWithReqeuestsAndOneClaimsRequestsMigrateOneData() {
+  public void givenOneTenantWithReqeuestsAndOneClaimsRequestsMigrateOneData()
+      throws KlawDataMigrationException {
     // Setup
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
     when(selectDataJdbc.selectFilteredTopicRequests(
@@ -247,6 +257,7 @@ class MigrateData2x2x0Test {
     boolean success = migrateData2x2x0.migrate();
 
     // Verify
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(1))
         .selectFilteredTopicRequests(
@@ -280,8 +291,10 @@ class MigrateData2x2x0Test {
 
   @Test
   public void
-      givenOneTenantWithReqeuestsAndOneClaimsRequestsButDataInDescriptionIsNotTeamIdDoNotMigrateOneData() {
+      givenOneTenantWithReqeuestsAndOneClaimsRequestsButDataInDescriptionIsNotTeamIdDoNotMigrateOneData()
+          throws KlawDataMigrationException {
     // Setup
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
     when(selectDataJdbc.selectFilteredTopicRequests(
@@ -312,6 +325,7 @@ class MigrateData2x2x0Test {
     boolean success = migrateData2x2x0.migrate();
 
     // Verify
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     verify(selectDataJdbc, times(1)).selectAllUsersAllTenants();
     verify(selectDataJdbc, times(1))
         .selectFilteredTopicRequests(
@@ -344,8 +358,10 @@ class MigrateData2x2x0Test {
   }
 
   @Test
-  public void givenOneTenantWithReqeuestsAndAlreadyMigratedClaimsRequestsDoNotMigrateData() {
+  public void givenOneTenantWithReqeuestsAndAlreadyMigratedClaimsRequestsDoNotMigrateData()
+      throws KlawDataMigrationException {
     // Setup
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
     when(selectDataJdbc.selectFilteredTopicRequests(
@@ -409,8 +425,10 @@ class MigrateData2x2x0Test {
   }
 
   @Test
-  public void givenOneTenantWithReqeuestsAndNoMigratedClaimsRequestsMigrateData() {
+  public void givenOneTenantWithReqeuestsAndNoMigratedClaimsRequestsMigrateData()
+      throws KlawDataMigrationException {
     // Setup
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(1));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
     when(selectDataJdbc.selectFilteredTopicRequests(
@@ -474,8 +492,10 @@ class MigrateData2x2x0Test {
   }
 
   @Test
-  public void givenThreeTenantsWithAMixOfRequestsToMigrateAndNotMigrateMigrateData() {
+  public void givenThreeTenantsWithAMixOfRequestsToMigrateAndNotMigrateMigrateData()
+      throws KlawDataMigrationException {
     // Setup
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(getSuperAdmin());
     when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(3));
     when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
     when(selectDataJdbc.selectFilteredTopicRequests(
@@ -541,6 +561,22 @@ class MigrateData2x2x0Test {
     verify(updateDataJdbc, times(21)).updateConnectorRequest(any());
 
     assertThat(success).isTrue();
+  }
+
+  @Test
+  public void givenNoSuperAdminOrAdminThrowError() {
+    // Setup
+    when(selectDataJdbc.selectAllUsersInfo(anyInt())).thenReturn(new ArrayList<>());
+    when(selectDataJdbc.selectAllUsersAllTenants()).thenReturn(getUserAndTenantInfo(3));
+    when(selectDataJdbc.selectAllTeams(anyInt())).thenReturn(getTeams(2));
+
+    // Execute
+
+    Assertions.assertThatExceptionOfType(KlawDataMigrationException.class)
+        .isThrownBy(
+            () -> {
+              migrateData2x2x0.migrate();
+            });
   }
 
   private List<TopicRequest> getListOfTopicRequests(
@@ -626,6 +662,19 @@ class MigrateData2x2x0Test {
     }
 
     return users;
+  }
+
+  private List<UserInfo> getSuperAdmin() {
+
+    UserInfo info = new UserInfo();
+    info.setTenantId(101);
+    info.setTeamId(1);
+    info.setRole(RolesType.SUPERADMIN.name());
+    info.setUsername("superadmin");
+    info.setFullname("superadmin");
+    info.setSwitchTeams(false);
+
+    return List.of(info);
   }
 
   private List<Team> getTeams(int numberOfEntries) {
