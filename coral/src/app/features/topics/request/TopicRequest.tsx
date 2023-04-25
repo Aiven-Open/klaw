@@ -27,7 +27,7 @@ import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import { requestTopic } from "src/domain/topic/topic-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { createTopicRequestPayload } from "src/app/features/topics/request/utils";
+import { generateTopicNameDescription } from "src/app/features/topics/request/utils";
 import { Dialog } from "src/app/components/Dialog";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -72,8 +72,7 @@ function TopicRequest() {
   const redirectToMyRequests = () =>
     navigate("/requests/topics?status=CREATED");
 
-  const onSubmit: SubmitHandler<Schema> = (data) =>
-    mutate(createTopicRequestPayload(data));
+  const onSubmit: SubmitHandler<Schema> = (data) => mutate(data);
 
   const [selectedEnvironment] = form.getValues(["environment"]);
   useExtendedFormValidationAndTriggers(form, {
@@ -83,21 +82,6 @@ function TopicRequest() {
   function cancelRequest() {
     form.reset();
     navigate(-1);
-  }
-
-  function getTopicNamePlaceholder({
-    applyRegex,
-    regex,
-  }: {
-    applyRegex: boolean | undefined;
-    regex: string | undefined;
-  }) {
-    const defaultPlaceholder =
-      "Allowed characters: letter, digit, period, underscore, and hyphen.";
-    if (applyRegex && regex) {
-      return `Name has to follow pattern "${regex}". ${defaultPlaceholder}`;
-    }
-    return defaultPlaceholder;
   }
 
   return (
@@ -149,10 +133,9 @@ function TopicRequest() {
             <TextInput<Schema>
               name={"topicname"}
               labelText="Topic name"
-              placeholder={getTopicNamePlaceholder({
-                applyRegex: selectedEnvironment?.params?.applyRegex,
-                regex: selectedEnvironment?.params?.topicRegex?.[0],
-              })}
+              placeholder={generateTopicNameDescription(
+                selectedEnvironment?.params
+              )}
               required={true}
             />
             <span>Please enter a topic name</span>

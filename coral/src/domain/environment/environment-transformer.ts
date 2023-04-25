@@ -26,9 +26,15 @@ function transformEnvironmentApiResponse(
           ),
           maxRepFactor: parseNumberOrUndefined(environment.params.maxRepFactor),
           applyRegex: environment.params.applyRegex,
-          topicPrefix: environment.params.topicPrefix,
-          topicSuffix: environment.params.topicSuffix,
-          topicRegex: environment.params.topicRegex,
+          topicPrefix: environment.params.topicPrefix?.filter(
+          (prefix) => prefix.length > 0
+        ),
+          topicSuffix: environment.params.topicSuffix?.filter(
+          (suffix) => suffix.length > 0
+        ),
+          topicRegex: environment.params.topicRegex?.filter(
+          (regex) => regex.length > 0
+        ),
       },}),
       type: environment?.type,
     };

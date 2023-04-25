@@ -108,5 +108,37 @@ describe("environment-transformer.ts", () => {
         expectedResult
       );
     });
+
+    it("transforms API response objects into application domain model and removes empty strings where needed", () => {
+      const testInput: KlawApiModel<"EnvModelResponse">[] = [
+        createMockEnvironmentDTO({
+          name: "DEV",
+          id: "1001",
+          params: {
+            defaultPartitions: "1",
+            topicPrefix: ["dev-"],
+            topicSuffix: ["-one", "", "", "-two"],
+            topicRegex: [""],
+          },
+        }),
+      ];
+
+      const expectedResult: Environment[] = [
+        {
+          name: "DEV",
+          id: "1001",
+          type: "kafka",
+          params: {
+            defaultPartitions: 1,
+            topicPrefix: ["dev-"],
+            topicSuffix: ["-one", "-two"],
+            topicRegex: [],
+          },
+        },
+      ];
+      expect(transformEnvironmentApiResponse(testInput)).toEqual(
+        expectedResult
+      );
+    });
   });
 });

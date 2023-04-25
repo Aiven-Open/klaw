@@ -21,6 +21,8 @@ import {
   KlawApiResponse,
 } from "types/utils";
 import { convertQueryValuesToString } from "src/services/api-helper";
+import { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
+import { transformAdvancedConfigEntries } from "src/app/features/topics/request/utils";
 
 const getTopics = async (
   params: KlawApiRequestQueryParameters<"getTopics">
@@ -89,9 +91,19 @@ const getTopicAdvancedConfigOptions = (): Promise<
     )
     .then(transformGetTopicAdvancedConfigOptionsResponse);
 
-const requestTopic = (
-  payload: KlawApiRequest<"createTopicsCreateRequest">
-): Promise<unknown> => {
+const requestTopic = (data: Schema): Promise<unknown> => {
+  const payload: KlawApiRequest<"createTopicsCreateRequest"> = {
+    description: data.description,
+    environment: data.environment.id,
+    remarks: data.remarks,
+    topicname: data.topicname,
+    replicationfactor: data.replicationfactor,
+    topicpartitions: parseInt(data.topicpartitions, 10),
+    advancedTopicConfigEntries: transformAdvancedConfigEntries(
+      data.advancedConfiguration
+    ),
+    requestOperationType: "CREATE",
+  };
   return api.post<
     KlawApiResponse<"createTopicsCreateRequest">,
     KlawApiRequest<"createTopicsCreateRequest">

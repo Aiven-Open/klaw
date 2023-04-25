@@ -3,6 +3,7 @@ import isNumber from "lodash/isNumber";
 import { UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
 import { Environment } from "src/domain/environment";
+import { generateNamePatternString } from "src/app/features/topics/request/utils";
 
 const topicNameField = z
   .string()
@@ -112,7 +113,10 @@ function validateTopicName(
     return;
   }
 
-  const defaultTopicNamePattern = /^[a-zA-Z0-9._-]{3,}$/;
+  // zod already verifies that it's 3 chars at least
+  // @TODO clarify with backend if a topic with prefix
+  // also has to follow this pattern (eg. "prefix_a" not being valid)
+  const defaultTopicNamePattern = /^[a-zA-Z0-9._-]*$/;
   if (!defaultTopicNamePattern.test(topicname)) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
@@ -124,22 +128,46 @@ function validateTopicName(
     return;
   }
 
-  const prefixToCheck = environment.params?.topicPrefix?.[0];
-  if (prefixToCheck !== undefined && !topicname.startsWith(prefixToCheck)) {
+  const topicPrefix = environment.params?.topicPrefix
+  if (
+    topicPrefix !== undefined &&
+    topicPrefix.length > 0 &&
+    !topicPrefix.some((prefix) => {
+      return (
+        topicname.startsWith(prefix) &&
+        topicname.slice(prefix.length).length > 0 &&
+        defaultTopicNamePattern.test(topicname.slice(prefix.length))
+      );
+    })
+  ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       fatal: true,
-      message: `Topic name must start with "${prefixToCheck}".`,
+      message: `Topic name must start with ${generateNamePatternString(
+        topicPrefix
+      )}.`,
       path: ["topicname"],
     });
   }
 
-  const suffixToCheck = environment.params?.topicSuffix?.[0];
-  if (suffixToCheck !== undefined && !topicname.endsWith(suffixToCheck)) {
+  const topicSuffix = environment.params?.topicSuffix;
+  if (
+    topicSuffix !== undefined &&
+    topicSuffix.length > 0 &&
+    !topicSuffix.some((prefix) => {
+      return (
+        topicname.endsWith(prefix) &&
+        topicname.slice(prefix.length).length > 0 &&
+        defaultTopicNamePattern.test(topicname.slice(prefix.length))
+      );
+    })
+  ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       fatal: true,
-      message: `Topic name must end with "${suffixToCheck}".`,
+      message: `Topic name must end with ${generateNamePatternString(
+        topicSuffix
+      )}.`,
       path: ["topicname"],
     });
   }

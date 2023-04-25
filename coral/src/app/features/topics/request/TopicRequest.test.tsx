@@ -266,7 +266,7 @@ describe("<TopicRequest />", () => {
 
         expect(topicNameInput).toHaveAttribute(
           "placeholder",
-          'Name has to follow pattern ".*Dev.*". Allowed characters: letter, digit, period, underscore, and hyphen.'
+          'Follow name pattern: ".*Dev.*". Allowed characters: letter, digit, period, underscore, and hyphen.'
         );
       });
     });

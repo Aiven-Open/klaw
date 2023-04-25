@@ -1,44 +1,11 @@
 import {
-  createTopicRequestPayload,
+  generateNamePatternString,
+  generateTopicNameDescription,
   transformAdvancedConfigEntries,
 } from "src/app/features/topics/request/utils";
+import { Environment } from "src/domain/environment";
 
 describe("TopicRequest utils", () => {
-  describe("createTopicRequestPayload", () => {
-    it("returns expected payload", () => {
-      const formData = {
-        environment: {
-          id: "1",
-          name: "DEV",
-          type: "kafka",
-          params: {
-            defaultPartitions: 2,
-            maxPartitions: 6,
-            defaultRepFactor: 3,
-            maxRepFactor: 3,
-          },
-        },
-        remarks: "please approve this topic asap",
-        replicationfactor: "2",
-        topicpartitions: "3",
-        topicname: "example-topic-name",
-        description: "example description",
-        advancedConfiguration: "{}",
-      };
-      const res = createTopicRequestPayload(formData);
-
-      expect(res).toEqual({
-        environment: "1",
-        topicname: "example-topic-name",
-        replicationfactor: "2",
-        topicpartitions: 3,
-        advancedTopicConfigEntries: [],
-        description: "example description",
-        remarks: "please approve this topic asap",
-        requestOperationType: "CREATE",
-      });
-    });
-  });
   describe("transformAdvancedConfigEntries", () => {
     it("transforms empty object into empty array", () => {
       const res = transformAdvancedConfigEntries("{}");
@@ -103,6 +70,190 @@ describe("TopicRequest utils", () => {
         })
       );
       expect(res.find((c) => c.configKey === "test.key")).toBe(undefined);
+    });
+  });
+
+  describe("generateTopicNameDescription", () => {
+    it("generates the default description for an env without special requirements", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: false,
+        topicPrefix: undefined,
+        topicRegex: undefined,
+        topicSuffix: undefined,
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        "Allowed characters: letter, digit, period, underscore, and hyphen."
+      );
+    });
+
+    it("generates the description for an env with one topic prefix", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: false,
+        topicPrefix: ["prefix_"],
+        topicRegex: undefined,
+        topicSuffix: undefined,
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Prefix name with: "prefix_". Allowed characters: letter, digit, period, underscore, and hyphen.'
+      );
+    });
+
+    it("generates the description for an env with one topic prefix", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: false,
+        topicPrefix: ["prefix_"],
+        topicRegex: undefined,
+        topicSuffix: undefined,
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Prefix name with: "prefix_". Allowed characters: letter, digit, period, underscore, and hyphen.'
+      );
+    });
+
+    it("generates the description for an env with two topic prefixes", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: false,
+        topicPrefix: ["prefix_", "prefix2_"],
+        topicRegex: undefined,
+        topicSuffix: undefined,
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Prefix name with: "prefix_" or "prefix2_". Allowed characters: letter, digit, period, underscore, and hyphen.'
+      );
+    });
+
+    it("generates the description for an env with three topic prefixes", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: false,
+        topicPrefix: ["prefix_", "prefix2_", "prefix3_"],
+        topicRegex: undefined,
+        topicSuffix: undefined,
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Prefix name with: "prefix_", "prefix2_" or "prefix3_". Allowed characters: letter, digit, period, underscore,' +
+          " and" +
+          " hyphen."
+      );
+    });
+
+    it("generates the description for an env with one topic suffix", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: false,
+        topicPrefix: undefined,
+        topicRegex: undefined,
+        topicSuffix: ["_suffix"],
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Suffix name with: "_suffix". Allowed characters: letter, digit, period, underscore, and hyphen.'
+      );
+    });
+
+    it("generates the description for an env with two topic suffix", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: false,
+        topicPrefix: undefined,
+        topicRegex: undefined,
+        topicSuffix: ["_suffix", "_suffix2"],
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Suffix name with: "_suffix" or "_suffix2". Allowed characters: letter, digit, period, underscore, and hyphen.'
+      );
+    });
+
+    it("generates the description for an env with four topic suffix", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: false,
+        topicPrefix: undefined,
+        topicRegex: undefined,
+        topicSuffix: ["_suffix", "_suffix2", "_suffix3", "_suffix4"],
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Suffix name with: "_suffix", "_suffix2", "_suffix3" or "_suffix4". Allowed characters: letter, digit,' +
+          " period," +
+          " underscore," +
+          " and hyphen."
+      );
+    });
+
+    it("generates the description for an env with one regex", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: true,
+        topicPrefix: undefined,
+        topicRegex: [".*Dev*."],
+        topicSuffix: undefined,
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Follow name pattern: ".*Dev*.". Allowed characters: letter, digit, period, underscore, and hyphen.'
+      );
+    });
+
+    it("generates the description for an env with two regex", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: true,
+        topicPrefix: undefined,
+        topicRegex: [".*Dev*.", ".*Dev2*."],
+        topicSuffix: undefined,
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Follow name pattern: ".*Dev*." or ".*Dev2*.". Allowed characters: letter, digit, period, underscore, and hyphen.'
+      );
+    });
+
+    it("generates the description for an env with three regex", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: true,
+        topicPrefix: undefined,
+        topicRegex: [".*Dev*.", ".*Dev2*.", ".*Dev3*."],
+        topicSuffix: undefined,
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Follow name pattern: ".*Dev*.", ".*Dev2*." or ".*Dev3*.". Allowed characters: letter, digit, period,' +
+          " underscore, and" +
+          " hyphen."
+      );
+    });
+  });
+
+  describe("generateNamePatternString", () => {
+    it("creates a string listing one pattern that can be used in a sentence", () => {
+      const input = ["prefix1_"];
+
+      expect(generateNamePatternString(input)).toEqual('"prefix1_"');
+    });
+
+    it("creates a string listing two pattern that can be used in a sentence", () => {
+      const input = ["_suffix1", "_suffix2"];
+
+      expect(generateNamePatternString(input)).toEqual(
+        '"_suffix1" or "_suffix2"'
+      );
+    });
+
+    it("creates a string listing three pattern that can be used in a sentence", () => {
+      const input = ["prefix1_", "prefix2_", "prefix3_"];
+
+      expect(generateNamePatternString(input)).toEqual(
+        '"prefix1_", "prefix2_" or "prefix3_"'
+      );
+    });
+
+    it("creates a string listing four pattern that can be used in a sentence", () => {
+      const input = ["_suffix1", "_suffix2", "_suffix3", "_suffix4"];
+
+      expect(generateNamePatternString(input)).toEqual(
+        '"_suffix1", "_suffix2", "_suffix3" or "_suffix4"'
+      );
     });
   });
 });
