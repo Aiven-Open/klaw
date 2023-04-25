@@ -8,7 +8,6 @@ import {
   components,
 } from "types/api";
 import { ResolveIntersectionTypes } from "types/utils";
-import isEmpty from "lodash/isEmpty";
 
 type KlawApiResponse = ResolveIntersectionTypes<
   components["schemas"]["ApiResponse"]
