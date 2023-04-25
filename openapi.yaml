@@ -5693,7 +5693,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorConfig", "connectorName", "description", "environment" ]
+        "required" : [ "requestOperationType", "connectorConfig", "connectorName", "description", "environment" ]
       },
       "AclRequestsModel" : {
         "properties" : {

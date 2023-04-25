@@ -1,3 +1,5 @@
+import attempt from "lodash/attempt";
+import isError from "lodash/isError";
 import z from "zod";
 
 const connectorRequestFormSchema = z.object({
@@ -7,25 +9,26 @@ const connectorRequestFormSchema = z.object({
   connectorName: z.string().min(5),
   connectorConfig: z
     .string()
-    // Three refines for each of the three required config properties
+    // Refines for JSON object and for each of the three required config properties
     // Only checking the presence of the properties, not their values
+    .refine((value) => !isError(attempt(() => JSON.parse(value))), {
+      message: "Must be valid JSON",
+    })
+    .refine((value) => value.startsWith("{") && value.endsWith("}"), {
+      message: "Must be a JSON Object",
+    })
+    .refine((value) => "tasks.max" in attempt(() => JSON.parse(value)), {
+      message: 'Missing "tasks.max" configuration property.',
+    })
+    .refine((value) => "connector.class" in attempt(() => JSON.parse(value)), {
+      message: 'Missing "connector.class" configuration property.',
+    })
     .refine(
       (value) => {
-        return value.includes("tasks.max");
+        const json = attempt(() => JSON.parse(value));
+        return "topics" in json || "topics.regex" in json;
       },
-      { message: `Missing "tasks.max" configuration property.` }
-    )
-    .refine(
-      (value) => {
-        return value.includes("connector.class");
-      },
-      { message: `Missing "connector.class" configuration property.` }
-    )
-    .refine(
-      (value) => {
-        return value.includes("topics");
-      },
-      { message: `Missing "topics" or "topics.regex" configuration property.` }
+      { message: 'Missing "topics" or "topics.regex" configuration property.' }
     ),
   description: z.string().min(5),
   remarks: z.string().optional(),

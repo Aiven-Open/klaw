@@ -706,7 +706,7 @@ export type components = {
     };
     KafkaConnectorRequestModel: {
       /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       environment: string;
       appname?: string;
       remarks?: string;

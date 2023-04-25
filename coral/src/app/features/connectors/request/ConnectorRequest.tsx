@@ -1,4 +1,12 @@
-import { Alert, Box, Button, Grid, Typography } from "@aivenio/aquarium";
+import {
+  Alert,
+  BorderBox,
+  Box,
+  Button,
+  Grid,
+  Label,
+  Typography,
+} from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -41,7 +49,7 @@ function ConnectorRequest() {
     queryFn: () => getSyncConnectorsEnvironments(),
   });
 
-  const schemaRequestMutation = useMutation(createConnectorRequest, {
+  const connectorRequestMutation = useMutation(createConnectorRequest, {
     onSuccess: () => {
       setSuccessModalOpen(true);
       setTimeout(() => {
@@ -55,7 +63,7 @@ function ConnectorRequest() {
   }
 
   function onSubmitForm(userInput: ConnectorRequestFormSchema) {
-    schemaRequestMutation.mutate(userInput);
+    connectorRequestMutation.mutate(userInput);
   }
 
   function cancelRequest() {
@@ -81,16 +89,16 @@ function ConnectorRequest() {
       )}
 
       <Box maxWidth={"7xl"}>
-        {schemaRequestMutation.isError && (
+        {connectorRequestMutation.isError && (
           <Box marginBottom={"l1"} role="alert">
             <Alert type="error">
-              {parseErrorMsg(schemaRequestMutation.error)}
+              {parseErrorMsg(connectorRequestMutation.error)}
             </Alert>
           </Box>
         )}
         <Form
           {...form}
-          ariaLabel={"Request a new schema"}
+          ariaLabel={"Request a new connector"}
           onSubmit={onSubmitForm}
         >
           {environmentsIsLoading && (
@@ -122,34 +130,53 @@ function ConnectorRequest() {
             required
           />
 
+          <Label labelText="Connector configuration" required />
           <_Controller<ConnectorRequestFormSchema>
             name={"connectorConfig"}
             control={form.control}
             render={({ fieldState: { error } }) => {
               return (
                 <>
-                  <MonacoEditor
-                    data-testid="connector-request-config"
-                    height="200px"
-                    language="json"
-                    theme={"light"}
-                    onChange={(value) =>
-                      value !== undefined &&
-                      form.setValue("connectorConfig", value, {
-                        shouldValidate: true,
-                      })
-                    }
-                    options={{
-                      language: "json",
-                      ariaLabel: "Connector configuration",
-                      renderControlCharacters: false,
-                      minimap: { enabled: false },
-                      folding: false,
-                      lineNumbers: "off",
-                      scrollBeyondLastLine: false,
-                      automaticLayout: true,
-                    }}
-                  />
+                  <BorderBox
+                    borderColor="grey-20"
+                    borderWidth={1}
+                    paddingY={"3"}
+                    borderRadius={2}
+                  >
+                    <MonacoEditor
+                      data-testid="connector-request-config"
+                      height="200px"
+                      language="json"
+                      theme={"light"}
+                      onChange={(value) =>
+                        value !== undefined &&
+                        form.setValue("connectorConfig", value, {
+                          shouldValidate: true,
+                        })
+                      }
+                      options={{
+                        language: "json",
+                        ariaLabel: "Connector configuration",
+                        renderControlCharacters: false,
+                        minimap: { enabled: false },
+                        folding: false,
+                        lineNumbers: "off",
+                        scrollBeyondLastLine: false,
+                        renderLineHighlight: "none",
+                        cursorBlinking: "solid",
+                        overviewRulerLanes: 0,
+                        wordBasedSuggestions: false,
+                        lineNumbersMinChars: 3,
+                        glyphMargin: false,
+                        cursorStyle: "line-thin",
+                        scrollbar: {
+                          useShadows: false,
+                          verticalScrollbarSize: 2,
+                        },
+                        fixedOverflowWidgets: true,
+                      }}
+                    />
+                  </BorderBox>
                   <Box marginTop={"1"} marginBottom={"3"} aria-hidden={"true"}>
                     <Typography.Caption color={"error-50"}>
                       {error !== undefined ? error.message : <>&nbsp;</>}
@@ -173,7 +200,9 @@ function ConnectorRequest() {
           </Grid>
 
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
-            <SubmitButton>Submit request</SubmitButton>
+            <SubmitButton disabled={connectorRequestMutation.isLoading}>
+              Submit request
+            </SubmitButton>
             <Button
               type="button"
               kind={"secondary"}
