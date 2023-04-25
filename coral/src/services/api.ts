@@ -8,6 +8,7 @@ import {
   components,
 } from "types/api";
 import { ResolveIntersectionTypes } from "types/utils";
+import isEmpty from "lodash/isEmpty";
 
 type KlawApiResponse = ResolveIntersectionTypes<
   components["schemas"]["ApiResponse"]
@@ -466,7 +467,7 @@ function withoutPayloadAndWithVerb<TResponse extends SomeObject>(
   params?: Params
 ): Promise<TResponse> {
   return fetch(
-    `${API_BASE_URL}${pathname}?${params}`,
+    `${API_BASE_URL}${pathname}${!params ? "" : `?${params}`}`,
     withoutPayload(method)
   ).then((response) => handleResponse<TResponse>(response));
 }
