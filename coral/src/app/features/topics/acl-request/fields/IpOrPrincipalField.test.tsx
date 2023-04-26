@@ -5,7 +5,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import IpOrPrincipalField from "src/app/features/topics/acl-request/fields/IpOrPrincipalField";
-import { aclIpPrincipleType } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
+import { aclIpPrincipleType } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 import { getAivenServiceAccounts } from "src/domain/acl/acl-api";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";

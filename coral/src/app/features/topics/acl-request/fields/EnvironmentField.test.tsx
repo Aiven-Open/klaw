@@ -1,6 +1,6 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import EnvironmentField from "src/app/features/topics/acl-request/fields/EnvironmentField";
-import { environment } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
+import { environment } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";

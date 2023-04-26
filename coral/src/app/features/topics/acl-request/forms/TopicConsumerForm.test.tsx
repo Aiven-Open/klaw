@@ -12,7 +12,7 @@ import TopicConsumerForm, {
 } from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
 import topicConsumerFormSchema, {
   TopicConsumerFormSchema,
-} from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
+} from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-consumer";
 import { getAivenServiceAccounts } from "src/domain/acl/acl-api";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
