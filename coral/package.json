@@ -93,17 +93,15 @@
     "vite": "^4.3.2",
     "whatwg-fetch": "^3.6.2"
   },
+  "peerDependencies": {
+    "json5": ">=1.0.2",
+    "yaml": "2.2.2"
+  },
   "alex": {
     "noBinary": true,
     "profanitySureness": 1
   },
   "msw": {
     "workerDirectory": "./"
-  },
-  "pnpm": {
-    "overrides": {
-      "json5@<1.0.2": ">=1.0.2",
-      "json5@>=2.0.0 <2.2.2": ">=2.2.2"
-    }
   }
 }
