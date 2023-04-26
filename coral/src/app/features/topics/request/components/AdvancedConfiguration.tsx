@@ -3,7 +3,7 @@ import {
   useFormContext,
   UseFormSetError,
 } from "react-hook-form";
-import Editor, { Monaco, useMonaco } from "@monaco-editor/react";
+import MonacoEditor, { Monaco, useMonaco } from "@monaco-editor/react";
 import { useQuery } from "@tanstack/react-query";
 import isString from "lodash/isString";
 import { Position, editor } from "monaco-editor";
@@ -89,7 +89,7 @@ function AdvancedConfiguration({ name }: Props) {
           render={({ field: { name, value } }) => {
             return (
               <>
-                <Editor
+                <MonacoEditor
                   data-testid="advancedConfiguration"
                   height="300px"
                   defaultLanguage={"json"}
