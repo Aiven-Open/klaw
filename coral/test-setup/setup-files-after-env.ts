@@ -9,5 +9,7 @@ process.env.FEATURE_FLAG_TOPIC_REQUEST = "true";
 
 jest.mock("src/domain/auth-user", () => ({
   ...jest.requireActual("src/domain/auth-user"),
-  getUserTeamName: () => "TeamName",
+  getAuth: () => {
+    return { username: "jest-mock-user" };
+  },
 }));

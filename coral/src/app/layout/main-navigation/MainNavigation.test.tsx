@@ -45,6 +45,12 @@ const navOrderFirstLevel = [
 ];
 
 describe("MainNavigation.tsx", () => {
+  beforeAll(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    useQuerySpy.mockReturnValue({ data: undefined, isLoading: false });
+  });
+
   describe("renders the main navigation in default state", () => {
     beforeEach(() => {
       customRender(<MainNavigation />, {
@@ -250,7 +256,10 @@ describe("MainNavigation.tsx", () => {
     it("renders the user's current team", async () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: "Team-name", isLoading: false });
+      useQuerySpy.mockReturnValue({
+        data: { teamname: "Team-name" },
+        isLoading: false,
+      });
       customRender(<MainNavigation />, {
         memoryRouter: true,
         queryClient: true,

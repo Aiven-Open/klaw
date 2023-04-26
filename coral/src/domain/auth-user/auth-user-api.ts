@@ -2,12 +2,13 @@ import {
   AuthUser,
   AuthUserLoginData,
 } from "src/domain/auth-user/auth-user-types";
-
 import api, { API_PATHS } from "src/services/api";
 import { paths as ApiPaths } from "types/api";
 import { KlawApiResponse } from "types/utils";
 
-const getAuthUser = (userLogin: AuthUserLoginData): Promise<AuthUser> => {
+const getAuthUserMockForLogin = (
+  userLogin: AuthUserLoginData
+): Promise<AuthUser> => {
   const data = new URLSearchParams();
   data.append("username", userLogin.username);
   data.append("password", userLogin.password);
@@ -18,10 +19,20 @@ const getAuthUser = (userLogin: AuthUserLoginData): Promise<AuthUser> => {
   return api.post("/login" as keyof ApiPaths, data);
 };
 
-function getUserTeamName(): Promise<string> {
-  return api
-    .get<KlawApiResponse<"getAuth">>(API_PATHS.getAuth)
-    .then((response) => response.teamname);
+function transformAuthResponse(response: KlawApiResponse<"getAuth">): AuthUser {
+  return {
+    username: response.username,
+    teamname: response.teamname,
+    teamId: response.teamId,
+    canSwitchTeams: response.canSwitchTeams,
+  };
 }
 
-export { getAuthUser, getUserTeamName };
+function getAuth(): Promise<AuthUser> {
+  console.log("hello");
+  return api
+    .get<KlawApiResponse<"getAuth">>(API_PATHS.getAuth)
+    .then((response) => transformAuthResponse(response));
+}
+
+export { getAuthUserMockForLogin, getAuth };

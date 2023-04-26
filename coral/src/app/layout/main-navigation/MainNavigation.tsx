@@ -12,22 +12,22 @@ import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLin
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
 import { useQuery } from "@tanstack/react-query";
-import { getUserTeamName } from "src/domain/auth-user";
+import { getAuth } from "src/domain/auth-user";
 
 function MainNavigation() {
   const { pathname } = useLocation();
 
-  const { data: teamName, isLoading } = useQuery(
+  const { data: authUser, isLoading } = useQuery(
     ["user-getAuth-data"],
-    getUserTeamName
+    getAuth
   );
 
   const getUserTeam = () => {
     if (isLoading) {
       return <i className="text-grey-40">Fetching team...</i>;
     }
-    if (!isLoading && teamName !== undefined) {
-      return teamName;
+    if (!isLoading && authUser?.teamname !== undefined) {
+      return authUser?.teamname;
     }
     return <i>No team found</i>;
   };
