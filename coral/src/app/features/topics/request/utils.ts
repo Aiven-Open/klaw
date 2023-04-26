@@ -1,6 +1,6 @@
 import isString from "lodash/isString";
 import { KlawApiRequest } from "types/utils";
-import { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
+import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 
 function createTopicRequestPayload(
   formData: Schema

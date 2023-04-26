@@ -19,9 +19,9 @@ import {
 } from "src/app/components/Form";
 import formSchema, {
   useExtendedFormValidationAndTriggers,
-} from "src/app/features/topics/request/schemas/topic-request-form";
+} from "src/app/features/topics/request/form-schemas/topic-request-form";
 import SelectOrNumberInput from "src/app/features/topics/request/components/SelectOrNumberInput";
-import type { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
+import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { Environment } from "src/domain/environment";
 import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
