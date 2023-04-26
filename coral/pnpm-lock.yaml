@@ -16,7 +16,7 @@ specifiers:
   '@testing-library/react-hooks': ^8.0.1
   '@testing-library/user-event': ^14.4.3
   '@types/jest': ^29.5.1
-  '@types/lodash': ^4.14.182
+  '@types/lodash': ^4.14.194
   '@types/node': '*'
   '@types/react': ^18.0.17
   '@types/react-dom': ^18.0.6
@@ -74,7 +74,7 @@ devDependencies:
   '@testing-library/react-hooks': 8.0.1_pfph2cfyfb2ft5retlxppkywlu
   '@testing-library/user-event': 14.4.3_aaq3sbffpfe3jnxzm2zngsddei
   '@types/jest': 29.5.1
-  '@types/lodash': 4.14.186
+  '@types/lodash': 4.14.194
   '@types/node': 18.11.2
   '@types/react': 18.0.21
   '@types/react-dom': 18.0.6
@@ -2472,8 +2472,8 @@ packages:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
 
-  /@types/lodash/4.14.186:
-    resolution: {integrity: sha512-eHcVlLXP0c2FlMPm56ITode2AgLMSa6aJ05JTTbYbI+7EMkCEE5qk2E41d5g2lCVTqRe0GnnRFurmlCsDODrPw==}
+  /@types/lodash/4.14.194:
+    resolution: {integrity: sha512-r22s9tAS7imvBt2lyHC9B8AGwWnXaYb1tY09oyLkXDs4vArpYJzw09nj8MLx5VfciBPGIb+ZwG0ssYnEPJxn/g==}
     dev: true
 
   /@types/ms/0.7.31:
