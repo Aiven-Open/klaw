@@ -4,6 +4,7 @@ import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawDataMigrationException;
 import io.aiven.klaw.helpers.db.rdbms.SelectDataJdbc;
 import io.aiven.klaw.helpers.db.rdbms.UpdateDataJdbc;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -32,13 +33,14 @@ public class MigrateData2x2x0 {
   }
 
   @MigrationRunner()
-  public boolean migrate() {
+  public boolean migrate() throws KlawDataMigrationException {
     List<UserInfo> allUserInfo = selectDataJdbc.selectAllUsersAllTenants();
     Set<Integer> tenantIds =
         allUserInfo.stream().map(UserInfo::getTenantId).collect(Collectors.toSet());
 
     for (int tenantId : tenantIds) {
       List<Team> teams = selectDataJdbc.selectAllTeams(tenantId);
+
       List<Integer> teamIds =
           teams.stream().map(team -> team.getTeamId()).collect(Collectors.toList());
       migrateTopics(teamIds, tenantId);
@@ -48,11 +50,10 @@ public class MigrateData2x2x0 {
     return true;
   }
 
-  private void migrateConnectors(List<Integer> teams, Integer tenantId) {
+  private void migrateConnectors(List<Integer> teams, int tenantId) {
     int numberOfRequests = 0, numberOfRequestsUpdated = 0;
     List<KafkaConnectorRequest> kcRequests =
-        selectDataJdbc.selectFilteredKafkaConnectorRequests(
-            false, "superadmin", null, null, true, Integer.valueOf(tenantId), null, null, false);
+        selectDataJdbc.getAllConnectorRequestsByTenantId(tenantId);
 
     kcRequests =
         kcRequests.stream()
@@ -81,20 +82,9 @@ public class MigrateData2x2x0 {
         numberOfRequestsUpdated);
   }
 
-  private void migrateTopics(List<Integer> teams, Integer tenantId) {
+  private void migrateTopics(List<Integer> teams, int tenantId) {
     int numberOfRequests = 0, numberOfRequestsUpdated = 0;
-    List<TopicRequest> topicRequests =
-        selectDataJdbc.selectFilteredTopicRequests(
-            false,
-            "superadmin",
-            null,
-            true,
-            Integer.valueOf(tenantId),
-            null,
-            null,
-            null,
-            null,
-            false);
+    List<TopicRequest> topicRequests = selectDataJdbc.getAllTopicRequestsByTenantId(tenantId);
 
     topicRequests =
         topicRequests.stream()
