@@ -1662,6 +1662,14 @@ public class SelectDataJdbc {
     requestObjList.forEach(reqObj -> countsMap.put((String) reqObj[0], (Long) reqObj[1]));
   }
 
+  public List<TopicRequest> getAllTopicRequestsByTenantId(int tenantId) {
+    return Lists.newArrayList(topicRequestsRepo.findAllByTenantId(tenantId));
+  }
+
+  public List<KafkaConnectorRequest> getAllConnectorRequestsByTenantId(int tenantId) {
+    return Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
+  }
+
   public List<KwClusters> getClusters() {
     return Lists.newArrayList(kwClusterRepo.findAll());
   }
