@@ -1002,6 +1002,8 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           aclType: "PRODUCER",
+          requestOperationType: "CREATE",
+          transactionalId: undefined,
           teamId: 1,
         });
 
@@ -1075,6 +1077,7 @@ describe("<TopicAclRequest />", () => {
           topicname: "aivtopic1",
           environment: "1",
           aclType: "PRODUCER",
+          requestOperationType: "CREATE",
           teamId: 1,
         });
       });
@@ -1394,6 +1397,7 @@ describe("<TopicAclRequest />", () => {
           aclType: "CONSUMER",
           teamId: 1,
           consumergroup: "group",
+          requestOperationType: "CREATE",
         });
 
         const alert = await screen.findByRole("alert");
@@ -1484,6 +1488,8 @@ describe("<TopicAclRequest />", () => {
           aclType: "CONSUMER",
           teamId: 1,
           consumergroup: "group",
+          requestOperationType: "CREATE",
+          transactionalId: undefined,
         });
       });
 

@@ -73,7 +73,6 @@ function ConnectorRequest() {
 
   return (
     <>
-      {JSON.stringify(form.watch())}
       {successModalOpen && (
         <Dialog
           title={"Connector request successful!"}

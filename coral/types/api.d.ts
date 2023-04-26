@@ -473,7 +473,7 @@ export type components = {
   schemas: {
     SchemaRequestModel: {
       /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -514,7 +514,7 @@ export type components = {
     };
     TopicUpdateRequestModel: {
       /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -687,7 +687,7 @@ export type components = {
     };
     TopicCreateRequestModel: {
       /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       environment: string;
       appname?: string;
       remarks?: string;
@@ -720,7 +720,7 @@ export type components = {
     };
     AclRequestsModel: {
       /** @enum {string} */
-      requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       environment: string;
       appname?: string;
       remarks?: string;

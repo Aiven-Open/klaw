@@ -161,7 +161,7 @@ describe("<ConnectorRequest />", () => {
     afterEach(cleanup);
 
     it("validates that connector name is at least 5 characters", async () => {
-      const expectedErrorMsg = "String must contain at least 5 character(s)";
+      const expectedErrorMsg = "Connector name must be at least 5 characters";
       const connectorNameInput = screen.getByLabelText(/Connector name/);
       await user.type(connectorNameInput, "test{tab}");
       const errorMessage = await screen.findByText(expectedErrorMsg);
@@ -281,7 +281,8 @@ describe("<ConnectorRequest />", () => {
     afterEach(cleanup);
 
     it("validates that connector description is at least 5 characters", async () => {
-      const expectedErrorMsg = "String must contain at least 5 character(s)";
+      const expectedErrorMsg =
+        "Connector description must be at least 5 characters";
       const connectorNameInput = screen.getByLabelText(/Connector description/);
       await user.type(connectorNameInput, "test{tab}");
       const errorMessage = await screen.findByText(expectedErrorMsg);
@@ -434,7 +435,7 @@ describe("<ConnectorRequest />", () => {
 
         await waitFor(() =>
           expect(
-            screen.getByText("String must contain at least 5 character(s)")
+            screen.getByText("Connector name must be at least 5 characters")
           ).toBeVisible()
         );
 

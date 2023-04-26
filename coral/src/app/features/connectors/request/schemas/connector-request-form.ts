@@ -3,10 +3,10 @@ import isError from "lodash/isError";
 import z from "zod";
 
 const connectorRequestFormSchema = z.object({
-  environment: z
+  environment: z.string().min(1, { message: "Please select an environment" }),
+  connectorName: z
     .string()
-    .min(1, { message: "Selection Error: Please select an environment." }),
-  connectorName: z.string().min(5),
+    .min(5, { message: "Connector name must be at least 5 characters" }),
   connectorConfig: z
     .string()
     // Refines for JSON object and for each of the three required config properties
@@ -30,7 +30,9 @@ const connectorRequestFormSchema = z.object({
       },
       { message: 'Missing "topics" or "topics.regex" configuration property.' }
     ),
-  description: z.string().min(5),
+  description: z
+    .string()
+    .min(5, { message: "Connector description must be at least 5 characters" }),
   remarks: z.string().optional(),
 });
 

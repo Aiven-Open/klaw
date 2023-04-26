@@ -5004,7 +5004,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "environment", "schemafull", "topicname" ]
+        "required" : [ "environment", "requestOperationType", "schemafull", "topicname" ]
       },
       "ApiResponse" : {
         "properties" : {
@@ -5144,7 +5144,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "description", "environment", "replicationfactor", "topicname", "topicpartitions" ]
+        "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
       },
       "TeamModel" : {
         "properties" : {
@@ -5654,7 +5654,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "description", "environment", "replicationfactor", "topicname", "topicpartitions" ]
+        "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
       },
       "KafkaConnectorRequestModel" : {
         "properties" : {
@@ -5693,7 +5693,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "requestOperationType", "connectorConfig", "connectorName", "description", "environment" ]
+        "required" : [ "connectorConfig", "connectorName", "description", "environment", "requestOperationType" ]
       },
       "AclRequestsModel" : {
         "properties" : {
@@ -5765,7 +5765,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "environment", "teamId", "topicname" ]
+        "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "environment", "requestOperationType", "teamId", "topicname" ]
       },
       "KwTenantModel" : {
         "properties" : {

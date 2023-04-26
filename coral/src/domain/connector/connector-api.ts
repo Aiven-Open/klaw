@@ -130,7 +130,10 @@ const deleteConnectorRequest = ({ reqIds }: DeleteRequestParams) => {
 };
 
 const createConnectorRequest = (
-  connectorPayload: KlawApiRequest<"createConnectorRequest">
+  connectorPayload: Omit<
+    KlawApiRequest<"createConnectorRequest">,
+    "requestOperationType"
+  >
 ) => {
   return api.post<
     KlawApiResponse<"createConnectorRequest">,
