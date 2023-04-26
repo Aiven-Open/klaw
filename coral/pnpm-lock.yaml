@@ -43,7 +43,7 @@ specifiers:
   prettier: ^2.7.1
   react: ^18.2.0
   react-dom: ^18.2.0
-  react-hook-form: ^7.38.0
+  react-hook-form: ^7.43.9
   react-router-dom: ^6.4.2
   react-test-renderer: ^18.2.0
   rollup-plugin-visualizer: ^5.9.0
@@ -56,13 +56,13 @@ specifiers:
 
 dependencies:
   '@aivenio/aquarium': 1.14.0_pvnihi4muhoy7kenlmiyxwzuqy
-  '@hookform/resolvers': 2.9.10_react-hook-form@7.38.0
+  '@hookform/resolvers': 2.9.10_react-hook-form@7.43.9
   '@monaco-editor/react': 4.5.0_bp43pgihi2cxclx2bm2cvm6q7a
   '@tanstack/react-query': 4.14.1_biqbaboplfbrettd7655fr4n2y
   monaco-editor: 0.37.1
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
-  react-hook-form: 7.38.0_react@18.2.0
+  react-hook-form: 7.43.9_react@18.2.0
   react-router-dom: 6.4.2_biqbaboplfbrettd7655fr4n2y
   zod: 3.19.1
 
@@ -596,12 +596,12 @@ packages:
       tslib: 2.4.0
     dev: false
 
-  /@hookform/resolvers/2.9.10_react-hook-form@7.38.0:
+  /@hookform/resolvers/2.9.10_react-hook-form@7.43.9:
     resolution: {integrity: sha512-JIL1DgJIlH9yuxcNGtyhsWX/PgNltz+5Gr6+8SX9fhXc/hPbEIk6wPI82nhgvp3uUb6ZfAM5mqg/x7KR7NAb+A==}
     peerDependencies:
       react-hook-form: ^7.0.0
     dependencies:
-      react-hook-form: 7.38.0_react@18.2.0
+      react-hook-form: 7.43.9_react@18.2.0
     dev: false
 
   /@humanwhocodes/config-array/0.11.8:
@@ -6174,8 +6174,8 @@ packages:
     resolution: {integrity: sha512-rtGImPZ0YyLrscKI9xTpV8psd6I8VAtjKCzQDlzyDvqJA8XOW78TXYQwNRNd8g8JZnDu8q9Fu/1v4HPAVwVdHA==}
     dev: false
 
-  /react-hook-form/7.38.0_react@18.2.0:
-    resolution: {integrity: sha512-gxWW1kMeru9xR1GoR+Iw4hA+JBOM3SHfr4DWCUKY0xc7Vv1MLsF109oHtBeWl9shcyPFx67KHru44DheN0XY5A==}
+  /react-hook-form/7.43.9_react@18.2.0:
+    resolution: {integrity: sha512-AUDN3Pz2NSeoxQ7Hs6OhQhDr6gtF9YRuutGDwPQqhSUAHJSgGl2VeY3qN19MG0SucpjgDiuMJ4iC5T5uB+eaNQ==}
     engines: {node: '>=12.22.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18
