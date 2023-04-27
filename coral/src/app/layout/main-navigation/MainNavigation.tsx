@@ -11,25 +11,20 @@ import { useLocation } from "react-router-dom";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
-import { useQuery } from "@tanstack/react-query";
-import { getAuth } from "src/domain/auth-user";
+import { AuthUser } from "src/domain/auth-user";
 
-function MainNavigation() {
+type MainNavigationProps = {
+  authUser: AuthUser | undefined;
+};
+function MainNavigation(props: MainNavigationProps) {
+  const { authUser } = props;
   const { pathname } = useLocation();
 
-  const { data: authUser, isLoading } = useQuery(
-    ["user-getAuth-data"],
-    getAuth
-  );
-
   const getUserTeam = () => {
-    if (isLoading) {
+    if (!authUser) {
       return <i className="text-grey-40">Fetching team...</i>;
     }
-    if (!isLoading && authUser?.teamname !== undefined) {
-      return authUser?.teamname;
-    }
-    return <i>No team found</i>;
+    return authUser.teamname;
   };
 
   return (

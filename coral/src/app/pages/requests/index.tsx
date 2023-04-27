@@ -1,6 +1,5 @@
 import { PageHeader } from "@aivenio/aquarium";
 import { Navigate, useMatches } from "react-router-dom";
-import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 import RequestsResourceTabs from "src/app/features/requests/RequestsResourceTabs";
 import Layout from "src/app/layout/Layout";
 import {
@@ -17,12 +16,10 @@ const RequestsPage = () => {
     return <Navigate to={`/requests/topics`} replace={true} />;
   }
   return (
-    <AuthenticationRequiredBoundary>
-      <Layout>
-        <PageHeader title={"My team's requests"} />
-        <RequestsResourceTabs currentTab={currentTab} />
-      </Layout>
-    </AuthenticationRequiredBoundary>
+    <Layout>
+      <PageHeader title={"My team's requests"} />
+      <RequestsResourceTabs currentTab={currentTab} />
+    </Layout>
   );
 
   function findMatchingTab(

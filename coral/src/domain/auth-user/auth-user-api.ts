@@ -29,7 +29,6 @@ function transformAuthResponse(response: KlawApiResponse<"getAuth">): AuthUser {
 }
 
 function getAuth(): Promise<AuthUser> {
-  console.log("hello");
   return api
     .get<KlawApiResponse<"getAuth">>(API_PATHS.getAuth)
     .then((response) => transformAuthResponse(response));

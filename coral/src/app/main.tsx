@@ -11,6 +11,8 @@ import "/src/app/accessibility.module.css";
 import "/src/app/main.module.css";
 // https://github.com/microsoft/monaco-editor/tree/main/samples/browser-esm-vite-react
 import "/src/services/configure-monaco-editor";
+import { AuthProvider } from "src/app/context-provider/AuthProvider";
+import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 
 const DEV_MODE = import.meta.env.DEV;
 
@@ -45,13 +47,17 @@ function prepare(): Promise<void | ServiceWorkerRegistration> {
 
 prepare().then(() => {
   root.render(
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <AquariumContext>
-          <RouterProvider router={router} />
-          {DEV_MODE && <ReactQueryDevtools />}
-        </AquariumContext>
-      </QueryClientProvider>
-    </React.StrictMode>
+    // <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <AuthenticationRequiredBoundary>
+        <AuthProvider>
+          <AquariumContext>
+            <RouterProvider router={router} />
+            {DEV_MODE && <ReactQueryDevtools />}
+          </AquariumContext>
+        </AuthProvider>
+      </AuthenticationRequiredBoundary>
+    </QueryClientProvider>
+    //</React.StrictMode>
   );
 });

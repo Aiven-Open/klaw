@@ -3,8 +3,11 @@ import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import Header from "src/app/layout/header/Header";
 import SkipLink from "src/app/layout/skip-link/SkipLink";
 import { ReactNode, useRef } from "react";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 function Layout({ children }: { children: ReactNode }) {
+  const authUser = useAuthContext();
+
   const ref = useRef<HTMLDivElement>(null);
   return (
     <>
@@ -28,7 +31,7 @@ function Layout({ children }: { children: ReactNode }) {
           <Header />
         </GridItem>
         <GridItem colStart={"1"} colEnd={"2"} rowStart={"2"}>
-          <MainNavigation />
+          <MainNavigation authUser={authUser} />
         </GridItem>
         <GridItem colStart={"2"} colEnd={"12"}>
           <Box
