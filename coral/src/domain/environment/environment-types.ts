@@ -16,7 +16,11 @@ type Environment = {
   name: KlawApiModel<"EnvModelResponse">["name"];
   id: KlawApiModel<"EnvModelResponse">["id"];
   type: KlawApiModel<"EnvModelResponse">["type"];
-  params: {
+  // even though the openapi definition defines `params` as required
+  // some endpoints don't have a `params` property
+  // so we need to make sure that we know where to
+  // handle a potential missing params property
+  params?: {
     // will be changed to Integer in BE at some point
     // and we need it best as a number
     defaultPartitions?: number;

@@ -5,6 +5,39 @@ import { Environment } from "src/domain/environment/environment-types";
 
 describe("environment-transformer.ts", () => {
   describe("transformEnvironmentApiResponse", () => {
+    // even though the openapi definition defines `params` as required
+    // some endpoints don't have a `params` property
+    // so we need to add a handling for that, too
+    it("transforms API response objects into application domain model without params", () => {
+      const emptyParamsEnv: KlawApiModel<"EnvModelResponse"> =
+        createMockEnvironmentDTO({
+          name: "DEV",
+          id: "1337",
+        });
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      delete emptyParamsEnv.params;
+
+      const testInput: Omit<KlawApiModel<"EnvModelResponse">, "params">[] = [
+        emptyParamsEnv,
+      ];
+
+      const expectedResult: Environment[] = [
+        {
+          name: "DEV",
+          id: "1337",
+          type: "kafka",
+        },
+      ];
+
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      expect(transformEnvironmentApiResponse(testInput)).toEqual(
+        expectedResult
+      );
+    });
+
     it("transforms API response objects into application domain model with a few params", () => {
       const testInput: KlawApiModel<"EnvModelResponse">[] = [
         createMockEnvironmentDTO({
