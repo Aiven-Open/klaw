@@ -40,6 +40,7 @@ describe("topic-api", () => {
         description: "this-is-description",
         remarks: "",
         topictype: "Create" as const,
+        requestOperationType: "CREATE" as const,
       };
       requestTopic(payload);
       expect(postSpy).toHaveBeenCalledTimes(1);
