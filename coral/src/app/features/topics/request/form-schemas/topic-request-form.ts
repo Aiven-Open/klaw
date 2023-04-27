@@ -128,7 +128,7 @@ function validateTopicName(
     return;
   }
 
-  const topicPrefix = environment.params?.topicPrefix
+  const topicPrefix = environment.params?.topicPrefix;
   if (
     topicPrefix !== undefined &&
     topicPrefix.length > 0 &&

@@ -9,7 +9,7 @@ import {
   mockRequestTopic,
 } from "src/domain/topic/topic-api.msw";
 import { KlawApiRequestQueryParameters } from "types/utils";
-import { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
+import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { Environment } from "src/domain/environment";
 
 describe("topic-api", () => {
@@ -58,9 +58,8 @@ describe("topic-api", () => {
           advancedTopicConfigEntries: [],
           description: "this-is-description",
           remarks: "",
-          requestOperationType: "CREATE",
-        requestOperationType: "CREATE" as const,
-      };
+          requestOperationType: "CREATE" as const,
+        };
       requestTopic(parameters);
       expect(postSpy).toHaveBeenCalledTimes(1);
       expect(postSpy).toHaveBeenCalledWith("/createTopics", payload);

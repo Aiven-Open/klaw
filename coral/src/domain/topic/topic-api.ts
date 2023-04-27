@@ -21,7 +21,7 @@ import {
   KlawApiResponse,
 } from "types/utils";
 import { convertQueryValuesToString } from "src/services/api-helper";
-import { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
+import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { transformAdvancedConfigEntries } from "src/app/features/topics/request/utils";
 
 const getTopics = async (
