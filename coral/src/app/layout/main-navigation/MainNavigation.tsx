@@ -12,6 +12,7 @@ import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLin
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 
 function MainNavigation() {
   const authUser = useAuthContext();
