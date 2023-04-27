@@ -1,6 +1,6 @@
 import { cleanup, screen } from "@testing-library/react";
 import TopicNameField from "src/app/features/topics/acl-request/fields/TopicNameField";
-import { topicname } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
+import { topicname } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
 

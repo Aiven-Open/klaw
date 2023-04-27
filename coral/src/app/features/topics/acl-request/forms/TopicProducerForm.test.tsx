@@ -11,7 +11,7 @@ import TopicProducerForm, {
 } from "src/app/features/topics/acl-request/forms/TopicProducerForm";
 import topicProducerFormSchema, {
   TopicProducerFormSchema,
-} from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
+} from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-producer";
 import { getAivenServiceAccounts } from "src/domain/acl/acl-api";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";

@@ -7,11 +7,11 @@ import {
   topicname,
   environment,
   teamId,
-} from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
+} from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 import {
   hasOnlyValidCharacters,
   validateAclPrincipleValue,
-} from "src/app/features/topics/acl-request/schemas/validation";
+} from "src/app/features/topics/acl-request/form-schemas/validation";
 import { z } from "zod";
 
 const aclType = z.literal("PRODUCER");
