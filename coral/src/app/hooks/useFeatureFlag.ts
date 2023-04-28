@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
-
-enum FeatureFlag {
-  TOPIC_REQUEST = "FEATURE_FLAG_TOPIC_REQUEST",
-}
+import { FeatureFlag } from "src/services/feature-flags/types";
+import { isFeatureFlagActive } from "src/services/feature-flags/utils";
+import { getProcessEnv } from "src/config";
 
 const useFeatureFlag = (flagName: FeatureFlag) => {
   const [state, setState] = useState(false);
   useEffect(() => {
-    setState(process.env[flagName] === "true");
-  }, [process.env[flagName]]);
+    setState(isFeatureFlagActive(flagName));
+  }, [getProcessEnv()[flagName]]);
   return state;
 };
 
-export { FeatureFlag };
 export default useFeatureFlag;
