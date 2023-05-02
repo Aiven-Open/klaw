@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class SyncTopicsList {
-  private List<TopicRequestsResponseModel> resultSet;
+  private List<TopicSyncResponseModel> resultSet;
   private int allTopicsCount;
 }

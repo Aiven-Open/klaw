@@ -562,7 +562,7 @@
 										</tr>
 										</thead>
 										<tbody>
-										<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}" class="gradeX">
+										<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}" class="gradeX" ng-style="{'border-color' : (resultBrowest.validTopicName == false) ? 'red' : 'blue' }">
 
 											<td>{{ resultBrowset.topicname}}</td>
 											<td>{{ resultBrowset.topicpartitions}}</td>
@@ -588,7 +588,7 @@
 												<span class="badge badge-info"></span>
 												<a class="mytooltip" href="javascript:void(0)" style="color:blue;">
 													<i class="far fa-plus-square"></i>
-													<span class="tooltip-content3">Topic new on cluster.</span>
+													<span class="tooltip-content3">Topic new on cluster. {{resultBrowset.validationStatus}}</span>
 												</a>
 											</td>
 											<td ng-show="resultBrowset.remarks == 'DELETED'">
