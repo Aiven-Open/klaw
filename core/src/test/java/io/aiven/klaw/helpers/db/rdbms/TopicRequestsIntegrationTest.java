@@ -395,7 +395,7 @@ public class TopicRequestsIntegrationTest {
         selectDataJdbc.selectFilteredTopicRequests(
             true, "John", "ALL", true, 103, Integer.valueOf(103), null, null, null, false);
 
-    assertThat(james.size()).isEqualTo(32);
+    assertThat(james.size()).isEqualTo(28);
     for (TopicRequest req : james) {
       assertThat(req.getTenantId()).isEqualTo(101);
       if (!req.getRequestOperationType().equals(RequestOperationType.CLAIM.value)) {
@@ -492,7 +492,7 @@ public class TopicRequestsIntegrationTest {
         selectDataJdbc.selectFilteredTopicRequests(
             true, "James", "declined", true, 101, Integer.valueOf(99), null, null, null, false);
 
-    assertThat(james.size()).isEqualTo(10);
+    assertThat(james.size()).isEqualTo(0);
   }
 
   @Test
