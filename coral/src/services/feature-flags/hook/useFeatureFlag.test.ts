@@ -1,4 +1,4 @@
-import useFeatureFlag from "src/app/hooks/useFeatureFlag";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
 import { renderHook } from "@testing-library/react";
 import { FeatureFlag } from "src/services/feature-flags/types";
 

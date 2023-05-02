@@ -32,7 +32,7 @@ Example:
 
 
 ### 2. Add your flag to the `FeatureFlag` enum
-Add the environment variable to be part of `FeatureFlag` enum defined in [useFeatureFlag.ts](../src/app/hooks/useFeatureFlag.ts) like this:
+Add the environment variable to be part of `FeatureFlag` enum defined in [useFeatureFlag.ts](../src/services/feature-flags/hook/useFeatureFlag.ts) like this:
 
 ```
 // useFeatureFlag.ts
