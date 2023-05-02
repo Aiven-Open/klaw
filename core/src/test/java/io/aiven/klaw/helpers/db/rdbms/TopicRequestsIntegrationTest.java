@@ -363,7 +363,7 @@ public class TopicRequestsIntegrationTest {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
 
-    assertThat(john.size()).isEqualTo(10);
+    assertThat(john.size()).isEqualTo(0);
 
     assertThat(all.size()).isEqualTo(32);
   }
@@ -492,7 +492,7 @@ public class TopicRequestsIntegrationTest {
         selectDataJdbc.selectFilteredTopicRequests(
             true, "James", "declined", true, 101, Integer.valueOf(99), null, null, null, false);
 
-    assertThat(james.size()).isEqualTo(0);
+    assertThat(james.size()).isEqualTo(10);
   }
 
   @Test
@@ -652,7 +652,7 @@ public class TopicRequestsIntegrationTest {
         selectDataJdbc.selectFilteredTopicRequests(
             true, "John", RequestStatus.ALL.value, true, 101, null, null, null, null, false);
 
-    assertThat(resultSet.size()).isEqualTo(35);
+    assertThat(resultSet.size()).isEqualTo(7);
     for (TopicRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getRequestor()).isNotEqualTo("James");

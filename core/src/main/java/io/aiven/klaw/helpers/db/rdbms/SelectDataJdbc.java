@@ -534,12 +534,12 @@ public class SelectDataJdbc {
                   tenantId,
                   String.valueOf(teamSelected),
                   isMyRequest ? requestor : null));
-
+      // On Approvals this should always be filtered by the users current team
       topicRequestListSub =
           Lists.newArrayList(
               findTopicRequestsByExample(
                   requestOperationType != null ? requestOperationType.value : null,
-                  teamId,
+                  teamSelected,
                   env,
                   status,
                   tenantId,
