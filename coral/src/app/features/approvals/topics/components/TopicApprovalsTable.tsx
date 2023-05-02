@@ -45,7 +45,7 @@ function TopicApprovalsTable({
   isBeingDeclined,
 }: TopicApprovalsTableProp) {
   const columns: Array<DataTableColumn<TopicRequestTableRow>> = [
-    { type: "text", field: "topicname", headerName: "Topic" },
+    { type: "text", field: "topicname", headerName: "Topic", width: 150 },
     {
       type: "status",
       field: "environmentName",
@@ -171,7 +171,7 @@ function TopicApprovalsTable({
       ariaLabel={ariaLabel}
       columns={columns}
       rows={rows}
-      noWrap={false}
+      noWrap={true}
     />
   );
 }

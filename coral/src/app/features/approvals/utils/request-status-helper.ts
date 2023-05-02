@@ -13,6 +13,14 @@ const statusList: RequestStatus[] = [
   "DELETED",
 ];
 
+enum statusNames {
+  "ALL" = "ALL",
+  "APPROVED" = "APPROVED",
+  "CREATED" = "CREATED",
+  "DECLINED" = "DECLINED",
+  "DELETED" = "DELETED",
+}
+
 const requestStatusChipStatusMap: { [key in RequestStatus]: ChipStatus } = {
   ALL: "neutral",
   APPROVED: "success",
@@ -31,4 +39,16 @@ const requestStatusNameMap: {
   DELETED: "Deleted",
 };
 
-export { requestStatusNameMap, requestStatusChipStatusMap, statusList };
+// This is a typeguard, explicit any is the correct type
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isStatusName = (name: any): name is RequestStatus => {
+  return statusList.includes(name);
+};
+
+export {
+  requestStatusNameMap,
+  requestStatusChipStatusMap,
+  statusList,
+  statusNames,
+  isStatusName,
+};

@@ -1,43 +1,31 @@
 import { PageHeader } from "@aivenio/aquarium";
-import { Navigate, useMatches } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
-import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
+import StatusTabs from "src/app/features/approvals/components/StatusTabs";
 import Layout from "src/app/layout/Layout";
-import {
-  ApprovalsTabEnum,
-  APPROVALS_TAB_ID_INTO_PATH,
-  isApprovalsTabEnum,
-} from "src/app/router_utils";
 
 const ApprovalsPage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const matches = useMatches();
-  const currentTab = findMatchingTab(matches);
-  if (currentTab === undefined) {
-    return <Navigate to={`/approvals/topics`} replace={true} />;
-  }
+  const { pathname } = useLocation();
+  const getEntity = (path: string) => {
+    if (path.includes("topics")) {
+      return "TOPIC";
+    }
+    if (path.includes("acl")) {
+      return "ACL";
+    }
+    if (path.includes("schemas")) {
+      return "SCHEMA";
+    }
+    return "CONNECTOR";
+  };
   return (
     <AuthenticationRequiredBoundary>
       <Layout>
         <PageHeader title={"Approve requests"} />
-        <ApprovalResourceTabs currentTab={currentTab} />
+        <StatusTabs entity={getEntity(pathname)} />
       </Layout>
     </AuthenticationRequiredBoundary>
   );
-
-  function findMatchingTab(
-    matches: ReturnType<typeof useMatches>
-  ): ApprovalsTabEnum | undefined {
-    const match = matches
-      .map((match) => match.id)
-      .find((id) =>
-        Object.prototype.hasOwnProperty.call(APPROVALS_TAB_ID_INTO_PATH, id)
-      );
-    if (isApprovalsTabEnum(match)) {
-      return match;
-    }
-    return undefined;
-  }
 };
 
 export default ApprovalsPage;

@@ -1,4 +1,5 @@
 import isString from "lodash/isString";
+import { RequestStatus } from "src/domain/requests/requests-types";
 
 enum Routes {
   TOPICS = "/topics",
@@ -24,6 +25,14 @@ enum ApprovalsTabEnum {
   SCHEMAS = "APPROVALS_TAB_ENUM_schemas",
   CONNECTORS = "APPROVALS_TAB_ENUM_connectors",
 }
+type StatusTabMap = { [key in RequestStatus]: URLSearchParams };
+const statusTabMap: StatusTabMap = {
+  CREATED: new URLSearchParams({ status: "CREATED" }),
+  APPROVED: new URLSearchParams({ status: "APPROVED" }),
+  DECLINED: new URLSearchParams({ status: "DECLINED" }),
+  DELETED: new URLSearchParams({ status: "DELETED" }),
+  ALL: new URLSearchParams({}),
+};
 
 const REQUESTS_TAB_ID_INTO_PATH = {
   [RequestsTabEnum.TOPICS]: "topics",
@@ -62,6 +71,7 @@ function isApprovalsTabEnum(value: unknown): value is ApprovalsTabEnum {
 export {
   RequestsTabEnum,
   ApprovalsTabEnum,
+  statusTabMap,
   Routes,
   REQUESTS_TAB_ID_INTO_PATH,
   APPROVALS_TAB_ID_INTO_PATH,

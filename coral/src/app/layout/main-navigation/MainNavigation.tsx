@@ -85,12 +85,32 @@ function MainNavigation() {
           </MainNavigationSubmenuList>
         </li>
         <li>
-          <MainNavigationLink
+          <MainNavigationSubmenuList
             icon={tickCircle}
-            to={Routes.APPROVALS}
-            linkText={"Approve requests"}
-            active={pathname.startsWith(Routes.APPROVALS)}
-          />
+            text={"Approve requests"}
+            expanded={pathname.startsWith(Routes.APPROVALS)}
+          >
+            <MainNavigationLink
+              to={`/approvals/topics`}
+              active={pathname.includes("approvals/topics")}
+              linkText={"Topics"}
+            />
+            <MainNavigationLink
+              to={`/approvals/acls`}
+              active={pathname === `approvals/acls`}
+              linkText={"ACLs"}
+            />
+            <MainNavigationLink
+              to={`/approvals/schemas`}
+              active={pathname === `approvals/schemas`}
+              linkText={"Schemas"}
+            />
+            <MainNavigationLink
+              to={`/approvals/connectors`}
+              linkText={"Connectors"}
+              active={pathname === `approvals/connectors`}
+            />
+          </MainNavigationSubmenuList>
         </li>
         <li>
           <MainNavigationLink
