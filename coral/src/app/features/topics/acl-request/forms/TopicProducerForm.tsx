@@ -23,7 +23,7 @@ import EnvironmentField from "src/app/features/topics/acl-request/fields/Environ
 import IpOrPrincipalField from "src/app/features/topics/acl-request/fields/IpOrPrincipalField";
 import RemarksField from "src/app/features/topics/acl-request/fields/RemarksField";
 import TopicNameOrPrefixField from "src/app/features/topics/acl-request/fields/TopicNameOrPrefixField";
-import { TopicProducerFormSchema } from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
+import { TopicProducerFormSchema } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-producer";
 import { createAclRequest } from "src/domain/acl/acl-api";
 import { Environment } from "src/domain/environment";
 import { parseErrorMsg } from "src/services/mutation-utils";

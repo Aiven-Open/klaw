@@ -19,29 +19,28 @@ import { convertQueryValuesToString } from "src/services/api-helper";
 const filterGetConnectorRequestParams = (
   params: KlawApiRequestQueryParameters<"getConnectorRequests">
 ) => {
-  const isMyRequest = "true";
-  // @TODO: update when this issue is resolved https://github.com/aiven/klaw/issues/974
-  // const isMyRequest = String(Boolean(params.isMyRequest));
+  return omitBy(
+    { ...params, isMyRequest: String(Boolean(params.isMyRequest)) },
+    (value, property) => {
+      const omitEnv = property === "env" && value === "ALL";
+      const omitConnectorType = property === "aclType" && value === "ALL";
+      const omitTopic = property === "topic" && value === "";
+      const omitIsMyRequest = property === "isMyRequest" && value !== "true"; // Omit if anything else than true
+      const omitOperationType =
+        property === "operationType" && value === undefined;
+      const omitSearch =
+        property === "search" && (value === "" || value === undefined);
 
-  return omitBy({ ...params, isMyRequest }, (value, property) => {
-    const omitEnv = property === "env" && value === "ALL";
-    const omitConnectorType = property === "aclType" && value === "ALL";
-    const omitTopic = property === "topic" && value === "";
-    const omitIsMyRequest = property === "isMyRequest" && value !== "true";
-    const omitOperationType =
-      property === "operationType" && value === undefined;
-    const omitSearch =
-      property === "search" && (value === "" || value === undefined);
-
-    return (
-      omitEnv ||
-      omitConnectorType ||
-      omitTopic ||
-      omitOperationType ||
-      omitIsMyRequest ||
-      omitSearch
-    );
-  });
+      return (
+        omitEnv ||
+        omitConnectorType ||
+        omitTopic ||
+        omitOperationType ||
+        omitIsMyRequest ||
+        omitSearch
+      );
+    }
+  );
 };
 
 const getConnectors = (
@@ -130,12 +129,18 @@ const deleteConnectorRequest = ({ reqIds }: DeleteRequestParams) => {
 };
 
 const createConnectorRequest = (
-  connectorPayload: KlawApiRequest<"createConnectorRequest">
+  connectorPayload: Omit<
+    KlawApiRequest<"createConnectorRequest">,
+    "requestOperationType"
+  >
 ) => {
   return api.post<
     KlawApiResponse<"createConnectorRequest">,
     KlawApiRequest<"createConnectorRequest">
-  >(API_PATHS.createConnectorRequest, connectorPayload);
+  >(API_PATHS.createConnectorRequest, {
+    ...connectorPayload,
+    requestOperationType: "CREATE",
+  });
 };
 
 export {

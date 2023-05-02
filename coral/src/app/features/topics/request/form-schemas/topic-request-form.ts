@@ -3,6 +3,7 @@ import isNumber from "lodash/isNumber";
 import { UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
 import { Environment } from "src/domain/environment";
+import { generateNamePatternString } from "src/app/features/topics/request/utils";
 
 const topicNameField = z
   .string()
@@ -13,18 +14,20 @@ const topicPartitionsField = z.string();
 
 const replicationFactorField = z.string();
 
+const environmentParams = z.object({
+  maxRepFactor: z.number().optional(),
+  maxPartitions: z.number().optional(),
+  defaultPartitions: z.number().optional(),
+  defaultRepFactor: z.number().optional(),
+  topicPrefix: z.array(z.string()).optional(),
+  topicSuffix: z.array(z.string()).optional(),
+});
+
 const environmentField: z.ZodType<Environment> = z.object({
   name: z.string(),
   id: z.string(),
   type: z.string(),
-  params: z.object({
-    maxRepFactor: z.number().optional(),
-    maxPartitions: z.number().optional(),
-    defaultPartitions: z.number().optional(),
-    defaultRepFactor: z.number().optional(),
-    topicPrefix: z.array(z.string()).optional(),
-    topicSuffix: z.array(z.string()).optional(),
-  }),
+  params: environmentParams.optional(),
 });
 
 const advancedConfigurationField = z.string().optional();
@@ -50,23 +53,19 @@ function validateReplicationFactor(
   },
   ctx: RefinementCtx
 ) {
-  const {
-    environment: {
-      params: { maxRepFactor },
-    },
-    replicationfactor,
-  } = val;
+  const { environment, replicationfactor } = val;
   if (
-    isNumber(maxRepFactor) &&
-    parseInt(replicationfactor, 10) > maxRepFactor
+    environment.params?.maxRepFactor &&
+    isNumber(environment.params?.maxRepFactor) &&
+    parseInt(replicationfactor, 10) > environment.params.maxRepFactor
   ) {
     ctx.addIssue({
       code: z.ZodIssueCode.too_big,
       inclusive: true,
-      maximum: maxRepFactor,
+      maximum: environment.params.maxRepFactor,
       type: "number",
       path: ["replicationfactor"],
-      message: `${replicationfactor} can not be bigger than ${maxRepFactor}`,
+      message: `${replicationfactor} can not be bigger than ${environment.params.maxRepFactor}`,
     });
   }
 }
@@ -78,23 +77,19 @@ function validateTopicPartitions(
   },
   ctx: RefinementCtx
 ) {
-  const {
-    environment: {
-      params: { maxPartitions },
-    },
-    topicpartitions,
-  } = val;
+  const { environment, topicpartitions } = val;
   if (
-    isNumber(maxPartitions) &&
-    parseInt(topicpartitions, 10) > maxPartitions
+    environment.params?.maxPartitions &&
+    isNumber(environment.params.maxPartitions) &&
+    parseInt(topicpartitions, 10) > environment.params.maxPartitions
   ) {
     ctx.addIssue({
       code: z.ZodIssueCode.too_big,
       inclusive: true,
-      maximum: maxPartitions,
+      maximum: environment.params.maxPartitions,
       type: "number",
       path: ["topicpartitions"],
-      message: `${topicpartitions} can not be bigger than ${maxPartitions}`,
+      message: `${topicpartitions} can not be bigger than ${environment.params.maxPartitions}`,
     });
   }
 }
@@ -106,29 +101,73 @@ function validateTopicName(
   },
   ctx: RefinementCtx
 ) {
-  const {
-    environment: {
-      params: { topicPrefix, topicSuffix },
-    },
-    topicname,
-  } = val;
+  const { environment, topicname } = val;
 
-  const prefixToCheck = topicPrefix?.[0];
-  if (prefixToCheck !== undefined && !topicname.startsWith(prefixToCheck)) {
+  if (topicname.length < 3) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       fatal: true,
-      message: `Topic name must start with "${prefixToCheck}".`,
+      message: "Topic name must contain at least 3 characters.",
+      path: ["topicname"],
+    });
+    return;
+  }
+
+  // zod already verifies that it's 3 chars at least
+  // @TODO clarify with backend if a topic with prefix
+  // also has to follow this pattern (eg. "prefix_a" not being valid)
+  const defaultTopicNamePattern = /^[a-zA-Z0-9._-]*$/;
+  if (!defaultTopicNamePattern.test(topicname)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      fatal: true,
+      message:
+        "Topic name can only contain letters, digits, period, underscore, hyphen.",
+      path: ["topicname"],
+    });
+    return;
+  }
+
+  const topicPrefix = environment.params?.topicPrefix;
+  if (
+    topicPrefix !== undefined &&
+    topicPrefix.length > 0 &&
+    !topicPrefix.some((prefix) => {
+      return (
+        topicname.startsWith(prefix) &&
+        topicname.slice(prefix.length).length > 0 &&
+        defaultTopicNamePattern.test(topicname.slice(prefix.length))
+      );
+    })
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      fatal: true,
+      message: `Topic name must start with ${generateNamePatternString(
+        topicPrefix
+      )}.`,
       path: ["topicname"],
     });
   }
 
-  const suffixToCheck = topicSuffix?.[0];
-  if (suffixToCheck !== undefined && !topicname.endsWith(suffixToCheck)) {
+  const topicSuffix = environment.params?.topicSuffix;
+  if (
+    topicSuffix !== undefined &&
+    topicSuffix.length > 0 &&
+    !topicSuffix.some((prefix) => {
+      return (
+        topicname.endsWith(prefix) &&
+        topicname.slice(prefix.length).length > 0 &&
+        defaultTopicNamePattern.test(topicname.slice(prefix.length))
+      );
+    })
+  ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       fatal: true,
-      message: `Topic name must end with "${suffixToCheck}".`,
+      message: `Topic name must end with ${generateNamePatternString(
+        topicSuffix
+      )}.`,
       path: ["topicname"],
     });
   }
@@ -150,8 +189,8 @@ const useExtendedFormValidationAndTriggers = (
     if (isInitialized && environment !== undefined) {
       const nextTopicPartitions = findNextValue({
         currentValue: topicPartitions,
-        environmentMax: environment.params.maxPartitions,
-        environmentDefault: environment.params.defaultPartitions,
+        environmentMax: environment.params?.maxPartitions,
+        environmentDefault: environment.params?.defaultPartitions,
         fallbackDefault: 2,
       });
       form.setValue("topicpartitions", nextTopicPartitions.toString(), {
@@ -160,8 +199,8 @@ const useExtendedFormValidationAndTriggers = (
 
       const nextReplicationFactorValue = findNextValue({
         currentValue: replicationFactor,
-        environmentMax: environment.params.maxRepFactor,
-        environmentDefault: environment.params.defaultRepFactor,
+        environmentMax: environment.params?.maxRepFactor,
+        environmentDefault: environment.params?.defaultRepFactor,
         fallbackDefault: 1,
       });
       form.setValue(
@@ -199,10 +238,8 @@ const useExtendedFormValidationAndTriggers = (
 
 type FoobarArgs = {
   currentValue: string;
-  environmentMax: z.infer<typeof environmentField>["params"]["maxPartitions"];
-  environmentDefault: z.infer<
-    typeof environmentField
-  >["params"]["defaultPartitions"];
+  environmentMax: z.infer<typeof environmentParams>["maxPartitions"];
+  environmentDefault: z.infer<typeof environmentParams>["defaultPartitions"];
   fallbackDefault: number;
 };
 function findNextValue({

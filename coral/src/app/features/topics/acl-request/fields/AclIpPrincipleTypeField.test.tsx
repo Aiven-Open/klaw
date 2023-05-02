@@ -1,6 +1,6 @@
 import { cleanup } from "@testing-library/react";
 import AclIpPrincipleTypeField from "src/app/features/topics/acl-request/fields/AclIpPrincipleTypeField";
-import { aclIpPrincipleType } from "src/app/features/topics/acl-request/schemas/topic-acl-request-shared-fields";
+import { aclIpPrincipleType } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
 

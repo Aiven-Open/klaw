@@ -25,7 +25,10 @@ const createAclRequest = (
 ): Promise<KlawApiResponse<"createAcl">> => {
   return api.post<KlawApiResponse<"createAcl">, KlawApiRequest<"createAcl">>(
     API_PATHS.createAcl,
-    aclPayload
+    {
+      ...aclPayload,
+      requestOperationType: "CREATE",
+    }
   );
 };
 

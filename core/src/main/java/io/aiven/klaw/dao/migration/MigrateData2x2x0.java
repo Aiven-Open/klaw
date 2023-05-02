@@ -8,9 +8,7 @@ import io.aiven.klaw.error.KlawDataMigrationException;
 import io.aiven.klaw.helpers.db.rdbms.SelectDataJdbc;
 import io.aiven.klaw.helpers.db.rdbms.UpdateDataJdbc;
 import io.aiven.klaw.model.enums.RequestOperationType;
-import io.aiven.klaw.model.enums.RolesType;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -42,33 +40,20 @@ public class MigrateData2x2x0 {
 
     for (int tenantId : tenantIds) {
       List<Team> teams = selectDataJdbc.selectAllTeams(tenantId);
-      List<UserInfo> users = selectDataJdbc.selectAllUsersInfo(tenantId);
-      Optional<UserInfo> superAdmin =
-          users.stream()
-              .filter(
-                  user ->
-                      user.getRole().equalsIgnoreCase(RolesType.SUPERADMIN.name())
-                          || user.getRole().equalsIgnoreCase(RolesType.ADMIN.name()))
-              .findFirst();
-      if (!superAdmin.isPresent()) {
-
-        throw new KlawDataMigrationException("Unable to find Superadmin or admin to run queries.");
-      }
 
       List<Integer> teamIds =
           teams.stream().map(team -> team.getTeamId()).collect(Collectors.toList());
-      migrateTopics(teamIds, tenantId, superAdmin.get().getUsername());
-      migrateConnectors(teamIds, tenantId, superAdmin.get().getUsername());
+      migrateTopics(teamIds, tenantId);
+      migrateConnectors(teamIds, tenantId);
     }
 
     return true;
   }
 
-  private void migrateConnectors(List<Integer> teams, Integer tenantId, String superadmin) {
+  private void migrateConnectors(List<Integer> teams, int tenantId) {
     int numberOfRequests = 0, numberOfRequestsUpdated = 0;
     List<KafkaConnectorRequest> kcRequests =
-        selectDataJdbc.selectFilteredKafkaConnectorRequests(
-            false, superadmin, null, null, true, Integer.valueOf(tenantId), null, null, false);
+        selectDataJdbc.getAllConnectorRequestsByTenantId(tenantId);
 
     kcRequests =
         kcRequests.stream()
@@ -97,21 +82,9 @@ public class MigrateData2x2x0 {
         numberOfRequestsUpdated);
   }
 
-  private void migrateTopics(List<Integer> teams, Integer tenantId, String superadmin) {
+  private void migrateTopics(List<Integer> teams, int tenantId) {
     int numberOfRequests = 0, numberOfRequestsUpdated = 0;
-    log.debug("Superuser {} used to execute instructions for tenantId: {}", superadmin, tenantId);
-    List<TopicRequest> topicRequests =
-        selectDataJdbc.selectFilteredTopicRequests(
-            false,
-            superadmin,
-            null,
-            true,
-            Integer.valueOf(tenantId),
-            null,
-            null,
-            null,
-            null,
-            false);
+    List<TopicRequest> topicRequests = selectDataJdbc.getAllTopicRequestsByTenantId(tenantId);
 
     topicRequests =
         topicRequests.stream()

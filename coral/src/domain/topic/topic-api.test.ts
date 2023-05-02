@@ -9,6 +9,8 @@ import {
   mockRequestTopic,
 } from "src/domain/topic/topic-api.msw";
 import { KlawApiRequestQueryParameters } from "types/utils";
+import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
+import { Environment } from "src/domain/environment";
 
 describe("topic-api", () => {
   beforeAll(() => {
@@ -31,17 +33,34 @@ describe("topic-api", () => {
     });
     it("calls api.post with correct payload", () => {
       const postSpy = jest.spyOn(api, "post");
-      const payload = {
-        environment: "DEV",
-        topicname: "topic-for-unittest",
-        topicpartitions: 1,
-        replicationfactor: "1",
-        advancedTopicConfigEntries: [],
-        description: "this-is-description",
-        remarks: "",
-        topictype: "Create" as const,
+      const env: Environment = {
+        name: "DEV",
+        id: "1",
+        type: "kafka",
+        params: {},
       };
-      requestTopic(payload);
+
+      const parameters: Schema = {
+        description: "this-is-description",
+        environment: env,
+        remarks: "",
+        replicationfactor: "1",
+        topicname: "topic-for-unittest",
+        topicpartitions: "1",
+      };
+
+      const payload: KlawApiRequestQueryParameters<"createTopicsCreateRequest"> =
+        {
+          environment: "1",
+          topicname: "topic-for-unittest",
+          topicpartitions: 1,
+          replicationfactor: "1",
+          advancedTopicConfigEntries: [],
+          description: "this-is-description",
+          remarks: "",
+          requestOperationType: "CREATE" as const,
+        };
+      requestTopic(parameters);
       expect(postSpy).toHaveBeenCalledTimes(1);
       expect(postSpy).toHaveBeenCalledWith("/createTopics", payload);
     });

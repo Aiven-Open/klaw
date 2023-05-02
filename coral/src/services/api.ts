@@ -466,7 +466,7 @@ function withoutPayloadAndWithVerb<TResponse extends SomeObject>(
   params?: Params
 ): Promise<TResponse> {
   return fetch(
-    `${API_BASE_URL}${pathname}?${params}`,
+    `${API_BASE_URL}${pathname}${!params ? "" : `?${params}`}`,
     withoutPayload(method)
   ).then((response) => handleResponse<TResponse>(response));
 }
