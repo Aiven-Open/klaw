@@ -19,15 +19,15 @@ import {
 } from "src/app/components/Form";
 import formSchema, {
   useExtendedFormValidationAndTriggers,
-} from "src/app/features/topics/request/schemas/topic-request-form";
+} from "src/app/features/topics/request/form-schemas/topic-request-form";
 import SelectOrNumberInput from "src/app/features/topics/request/components/SelectOrNumberInput";
-import type { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
+import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { Environment } from "src/domain/environment";
 import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import { requestTopic } from "src/domain/topic/topic-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { createTopicRequestPayload } from "src/app/features/topics/request/utils";
+import { generateTopicNameDescription } from "src/app/features/topics/request/utils";
 import { Dialog } from "src/app/components/Dialog";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -72,8 +72,7 @@ function TopicRequest() {
   const redirectToMyRequests = () =>
     navigate("/requests/topics?status=CREATED");
 
-  const onSubmit: SubmitHandler<Schema> = (data) =>
-    mutate(createTopicRequestPayload(data));
+  const onSubmit: SubmitHandler<Schema> = (data) => mutate(data);
 
   const [selectedEnvironment] = form.getValues(["environment"]);
   useExtendedFormValidationAndTriggers(form, {
@@ -134,9 +133,12 @@ function TopicRequest() {
             <TextInput<Schema>
               name={"topicname"}
               labelText="Topic name"
-              placeholder="e.g. my-topic"
+              placeholder={generateTopicNameDescription(
+                selectedEnvironment?.params
+              )}
               required={true}
             />
+            <span>Please enter a topic name</span>
             <Box component={Flexbox} gap={"l1"}>
               <Box component={FlexboxItem} grow={1} width={"1/2"}>
                 <SelectOrNumberInput

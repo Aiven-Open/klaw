@@ -44,34 +44,34 @@
   "dependencies": {
     "@aivenio/aquarium": "^1.14.0",
     "@hookform/resolvers": "^2.9.10",
-    "@monaco-editor/react": "^4.4.6",
-    "@tanstack/react-query": "^4.14.1",
-    "monaco-editor": "^0.34.1",
+    "@monaco-editor/react": "^4.5.0",
+    "@tanstack/react-query": "^4.29.5",
+    "monaco-editor": "^0.37.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.38.0",
-    "react-router-dom": "^6.4.2",
+    "react-hook-form": "^7.43.9",
+    "react-router-dom": "^6.10.0",
     "zod": "^3.19.1"
   },
   "devDependencies": {
-    "@tanstack/react-query-devtools": "^4.14.1",
+    "@tanstack/react-query-devtools": "^4.29.5",
     "@testing-library/dom": "^8.19.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/user-event": "^14.4.3",
-    "@types/jest": "^29.4.0",
-    "@types/lodash": "^4.14.182",
+    "@types/jest": "^29.5.1",
+    "@types/lodash": "^4.14.194",
     "@types/node": "*",
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.1",
     "@types/testing-library__jest-dom": "^5.14.5",
-    "@typescript-eslint/eslint-plugin": "^5.40.1",
-    "@typescript-eslint/parser": "^5.40.1",
-    "@vitejs/plugin-react": "^3.1.0",
-    "eslint": "^8.36.0",
-    "eslint-config-prettier": "^8.7.0",
-    "eslint-import-resolver-typescript": "^3.5.3",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "@vitejs/plugin-react": "^4.0.0",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-import-resolver-typescript": "^3.5.5",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-lodash": "^7.4.0",
     "eslint-plugin-no-relative-import-paths": "^1.4.0",
@@ -87,11 +87,15 @@
     "prettier": "^2.7.1",
     "react-test-renderer": "^18.2.0",
     "rollup-plugin-visualizer": "^5.9.0",
-    "ts-jest": "^29.0.5",
+    "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "typescript": "^4.6.4",
-    "vite": "^3.1.0",
+    "typescript": "^4.8.4",
+    "vite": "^4.3.2",
     "whatwg-fetch": "^3.6.2"
+  },
+  "peerDependencies": {
+    "json5": ">=1.0.2",
+    "yaml": "2.2.2"
   },
   "alex": {
     "noBinary": true,
@@ -99,11 +103,5 @@
   },
   "msw": {
     "workerDirectory": "./"
-  },
-  "pnpm": {
-    "overrides": {
-      "json5@<1.0.2": ">=1.0.2",
-      "json5@>=2.0.0 <2.2.2": ">=2.2.2"
-    }
   }
 }

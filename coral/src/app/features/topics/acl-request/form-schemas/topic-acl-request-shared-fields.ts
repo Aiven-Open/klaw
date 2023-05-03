@@ -1,4 +1,4 @@
-import { isIpRegex } from "src/app/features/topics/acl-request/schemas/validation";
+import { isIpRegex } from "src/app/features/topics/acl-request/form-schemas/validation";
 import { z } from "zod";
 
 // The errorMap usage in this schema is to allow react-hook-form to return the correct error

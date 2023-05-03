@@ -10,10 +10,10 @@ import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicPr
 import useExtendedEnvironments from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 import topicConsumerFormSchema, {
   TopicConsumerFormSchema,
-} from "src/app/features/topics/acl-request/schemas/topic-acl-request-consumer";
+} from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-consumer";
 import topicProducerFormSchema, {
   TopicProducerFormSchema,
-} from "src/app/features/topics/acl-request/schemas/topic-acl-request-producer";
+} from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-producer";
 import { getTopicTeam, TopicTeam } from "src/domain/topic";
 import { AclType } from "src/domain/acl";
 

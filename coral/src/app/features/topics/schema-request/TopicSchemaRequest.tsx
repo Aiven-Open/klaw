@@ -13,7 +13,7 @@ import {
 import {
   TopicRequestFormSchema,
   topicRequestFormSchema,
-} from "src/app/features/topics/schema-request/schemas/topic-schema-request-form";
+} from "src/app/features/topics/schema-request/form-schemas/topic-schema-request-form";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import { Alert, Box, Button } from "@aivenio/aquarium";
 import { createSchemaRequest } from "src/domain/schema-request";

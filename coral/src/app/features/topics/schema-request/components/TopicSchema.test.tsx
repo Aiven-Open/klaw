@@ -3,7 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
-import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/schemas/topic-schema-request-form";
+import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/form-schemas/topic-schema-request-form";
 import { readFile } from "src/app/features/topics/schema-request/utils/read-file";
 
 jest.mock("src/app/features/topics/schema-request/utils/read-file");

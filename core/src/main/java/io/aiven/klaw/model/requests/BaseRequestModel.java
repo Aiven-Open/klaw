@@ -13,7 +13,7 @@ import lombok.ToString;
 public class BaseRequestModel implements Serializable {
 
   // CREATE / DELETE / ..
-  private RequestOperationType requestOperationType;
+  @NotNull private RequestOperationType requestOperationType;
 
   @NotNull private String environment;
 

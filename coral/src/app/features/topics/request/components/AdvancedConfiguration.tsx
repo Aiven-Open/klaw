@@ -3,14 +3,14 @@ import {
   useFormContext,
   UseFormSetError,
 } from "react-hook-form";
-import Editor, { Monaco, useMonaco } from "@monaco-editor/react";
+import MonacoEditor, { Monaco, useMonaco } from "@monaco-editor/react";
 import { useQuery } from "@tanstack/react-query";
 import isString from "lodash/isString";
 import { Position, editor } from "monaco-editor";
 import { useEffect, useRef } from "react";
 import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { TopicAdvancedConfigurationOptions } from "src/domain/topic/topic-types";
-import { Schema } from "src/app/features/topics/request/schemas/topic-request-form";
+import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { BorderBox, Box, Flexbox, Typography } from "@aivenio/aquarium";
 
 type Props = {
@@ -89,7 +89,7 @@ function AdvancedConfiguration({ name }: Props) {
           render={({ field: { name, value } }) => {
             return (
               <>
-                <Editor
+                <MonacoEditor
                   data-testid="advancedConfiguration"
                   height="300px"
                   defaultLanguage={"json"}
