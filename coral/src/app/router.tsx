@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 import Layout from "src/app/layout/Layout";
+import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
 import ApprovalsPage from "src/app/pages/approvals";
 import AclApprovalsPage from "src/app/pages/approvals/acls";
 import ConnectorApprovalsPage from "src/app/pages/approvals/connectors";
@@ -43,10 +44,6 @@ const routes: Array<RouteObject> = [
       {
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
-      },
-      {
-        path: Routes.CONNECTOR_REQUEST,
-        element: <RequestConnector />,
       },
       {
         path: Routes.TOPIC_REQUEST,
@@ -117,6 +114,10 @@ const routes: Array<RouteObject> = [
         element: <NotFound />,
       },
     ],
+  },
+  {
+    path: Routes.CONNECTOR_REQUEST,
+    element: <RequestConnector />,
   },
 ];
 
