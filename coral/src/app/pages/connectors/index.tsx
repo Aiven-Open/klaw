@@ -9,7 +9,7 @@ const ConnectorsPage = () => {
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    <>
       <PreviewBanner linkTarget={"/kafkaConnectors"} />
       <PageHeader
         title={"All Kafka Connectors"}
@@ -20,7 +20,7 @@ const ConnectorsPage = () => {
         }}
       />
       <BrowseConnectors />
-    </Layout>
+    </>
   );
 };
 

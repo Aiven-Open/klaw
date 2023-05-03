@@ -5,11 +5,11 @@ import Layout from "src/app/layout/Layout";
 
 const RequestTopic = () => {
   return (
-    <Layout>
+    <>
       <PreviewBanner linkTarget={"/requestTopics"} />
       <PageHeader title={"Request topic"} />
       <TopicRequest />
-    </Layout>
+    </>
   );
 };
 

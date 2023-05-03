@@ -4,10 +4,10 @@ import Layout from "src/app/layout/Layout";
 
 const TopicRequestsPage = () => {
   return (
-    <Layout>
+    <>
       <PreviewBanner linkTarget={"/myTopicRequests"} />
       <TopicRequests />
-    </Layout>
+    </>
   );
 };
 

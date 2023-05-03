@@ -4,10 +4,10 @@ import Layout from "src/app/layout/Layout";
 
 const ConnectorRequestsPage = () => {
   return (
-    <Layout>
+    <>
       <PreviewBanner linkTarget={"/myConnectorRequests"} />
       <ConnectorRequests />
-    </Layout>
+    </>
   );
 };
 

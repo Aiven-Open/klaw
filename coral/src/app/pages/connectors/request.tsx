@@ -4,10 +4,10 @@ import Layout from "src/app/layout/Layout";
 
 const RequestConnector = () => {
   return (
-    <Layout>
+    <>
       <PageHeader title={"Request connector"} />
       <ConnectorRequest />
-    </Layout>
+    </>
   );
 };
 

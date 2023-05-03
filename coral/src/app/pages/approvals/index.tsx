@@ -16,10 +16,10 @@ const ApprovalsPage = () => {
     return <Navigate to={`/approvals/topics`} replace={true} />;
   }
   return (
-    <Layout>
+    <>
       <PageHeader title={"Approve requests"} />
       <ApprovalResourceTabs currentTab={currentTab} />
-    </Layout>
+    </>
   );
 
   function findMatchingTab(

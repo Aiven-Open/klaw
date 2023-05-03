@@ -5,7 +5,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 describe("Layout.tsx", () => {
   const testChildren = <div data-testid={"test-children"}></div>;
   beforeAll(() => {
-    customRender(<Layout>{testChildren}</Layout>, {
+    customRender(<>{testChildren}</>, {
       memoryRouter: true,
       queryClient: true,
     });

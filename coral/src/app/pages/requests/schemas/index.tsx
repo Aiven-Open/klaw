@@ -4,10 +4,10 @@ import Layout from "src/app/layout/Layout";
 
 const SchemaRequestsPage = () => {
   return (
-    <Layout>
+    <>
       <PreviewBanner linkTarget={"/mySchemaRequests"} />
       <SchemaRequests />
-    </Layout>
+    </>
   );
 };
 

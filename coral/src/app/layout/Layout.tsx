@@ -4,8 +4,9 @@ import Header from "src/app/layout/header/Header";
 import SkipLink from "src/app/layout/skip-link/SkipLink";
 import { ReactNode, useRef } from "react";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import { Outlet } from "react-router-dom";
 
-function Layout({ children }: { children: ReactNode }) {
+function Layout() {
   const authUser = useAuthContext();
 
   const ref = useRef<HTMLDivElement>(null);
@@ -41,7 +42,9 @@ function Layout({ children }: { children: ReactNode }) {
             padding={"l2"}
             width={"full"}
           >
-            <div ref={ref}>{children}</div>
+            <div ref={ref}>
+              <Outlet />
+            </div>
           </Box>
         </GridItem>
       </Grid>

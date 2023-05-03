@@ -8,7 +8,7 @@ import Layout from "src/app/layout/Layout";
 const Topics = () => {
   const navigate = useNavigate();
   return (
-    <Layout>
+    <>
       <PreviewBanner linkTarget={"/browseTopics"} />
       <PageHeader
         title={"All topics"}
@@ -19,7 +19,7 @@ const Topics = () => {
         }}
       />
       <BrowseTopics />
-    </Layout>
+    </>
   );
 };
 

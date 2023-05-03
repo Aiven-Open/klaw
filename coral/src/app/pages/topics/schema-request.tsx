@@ -9,7 +9,7 @@ const SchemaRequest = () => {
   const { topicName } = useParams();
 
   return (
-    <Layout>
+    <>
       {topicName && (
         <>
           <PreviewBanner linkTarget={`/requestSchema?topicname=${topicName}`} />
@@ -17,7 +17,7 @@ const SchemaRequest = () => {
           <TopicSchemaRequest topicName={topicName} />
         </>
       )}
-    </Layout>
+    </>
   );
 };
 

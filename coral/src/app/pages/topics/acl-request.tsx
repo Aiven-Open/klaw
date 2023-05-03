@@ -8,7 +8,7 @@ const AclRequest = () => {
   const { topicName } = useParams();
 
   return (
-    <Layout>
+    <>
       <PreviewBanner
         linkTarget={`/requestAcls${
           topicName !== undefined ? `?topicName=${topicName}` : ""
@@ -16,7 +16,7 @@ const AclRequest = () => {
       />
       <PageHeader title={"ACL (Access Control) Request"} />
       <TopicAclRequest />
-    </Layout>
+    </>
   );
 };
 

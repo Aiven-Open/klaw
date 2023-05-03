@@ -16,10 +16,10 @@ const RequestsPage = () => {
     return <Navigate to={`/requests/topics`} replace={true} />;
   }
   return (
-    <Layout>
+    <>
       <PageHeader title={"My team's requests"} />
       <RequestsResourceTabs currentTab={currentTab} />
-    </Layout>
+    </>
   );
 
   function findMatchingTab(
