@@ -1051,9 +1051,52 @@ export type components = {
       position?: string;
     };
     SyncTopicsList: {
-      resultSet?: (components["schemas"]["TopicRequestsResponseModel"])[];
+      resultSet?: (components["schemas"]["TopicSyncResponseModel"])[];
       /** Format: int32 */
       allTopicsCount?: number;
+      /** Format: int32 */
+      invalidTopicNamesCount?: number;
+    };
+    TopicSyncResponseModel: {
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      topicname: string;
+      /** Format: int32 */
+      topicpartitions: number;
+      replicationfactor: string;
+      description: string;
+      /** Format: int32 */
+      topicid: number;
+      deleteAssociatedSchema: boolean;
+      advancedTopicConfigEntries: (components["schemas"]["TopicConfigEntry"])[];
+      approvingTeamId?: string;
+      sequence?: string;
+      possibleTeams?: (string)[];
+      validationStatus?: string;
+      validTopicName?: boolean;
+      deletable?: boolean;
+      editable?: boolean;
     };
     KafkaConnectorModelResponse: {
       /** Format: int32 */

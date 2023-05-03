@@ -147,7 +147,9 @@ public class TopicSyncControllerService {
 
     syncTopicsList.setResultSet(topicRequestModelList);
     syncTopicsList.setAllTopicsCount(allTopicsCount);
-
+    syncTopicsList.setInvalidTopicNamesCount(
+        Long.valueOf(topicRequestModelList.stream().filter(req -> !req.isValidTopicName()).count())
+            .intValue());
     return syncTopicsList;
   }
 
@@ -186,6 +188,12 @@ public class TopicSyncControllerService {
           getSyncTopicListRecon(
               topicsList, deletedTopicsFromClusterList, env, isBulkOption, tenantId));
       syncTopicsList.setAllTopicsCount(topicsList.size());
+      syncTopicsList.setInvalidTopicNamesCount(
+          Long.valueOf(
+                  syncTopicsList.getResultSet().stream()
+                      .filter(req -> !req.isValidTopicName())
+                      .count())
+              .intValue());
     } else {
       syncTopicsList.setResultSet(
           getSyncTopicList(
@@ -198,6 +206,12 @@ public class TopicSyncControllerService {
               sizeOfTopics,
               tenantId));
       syncTopicsList.setAllTopicsCount(sizeOfTopics.get(0));
+      syncTopicsList.setInvalidTopicNamesCount(
+          Long.valueOf(
+                  syncTopicsList.getResultSet().stream()
+                      .filter(req -> !req.isValidTopicName())
+                      .count())
+              .intValue());
     }
 
     return syncTopicsList;
