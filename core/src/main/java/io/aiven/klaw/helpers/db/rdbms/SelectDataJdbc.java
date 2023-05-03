@@ -648,11 +648,6 @@ public class SelectDataJdbc {
       int tenantId,
       String approvingTeam,
       String userName) {
-    log.info(
-        "Request Type : {} , env : {}, approvingTeam : {}",
-        requestType,
-        environment,
-        approvingTeam);
 
     TopicRequest request = new TopicRequest();
     request.setTenantId(tenantId);
