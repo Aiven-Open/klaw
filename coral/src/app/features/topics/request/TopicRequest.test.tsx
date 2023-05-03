@@ -12,6 +12,7 @@ import {
 import api from "src/services/api";
 import { server } from "src/services/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { objectHasProperty } from "src/services/type-utils";
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -254,7 +255,7 @@ describe("<TopicRequest />", () => {
         cleanup();
       });
 
-      it("shows the allowes pattern in placeholder", async () => {
+      it("shows the allowed pattern in placeholder", async () => {
         const select = await screen.findByRole("combobox", {
           name: "Environment *",
         });
@@ -267,6 +268,59 @@ describe("<TopicRequest />", () => {
         expect(topicNameInput).toHaveAttribute(
           "placeholder",
           'Follow name pattern: ".*Dev.*". Allowed characters: letter, digit, period, underscore, and hyphen.'
+        );
+      });
+    });
+
+    describe("informs user about valid input with a prefix is needed", () => {
+      beforeAll(() => {
+        mockGetEnvironmentsForTeam({
+          mswInstance: server,
+          response: {
+            data: [
+              createMockEnvironmentDTO({
+                name: "DEV",
+                id: "4",
+                params: {
+                  applyRegex: false,
+                  topicPrefix: ["prefix_"],
+                },
+              }),
+            ],
+          },
+        });
+        mockgetTopicAdvancedConfigOptions({
+          mswInstance: server,
+          response: {
+            data: defaultgetTopicAdvancedConfigOptionsResponse,
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+      });
+
+      it("shows the allowed pattern in placeholder", async () => {
+        const select = await screen.findByRole("combobox", {
+          name: "Environment *",
+        });
+        await user.selectOptions(select, "DEV");
+
+        const topicNameInput = screen.getByRole("textbox", {
+          name: /Topic name/,
+        });
+
+        expect(topicNameInput).toHaveAttribute(
+          "placeholder",
+          'Prefix name with: "prefix_". Allowed characters: letter, digit, period, underscore, and hyphen.'
         );
       });
     });
@@ -379,66 +433,8 @@ describe("<TopicRequest />", () => {
       });
     });
 
-    // describe("when topic name regex from BE should be applied", () => {
-    //   beforeAll(() => {
-    //     mockGetEnvironmentsForTeam({
-    //       mswInstance: server,
-    //       response: {
-    //         data: [
-    //           createMockEnvironmentDTO({
-    //             name: "EnvWithTopicPrefix",
-    //             id: "4",
-    //             params: {
-    //               applyRegex: true,
-    //               topicRegex: [".*Dev.*"],
-    //             },
-    //           }),
-    //         ],
-    //       },
-    //     });
-    //     mockgetTopicAdvancedConfigOptions({
-    //       mswInstance: server,
-    //       response: {
-    //         data: defaultgetTopicAdvancedConfigOptionsResponse,
-    //       },
-    //     });
-    //
-    //     customRender(
-    //       <AquariumContext>
-    //         <TopicRequest />
-    //       </AquariumContext>,
-    //       { queryClient: true }
-    //     );
-    //   });
-    //
-    //   afterAll(() => {
-    //     cleanup();
-    //   });
-    //
-    //   it("validates that topic name matches the defined regex", async () => {
-    //     const expectedErrorMsg =
-    //       "Topic name can only contain letters, digits, period, underscore, hyphen.";
-    //     const select = await screen.findByRole("combobox", {
-    //       name: "Environment *",
-    //     });
-    //
-    //     await user.selectOptions(select, "EnvWithTopicPrefix");
-    //
-    //     const topicNameInput = screen.getByLabelText(/Topic name/);
-    //     await user.type(topicNameInput, "topic_name{tab}");
-    //
-    //     const errorMessage = await screen.findByText(expectedErrorMsg);
-    //     expect(errorMessage).toBeVisible();
-    //
-    //     await user.clear(topicNameInput);
-    //     await user.type(topicNameInput, "dev-topic-name{tab}");
-    //
-    //     expect(errorMessage).not.toBeVisible();
-    //   });
-    // });
-
     describe("when environment params have topicPrefix defined", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         mockGetEnvironmentsForTeam({
           mswInstance: server,
           response: {
@@ -446,7 +442,16 @@ describe("<TopicRequest />", () => {
               createMockEnvironmentDTO({
                 name: "EnvWithTopicPrefix",
                 id: "4",
-                params: { topicPrefix: ["test-"] },
+                params: { topicPrefix: ["test-"], applyRegex: undefined },
+              }),
+              createMockEnvironmentDTO({
+                name: "EnvWithTopicRegex",
+                id: "2",
+                params: {
+                  applyRegex: true,
+                  topicRegex: [".*Dev*."],
+                  topicPrefix: ["test-"],
+                },
               }),
             ],
           },
@@ -466,7 +471,7 @@ describe("<TopicRequest />", () => {
         );
       });
 
-      afterAll(() => {
+      afterEach(() => {
         cleanup();
       });
 
@@ -488,6 +493,33 @@ describe("<TopicRequest />", () => {
         await user.type(topicNameInput, "test-foobar{tab}");
 
         expect(errorMessage).not.toBeVisible();
+      });
+
+      it("does not validate the prefix if a regex should be applied", async () => {
+        const expectedErrorMsg = 'Topic name must start with "test-".';
+        const select = await screen.findByRole("combobox", {
+          name: "Environment *",
+        });
+
+        await user.selectOptions(select, "EnvWithTopicRegex");
+
+        const topicNameInput = screen.getByLabelText(/Topic name/);
+        await user.type(topicNameInput, "foobar{tab}");
+
+        try {
+          await screen.findByText(expectedErrorMsg);
+          expect(true).toBe(false);
+        } catch (error) {
+          if (error && objectHasProperty(error, "name")) {
+            expect((error as { name: string }).name).toEqual(
+              "TestingLibraryElementError"
+            );
+          } else {
+            expect("But it did!").toEqual(
+              "Testing library should not have found an element here"
+            );
+          }
+        }
       });
     });
 

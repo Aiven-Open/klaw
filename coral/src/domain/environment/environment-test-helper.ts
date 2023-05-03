@@ -18,6 +18,7 @@ const defaultEnvironmentDTO: KlawApiModel<"EnvModelResponse"> = {
   associatedEnv: undefined,
   clusterType: "ALL",
   params: {
+    applyRegex: undefined,
     defaultPartitions: undefined,
     defaultRepFactor: undefined,
     maxPartitions: undefined,

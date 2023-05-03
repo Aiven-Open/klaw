@@ -19,6 +19,7 @@ const environmentParams = z.object({
   maxPartitions: z.number().optional(),
   defaultPartitions: z.number().optional(),
   defaultRepFactor: z.number().optional(),
+  applyRegex: z.boolean().optional(),
   topicPrefix: z.array(z.string()).optional(),
   topicSuffix: z.array(z.string()).optional(),
 });
@@ -128,48 +129,52 @@ function validateTopicName(
     return;
   }
 
-  const topicPrefix = environment.params?.topicPrefix;
-  if (
-    topicPrefix !== undefined &&
-    topicPrefix.length > 0 &&
-    !topicPrefix.some((prefix) => {
-      return (
-        topicname.startsWith(prefix) &&
-        topicname.slice(prefix.length).length > 0 &&
-        defaultTopicNamePattern.test(topicname.slice(prefix.length))
-      );
-    })
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      fatal: true,
-      message: `Topic name must start with ${generateNamePatternString(
-        topicPrefix
-      )}.`,
-      path: ["topicname"],
-    });
-  }
+  // if a topic name has a regex format, it can't have a
+  // prefix or suffix
+  if (!environment.params?.applyRegex) {
+    const topicPrefix = environment.params?.topicPrefix;
+    if (
+      topicPrefix !== undefined &&
+      topicPrefix.length > 0 &&
+      !topicPrefix.some((prefix) => {
+        return (
+          topicname.startsWith(prefix) &&
+          topicname.slice(prefix.length).length > 0 &&
+          defaultTopicNamePattern.test(topicname.slice(prefix.length))
+        );
+      })
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        fatal: true,
+        message: `Topic name must start with ${generateNamePatternString(
+          topicPrefix
+        )}.`,
+        path: ["topicname"],
+      });
+    }
 
-  const topicSuffix = environment.params?.topicSuffix;
-  if (
-    topicSuffix !== undefined &&
-    topicSuffix.length > 0 &&
-    !topicSuffix.some((prefix) => {
-      return (
-        topicname.endsWith(prefix) &&
-        topicname.slice(prefix.length).length > 0 &&
-        defaultTopicNamePattern.test(topicname.slice(prefix.length))
-      );
-    })
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      fatal: true,
-      message: `Topic name must end with ${generateNamePatternString(
-        topicSuffix
-      )}.`,
-      path: ["topicname"],
-    });
+    const topicSuffix = environment.params?.topicSuffix;
+    if (
+      topicSuffix !== undefined &&
+      topicSuffix.length > 0 &&
+      !topicSuffix.some((prefix) => {
+        return (
+          topicname.endsWith(prefix) &&
+          topicname.slice(prefix.length).length > 0 &&
+          defaultTopicNamePattern.test(topicname.slice(prefix.length))
+        );
+      })
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        fatal: true,
+        message: `Topic name must end with ${generateNamePatternString(
+          topicSuffix
+        )}.`,
+        path: ["topicname"],
+      });
+    }
   }
 }
 
