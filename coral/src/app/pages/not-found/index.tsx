@@ -1,11 +1,10 @@
 import { Box, Typography } from "@aivenio/aquarium";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
-import Layout from "src/app/layout/Layout";
 
 const NotFound = () => {
   return (
     <AuthenticationRequiredBoundary>
-      <Layout>
+      <>
         <Box role="main" display={"flex"} flexDirection={"column"} gap={"5"}>
           <Typography.Heading color={"secondary-100"}>
             Page not found
@@ -19,7 +18,7 @@ const NotFound = () => {
             <a href={"/index"}>Return to the old interface.</a>
           </Typography.MediumText>
         </Box>
-      </Layout>
+      </>
     </AuthenticationRequiredBoundary>
   );
 };

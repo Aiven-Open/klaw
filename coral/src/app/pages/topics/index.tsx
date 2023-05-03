@@ -4,13 +4,12 @@ import { useNavigate } from "react-router-dom";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 import PreviewBanner from "src/app/components/PreviewBanner";
 import BrowseTopics from "src/app/features/topics/browse/BrowseTopics";
-import Layout from "src/app/layout/Layout";
 
 const Topics = () => {
   const navigate = useNavigate();
   return (
     <AuthenticationRequiredBoundary>
-      <Layout>
+      <>
         <PreviewBanner linkTarget={"/browseTopics"} />
         <PageHeader
           title={"All topics"}
@@ -21,7 +20,7 @@ const Topics = () => {
           }}
         />
         <BrowseTopics />
-      </Layout>
+      </>
     </AuthenticationRequiredBoundary>
   );
 };

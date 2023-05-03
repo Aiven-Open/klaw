@@ -2,10 +2,9 @@ import { PageHeader } from "@aivenio/aquarium";
 import { Navigate, useMatches } from "react-router-dom";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 import RequestsResourceTabs from "src/app/features/requests/RequestsResourceTabs";
-import Layout from "src/app/layout/Layout";
 import {
-  RequestsTabEnum,
   REQUESTS_TAB_ID_INTO_PATH,
+  RequestsTabEnum,
   isRequestsTabEnum,
 } from "src/app/router_utils";
 
@@ -18,10 +17,10 @@ const RequestsPage = () => {
   }
   return (
     <AuthenticationRequiredBoundary>
-      <Layout>
+      <>
         <PageHeader title={"My team's requests"} />
         <RequestsResourceTabs currentTab={currentTab} />
-      </Layout>
+      </>
     </AuthenticationRequiredBoundary>
   );
 

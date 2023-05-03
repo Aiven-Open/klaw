@@ -1,10 +1,11 @@
 import { Box, Grid, GridItem } from "@aivenio/aquarium";
-import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
+import { useRef } from "react";
+import { Outlet } from "react-router-dom";
 import Header from "src/app/layout/header/Header";
+import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import SkipLink from "src/app/layout/skip-link/SkipLink";
-import { ReactNode, useRef } from "react";
 
-function Layout({ children }: { children: ReactNode }) {
+function Layout() {
   const ref = useRef<HTMLDivElement>(null);
   return (
     <>
@@ -38,7 +39,9 @@ function Layout({ children }: { children: ReactNode }) {
             padding={"l2"}
             width={"full"}
           >
-            <div ref={ref}>{children}</div>
+            <div ref={ref}>
+              <Outlet />
+            </div>
           </Box>
         </GridItem>
       </Grid>

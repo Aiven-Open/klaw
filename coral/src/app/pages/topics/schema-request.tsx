@@ -1,9 +1,8 @@
 import { PageHeader } from "@aivenio/aquarium";
+import { useParams } from "react-router-dom";
 import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
 import PreviewBanner from "src/app/components/PreviewBanner";
-import Layout from "src/app/layout/Layout";
 import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
-import { useParams } from "react-router-dom";
 
 const SchemaRequest = () => {
   // @TODO: should we add verification that this is a real topic name?
@@ -11,7 +10,7 @@ const SchemaRequest = () => {
 
   return (
     <AuthenticationRequiredBoundary>
-      <Layout>
+      <>
         {topicName && (
           <>
             <PreviewBanner
@@ -21,7 +20,7 @@ const SchemaRequest = () => {
             <TopicSchemaRequest topicName={topicName} />
           </>
         )}
-      </Layout>
+      </>
     </AuthenticationRequiredBoundary>
   );
 };
