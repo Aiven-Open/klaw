@@ -100,19 +100,6 @@ describe("TopicRequest utils", () => {
       );
     });
 
-    it("generates the description for an env with one topic prefix", () => {
-      const envWithoutExtras: Environment["params"] = {
-        applyRegex: false,
-        topicPrefix: ["prefix_"],
-        topicRegex: undefined,
-        topicSuffix: undefined,
-      };
-
-      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
-        'Prefix name with: "prefix_". Allowed characters: letter, digit, period, underscore, and hyphen.'
-      );
-    });
-
     it("generates the description for an env with two topic prefixes", () => {
       const envWithoutExtras: Environment["params"] = {
         applyRegex: false,
@@ -221,6 +208,34 @@ describe("TopicRequest utils", () => {
         'Follow name pattern: ".*Dev*.", ".*Dev2*." or ".*Dev3*.". Allowed characters: letter, digit, period,' +
           " underscore, and" +
           " hyphen."
+      );
+    });
+
+    // if a topic name has a regex format, it can't have a
+    // prefix or suffix
+    it("generates the description for an env with one regex and a prefix", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: true,
+        topicPrefix: ["prefix_"],
+        topicRegex: [".*Dev*."],
+        topicSuffix: undefined,
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Follow name pattern: ".*Dev*.". Allowed characters: letter, digit, period, underscore, and hyphen.'
+      );
+    });
+
+    it("generates the description for an env with one prefix and two suffix", () => {
+      const envWithoutExtras: Environment["params"] = {
+        applyRegex: undefined,
+        topicPrefix: ["prefix_"],
+        topicRegex: undefined,
+        topicSuffix: ["_suffix, _suffix"],
+      };
+
+      expect(generateTopicNameDescription(envWithoutExtras)).toEqual(
+        'Suffix name with: "_suffix, _suffix". Prefix name with: "prefix_". Allowed characters: letter, digit, period, underscore, and hyphen.'
       );
     });
   });

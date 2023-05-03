@@ -63,22 +63,26 @@ function generateTopicNameDescription(
     const { applyRegex, topicRegex, topicPrefix, topicSuffix } =
       environmentParams;
 
-    if (applyRegex && topicRegex && topicRegex.length > 0) {
-      desc.unshift(
-        `Follow name pattern: ${generateNamePatternString(topicRegex)}.`
-      );
-    }
+    // if a topic name has a regex format, it can't have a
+    // prefix or suffix
+    if (applyRegex) {
+      if (topicRegex && topicRegex.length > 0) {
+        desc.unshift(
+          `Follow name pattern: ${generateNamePatternString(topicRegex)}.`
+        );
+      }
+    } else {
+      if (topicPrefix && topicPrefix.length > 0) {
+        desc.unshift(
+          `Prefix name with: ${generateNamePatternString(topicPrefix)}.`
+        );
+      }
 
-    if (topicPrefix && topicPrefix.length > 0) {
-      desc.unshift(
-        `Prefix name with: ${generateNamePatternString(topicPrefix)}.`
-      );
-    }
-
-    if (topicSuffix && topicSuffix.length > 0) {
-      desc.unshift(
-        `Suffix name with: ${generateNamePatternString(topicSuffix)}.`
-      );
+      if (topicSuffix && topicSuffix.length > 0) {
+        desc.unshift(
+          `Suffix name with: ${generateNamePatternString(topicSuffix)}.`
+        );
+      }
     }
   }
   return desc.join(" ");
