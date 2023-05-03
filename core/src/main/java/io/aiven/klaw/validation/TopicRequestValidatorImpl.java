@@ -18,6 +18,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_116;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_117;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_118;
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -175,7 +176,7 @@ public class TopicRequestValidatorImpl
       TopicRequestModel topicRequestModel,
       String syncCluster,
       ConstraintValidatorContext constraintValidatorContext) {
-    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
     boolean promotionOrderCheck = false;
     if (null != orderOfEnvs) {
       promotionOrderCheck = checkInPromotionOrder(topicRequestModel.getEnvironment(), orderOfEnvs);

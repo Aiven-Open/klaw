@@ -15,6 +15,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_111;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_112;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_113;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -1086,7 +1087,7 @@ public class TopicControllerService {
 
     // tenant filtering
     List<Env> listAllEnvs = manageDatabase.getKafkaEnvList(tenantId);
-    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
 
     topicsFromSOT = commonUtilsService.groupTopicsByEnv(topicsFromSOT);
     List<Topic> filterProducerConsumerList = new ArrayList<>();
