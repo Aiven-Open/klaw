@@ -6,6 +6,7 @@ import { ReactNode, useRef } from "react";
 
 function Layout({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
+
   return (
     <>
       <SkipLink mainContent={ref} />
