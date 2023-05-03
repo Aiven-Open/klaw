@@ -24,15 +24,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     return (
       <AuthContext.Provider value={authUser}>{children}</AuthContext.Provider>
     );
-  } else {
-    window.location.assign("/login");
-
-    return (
-      <>
-        <h1>hello I'm redirected from AuthProvider</h1>
-        <AuthenticationRequiredAlert />
-      </>
-    );
   }
 };
 
