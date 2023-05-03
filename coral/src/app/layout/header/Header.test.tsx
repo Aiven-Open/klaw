@@ -1,12 +1,13 @@
+import { cleanup, screen, within } from "@testing-library/react";
 import Header from "src/app/layout/header/Header";
-import { cleanup, screen, render, within } from "@testing-library/react";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
 
 const quickLinksNavItems = [
-  { name: "Go to approval requests", linkTo: "/execTopics" },
+  { name: "Go to approve requests", linkTo: "/approvals/topics" },
   {
     name: "Go to Klaw documentation page",
     linkTo: "https://www.klaw-project.io/docs",
@@ -17,7 +18,7 @@ const quickLinksNavItems = [
 describe("Header.tsx", () => {
   describe("shows all necessary elements", () => {
     beforeAll(() => {
-      render(<Header />);
+      customRender(<Header />, { memoryRouter: true });
     });
 
     afterAll(cleanup);
@@ -43,7 +44,7 @@ describe("Header.tsx", () => {
     });
 
     quickLinksNavItems.forEach((item) => {
-      it(`renders a link to ${item}`, () => {
+      it(`renders a link to ${item.name}`, () => {
         const nav = screen.getByRole("navigation", { name: "Quick links" });
         const link = within(nav).getByRole("link", { name: item.name });
 
@@ -61,37 +62,42 @@ describe("Header.tsx", () => {
   });
 
   describe("enables user to navigate with keyboard only", () => {
-    const allHeaderLinks = [
+    const allHeaderElements = [
       "Klaw homepage",
+      "Request a new",
       ...quickLinksNavItems.map((link) => link.name),
     ];
 
-    describe("user can navigate through links", () => {
+    describe("user can navigate through elements", () => {
       beforeEach(() => {
-        render(<Header />);
+        customRender(<Header />, { memoryRouter: true });
         const heading = screen.getByRole("banner");
         heading.focus();
       });
 
       afterEach(cleanup);
 
-      allHeaderLinks.forEach((headerLink, index) => {
+      allHeaderElements.forEach((headerElement, index) => {
         const numbersOfTabs = index + 1;
-        it(`sets focus on ${headerLink} when user tabs ${numbersOfTabs} times`, async () => {
-          const link = screen.getByRole("link", { name: headerLink });
-          expect(link).not.toHaveFocus();
+        it(`sets focus on ${headerElement} when user tabs ${numbersOfTabs} times`, async () => {
+          const element =
+            headerElement !== "Request a new"
+              ? screen.getByRole("link", { name: headerElement })
+              : screen.getByRole("button", { name: headerElement });
+
+          expect(element).not.toHaveFocus();
 
           await tabThroughForward(numbersOfTabs);
 
-          expect(link).toHaveFocus();
+          expect(element).toHaveFocus();
         });
       });
     });
 
     describe("user can navigate backward through links", () => {
       beforeEach(() => {
-        render(<Header />);
-        const lastElement = allHeaderLinks[allHeaderLinks.length - 1];
+        customRender(<Header />, { memoryRouter: true });
+        const lastElement = allHeaderElements[allHeaderElements.length - 1];
         const lastNavItem = screen.getByRole("link", {
           name: lastElement,
         });
@@ -100,17 +106,20 @@ describe("Header.tsx", () => {
 
       afterEach(cleanup);
 
-      const allHeaderLinksReversed = [...allHeaderLinks].reverse();
-      allHeaderLinksReversed.forEach((headerLink, index) => {
+      const allHeaderElementsReversed = [...allHeaderElements].reverse();
+      allHeaderElementsReversed.forEach((headerElement, index) => {
         const numbersOfTabs = index;
 
-        it(`sets focus on ${headerLink} when user shift+tabs ${numbersOfTabs} times`, async () => {
-          const link = screen.getByRole("link", { name: headerLink });
-          index > 0 && expect(link).not.toHaveFocus();
+        it(`sets focus on ${headerElement} when user shift+tabs ${numbersOfTabs} times`, async () => {
+          const element =
+            headerElement !== "Request a new"
+              ? screen.getByRole("link", { name: headerElement })
+              : screen.getByRole("button", { name: headerElement });
+          index > 0 && expect(element).not.toHaveFocus();
 
           await tabThroughBackward(numbersOfTabs);
 
-          expect(link).toHaveFocus();
+          expect(element).toHaveFocus();
         });
       });
     });
