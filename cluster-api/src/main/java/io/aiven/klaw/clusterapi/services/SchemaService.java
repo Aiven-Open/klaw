@@ -197,7 +197,7 @@ public class SchemaService {
         versionsListAfter.get(versionsListAfter.size() - 1)); // set the last element of array
     registerSchemaCustomResponse.setSchemaRegistered(true);
 
-    log.info("SchemaRequest response body {}", schemaResponseResponseEntity.getBody());
+    log.debug("SchemaRequest response body {}", schemaResponseResponseEntity.getBody());
     return registerSchemaCustomResponse;
   }
 
