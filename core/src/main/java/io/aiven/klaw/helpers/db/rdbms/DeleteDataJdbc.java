@@ -326,7 +326,7 @@ public class DeleteDataJdbc {
 
   public void deleteSchemas(Topic topicObj) {
     messageSchemaRepo.deleteAll(
-        messageSchemaRepo.findAllByTenantIdAndTopicname(
-            topicObj.getTenantId(), topicObj.getTopicname()));
+        messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(
+            topicObj.getTenantId(), topicObj.getTopicname(), topicObj.getEnvironment()));
   }
 }

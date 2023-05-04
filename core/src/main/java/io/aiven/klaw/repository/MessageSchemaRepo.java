@@ -13,10 +13,11 @@ public interface MessageSchemaRepo extends CrudRepository<MessageSchema, Message
 
   List<MessageSchema> findAllByTenantId(int tenantId);
 
-  List<MessageSchema> findAllByTenantIdAndTopicname(int tenantId, String topicName);
+  List<MessageSchema> findAllByTenantIdAndTopicnameAndEnvironment(
+      int tenantId, String topicName, String environmentId);
 
-  List<MessageSchema> findAllByTenantIdAndTopicnameAndSchemaversion(
-      int tenantId, String topicName, String schemaVersion);
+  List<MessageSchema> findAllByTenantIdAndTopicnameAndSchemaversionAndEnvironment(
+      int tenantId, String topicName, String schemaVersion, String environmentId);
 
   @Query(
       value = "select count(*) from kwavroschemas where env = :envId and tenantid = :tenantId",

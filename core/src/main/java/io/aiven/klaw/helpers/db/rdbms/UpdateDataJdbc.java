@@ -348,8 +348,11 @@ public class UpdateDataJdbc {
     schemas.add(schemaObj);
 
     List<MessageSchema> messageSchemaList =
-        messageSchemaRepo.findAllByTenantIdAndTopicnameAndSchemaversion(
-            schemaObj.getTenantId(), schemaObj.getTopicname(), schemaObj.getSchemaversion());
+        messageSchemaRepo.findAllByTenantIdAndTopicnameAndSchemaversionAndEnvironment(
+            schemaObj.getTenantId(),
+            schemaObj.getTopicname(),
+            schemaObj.getSchemaversion(),
+            schemaObj.getEnvironment());
     if (messageSchemaList.isEmpty()) {
       insertDataJdbcHelper.insertIntoMessageSchemaSOT(schemas);
     }

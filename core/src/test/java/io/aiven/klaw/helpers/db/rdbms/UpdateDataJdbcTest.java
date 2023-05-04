@@ -157,8 +157,8 @@ public class UpdateDataJdbcTest {
 
   @Test
   public void updateSchemaRequest() {
-    when(messageSchemaRepo.findAllByTenantIdAndTopicnameAndSchemaversion(
-            anyInt(), anyString(), anyString()))
+    when(messageSchemaRepo.findAllByTenantIdAndTopicnameAndSchemaversionAndEnvironment(
+            anyInt(), anyString(), anyString(), anyString()))
         .thenReturn(Collections.emptyList());
     String result =
         updateData.updateSchemaRequest(utilMethods.getSchemaRequestsDao().get(0), "uiuser1");
