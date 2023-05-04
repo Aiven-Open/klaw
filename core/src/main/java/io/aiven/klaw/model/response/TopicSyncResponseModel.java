@@ -12,5 +12,5 @@ public class TopicSyncResponseModel extends TopicRequestsResponseModel implement
 
   private String validationStatus;
 
-  private boolean validTopicName;
+  private boolean validatedTopic;
 }

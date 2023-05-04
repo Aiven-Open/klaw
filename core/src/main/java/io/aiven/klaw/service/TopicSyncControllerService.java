@@ -147,8 +147,8 @@ public class TopicSyncControllerService {
 
     syncTopicsList.setResultSet(topicRequestModelList);
     syncTopicsList.setAllTopicsCount(allTopicsCount);
-    syncTopicsList.setInvalidTopicNamesCount(
-        Long.valueOf(topicRequestModelList.stream().filter(req -> !req.isValidTopicName()).count())
+    syncTopicsList.setAllTopicWarningsCount(
+        Long.valueOf(topicRequestModelList.stream().filter(req -> !req.isValidatedTopic()).count())
             .intValue());
     return syncTopicsList;
   }
@@ -188,10 +188,10 @@ public class TopicSyncControllerService {
           getSyncTopicListRecon(
               topicsList, deletedTopicsFromClusterList, env, isBulkOption, tenantId));
       syncTopicsList.setAllTopicsCount(topicsList.size());
-      syncTopicsList.setInvalidTopicNamesCount(
+      syncTopicsList.setAllTopicWarningsCount(
           Long.valueOf(
                   syncTopicsList.getResultSet().stream()
-                      .filter(req -> !req.isValidTopicName())
+                      .filter(req -> !req.isValidatedTopic())
                       .count())
               .intValue());
     } else {
@@ -206,10 +206,10 @@ public class TopicSyncControllerService {
               sizeOfTopics,
               tenantId));
       syncTopicsList.setAllTopicsCount(sizeOfTopics.get(0));
-      syncTopicsList.setInvalidTopicNamesCount(
+      syncTopicsList.setAllTopicWarningsCount(
           Long.valueOf(
                   syncTopicsList.getResultSet().stream()
-                      .filter(req -> !req.isValidTopicName())
+                      .filter(req -> !req.isValidatedTopic())
                       .count())
               .intValue());
     }
@@ -359,10 +359,10 @@ public class TopicSyncControllerService {
                 topicSuffix,
                 topicRegex,
                 env.getParams().isApplyRegex()));
-        topicSyncModel.setValidTopicName(StringUtils.isEmpty(topicSyncModel.getValidationStatus()));
+        topicSyncModel.setValidatedTopic(StringUtils.isEmpty(topicSyncModel.getValidationStatus()));
       } else {
         // no validation set so set boolean to true
-        topicSyncModel.setValidTopicName(true);
+        topicSyncModel.setValidatedTopic(true);
       }
       topicSyncList.add(topicSyncModel);
     }

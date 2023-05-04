@@ -1055,7 +1055,7 @@ export type components = {
       /** Format: int32 */
       allTopicsCount?: number;
       /** Format: int32 */
-      invalidTopicNamesCount?: number;
+      allTopicWarningsCount?: number;
     };
     TopicSyncResponseModel: {
       environment: string;
@@ -1094,7 +1094,7 @@ export type components = {
       sequence?: string;
       possibleTeams?: (string)[];
       validationStatus?: string;
-      validTopicName?: boolean;
+      validatedTopic?: boolean;
       deletable?: boolean;
       editable?: boolean;
     };

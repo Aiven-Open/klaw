@@ -250,9 +250,9 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 }
 
         $scope.updatedSyncArray = [];
-        $scope.invalidTopicNames = [];
-        $scope.invalidBulkTopicNames = [];
-        $scope.updateTopicDetails = function(sequence, teamselected,topic, partitions, replicationFactor, isValidTopicName) {
+        $scope.topicsWithWarning = [];
+        $scope.topicsWithWarningBulk = [];
+        $scope.updateTopicDetails = function(sequence, teamselected,topic, partitions, replicationFactor, isValidTopic) {
 
             var seqFound = -1;
             var i;
@@ -262,8 +262,8 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             }
             if(seqFound != -1){
                 $scope.updatedSyncArray.splice(seqFound,1);
-                 if(!isValidTopicName) {
-                 $scope.invalidTopicNames.splice($scope.invalidTopicNames.indexOf(topic), 1);
+                 if(!isValidTopic) {
+                 $scope.topicsWithWarning.splice($scope.topicsWithWarning.indexOf(topic), 1);
                  }
                 return;
             }
@@ -275,8 +275,8 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             serviceInput['replicationFactor'] = replicationFactor;
             serviceInput['teamSelected'] = teamselected;
             serviceInput['envSelected'] = $scope.getTopics.envName;
-            if(!isValidTopicName) {
-                $scope.invalidTopicNames.push(topic);
+            if(!isValidTopic) {
+                $scope.topicsWithWarning.push(topic);
             }
             $scope.updatedSyncArray.push(serviceInput);
         }
@@ -300,8 +300,8 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             }
 
                var warningMsg="";
-               if($scope.invalidTopicNames.length > 0) {
-               warningMsg = "This selection contains the following invalid topic names "+ $scope.invalidTopicNames;
+               if($scope.topicsWithWarning.length > 0) {
+               warningMsg = "This selection contains the following topic(s) "+ $scope.topicsWithWarning + " which have validation warnings.";
                } else {
                 warningMsg = "You would like to Synchronize topics with this selection ? ";
                }
@@ -426,7 +426,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
     			$scope.resultBrowseBulk = output["resultSet"];
     			if($scope.resultBrowseBulk != null && $scope.resultBrowseBulk.length != 0){
     			    $scope.allTopicsCount = output["allTopicsCount"];
-    			    $scope.invalidTopicNamesCount = output["invalidTopicNamesCount"];
+    			    $scope.allTopicWarningsCount = output["allTopicWarningsCount"];
                     $scope.resultPagesBulk = $scope.resultBrowseBulk[0].allPageNos;
                     $scope.resultPageSelectedBulk = pageNoSelected;
                     $scope.currentPageSelectedBulk = $scope.resultBrowseBulk[0].currentPage;
@@ -466,7 +466,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
 	    $scope.updatedTopicDetailsArray = [];
 
-    	$scope.updateTopicIds = function(topicId, topicPartitions, topicReplicationFactor, isTopicSelected, isValidTopicName){
+    	$scope.updateTopicIds = function(topicId, topicPartitions, topicReplicationFactor, isTopicSelected, isValidTopic){
     	    if($scope.updatedTopicIdsArray.includes(topicId) && !isTopicSelected)
                 $scope.updatedTopicIdsArray.splice($scope.updatedTopicIdsArray.indexOf(topicId), 1);
             else if(isTopicSelected)
@@ -476,10 +476,10 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             serviceInput['topicName'] = topicId;
             serviceInput['topicPartitions'] = topicPartitions;
             serviceInput['topicReplicationFactor'] = topicReplicationFactor;
-            if(!isValidTopicName && isTopicSelected) {
-             $scope.invalidBulkTopicNames.push(topicId);
-             } else if(!isValidTopicName && !isTopicSelected) {
-                $scope.invalidBulkTopicNames.splice($scope.invalidBulkTopicNames.indexOf(topicId), 1);
+            if(!isValidTopic && isTopicSelected) {
+             $scope.topicsWithWarningBulk.push(topicId);
+             } else if(!isValidTopic && !isTopicSelected) {
+                $scope.topicsWithWarningBulk.splice($scope.topicsWithWarningBulk.indexOf(topicId), 1);
              }
 
 
@@ -540,10 +540,10 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
              var warningMsg = "You would like to Synchronize "+ tmpCount +" topics to the selected team " + $scope.getTopicsBulk.team +
                                                                               " and environment ?";
-               if($scope.invalidBulkTopicNames.length > 0) {
-               warningMsg += " This selection contains the following invalid topic names "+ $scope.invalidBulkTopicNames;
-               } else if(typeOfSync == "ALL_TOPICS" && $scope.invalidTopicNamesCount > 0 ) {
-               warningMsg +=" There are " + $scope.invalidTopicNamesCount + " invalid topic names in this list.";
+               if($scope.topicsWithWarningBulk.length > 0) {
+               warningMsg += " This selection contains the following topics which have validation warnings "+ $scope.topicsWithWarningBulk;
+               } else if(typeOfSync == "ALL_TOPICS" && $scope.allTopicWarningsCount > 0 ) {
+               warningMsg +=" There are " + $scope.allTopicWarningsCount + " invalid topic names in this list.";
                }
 
 

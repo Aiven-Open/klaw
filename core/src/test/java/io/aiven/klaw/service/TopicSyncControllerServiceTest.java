@@ -500,7 +500,7 @@ public class TopicSyncControllerServiceTest {
     assertThat(syncTopics.getResultSet()).hasSize(0);
     for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
       assertThat(response.getValidationStatus()).isEqualTo(null);
-      assertThat(response.isValidTopicName()).isTrue();
+      assertThat(response.isValidatedTopic()).isTrue();
     }
   }
 
@@ -561,7 +561,7 @@ public class TopicSyncControllerServiceTest {
 
     for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
       assertThat(response.getValidationStatus()).isEqualTo(null);
-      assertThat(response.isValidTopicName()).isTrue();
+      assertThat(response.isValidatedTopic()).isTrue();
     }
   }
 
@@ -593,7 +593,7 @@ public class TopicSyncControllerServiceTest {
     assertThat(syncTopics.getResultSet()).hasSize(5);
     for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
       assertThat(response.getValidationStatus()).isEqualTo(null);
-      assertThat(response.isValidTopicName()).isTrue();
+      assertThat(response.isValidatedTopic()).isTrue();
     }
   }
 
@@ -755,7 +755,7 @@ public class TopicSyncControllerServiceTest {
     int actualInvalid = 0, actualStringValidation = 0;
     // Deleted Topics are not set with validation status as they are being removed
     for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
-      if (!response.isValidTopicName() && !response.getRemarks().equals("DELETED")) {
+      if (!response.isValidatedTopic() && !response.getRemarks().equals("DELETED")) {
         actualInvalid++;
       }
       if (!StringUtils.isEmpty(response.getValidationStatus())) {
@@ -828,7 +828,7 @@ public class TopicSyncControllerServiceTest {
     int actualInvalid = 0, actualStringValidation = 0;
     // Deleted Topics are not set with validation status as they are being removed
     for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
-      if (!response.isValidTopicName() && !response.getRemarks().equals("DELETED")) {
+      if (!response.isValidatedTopic() && !response.getRemarks().equals("DELETED")) {
         actualInvalid++;
       }
       if (!StringUtils.isEmpty(response.getValidationStatus())) {
@@ -901,7 +901,7 @@ public class TopicSyncControllerServiceTest {
     int actualInvalid = 0, actualStringValidation = 0;
     // Deleted Topics are not set with validation status as they are being removed
     for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
-      if (!response.isValidTopicName()
+      if (!response.isValidatedTopic()
           && (response.getRemarks() == null || !response.getRemarks().equals("DELETED"))) {
         actualInvalid++;
       }

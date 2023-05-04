@@ -6703,7 +6703,7 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "invalidTopicNamesCount" : {
+          "allTopicWarningsCount" : {
             "type" : "integer",
             "format" : "int32"
           }
@@ -6814,7 +6814,7 @@
           "validationStatus" : {
             "type" : "string"
           },
-          "validTopicName" : {
+          "validatedTopic" : {
             "type" : "boolean"
           },
           "deletable" : {

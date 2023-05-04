@@ -7,5 +7,5 @@ import lombok.Data;
 public class SyncTopicsList {
   private List<TopicSyncResponseModel> resultSet;
   private int allTopicsCount;
-  private int invalidTopicNamesCount;
+  private int allTopicWarningsCount;
 }
