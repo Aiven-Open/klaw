@@ -360,6 +360,9 @@ public class TopicSyncControllerService {
                 topicRegex,
                 env.getParams().isApplyRegex()));
         topicSyncModel.setValidTopicName(StringUtils.isEmpty(topicSyncModel.getValidationStatus()));
+      } else {
+        // no validation set so set boolean to true
+        topicSyncModel.setValidTopicName(true);
       }
       topicSyncList.add(topicSyncModel);
     }
@@ -436,22 +439,22 @@ public class TopicSyncControllerService {
         possibleTeams.add(SYNC_102);
 
         sotTopicStringList.add(topicObj.getTopicname());
-        TopicSyncResponseModel topicRequestModel = new TopicSyncResponseModel();
-        topicRequestModel.setTopicname(topicObj.getTopicname());
-        topicRequestModel.setEnvironment(topicObj.getEnvironment());
-        topicRequestModel.setTopicpartitions(topicObj.getNoOfPartitions());
-        topicRequestModel.setReplicationfactor(topicObj.getNoOfReplicas());
-        topicRequestModel.setTeamId(topicObj.getTeamId());
-        topicRequestModel.setTeamname(
+        TopicSyncResponseModel topicSyncModel = new TopicSyncResponseModel();
+        topicSyncModel.setTopicname(topicObj.getTopicname());
+        topicSyncModel.setEnvironment(topicObj.getEnvironment());
+        topicSyncModel.setTopicpartitions(topicObj.getNoOfPartitions());
+        topicSyncModel.setReplicationfactor(topicObj.getNoOfReplicas());
+        topicSyncModel.setTeamId(topicObj.getTeamId());
+        topicSyncModel.setTeamname(
             manageDatabase.getTeamNameFromTeamId(tenantId, topicObj.getTeamId()));
-        topicRequestModel.setPossibleTeams(possibleTeams);
-        topicRequestModel.setSequence("" + topicObj.getTopicid());
-        topicRequestModel.setRemarks("DELETED");
+        topicSyncModel.setPossibleTeams(possibleTeams);
+        topicSyncModel.setSequence("" + topicObj.getTopicid());
+        topicSyncModel.setRemarks("DELETED");
 
         // tenant teams
         if (teamList.contains(
             manageDatabase.getTeamNameFromTeamId(tenantId, topicObj.getTeamId()))) {
-          sotTopics.put(topicObj.getTopicname(), topicRequestModel);
+          sotTopics.put(topicObj.getTopicname(), topicSyncModel);
         }
       }
 

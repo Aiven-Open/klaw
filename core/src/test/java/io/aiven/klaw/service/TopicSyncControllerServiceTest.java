@@ -26,9 +26,14 @@ import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.model.response.SyncTopicsList;
+import io.aiven.klaw.model.response.TopicConfig;
+import io.aiven.klaw.model.response.TopicSyncResponseModel;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +46,8 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -53,6 +60,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.thymeleaf.util.StringUtils;
 
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -92,6 +100,8 @@ public class TopicSyncControllerServiceTest {
 
   private Env env = new Env();
   private Env test = new Env();
+  private Env uat = new Env();
+  private Env prd = new Env();
   @Captor ArgumentCaptor<TopicRequest> topicRequestCaptor;
 
   @Captor ArgumentCaptor<TopicRequest> updateTopicRequestCaptor;
@@ -115,11 +125,51 @@ public class TopicSyncControllerServiceTest {
 
   private void environmentSetUp() {
     env.setId("1");
+    env.setClusterId(1);
     env.setName("DEV");
 
     test.setId("2");
     test.setName("TST");
+    test.setClusterId(2);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(List.of(env, test));
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+  }
+
+  private void validatedEnvironmentSetUp() {
+    env.setId("1");
+    env.setClusterId(1);
+    env.setName("DEV");
+    EnvParams params = new EnvParams();
+    params.setTopicPrefix(List.of("Dev-"));
+    env.setParams(params);
+
+    test.setId("2");
+    test.setName("TST");
+    test.setClusterId(2);
+
+    EnvParams tstParams = new EnvParams();
+    tstParams.setTopicSuffix(List.of("-TST"));
+    test.setParams(tstParams);
+
+    uat.setId("3");
+    uat.setName("UAT");
+    uat.setClusterId(3);
+
+    EnvParams uatParams = new EnvParams();
+    uatParams.setTopicRegex(List.of(".*-UAT-.*"));
+    uatParams.setApplyRegex(true);
+    uat.setParams(uatParams);
+
+    prd.setId("4");
+    prd.setName("PRD");
+    prd.setClusterId(4);
+
+    EnvParams prdParams = new EnvParams();
+    prdParams.setTopicPrefix(List.of("prd-"));
+    prdParams.setTopicSuffix(List.of("-prd"));
+    prd.setParams(prdParams);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(List.of(env, test, uat, prd));
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
   }
 
   private void loginMock() {
@@ -422,6 +472,511 @@ public class TopicSyncControllerServiceTest {
         .isEqualTo("Error :Could not approve topic request. Please contact Administrator.");
   }
 
+  @Test
+  @Order(10)
+  public void getSyncList_noValidationSet_base() throws Exception {
+    stubUserInfo();
+    environmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(1));
+    when(commonUtilsService.deriveCurrentPage("1", "", 0)).thenReturn("0");
+    List<Topic> topics = generateTopics(14);
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(generateClusterTopics(14));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false);
+
+    // 14 in the DB and 14 in the cluster means we return 0 here.
+    assertThat(syncTopics.getResultSet()).hasSize(0);
+    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
+      assertThat(response.getValidationStatus()).isEqualTo(null);
+      assertThat(response.isValidTopicName()).isTrue();
+    }
+  }
+
+  @Test
+  @Order(11)
+  public void getReconSyncList_noValidationSet_base() throws Exception {
+    stubUserInfo();
+    environmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(1));
+    when(commonUtilsService.deriveCurrentPage("1", "", 0)).thenReturn("0");
+    List<Topic> topics = generateTopics(14);
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(generateClusterTopics(14));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false);
+
+    // 14 in the DB and 14 in the cluster means we return 0 here.
+    assertThat(syncTopics.getResultSet()).hasSize(0);
+  }
+
+  @Test
+  @Order(12)
+  public void getSyncList_noValidationSet_TwoNotSynchronized() throws Exception {
+    stubUserInfo();
+    environmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(1));
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+    List<Topic> topics = generateTopics(13);
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(generateClusterTopics(15));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false);
+
+    // With 13 existing in the DB and 15 on the cluster the missing 2 are returned
+    assertThat(syncTopics.getResultSet()).hasSize(2);
+
+    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
+      assertThat(response.getValidationStatus()).isEqualTo(null);
+      assertThat(response.isValidTopicName()).isTrue();
+    }
+  }
+
+  @Test
+  @Order(13)
+  public void getReconSyncList_noValidationSet_FiveNotSynched() throws Exception {
+    stubUserInfo();
+    environmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(1));
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+    List<Topic> topics = generateTopics(14);
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(generateClusterTopics(19));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false);
+
+    // 14 in the DB and 14 in the cluster means we return 0 here.
+    assertThat(syncTopics.getResultSet()).hasSize(5);
+    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
+      assertThat(response.getValidationStatus()).isEqualTo(null);
+      assertThat(response.isValidTopicName()).isTrue();
+    }
+  }
+
+  @Test
+  @Order(14)
+  public void getSyncList_noValidationSet_ThreeDeletedFromCluster_allTopics() throws Exception {
+    stubUserInfo();
+    environmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(1));
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+    List<Topic> topics = generateTopics(12);
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(generateClusterTopics(15));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getSyncTopics("1", "1", "", null, "true", false);
+
+    // With 12 existing in the DB and 15 on the cluster all 15 are returned
+    assertThat(syncTopics.getResultSet()).hasSize(15);
+
+    // Deleted Topics are not set with validation status as they are being removed
+    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
+      assertThat(response.getValidationStatus()).isEqualTo(null);
+    }
+  }
+
+  @Test
+  @Order(15)
+  public void getReconSyncList_noValidationSet_FourDeletedFromCluster() throws Exception {
+    stubUserInfo();
+    environmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(1));
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+    List<Topic> topics = generateTopics(14);
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(generateClusterTopics(10));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getReconTopics("1", "1", "", null, "false", false);
+
+    // 14 in the DB and 10 in the cluster i am expecting the difference to be returned
+    assertThat(syncTopics.getResultSet()).hasSize(4);
+    // Deleted Topics are not set with validation status as they are being removed
+    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
+      assertThat(response.getValidationStatus()).isEqualTo(null);
+    }
+  }
+
+  @Test
+  @Order(16)
+  public void getSyncList_noValidationSet_ThreeDeletedFromCluster() throws Exception {
+    stubUserInfo();
+    environmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(1));
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+    List<Topic> topics = generateTopics(12);
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(generateClusterTopics(15));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getSyncTopics("1", "1", "", null, "false", false);
+
+    // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
+    assertThat(syncTopics.getResultSet()).hasSize(3);
+
+    // Deleted Topics are not set with validation status as they are being removed
+    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
+      assertThat(response.getValidationStatus()).isEqualTo(null);
+    }
+  }
+
+  /**
+   * @param numberOfTopicsInDB How many topics already exist in the Klaw DB
+   * @param numberOfTopicsInCluster How Many topics Exist on the cluster
+   * @param environment Which environment you want to run against (check validatedEnvironmentSetUp()
+   *     to see the different envs and there individual validation setups
+   * @param expectedReturned How many Topics should be returned in the SyncTopicResponse
+   * @param expectedInValid How many of the returned Topics will have invlaid Topic Names
+   * @param topicNames A space sperated list that will be the names of the topics returned in the DB
+   *     and Cluster.
+   * @throws Exception
+   */
+  @ParameterizedTest
+  @CsvSource({
+    "5,8,1,3,3,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 DevTopic6 DevTopic7 DevTopic8",
+    "5,8,1,3,0,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
+    "8,8,1,0,0,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
+    "3,8,2,5,2,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic8-TST",
+    "3,8,3,5,4,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic-UAT-8",
+    "3,8,3,5,1,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "7,8,4,1,1,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "1,8,4,7,4,Topic1 Topic2 prd-Topic3-prd PRD-Topic-4-PRD prd-Topic-UAT-5 prd-Topic-6-prd prd-Topic-7-prd Topic-PRD-8"
+  })
+  @Order(17)
+  public void getSyncList_ValidationOn(
+      int numberOfTopicsInDB,
+      int numberOfTopicsInCluster,
+      int environment,
+      int expectedReturned,
+      int expectedInValid,
+      String topicNames)
+      throws Exception {
+    String[] namesOfTopics = topicNames.split(" ");
+    stubUserInfo();
+    validatedEnvironmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(4));
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+    List<Topic> topics = generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(
+            generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getSyncTopics(
+            String.valueOf(environment), "1", "", null, "false", false);
+
+    // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
+    assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
+    int actualInvalid = 0, actualStringValidation = 0;
+    // Deleted Topics are not set with validation status as they are being removed
+    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
+      if (!response.isValidTopicName() && !response.getRemarks().equals("DELETED")) {
+        actualInvalid++;
+      }
+      if (!StringUtils.isEmpty(response.getValidationStatus())) {
+        actualStringValidation++;
+      }
+    }
+    // every invalid string shoult match with an invalid flag
+    assertThat(actualInvalid).isEqualTo(actualStringValidation);
+    assertThat(actualInvalid).isEqualTo(expectedInValid);
+    assertThat(actualStringValidation).isEqualTo(expectedInValid);
+  }
+
+  /**
+   * @param numberOfTopicsInDB How many topics already exist in the Klaw DB
+   * @param numberOfTopicsInCluster How Many topics Exist on the cluster
+   * @param environment Which environment you want to run against (check validatedEnvironmentSetUp()
+   *     to see the different envs and there individual validation setups
+   * @param expectedReturned How many Topics should be returned in the SyncTopicResponse
+   * @param expectedInValid How many of the returned Topics will have invlaid Topic Names
+   * @param topicNames A space sperated list that will be the names of the topics returned in the DB
+   *     and Cluster.
+   * @throws Exception
+   */
+  @ParameterizedTest
+  @CsvSource({
+    "5,8,1,3,3,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 DevTopic6 DevTopic7 DevTopic8",
+    "5,8,1,3,0,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
+    "8,6,1,2,0,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
+    "3,8,2,5,2,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic8-TST",
+    "3,8,3,5,4,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic-UAT-8",
+    "3,8,3,5,1,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "7,8,4,1,1,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "1,8,4,7,4,Topic1 Topic2 prd-Topic3-prd PRD-Topic-4-PRD prd-Topic-UAT-5 prd-Topic-6-prd prd-Topic-7-prd Topic-PRD-8"
+  })
+  @Order(18)
+  public void getReconSyncList_ValidationOn(
+      int numberOfTopicsInDB,
+      int numberOfTopicsInCluster,
+      int environment,
+      int expectedReturned,
+      int expectedInValid,
+      String topicNames)
+      throws Exception {
+    String[] namesOfTopics = topicNames.split(" ");
+    stubUserInfo();
+    validatedEnvironmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(4));
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+    List<Topic> topics = generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(
+            generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getReconTopics(
+            String.valueOf(environment), "1", "", null, "false", false);
+
+    // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
+    assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
+    int actualInvalid = 0, actualStringValidation = 0;
+    // Deleted Topics are not set with validation status as they are being removed
+    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
+      if (!response.isValidTopicName() && !response.getRemarks().equals("DELETED")) {
+        actualInvalid++;
+      }
+      if (!StringUtils.isEmpty(response.getValidationStatus())) {
+        actualStringValidation++;
+      }
+    }
+    // every invalid string shoult match with an invalid flag
+    assertThat(actualInvalid).isEqualTo(actualStringValidation);
+    assertThat(actualInvalid).isEqualTo(expectedInValid);
+    assertThat(actualStringValidation).isEqualTo(expectedInValid);
+  }
+
+  /**
+   * @param numberOfTopicsInDB How many topics already exist in the Klaw DB
+   * @param numberOfTopicsInCluster How Many topics Exist on the cluster
+   * @param environment Which environment you want to run against (check validatedEnvironmentSetUp()
+   *     to see the different envs and there individual validation setups
+   * @param expectedReturned How many Topics should be returned in the SyncTopicResponse
+   * @param expectedInValid How many of the returned Topics will have invlaid Topic Names
+   * @param topicNames A space sperated list that will be the names of the topics returned in the DB
+   *     and Cluster.
+   * @throws Exception
+   */
+  @ParameterizedTest
+  @CsvSource({
+    "5,8,1,8,7,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 DevTopic6 DevTopic7 DevTopic8",
+    "0,3,1,3,3,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
+    "8,6,1,8,4,Topic1 Topic2 Topic3 Topic4 Dev-Topic5 Dev-Topic6 Dev-Topic7 Dev-Topic8",
+    "3,5,2,5,4,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic8-TST",
+    "3,7,3,7,7,Topic1 Topic2 Topic3 Topic4 Topic5-TST Topic6-tst Topic7-TST Topic-UAT-8",
+    "3,8,3,8,4,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "7,8,4,8,8,Topic1 Topic2 Topic3 Topic-4 Topic-UAT-5 Topic-UAT-6 Topic-UAT-7 Topic-UAT-8",
+    "1,7,4,7,4,Topic1 Topic2 prd-Topic3-prd PRD-Topic-4-PRD prd-Topic-UAT-5 prd-Topic-6-prd prd-Topic-7-prd Topic-PRD-8"
+  })
+  @Order(19)
+  public void getSyncList_ValidationOn_AllTopics(
+      int numberOfTopicsInDB,
+      int numberOfTopicsInCluster,
+      int environment,
+      int expectedReturned,
+      int expectedInValid,
+      String topicNames)
+      throws Exception {
+    String[] namesOfTopics = topicNames.split(" ");
+    stubUserInfo();
+    validatedEnvironmentSetUp();
+    // Get KwCluster Settings
+    when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
+        .thenReturn(getKwClusters(4));
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+    List<Topic> topics = generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+
+    // from the cluster
+    when(clusterApiService.getAllTopics(
+            anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString(), eq(101)))
+        .thenReturn(
+            generateClusterTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInCluster)));
+
+    // from the DB
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
+    SyncTopicsList syncTopics =
+        topicSyncControllerService.getSyncTopics(
+            String.valueOf(environment), "1", "", null, "true", false);
+
+    // With 12 existing in the DB and 15 on the cluster the missing 2 are returned
+    assertThat(syncTopics.getResultSet()).hasSize(expectedReturned);
+    int actualInvalid = 0, actualStringValidation = 0;
+    // Deleted Topics are not set with validation status as they are being removed
+    for (TopicSyncResponseModel response : syncTopics.getResultSet()) {
+      if (!response.isValidTopicName()
+          && (response.getRemarks() == null || !response.getRemarks().equals("DELETED"))) {
+        actualInvalid++;
+      }
+      if (!StringUtils.isEmpty(response.getValidationStatus())) {
+        actualStringValidation++;
+      }
+    }
+    // every invalid string shoult match with an invalid flag
+    assertThat(actualInvalid).isEqualTo(actualStringValidation);
+    assertThat(actualInvalid).isEqualTo(expectedInValid);
+    assertThat(actualStringValidation).isEqualTo(expectedInValid);
+  }
+
+  private List<TopicConfig> generateClusterTopics(int numberOfTopics) {
+    String[] topicNames = new String[numberOfTopics];
+    for (int i = 0; i < numberOfTopics; i++) {
+      topicNames[i] = "Topic" + i;
+    }
+    return generateClusterTopics(topicNames);
+  }
+
+  private List<TopicConfig> generateClusterTopics(String... topicNames) {
+
+    List<TopicConfig> topics = new ArrayList<>();
+
+    for (int i = 0; i < topicNames.length; i++) {
+      TopicConfig topic = new TopicConfig();
+      topic.setTopicName(topicNames[i]);
+      topic.setPartitions("9");
+      topic.setReplicationFactor("3");
+      topics.add(topic);
+    }
+    return topics;
+  }
+
+  private List<Topic> generateTopics(int numberOfTopics) {
+    String[] topicNames = new String[numberOfTopics];
+    for (int i = 0; i < numberOfTopics; i++) {
+      topicNames[i] = "Topic" + i;
+    }
+    return generateTopics(topicNames);
+  }
+
+  private List<Topic> generateTopics(String... topicNames) {
+    List<Topic> topics = new ArrayList<>();
+
+    for (int i = 0; i < topicNames.length; i++) {
+      Topic topic = new Topic();
+      topic.setTopicname(topicNames[i]);
+      topic.setTenantId(101);
+      topic.setTopicid(i);
+      topic.setTeamId(10);
+      topics.add(topic);
+    }
+    return topics;
+  }
+
+  private Map<Integer, KwClusters> getKwClusters(int numberOfClusters) {
+
+    Map<Integer, KwClusters> clustersMap = new HashMap<>();
+    for (int i = 1; i <= numberOfClusters; i++) {
+      KwClusters cluster = new KwClusters();
+
+      cluster.setClusterId(i);
+      cluster.setTenantId(101);
+      cluster.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+      cluster.setBootstrapServers("localhost:9092");
+      cluster.setClusterName("UnitTest");
+      cluster.setClusterType("kafka");
+      cluster.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
+      clustersMap.put(i, cluster);
+    }
+    return clustersMap;
+  }
+
   private List<Team> getAvailableTeams() {
 
     Team team1 = new Team();
@@ -446,6 +1001,11 @@ public class TopicSyncControllerServiceTest {
     when(userInfo.getTeamId()).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn(USERNAME);
     when(commonUtilsService.getTenantId(eq(USERNAME))).thenReturn(TENANT_ID);
+    when(handleDbRequests.getAllTeams(eq(101))).thenReturn(getAvailableTeams());
+    /// added
+    when(manageDatabase.getTeamIdFromTeamName(eq(101), eq("Team1"))).thenReturn(10);
+    when(manageDatabase.getTeamIdFromTeamName(eq(101), eq("Team2"))).thenReturn(20);
+    when(manageDatabase.getTeamIdFromTeamName(eq(101), eq("Team3"))).thenReturn(30);
   }
 
   private SyncBackTopics createSyncBackTopic(String TypeOfSync, String[] topics) {
