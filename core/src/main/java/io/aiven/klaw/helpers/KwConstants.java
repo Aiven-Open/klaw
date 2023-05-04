@@ -67,7 +67,7 @@ public class KwConstants {
   public static final String TENANT_CONFIG = "{}";
   public static final String ADDUSER_ROLES = "USER";
   public static final String ENVS_STANDARDNAMES =
-      "DEV,TST,SIT,STG,QAE,ACC,E2E,IOE,DRE,PEE,PRD,PRE,UAT";
+      "DEV,TST,SIT,STG,QAE,ACC,E2E,IOE,DRE,PEE,PRD,PRE,UAT,TEST,PROD";
   public static final String MAIL_PROTOCOL = "smtp";
   public static final String MAIL_HOST = "smtphost";
   public static final String MAIL_PORT = "22";

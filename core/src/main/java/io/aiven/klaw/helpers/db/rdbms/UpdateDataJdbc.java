@@ -28,6 +28,7 @@ import io.aiven.klaw.repository.KwKafkaConnectorRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
 import io.aiven.klaw.repository.KwPropertiesRepo;
 import io.aiven.klaw.repository.KwRolesPermsRepo;
+import io.aiven.klaw.repository.MessageSchemaRepo;
 import io.aiven.klaw.repository.RegisterInfoRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TeamRepo;
@@ -88,6 +89,9 @@ public class UpdateDataJdbc {
 
   @Autowired(required = false)
   private TenantRepo tenantRepo;
+
+  @Autowired(required = false)
+  private MessageSchemaRepo messageSchemaRepo;
 
   public UpdateDataJdbc(
       TopicRequestsRepo topicRequestsRepo,
@@ -183,7 +187,12 @@ public class UpdateDataJdbc {
     switch (requestOperationType) {
       case CREATE, PROMOTE -> insertDataJdbcHelper.insertIntoTopicSOT(topics, false);
       case UPDATE -> updateTopicSOT(topics, topicRequest.getOtherParams());
-      case DELETE -> deleteDataJdbcHelper.deleteTopics(topicObj);
+      case DELETE -> {
+        deleteDataJdbcHelper.deleteTopics(topicObj);
+        if (topicRequest.getDeleteAssociatedSchema()) {
+          deleteDataJdbcHelper.deleteSchemas(topicObj);
+        }
+      }
     }
 
     return ApiResultStatus.SUCCESS.value;
@@ -332,11 +341,18 @@ public class UpdateDataJdbc {
     schemaRequestRepo.save(schemaRequest);
 
     // Insert to SOT
+
     List<MessageSchema> schemas = new ArrayList<>();
     MessageSchema schemaObj = new MessageSchema();
     copyProperties(schemaRequest, schemaObj);
     schemas.add(schemaObj);
-    insertDataJdbcHelper.insertIntoMessageSchemaSOT(schemas);
+
+    List<MessageSchema> messageSchemaList =
+        messageSchemaRepo.findAllByTenantIdAndTopicnameAndSchemaversion(
+            schemaObj.getTenantId(), schemaObj.getTopicname(), schemaObj.getSchemaversion());
+    if (messageSchemaList.isEmpty()) {
+      insertDataJdbcHelper.insertIntoMessageSchemaSOT(schemas);
+    }
 
     return ApiResultStatus.SUCCESS.value;
   }

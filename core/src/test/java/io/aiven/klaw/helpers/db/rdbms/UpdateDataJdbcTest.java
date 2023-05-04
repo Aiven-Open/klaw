@@ -13,10 +13,12 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRepo;
+import io.aiven.klaw.repository.MessageSchemaRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
+import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -43,6 +45,8 @@ public class UpdateDataJdbcTest {
   @Mock private InsertDataJdbc insertDataJdbcHelper;
   @Mock private TopicRepo topicRepo;
 
+  @Mock MessageSchemaRepo messageSchemaRepo;
+
   @Mock private DeleteDataJdbc deleteDataJdbcHelper;
 
   private UpdateDataJdbc updateData;
@@ -64,6 +68,7 @@ public class UpdateDataJdbcTest {
     ReflectionTestUtils.setField(updateData, "deleteDataJdbcHelper", deleteDataJdbcHelper);
     ReflectionTestUtils.setField(updateData, "topicRepo", topicRepo);
     ReflectionTestUtils.setField(updateData, "kafkaConnectorRepo", kafkaConnectorRepo);
+    ReflectionTestUtils.setField(updateData, "messageSchemaRepo", messageSchemaRepo);
   }
 
   @Test
@@ -98,9 +103,11 @@ public class UpdateDataJdbcTest {
     TopicRequest req = utilMethods.getTopicRequest(1001);
 
     req.setRequestOperationType(requestOperationType);
+    req.setDeleteAssociatedSchema(true);
     String result = updateData.updateTopicRequest(req, "uiuser2");
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(deleteDataJdbcHelper, times(1)).deleteTopics(any());
+    verify(deleteDataJdbcHelper, times(1)).deleteSchemas(any());
   }
 
   @ParameterizedTest
@@ -150,6 +157,9 @@ public class UpdateDataJdbcTest {
 
   @Test
   public void updateSchemaRequest() {
+    when(messageSchemaRepo.findAllByTenantIdAndTopicnameAndSchemaversion(
+            anyInt(), anyString(), anyString()))
+        .thenReturn(Collections.emptyList());
     String result =
         updateData.updateSchemaRequest(utilMethods.getSchemaRequestsDao().get(0), "uiuser1");
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
