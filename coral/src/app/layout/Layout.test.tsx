@@ -1,10 +1,7 @@
 import Layout from "src/app/layout/Layout";
 import { cleanup, screen, within } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import {
-  tabThroughBackward,
-  tabThroughForward,
-} from "src/services/test-utils/tabbing";
+import { tabThroughForward } from "src/services/test-utils/tabbing";
 
 const testChildren = <div data-testid={"test-children"}></div>;
 
