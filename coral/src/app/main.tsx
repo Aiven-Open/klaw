@@ -1,6 +1,10 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import "@aivenio/aquarium/dist/styles.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import React from "react";
 import { createRoot } from "react-dom/client";
@@ -12,16 +16,30 @@ import "/src/app/main.module.css";
 // https://github.com/microsoft/monaco-editor/tree/main/samples/browser-esm-vite-react
 import "/src/services/configure-monaco-editor";
 import { AuthProvider } from "src/app/context-provider/AuthProvider";
-import AuthenticationRequiredBoundary from "src/app/components/AuthenticationRequiredBoundary";
+import { BasePage } from "src/app/layout/page/BasePage";
+import { AuthenticationRequiredAlert } from "src/app/components/AuthenticationRequiredAlert";
 
 const DEV_MODE = import.meta.env.DEV;
 
 const root = createRoot(document.getElementById("root") as HTMLElement);
 
 const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) => {
+      const isUnauthorized = isUnauthorizedError(error);
+      if (isUnauthorized) {
+        window.location.assign("/login");
+        root.render(
+          <BasePage
+            headerContent={<></>}
+            content={<AuthenticationRequiredAlert />}
+          />
+        );
+      }
+    },
+  }),
   defaultOptions: {
     queries: {
-      useErrorBoundary: (error: unknown) => isUnauthorizedError(error),
       retry: (failureCount: number, error: unknown) => {
         if (isUnauthorizedError(error)) {
           return false;
@@ -49,14 +67,12 @@ prepare().then(() => {
   root.render(
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <AuthenticationRequiredBoundary>
-          <AuthProvider>
-            <AquariumContext>
-              <RouterProvider router={router} />
-              {DEV_MODE && <ReactQueryDevtools />}
-            </AquariumContext>
-          </AuthProvider>
-        </AuthenticationRequiredBoundary>
+        <AuthProvider>
+          <AquariumContext>
+            <RouterProvider router={router} />
+            {DEV_MODE && <ReactQueryDevtools />}
+          </AquariumContext>
+        </AuthProvider>
       </QueryClientProvider>
     </React.StrictMode>
   );
