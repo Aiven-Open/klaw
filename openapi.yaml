@@ -3718,7 +3718,7 @@
     "/getEnvsForSchemaRequests" : {
       "get" : {
         "tags" : [ "envs-clusters-tenants-controller" ],
-        "operationId" : "getRequestForSchemas",
+        "operationId" : "getEnvsForSchemaRequests",
         "responses" : {
           "200" : {
             "description" : "OK",

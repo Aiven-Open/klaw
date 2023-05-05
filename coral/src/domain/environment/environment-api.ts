@@ -19,8 +19,8 @@ const getEnvironmentsForTeam = (): Promise<Environment[]> => {
 
 const getSchemaRegistryEnvironments = (): Promise<Environment[]> => {
   return api
-    .get<KlawApiResponse<"getRequestForSchemas">>(
-      API_PATHS.getRequestForSchemas
+    .get<KlawApiResponse<"getEnvsForSchemaRequests">>(
+      API_PATHS.getEnvsForSchemaRequests
     )
     .then(transformEnvironmentApiResponse);
 };

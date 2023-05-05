@@ -181,7 +181,7 @@ public class EnvsClustersTenantsController {
       value = "/getEnvsForSchemaRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<EnvModelResponse>> getRequestForSchemas() {
+  public ResponseEntity<List<EnvModelResponse>> getEnvsForSchemaRequests() {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getEnvsForSchemaRequests(), HttpStatus.OK);
   }
