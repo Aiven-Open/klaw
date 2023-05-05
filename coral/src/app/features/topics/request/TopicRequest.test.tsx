@@ -476,7 +476,8 @@ describe("<TopicRequest />", () => {
       });
 
       it("validates that topic name starts with environment topic prefix", async () => {
-        const expectedErrorMsg = 'Topic name must start with "test-".';
+        const expectedErrorMsg =
+          'Topic name must start with "test-". It must contain at least 3 characters after the prefix.';
         const select = await screen.findByRole("combobox", {
           name: "Environment *",
         });
@@ -558,7 +559,8 @@ describe("<TopicRequest />", () => {
       });
 
       it("validates that topic name ends with environment topic suffix", async () => {
-        const expectedErrorMsg = 'Topic name must end with "-test".';
+        const expectedErrorMsg =
+          'Topic name must end with "-test". It must contain at least 3 characters before the suffix.';
         const select = await screen.findByRole("combobox", {
           name: "Environment *",
         });

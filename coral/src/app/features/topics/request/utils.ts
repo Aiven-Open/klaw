@@ -88,8 +88,115 @@ function generateTopicNameDescription(
   return desc.join(" ");
 }
 
+function stripPrefixAndSuffix({
+  topicName,
+  prefixOrPrefix,
+}: {
+  topicName: string;
+  prefixOrPrefix: string[];
+}): string {
+  // sorting first prevents to remove pre/suffixes that are
+  // partial matches to others, e.g. remove "team_" when another
+  // prefix is "devteam_, which would not be found and removed then
+  return prefixOrPrefix
+    .sort((a, b) => b.length - a.length)
+    .reduce((acc: string, cur: string) => {
+      return acc.split(cur).filter(Boolean).join("");
+    }, topicName);
+}
+
+function isValidTopicNameWithPrefix({
+  topicName,
+  prefix,
+  defaultPattern,
+}: {
+  topicName: string;
+  prefix: string[];
+  defaultPattern: RegExp;
+}): boolean {
+  if (prefix.length === 0) {
+    return true; // No prefixes to match, so it always passes
+  }
+
+  const prefixMatch = prefix.some((p) => topicName.startsWith(p));
+  const topicNameWithoutPrefix = stripPrefixAndSuffix({
+    topicName: topicName,
+    prefixOrPrefix: prefix,
+  });
+
+  return (
+    prefixMatch &&
+    topicNameWithoutPrefix.length >= 3 &&
+    defaultPattern.test(topicNameWithoutPrefix)
+  );
+}
+
+function isValidTopicNameWithSuffix({
+  topicName,
+  suffix,
+  defaultPattern,
+}: {
+  topicName: string;
+  suffix: string[];
+  defaultPattern: RegExp;
+}): boolean {
+  if (suffix.length === 0) {
+    return true; // No suffixes to match, so it always passes
+  }
+
+  const suffixMatch = suffix.some((s) => topicName.endsWith(s));
+  const topicNameWithoutSuffix = stripPrefixAndSuffix({
+    topicName: topicName,
+    prefixOrPrefix: suffix,
+  });
+
+  return (
+    suffixMatch &&
+    topicNameWithoutSuffix.length >= 3 &&
+    defaultPattern.test(topicNameWithoutSuffix)
+  );
+}
+
+function isValidTopicNameWithPrefixAndSuffix({
+  topicName,
+  prefix,
+  suffix,
+  defaultPattern,
+}: {
+  topicName: string;
+  prefix: string[];
+  suffix: string[];
+  defaultPattern: RegExp;
+}): boolean {
+  if (prefix.length === 0 && suffix.length === 0) {
+    return true;
+  }
+
+  const prefixValid = isValidTopicNameWithPrefix({
+    topicName: topicName,
+    prefix,
+    defaultPattern,
+  });
+
+  const suffixValid = isValidTopicNameWithSuffix({
+    topicName: topicName,
+    suffix,
+    defaultPattern,
+  });
+
+  const topicNameStripped = stripPrefixAndSuffix({
+    topicName: topicName,
+    prefixOrPrefix: [...suffix, ...prefix],
+  });
+
+  return prefixValid && suffixValid && topicNameStripped.length > 2;
+}
+
 export {
   transformAdvancedConfigEntries,
   generateTopicNameDescription,
   generateNamePatternString,
+  isValidTopicNameWithPrefix,
+  isValidTopicNameWithSuffix,
+  isValidTopicNameWithPrefixAndSuffix,
 };
