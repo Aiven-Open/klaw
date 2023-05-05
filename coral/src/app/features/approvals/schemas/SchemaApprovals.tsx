@@ -266,10 +266,7 @@ function SchemaApprovals() {
       )}
       <TableLayout
         filters={[
-          <EnvironmentFilter
-            key={"environment"}
-            environmentEndpoint={"getSchemaRegistryEnvironments"}
-          />,
+          <EnvironmentFilter key={"environment"} />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,
           <TopicFilter key={"topic"} />,

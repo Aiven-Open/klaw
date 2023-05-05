@@ -10,8 +10,8 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { ConnectorRequests } from "src/app/features/requests/connectors/ConnectorRequests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
-  getEnvironments,
-  getSyncConnectorsEnvironments,
+  getAllEnvironments,
+  getEnvironmentsForConnectorRequest,
 } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import {
@@ -27,15 +27,15 @@ jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/connector/connector-api.ts");
 
 const mockGetConnectorEnvironmentRequest =
-  getEnvironments as jest.MockedFunction<typeof getEnvironments>;
+  getAllEnvironments as jest.MockedFunction<typeof getAllEnvironments>;
 
 const mockGetConnectorRequests = getConnectorRequests as jest.MockedFunction<
   typeof getConnectorRequests
 >;
 
 const mockGetSyncConnectorsEnvironments =
-  getSyncConnectorsEnvironments as jest.MockedFunction<
-    typeof getSyncConnectorsEnvironments
+  getEnvironmentsForConnectorRequest as jest.MockedFunction<
+    typeof getEnvironmentsForConnectorRequest
   >;
 
 const mockDeleteConnectorRequest =

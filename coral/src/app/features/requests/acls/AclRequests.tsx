@@ -169,10 +169,7 @@ function AclRequests() {
       )}
       <TableLayout
         filters={[
-          <EnvironmentFilter
-            key="environment"
-            environmentEndpoint={"getAllEnvironments"}
-          />,
+          <EnvironmentFilter key="environment" />,
           <AclTypeFilter key="aclType" />,
           <StatusFilter key="status" defaultStatus="ALL" />,
           <RequestTypeFilter key="operationType" />,

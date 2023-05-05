@@ -14,7 +14,7 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { TopicRequests } from "src/app/features/requests/topics/TopicRequests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
-import { getEnvironmentsForTopicRequest } from "src/domain/environment";
+import { getAllEnvironments } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
@@ -22,10 +22,9 @@ import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/re
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 
-const mockGetTopicRequestEnvironments =
-  getEnvironmentsForTopicRequest as jest.MockedFunction<
-    typeof getEnvironmentsForTopicRequest
-  >;
+const mockGetAllEnvironments = getAllEnvironments as jest.MockedFunction<
+  typeof getAllEnvironments
+>;
 
 const mockGetTopicRequests = getTopicRequests as jest.MockedFunction<
   typeof getTopicRequests
@@ -72,9 +71,7 @@ const mockGetTopicRequestsResponse = transformGetTopicRequestsResponse([
 describe("TopicRequests", () => {
   beforeEach(() => {
     mockIntersectionObserver();
-    mockGetTopicRequestEnvironments.mockResolvedValue(
-      mockedEnvironmentResponse
-    );
+    mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
     mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
   });
 
@@ -200,9 +197,7 @@ describe("TopicRequests", () => {
 
   describe("user can browse the requests in paged sets", () => {
     beforeEach(() => {
-      mockGetTopicRequestEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetTopicRequests.mockResolvedValue({
         totalPages: 1,
         currentPage: 1,
@@ -312,9 +307,7 @@ describe("TopicRequests", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
-      mockGetTopicRequestEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetTopicRequests.mockResolvedValue({
         totalPages: 3,
         currentPage: 1,
@@ -363,9 +356,7 @@ describe("TopicRequests", () => {
 
   describe("user can filter topic requests by 'environment'", () => {
     beforeEach(async () => {
-      mockGetTopicRequestEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
       customRender(<TopicRequests />, {
         queryClient: true,
@@ -413,9 +404,7 @@ describe("TopicRequests", () => {
 
   describe("user can filter topic requests by 'status'", () => {
     beforeEach(async () => {
-      mockGetTopicRequestEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
 
       customRender(<TopicRequests />, {
@@ -466,9 +455,7 @@ describe("TopicRequests", () => {
 
   describe("shows a detail modal for topic request", () => {
     beforeEach(async () => {
-      mockGetTopicRequestEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
 
       customRender(<TopicRequests />, {
@@ -555,9 +542,7 @@ describe("TopicRequests", () => {
     const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
-      mockGetTopicRequestEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
 
       customRender(<TopicRequests />, {
@@ -713,9 +698,7 @@ describe("TopicRequests", () => {
   describe("user can filter topic requests by operation type", () => {
     const originalConsoleError = console.error;
     beforeEach(async () => {
-      mockGetTopicRequestEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetTopicRequests.mockResolvedValue(mockGetTopicRequestsResponse);
 
       customRender(<TopicRequests />, {

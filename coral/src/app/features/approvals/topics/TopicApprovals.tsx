@@ -276,10 +276,7 @@ function TopicApprovals() {
       )}
       <TableLayout
         filters={[
-          <EnvironmentFilter
-            key={"environment"}
-            environmentEndpoint={"getAllEnvironments"}
-          />,
+          <EnvironmentFilter key={"environment"} />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,
           <TeamFilter key={"team"} />,

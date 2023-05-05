@@ -9,7 +9,7 @@ import {
   getConnectorRequestsForApprover,
 } from "src/domain/connector";
 import { transformConnectorRequestApiResponse } from "src/domain/connector/connector-transformer";
-import { getSyncConnectorsEnvironments } from "src/domain/environment";
+import { getAllEnvironments } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
@@ -18,10 +18,9 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 jest.mock("src/domain/connector/connector-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
-const mockGetSyncConnectorsEnvironments =
-  getSyncConnectorsEnvironments as jest.MockedFunction<
-    typeof getSyncConnectorsEnvironments
-  >;
+const mockGetAllEnvironments = getAllEnvironments as jest.MockedFunction<
+  typeof getAllEnvironments
+>;
 
 const mockGetConnectorRequestsForApprover =
   getConnectorRequestsForApprover as jest.MockedFunction<
@@ -139,7 +138,7 @@ describe("ConnectorApprovals", () => {
         totalPages: 1,
         currentPage: 1,
       });
-      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -183,9 +182,7 @@ describe("ConnectorApprovals", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSyncConnectorsEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetConnectorRequestsForApprover.mockResolvedValue(
         mockedApiResponseConnectorRequests
       );
@@ -248,7 +245,7 @@ describe("ConnectorApprovals", () => {
         totalPages: 1,
         currentPage: 1,
       });
-      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -354,7 +351,7 @@ describe("ConnectorApprovals", () => {
         entries: [],
       });
 
-      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
 
       customRender(<ConnectorApprovals />, {
         queryClient: true,
@@ -399,9 +396,7 @@ describe("ConnectorApprovals", () => {
     const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
-      mockGetSyncConnectorsEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetConnectorRequestsForApprover.mockResolvedValue(
         mockedApiResponseConnectorRequests
       );
@@ -568,9 +563,7 @@ describe("ConnectorApprovals", () => {
     beforeEach(async () => {
       console.error = jest.fn();
 
-      mockGetSyncConnectorsEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetConnectorRequestsForApprover.mockResolvedValue(
         mockedApiResponseConnectorRequests
       );

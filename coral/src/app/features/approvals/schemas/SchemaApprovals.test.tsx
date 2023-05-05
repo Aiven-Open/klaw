@@ -2,7 +2,7 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import SchemaApprovals from "src/app/features/approvals/schemas/SchemaApprovals";
-import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { getAllEnvironments } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import {
@@ -19,10 +19,9 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getSchemaRegistryEnvironments as jest.MockedFunction<
-    typeof getSchemaRegistryEnvironments
-  >;
+const mockGetAllEnvironments = getAllEnvironments as jest.MockedFunction<
+  typeof getAllEnvironments
+>;
 
 const mockGetSchemaRequestsForApprover =
   getSchemaRequestsForApprover as jest.MockedFunction<
@@ -132,7 +131,7 @@ describe("SchemaApprovals", () => {
         totalPages: 1,
         currentPage: 1,
       });
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -176,9 +175,7 @@ describe("SchemaApprovals", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequestsForApprover.mockResolvedValue(
         mockedApiResponseSchemaRequests
       );
@@ -241,7 +238,7 @@ describe("SchemaApprovals", () => {
         totalPages: 1,
         currentPage: 1,
       });
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
     });
 
     afterEach(() => {
@@ -347,7 +344,7 @@ describe("SchemaApprovals", () => {
         entries: [],
       });
 
-      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetAllEnvironments.mockResolvedValue([]);
 
       customRender(<SchemaApprovals />, {
         queryClient: true,
@@ -388,9 +385,7 @@ describe("SchemaApprovals", () => {
 
   describe("shows a detail modal for schema request", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequestsForApprover.mockResolvedValue(
         mockedApiResponseSchemaRequests
       );
@@ -508,9 +503,7 @@ describe("SchemaApprovals", () => {
 
   describe("handles filtering entries in the table", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequestsForApprover.mockResolvedValue({
         totalPages: 1,
         currentPage: 1,
@@ -614,9 +607,7 @@ describe("SchemaApprovals", () => {
     const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequestsForApprover.mockResolvedValue(
         mockedApiResponseSchemaRequests
       );
@@ -783,9 +774,7 @@ describe("SchemaApprovals", () => {
     beforeEach(async () => {
       console.error = jest.fn();
 
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequestsForApprover.mockResolvedValue(
         mockedApiResponseSchemaRequests
       );

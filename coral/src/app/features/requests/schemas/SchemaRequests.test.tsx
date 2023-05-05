@@ -17,17 +17,16 @@ import {
   mockedEnvironmentResponse,
 } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import userEvent from "@testing-library/user-event";
-import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { getAllEnvironments } from "src/domain/environment";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getSchemaRegistryEnvironments as jest.MockedFunction<
-    typeof getSchemaRegistryEnvironments
-  >;
+const mockGetAllEnvironments = getAllEnvironments as jest.MockedFunction<
+  typeof getAllEnvironments
+>;
 
 const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
   typeof getSchemaRequests
@@ -60,9 +59,7 @@ describe("SchemaRequest", () => {
       // while making sure to not swallow other console.errors
       console.error = jest.fn();
 
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue({
         entries: [],
         totalPages: 1,
@@ -111,9 +108,7 @@ describe("SchemaRequest", () => {
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
@@ -187,9 +182,7 @@ describe("SchemaRequest", () => {
 
   describe("renders pagination dependent on response", () => {
     beforeEach(() => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue({
         entries: [],
         totalPages: 1,
@@ -293,9 +286,7 @@ describe("SchemaRequest", () => {
 
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue({
         totalPages: 3,
         currentPage: 1,
@@ -341,9 +332,7 @@ describe("SchemaRequest", () => {
 
   describe("user can filter schema requests by 'environment'", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
@@ -387,9 +376,7 @@ describe("SchemaRequest", () => {
 
   describe("user can filter schema requests by 'Request type'", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
@@ -434,9 +421,7 @@ describe("SchemaRequest", () => {
 
   describe("user can filter schema requests by 'status'", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
@@ -481,9 +466,7 @@ describe("SchemaRequest", () => {
 
   describe("user can filter schema requests by 'topic' they searched for", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
@@ -526,9 +509,7 @@ describe("SchemaRequest", () => {
 
   describe("user can filter schema requests by only showing their own requests", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
@@ -571,9 +552,7 @@ describe("SchemaRequest", () => {
 
   describe("shows a detail modal for schema request", () => {
     beforeEach(async () => {
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
@@ -667,9 +646,7 @@ describe("SchemaRequest", () => {
     const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
+      mockGetAllEnvironments.mockResolvedValue(mockedEnvironmentResponse);
       mockGetSchemaRequests.mockResolvedValue(mockedApiResponseSchemaRequests);
 
       customRender(<SchemaRequests />, {
