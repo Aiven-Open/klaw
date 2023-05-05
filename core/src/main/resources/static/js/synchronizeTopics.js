@@ -543,7 +543,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                if($scope.topicsWithWarningBulk.length > 0) {
                warningMsg += " This selection contains the following topics which have validation warnings "+ $scope.topicsWithWarningBulk;
                } else if(typeOfSync == "ALL_TOPICS" && $scope.allTopicWarningsCount > 0 ) {
-               warningMsg +=" There are " + $scope.allTopicWarningsCount + " invalid topic names in this list.";
+               warningMsg +=" There are " + $scope.allTopicWarningsCount + " validation warnings on topics in this list.";
                }
 
 

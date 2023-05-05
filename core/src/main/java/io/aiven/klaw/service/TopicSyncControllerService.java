@@ -342,28 +342,35 @@ public class TopicSyncControllerService {
     TopicSyncResponseModel topicSyncModel;
 
     Env env = getEnvDetails(envId);
+
     String topicPrefix = "", topicSuffix = "", topicRegex = "";
+    int maxRepFactor = 0, maxPartitions = 0;
     if (env.getParams() != null) {
       topicPrefix = getValueOrDefault(env.getParams().getTopicPrefix(), "");
       topicSuffix = getValueOrDefault(env.getParams().getTopicSuffix(), "");
       topicRegex = getValueOrDefault(env.getParams().getTopicRegex(), "");
+      maxPartitions = Integer.parseInt(getValueOrDefault(env.getParams().getMaxPartitions(), "0"));
+      maxRepFactor = Integer.parseInt(getValueOrDefault(env.getParams().getMaxRepFactor(), "0"));
     }
     for (TopicRequest topicReq : topicsList) {
       topicSyncModel = new TopicSyncResponseModel();
       copyProperties(topicReq, topicSyncModel);
       if (env.getParams() != null) {
         topicSyncModel.setValidationStatus(
-            doesConformToEnvNamingConfiguration(
+            doesTopicConformToEnvValidation(
                 topicSyncModel,
                 topicPrefix,
                 topicSuffix,
                 topicRegex,
-                env.getParams().isApplyRegex()));
+                env.getParams().isApplyRegex(),
+                maxRepFactor,
+                maxPartitions));
         topicSyncModel.setValidatedTopic(StringUtils.isEmpty(topicSyncModel.getValidationStatus()));
       } else {
         // no validation set so set boolean to true
         topicSyncModel.setValidatedTopic(true);
       }
+
       topicSyncList.add(topicSyncModel);
     }
     return topicSyncList;
@@ -1177,12 +1184,14 @@ public class TopicSyncControllerService {
     return orderedEnv.contains(envId);
   }
 
-  private String doesConformToEnvNamingConfiguration(
+  private String doesTopicConformToEnvValidation(
       TopicSyncResponseModel topicRequestReq,
       String topicPrefix,
       String topicSuffix,
       String topicRegex,
-      boolean applyRegex) {
+      boolean applyRegex,
+      int maxRepFactor,
+      int maxPartitions) {
     String validationResponse = "";
 
     if (!applyRegex) {
@@ -1191,7 +1200,7 @@ public class TopicSyncControllerService {
           && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {
         validationResponse +=
             String.format(
-                "Topic prefix %s does not match. %s", topicPrefix, topicRequestReq.getTopicname());
+                "Topic prefix %s does not match. %s ", topicPrefix, topicRequestReq.getTopicname());
       }
 
       if (topicSuffix != null
@@ -1199,7 +1208,7 @@ public class TopicSyncControllerService {
           && !topicRequestReq.getTopicname().endsWith(topicSuffix)) {
         validationResponse +=
             String.format(
-                "Topic suffix %s does not match. %s", topicSuffix, topicRequestReq.getTopicname());
+                "Topic suffix %s does not match. %s ", topicSuffix, topicRequestReq.getTopicname());
       }
     } else {
       if (topicRegex != null
@@ -1208,8 +1217,29 @@ public class TopicSyncControllerService {
 
         validationResponse +=
             String.format(
-                "Topic Regex %s does not match. %s", topicRegex, topicRequestReq.getTopicname());
+                "Topic Regex %s does not match. %s ", topicRegex, topicRequestReq.getTopicname());
       }
+    }
+
+    if (Integer.parseInt(getValueOrDefault(topicRequestReq.getReplicationfactor(), "0"))
+        > maxRepFactor) {
+      validationResponse +=
+          String.format(
+              "Topic exceeds maximum replication factor %d with %s configured replication factor. ",
+              maxRepFactor, topicRequestReq.getReplicationfactor());
+    }
+    if (topicRequestReq.getTopicpartitions() != null
+        && topicRequestReq.getTopicpartitions().intValue() > maxPartitions) {
+      validationResponse +=
+          String.format(
+              "Topic exceeds maximum partitions %d with %s configured partitions. ",
+              maxPartitions, topicRequestReq.getTopicpartitions().intValue());
+    } else if (topicRequestReq.getTopicpartitions() == null) {
+      validationResponse +=
+          String.format(
+              "Topic partitions not configured. ",
+              maxPartitions,
+              topicRequestReq.getTopicpartitions().intValue());
     }
 
     return validationResponse;
@@ -1217,6 +1247,10 @@ public class TopicSyncControllerService {
 
   private static String getValueOrDefault(List<String> params, String defaultValue) {
     return (params != null && params.size() > 0) ? params.get(0) : defaultValue;
+  }
+
+  private static String getValueOrDefault(String param, String defaultValue) {
+    return (param != null) ? param : defaultValue;
   }
 
   private boolean isRegexAMatch(TopicSyncResponseModel topicRequestReq, String topicRegex) {
