@@ -13,7 +13,7 @@ type MockApi<T extends keyof operations> = {
   };
 };
 
-function mockGetEnvironments({
+function mockGetEnvironmentsForTopicRequest({
   mswInstance,
   response,
 }: MockApi<"getEnvsBaseCluster">) {
@@ -67,7 +67,7 @@ const getMockedResponseGetClusterInfoFromEnv = (
 });
 
 export {
-  mockGetEnvironments,
+  mockGetEnvironmentsForTopicRequest,
   mockGetEnvironmentsForTeam,
   mockedEnvironmentResponse,
   mockGetClusterInfoFromEnv,

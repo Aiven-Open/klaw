@@ -3,7 +3,7 @@ import { Environment } from "src/domain/environment/environment-types";
 import api, { API_PATHS } from "src/services/api";
 import { KlawApiResponse } from "types/utils";
 
-const getEnvironments = async (): Promise<Environment[]> => {
+const getEnvironmentsForTopicRequest = async (): Promise<Environment[]> => {
   return api
     .get<KlawApiResponse<"getEnvsBaseCluster">>(API_PATHS.getEnvsBaseCluster)
     .then(transformEnvironmentApiResponse);
@@ -48,7 +48,7 @@ const getClusterInfo = async ({
 };
 
 export {
-  getEnvironments,
+  getEnvironmentsForTopicRequest,
   getClusterInfo,
   getEnvironmentsForTeam,
   getSchemaRegistryEnvironments,

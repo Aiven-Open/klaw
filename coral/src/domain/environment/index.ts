@@ -1,17 +1,17 @@
 import {
-  getEnvironments,
+  getEnvironmentsForTopicRequest,
   getSchemaRegistryEnvironments,
   getSyncConnectorsEnvironments,
 } from "src/domain/environment/environment-api";
-import { mockGetEnvironments } from "src/domain/environment/environment-api.msw";
+import { mockGetEnvironmentsForTopicRequest } from "src/domain/environment/environment-api.msw";
 import {
   ALL_ENVIRONMENTS_VALUE,
   Environment,
 } from "src/domain/environment/environment-types";
 
 export {
-  getEnvironments,
-  mockGetEnvironments,
+  getEnvironmentsForTopicRequest,
+  mockGetEnvironmentsForTopicRequest,
   ALL_ENVIRONMENTS_VALUE,
   getSchemaRegistryEnvironments,
   getSyncConnectorsEnvironments,
