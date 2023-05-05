@@ -5,7 +5,7 @@ import { KlawApiResponse } from "types/utils";
 
 const getEnvironments = async (): Promise<Environment[]> => {
   return api
-    .get<KlawApiResponse<"getEnvs">>(API_PATHS.getEnvs)
+    .get<KlawApiResponse<"getEnvsBaseCluster">>(API_PATHS.getEnvsBaseCluster)
     .then(transformEnvironmentApiResponse);
 };
 
@@ -19,7 +19,9 @@ const getEnvironmentsForTeam = (): Promise<Environment[]> => {
 
 const getSchemaRegistryEnvironments = (): Promise<Environment[]> => {
   return api
-    .get<KlawApiResponse<"getSchemaRegEnvs">>(API_PATHS.getSchemaRegEnvs)
+    .get<KlawApiResponse<"getRequestForSchemas">>(
+      API_PATHS.getRequestForSchemas
+    )
     .then(transformEnvironmentApiResponse);
 };
 
