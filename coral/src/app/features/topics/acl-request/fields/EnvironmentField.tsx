@@ -1,9 +1,9 @@
 import { Option } from "@aivenio/aquarium";
 import { NativeSelect } from "src/app/components/Form";
-import { Environment } from "src/domain/environment";
+import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 
 interface EnvironmentFieldProps {
-  environments: Environment[];
+  environments: ExtendedEnvironment[];
 }
 
 const EnvironmentField = ({ environments }: EnvironmentFieldProps) => {
@@ -14,11 +14,20 @@ const EnvironmentField = ({ environments }: EnvironmentFieldProps) => {
       placeholder={"-- Please select --"}
       required
     >
-      {environments.map((env) => (
-        <Option key={env.id} value={env.id}>
-          {env.name}
-        </Option>
-      ))}
+      {environments.map((env) => {
+        if (env.topicNames.length === 0) {
+          return (
+            <Option key={env.id} value={env.id} disabled>
+              {env.name} (no topic available)
+            </Option>
+          );
+        }
+        return (
+          <Option key={env.id} value={env.id}>
+            {env.name}
+          </Option>
+        );
+      })}
     </NativeSelect>
   );
 };

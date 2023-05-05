@@ -45,6 +45,26 @@ describe("TopicNameOrPrefixField", () => {
     expect(options).toHaveLength(mockedTopicNames.length + 1);
   });
 
+  it("renders a readonly TopicNameField (producer form)", () => {
+    const result = renderForm(
+      <TopicNameOrPrefixField
+        topicNames={mockedTopicNames}
+        aclPatternType={producerLiteral}
+        readOnly={true}
+      />,
+      {
+        schema: producerSchema,
+        onSubmit,
+        onError,
+      }
+    );
+    const field = result.getByRole("combobox");
+
+    expect(field).toBeVisible();
+    expect(field).toBeDisabled();
+    expect(field).toHaveAttribute("aria-readonly", "true");
+  });
+
   it("renders a text field (producer form)", () => {
     const result = renderForm(
       <TopicNameOrPrefixField
