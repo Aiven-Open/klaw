@@ -7,7 +7,7 @@ import { mockCreateAclRequest } from "src/domain/acl/acl-api-msw";
 import {
   getMockedResponseGetClusterInfoFromEnv,
   mockGetClusterInfoFromEnv,
-  mockGetEnvironments,
+  mockGetAllEnvironments,
 } from "src/domain/environment/environment-api.msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import {
@@ -32,7 +32,7 @@ jest.mock("src/domain/acl/acl-api", () => ({
 }));
 
 const dataSetup = ({ isAivenCluster }: { isAivenCluster: boolean }) => {
-  mockGetEnvironments({
+  mockGetAllEnvironments({
     mswInstance: server,
     response: {
       data: [

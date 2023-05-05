@@ -8,7 +8,7 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Environment,
-  getSchemaRegistryEnvironments,
+  getEnvironmentsForSchemaRequest,
 } from "src/domain/environment";
 import {
   TopicRequestFormSchema,
@@ -67,7 +67,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     Error
   >({
     queryKey: ["schemaRegistryEnvironments"],
-    queryFn: () => getSchemaRegistryEnvironments(),
+    queryFn: () => getEnvironmentsForSchemaRequest(),
   });
 
   const schemaRequestMutation = useMutation(createSchemaRequest, {

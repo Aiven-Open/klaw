@@ -13,6 +13,15 @@ type MockApi<T extends keyof operations> = {
   };
 };
 
+function mockGetAllEnvironments({ mswInstance, response }: MockApi<"getEnvs">) {
+  const url = `${getHTTPBaseAPIUrl()}/getEnvs`;
+  mswInstance.use(
+    rest.get(url, async (req, res, ctx) => {
+      return res(ctx.status(response.status ?? 200), ctx.json(response.data));
+    })
+  );
+}
+
 function mockGetEnvironmentsForTopicRequest({
   mswInstance,
   response,
@@ -67,6 +76,7 @@ const getMockedResponseGetClusterInfoFromEnv = (
 });
 
 export {
+  mockGetAllEnvironments,
   mockGetEnvironmentsForTopicRequest,
   mockGetEnvironmentsForTeam,
   mockedEnvironmentResponse,

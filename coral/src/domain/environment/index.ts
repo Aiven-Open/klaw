@@ -1,7 +1,8 @@
 import {
+  getAllEnvironments,
   getEnvironmentsForTopicRequest,
-  getSchemaRegistryEnvironments,
-  getSyncConnectorsEnvironments,
+  getEnvironmentsForSchemaRequest,
+  getEnvironmentsForConnectorRequest,
 } from "src/domain/environment/environment-api";
 import { mockGetEnvironmentsForTopicRequest } from "src/domain/environment/environment-api.msw";
 import {
@@ -10,10 +11,11 @@ import {
 } from "src/domain/environment/environment-types";
 
 export {
+  getAllEnvironments,
   getEnvironmentsForTopicRequest,
   mockGetEnvironmentsForTopicRequest,
   ALL_ENVIRONMENTS_VALUE,
-  getSchemaRegistryEnvironments,
-  getSyncConnectorsEnvironments,
+  getEnvironmentsForSchemaRequest,
+  getEnvironmentsForConnectorRequest,
 };
 export type { Environment };

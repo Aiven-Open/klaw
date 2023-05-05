@@ -23,7 +23,7 @@ const getEnvironmentsForTeam = (): Promise<Environment[]> => {
     .then(transformEnvironmentApiResponse);
 };
 
-const getSchemaRegistryEnvironments = (): Promise<Environment[]> => {
+const getEnvironmentsForSchemaRequest = (): Promise<Environment[]> => {
   return api
     .get<KlawApiResponse<"getEnvsForSchemaRequests">>(
       API_PATHS.getEnvsForSchemaRequests
@@ -31,7 +31,7 @@ const getSchemaRegistryEnvironments = (): Promise<Environment[]> => {
     .then(transformEnvironmentApiResponse);
 };
 
-const getSyncConnectorsEnvironments = (): Promise<Environment[]> => {
+const getEnvironmentsForConnectorRequest = (): Promise<Environment[]> => {
   return api
     .get<KlawApiResponse<"getSyncConnectorsEnv">>(
       API_PATHS.getSyncConnectorsEnv
@@ -58,6 +58,6 @@ export {
   getEnvironmentsForTopicRequest,
   getClusterInfo,
   getEnvironmentsForTeam,
-  getSchemaRegistryEnvironments,
-  getSyncConnectorsEnvironments,
+  getEnvironmentsForSchemaRequest,
+  getEnvironmentsForConnectorRequest,
 };

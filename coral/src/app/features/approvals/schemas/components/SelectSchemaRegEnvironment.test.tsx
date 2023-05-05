@@ -1,7 +1,7 @@
 import { cleanup, screen } from "@testing-library/react";
 import {
   ALL_ENVIRONMENTS_VALUE,
-  getSchemaRegistryEnvironments,
+  getEnvironmentsForSchemaRequest,
 } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -13,8 +13,8 @@ import { SelectSchemaRegEnvironment } from "src/app/features/approvals/schemas/c
 jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getSchemaRegistryEnvironments as jest.MockedFunction<
-    typeof getSchemaRegistryEnvironments
+  getEnvironmentsForSchemaRequest as jest.MockedFunction<
+    typeof getEnvironmentsForSchemaRequest
   >;
 
 const filterLabel = "Filter by Environment";
