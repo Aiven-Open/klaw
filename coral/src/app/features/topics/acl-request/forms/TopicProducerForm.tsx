@@ -54,8 +54,9 @@ const TopicProducerForm = ({
   const { aclIpPrincipleType, aclPatternType, topicname, environment } =
     topicProducerForm.getValues();
   const validEnvironments = environments.filter(({ topicNames }) => {
-    // Return all envs if there is no pre-selected topic
-    if (topicname === undefined) {
+    // Return all envs if there is no pre-selected topic,
+    // or if pattern type is PREFIXED
+    if (topicname === undefined || aclPatternType === "PREFIXED") {
       return true;
     }
     return topicNames.includes(topicname);
