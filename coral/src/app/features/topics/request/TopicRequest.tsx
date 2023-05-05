@@ -138,7 +138,6 @@ function TopicRequest() {
               )}
               required={true}
             />
-            <span>Please enter a topic name</span>
             <Box component={Flexbox} gap={"l1"}>
               <Box component={FlexboxItem} grow={1} width={"1/2"}>
                 <SelectOrNumberInput
