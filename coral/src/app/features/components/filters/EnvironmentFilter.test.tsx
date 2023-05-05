@@ -3,7 +3,7 @@ import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import {
-  getEnvironments,
+  getAllEnvironments,
   getSchemaRegistryEnvironments,
   getSyncConnectorsEnvironments,
 } from "src/domain/environment";
@@ -12,8 +12,8 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/environment/environment-api.ts");
 
-const mockGetEnvironments = getEnvironments as jest.MockedFunction<
-  typeof getEnvironments
+const mockGetEnvironments = getAllEnvironments as jest.MockedFunction<
+  typeof getAllEnvironments
 >;
 
 const mockGetSchemaRegistryEnvironments =
@@ -51,9 +51,9 @@ describe("EnvironmentFilter.tsx", () => {
       jest.resetAllMocks();
     });
 
-    it("fetches from the getEnvironments endpoint", () => {
+    it("fetches from the getAllEnvironments endpoint", () => {
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
         {
           memoryRouter: true,
           queryClient: true,
@@ -105,7 +105,7 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
         {
           memoryRouter: true,
           queryClient: true,
@@ -161,7 +161,7 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
         {
           memoryRouter: true,
           queryClient: true,
@@ -195,7 +195,7 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
         {
           queryClient: true,
           memoryRouter: true,
@@ -232,7 +232,7 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getEnvironments"} />,
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
         {
           queryClient: true,
           browserRouter: true,

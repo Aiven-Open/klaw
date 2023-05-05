@@ -278,7 +278,7 @@ function TopicApprovals() {
         filters={[
           <EnvironmentFilter
             key={"environment"}
-            environmentEndpoint={"getEnvironments"}
+            environmentEndpoint={"getAllEnvironments"}
           />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,

@@ -10,7 +10,7 @@ import AclApprovals from "src/app/features/approvals/acls/AclApprovals";
 import { getAclRequestsForApprover } from "src/domain/acl/acl-api";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import { AclRequest } from "src/domain/acl/acl-types";
-import { Environment, getEnvironments } from "src/domain/environment";
+import { Environment, getAllEnvironments } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
@@ -19,8 +19,8 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 jest.mock("src/domain/acl/acl-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
-const mockGetEnvironments = getEnvironments as jest.MockedFunction<
-  typeof getEnvironments
+const mockGetEnvironments = getAllEnvironments as jest.MockedFunction<
+  typeof getAllEnvironments
 >;
 
 const mockGetAclRequestsForApprover =

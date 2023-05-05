@@ -171,7 +171,7 @@ function AclRequests() {
         filters={[
           <EnvironmentFilter
             key="environment"
-            environmentEndpoint={"getEnvironments"}
+            environmentEndpoint={"getAllEnvironments"}
           />,
           <AclTypeFilter key="aclType" />,
           <StatusFilter key="status" defaultStatus="ALL" />,

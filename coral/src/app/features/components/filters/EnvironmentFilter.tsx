@@ -3,14 +3,14 @@ import { useQuery } from "@tanstack/react-query";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import {
   Environment,
-  getEnvironments,
+  getAllEnvironments,
   getSchemaRegistryEnvironments,
   getSyncConnectorsEnvironments,
 } from "src/domain/environment";
 import { HTTPError } from "src/services/api";
 
 type EnvironmentEndpoint =
-  | "getEnvironments"
+  | "getAllEnvironments"
   | "getSchemaRegistryEnvironments"
   | "getSyncConnectorsEnvironments";
 interface EnvironmentFilterProps {
@@ -21,7 +21,7 @@ interface EnvironmentFilterProps {
 const environmentEndpointMap: {
   [key in EnvironmentEndpoint]: () => Promise<Environment[]>;
 } = {
-  getEnvironments: getEnvironments,
+  getAllEnvironments: getAllEnvironments,
   getSchemaRegistryEnvironments: getSchemaRegistryEnvironments,
   getSyncConnectorsEnvironments: getSyncConnectorsEnvironments,
 };

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Environment, getEnvironments } from "src/domain/environment";
+import { Environment, getAllEnvironments } from "src/domain/environment";
 import { getClusterInfo } from "src/domain/environment/environment-api";
 import { getTopicNames } from "src/domain/topic";
 
@@ -32,7 +32,7 @@ const useExtendedEnvironments = () => {
     isLoading: isLoadingExtendedEnvironments,
   } = useQuery<ExtendedEnvironment[], Error>(["topic-environments"], {
     queryFn: async () => {
-      const environments = await getEnvironments();
+      const environments = await getAllEnvironments();
 
       const extensionRequests = environments.map(async (environment) => {
         const [topicNames, clusterInfo] = await getExtensionData({
