@@ -408,6 +408,7 @@ function _NativeSelect<T extends FieldValues>({
             {...baseNativeProps}
             name={name}
             disabled={disabled || isSubmitting}
+            aria-readonly={props.readOnly}
             onBlur={(option) => {
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               form.setValue(name, option.target.value as any, {
