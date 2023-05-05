@@ -1,9 +1,11 @@
 import { Box, DropdownMenu, PrimaryDropdownButton } from "@aivenio/aquarium";
 import notifications from "@aivenio/aquarium/dist/module/icons/notifications";
+import people from "@aivenio/aquarium/dist/module/icons/people";
 import questionMark from "@aivenio/aquarium/dist/module/icons/questionMark";
-import user from "@aivenio/aquarium/dist/module/icons/user";
+import code from "@aivenio/aquarium/dist/src/icons/code";
 import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
+import user from "@aivenio/aquarium/dist/src/icons/user";
 import { useNavigate } from "react-router-dom";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import logo from "src/app/layout/header/klaw_logo.png";
@@ -12,6 +14,8 @@ import { Routes } from "src/app/router_utils";
 const requestNewEntityPaths: { [key: string]: string } = {
   topic: Routes.TOPIC_REQUEST,
   connector: Routes.CONNECTOR_REQUEST,
+  acl: Routes.ACL_REQUEST,
+  schema: Routes.SCHEMA_REQUEST,
 };
 
 function Header() {
@@ -51,6 +55,12 @@ function Header() {
           <DropdownMenu.Items>
             <DropdownMenu.Item key="topic" icon={codeBlock}>
               Topic
+            </DropdownMenu.Item>
+            <DropdownMenu.Item key="acl" icon={people}>
+              ACL
+            </DropdownMenu.Item>
+            <DropdownMenu.Item key="schema" icon={code}>
+              Schema
             </DropdownMenu.Item>
             <DropdownMenu.Item key="connector" icon={layoutGroupBy}>
               Kafka connector
