@@ -25,16 +25,17 @@ import RemarksField from "src/app/features/topics/acl-request/fields/RemarksFiel
 import TopicNameOrPrefixField from "src/app/features/topics/acl-request/fields/TopicNameOrPrefixField";
 import { TopicProducerFormSchema } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-producer";
 import { createAclRequest } from "src/domain/acl/acl-api";
-import { Environment } from "src/domain/environment";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { Dialog } from "src/app/components/Dialog";
+import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 
 // eslint-disable-next-line import/exports-last
 export interface TopicProducerFormProps {
   topicProducerForm: UseFormReturn<TopicProducerFormSchema>;
   topicNames: string[];
-  environments: Environment[];
+  environments: ExtendedEnvironment[];
   renderAclTypeField: () => JSX.Element;
+  isSubscription: boolean;
   isAivenCluster?: boolean;
 }
 
@@ -44,6 +45,7 @@ const TopicProducerForm = ({
   environments,
   renderAclTypeField,
   isAivenCluster,
+  isSubscription,
 }: TopicProducerFormProps) => {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
@@ -51,6 +53,13 @@ const TopicProducerForm = ({
   const navigate = useNavigate();
   const { aclIpPrincipleType, aclPatternType, topicname, environment } =
     topicProducerForm.getValues();
+  const validEnvironments = environments.filter(({ topicNames }) => {
+    // Return all envs if there is no pre-selected topic
+    if (topicname === undefined) {
+      return true;
+    }
+    return topicNames.includes(topicname);
+  });
   const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
   const { current: initialAclPatternType } = useRef(aclPatternType);
 
@@ -137,7 +146,7 @@ const TopicProducerForm = ({
         <Grid cols="2" minWidth={"fit"} colGap={"9"}>
           <GridItem>{renderAclTypeField()}</GridItem>
           <GridItem>
-            <EnvironmentField environments={environments} />
+            <EnvironmentField environments={validEnvironments} />
           </GridItem>
 
           <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
@@ -162,6 +171,7 @@ const TopicProducerForm = ({
               <TopicNameOrPrefixField
                 topicNames={topicNames}
                 aclPatternType={aclPatternType}
+                readOnly={isSubscription}
               />
             )}
           </GridItem>
