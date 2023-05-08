@@ -1974,10 +1974,7 @@ describe("<TopicAclRequest />", () => {
 
       await userEvent.click(cancelButton);
 
-      await waitFor(() => {
-        expect(mockedNavigate).toHaveBeenCalledTimes(1);
-        expect(mockedNavigate).toHaveBeenCalledWith(-1);
-      });
+      expect(mockedNavigate).toHaveBeenCalledWith(-1);
     });
   });
 

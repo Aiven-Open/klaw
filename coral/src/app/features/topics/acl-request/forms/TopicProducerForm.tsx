@@ -53,14 +53,6 @@ const TopicProducerForm = ({
   const navigate = useNavigate();
   const { aclIpPrincipleType, aclPatternType, topicname, environment } =
     topicProducerForm.getValues();
-  const validEnvironments = environments.filter(({ topicNames }) => {
-    // Return all envs if there is no pre-selected topic,
-    // or if pattern type is PREFIXED
-    if (topicname === undefined || aclPatternType === "PREFIXED") {
-      return true;
-    }
-    return topicNames.includes(topicname);
-  });
   const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
   const { current: initialAclPatternType } = useRef(aclPatternType);
 
@@ -117,7 +109,6 @@ const TopicProducerForm = ({
 
   const hideIpOrPrincipalField =
     aclIpPrincipleType === undefined || isAivenCluster === undefined;
-  const hideTopicNameOrPrefixField = aclPatternType === undefined;
 
   return (
     <>
@@ -147,7 +138,10 @@ const TopicProducerForm = ({
         <Grid cols="2" minWidth={"fit"} colGap={"9"}>
           <GridItem>{renderAclTypeField()}</GridItem>
           <GridItem>
-            <EnvironmentField environments={validEnvironments} />
+            <EnvironmentField
+              environments={environments}
+              selectedTopic={topicname}
+            />
           </GridItem>
 
           <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
@@ -166,15 +160,11 @@ const TopicProducerForm = ({
             </RadioButtonGroup>
           </GridItem>
           <GridItem>
-            {hideTopicNameOrPrefixField ? (
-              <Box data-testid="empty" style={{ height: "87px" }} />
-            ) : (
-              <TopicNameOrPrefixField
-                topicNames={topicNames}
-                aclPatternType={aclPatternType}
-                readOnly={isSubscription}
-              />
-            )}
+            <TopicNameOrPrefixField
+              topicNames={topicNames}
+              aclPatternType={aclPatternType}
+              readOnly={isSubscription}
+            />
           </GridItem>
 
           <GridItem colSpan={"span-2"}>

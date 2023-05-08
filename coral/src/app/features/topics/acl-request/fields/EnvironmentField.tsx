@@ -4,9 +4,42 @@ import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries
 
 interface EnvironmentFieldProps {
   environments: ExtendedEnvironment[];
+  selectedTopic?: string;
 }
 
-const EnvironmentField = ({ environments }: EnvironmentFieldProps) => {
+const getOptions = (
+  environments: ExtendedEnvironment[],
+  topicName?: string
+) => {
+  return environments.map((env) => {
+    if (env.topicNames.length === 0) {
+      return (
+        <Option key={env.id} value={env.id} disabled>
+          {env.name} (no topic available)
+        </Option>
+      );
+    }
+
+    if (topicName !== undefined && !env.topicNames.includes(topicName)) {
+      return (
+        <Option key={env.id} value={env.id} disabled>
+          {env.name} (unavailable for selected topic)
+        </Option>
+      );
+    }
+
+    return (
+      <Option key={env.id} value={env.id}>
+        {env.name}
+      </Option>
+    );
+  });
+};
+
+const EnvironmentField = ({
+  environments,
+  selectedTopic,
+}: EnvironmentFieldProps) => {
   return (
     <NativeSelect
       name="environment"
@@ -14,20 +47,7 @@ const EnvironmentField = ({ environments }: EnvironmentFieldProps) => {
       placeholder={"-- Please select --"}
       required
     >
-      {environments.map((env) => {
-        if (env.topicNames.length === 0) {
-          return (
-            <Option key={env.id} value={env.id} disabled>
-              {env.name} (no topic available)
-            </Option>
-          );
-        }
-        return (
-          <Option key={env.id} value={env.id}>
-            {env.name}
-          </Option>
-        );
-      })}
+      {getOptions(environments, selectedTopic)}
     </NativeSelect>
   );
 };

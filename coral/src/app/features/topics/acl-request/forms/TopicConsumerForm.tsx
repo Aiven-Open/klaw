@@ -51,13 +51,6 @@ const TopicConsumerForm = ({
   const navigate = useNavigate();
   const { aclIpPrincipleType, environment, topicname } =
     topicConsumerForm.getValues();
-  const validEnvironments = environments.filter(({ topicNames }) => {
-    // Return all envs if there is no pre-selected topic
-    if (topicname === undefined) {
-      return true;
-    }
-    return topicNames.includes(topicname);
-  });
   const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
 
   // Reset values of acl_ip and acl_ssl when user switches between IP or Principal
@@ -146,7 +139,10 @@ const TopicConsumerForm = ({
         <Grid cols="2" minWidth={"fit"} colGap={"9"}>
           <GridItem>{renderAclTypeField()}</GridItem>
           <GridItem>
-            <EnvironmentField environments={validEnvironments} />
+            <EnvironmentField
+              environments={environments}
+              selectedTopic={topicname}
+            />
           </GridItem>
 
           <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
