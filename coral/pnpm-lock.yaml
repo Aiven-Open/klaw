@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@aivenio/aquarium': ^1.14.0
+  '@aivenio/aquarium': ^1.17.1
   '@hookform/resolvers': ^2.9.10
   '@monaco-editor/react': ^4.5.0
   '@tanstack/react-query': ^4.29.5
@@ -51,7 +51,7 @@ specifiers:
   zod: ^3.19.1
 
 dependencies:
-  '@aivenio/aquarium': 1.14.0_pvnihi4muhoy7kenlmiyxwzuqy
+  '@aivenio/aquarium': 1.17.1_pvnihi4muhoy7kenlmiyxwzuqy
   '@hookform/resolvers': 2.9.10_react-hook-form@7.43.9
   '@monaco-editor/react': 4.5.0_bp43pgihi2cxclx2bm2cvm6q7a
   '@tanstack/react-query': 4.29.5_biqbaboplfbrettd7655fr4n2y
@@ -108,8 +108,8 @@ packages:
     resolution: {integrity: sha512-+u76oB43nOHrF4DDWRLWDCtci7f3QJoEBigemIdIeTi1ODqjx6Tad9NCVnPRwewWlKkVab5PlK8DCtPTyX7S8g==}
     dev: true
 
-  /@aivenio/aquarium/1.14.0_pvnihi4muhoy7kenlmiyxwzuqy:
-    resolution: {integrity: sha512-chn5je+4d0w8dtAJ+w3mf/rqw/F1ws7ZJOEMCsw/JRdOPfePC93OSeavH7poT1GGObe7ZBWHxIc7woiawsJmJA==}
+  /@aivenio/aquarium/1.17.1_pvnihi4muhoy7kenlmiyxwzuqy:
+    resolution: {integrity: sha512-qg5Sw9VbGlDRrDYsmbGa1uvOwSFYqZC563cZemiUH5Mberv67J/Yo5ShqAcgHZsmqZMzDI3pPWkWqSBvpVQqGQ==}
     peerDependencies:
       lodash: 4.x
       react: 16.x || 17.x
@@ -3857,6 +3857,7 @@ packages:
 
   /eslint-config-prettier/8.8.0_eslint@8.39.0:
     resolution: {integrity: sha512-wLbQiFre3tdGgpDv67NQKnJuTlcUVYHas3k+DZCc2U2BadthoEY4B7hLPvAxaqdyOGCzuLfii2fqGph10va7oA==}
+    hasBin: true
     peerDependencies:
       eslint: '>=7.0.0'
     dependencies:
@@ -4930,6 +4931,7 @@ packages:
   /jest-cli/29.5.0_5uyhgycj63wuqgvl4exdnr442q:
     resolution: {integrity: sha512-L1KcP1l4HtfwdxXNFCL5bmUbLQiKrakMUriBEcc1Vfz6gx31ORKdreuWvmQVBit+1ss9NNR3yxjwfwzZNdQXJw==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    hasBin: true
     peerDependencies:
       node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
     peerDependenciesMeta:
@@ -5310,6 +5312,7 @@ packages:
   /jest/29.5.0_5uyhgycj63wuqgvl4exdnr442q:
     resolution: {integrity: sha512-juMg3he2uru1QoXX078zTa7pO85QyB9xajZc6bU+d9yEGwrKX6+vGmJQ3UdVZsvTEUARIdObzH68QItim6OSSQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    hasBin: true
     peerDependencies:
       node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
     peerDependenciesMeta:
@@ -5658,6 +5661,7 @@ packages:
   /msw/0.47.4_typescript@4.8.4:
     resolution: {integrity: sha512-Psftt8Yfl0+l+qqg9OlmKEsxF8S/vtda0CmlR6y8wTaWrMMzuCDa55n2hEGC0ZRDwuV6FFWc/4CjoDsBpATKBw==}
     engines: {node: '>=14'}
+    hasBin: true
     requiresBuild: true
     peerDependencies:
       typescript: '>= 4.2.x <= 4.8.x'
@@ -6393,6 +6397,7 @@ packages:
   /rollup-plugin-visualizer/5.9.0:
     resolution: {integrity: sha512-bbDOv47+Bw4C/cgs0czZqfm8L82xOZssk4ayZjG40y9zbXclNk7YikrZTDao6p7+HDiGxrN0b65SgZiVm9k1Cg==}
     engines: {node: '>=14'}
+    hasBin: true
     peerDependencies:
       rollup: 2.x || 3.x
     peerDependenciesMeta:
@@ -6827,6 +6832,7 @@ packages:
   /ts-jest/29.1.0_ctj3nbdeenrflfbbfxj2lsuicq:
     resolution: {integrity: sha512-ZhNr7Z4PcYa+JjMl62ir+zPiNJfXJN6E8hSLnaUKhOgqcn8vb3e537cpkd0FuAfRK3sR1LSqM1MOhliXNgOFPA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    hasBin: true
     peerDependencies:
       '@babel/core': '>=7.0.0-beta.0 <8'
       '@jest/types': ^29.0.0
@@ -6858,6 +6864,7 @@ packages:
 
   /ts-node/10.9.1_id5sxmpllzol2kp2zgqrnepaum:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
+    hasBin: true
     peerDependencies:
       '@swc/core': '>=1.2.50'
       '@swc/wasm': '>=1.2.50'
@@ -6978,6 +6985,7 @@ packages:
 
   /update-browserslist-db/1.0.10_browserslist@4.21.4:
     resolution: {integrity: sha512-OztqDenkfFkbSG+tRxBeAnCVPckDBcvibKd35yDONx6OU8N7sqgwc7rCbkJ/WcYtVRZ4ba68d6byhC21GFh7sQ==}
+    hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
     dependencies:
@@ -7036,6 +7044,7 @@ packages:
   /vite/4.3.2_@types+node@18.11.2:
     resolution: {integrity: sha512-9R53Mf+TBoXCYejcL+qFbZde+eZveQLDYd9XgULILLC1a5ZwPaqgmdVpL8/uvw2BM/1TzetWjglwm+3RO+xTyw==}
     engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
     peerDependencies:
       '@types/node': '>= 14'
       less: '*'
