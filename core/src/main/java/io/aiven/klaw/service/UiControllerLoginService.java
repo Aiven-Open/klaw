@@ -271,7 +271,10 @@ public class UiControllerLoginService {
     }
 
     if ("true".equals(ssoEnabled)) {
-      if (uri.contains("register") || uri.equals("registrationReview.html")) {
+      if (uri.contains("register")
+          || uri.equals("registrationReview.html")
+          || uri.equals("forgotPassword")
+          || uri.equals("forgotPassword.html")) {
         return uri;
       } else {
         if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
@@ -281,7 +284,10 @@ public class UiControllerLoginService {
         }
       }
     } else {
-      if (uri.contains("register") || uri.equals("registrationReview.html")) {
+      if (uri.contains("register")
+          || uri.equals("registrationReview.html")
+          || uri.equals("forgotPassword")
+          || uri.equals("forgotPassword.html")) {
         return uri;
       } else {
         if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
