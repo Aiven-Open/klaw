@@ -6,10 +6,10 @@ import { tabNavigateTo } from "src/services/test-utils/tabbing";
 describe("NotFound", () => {
   describe("renders a Not Found page with correct text", () => {
     beforeAll(() => {
-      customRender(<NotFound />, { memoryRouter: true, queryClient: true });
+      customRender(<NotFound />, { memoryRouter: true });
     });
 
-    it("renders a headline", async () => {
+    it("renders a headline", () => {
       const headline = screen.getByRole("heading", {
         name: "Page not found",
       });
@@ -17,7 +17,7 @@ describe("NotFound", () => {
       expect(headline).toBeVisible();
     });
 
-    it("renders a description", async () => {
+    it("renders a description", () => {
       const description = screen.getByText(
         "Sorry, the page you are looking for does not exist."
       );
@@ -25,7 +25,7 @@ describe("NotFound", () => {
       expect(description).toBeVisible();
     });
 
-    it("renders a link to old interface index page", async () => {
+    it("renders a link to old interface index page", () => {
       const link = screen.getByRole("link", {
         name: "Return to the old interface.",
       });

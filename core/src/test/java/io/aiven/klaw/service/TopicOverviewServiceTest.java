@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static io.aiven.klaw.service.BaseOverviewService.NO_PROMOTION;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -125,7 +126,7 @@ public class TopicOverviewServiceTest {
 
     when(manageDatabase.getAllEnvList(anyInt()))
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
     List<AclInfo> aclList =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE).getAclInfoList();
@@ -161,7 +162,7 @@ public class TopicOverviewServiceTest {
 
     when(manageDatabase.getAllEnvList(anyInt()))
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
 
     List<AclInfo> aclList =
@@ -184,8 +185,8 @@ public class TopicOverviewServiceTest {
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
     when(commonUtilsService.getTopicsForTopicName(TESTTOPIC, 101))
         .thenReturn(List.of(createTopic(TESTTOPIC)));
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
-    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1");
 
     TopicOverview returnedValue =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
@@ -201,10 +202,10 @@ public class TopicOverviewServiceTest {
     stubKafkaPromotion(TESTTOPIC, 15);
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
     when(commonUtilsService.getTopicsForTopicName(TESTTOPIC, 101))
-        .thenReturn(Arrays.asList(createTopic(TESTTOPIC)));
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS")))
+        .thenReturn(List.of(createTopic(TESTTOPIC)));
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS)))
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
-    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS")))
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS)))
         .thenReturn("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
 
     TopicOverview returnedValue =
@@ -224,7 +225,7 @@ public class TopicOverviewServiceTest {
     stubKafkaPromotion(TESTTOPIC, 1);
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
 
-    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1");
 
     TopicOverview returnedValue =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
@@ -258,7 +259,7 @@ public class TopicOverviewServiceTest {
 
     when(manageDatabase.getAllEnvList(anyInt()))
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
-    when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_TOPICS_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
     List<AclInfo> aclList =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE).getAclInfoList();
@@ -280,7 +281,7 @@ public class TopicOverviewServiceTest {
     stubKafkaPromotion(TESTTOPIC, 1);
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
 
-    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("1");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1");
     when(commonUtilsService.getTopicsForTopicName(eq(TESTTOPIC), eq(101)))
         .thenReturn(List.of(createTopic(TESTTOPIC)));
     when(handleDbRequests.getSyncAcls(anyString(), eq(TESTTOPIC), eq(101)))
