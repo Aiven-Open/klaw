@@ -20,6 +20,7 @@ import {
   getTopicRequestsForApprover,
 } from "src/domain/topic/topic-api";
 import { HTTPError } from "src/services/api";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 const defaultType = "ALL";
 
@@ -51,7 +52,7 @@ function TopicApprovals() {
     reqNo: null,
   });
 
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorQuickActions, setErrorQuickActions] = useState("");
 
   const handleChangePage = (activePage: number) => {
     searchParams.set("page", activePage.toString());
@@ -92,7 +93,7 @@ function TopicApprovals() {
   } = useMutation({
     mutationFn: approveTopicRequest,
     onSuccess: () => {
-      setErrorMessage("");
+      setErrorQuickActions("");
       setDetailsModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
@@ -115,11 +116,7 @@ function TopicApprovals() {
       queryClient.refetchQueries(["topicRequestsForApprover"]);
     },
     onError: (error: HTTPError) => {
-      const errorMessage = Array.isArray(error.data)
-        ? error.data[0].message || error.data[0].result
-        : "Unexpected error";
-
-      setErrorMessage(errorMessage);
+      setErrorQuickActions(parseErrorMsg(error));
     },
   });
 
@@ -130,7 +127,7 @@ function TopicApprovals() {
   } = useMutation({
     mutationFn: declineTopicRequest,
     onSuccess: () => {
-      setErrorMessage("");
+      setErrorQuickActions("");
       setDeclineModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
@@ -153,11 +150,7 @@ function TopicApprovals() {
       queryClient.refetchQueries(["topicRequestsForApprover"]);
     },
     onError: (error: HTTPError) => {
-      const errorMessage = Array.isArray(error.data)
-        ? error.data[0].message || error.data[0].result
-        : "Unexpected error";
-
-      setErrorMessage(errorMessage);
+      setErrorQuickActions(parseErrorMsg(error));
     },
   });
 
@@ -230,7 +223,7 @@ function TopicApprovals() {
               text: "Approve",
               onClick: () => {
                 if (detailsModal.reqNo === null) {
-                  setErrorMessage("reqNo is null, it should be a number");
+                  setErrorQuickActions("reqNo is null, it should be a number");
                   return;
                 }
                 approveRequest({
@@ -265,7 +258,7 @@ function TopicApprovals() {
           onCancel={() => setDeclineModal({ isOpen: false, reqNo: null })}
           onSubmit={(message: string) => {
             if (declineModal.reqNo === null) {
-              setErrorMessage("reqNo is null, it should be a number");
+              setErrorQuickActions("reqNo is null, it should be a number");
               return;
             }
             declineRequest({
@@ -276,9 +269,9 @@ function TopicApprovals() {
           isLoading={declineIsLoading || approveIsLoading}
         />
       )}
-      {errorMessage !== "" && (
+      {errorQuickActions !== "" && (
         <div role="alert">
-          <Alert type="error">{errorMessage}</Alert>
+          <Alert type="error">{errorQuickActions}</Alert>
         </div>
       )}
       <TableLayout

@@ -3,7 +3,12 @@ import isNumber from "lodash/isNumber";
 import { UseFormReturn } from "react-hook-form";
 import { useEffect } from "react";
 import { Environment } from "src/domain/environment";
-import { generateNamePatternString } from "src/app/features/topics/request/utils";
+import {
+  generateNamePatternString,
+  isValidTopicNameWithPrefix,
+  isValidTopicNameWithPrefixAndSuffix,
+  isValidTopicNameWithSuffix,
+} from "src/app/features/topics/request/utils";
 
 const topicNameField = z
   .string()
@@ -19,6 +24,7 @@ const environmentParams = z.object({
   maxPartitions: z.number().optional(),
   defaultPartitions: z.number().optional(),
   defaultRepFactor: z.number().optional(),
+  applyRegex: z.boolean().optional(),
   topicPrefix: z.array(z.string()).optional(),
   topicSuffix: z.array(z.string()).optional(),
 });
@@ -114,7 +120,6 @@ function validateTopicName(
   }
 
   // zod already verifies that it's 3 chars at least
-  // @TODO clarify with backend if a topic with prefix
   // also has to follow this pattern (eg. "prefix_a" not being valid)
   const defaultTopicNamePattern = /^[a-zA-Z0-9._-]*$/;
   if (!defaultTopicNamePattern.test(topicname)) {
@@ -128,48 +133,75 @@ function validateTopicName(
     return;
   }
 
-  const topicPrefix = environment.params?.topicPrefix;
-  if (
-    topicPrefix !== undefined &&
-    topicPrefix.length > 0 &&
-    !topicPrefix.some((prefix) => {
-      return (
-        topicname.startsWith(prefix) &&
-        topicname.slice(prefix.length).length > 0 &&
-        defaultTopicNamePattern.test(topicname.slice(prefix.length))
-      );
-    })
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      fatal: true,
-      message: `Topic name must start with ${generateNamePatternString(
-        topicPrefix
-      )}.`,
-      path: ["topicname"],
-    });
-  }
+  // if a topic name has a regex format, it can't have a
+  // prefix or suffix
+  if (!environment.params?.applyRegex) {
+    const topicPrefix = environment.params?.topicPrefix;
+    const topicSuffix = environment.params?.topicSuffix;
 
-  const topicSuffix = environment.params?.topicSuffix;
-  if (
-    topicSuffix !== undefined &&
-    topicSuffix.length > 0 &&
-    !topicSuffix.some((prefix) => {
-      return (
-        topicname.endsWith(prefix) &&
-        topicname.slice(prefix.length).length > 0 &&
-        defaultTopicNamePattern.test(topicname.slice(prefix.length))
-      );
-    })
-  ) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      fatal: true,
-      message: `Topic name must end with ${generateNamePatternString(
-        topicSuffix
-      )}.`,
-      path: ["topicname"],
-    });
+    const hasPrefix = topicPrefix !== undefined && topicPrefix.length > 0;
+    const hasSuffix = topicSuffix !== undefined && topicSuffix.length > 0;
+
+    if (
+      hasPrefix &&
+      hasSuffix &&
+      !isValidTopicNameWithPrefixAndSuffix({
+        topicName: topicname,
+        prefix: topicPrefix,
+        suffix: topicSuffix,
+        defaultPattern: defaultTopicNamePattern,
+      })
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        fatal: true,
+        message: `Topic name must start with ${generateNamePatternString(
+          topicPrefix
+        )} and end with ${generateNamePatternString(
+          topicSuffix
+        )}. It must contain at least 3 characters in addition to prefix and suffix.`,
+        path: ["topicname"],
+      });
+      return;
+    }
+
+    if (
+      hasPrefix &&
+      !isValidTopicNameWithPrefix({
+        topicName: topicname,
+        prefix: topicPrefix,
+        defaultPattern: defaultTopicNamePattern,
+      })
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        fatal: true,
+        message: `Topic name must start with ${generateNamePatternString(
+          topicPrefix
+        )}. It must contain at least 3 characters after the prefix.`,
+        path: ["topicname"],
+      });
+      return;
+    }
+
+    if (
+      hasSuffix &&
+      !isValidTopicNameWithSuffix({
+        topicName: topicname,
+        suffix: topicSuffix,
+        defaultPattern: defaultTopicNamePattern,
+      })
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        fatal: true,
+        message: `Topic name must end with ${generateNamePatternString(
+          topicSuffix
+        )}. It must contain at least 3 characters before the suffix.`,
+        path: ["topicname"],
+      });
+    }
+    return;
   }
 }
 

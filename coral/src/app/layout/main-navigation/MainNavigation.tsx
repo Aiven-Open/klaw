@@ -11,26 +11,11 @@ import { useLocation } from "react-router-dom";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
-import { useQuery } from "@tanstack/react-query";
-import { getUserTeamName } from "src/domain/auth-user";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 function MainNavigation() {
+  const authUser = useAuthContext();
   const { pathname } = useLocation();
-
-  const { data: teamName, isLoading } = useQuery(
-    ["user-getAuth-data"],
-    getUserTeamName
-  );
-
-  const getUserTeam = () => {
-    if (isLoading) {
-      return <i className="text-grey-40">Fetching team...</i>;
-    }
-    if (!isLoading && teamName !== undefined) {
-      return teamName;
-    }
-    return <i>No team found</i>;
-  };
 
   return (
     <Box
@@ -41,12 +26,14 @@ function MainNavigation() {
       minHeight={"full"}
       paddingTop={"l2"}
     >
-      <Flexbox direction={"column"} paddingLeft={"l3"}>
-        <div className="inline-block mb-2 typography-small-strong text-grey-60">
-          Team
-        </div>
-        <div>{getUserTeam()}</div>
-      </Flexbox>
+      {authUser?.teamname && (
+        <Flexbox direction={"column"} paddingLeft={"l3"}>
+          <div className="inline-block mb-2 typography-small-strong text-grey-60">
+            Team
+          </div>
+          <div>{authUser.teamname}</div>
+        </Flexbox>
+      )}
       <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
         <Divider direction="horizontal" size={2} />
       </Box>

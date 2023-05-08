@@ -13,6 +13,8 @@ import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_108;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_EXPIRY_DEFAULT_TENANT;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_TRIAL_PERIOD;
 import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.SUPERADMIN_ROLE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
@@ -314,12 +316,11 @@ public class EnvsClustersTenantsControllerService {
   public List<EnvModelResponse> getEnvsForRequestTopicsCluster() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
 
-    String requestTopicsEnvs =
-        commonUtilsService.getEnvProperty(tenantId, "REQUEST_TOPICS_OF_ENVS");
+    String requestTopicsEnvs = commonUtilsService.getEnvProperty(tenantId, REQUEST_TOPICS_OF_ENVS);
     if (requestTopicsEnvs == null) {
       return new ArrayList<>();
     }
-    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
     String[] reqTopicsEnvs = requestTopicsEnvs.split(",");
     List<Env> listEnvs = manageDatabase.getKafkaEnvList(tenantId);
     List<EnvModelResponse> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA, tenantId);
@@ -338,7 +339,7 @@ public class EnvsClustersTenantsControllerService {
 
   public List<EnvModelResponse> getKafkaEnvs() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
-    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
     List<Env> listEnvs = manageDatabase.getKafkaEnvList(tenantId);
     List<EnvModelResponse> envModelList = getEnvModels(listEnvs, KafkaClustersType.KAFKA, tenantId);
     envModelList.forEach(
@@ -364,7 +365,7 @@ public class EnvsClustersTenantsControllerService {
 
   public List<EnvModelResponse> getConnectorEnvs() {
     int tenantId = getUserDetails(getUserName()).getTenantId();
-    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
     List<Env> listEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
     List<EnvModelResponse> envModelList =
         getEnvModels(listEnvs, KafkaClustersType.KAFKA_CONNECT, tenantId);
