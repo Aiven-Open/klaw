@@ -104,6 +104,17 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   return (
     <>
+      {!topicNamesIsLoading && topicNames === undefined && (
+        <Box marginBottom={"l1"}>
+          {" "}
+          <Alert type="error">Could not fetch topic names.</Alert>
+        </Box>
+      )}
+      {!environmentsIsLoading && environments === undefined && (
+        <Box marginBottom={"l1"}>
+          <Alert type="error">Could not fetch environments.</Alert>
+        </Box>
+      )}
       {successModalOpen && (
         <Dialog
           title={"Schema request successful!"}
@@ -151,13 +162,11 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             </NativeSelect>
           )}
 
-          {environmentsIsLoading && (
+          {environmentsIsLoading || environments === undefined ? (
             <div data-testid={"environments-select-loading"}>
               <NativeSelect.Skeleton />
             </div>
-          )}
-
-          {environments && (
+          ) : (
             <NativeSelect<TopicRequestFormSchema>
               name={"environment"}
               labelText={"Environment"}
