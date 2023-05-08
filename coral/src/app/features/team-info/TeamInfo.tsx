@@ -1,57 +1,52 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getUserTeamName } from "src/domain/auth-user";
-import { getTeamsOfUser } from "src/domain/team";
 import { NativeSelect } from "@aivenio/aquarium";
-import { updateTeam } from "src/domain/team/team-api";
+import { getTeamsOfUser, updateTeam } from "src/domain/team/team-api";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 
 function TeamInfo() {
   const queryClient = useQueryClient();
 
-  const { data: user, isLoading: userLoading } = useQuery(
-    ["user-getAuth-data"],
-    getUserTeamName
-  );
-
-  const { data: teams, isLoading: teamsLoading } = useQuery(
-    ["user-teams"],
-    () => getTeamsOfUser({ userName: user?.userName }),
-    {
-      enabled: Boolean(user?.canSwitchTeams),
-    }
-  );
+  const authUser = useAuthContext();
 
   const { mutate: updateTeamForUser } = useMutation(updateTeam, {
     onSuccess: async () => {
-      queryClient.refetchQueries();
+      await queryClient.refetchQueries();
     },
     onError(error: Error) {
       console.error(error);
     },
   });
 
-  if (userLoading) {
-    return <i className="text-grey-40">Fetching team...</i>;
-  }
+  const { data: teams, isLoading: teamsLoading } = useQuery(
+    ["user-teams"],
+    () => getTeamsOfUser({ userName: authUser?.username }),
+    {
+      enabled: Boolean(authUser && authUser?.canSwitchTeams),
+    }
+  );
 
-  if ((!userLoading && !user) || !user?.teamName) {
+  if (!authUser?.teamname || authUser.teamname.length === 0) {
     return <i>No team found</i>;
   }
 
-  if (
-    !user.canSwitchTeams ||
-    (!teamsLoading && !teams) ||
-    (teams && teams.length === 0)
-  ) {
-    return <>{user.teamName}</>;
+  if (!authUser.canSwitchTeams) {
+    return <>{authUser.teamname}</>;
+  }
+
+  console.log(authUser);
+
+  if (teamsLoading) {
+    console.log(teamsLoading);
+    return <NativeSelect.Skeleton />;
   }
 
   return (
     <NativeSelect
-      value={user.teamId}
+      value={authUser.teamId}
       onChange={({ currentTarget: { value: teamId } }) => {
         console.log(teamId);
         updateTeamForUser({
-          userName: user.userName,
+          userName: authUser.username,
           teamId: Number(teamId),
         });
       }}

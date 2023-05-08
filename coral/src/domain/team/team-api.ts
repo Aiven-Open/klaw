@@ -16,10 +16,11 @@ const updateTeam = ({
     username: userName,
     teamId: teamId,
   };
-
+  console.log("hello");
   return api.post<
     KlawApiResponse<"updateUserTeamFromSwitchTeams">,
     KlawApiRequest<"updateUserTeamFromSwitchTeams">
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
   >("/user/updateTeam", payload);
 };
@@ -29,6 +30,7 @@ const getTeamsOfUser = ({ userName }: { userName: string | undefined }) => {
     return undefined;
   }
   return api.get<KlawApiResponse<"getSwitchTeams">>(
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     `/user/${userName}/switchTeamsList`
   );

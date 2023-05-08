@@ -1,4 +1,4 @@
-import { Box, Divider, Flexbox } from "@aivenio/aquarium";
+import { Box, Divider } from "@aivenio/aquarium";
 import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import cog from "@aivenio/aquarium/dist/src/icons/cog";
 import add from "@aivenio/aquarium/dist/src/icons/add";
@@ -11,11 +11,9 @@ import { useLocation } from "react-router-dom";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 
 function MainNavigation() {
-  const authUser = useAuthContext();
   const { pathname } = useLocation();
 
   return (
@@ -27,14 +25,7 @@ function MainNavigation() {
       minHeight={"full"}
       paddingTop={"l2"}
     >
-      {authUser?.teamname && (
-        <Flexbox direction={"column"} paddingLeft={"l3"}>
-          <div className="inline-block mb-2 typography-small-strong text-grey-60">
-            Team
-          </div>
-          <div>{authUser.teamname}</div>
-        </Flexbox>
-      )}
+      <TeamInfo />
       <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
         <Divider direction="horizontal" size={2} />
       </Box>
