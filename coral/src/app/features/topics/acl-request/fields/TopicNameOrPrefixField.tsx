@@ -1,3 +1,4 @@
+import { Input } from "@aivenio/aquarium";
 import { TextInput } from "src/app/components/Form";
 import TopicNameField from "src/app/features/topics/acl-request/fields/TopicNameField";
 import { CreateAclRequestTopicTypeProducer } from "src/domain/acl";
@@ -22,8 +23,7 @@ const TopicNameOrPrefixField = ({
   }
 
   return (
-    <TextInput
-      name="topicname"
+    <Input
       labelText="Topic name or prefix"
       defaultValue="Select environment and topic pattern type first"
       readOnly
