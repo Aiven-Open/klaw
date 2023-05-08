@@ -56,7 +56,7 @@
         <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
         <jjwt.version>0.11.5</jjwt.version>
         <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
-        <maven-surefire-plugin.version>3.0.0</maven-surefire-plugin.version>
+        <maven-surefire-plugin.version>3.1.0</maven-surefire-plugin.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         <spotless-maven-plugin.version>2.36.0</spotless-maven-plugin.version>

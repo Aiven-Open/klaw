@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -136,7 +137,7 @@ public class UiConfigControllerServiceTest {
   public void getRequestSchemaEnvs_IsEmpty() {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("DEV,TST");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS"))).thenReturn("");
     when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
     when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(getAllSchemaEnvs());
@@ -152,7 +153,7 @@ public class UiConfigControllerServiceTest {
 
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("DEV,TST");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
         .thenReturn("DEV");
     when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
@@ -172,7 +173,7 @@ public class UiConfigControllerServiceTest {
     // sTT is a misspelt env one tht does not exist and so should not be returned.
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("DEV,TST");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
         .thenReturn("DEV,sTT");
     when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
@@ -192,7 +193,7 @@ public class UiConfigControllerServiceTest {
     // DEV and TSTS are both spelt correctly and configured so both should be returned.
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("DEV,TST");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
         .thenReturn("DEV,TST");
     when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());
@@ -213,7 +214,8 @@ public class UiConfigControllerServiceTest {
     // only two kWclusters are configured DEV and TST so UAT should not return.
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getEnvProperty(eq(101), eq("ORDER_OF_ENVS"))).thenReturn("DEV,TST,UAT");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS)))
+        .thenReturn("DEV,TST,UAT");
     when(commonUtilsService.getEnvProperty(eq(101), eq("REQUEST_SCHEMA_OF_ENVS")))
         .thenReturn("DEV,TST,UAT");
     when(handleDbRequests.getAllSchemaRegEnvs(1)).thenReturn(getAllSchemaEnvs());

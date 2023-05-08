@@ -273,9 +273,20 @@ public class SchemaRegistryControllerService {
         clusterApiService.postSchema(
             schemaRequest, schemaRequest.getEnvironment(), schemaRequest.getTopicname(), tenantId);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    if (Objects.requireNonNull(Objects.requireNonNull(response.getBody()).getMessage())
-        .contains("id\":")) {
+    ApiResponse apiResponse = response.getBody();
+    Map<String, Object> registerSchemaCustomResponse = null;
+    boolean schemaRegistered = false;
+    if (apiResponse != null
+        && apiResponse.getData() != null
+        && apiResponse.getData() instanceof Map<?, ?>) {
+      registerSchemaCustomResponse = (Map) apiResponse.getData();
+      schemaRegistered = (Boolean) registerSchemaCustomResponse.get("schemaRegistered");
+    }
+    if (registerSchemaCustomResponse != null && (registerSchemaCustomResponse.containsKey("id"))) {
       try {
+        if (schemaRegistered) {
+          schemaRequest.setSchemaversion(registerSchemaCustomResponse.get("version") + "");
+        }
         String responseDb = dbHandle.updateSchemaRequest(schemaRequest, userDetails);
         mailService.sendMail(
             schemaRequest.getTopicname(),

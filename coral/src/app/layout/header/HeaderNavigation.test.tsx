@@ -1,5 +1,5 @@
 import { cleanup, screen, within } from "@testing-library/react";
-import Header from "src/app/layout/header/Header";
+import HeaderNavigation from "src/app/layout/header/HeaderNavigation";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
   tabThroughBackward,
@@ -15,32 +15,18 @@ const quickLinksNavItems = [
   { name: "Go to your profile", linkTo: "/myProfile" },
 ];
 
-describe("Header.tsx", () => {
+describe("HeaderNavigation.tsx", () => {
   describe("shows all necessary elements", () => {
     beforeAll(() => {
-      customRender(<Header />, { memoryRouter: true });
+      customRender(<HeaderNavigation />, { memoryRouter: true });
     });
 
     afterAll(cleanup);
 
-    it("renders a header element", () => {
-      const heading = screen.getByRole("banner");
+    it("renders a navigation element with quick links", () => {
+      const nav = screen.getByRole("navigation", { name: "Quick links" });
 
-      expect(heading).toBeVisible();
-    });
-
-    it("renders a link to the Klaw hompeage", () => {
-      const link = screen.getByRole("link", { name: "Klaw homepage" });
-
-      expect(link).toBeVisible();
-    });
-
-    it("renders the Klaw logo inside link hidden from assistive technology", () => {
-      const link = screen.getByRole("link", { name: "Klaw homepage" });
-      const logo = link.querySelector("img");
-
-      expect(logo).toHaveAttribute("src");
-      expect(logo).toHaveAttribute("aria-hidden", "true");
+      expect(nav).toBeVisible();
     });
 
     quickLinksNavItems.forEach((item) => {
@@ -70,9 +56,9 @@ describe("Header.tsx", () => {
 
     describe("user can navigate through elements", () => {
       beforeEach(() => {
-        customRender(<Header />, { memoryRouter: true });
-        const heading = screen.getByRole("banner");
-        heading.focus();
+        customRender(<HeaderNavigation />, { memoryRouter: true });
+        const navigation = screen.getByRole("navigation");
+        navigation.focus();
       });
 
       afterEach(cleanup);
@@ -96,7 +82,7 @@ describe("Header.tsx", () => {
 
     describe("user can navigate backward through links", () => {
       beforeEach(() => {
-        customRender(<Header />, { memoryRouter: true });
+        customRender(<HeaderNavigation />, { memoryRouter: true });
         const lastElement = allHeaderElements[allHeaderElements.length - 1];
         const lastNavItem = screen.getByRole("link", {
           name: lastElement,
