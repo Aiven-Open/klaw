@@ -367,6 +367,12 @@ public class KlawErrorMessages {
 
   public static final String TOPICS_VLD_ERR_118 = "Topic regex does not match. %s";
 
+  public static final String TOPICS_VLD_ERR_119 =
+      "Topic name: %s is not long enough when prefix and suffix's are excluded. %s minimum are required to be unique.";
+
+  public static final String TOPICS_VLD_ERR_120 =
+      "Topic Suffix and Topic Prefix overlap there is a requirement for %s characters minimum to be unique between the prefix and suffix.";
+
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";
 
