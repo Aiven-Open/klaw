@@ -25,13 +25,10 @@ const updateTeam = ({
   >("/user/updateTeam", payload);
 };
 
-const getTeamsOfUser = ({ userName }: { userName: string | undefined }) => {
-  if (!userName) {
-    return undefined;
-  }
+const getTeamsOfUser = ({ userName }: { userName: string }) => {
   return api.get<KlawApiResponse<"getSwitchTeams">>(
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
+    // @ts-ignore
     `/user/${userName}/switchTeamsList`
   );
 };

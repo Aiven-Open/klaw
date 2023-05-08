@@ -25,7 +25,9 @@ function MainNavigation() {
       minHeight={"full"}
       paddingTop={"l2"}
     >
-      <TeamInfo />
+      <Box paddingX={"l3"}>
+        <TeamInfo />
+      </Box>
       <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
         <Divider direction="horizontal" size={2} />
       </Box>

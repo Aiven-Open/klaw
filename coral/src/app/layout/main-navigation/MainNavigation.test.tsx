@@ -15,6 +15,8 @@ const authUser: AuthUser = {
   username: "i-am-test-user",
 };
 
+jest.mock("src/domain/team/team-api.ts");
+
 jest.mock("src/app/context-provider/AuthProvider", () => ({
   useAuthContext: () => {
     return authUser;
