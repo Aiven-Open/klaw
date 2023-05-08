@@ -25,6 +25,26 @@ describe("TopicNameOrPrefixField", () => {
     onError.mockClear();
   });
 
+  it("renders a readonly field with information when no pattern type is chosen", () => {
+    const result = renderForm(
+      <TopicNameOrPrefixField
+        topicNames={mockedTopicNames}
+        aclPatternType={undefined}
+      />,
+      {
+        schema: producerSchema,
+        onSubmit,
+        onError,
+      }
+    );
+    const field = result.getByRole("textbox");
+    expect(field).toBeVisible();
+    expect(field).toHaveAttribute("readonly");
+    expect(field).toHaveValue(
+      "Select environment and topic pattern type first"
+    );
+  });
+
   it("renders a TopicNameField (producer form)", () => {
     const result = renderForm(
       <TopicNameOrPrefixField

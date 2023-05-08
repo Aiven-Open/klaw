@@ -4,7 +4,7 @@ import { CreateAclRequestTopicTypeProducer } from "src/domain/acl";
 
 interface TopicNameOrPrefixFieldProps {
   topicNames: string[];
-  aclPatternType: CreateAclRequestTopicTypeProducer["aclPatternType"];
+  aclPatternType?: CreateAclRequestTopicTypeProducer["aclPatternType"];
   readOnly?: boolean;
 }
 
@@ -17,7 +17,18 @@ const TopicNameOrPrefixField = ({
     return <TopicNameField topicNames={topicNames} readOnly={readOnly} />;
   }
 
-  return <TextInput name="topicname" labelText="Prefix" required />;
+  if (aclPatternType === "PREFIXED") {
+    return <TextInput name="topicname" labelText="Prefix" required />;
+  }
+
+  return (
+    <TextInput
+      name="topicname"
+      labelText="Topic name or prefix"
+      defaultValue="Select environment and topic pattern type first"
+      readOnly
+    />
+  );
 };
 
 export default TopicNameOrPrefixField;
