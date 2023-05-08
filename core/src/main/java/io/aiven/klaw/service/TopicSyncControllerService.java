@@ -6,6 +6,10 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_108;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -344,15 +348,18 @@ public class TopicSyncControllerService {
 
     Env env = getEnvDetails(envId);
 
-    String topicPrefix = "", topicSuffix = "", topicRegex = "";
+    String topicPrefix = "";
+    String topicSuffix = "";
+    Pattern topicRegex = null;
     int maxRepFactor = 0, maxPartitions = 0;
     if (env.getParams() != null) {
       topicPrefix = getValueOrDefault(env.getParams().getTopicPrefix(), "");
       topicSuffix = getValueOrDefault(env.getParams().getTopicSuffix(), "");
-      topicRegex = getValueOrDefault(env.getParams().getTopicRegex(), "");
+      topicRegex = Pattern.compile(getValueOrDefault(env.getParams().getTopicRegex(), ""));
       maxPartitions = Integer.parseInt(getValueOrDefault(env.getParams().getMaxPartitions(), "0"));
       maxRepFactor = Integer.parseInt(getValueOrDefault(env.getParams().getMaxRepFactor(), "0"));
     }
+
     for (TopicRequest topicReq : topicsList) {
       topicSyncModel = new TopicSyncResponseModel();
       copyProperties(topicReq, topicSyncModel);
@@ -1189,7 +1196,7 @@ public class TopicSyncControllerService {
       TopicSyncResponseModel topicRequestReq,
       String topicPrefix,
       String topicSuffix,
-      String topicRegex,
+      Pattern topicRegex,
       boolean applyRegex,
       int maxRepFactor,
       int maxPartitions) {
@@ -1201,7 +1208,7 @@ public class TopicSyncControllerService {
           && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {
         validationResponse +=
             String.format(
-                "Topic prefix %s does not match. %s ", topicPrefix, topicRequestReq.getTopicname());
+                TOPICS_SYNC_ERR_105, "prefix", topicPrefix, topicRequestReq.getTopicname());
       }
 
       if (topicSuffix != null
@@ -1209,38 +1216,30 @@ public class TopicSyncControllerService {
           && !topicRequestReq.getTopicname().endsWith(topicSuffix)) {
         validationResponse +=
             String.format(
-                "Topic suffix %s does not match. %s ", topicSuffix, topicRequestReq.getTopicname());
+                TOPICS_SYNC_ERR_105, "suffix", topicSuffix, topicRequestReq.getTopicname());
       }
     } else {
-      if (topicRegex != null
-          && !topicRegex.isBlank()
-          && !isRegexAMatch(topicRequestReq, topicRegex)) {
+      if (topicRegex != null && !isRegexAMatch(topicRequestReq, topicRegex)) {
 
         validationResponse +=
-            String.format(
-                "Topic Regex %s does not match. %s ", topicRegex, topicRequestReq.getTopicname());
+            String.format(TOPICS_SYNC_ERR_105, "regex", topicRegex, topicRequestReq.getTopicname());
       }
     }
 
     if (Integer.parseInt(getValueOrDefault(topicRequestReq.getReplicationfactor(), "0"))
         > maxRepFactor) {
       validationResponse +=
-          String.format(
-              "Topic exceeds maximum replication factor %d with %s configured replication factor. ",
-              maxRepFactor, topicRequestReq.getReplicationfactor());
+          String.format(TOPICS_SYNC_ERR_106, maxRepFactor, topicRequestReq.getReplicationfactor());
     }
     if (topicRequestReq.getTopicpartitions() != null
         && topicRequestReq.getTopicpartitions().intValue() > maxPartitions) {
       validationResponse +=
           String.format(
-              "Topic exceeds maximum partitions %d with %s configured partitions. ",
-              maxPartitions, topicRequestReq.getTopicpartitions().intValue());
+              TOPICS_SYNC_ERR_107, maxPartitions, topicRequestReq.getTopicpartitions().intValue());
     } else if (topicRequestReq.getTopicpartitions() == null) {
       validationResponse +=
           String.format(
-              "Topic partitions not configured. ",
-              maxPartitions,
-              topicRequestReq.getTopicpartitions().intValue());
+              TOPICS_SYNC_ERR_108, maxPartitions, topicRequestReq.getTopicpartitions().intValue());
     }
 
     return validationResponse;
@@ -1254,9 +1253,8 @@ public class TopicSyncControllerService {
     return (param != null) ? param : defaultValue;
   }
 
-  private boolean isRegexAMatch(TopicSyncResponseModel topicRequestReq, String topicRegex) {
-    Pattern p = Pattern.compile(topicRegex);
-    Matcher m = p.matcher(topicRequestReq.getTopicname());
+  private boolean isRegexAMatch(TopicSyncResponseModel topicRequestReq, Pattern topicRegex) {
+    Matcher m = topicRegex.matcher(topicRequestReq.getTopicname());
     return m.matches();
   }
 }

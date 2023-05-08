@@ -380,6 +380,16 @@ public class KlawErrorMessages {
   public static final String TOPICS_SYNC_ERR_104 =
       "Failure. The following topics are being synchronized with a different team, when compared to main Sync cluster : ";
 
+  public static final String TOPICS_SYNC_ERR_105 = "Topic %s %s does not match. %s ";
+
+  public static final String TOPICS_SYNC_ERR_106 =
+      "Topic exceeds maximum replication factor %d with %s configured replication factor. ";
+
+  public static final String TOPICS_SYNC_ERR_107 =
+      "Topic exceeds maximum partitions %d with %s configured partitions. ";
+
+  public static final String TOPICS_SYNC_ERR_108 = "Topic partitions not configured. ";
+
   // Teams service
   public static final String TEAMS_ERR_101 = "Team id cannot be empty.";
 
