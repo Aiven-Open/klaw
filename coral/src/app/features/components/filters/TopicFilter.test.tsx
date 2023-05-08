@@ -18,6 +18,12 @@ describe("TopicFilter.tsx", () => {
 
       expect(searchInput).toBeEnabled();
     });
+
+    it("shows a placeholder informing user about scope of search", () => {
+      const searchInput = screen.getByRole<HTMLInputElement>("search");
+
+      expect(searchInput.placeholder).toEqual("Search Topic name");
+    });
   });
 
   describe("sets the field value on a query param", () => {

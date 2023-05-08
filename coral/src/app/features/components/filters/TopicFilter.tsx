@@ -11,7 +11,7 @@ function TopicFilter() {
         type={"search"}
         aria-describedby={"search-field-description"}
         role="search"
-        placeholder={"Search Topic"}
+        placeholder={"Search Topic name"}
         defaultValue={topic}
         onChange={debounce((e) => {
           const parsedTopic = String(e.target.value).trim();
