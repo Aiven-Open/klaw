@@ -708,7 +708,9 @@ describe("Form", () => {
 
       await user.tab();
 
-      expect(screen.getByRole("button", { name: "Berlin" })).toBeVisible();
+      expect(
+        screen.getByRole("button", { name: "Remove Berlin" })
+      ).toBeVisible();
 
       expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
       expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();
@@ -723,7 +725,7 @@ describe("Form", () => {
       await user.type(citiesInput, "NYC");
       await user.tab();
 
-      expect(screen.getByRole("button", { name: "NYC" })).toBeVisible();
+      expect(screen.getByRole("button", { name: "Remove NYC" })).toBeVisible();
 
       expect(screen.getByRole("button", { name: "Submit" })).toBeVisible();
       expect(screen.getByRole("button", { name: "Submit" })).toBeEnabled();

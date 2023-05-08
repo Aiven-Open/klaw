@@ -367,6 +367,12 @@ public class KlawErrorMessages {
 
   public static final String TOPICS_VLD_ERR_118 = "Topic regex does not match. %s";
 
+  public static final String TOPICS_VLD_ERR_119 =
+      "Topic name: %s is not long enough when prefix and suffix's are excluded. %s minimum are required to be unique.";
+
+  public static final String TOPICS_VLD_ERR_120 =
+      "Topic Suffix and Topic Prefix overlap there is a requirement for %s characters minimum to be unique between the prefix and suffix.";
+
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";
 
@@ -379,6 +385,16 @@ public class KlawErrorMessages {
 
   public static final String TOPICS_SYNC_ERR_104 =
       "Failure. The following topics are being synchronized with a different team, when compared to main Sync cluster : ";
+
+  public static final String TOPICS_SYNC_ERR_105 = "Topic %s %s does not match. %s ";
+
+  public static final String TOPICS_SYNC_ERR_106 =
+      "Topic exceeds maximum replication factor %d with %s configured replication factor. ";
+
+  public static final String TOPICS_SYNC_ERR_107 =
+      "Topic exceeds maximum partitions %d with %s configured partitions. ";
+
+  public static final String TOPICS_SYNC_ERR_108 = "Topic partitions not configured. ";
 
   // Teams service
   public static final String TEAMS_ERR_101 = "Team id cannot be empty.";

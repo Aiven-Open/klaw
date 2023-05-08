@@ -85,7 +85,7 @@ public class TopicSyncController {
       @RequestParam(value = "isBulkOption", defaultValue = "false", required = false)
           String isBulkOption)
       throws Exception {
-    if (Boolean.parseBoolean(showAllTopics))
+    if (Boolean.parseBoolean(showAllTopics)) {
       return new ResponseEntity<>(
           topicSyncControllerService.getSyncTopics(
               envId,
@@ -95,7 +95,7 @@ public class TopicSyncController {
               showAllTopics,
               Boolean.parseBoolean(isBulkOption)),
           HttpStatus.OK);
-    else
+    } else {
       return new ResponseEntity<>(
           topicSyncControllerService.getReconTopics(
               envId,
@@ -105,5 +105,6 @@ public class TopicSyncController {
               showAllTopics,
               Boolean.parseBoolean(isBulkOption)),
           HttpStatus.OK);
+    }
   }
 }
