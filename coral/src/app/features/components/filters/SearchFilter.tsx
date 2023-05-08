@@ -11,7 +11,7 @@ function SearchFilter() {
         type={"search"}
         aria-describedby={"search-field-description"}
         role="search"
-        placeholder={`Search by name`}
+        placeholder={`Search Connector name`}
         defaultValue={search.toString()}
         onChange={debounce(
           (event: ChangeEvent<HTMLInputElement>) =>

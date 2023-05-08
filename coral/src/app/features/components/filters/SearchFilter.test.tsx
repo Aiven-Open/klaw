@@ -26,7 +26,7 @@ describe("SearchFilter.tsx", () => {
       customRender(<SearchFilter />, {
         memoryRouter: true,
       });
-      screen.getByPlaceholderText("Search by name");
+      screen.getByPlaceholderText("Search Connector name");
     });
   });
 
