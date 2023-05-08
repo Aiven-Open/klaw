@@ -154,13 +154,13 @@ function ConnectorRequests() {
       )}
       <TableLayout
         filters={[
-          <SearchFilter key="connector" />,
           <EnvironmentFilter
             key="environment"
             environmentEndpoint="getSyncConnectorsEnvironments"
           />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,
+          <SearchFilter key="connector" />,
           <MyRequestsFilter key={"isMyRequest"} />,
         ]}
         table={
