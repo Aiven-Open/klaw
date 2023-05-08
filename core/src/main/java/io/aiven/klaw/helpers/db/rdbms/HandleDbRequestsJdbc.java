@@ -188,6 +188,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   public List<KafkaConnectorRequest> getAllConnectorRequests(
       String requestor,
       RequestOperationType requestOperationType,
+      RequestStatus requestStatus,
       String env,
       String wildcardSearch,
       int tenantId,
@@ -195,7 +196,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcSelectHelper.selectFilteredKafkaConnectorRequests(
         false,
         requestor,
-        RequestStatus.CREATED.value,
+        requestStatus.value,
         requestOperationType,
         false,
         tenantId,

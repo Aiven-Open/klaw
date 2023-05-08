@@ -54,7 +54,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -820,7 +819,7 @@ public class KafkaConnectControllerService {
   public List<KafkaConnectorRequestsResponseModel> getConnectorRequests(
       String pageNo,
       String currentPage,
-      String requestsType,
+      RequestStatus requestsType,
       RequestOperationType requestOperationType,
       String env,
       Order order,
@@ -833,17 +832,16 @@ public class KafkaConnectControllerService {
         manageDatabase
             .getHandleDbRequests()
             .getAllConnectorRequests(
-                userDetails, requestOperationType, env, search, tenantId, isMyRequest);
+                userDetails,
+                requestOperationType,
+                requestsType,
+                env,
+                search,
+                tenantId,
+                isMyRequest);
 
     topicReqs = filterByTenantAndOrder(userDetails, topicReqs, order);
-    // TODO is this really needed?
-    if (!"all".equals(requestsType)
-        && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType)) {
-      topicReqs =
-          topicReqs.stream()
-              .filter(topicRequest -> Objects.equals(topicRequest.getRequestStatus(), requestsType))
-              .collect(Collectors.toList());
-    }
+
     topicReqs = getConnectorRequestsPaged(topicReqs, pageNo, currentPage);
 
     return getConnectorRequestModels(topicReqs);
