@@ -3,12 +3,15 @@ package io.aiven.klaw.clusterapi.services;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.RegisterSchemaCustomResponse;
+import io.aiven.klaw.clusterapi.models.RegisterSchemaResponse;
 import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -96,36 +99,27 @@ public class SchemaService {
         }
       }
 
-      String suffixUrl =
-          clusterSchemaRequest.getEnv()
-              + "/"
-              + SCHEMA_SUBJECTS_URI
-              + "/"
-              + clusterSchemaRequest.getTopicName()
-              + SCHEMA_VALUE_URI
-              + "/versions";
-      Pair<String, RestTemplate> reqDetails =
-          clusterApiUtils.getRequestDetails(suffixUrl, clusterSchemaRequest.getProtocol());
+      RegisterSchemaCustomResponse registerSchemaCustomResponse =
+          registerSchemaPostCall(clusterSchemaRequest);
 
-      HttpEntity<Map<String, String>> request =
-          buildSchemaEntity(
-              clusterSchemaRequest.getFullSchema(),
-              clusterSchemaRequest.getClusterIdentification());
-      ResponseEntity<String> responseNew =
-          reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
-
-      String updateTopicReqStatus = registerSchemaPostCall(clusterSchemaRequest);
-
-      return ApiResponse.builder().success(true).message(updateTopicReqStatus).build();
+      return ApiResponse.builder()
+          .success(true)
+          .message(ApiResultStatus.SUCCESS.value)
+          .data(registerSchemaCustomResponse)
+          .build();
     } catch (Exception e) {
       log.error("Exception:", e);
       if (e instanceof HttpClientErrorException
           && ((HttpClientErrorException.Conflict) e).getStatusCode().value() == 409) {
         return ApiResponse.builder()
+            .success(false)
             .message("Schema being registered is incompatible with an earlier schema")
             .build();
       }
-      return ApiResponse.builder().success(false).message("Failure in registering schema.").build();
+      return ApiResponse.builder()
+          .success(false)
+          .message("Failure in registering schema." + e.getMessage())
+          .build();
     } finally {
       // Ensure the Schema compatibility is returned to previous setting before the force update.
       resetCompatibilityOnSubject(
@@ -164,24 +158,50 @@ public class SchemaService {
     }
   }
 
-  private String registerSchemaPostCall(ClusterSchemaRequest clusterSchemaRequest) {
+  private RegisterSchemaCustomResponse registerSchemaPostCall(
+      ClusterSchemaRequest clusterSchemaRequest) throws Exception {
     String suffixUrl =
         clusterSchemaRequest.getEnv()
-            + "/subjects/"
+            + "/"
+            + SCHEMA_SUBJECTS_URI
+            + "/"
             + clusterSchemaRequest.getTopicName()
-            + "-value/versions";
+            + SCHEMA_VALUE_URI
+            + "/versions";
     Pair<String, RestTemplate> reqDetails =
         clusterApiUtils.getRequestDetails(suffixUrl, clusterSchemaRequest.getProtocol());
 
     HttpEntity<Map<String, String>> request =
         buildSchemaEntity(
             clusterSchemaRequest.getFullSchema(), clusterSchemaRequest.getClusterIdentification());
-    ResponseEntity<String> responseNew =
-        reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
 
-    String updateTopicReqStatus = responseNew.getBody();
-    log.info("SchemaRequest response body {}", responseNew.getBody());
-    return updateTopicReqStatus;
+    ResponseEntity<RegisterSchemaResponse> schemaResponseResponseEntity =
+        reqDetails
+            .getRight()
+            .postForEntity(reqDetails.getLeft(), request, RegisterSchemaResponse.class);
+    List<Integer> versionsListAfter =
+        new ArrayList<>(
+            Objects.requireNonNull(
+                getSchemaVersions(
+                    clusterSchemaRequest.getEnv(),
+                    clusterSchemaRequest.getTopicName(),
+                    clusterSchemaRequest.getProtocol(),
+                    clusterSchemaRequest.getClusterIdentification())));
+
+    RegisterSchemaResponse registerSchemaResponse = schemaResponseResponseEntity.getBody();
+    RegisterSchemaCustomResponse registerSchemaCustomResponse = new RegisterSchemaCustomResponse();
+    if (registerSchemaResponse != null) {
+      registerSchemaCustomResponse.setId(registerSchemaResponse.getId());
+    } else {
+      throw new Exception("Failure in registering schema.");
+    }
+
+    registerSchemaCustomResponse.setVersion(
+        versionsListAfter.get(versionsListAfter.size() - 1)); // set the last element of array
+    registerSchemaCustomResponse.setSchemaRegistered(true);
+
+    log.debug("SchemaRequest response body {}", schemaResponseResponseEntity.getBody());
+    return registerSchemaCustomResponse;
   }
 
   public Map<Integer, Map<String, Object>> getSchema(
