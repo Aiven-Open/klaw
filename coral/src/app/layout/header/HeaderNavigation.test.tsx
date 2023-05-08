@@ -49,7 +49,6 @@ describe("HeaderNavigation.tsx", () => {
 
   describe("enables user to navigate with keyboard only", () => {
     const allHeaderElements = [
-      "Klaw homepage",
       "Request a new",
       ...quickLinksNavItems.map((link) => link.name),
     ];

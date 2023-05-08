@@ -73,14 +73,25 @@ describe("Layout.tsx", () => {
       expect(homeLink).toHaveFocus();
     });
 
-    it("sets focus on the first element of the quick link navigation if user tabs 3 times", async () => {
+    it("sets focus on the Create a new entity dropdown of the quick link navigation if user tabs 3 times", async () => {
+      const dropdown = screen.getByRole("button", {
+        name: "Request a new",
+      });
+
+      expect(dropdown).not.toHaveFocus();
+      await tabThroughForward(3);
+
+      expect(dropdown).toHaveFocus();
+    });
+
+    it("sets focus on the first element of the quick link navigation if user tabs 4 times", async () => {
       const quickLinks = screen.getByRole("navigation", {
         name: "Quick links",
       });
       const link = within(quickLinks).getAllByRole("link")[0];
 
       expect(link).not.toHaveFocus();
-      await tabThroughForward(3);
+      await tabThroughForward(4);
 
       expect(link).toHaveFocus();
     });
