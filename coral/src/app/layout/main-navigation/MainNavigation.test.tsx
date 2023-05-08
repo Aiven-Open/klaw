@@ -1,4 +1,3 @@
-import * as ReactQuery from "@tanstack/react-query";
 import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
@@ -7,8 +6,20 @@ import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
+import { AuthUser } from "src/domain/auth-user";
 
-const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
+const authUser: AuthUser = {
+  canSwitchTeams: "false",
+  teamId: "2",
+  teamname: "awesome-bunch-of-people",
+  username: "i-am-test-user",
+};
+
+jest.mock("src/app/context-provider/AuthProvider", () => ({
+  useAuthContext: () => {
+    return authUser;
+  },
+}));
 
 const navLinks = [
   {
@@ -58,6 +69,13 @@ describe("MainNavigation.tsx", () => {
     it("renders the main navigation", () => {
       const nav = screen.getByRole("navigation", { name: "Main navigation" });
       expect(nav).toBeVisible();
+    });
+
+    it("renders the user's current team", async () => {
+      const teamLabel = screen.getByText("Team");
+      const teamName = screen.getByText(authUser.teamname);
+      expect(teamLabel).toBeVisible();
+      expect(teamName).toBeVisible();
     });
 
     navLinks.forEach((link) => {
@@ -223,43 +241,6 @@ describe("MainNavigation.tsx", () => {
           expect(link).toHaveFocus();
         });
       });
-    });
-  });
-
-  describe("user can see their current team", () => {
-    afterEach(() => {
-      cleanup();
-      useQuerySpy.mockClear();
-    });
-
-    it("renders loading state", async () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: undefined, isLoading: true });
-      customRender(<MainNavigation />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
-
-      const teamLabel = screen.getByText("Team");
-      const teamName = screen.getByText("Fetching team...");
-      expect(teamLabel).toBeVisible();
-      expect(teamName).toBeVisible();
-    });
-
-    it("renders the user's current team", async () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: "Team-name", isLoading: false });
-      customRender(<MainNavigation />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
-
-      const teamLabel = screen.getByText("Team");
-      const teamName = screen.getByText("Team-name");
-      expect(teamLabel).toBeVisible();
-      expect(teamName).toBeVisible();
     });
   });
 });
