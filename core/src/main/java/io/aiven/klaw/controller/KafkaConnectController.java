@@ -152,7 +152,7 @@ public class KafkaConnectController {
         kafkaConnectControllerService.getConnectorRequests(
             pageNo,
             currentPage,
-            requestStatus.value,
+            requestStatus,
             requestOperationType,
             env,
             order,
