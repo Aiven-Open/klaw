@@ -323,4 +323,10 @@ public class DeleteDataJdbc {
 
     return ApiResultStatus.SUCCESS.value;
   }
+
+  public void deleteSchemas(Topic topicObj) {
+    messageSchemaRepo.deleteAll(
+        messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(
+            topicObj.getTenantId(), topicObj.getTopicname(), topicObj.getEnvironment()));
+  }
 }

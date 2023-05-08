@@ -520,26 +520,13 @@ public class SelectDataJdbc {
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
     List<TopicRequest> topicRequests = new ArrayList<>();
     List<TopicRequest> topicRequestListSub;
-
     if (isApproval) { // approvers
-      // Team Name is null here as it is the team who created the requested
-      // Approving Team includes the teamId as that is how Claim topics know who is the owning team.
-      List<TopicRequest> claimTopicReqs =
-          Lists.newArrayList(
-              findTopicRequestsByExample(
-                  RequestOperationType.CLAIM.value,
-                  null,
-                  env,
-                  status,
-                  tenantId,
-                  String.valueOf(teamSelected),
-                  isMyRequest ? requestor : null));
-
+      // On Approvals this should always be filtered by the users current team
       topicRequestListSub =
           Lists.newArrayList(
               findTopicRequestsByExample(
                   requestOperationType != null ? requestOperationType.value : null,
-                  teamId,
+                  teamSelected,
                   env,
                   status,
                   tenantId,
@@ -556,13 +543,29 @@ public class SelectDataJdbc {
                           topicRequest.getRequestOperationType()))
               .collect(Collectors.toList());
 
-      topicRequestListSub.addAll(claimTopicReqs);
+      if (requestOperationType == null || requestOperationType.equals(RequestOperationType.CLAIM)) {
+        // Team Name is null here as it is the team who created the requested
+        // Approving Team includes the teamId as that is how Claim topics know who is the owning
+        // team.
+        List<TopicRequest> claimTopicReqs =
+            Lists.newArrayList(
+                findTopicRequestsByExample(
+                    RequestOperationType.CLAIM.value,
+                    null,
+                    env,
+                    status,
+                    tenantId,
+                    String.valueOf(teamSelected),
+                    isMyRequest ? requestor : null));
+        topicRequestListSub.addAll(claimTopicReqs);
+      }
+
       // remove users own requests to approve/show in the list
       // Placed here as it should only apply for approvers.
       topicRequestListSub =
           topicRequestListSub.stream()
               .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
-              .collect(Collectors.toList());
+              .toList();
     } else {
       if (showRequestsOfAllTeams) {
         topicRequestListSub =
@@ -588,6 +591,13 @@ public class SelectDataJdbc {
                     null,
                     isMyRequest ? requestor : null));
       }
+    }
+
+    if (teamId != null) {
+      topicRequestListSub =
+          topicRequestListSub.stream()
+              .filter(topicRequest -> topicRequest.getTeamId().equals(teamId))
+              .toList();
     }
 
     boolean wildcardFilter = (wildcardSearch != null && !wildcardSearch.isEmpty());

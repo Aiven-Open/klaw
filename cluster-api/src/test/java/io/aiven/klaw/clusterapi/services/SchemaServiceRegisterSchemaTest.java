@@ -412,12 +412,18 @@ class SchemaServiceRegisterSchemaTest {
             any(HashMap.class)))
         .thenReturn(createErrorCompatibilityResponseEntity(HttpStatus.NOT_FOUND))
         .thenReturn(createErrorCompatibilityResponseEntity(HttpStatus.NOT_FOUND));
+    when(restTemplate.exchange(
+            eq(REGISTRY_URL),
+            any(HttpMethod.class),
+            any(HttpEntity.class),
+            eq(new ParameterizedTypeReference<Map<String, String>>() {}),
+            any(HashMap.class)))
+        .thenReturn(createErrorCompatibilityResponseEntity(HttpStatus.NOT_FOUND))
+        .thenReturn(createErrorCompatibilityResponseEntity(HttpStatus.NOT_FOUND));
     schemaService.registerSchema(schemaReq);
     // change schema compatibility to NONE, once
     verify(restTemplate, times(1)).put(any(), any(), eq(String.class));
 
-    verify(restTemplate, times(2))
-        .postForEntity(anyString(), any(HttpEntity.class), eq(String.class));
     // 2 calls to get the current SchemaCompatibility (subject, global) as isForce==false
     verify(restTemplate, times(2))
         .exchange(

@@ -198,11 +198,6 @@ public class DefaultDataService {
             "Email notification body for password reset");
     kwPropertiesList.add(kwProperties16);
 
-    KwProperties kwProperties17 =
-        new KwProperties(
-            "klaw.superuser.mailid", tenantId, mailId, "Email id of Super user or Super Admin");
-    kwPropertiesList.add(kwProperties17);
-
     KwProperties kwProperties18 =
         new KwProperties(
             "klaw.reports.location",

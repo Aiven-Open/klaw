@@ -193,8 +193,16 @@ public class SchemaRegistryControllerServiceTest {
   @Order(4)
   public void execSchemaRequestsSuccess() throws KlawException {
     int schemaReqId = 1001;
+    Map<String, Object> registerSchemaCustomResponse = new HashMap<>();
+    registerSchemaCustomResponse.put("schemaRegistered", true);
+    registerSchemaCustomResponse.put("version", 1);
+    registerSchemaCustomResponse.put("id", 1);
 
-    ApiResponse apiResponse = ApiResponse.builder().message("Schema registered id\": 215").build();
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .message("Schema registered id\": 215")
+            .data(registerSchemaCustomResponse)
+            .build();
 
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();

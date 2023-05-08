@@ -10,6 +10,8 @@ import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
+import io.aiven.klaw.clusterapi.models.RegisterSchemaCustomResponse;
+import io.aiven.klaw.clusterapi.models.RegisterSchemaResponse;
 import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
@@ -46,8 +48,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -365,30 +369,46 @@ public class UtilComponentsServiceTest {
   }
 
   @Test
-  public void postSchema1() {
+  public void registerNewSchema() {
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
-    ApiResponse apiResponse = ApiResponse.builder().message("Schema created id : 101").build();
-    ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    RegisterSchemaResponse registerSchemaResponse = new RegisterSchemaResponse();
+    registerSchemaResponse.setId(1);
+
+    ResponseEntity<List<Integer>> response2 = new ResponseEntity<>(List.of(1), HttpStatus.OK);
     when(clusterApiUtils.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
     when(clusterApiUtils.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
-    when(restTemplate.postForEntity(anyString(), any(), eq(String.class)))
-        .thenReturn(new ResponseEntity<>("Schema created id : 101", HttpStatus.OK));
+    when(restTemplate.postForEntity(anyString(), any(), eq(RegisterSchemaResponse.class)))
+        .thenReturn(new ResponseEntity<>(registerSchemaResponse, HttpStatus.OK));
+    when(restTemplate.exchange(
+            anyString(),
+            eq(HttpMethod.GET),
+            any(),
+            eq(new ParameterizedTypeReference<List<Integer>>() {}),
+            anyMap()))
+        .thenReturn(response2);
 
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
-    assertThat(resultResp.getMessage()).isEqualTo("Schema created id : 101");
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    RegisterSchemaCustomResponse registerSchemaCustomResponse =
+        (RegisterSchemaCustomResponse) resultResp.getData();
+    assertThat(registerSchemaCustomResponse.isSchemaRegistered()).isTrue();
+    assertThat(registerSchemaCustomResponse.getVersion()).isEqualTo(1);
+    assertThat(registerSchemaCustomResponse.getId()).isEqualTo(1);
   }
 
   @Test
-  public void postSchema2() {
+  public void registerSchemaFailure() {
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
+    ResponseEntity<List<Integer>> response = new ResponseEntity<>(List.of(1, 2), HttpStatus.OK);
     when(clusterApiUtils.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
     when(clusterApiUtils.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
-    when(restTemplate.postForEntity(anyString(), any(), eq(String.class)))
-        .thenReturn(
-            new ResponseEntity<>(
-                "Cannot retrieve SchemaRegistry Url", HttpStatus.INTERNAL_SERVER_ERROR));
+
+    when(restTemplate.postForEntity(anyString(), any(), eq(RegisterSchemaResponse.class)))
+        .thenThrow(new RuntimeException("Unable to connect"));
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
-    assertThat(resultResp.getMessage()).isEqualTo("Cannot retrieve SchemaRegistry Url");
+    assertThat(resultResp.getMessage())
+        .contains("Failure in registering schema.")
+        .contains("Unable to connect");
   }
 
   private Map<String, TopicDescription> getTopicDescs() {

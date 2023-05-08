@@ -6,8 +6,3 @@ import * as process from "process";
 
 process.env.API_BASE_URL = "http://localhost:8080";
 process.env.FEATURE_FLAG_TOPIC_REQUEST = "true";
-
-jest.mock("src/domain/auth-user", () => ({
-  ...jest.requireActual("src/domain/auth-user"),
-  getUserTeamName: () => "TeamName",
-}));

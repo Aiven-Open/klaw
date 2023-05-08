@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
@@ -475,14 +476,14 @@ public class CommonUtilsService {
       List<Integer> intOrderEnvsList = new ArrayList<>();
 
       switch (envPropertyType) {
-        case "ORDER_OF_ENVS" -> {
+        case ORDER_OF_TOPIC_ENVS -> {
           List<String> orderOfTopicPromotionEnvsList =
               tenantModel.getOrderOfTopicPromotionEnvsList();
           if (null != orderOfTopicPromotionEnvsList && !orderOfTopicPromotionEnvsList.isEmpty()) {
             orderOfTopicPromotionEnvsList.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));
           }
         }
-        case "REQUEST_TOPICS_OF_ENVS" -> {
+        case REQUEST_TOPICS_OF_ENVS -> {
           List<String> requestTopics = tenantModel.getRequestTopicsEnvironmentsList();
           if (requestTopics != null && !requestTopics.isEmpty()) {
             requestTopics.forEach(a -> intOrderEnvsList.add(Integer.parseInt(a)));

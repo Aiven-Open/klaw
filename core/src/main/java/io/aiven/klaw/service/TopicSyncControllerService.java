@@ -6,6 +6,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_104;
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -674,7 +675,7 @@ public class TopicSyncControllerService {
 
     // tenant filtering
     List<Env> listAllEnvs = manageDatabase.getKafkaEnvList(tenantId);
-    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
 
     topicsFromSOT = commonUtilsService.groupTopicsByEnv(topicsFromSOT);
     List<Topic> filterProducerConsumerList = new ArrayList<>();
@@ -969,7 +970,7 @@ public class TopicSyncControllerService {
     // tenant filtering
     int tenantId = commonUtilsService.getTenantId(getUserName());
     String syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
-    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_ENVS");
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
 
     List<Topic> existingTopics;
     List<Topic> listTopics = new ArrayList<>();

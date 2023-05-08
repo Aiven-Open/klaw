@@ -200,7 +200,9 @@ public class ClusterApiController {
     return new ResponseEntity<>(consumerOffsetDetails, HttpStatus.OK);
   }
 
-  @PostMapping(value = "/createTopics")
+  @PostMapping(
+      value = "/createTopics",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createTopics(
       @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
     try {
@@ -218,7 +220,9 @@ public class ClusterApiController {
     }
   }
 
-  @PostMapping(value = "/updateTopics")
+  @PostMapping(
+      value = "/updateTopics",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateTopics(
       @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
     try {
@@ -235,7 +239,9 @@ public class ClusterApiController {
     }
   }
 
-  @PostMapping(value = "/deleteTopics")
+  @PostMapping(
+      value = "/deleteTopics",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteTopics(
       @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
     try {
@@ -251,7 +257,9 @@ public class ClusterApiController {
     }
   }
 
-  @PostMapping(value = "/createAcls")
+  @PostMapping(
+      value = "/createAcls",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createAcls(
       @RequestBody @Valid ClusterAclRequest clusterAclRequest) {
 
@@ -305,7 +313,9 @@ public class ClusterApiController {
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  @PostMapping(value = "/deleteAcls")
+  @PostMapping(
+      value = "/deleteAcls",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteAcls(
       @RequestBody @Valid ClusterAclRequest clusterAclRequest) {
     String result;
@@ -360,7 +370,9 @@ public class ClusterApiController {
    * compatibility is NOT_SET, get global compatibility - Apply global compatibility on subject
    * level If force register is not enabled - Register schema
    */
-  @PostMapping(value = "/postSchema")
+  @PostMapping(
+      value = "/postSchema",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> postSchema(
       @RequestBody @Valid ClusterSchemaRequest clusterSchemaRequest) {
     try {
@@ -371,7 +383,9 @@ public class ClusterApiController {
     }
   }
 
-  @PostMapping(value = "/schema/validate/compatibility")
+  @PostMapping(
+      value = "/schema/validate/compatibility",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> schemaCompatibilityValidation(
       @RequestBody @Valid ClusterSchemaRequest clusterSchemaRequest) {
     try {

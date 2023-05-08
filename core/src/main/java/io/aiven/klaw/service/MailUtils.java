@@ -29,12 +29,11 @@ public class MailUtils {
   public static final String KLAW_REGISTRATION_REQUEST = "Klaw Registration request";
 
   @Value("${klaw.admin.mailid}")
-  private String kwSaasAdminMailId;
+  private String kwAdminMailId;
 
   @Value("${klaw.ad.username.attribute:preferred_username}")
   private String preferredUsername;
 
-  private static final String SUPERUSER_MAILID_KEY = "klaw.superuser.mailid";
   private static final String TOPIC_REQ_KEY = "klaw.mail.topicrequest.content";
   private static final String TOPIC_REQ_DEL_KEY = "klaw.mail.topicdeleterequest.content";
   private static final String TOPIC_REQ_CLAIM_KEY = "klaw.mail.topicclaimrequest.content";
@@ -54,8 +53,6 @@ public class MailUtils {
   private static final String REGISTER_USER_SAASADMIN_TOUSER_KEY =
       "klaw.mail.registerusertouser.saasadmin.content";
   private static final String RECONCILIATION_TOPICS_KEY = "klaw.mail.recontopics.content";
-
-  private String superUserMailId;
   private String topicRequestMail;
   private String topicDeleteRequestMail;
   private String topicClaimRequestMail;
@@ -201,9 +198,7 @@ public class MailUtils {
             registrationRequest, registerUserInfo.getUsername(), registerUserInfo.getFullname());
 
     subject = NEW_USER_REGISTRATION_REQUEST;
-    if (!Objects.equals(
-        registerUserInfo.getMailid(),
-        manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId)))
+    if (!Objects.equals(registerUserInfo.getMailid(), kwAdminMailId))
       sendMailToAdmin(subject, formattedStr, tenantId, loginUrl);
 
     // Sending to user
@@ -261,9 +256,7 @@ public class MailUtils {
               registerUserInfo.getRole());
 
       subject = NEW_USER_REGISTRATION_REQUEST;
-      if (!Objects.equals(
-          registerUserInfo.getMailid(),
-          manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId)))
+      if (!Objects.equals(registerUserInfo.getMailid(), kwAdminMailId))
         sendMailToAdmin(subject, formattedStr, tenantId, loginUrl);
 
       // Sending to user
@@ -293,7 +286,6 @@ public class MailUtils {
 
   public void sendReconMailToAdmin(
       String subject, String reconTopicsContent, String tenantName, int tenantId, String loginUrl) {
-    this.superUserMailId = manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId);
     String reconMailContent =
         manageDatabase.getKwPropertyValue(RECONCILIATION_TOPICS_KEY, tenantId);
     String formattedStr = String.format(reconMailContent, tenantName);
@@ -301,9 +293,9 @@ public class MailUtils {
     try {
       CompletableFuture.runAsync(
               () -> {
-                if (superUserMailId != null) {
+                if (kwAdminMailId != null) {
                   emailService.sendSimpleMessage(
-                      superUserMailId, null, subject, formattedStr, tenantId, loginUrl);
+                      kwAdminMailId, null, subject, formattedStr, tenantId, loginUrl);
                 }
               })
           .get();
@@ -313,12 +305,11 @@ public class MailUtils {
   }
 
   public void sendMailToAdmin(String subject, String mailContent, int tenantId, String loginUrl) {
-    this.superUserMailId = manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId);
     CompletableFuture.runAsync(
         () -> {
-          if (superUserMailId != null) {
+          if (kwAdminMailId != null) {
             emailService.sendSimpleMessage(
-                superUserMailId, null, subject, mailContent, tenantId, loginUrl);
+                kwAdminMailId, null, subject, mailContent, tenantId, loginUrl);
           }
         });
   }
@@ -332,7 +323,6 @@ public class MailUtils {
       String otherMailId,
       int tenantId,
       String loginUrl) {
-    this.superUserMailId = manageDatabase.getKwPropertyValue(SUPERUSER_MAILID_KEY, tenantId);
 
     CompletableFuture.runAsync(
         () -> {
@@ -369,7 +359,7 @@ public class MailUtils {
     String mailtext =
         "Tenant extension : Tenant " + tenantId + " username " + userName + " period " + period;
     emailService.sendSimpleMessage(
-        userName, kwSaasAdminMailId, "Tenant Extension", mailtext, tenantId, loginUrl);
+        userName, kwAdminMailId, "Tenant Extension", mailtext, tenantId, loginUrl);
     return ApiResultStatus.SUCCESS.value;
   }
 }

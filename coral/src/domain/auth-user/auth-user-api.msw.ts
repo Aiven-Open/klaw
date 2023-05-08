@@ -4,7 +4,10 @@ import { AuthUser } from "src/domain/auth-user/auth-user-types";
 import { MswInstance } from "src/services/api-mocks/types";
 
 const user: AuthUser = {
-  name: "Super Admin",
+  username: "Super Admin",
+  teamname: "",
+  teamId: "",
+  canSwitchTeams: "",
 };
 
 const correctUsername = "superadmin";
