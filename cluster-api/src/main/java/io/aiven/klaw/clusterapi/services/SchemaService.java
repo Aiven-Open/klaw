@@ -159,7 +159,7 @@ public class SchemaService {
   }
 
   private RegisterSchemaCustomResponse registerSchemaPostCall(
-      ClusterSchemaRequest clusterSchemaRequest) {
+      ClusterSchemaRequest clusterSchemaRequest) throws Exception {
     String suffixUrl =
         clusterSchemaRequest.getEnv()
             + "/"
@@ -190,8 +190,11 @@ public class SchemaService {
 
     RegisterSchemaResponse registerSchemaResponse = schemaResponseResponseEntity.getBody();
     RegisterSchemaCustomResponse registerSchemaCustomResponse = new RegisterSchemaCustomResponse();
-    registerSchemaCustomResponse.setId(
-        registerSchemaResponse != null ? registerSchemaResponse.getId() : -1);
+    if (registerSchemaResponse != null) {
+      registerSchemaCustomResponse.setId(registerSchemaResponse.getId());
+    } else {
+      throw new Exception("Failure in registering schema.");
+    }
 
     registerSchemaCustomResponse.setVersion(
         versionsListAfter.get(versionsListAfter.size() - 1)); // set the last element of array
