@@ -22,7 +22,6 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_119;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_120;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 
-
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
