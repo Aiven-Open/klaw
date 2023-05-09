@@ -1,7 +1,7 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { cleanup, screen, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import { getEnvironmentsForConnectorRequest } from "src/domain/environment";
+import { getAllEnvironmentsForConnector } from "src/domain/environment";
 import { getConnectorRequests } from "src/domain/connector/connector-api";
 import ConnectorRequestsPage from "src/app/pages/requests/connectors/index";
 import { getTeams } from "src/domain/team";
@@ -12,8 +12,8 @@ jest.mock("src/domain/connector/connector-api.ts");
 
 const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 const mockGetSyncConnectorsEnvironments =
-  getEnvironmentsForConnectorRequest as jest.MockedFunction<
-    typeof getEnvironmentsForConnectorRequest
+  getAllEnvironmentsForConnector as jest.MockedFunction<
+    typeof getAllEnvironmentsForConnector
   >;
 const mockGetConnectorRequests = getConnectorRequests as jest.MockedFunction<
   typeof getConnectorRequests

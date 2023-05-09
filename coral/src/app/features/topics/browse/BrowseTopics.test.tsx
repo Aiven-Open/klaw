@@ -2,7 +2,10 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import BrowseTopics from "src/app/features/topics/browse/BrowseTopics";
-import { Environment, getAllEnvironments } from "src/domain/environment";
+import {
+  Environment,
+  getAllEnvironmentsForTopicAndAcl,
+} from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { getTeams } from "src/domain/team";
@@ -23,9 +26,10 @@ jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 const mockGetTopics = getTopics as jest.MockedFunction<typeof getTopics>;
-const mockGetEnvironments = getAllEnvironments as jest.MockedFunction<
-  typeof getAllEnvironments
->;
+const mockGetEnvironments =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
+  >;
 
 const filterByEnvironmentLabel = "Filter by Environment";
 const filterByTeamLabel = "Filter by team";

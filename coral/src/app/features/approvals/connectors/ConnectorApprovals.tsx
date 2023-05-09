@@ -269,7 +269,7 @@ function ConnectorApprovals() {
         filters={[
           <EnvironmentFilter
             key={"environment"}
-            environmentEndpoint={"getSyncConnectorsEnvironments"}
+            environmentEndpoint={"getAllEnvironmentsForConnector"}
           />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,

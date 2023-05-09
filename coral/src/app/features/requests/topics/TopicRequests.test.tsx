@@ -14,7 +14,7 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { TopicRequests } from "src/app/features/requests/topics/TopicRequests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
-import { getEnvironmentsForTopicRequest } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
@@ -23,8 +23,8 @@ jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 
 const mockGetTopicRequestEnvironments =
-  getEnvironmentsForTopicRequest as jest.MockedFunction<
-    typeof getEnvironmentsForTopicRequest
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
   >;
 
 const mockGetTopicRequests = getTopicRequests as jest.MockedFunction<

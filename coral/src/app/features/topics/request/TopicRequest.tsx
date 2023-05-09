@@ -23,7 +23,7 @@ import formSchema, {
 import SelectOrNumberInput from "src/app/features/topics/request/components/SelectOrNumberInput";
 import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { Environment } from "src/domain/environment";
-import { getEnvironmentsForTeam } from "src/domain/environment/environment-api";
+import { getTopicAndAclEnvironmentsForTeam } from "src/domain/environment/environment-api";
 import AdvancedConfiguration from "src/app/features/topics/request/components/AdvancedConfiguration";
 import { requestTopic } from "src/domain/topic/topic-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
@@ -40,7 +40,7 @@ function TopicRequest() {
 
   const { data: environments } = useQuery<Environment[], Error>(
     ["environments-for-team"],
-    getEnvironmentsForTeam
+    getTopicAndAclEnvironmentsForTeam
   );
 
   const defaultValues = Array.isArray(environments)

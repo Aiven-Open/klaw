@@ -1,21 +1,23 @@
 import {
-  getAllEnvironments,
-  getEnvironmentsForTopicRequest,
+  getAllEnvironmentsForTopicAndAcl,
+  getEnvironmentsForTopicAndAclRequest,
+  getAllEnvironmentsForSchema,
   getEnvironmentsForSchemaRequest,
-  getEnvironmentsForConnectorRequest,
+  getAllEnvironmentsForConnector,
 } from "src/domain/environment/environment-api";
-import { mockGetEnvironmentsForTopicRequest } from "src/domain/environment/environment-api.msw";
+import { mockgetEnvironmentsForTopicAndAclRequest } from "src/domain/environment/environment-api.msw";
 import {
   ALL_ENVIRONMENTS_VALUE,
   Environment,
 } from "src/domain/environment/environment-types";
 
 export {
-  getAllEnvironments,
-  getEnvironmentsForTopicRequest,
-  mockGetEnvironmentsForTopicRequest,
+  getAllEnvironmentsForTopicAndAcl,
+  getEnvironmentsForTopicAndAclRequest,
+  mockgetEnvironmentsForTopicAndAclRequest,
   ALL_ENVIRONMENTS_VALUE,
+  getAllEnvironmentsForSchema,
   getEnvironmentsForSchemaRequest,
-  getEnvironmentsForConnectorRequest,
+  getAllEnvironmentsForConnector,
 };
 export type { Environment };

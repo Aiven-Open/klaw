@@ -5,14 +5,14 @@ import ConnectorRequest from "src/app/features/connectors/request/ConnectorReque
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { createConnectorRequest } from "src/domain/connector";
-import { getEnvironmentsForConnectorRequest } from "src/domain/environment";
+import { getAllEnvironmentsForConnector } from "src/domain/environment";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/connector/connector-api.ts");
 
 const mockGetConnectorEnvironmentRequest =
-  getEnvironmentsForConnectorRequest as jest.MockedFunction<
-    typeof getEnvironmentsForConnectorRequest
+  getAllEnvironmentsForConnector as jest.MockedFunction<
+    typeof getAllEnvironmentsForConnector
   >;
 
 const mockCreateConnectorRequest =

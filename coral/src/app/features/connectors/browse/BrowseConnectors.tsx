@@ -53,7 +53,7 @@ function BrowseConnectors() {
         <TeamFilter key={"team"} />,
         <EnvironmentFilter
           key={"environment"}
-          environmentEndpoint={"getSyncConnectorsEnvironments"}
+          environmentEndpoint={"getAllEnvironmentsForConnector"}
         />,
         <SearchFilter key="connector-name" />,
       ]}

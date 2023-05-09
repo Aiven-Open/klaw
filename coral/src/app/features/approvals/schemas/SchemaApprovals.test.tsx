@@ -2,7 +2,7 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import SchemaApprovals from "src/app/features/approvals/schemas/SchemaApprovals";
-import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { getAllEnvironmentsForSchema } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import {
@@ -20,8 +20,8 @@ jest.mock("src/domain/schema-request/schema-request-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getSchemaRegistryEnvironments as jest.MockedFunction<
-    typeof getSchemaRegistryEnvironments
+  getAllEnvironmentsForSchema as jest.MockedFunction<
+    typeof getAllEnvironmentsForSchema
   >;
 
 const mockGetSchemaRequestsForApprover =

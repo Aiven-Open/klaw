@@ -13,7 +13,10 @@ type MockApi<T extends keyof operations> = {
   };
 };
 
-function mockGetAllEnvironments({ mswInstance, response }: MockApi<"getEnvs">) {
+function mockgetAllEnvironmentsForTopicAndAcl({
+  mswInstance,
+  response,
+}: MockApi<"getEnvs">) {
   const url = `${getHTTPBaseAPIUrl()}/getEnvs`;
   mswInstance.use(
     rest.get(url, async (req, res, ctx) => {
@@ -22,7 +25,7 @@ function mockGetAllEnvironments({ mswInstance, response }: MockApi<"getEnvs">) {
   );
 }
 
-function mockGetEnvironmentsForTopicRequest({
+function mockgetEnvironmentsForTopicAndAclRequest({
   mswInstance,
   response,
 }: MockApi<"getEnvsBaseCluster">) {
@@ -34,7 +37,7 @@ function mockGetEnvironmentsForTopicRequest({
   );
 }
 
-function mockGetEnvironmentsForTeam({
+function mockgetTopicAndAclEnvironmentsForTeam({
   mswInstance,
   response,
 }: MockApi<"getEnvsBaseClusterFilteredForTeam">) {
@@ -76,9 +79,9 @@ const getMockedResponseGetClusterInfoFromEnv = (
 });
 
 export {
-  mockGetAllEnvironments,
-  mockGetEnvironmentsForTopicRequest,
-  mockGetEnvironmentsForTeam,
+  mockgetAllEnvironmentsForTopicAndAcl,
+  mockgetEnvironmentsForTopicAndAclRequest,
+  mockgetTopicAndAclEnvironmentsForTeam,
   mockedEnvironmentResponse,
   mockGetClusterInfoFromEnv,
   getMockedResponseGetClusterInfoFromEnv,

@@ -157,7 +157,7 @@ function ConnectorRequests() {
           <SearchFilter key="connector" />,
           <EnvironmentFilter
             key="environment"
-            environmentEndpoint="getSyncConnectorsEnvironments"
+            environmentEndpoint="getAllEnvironmentsForConnector"
           />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,

@@ -3,27 +3,28 @@ import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import {
-  getAllEnvironments,
-  getSchemaRegistryEnvironments,
-  getSyncConnectorsEnvironments,
+  getAllEnvironmentsForTopicAndAcl,
+  getAllEnvironmentsForSchema,
+  getAllEnvironmentsForConnector,
 } from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/environment/environment-api.ts");
 
-const mockGetEnvironments = getAllEnvironments as jest.MockedFunction<
-  typeof getAllEnvironments
->;
+const mockGetEnvironments =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
+  >;
 
 const mockGetSchemaRegistryEnvironments =
-  getSchemaRegistryEnvironments as jest.MockedFunction<
-    typeof getSchemaRegistryEnvironments
+  getAllEnvironmentsForSchema as jest.MockedFunction<
+    typeof getAllEnvironmentsForSchema
   >;
 
 const mockGetSyncConnectorsEnvironments =
-  getSyncConnectorsEnvironments as jest.MockedFunction<
-    typeof getSyncConnectorsEnvironments
+  getAllEnvironmentsForConnector as jest.MockedFunction<
+    typeof getAllEnvironmentsForConnector
   >;
 
 const mockEnvironments = [
@@ -51,9 +52,11 @@ describe("EnvironmentFilter.tsx", () => {
       jest.resetAllMocks();
     });
 
-    it("fetches from the getAllEnvironments endpoint", () => {
+    it("fetches from the getAllEnvironmentsForTopicAndAcl endpoint", () => {
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        <EnvironmentFilter
+          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+        />,
         {
           memoryRouter: true,
           queryClient: true,
@@ -65,10 +68,10 @@ describe("EnvironmentFilter.tsx", () => {
       expect(mockGetSyncConnectorsEnvironments).not.toHaveBeenCalled();
     });
 
-    it("fetches from the getSchemaRegistryEnvironments endpoint", () => {
+    it("fetches from the getAllEnvironmentsForSchema endpoint", () => {
       customRender(
         <EnvironmentFilter
-          environmentEndpoint={"getSchemaRegistryEnvironments"}
+          environmentEndpoint={"getAllEnvironmentsForSchema"}
         />,
         {
           memoryRouter: true,
@@ -81,10 +84,10 @@ describe("EnvironmentFilter.tsx", () => {
       expect(mockGetSyncConnectorsEnvironments).not.toHaveBeenCalled();
     });
 
-    it("fetches from the getSyncConnectorsEnvironments endpoint", () => {
+    it("fetches from the getAllEnvironmentsForConnector endpoint", () => {
       customRender(
         <EnvironmentFilter
-          environmentEndpoint={"getSyncConnectorsEnvironments"}
+          environmentEndpoint={"getAllEnvironmentsForConnector"}
         />,
         {
           memoryRouter: true,
@@ -105,7 +108,9 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        <EnvironmentFilter
+          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+        />,
         {
           memoryRouter: true,
           queryClient: true,
@@ -161,7 +166,9 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        <EnvironmentFilter
+          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+        />,
         {
           memoryRouter: true,
           queryClient: true,
@@ -195,7 +202,9 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        <EnvironmentFilter
+          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+        />,
         {
           queryClient: true,
           memoryRouter: true,
@@ -232,7 +241,9 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(
-        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        <EnvironmentFilter
+          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+        />,
         {
           queryClient: true,
           browserRouter: true,

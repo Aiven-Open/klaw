@@ -5,7 +5,7 @@ import BrowseConnectors from "src/app/features/connectors/browse/BrowseConnector
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { Connector, getConnectors } from "src/domain/connector";
-import { getSyncConnectorsEnvironments } from "src/domain/environment";
+import { getAllEnvironmentsForConnector } from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { getTeams } from "src/domain/team";
@@ -21,8 +21,8 @@ const mockGetConnectors = getConnectors as jest.MockedFunction<
 const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 
 const mockGetSyncConnectorsEnvironments =
-  getSyncConnectorsEnvironments as jest.MockedFunction<
-    typeof getSyncConnectorsEnvironments
+  getAllEnvironmentsForConnector as jest.MockedFunction<
+    typeof getAllEnvironmentsForConnector
   >;
 
 const mockConnectors: Connector[] = [

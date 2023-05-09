@@ -268,7 +268,7 @@ function SchemaApprovals() {
         filters={[
           <EnvironmentFilter
             key={"environment"}
-            environmentEndpoint={"getSchemaRegistryEnvironments"}
+            environmentEndpoint={"getAllEnvironmentsForSchema"}
           />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,
