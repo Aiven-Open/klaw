@@ -11,6 +11,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.error.RestErrorResponse;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.cluster.ClusterAclRequest;
@@ -393,7 +394,7 @@ public class ClusterApiService {
       String kafkaConnectHost,
       String clusterIdentification,
       int tenantId)
-      throws KlawException {
+      throws KlawException, KlawRestException {
     log.info("approveConnectorRequests {} {}", connectorConfig, kafkaConnectHost);
     getClusterApiProperties(tenantId);
     ResponseEntity<ApiResponse> response;
@@ -448,9 +449,10 @@ public class ClusterApiService {
 
       RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
       if (errorResponse != null) {
-        throw new KlawException(errorResponse.getMessage());
+        log.error("approveConnectorRequests {} {}", connectorName, errorResponse.getMessage());
+        throw new KlawRestException(errorResponse.getMessage());
       } else {
-        throw new KlawException(CLUSTER_API_ERR_118);
+        throw new KlawRestException(CLUSTER_API_ERR_118);
       }
 
     } catch (Exception ex) {

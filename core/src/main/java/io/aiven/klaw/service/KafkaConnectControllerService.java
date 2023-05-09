@@ -21,6 +21,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorConfig;
@@ -521,7 +522,8 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public ApiResponse approveConnectorRequests(String connectorId) throws KlawException {
+  public ApiResponse approveConnectorRequests(String connectorId)
+      throws KlawException, KlawRestException {
     log.info("approveConnectorRequests {}", connectorId);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
