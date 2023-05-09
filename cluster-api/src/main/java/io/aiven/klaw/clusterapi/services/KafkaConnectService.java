@@ -6,6 +6,7 @@ import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.error.RestErrorResponse;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +20,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,6 +33,8 @@ public class KafkaConnectService {
       new ParameterizedTypeReference<>() {};
   private static final ParameterizedTypeReference<Map<String, Object>>
       GET_CONNECTOR_DETAILS_TYPEREF = new ParameterizedTypeReference<>() {};
+  public static final String UNABLE_TO_CREATE_CONNECTOR_ON_CLUSTER =
+      "Unable to create Connector on Cluster.";
 
   final ClusterApiUtils clusterApiUtils;
 
@@ -121,9 +126,14 @@ public class KafkaConnectService {
     try {
       responseNew =
           reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
-    } catch (RestClientException e) {
-      log.error("Error in registering new connector ", e);
-      throw new Exception(e.toString());
+    } catch (HttpServerErrorException | HttpClientErrorException e) {
+
+      RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+      if (errorResponse != null) {
+        throw new Exception(errorResponse.getMessage());
+      } else {
+        throw new Exception(UNABLE_TO_CREATE_CONNECTOR_ON_CLUSTER);
+      }
     }
     if (responseNew.getStatusCodeValue() == 201) {
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();

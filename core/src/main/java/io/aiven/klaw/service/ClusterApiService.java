@@ -11,6 +11,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.RestErrorResponse;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
@@ -84,6 +85,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -430,12 +433,21 @@ public class ClusterApiService {
         return response.getBody().get("errorText");
       }
 
-    } catch (Exception e) {
-      log.error("approveConnectorRequests {} ", connectorName, e);
+    } catch (HttpServerErrorException | HttpClientErrorException e) {
+      log.error("approveConnectorRequests {} {}", connectorName, e.getMessage());
       if (e.getMessage().contains(CLUSTER_API_ERR_120)
           || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return CLUSTER_API_ERR_118;
       }
+
+      RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+      if (errorResponse != null) {
+        throw new KlawException(errorResponse.getMessage());
+      } else {
+        throw new KlawException(CLUSTER_API_ERR_118);
+      }
+
+    } catch (Exception ex) {
       throw new KlawException(CLUSTER_API_ERR_105);
     }
   }
