@@ -75,8 +75,8 @@ function ConnectorTable(props: ConnectorTableProps) {
 
   if (rows.length === 0) {
     return (
-      <EmptyState title="No Kafka Connectors">
-        No Kafka Connectors matched your criteria.
+      <EmptyState title="No Connectors">
+        No Connectors matched your criteria.
       </EmptyState>
     );
   }

@@ -70,19 +70,19 @@ describe("ConnectorTable.tsx", () => {
       );
       expect(
         screen.getByRole("heading", {
-          name: "No Kafka Connectors",
+          name: "No Connectors",
         })
       ).toBeVisible();
     });
   });
 
-  describe("shows all Kafka Connectors as a table", () => {
+  describe("shows all Connectors as a table", () => {
     beforeAll(() => {
       mockIntersectionObserver();
       render(
         <ConnectorTable
           connectors={mockConnectors}
-          ariaLabel={"Kafka Connectors overview, page 1 of 10"}
+          ariaLabel={"Connectors overview, page 1 of 10"}
         />
       );
     });
@@ -91,7 +91,7 @@ describe("ConnectorTable.tsx", () => {
 
     it("renders a connector table with information about pages", async () => {
       const table = screen.getByRole("table", {
-        name: "Kafka Connectors overview, page 1 of 10",
+        name: "Connectors overview, page 1 of 10",
       });
 
       expect(table).toBeVisible();
@@ -100,7 +100,7 @@ describe("ConnectorTable.tsx", () => {
     tableRowHeader.forEach((header) => {
       it(`renders a column header for ${header}`, () => {
         const table = screen.getByRole("table", {
-          name: "Kafka Connectors overview, page 1 of 10",
+          name: "Connectors overview, page 1 of 10",
         });
         const colHeader = within(table).getByRole("columnheader", {
           name: header,
@@ -113,7 +113,7 @@ describe("ConnectorTable.tsx", () => {
     mockConnectors.forEach((connector) => {
       it(`renders the connector name "${connector.connectorName}" as a link to the detail view as row header`, () => {
         const table = screen.getByRole("table", {
-          name: "Kafka Connectors overview, page 1 of 10",
+          name: "Connectors overview, page 1 of 10",
         });
         const rowHeader = within(table).getByRole("cell", {
           name: connector.connectorName,
@@ -132,7 +132,7 @@ describe("ConnectorTable.tsx", () => {
 
       it(`renders the team for ${connector.connectorName} `, () => {
         const table = screen.getByRole("table", {
-          name: "Kafka Connectors overview, page 1 of 10",
+          name: "Connectors overview, page 1 of 10",
         });
         const row = within(table).getByRole("row", {
           name: new RegExp(`${connector.connectorName}`, "i"),
@@ -146,7 +146,7 @@ describe("ConnectorTable.tsx", () => {
 
       it(`renders a list of Environments for connector ${connector}`, () => {
         const table = screen.getByRole("table", {
-          name: "Kafka Connectors overview, page 1 of 10",
+          name: "Connectors overview, page 1 of 10",
         });
         const row = within(table).getByRole("row", {
           name: new RegExp(`${connector.connectorName}`, "i"),
@@ -164,7 +164,7 @@ describe("ConnectorTable.tsx", () => {
       (connector.environmentsList as string[]).forEach((env) => {
         it(`renders Environment ${env} for connector ${connector}`, () => {
           const table = screen.getByRole("table", {
-            name: "Kafka Connectors overview, page 1 of 10",
+            name: "Connectors overview, page 1 of 10",
           });
           const row = within(table).getByRole("row", {
             name: new RegExp(`${connector.connectorName}`, "i"),
@@ -187,11 +187,11 @@ describe("ConnectorTable.tsx", () => {
       render(
         <ConnectorTable
           connectors={mockConnectors}
-          ariaLabel={"Kafka Connectors overview, page 1 of 10"}
+          ariaLabel={"Connectors overview, page 1 of 10"}
         />
       );
       const table = screen.getByRole("table", {
-        name: "Kafka Connectors overview, page 1 of 10",
+        name: "Connectors overview, page 1 of 10",
       });
       table.focus();
     });
