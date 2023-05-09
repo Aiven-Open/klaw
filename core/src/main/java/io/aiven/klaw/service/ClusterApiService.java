@@ -449,7 +449,6 @@ public class ClusterApiService {
 
       RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
       if (errorResponse != null) {
-        log.error("approveConnectorRequests {} {}", connectorName, errorResponse.getMessage());
         throw new KlawRestException(errorResponse.getMessage());
       } else {
         throw new KlawRestException(CLUSTER_API_ERR_118);

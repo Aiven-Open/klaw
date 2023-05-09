@@ -22,6 +22,7 @@ import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawRestException;
+import io.aiven.klaw.error.RestErrorResponse;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorConfig;
@@ -58,6 +59,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 
 @Service
 @Slf4j
@@ -800,6 +803,16 @@ public class KafkaConnectControllerService {
             .success(result.equals(ApiResultStatus.SUCCESS.value))
             .message(result)
             .build();
+      } catch (HttpServerErrorException | HttpClientErrorException e) {
+        log.error("deleteConnectorRequests {} {}", connectorName, e.getMessage());
+
+        RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+        if (errorResponse != null) {
+          return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
+        } else {
+          return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build();
+        }
+
       } catch (Exception e) {
         log.error(e.getMessage());
         throw new KlawException(e.getMessage());
