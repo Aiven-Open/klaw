@@ -37,6 +37,7 @@ public class KafkaConnectService {
       "Unable to create Connector on Cluster.";
   public static final String UNABLE_TO_UPDATE_CONNECTOR_ON_CLUSTER =
       "Unable to update Connector on Cluster";
+  public static final String UNABLE_TO_DELETE_CONNECTOR_ON_CLUSTER = "Unable To Delete Connector on Cluster.";
 
   final ClusterApiUtils clusterApiUtils;
 
@@ -73,7 +74,7 @@ public class KafkaConnectService {
       } else {
         return ApiResponse.builder()
             .success(false)
-            .message("Unable To Delete Connector on Cluster.")
+            .message(UNABLE_TO_DELETE_CONNECTOR_ON_CLUSTER)
             .build();
       }
     }
