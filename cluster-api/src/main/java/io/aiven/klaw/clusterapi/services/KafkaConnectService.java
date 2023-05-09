@@ -22,6 +22,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -69,15 +70,7 @@ public class KafkaConnectService {
               new ParameterizedTypeReference<>() {});
     } catch (HttpServerErrorException | HttpClientErrorException e) {
       log.error("Error in deleting connector ", e);
-      RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
-      if (errorResponse != null) {
-        return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
-      } else {
-        return ApiResponse.builder()
-            .success(false)
-            .message(UNABLE_TO_DELETE_CONNECTOR_ON_CLUSTER)
-            .build();
-      }
+      return buildErrorResponseFromRestException(e, UNABLE_TO_DELETE_CONNECTOR_ON_CLUSTER);
     }
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
@@ -103,17 +96,19 @@ public class KafkaConnectService {
       reqDetails.getRight().put(reqDetails.getLeft(), request, String.class);
     } catch (HttpServerErrorException | HttpClientErrorException e) {
       log.error("Error in updating connector ", e);
-      RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
-      if (errorResponse != null) {
-        return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
-      } else {
-        return ApiResponse.builder()
-            .success(false)
-            .message(UNABLE_TO_UPDATE_CONNECTOR_ON_CLUSTER)
-            .build();
-      }
+      return buildErrorResponseFromRestException(e, UNABLE_TO_UPDATE_CONNECTOR_ON_CLUSTER);
     }
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+  }
+
+  private static ApiResponse buildErrorResponseFromRestException(
+      HttpStatusCodeException e, String unableToUpdateConnectorOnCluster) {
+    RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+    if (errorResponse != null) {
+      return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
+    } else {
+      return ApiResponse.builder().success(false).message(unableToUpdateConnectorOnCluster).build();
+    }
   }
 
   public ApiResponse postNewConnector(ClusterConnectorRequest clusterConnectorRequest)
@@ -137,16 +132,7 @@ public class KafkaConnectService {
           reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
     } catch (HttpServerErrorException | HttpClientErrorException e) {
 
-      RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
-      if (errorResponse != null) {
-        return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
-
-      } else {
-        return ApiResponse.builder()
-            .success(false)
-            .message(UNABLE_TO_CREATE_CONNECTOR_ON_CLUSTER)
-            .build();
-      }
+      return buildErrorResponseFromRestException(e, UNABLE_TO_CREATE_CONNECTOR_ON_CLUSTER);
     }
     if (responseNew.getStatusCodeValue() == 201) {
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
