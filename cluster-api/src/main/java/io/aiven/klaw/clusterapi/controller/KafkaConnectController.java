@@ -70,14 +70,14 @@ public class KafkaConnectController {
   }
 
   @PostMapping(value = "/updateConnector")
-  public ResponseEntity<Map<String, String>> updateConnector(
+  public ResponseEntity<ApiResponse> updateConnector(
       @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest) {
     return new ResponseEntity<>(
         kafkaConnectService.updateConnector(clusterConnectorRequest), HttpStatus.OK);
   }
 
   @PostMapping(value = "/deleteConnector")
-  public ResponseEntity<Map<String, String>> deleteConnector(
+  public ResponseEntity<ApiResponse> deleteConnector(
       @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest) {
     return new ResponseEntity<>(
         kafkaConnectService.deleteConnector(clusterConnectorRequest), HttpStatus.OK);
