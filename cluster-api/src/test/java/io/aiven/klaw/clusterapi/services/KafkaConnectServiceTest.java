@@ -102,7 +102,7 @@ class KafkaConnectServiceTest {
 
   private String getRestErrorResponse(String resp) throws JsonProcessingException {
     RestErrorResponse restErrorResponse = new RestErrorResponse();
-    restErrorResponse.setError_code(400);
+    restErrorResponse.setErrorCode(400);
     restErrorResponse.setMessage(resp);
     return objectMapper.writeValueAsString(restErrorResponse);
   }

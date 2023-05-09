@@ -61,6 +61,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 @Service
 @Slf4j
@@ -806,12 +807,7 @@ public class KafkaConnectControllerService {
       } catch (HttpServerErrorException | HttpClientErrorException e) {
         log.error("deleteConnectorRequests {} {}", connectorName, e.getMessage());
 
-        RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
-        if (errorResponse != null) {
-          return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
-        } else {
-          return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build();
-        }
+        return processRestErrorResponse(e, CLUSTER_API_ERR_118);
 
       } catch (Exception e) {
         log.error(e.getMessage());
@@ -823,6 +819,16 @@ public class KafkaConnectControllerService {
           .success(false)
           .message(String.format(KAFKA_CONNECT_ERR_116, connectorName))
           .build();
+    }
+  }
+
+  private ApiResponse processRestErrorResponse(HttpStatusCodeException e, String defaultMsg) {
+    RestErrorResponse errorResponse = null;
+    errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+    try {
+      return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
+    } catch (Exception ex) {
+      return ApiResponse.builder().success(false).message(defaultMsg).build();
     }
   }
 
