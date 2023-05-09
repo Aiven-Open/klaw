@@ -37,10 +37,8 @@ public class KafkaConnectService {
     this.clusterApiUtils = clusterApiUtils;
   }
 
-  public Map<String, String> deleteConnector(ClusterConnectorRequest clusterConnectorRequest) {
+  public ApiResponse deleteConnector(ClusterConnectorRequest clusterConnectorRequest) {
     log.info("Into deleteConnector {}", clusterConnectorRequest);
-    Map<String, String> result = new HashMap<>();
-
     String suffixUrl =
         clusterConnectorRequest.getEnv()
             + "/connectors/"
@@ -62,18 +60,13 @@ public class KafkaConnectService {
               new ParameterizedTypeReference<>() {});
     } catch (RestClientException e) {
       log.error("Error in deleting connector ", e);
-      result.put("result", ApiResultStatus.ERROR.value);
-      result.put("errorText", e.toString().replaceAll("\"", ""));
-      return result;
+      return ApiResponse.builder().success(false).message(e.getMessage()).build();
     }
-    result.put("result", ApiResultStatus.SUCCESS.value);
-    return result;
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
-  public Map<String, String> updateConnector(ClusterConnectorRequest clusterConnectorRequest) {
+  public ApiResponse updateConnector(ClusterConnectorRequest clusterConnectorRequest) {
     log.info("Into updateConnector {}", clusterConnectorRequest);
-    Map<String, String> result = new HashMap<>();
-
     String suffixUrl =
         clusterConnectorRequest.getEnv()
             + "/connectors/"
@@ -93,13 +86,9 @@ public class KafkaConnectService {
       reqDetails.getRight().put(reqDetails.getLeft(), request, String.class);
     } catch (RestClientException e) {
       log.error("Error in updating connector ", e);
-      result.put("result", ApiResultStatus.ERROR.value);
-      result.put("errorText", e.toString().replaceAll("\"", ""));
-      return result;
+      return ApiResponse.builder().success(false).message(e.getMessage()).build();
     }
-    result.put("result", ApiResultStatus.SUCCESS.value);
-
-    return result;
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
   public ApiResponse postNewConnector(ClusterConnectorRequest clusterConnectorRequest)

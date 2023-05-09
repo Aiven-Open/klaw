@@ -393,7 +393,7 @@ public class ClusterApiService {
       throws KlawException {
     log.info("approveConnectorRequests {} {}", connectorConfig, kafkaConnectHost);
     getClusterApiProperties(tenantId);
-    ResponseEntity<Map<String, String>> response;
+    ResponseEntity<ApiResponse> response;
     try {
       ClusterConnectorRequest clusterConnectorRequest =
           ClusterConnectorRequest.builder()
@@ -423,11 +423,17 @@ public class ClusterApiService {
           getRestTemplate()
               .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
 
-      if (ApiResultStatus.SUCCESS.value.equals(
-          Objects.requireNonNull(response.getBody()).get("message"))) {
-        return ApiResultStatus.SUCCESS.value;
-      } else {
-        return response.getBody().get("errorText");
+      ApiResponse apiResponse = response.getBody();
+      if (apiResponse != null) {
+        if (apiResponse.isSuccess()) {
+          return ApiResultStatus.SUCCESS.value;
+        } else {
+          if (apiResponse.getMessage().contains("Connector " + connectorName + " not found")) {
+            // if connector not found in cluster, delete from klaw
+            return ApiResultStatus.SUCCESS.value;
+          }
+          return apiResponse.getMessage();
+        }
       }
 
     } catch (Exception e) {
@@ -438,6 +444,7 @@ public class ClusterApiService {
       }
       throw new KlawException(CLUSTER_API_ERR_105);
     }
+    return ApiResultStatus.FAILURE.value;
   }
 
   public ResponseEntity<ApiResponse> approveTopicRequests(
