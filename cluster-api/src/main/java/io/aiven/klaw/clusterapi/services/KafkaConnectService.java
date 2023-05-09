@@ -98,6 +98,8 @@ public class KafkaConnectService {
     } catch (HttpServerErrorException | HttpClientErrorException e) {
       log.error("Error in updating connector ", e);
       return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_124);
+    } catch (Exception ex) {
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_124).build();
     }
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
