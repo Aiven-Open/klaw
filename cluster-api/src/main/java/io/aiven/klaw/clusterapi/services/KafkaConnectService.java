@@ -141,6 +141,8 @@ public class KafkaConnectService {
     } catch (HttpServerErrorException | HttpClientErrorException e) {
 
       return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_12£);
+    } catch (Exception ex) {
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_12£).build();
     }
     if (responseNew.getStatusCodeValue() == 201) {
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
