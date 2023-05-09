@@ -102,12 +102,17 @@ public class KafkaConnectService {
   }
 
   private static ApiResponse buildErrorResponseFromRestException(
-      HttpStatusCodeException e, String unableToUpdateConnectorOnCluster) {
-    RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+      HttpStatusCodeException e, String defaultErrorMsg) {
+    RestErrorResponse errorResponse = null;
+    try {
+      errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+    } catch (Exception ex) {
+      log.error("Error caught trying to process the error response. ", ex);
+    }
     if (errorResponse != null) {
       return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
     } else {
-      return ApiResponse.builder().success(false).message(unableToUpdateConnectorOnCluster).build();
+      return ApiResponse.builder().success(false).message(defaultErrorMsg).build();
     }
   }
 

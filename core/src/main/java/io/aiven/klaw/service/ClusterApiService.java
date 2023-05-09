@@ -88,6 +88,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -446,18 +447,23 @@ public class ClusterApiService {
           || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return CLUSTER_API_ERR_118;
       }
-
-      RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
-      if (errorResponse != null) {
-        throw new KlawRestException(errorResponse.getMessage());
-      } else {
-        throw new KlawRestException(CLUSTER_API_ERR_118);
-      }
-
+      String errorResponse = getRestErrorResponse(e, CLUSTER_API_ERR_118);
+      throw new KlawRestException(errorResponse);
     } catch (Exception ex) {
       throw new KlawException(CLUSTER_API_ERR_105);
     }
     return ApiResultStatus.FAILURE.value;
+  }
+
+  private String getRestErrorResponse(HttpStatusCodeException e, String defaultErrorMsg) {
+    RestErrorResponse errorResponse = null;
+    try {
+      errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+    } catch (Exception ex) {
+      log.error("Exception caught trying to process error message: ", ex);
+      return defaultErrorMsg;
+    }
+    return errorResponse.getMessage();
   }
 
   public ResponseEntity<ApiResponse> approveTopicRequests(
