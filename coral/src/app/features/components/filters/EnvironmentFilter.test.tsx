@@ -2,7 +2,11 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
-import { getAllEnvironments } from "src/domain/environment";
+import {
+  getAllEnvironments,
+  getEnvironmentsForSchemaRequest,
+  getEnvironmentsForConnectorRequest,
+} from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -11,6 +15,17 @@ jest.mock("src/domain/environment/environment-api.ts");
 const mockGetEnvironments = getAllEnvironments as jest.MockedFunction<
   typeof getAllEnvironments
 >;
+
+const mockGetSchemaRegistryEnvironments =
+  getEnvironmentsForSchemaRequest as jest.MockedFunction<
+    typeof getEnvironmentsForSchemaRequest
+  >;
+
+const mockGetSyncConnectorsEnvironments =
+  getEnvironmentsForConnectorRequest as jest.MockedFunction<
+    typeof getEnvironmentsForConnectorRequest
+  >;
+
 const mockEnvironments = [
   createEnvironment({
     name: "DEV",
@@ -28,6 +43,8 @@ describe("EnvironmentFilter.tsx", () => {
   describe("uses a given endpoint to fetch environments", () => {
     beforeEach(() => {
       mockGetEnvironments.mockResolvedValue([]);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
     });
     afterEach(() => {
       cleanup();
@@ -41,12 +58,16 @@ describe("EnvironmentFilter.tsx", () => {
       });
 
       expect(mockGetEnvironments).toHaveBeenCalled();
+      expect(mockGetSchemaRegistryEnvironments).not.toHaveBeenCalled();
+      expect(mockGetSyncConnectorsEnvironments).not.toHaveBeenCalled();
     });
   });
 
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(<EnvironmentFilter />, {
         memoryRouter: true,
@@ -98,6 +119,8 @@ describe("EnvironmentFilter.tsx", () => {
       const routePath = `/?environment=${mockedQueryParamDev}`;
 
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(<EnvironmentFilter />, {
         memoryRouter: true,
@@ -127,6 +150,8 @@ describe("EnvironmentFilter.tsx", () => {
   describe("handles user selecting a environment", () => {
     beforeEach(async () => {
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(<EnvironmentFilter />, {
         queryClient: true,
@@ -159,6 +184,8 @@ describe("EnvironmentFilter.tsx", () => {
   describe("updates the search param to preserve environment in url", () => {
     beforeEach(async () => {
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
       customRender(<EnvironmentFilter />, {
         queryClient: true,
