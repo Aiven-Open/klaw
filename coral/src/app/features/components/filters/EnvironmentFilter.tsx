@@ -1,16 +1,38 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
-import { Environment, getAllEnvironments } from "src/domain/environment";
+import {
+  Environment,
+  getAllEnvironments,
+  getSchemaRegistryEnvironments,
+  getSyncConnectorsEnvironments,
+} from "src/domain/environment";
 import { HTTPError } from "src/services/api";
 
-function EnvironmentFilter() {
+type EnvironmentEndpoint =
+  | "getAllEnvironments"
+  | "getSchemaRegistryEnvironments"
+  | "getSyncConnectorsEnvironments";
+interface EnvironmentFilterProps {
+  isSchemaRegistryEnvironments?: boolean;
+  environmentEndpoint: EnvironmentEndpoint;
+}
+
+const environmentEndpointMap: {
+  [key in EnvironmentEndpoint]: () => Promise<Environment[]>;
+} = {
+  getAllEnvironments: getAllEnvironments,
+  getSchemaRegistryEnvironments: getSchemaRegistryEnvironments,
+  getSyncConnectorsEnvironments: getSyncConnectorsEnvironments,
+};
+
+function EnvironmentFilter({ environmentEndpoint }: EnvironmentFilterProps) {
   const { environment, setFilterValue } = useFiltersValues();
 
   const { data: environments } = useQuery<Environment[], HTTPError>(
-    ["environment-filter"],
+    [environmentEndpoint],
     {
-      queryFn: getAllEnvironments,
+      queryFn: environmentEndpointMap[environmentEndpoint],
     }
   );
 

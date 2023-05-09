@@ -267,7 +267,10 @@ function ConnectorApprovals() {
       )}
       <TableLayout
         filters={[
-          <EnvironmentFilter key={"environment"} />,
+          <EnvironmentFilter
+            key={"environment"}
+            environmentEndpoint={"getSyncConnectorsEnvironments"}
+          />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,
           <SearchFilter key={"search"} />,

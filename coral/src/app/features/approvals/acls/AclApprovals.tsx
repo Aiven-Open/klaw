@@ -240,7 +240,10 @@ function AclApprovals() {
 
       <TableLayout
         filters={[
-          <EnvironmentFilter key={"environment"} />,
+          <EnvironmentFilter
+            key={"environment"}
+            environmentEndpoint={"getAllEnvironments"}
+          />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,
           <AclTypeFilter key={"aclType"} />,

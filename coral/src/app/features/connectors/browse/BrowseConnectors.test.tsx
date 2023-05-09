@@ -5,7 +5,7 @@ import BrowseConnectors from "src/app/features/connectors/browse/BrowseConnector
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { Connector, getConnectors } from "src/domain/connector";
-import { getAllEnvironments } from "src/domain/environment";
+import { getSyncConnectorsEnvironments } from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { getTeams } from "src/domain/team";
@@ -20,9 +20,10 @@ const mockGetConnectors = getConnectors as jest.MockedFunction<
 
 const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 
-const mockGetAllEnvironments = getAllEnvironments as jest.MockedFunction<
-  typeof getAllEnvironments
->;
+const mockGetSyncConnectorsEnvironments =
+  getSyncConnectorsEnvironments as jest.MockedFunction<
+    typeof getSyncConnectorsEnvironments
+  >;
 
 const mockConnectors: Connector[] = [
   {
@@ -133,7 +134,7 @@ describe("BrowseConnectors.tsx", () => {
   describe("handles successful response with one page", () => {
     beforeAll(async () => {
       mockGetTeams.mockResolvedValue([]);
-      mockGetAllEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue(mockResponseDefault);
 
       customRender(<BrowseConnectors />, {
@@ -180,7 +181,7 @@ describe("BrowseConnectors.tsx", () => {
   describe("handles successful response with three pages", () => {
     beforeAll(async () => {
       mockGetTeams.mockResolvedValue([]);
-      mockGetAllEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue({
         ...mockResponseDefault,
         totalPages: 3,
@@ -220,7 +221,7 @@ describe("BrowseConnectors.tsx", () => {
   describe("handles user stepping through pagination", () => {
     beforeEach(async () => {
       mockGetTeams.mockResolvedValue([]);
-      mockGetAllEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue({
         ...mockResponseDefault,
         totalPages: 4,
@@ -268,7 +269,7 @@ describe("BrowseConnectors.tsx", () => {
 
     beforeEach(async () => {
       mockGetTeams.mockResolvedValue(mockTeams);
-      mockGetAllEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue(mockResponseDefault);
 
       customRender(<BrowseConnectors />, {
@@ -329,7 +330,7 @@ describe("BrowseConnectors.tsx", () => {
 
     beforeEach(async () => {
       mockGetTeams.mockResolvedValue([]);
-      mockGetAllEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue(mockEnvironments);
       mockGetConnectors.mockResolvedValue(mockResponseDefault);
 
       customRender(<BrowseConnectors />, {
@@ -389,7 +390,7 @@ describe("BrowseConnectors.tsx", () => {
     const testSearchInput = "My search name";
     beforeEach(async () => {
       mockGetTeams.mockResolvedValue([]);
-      mockGetAllEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue(mockResponseDefault);
       customRender(<BrowseConnectors />, {
         memoryRouter: true,

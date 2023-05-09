@@ -4,8 +4,8 @@ import userEvent from "@testing-library/user-event";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import {
   getAllEnvironments,
-  getEnvironmentsForSchemaRequest,
-  getEnvironmentsForConnectorRequest,
+  getSchemaRegistryEnvironments,
+  getSyncConnectorsEnvironments,
 } from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -17,13 +17,13 @@ const mockGetEnvironments = getAllEnvironments as jest.MockedFunction<
 >;
 
 const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as jest.MockedFunction<
-    typeof getEnvironmentsForSchemaRequest
+  getSchemaRegistryEnvironments as jest.MockedFunction<
+    typeof getSchemaRegistryEnvironments
   >;
 
 const mockGetSyncConnectorsEnvironments =
-  getEnvironmentsForConnectorRequest as jest.MockedFunction<
-    typeof getEnvironmentsForConnectorRequest
+  getSyncConnectorsEnvironments as jest.MockedFunction<
+    typeof getSyncConnectorsEnvironments
   >;
 
 const mockEnvironments = [
@@ -52,14 +52,49 @@ describe("EnvironmentFilter.tsx", () => {
     });
 
     it("fetches from the getAllEnvironments endpoint", () => {
-      customRender(<EnvironmentFilter />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
 
       expect(mockGetEnvironments).toHaveBeenCalled();
       expect(mockGetSchemaRegistryEnvironments).not.toHaveBeenCalled();
       expect(mockGetSyncConnectorsEnvironments).not.toHaveBeenCalled();
+    });
+
+    it("fetches from the getSchemaRegistryEnvironments endpoint", () => {
+      customRender(
+        <EnvironmentFilter
+          environmentEndpoint={"getSchemaRegistryEnvironments"}
+        />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+
+      expect(mockGetSchemaRegistryEnvironments).toHaveBeenCalled();
+      expect(mockGetEnvironments).not.toHaveBeenCalled();
+      expect(mockGetSyncConnectorsEnvironments).not.toHaveBeenCalled();
+    });
+
+    it("fetches from the getSyncConnectorsEnvironments endpoint", () => {
+      customRender(
+        <EnvironmentFilter
+          environmentEndpoint={"getSyncConnectorsEnvironments"}
+        />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+
+      expect(mockGetSyncConnectorsEnvironments).toHaveBeenCalled();
+      expect(mockGetEnvironments).not.toHaveBeenCalled();
+      expect(mockGetSchemaRegistryEnvironments).not.toHaveBeenCalled();
     });
   });
 
@@ -69,10 +104,13 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
-      customRender(<EnvironmentFilter />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
@@ -122,11 +160,14 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
-      customRender(<EnvironmentFilter />, {
-        memoryRouter: true,
-        queryClient: true,
-        customRoutePath: routePath,
-      });
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        {
+          memoryRouter: true,
+          queryClient: true,
+          customRoutePath: routePath,
+        }
+      );
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
@@ -153,10 +194,13 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
-      customRender(<EnvironmentFilter />, {
-        queryClient: true,
-        memoryRouter: true,
-      });
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
@@ -187,10 +231,13 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
-      customRender(<EnvironmentFilter />, {
-        queryClient: true,
-        browserRouter: true,
-      });
+      customRender(
+        <EnvironmentFilter environmentEndpoint={"getAllEnvironments"} />,
+        {
+          queryClient: true,
+          browserRouter: true,
+        }
+      );
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );

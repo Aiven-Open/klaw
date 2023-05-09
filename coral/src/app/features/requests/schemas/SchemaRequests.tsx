@@ -164,7 +164,10 @@ function SchemaRequests() {
       )}
       <TableLayout
         filters={[
-          <EnvironmentFilter key={"environments"} />,
+          <EnvironmentFilter
+            key={"environments"}
+            environmentEndpoint={"getSchemaRegistryEnvironments"}
+          />,
           <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,
           <TopicFilter key={"topic"} />,

@@ -51,7 +51,10 @@ function BrowseConnectors() {
     <TableLayout
       filters={[
         <TeamFilter key={"team"} />,
-        <EnvironmentFilter key={"environment"} />,
+        <EnvironmentFilter
+          key={"environment"}
+          environmentEndpoint={"getSyncConnectorsEnvironments"}
+        />,
         <SearchFilter key="connector-name" />,
       ]}
       table={

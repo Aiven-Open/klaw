@@ -52,7 +52,10 @@ function BrowseTopics() {
     <TableLayout
       filters={[
         <TeamFilter key="team" />,
-        <EnvironmentFilter key="environment" />,
+        <EnvironmentFilter
+          key="environment"
+          environmentEndpoint={"getAllEnvironments"}
+        />,
         <TopicFilter key="search" />,
       ]}
       table={

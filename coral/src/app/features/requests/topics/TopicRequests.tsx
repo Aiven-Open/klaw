@@ -154,7 +154,10 @@ function TopicRequests() {
       )}
       <TableLayout
         filters={[
-          <EnvironmentFilter key="environments" />,
+          <EnvironmentFilter
+            key="environments"
+            environmentEndpoint={"getEnvironmentsForTopicRequest"}
+          />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,
           <TopicFilter key={"topic"} />,
