@@ -300,7 +300,7 @@ describe("AclRequests", () => {
       customRender(<AclRequests />, {
         queryClient: true,
         memoryRouter: true,
-        customRoutePath: "/?topic=abc",
+        customRoutePath: "/?search=abc",
       });
       expect(getAclRequests).toHaveBeenNthCalledWith(1, {
         pageNo: "1",
@@ -318,11 +318,9 @@ describe("AclRequests", () => {
         queryClient: true,
         memoryRouter: true,
       });
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
       expect(search).toBeEnabled();
-      expect(search).toHaveAccessibleDescription(
-        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
-      );
+
       await userEvent.type(search, "abc");
       await waitFor(() => {
         expect(getAclRequests).toHaveBeenLastCalledWith({

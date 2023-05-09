@@ -3,15 +3,21 @@ import debounce from "lodash/debounce";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import type { ChangeEvent } from "react";
 
-function SearchFilter() {
+type SearchFilterProps = {
+  placeholder: string;
+  description: string;
+};
+
+function SearchFilter({ placeholder, description }: SearchFilterProps) {
   const { search, setFilterValue } = useFiltersValues();
   return (
-    <div key={"search"}>
+    <>
       <SearchInput
         type={"search"}
+        aria-label={placeholder}
         aria-describedby={"search-field-description"}
         role="search"
-        placeholder={`Search Connector name`}
+        placeholder={placeholder}
         defaultValue={search.toString()}
         onChange={debounce(
           (event: ChangeEvent<HTMLInputElement>) =>
@@ -23,12 +29,10 @@ function SearchFilter() {
         )}
       />
       <div id={"search-field-description"} className={"visually-hidden"}>
-        Search for an partial match in name. Searching starts automatically with
-        a little delay while typing. Press &quot;Escape&quot; to delete all your
-        input.
+        {description}
       </div>
-    </div>
+    </>
   );
 }
 
-export default SearchFilter;
+export { SearchFilter };

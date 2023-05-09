@@ -155,12 +155,9 @@ describe("SchemaRequest", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
 
       expect(search).toBeVisible();
-      expect(search).toHaveAccessibleDescription(
-        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
-      );
     });
 
     it("shows a toggle to only show users own requests", () => {
@@ -489,7 +486,7 @@ describe("SchemaRequest", () => {
       customRender(<SchemaRequests />, {
         queryClient: true,
         memoryRouter: true,
-        customRoutePath: "/?topic=TEST_SEARCH_VALUE",
+        customRoutePath: "/?search=TEST_SEARCH_VALUE",
       });
 
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
@@ -508,7 +505,7 @@ describe("SchemaRequest", () => {
     });
 
     it("enables user to search for topic", async () => {
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
 
       // since the search term is persisted, it's the current
       // value of the search element.

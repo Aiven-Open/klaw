@@ -1,32 +1,46 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import SearchFilter from "src/app/features/components/filters/SearchFilter";
+import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("SearchFilter.tsx", () => {
+  const placeholder = "Search something";
+  const description = "This is a description for screenreaders";
+
   describe("renders default view when no query is set", () => {
     beforeAll(async () => {
-      customRender(<SearchFilter />, {
-        memoryRouter: true,
-      });
+      customRender(
+        <SearchFilter placeholder={placeholder} description={description} />,
+        {
+          memoryRouter: true,
+        }
+      );
     });
 
     afterAll(cleanup);
 
     it("renders a search input", () => {
-      const searchInput = screen.getByRole("search");
+      const searchInput = screen.getByRole("search", { name: placeholder });
 
       expect(searchInput).toBeEnabled();
     });
-  });
 
-  describe("it describes the target entity of the search", () => {
-    afterEach(cleanup);
-    it("provides description", () => {
-      customRender(<SearchFilter />, {
-        memoryRouter: true,
-      });
-      screen.getByPlaceholderText("Search Connector name");
+    it("shows placeholder as accessible label", () => {
+      const searchInput = screen.getByRole("search");
+
+      expect(searchInput).toHaveAccessibleName(placeholder);
+    });
+
+    it("shows a placeholder dependent on prop", () => {
+      const searchInput = screen.getByRole("search", { name: placeholder });
+
+      expect(searchInput).toHaveAttribute("placeholder", placeholder);
+    });
+
+    it("shows a description for AT dependent on prop", () => {
+      const searchInput = screen.getByRole("search", { name: placeholder });
+
+      expect(searchInput).toHaveAccessibleDescription(description);
     });
   });
 
@@ -36,10 +50,13 @@ describe("SearchFilter.tsx", () => {
     beforeEach(async () => {
       const routePath = `/topics?search=${topicTest}`;
 
-      customRender(<SearchFilter />, {
-        memoryRouter: true,
-        customRoutePath: routePath,
-      });
+      customRender(
+        <SearchFilter placeholder={placeholder} description={description} />,
+        {
+          memoryRouter: true,
+          customRoutePath: routePath,
+        }
+      );
     });
 
     afterEach(() => {
@@ -55,9 +72,12 @@ describe("SearchFilter.tsx", () => {
 
   describe("handles user typing a search", () => {
     beforeEach(async () => {
-      customRender(<SearchFilter />, {
-        memoryRouter: true,
-      });
+      customRender(
+        <SearchFilter placeholder={placeholder} description={description} />,
+        {
+          memoryRouter: true,
+        }
+      );
     });
 
     afterEach(() => {
@@ -66,7 +86,7 @@ describe("SearchFilter.tsx", () => {
     });
 
     it("sets the topic the user choose as active option", async () => {
-      const searchInput = screen.getByRole("search");
+      const searchInput = screen.getByRole("search", { name: placeholder });
 
       await userEvent.type(searchInput, "testing");
 
@@ -76,9 +96,12 @@ describe("SearchFilter.tsx", () => {
 
   describe("updates the search param to preserve topic in url", () => {
     beforeEach(async () => {
-      customRender(<SearchFilter />, {
-        browserRouter: true,
-      });
+      customRender(
+        <SearchFilter placeholder={placeholder} description={description} />,
+        {
+          browserRouter: true,
+        }
+      );
     });
 
     afterEach(() => {
@@ -93,7 +116,7 @@ describe("SearchFilter.tsx", () => {
     });
 
     it("sets `testing` and `page=1` as search param when user types in search input", async () => {
-      const searchInput = screen.getByRole("search");
+      const searchInput = screen.getByRole("search", { name: placeholder });
 
       await userEvent.type(searchInput, "testing");
 

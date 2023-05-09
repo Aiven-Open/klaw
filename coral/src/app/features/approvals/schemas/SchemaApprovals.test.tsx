@@ -213,12 +213,9 @@ describe("SchemaApprovals", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
 
       expect(search).toBeVisible();
-      expect(search).toHaveAccessibleDescription(
-        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
-      );
     });
 
     it("shows a table with all schema requests and a header row", () => {
@@ -595,7 +592,7 @@ describe("SchemaApprovals", () => {
         defaultApiParams
       );
 
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
 
       await userEvent.type(search, "myTopic");
 

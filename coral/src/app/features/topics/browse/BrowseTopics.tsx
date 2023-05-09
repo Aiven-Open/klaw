@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
-import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import TopicTable from "src/app/features/topics/browse/components/TopicTable";
@@ -16,7 +16,7 @@ function BrowseTopics() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { topic, environment, teamId } = useFiltersValues();
+  const { search, environment, teamId } = useFiltersValues();
 
   const {
     data: topics,
@@ -24,13 +24,13 @@ function BrowseTopics() {
     isError,
     error,
   } = useQuery({
-    queryKey: ["browseTopics", currentPage, topic, environment, teamId],
+    queryKey: ["browseTopics", currentPage, search, environment, teamId],
     queryFn: () =>
       getTopics({
         pageNo: currentPage.toString(),
         env: environment,
         teamId: teamId === "ALL" ? undefined : Number(teamId),
-        topicnamesearch: topic.length === 0 ? undefined : topic,
+        topicnamesearch: search.length === 0 ? undefined : search,
       }),
     keepPreviousData: true,
   });
@@ -56,7 +56,7 @@ function BrowseTopics() {
           key="environment"
           environmentEndpoint={"getEnvironments"}
         />,
-        <TopicFilter key="search" />,
+        <SearchTopicFilter key={"search"} />,
       ]}
       table={
         <TopicTable

@@ -11,7 +11,7 @@ import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFi
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
-import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
@@ -33,9 +33,11 @@ function TopicApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, topic, teamId, requestType } = useFiltersValues({
-    defaultStatus: "CREATED",
-  });
+  const { environment, status, search, teamId, requestType } = useFiltersValues(
+    {
+      defaultStatus: "CREATED",
+    }
+  );
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -71,7 +73,7 @@ function TopicApprovals() {
       environment,
       status,
       teamId,
-      topic,
+      search,
       requestType,
     ],
     queryFn: () =>
@@ -80,7 +82,7 @@ function TopicApprovals() {
         env: environment,
         requestStatus: status,
         teamId: teamId !== defaultType ? Number(teamId) : undefined,
-        search: topic,
+        search: search,
         operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
@@ -283,7 +285,7 @@ function TopicApprovals() {
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,
           <TeamFilter key={"team"} />,
-          <TopicFilter key={"topic"} />,
+          <SearchTopicFilter key={"topic"} />,
         ]}
         table={table}
         pagination={pagination}

@@ -285,13 +285,10 @@ describe("AclApprovals", () => {
       expect(select).toHaveDisplayValue("All request types");
     });
 
-    it("renders a select to filter by environment with default", () => {
-      const search = screen.getByRole("search");
+    it("renders a search field for topic names", () => {
+      const search = screen.getByRole("search", { name: "Search Topic name" });
 
       expect(search).toBeVisible();
-      expect(search).toHaveAccessibleDescription(
-        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
-      );
     });
 
     it("filters by Environment", async () => {
@@ -365,7 +362,7 @@ describe("AclApprovals", () => {
     });
 
     it("filters by Topic", async () => {
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
 
       expect(search).toBeEnabled();
 
@@ -418,7 +415,7 @@ describe("AclApprovals", () => {
       await userEvent.selectOptions(select, option);
       expect(select).toHaveDisplayValue("PRODUCER");
 
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
       expect(search).toBeEnabled();
       await userEvent.type(search, "topicname");
       expect(search).toHaveValue("topicname");
