@@ -512,7 +512,7 @@ public class ClusterApiService {
                 .build();
       } else {
         uri = clusterConnUrl + URI_DELETE_TOPICS;
-        if (deleteAssociatedSchema) {
+        if (deleteAssociatedSchema && envSelected.getAssociatedEnv() != null) {
           // get associated schema env
           Env schemaEnvSelected =
               manageDatabase

@@ -62,7 +62,6 @@ public class KafkaConnectController {
       ApiResponse result = kafkaConnectService.postNewConnector(clusterConnectorRequest);
       return new ResponseEntity<>(result, HttpStatus.OK);
     } catch (Exception e) {
-      log.error("error : ", e);
       return new ResponseEntity<>(
           ApiResponse.builder().success(false).message(e.getMessage()).build(),
           HttpStatus.INTERNAL_SERVER_ERROR);

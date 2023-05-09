@@ -35,6 +35,8 @@ public class KafkaConnectService {
       GET_CONNECTOR_DETAILS_TYPEREF = new ParameterizedTypeReference<>() {};
   public static final String UNABLE_TO_CREATE_CONNECTOR_ON_CLUSTER =
       "Unable to create Connector on Cluster.";
+  public static final String UNABLE_TO_UPDATE_CONNECTOR_ON_CLUSTER =
+      "Unable to update Connector on Cluster";
 
   final ClusterApiUtils clusterApiUtils;
 
@@ -63,9 +65,17 @@ public class KafkaConnectService {
               HttpMethod.DELETE,
               request,
               new ParameterizedTypeReference<>() {});
-    } catch (RestClientException e) {
+    } catch (HttpServerErrorException | HttpClientErrorException e) {
       log.error("Error in deleting connector ", e);
-      return ApiResponse.builder().success(false).message(e.getMessage()).build();
+      RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+      if (errorResponse != null) {
+        return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
+      } else {
+        return ApiResponse.builder()
+            .success(false)
+            .message("Unable To Delete Connector on Cluster.")
+            .build();
+      }
     }
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
@@ -89,9 +99,17 @@ public class KafkaConnectService {
 
     try {
       reqDetails.getRight().put(reqDetails.getLeft(), request, String.class);
-    } catch (RestClientException e) {
+    } catch (HttpServerErrorException | HttpClientErrorException e) {
       log.error("Error in updating connector ", e);
-      return ApiResponse.builder().success(false).message(e.getMessage()).build();
+      RestErrorResponse errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+      if (errorResponse != null) {
+        return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
+      } else {
+        return ApiResponse.builder()
+            .success(false)
+            .message(UNABLE_TO_UPDATE_CONNECTOR_ON_CLUSTER)
+            .build();
+      }
     }
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
