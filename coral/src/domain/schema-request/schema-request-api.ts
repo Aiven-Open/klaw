@@ -26,16 +26,17 @@ type CreateSchemaRequestPayload = ResolveIntersectionTypes<
 const createSchemaRequest = (
   params: CreateSchemaRequestPayload
 ): Promise<KlawApiResponse<"uploadSchema">> => {
-  const payload = {
+  const payload: KlawApiRequest<"uploadSchema"> = {
     ...params,
     schemaversion: "1.0",
     appname: "App",
+    requestOperationType: "CREATE",
   };
 
-  return api.post<KlawApiResponse<"uploadSchema">, CreateSchemaRequestPayload>(
-    API_PATHS.uploadSchema,
-    payload
-  );
+  return api.post<
+    KlawApiResponse<"uploadSchema">,
+    KlawApiRequest<"uploadSchema">
+  >(API_PATHS.uploadSchema, payload);
 };
 
 type GetSchemaRequestsForApproverQueryParams = ResolveIntersectionTypes<
