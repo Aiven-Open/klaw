@@ -26,6 +26,7 @@ const TopicNameOrPrefixField = ({
     <Input
       labelText="Topic name or prefix"
       defaultValue="Select environment and topic pattern type first"
+      height={45}
       readOnly
     />
   );

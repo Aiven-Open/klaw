@@ -4,6 +4,7 @@ import {
   Divider,
   Grid,
   GridItem,
+  Input,
   SecondaryButton,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
@@ -150,7 +151,19 @@ const TopicConsumerForm = ({
           </GridItem>
 
           <GridItem>
-            <TopicNameField topicNames={topicNames} readOnly={isSubscription} />
+            {environment === undefined ? (
+              <Input
+                labelText="Topic name"
+                defaultValue="Select environment first"
+                height={45}
+                readOnly
+              />
+            ) : (
+              <TopicNameField
+                topicNames={topicNames}
+                readOnly={isSubscription}
+              />
+            )}
           </GridItem>
           <GridItem>
             {hideConsumerGroupField ? (
