@@ -26,8 +26,8 @@ public class EmailConfig {
   @Value("${spring.mail.password:null}")
   private String smtpFromPassword;
 
-  @Value("${spring.mail.properties.mail.smtp.auth:null}")
-  private String smtpAuthentication;
+  @Value("${spring.mail.properties.mail.smtp.auth:false}")
+  private boolean smtpAuthentication;
 
   @Value("${spring.mail.properties.mail.smtp.starttls.enable:null}")
   private String smtpTlsEnable;
@@ -45,8 +45,10 @@ public class EmailConfig {
     mailSender.setHost(smtpHost);
     mailSender.setPort(smtpPort);
 
-    mailSender.setUsername(smtpFromUsername);
-    mailSender.setPassword(smtpFromPassword);
+    if (smtpAuthentication) {
+      mailSender.setUsername(smtpFromUsername);
+      mailSender.setPassword(smtpFromPassword);
+    }
 
     Properties props = mailSender.getJavaMailProperties();
     props.put("mail.transport.protocol", mailProtocol);
