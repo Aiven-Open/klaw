@@ -58,7 +58,7 @@ function HeaderNavigation() {
             <HeaderMenuLink
               icon={notifications}
               linkText={"Go to approve requests"}
-              href={`/approvals/topics`}
+              href={Routes.APPROVALS}
             />
           </li>
           <li>

@@ -1,5 +1,6 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import HeaderNavigation from "src/app/layout/header/HeaderNavigation";
+import { Routes } from "src/app/router_utils";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
   tabThroughBackward,
@@ -7,7 +8,7 @@ import {
 } from "src/services/test-utils/tabbing";
 
 const quickLinksNavItems = [
-  { name: "Go to approve requests", linkTo: "/approvals/topics" },
+  { name: "Go to approve requests", linkTo: Routes.APPROVALS },
   {
     name: "Go to Klaw documentation page",
     linkTo: "https://www.klaw-project.io/docs",
