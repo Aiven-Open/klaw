@@ -14,7 +14,6 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
       style={{
         gridTemplateColumns: "245px 1fr",
         gridTemplateRows: "auto 1fr",
-        isolation: "isolate",
       }}
     >
       <GridItem
@@ -53,6 +52,7 @@ function BasePage({ headerContent, content, sidebar }: BasePageProps) {
           flexDirection={"column"}
           padding={"l2"}
           width={"full"}
+          style={{ isolation: "isolate" }}
         >
           {content}
         </Box>
