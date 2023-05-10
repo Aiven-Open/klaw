@@ -1,8 +1,8 @@
 package io.aiven.klaw.clusterapi.services;
 
-import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_124;
-import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_125;
-import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_12;
+import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_2;
+import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_3;
+import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_1;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
@@ -68,10 +68,10 @@ public class KafkaConnectService {
               new ParameterizedTypeReference<>() {});
     } catch (HttpServerErrorException | HttpClientErrorException e) {
       log.error("Error in deleting connector ", e);
-      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_125);
+      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_3);
     } catch (RestClientException ex) {
       log.error("Error in deleting connector ", ex);
-      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_125).build();
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_3).build();
     }
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
@@ -97,9 +97,9 @@ public class KafkaConnectService {
       reqDetails.getRight().put(reqDetails.getLeft(), request, String.class);
     } catch (HttpServerErrorException | HttpClientErrorException e) {
       log.error("Error in updating connector ", e);
-      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_124);
+      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_2);
     } catch (Exception ex) {
-      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_124).build();
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_2).build();
     }
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
@@ -140,9 +140,9 @@ public class KafkaConnectService {
           reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
     } catch (HttpServerErrorException | HttpClientErrorException e) {
 
-      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_12);
+      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_1);
     } catch (Exception ex) {
-      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_12).build();
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_1).build();
     }
     if (responseNew.getStatusCodeValue() == 201) {
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
