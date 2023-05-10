@@ -12,7 +12,7 @@ const ConnectorsPage = () => {
     <Layout>
       <PreviewBanner linkTarget={"/kafkaConnectors"} />
       <PageHeader
-        title={"All Kafka Connectors"}
+        title={"All Connectors"}
         primaryAction={{
           text: "Request new Connector",
           onClick: () => navigate("/connectors/request"),

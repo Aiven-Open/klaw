@@ -250,7 +250,9 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 }
 
         $scope.updatedSyncArray = [];
-        $scope.updateTopicDetails = function(sequence, teamselected,topic, partitions, replicationFactor) {
+        $scope.topicsWithWarning = [];
+        $scope.topicsWithWarningBulk = [];
+        $scope.updateTopicDetails = function(sequence, teamselected,topic, partitions, replicationFactor, isValidTopic) {
 
             var seqFound = -1;
             var i;
@@ -260,6 +262,9 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             }
             if(seqFound != -1){
                 $scope.updatedSyncArray.splice(seqFound,1);
+                 if(!isValidTopic) {
+                 $scope.topicsWithWarning.splice($scope.topicsWithWarning.indexOf(topic), 1);
+                 }
                 return;
             }
 
@@ -270,7 +275,9 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             serviceInput['replicationFactor'] = replicationFactor;
             serviceInput['teamSelected'] = teamselected;
             serviceInput['envSelected'] = $scope.getTopics.envName;
-
+            if(!isValidTopic) {
+                $scope.topicsWithWarning.push(topic);
+            }
             $scope.updatedSyncArray.push(serviceInput);
         }
 
@@ -292,9 +299,17 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 return;
             }
 
+               var warningMsg="";
+               if($scope.topicsWithWarning.length > 0) {
+               warningMsg = "This selection contains the following topic(s) "+ $scope.topicsWithWarning + " which have validation warnings.";
+               } else {
+                warningMsg = "You would like to Synchronize topics with this selection ? ";
+               }
+
+
             swal({
                     title: "Are you sure?",
-                    text: "You would like to Synchronize topics with this selection ? ",
+                    text: warningMsg,
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",
@@ -411,6 +426,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
     			$scope.resultBrowseBulk = output["resultSet"];
     			if($scope.resultBrowseBulk != null && $scope.resultBrowseBulk.length != 0){
     			    $scope.allTopicsCount = output["allTopicsCount"];
+    			    $scope.allTopicWarningsCount = output["allTopicWarningsCount"];
                     $scope.resultPagesBulk = $scope.resultBrowseBulk[0].allPageNos;
                     $scope.resultPageSelectedBulk = pageNoSelected;
                     $scope.currentPageSelectedBulk = $scope.resultBrowseBulk[0].currentPage;
@@ -450,7 +466,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
 	    $scope.updatedTopicDetailsArray = [];
 
-    	$scope.updateTopicIds = function(topicId, topicPartitions, topicReplicationFactor, isTopicSelected){
+    	$scope.updateTopicIds = function(topicId, topicPartitions, topicReplicationFactor, isTopicSelected, isValidTopic){
     	    if($scope.updatedTopicIdsArray.includes(topicId) && !isTopicSelected)
                 $scope.updatedTopicIdsArray.splice($scope.updatedTopicIdsArray.indexOf(topicId), 1);
             else if(isTopicSelected)
@@ -460,6 +476,12 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
             serviceInput['topicName'] = topicId;
             serviceInput['topicPartitions'] = topicPartitions;
             serviceInput['topicReplicationFactor'] = topicReplicationFactor;
+            if(!isValidTopic && isTopicSelected) {
+             $scope.topicsWithWarningBulk.push(topicId);
+             } else if(!isValidTopic && !isTopicSelected) {
+                $scope.topicsWithWarningBulk.splice($scope.topicsWithWarningBulk.indexOf(topicId), 1);
+             }
+
 
             $scope.updatedTopicDetailsArray.push(serviceInput);
     	}
@@ -516,6 +538,16 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
                 return;
             }
 
+             var warningMsg = "You would like to Synchronize "+ tmpCount +" topics to the selected team " + $scope.getTopicsBulk.team +
+                                                                              " and environment ?";
+               if($scope.topicsWithWarningBulk.length > 0) {
+               warningMsg += " This selection contains the following topics which have validation warnings "+ $scope.topicsWithWarningBulk;
+               } else if(typeOfSync == "ALL_TOPICS" && $scope.allTopicWarningsCount > 0 ) {
+               warningMsg +=" There are " + $scope.allTopicWarningsCount + " validation warnings on topics in this list.";
+               }
+
+
+
             var serviceInput = {};
             serviceInput['topicNames'] = $scope.updatedTopicIdsArray;
             serviceInput['sourceEnv'] = $scope.getTopicsBulk.envName;
@@ -526,8 +558,7 @@ app.controller("synchronizeTopicsCtrl", function($scope, $http, $location, $wind
 
             swal({
                     title: "Are you sure?",
-                    text: "You would like to Synchronize "+ tmpCount +" topics to the selected team " + $scope.getTopicsBulk.team +
-                    " and environment ?",
+                    text: warningMsg,
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonColor: "#DD6B55",

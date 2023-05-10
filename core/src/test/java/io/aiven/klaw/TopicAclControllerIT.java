@@ -79,7 +79,7 @@ public class TopicAclControllerIT {
   private static final String superAdminPwd = "kwsuperadmin123$$";
   private static final String user1 = "tkwusera", user2 = "tkwuserb", user3 = "tkwuserc";
   private static final String topicName = "testtopic";
-  private static final int topicId1 = 1001, topicId3 = 1004, topicId4 = 1006;
+  private static final int topicId1 = 1001, topicId3 = 1004, topicId4 = 1006, topicId5 = 1008;
 
   @BeforeAll
   public static void setup() {
@@ -1028,5 +1028,97 @@ public class TopicAclControllerIT {
         .getResponse()
         .getContentAsString();
     return topicName;
+  }
+
+  @Test
+  @Order(29)
+  public void createEnvWithPrefixAndSuffix() throws Exception {
+    EnvModel envModel = mockMethods.getEnvModel("TST");
+    envModel.getParams().setTopicPrefix(List.of("prefix-"));
+    envModel.getParams().setTopicSuffix(List.of("-suffix"));
+    envModel.setId("3");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewEnv")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getEnvs")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<Map<String, Object>> clusterModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(clusterModels).hasSize(3);
+  }
+
+  @Test
+  @Order(30)
+  public void createTopicRequestFailValidation() throws Exception {
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId5);
+    addTopicRequest.setTopicname("prefix-t-suffix");
+    addTopicRequest.setEnvironment("3");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/createTopics")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isFalse();
+    assertThat(response1.getMessage())
+        .isEqualTo(
+            "Topic name: prefix-t-suffix is not long enough when prefix and suffix's are excluded. 3 minimum are required to be unique.");
+  }
+
+  @Test
+  @Order(31)
+  public void createTopicRequestFailValidation_prefix_suffix_overlap() throws Exception {
+    TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId5);
+    addTopicRequest.setTopicname("prefix-suffix");
+    addTopicRequest.setEnvironment("3");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/createTopics")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isBadRequest())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isFalse();
+    assertThat(response1.getMessage())
+        .isEqualTo(
+            "Topic Suffix and Topic Prefix overlap there is a requirement for prefix-suffix characters minimum to be unique between the prefix and suffix.");
   }
 }

@@ -179,7 +179,7 @@ class RequestControllerTest {
   @Order(9)
   @Test
   public void givenARequestToApproveMulitpleCallCorrectCONNECTORServiceAndReturnSuccessOK()
-      throws KlawException {
+      throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.approveConnectorRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true));
     ResponseEntity<List<ApiResponse>> result =
@@ -193,7 +193,7 @@ class RequestControllerTest {
   @Test
   public void
       givenARequestToApproveMulitpleCallCorrectCONNECTORServiceAndReturnSuccessMultiStatusResponse()
-          throws KlawException {
+          throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.approveConnectorRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.SUCCESS, true))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
@@ -207,7 +207,7 @@ class RequestControllerTest {
   @Order(11)
   @Test
   public void givenARequestToApproveCallCorrectCONNECTORServiceAndReturnISEResponse()
-      throws KlawException {
+      throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.approveConnectorRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
@@ -219,7 +219,7 @@ class RequestControllerTest {
   @Order(12)
   @Test
   public void givenMultipleRequestToApproveCallCorrectCONNECTORServiceAndReturnISEResponse()
-      throws KlawException {
+      throws KlawException, KlawRestException {
     when(kafkaConnectControllerService.approveConnectorRequests(anyString()))
         .thenReturn(getApiResponse(ApiResultStatus.FAILURE, false));
     ResponseEntity<List<ApiResponse>> result =
@@ -285,7 +285,7 @@ class RequestControllerTest {
   @Order(17)
   @Test
   public void givenMultipleRequestToApproveCallCorrectUSERServiceAndReturnISEResponse()
-      throws KlawException {
+      throws KlawException, KlawRestException {
 
     ResponseEntity<List<ApiResponse>> result =
         controller.approveRequest(

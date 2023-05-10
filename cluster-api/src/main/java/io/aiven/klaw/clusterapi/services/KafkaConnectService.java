@@ -1,11 +1,16 @@
 package io.aiven.klaw.clusterapi.services;
 
+import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_1;
+import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_2;
+import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_3;
+
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.error.RestErrorResponse;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,6 +24,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -37,10 +45,8 @@ public class KafkaConnectService {
     this.clusterApiUtils = clusterApiUtils;
   }
 
-  public Map<String, String> deleteConnector(ClusterConnectorRequest clusterConnectorRequest) {
+  public ApiResponse deleteConnector(ClusterConnectorRequest clusterConnectorRequest) {
     log.info("Into deleteConnector {}", clusterConnectorRequest);
-    Map<String, String> result = new HashMap<>();
-
     String suffixUrl =
         clusterConnectorRequest.getEnv()
             + "/connectors/"
@@ -60,20 +66,18 @@ public class KafkaConnectService {
               HttpMethod.DELETE,
               request,
               new ParameterizedTypeReference<>() {});
-    } catch (RestClientException e) {
+    } catch (HttpServerErrorException | HttpClientErrorException e) {
       log.error("Error in deleting connector ", e);
-      result.put("result", ApiResultStatus.ERROR.value);
-      result.put("errorText", e.toString().replaceAll("\"", ""));
-      return result;
+      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_3);
+    } catch (RestClientException ex) {
+      log.error("Error in deleting connector ", ex);
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_3).build();
     }
-    result.put("result", ApiResultStatus.SUCCESS.value);
-    return result;
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 
-  public Map<String, String> updateConnector(ClusterConnectorRequest clusterConnectorRequest) {
+  public ApiResponse updateConnector(ClusterConnectorRequest clusterConnectorRequest) {
     log.info("Into updateConnector {}", clusterConnectorRequest);
-    Map<String, String> result = new HashMap<>();
-
     String suffixUrl =
         clusterConnectorRequest.getEnv()
             + "/connectors/"
@@ -91,15 +95,28 @@ public class KafkaConnectService {
 
     try {
       reqDetails.getRight().put(reqDetails.getLeft(), request, String.class);
-    } catch (RestClientException e) {
+    } catch (HttpServerErrorException | HttpClientErrorException e) {
       log.error("Error in updating connector ", e);
-      result.put("result", ApiResultStatus.ERROR.value);
-      result.put("errorText", e.toString().replaceAll("\"", ""));
-      return result;
+      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_2);
+    } catch (Exception ex) {
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_2).build();
     }
-    result.put("result", ApiResultStatus.SUCCESS.value);
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+  }
 
-    return result;
+  private static ApiResponse buildErrorResponseFromRestException(
+      HttpStatusCodeException e, String defaultErrorMsg) {
+    RestErrorResponse errorResponse = null;
+    try {
+      errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+    } catch (Exception ex) {
+      log.error("Error caught trying to process the error response. ", ex);
+    }
+    if (errorResponse != null) {
+      return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
+    } else {
+      return ApiResponse.builder().success(false).message(defaultErrorMsg).build();
+    }
   }
 
   public ApiResponse postNewConnector(ClusterConnectorRequest clusterConnectorRequest)
@@ -121,9 +138,11 @@ public class KafkaConnectService {
     try {
       responseNew =
           reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
-    } catch (RestClientException e) {
-      log.error("Error in registering new connector ", e);
-      throw new Exception(e.toString());
+    } catch (HttpServerErrorException | HttpClientErrorException e) {
+
+      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_1);
+    } catch (Exception ex) {
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_1).build();
     }
     if (responseNew.getStatusCodeValue() == 201) {
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();

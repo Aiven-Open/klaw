@@ -146,32 +146,29 @@ public class KafkaConnectControllerTest {
   @Test
   public void updateConnector() throws Exception {
     String postUrl = "/topics/updateConnector";
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ClusterConnectorRequest clusterConnectorRequest = getClusterConnectorRequest();
     String jsonReq = new ObjectMapper().writer().writeValueAsString(clusterConnectorRequest);
-    when(kafkaConnectService.updateConnector(any())).thenReturn(resultMap);
+    when(kafkaConnectService.updateConnector(any())).thenReturn(apiResponse);
 
     mvc.perform(post(postUrl).content(jsonReq).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", hasKey("result")));
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
   }
 
   @Test
   public void deleteConnector() throws Exception {
     String postUrl = "/topics/deleteConnector";
-    Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", ApiResultStatus.SUCCESS.value);
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ClusterConnectorRequest clusterConnectorRequest = getClusterConnectorRequest();
     String jsonReq = new ObjectMapper().writer().writeValueAsString(clusterConnectorRequest);
-    when(kafkaConnectService.deleteConnector(any())).thenReturn(resultMap);
+    when(kafkaConnectService.deleteConnector(any())).thenReturn(apiResponse);
 
     mvc.perform(post(postUrl).content(jsonReq).contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", hasKey("result")))
-        .andExpect(jsonPath("$", hasValue(ApiResultStatus.SUCCESS.value)));
+        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
   }
 
   private static ClusterConnectorRequest getClusterConnectorRequest() {

@@ -31,7 +31,7 @@ const navLinks = [
     linkTo: "/topics",
   },
   {
-    name: "Kafka Connectors",
+    name: "Connectors",
     linkTo: "/connectors",
   },
   { name: "Approve requests", linkTo: "/approvals" },
@@ -47,7 +47,7 @@ const submenuItems = [
 const navOrderFirstLevel = [
   { name: "Dashboard", isSubmenu: false },
   { name: "Topics", isSubmenu: false },
-  { name: "Kafka Connectors", isSubmenu: false },
+  { name: "Connectors", isSubmenu: false },
   { name: "Users and teams", isSubmenu: true },
   { name: "Approve requests", isSubmenu: false },
   { name: "My team's requests", isSubmenu: false },

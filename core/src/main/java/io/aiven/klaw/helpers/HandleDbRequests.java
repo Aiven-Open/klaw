@@ -5,6 +5,7 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +83,7 @@ public interface HandleDbRequests {
   List<KafkaConnectorRequest> getAllConnectorRequests(
       String requestor,
       RequestOperationType requestOperationType,
+      RequestStatus requestStatus,
       String env,
       String wildcardSearch,
       int tenantId,

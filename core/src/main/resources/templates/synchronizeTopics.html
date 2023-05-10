@@ -563,13 +563,12 @@
 										</thead>
 										<tbody>
 										<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topicname}}" class="gradeX">
-
 											<td>{{ resultBrowset.topicname}}</td>
 											<td>{{ resultBrowset.topicpartitions}}</td>
 											<td>{{ resultBrowset.replicationfactor}}</td>
 											<td ng-show="resultBrowset.remarks != 'DELETED'">
 												<select class="form-control custom-select" ng-change="updateTopicDetails(resultBrowset.sequence, resultBrowset.teamname, resultBrowset.topicname,
-												 resultBrowset.topicpartitions, resultBrowset.replicationfactor)"
+												 resultBrowset.topicpartitions, resultBrowset.replicationfactor,resultBrowset.validatedTopic)"
 														ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
 														ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 													<option value="" selected="selected">
@@ -578,7 +577,7 @@
 											</td>
 											<td ng-show="resultBrowset.remarks == 'DELETED'">
 												<select class="form-control custom-select" ng-change="updateTopicDetails(resultBrowset.sequence, resultBrowset.teamname, resultBrowset.topicname,
-												 resultBrowset.topicpartitions, resultBrowset.replicationfactor)"
+												 resultBrowset.topicpartitions, resultBrowset.replicationfactor,resultBrowset.validatedTopic)"
 														ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
 														ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 												</select>
@@ -587,8 +586,9 @@
 											<td ng-show="resultBrowset.remarks == 'ADDED'">
 												<span class="badge badge-info"></span>
 												<a class="mytooltip" href="javascript:void(0)" style="color:blue;">
-													<i class="far fa-plus-square"></i>
-													<span class="tooltip-content3">Topic new on cluster.</span>
+													<i ng-show="resultBrowset.validatedTopic != true"  class="fa fa-exclamation-triangle" style="color: #FFBF00"></i>
+													<i ng-show="resultBrowset.validatedTopic == true"  class="far fa-plus-square"></i>
+													<span class="tooltip-content3">Topic new on cluster. {{resultBrowset.validationStatus}}</span>
 												</a>
 											</td>
 											<td ng-show="resultBrowset.remarks == 'DELETED'">
@@ -727,7 +727,7 @@
 											<td>
 												<label class="custom-control custom-checkbox">
 													<input type="checkbox" value="false" ng-click="updateTopicIds(resultBrowset.topicname, resultBrowset.topicpartitions,
-													 resultBrowset.replicationfactor, syncTopicCbId[$index].topicname)"
+													 resultBrowset.replicationfactor, syncTopicCbId[$index].topicname, resultBrowset.validatedTopic)"
 														   ng-init="syncTopicCbId[$index].topicname=false" ng-model="syncTopicCbId[$index].topicname" class="custom-control-input">
 													<span class="custom-control-label"></span>
 												</label>
@@ -741,8 +741,9 @@
 											<td ng-show="resultBrowset.remarks == 'ADDED'">
 												<span class="badge badge-info"></span>
 												<a class="mytooltip" href="javascript:void(0)" style="color:blue;">
-													<i class="far fa-plus-square"></i>
-													<span class="tooltip-content3">TOPIC NEW ON CLUSTER</span>
+													<i ng-show="resultBrowset.validatedTopic != true"  class="fa fa-exclamation-triangle" style="color: #FFBF00"></i>
+													<i ng-show="resultBrowset.validatedTopic == true"  class="far fa-plus-square"></i>
+													<span class="tooltip-content3">TOPIC NEW ON CLUSTER {{resultBrowset.validationStatus}}</span>
 												</a>
 											</td>
 											<td ng-show="resultBrowset.remarks == 'DELETED'">

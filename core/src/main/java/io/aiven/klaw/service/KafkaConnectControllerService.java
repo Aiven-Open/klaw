@@ -21,6 +21,8 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawRestException;
+import io.aiven.klaw.error.RestErrorResponse;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorConfig;
@@ -54,10 +56,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 
 @Service
 @Slf4j
@@ -522,7 +526,8 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public ApiResponse approveConnectorRequests(String connectorId) throws KlawException {
+  public ApiResponse approveConnectorRequests(String connectorId)
+      throws KlawException, KlawRestException {
     log.info("approveConnectorRequests {}", connectorId);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -799,6 +804,11 @@ public class KafkaConnectControllerService {
             .success(result.equals(ApiResultStatus.SUCCESS.value))
             .message(result)
             .build();
+      } catch (HttpServerErrorException | HttpClientErrorException e) {
+        log.error("deleteConnectorRequests {} {}", connectorName, e.getMessage());
+
+        return processRestErrorResponse(e, CLUSTER_API_ERR_118);
+
       } catch (Exception e) {
         log.error(e.getMessage());
         throw new KlawException(e.getMessage());
@@ -812,6 +822,16 @@ public class KafkaConnectControllerService {
     }
   }
 
+  private ApiResponse processRestErrorResponse(HttpStatusCodeException e, String defaultMsg) {
+    RestErrorResponse errorResponse = null;
+    errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+    try {
+      return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
+    } catch (Exception ex) {
+      return ApiResponse.builder().success(false).message(defaultMsg).build();
+    }
+  }
+
   private boolean checkInPromotionOrder(String envId, String orderOfEnvs) {
     List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
     return orderedEnv.contains(envId);
@@ -820,7 +840,7 @@ public class KafkaConnectControllerService {
   public List<KafkaConnectorRequestsResponseModel> getConnectorRequests(
       String pageNo,
       String currentPage,
-      String requestsType,
+      RequestStatus requestsType,
       RequestOperationType requestOperationType,
       String env,
       Order order,
@@ -833,17 +853,16 @@ public class KafkaConnectControllerService {
         manageDatabase
             .getHandleDbRequests()
             .getAllConnectorRequests(
-                userDetails, requestOperationType, env, search, tenantId, isMyRequest);
+                userDetails,
+                requestOperationType,
+                requestsType,
+                env,
+                search,
+                tenantId,
+                isMyRequest);
 
     topicReqs = filterByTenantAndOrder(userDetails, topicReqs, order);
-    // TODO is this really needed?
-    if (!"all".equals(requestsType)
-        && EnumUtils.isValidEnumIgnoreCase(RequestStatus.class, requestsType)) {
-      topicReqs =
-          topicReqs.stream()
-              .filter(topicRequest -> Objects.equals(topicRequest.getRequestStatus(), requestsType))
-              .collect(Collectors.toList());
-    }
+
     topicReqs = getConnectorRequestsPaged(topicReqs, pageNo, currentPage);
 
     return getConnectorRequestModels(topicReqs);

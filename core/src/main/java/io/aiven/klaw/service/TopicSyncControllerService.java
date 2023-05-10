@@ -6,6 +6,10 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_108;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -29,7 +33,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.response.SyncTopicsList;
 import io.aiven.klaw.model.response.TopicConfig;
-import io.aiven.klaw.model.response.TopicRequestsResponseModel;
+import io.aiven.klaw.model.response.TopicSyncResponseModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -40,8 +44,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -82,10 +89,10 @@ public class TopicSyncControllerService {
       for (String envStr : envsStrList) {
         reconStr = new StringBuilder();
         try {
-          List<TopicRequestsResponseModel> results =
+          List<TopicSyncResponseModel> results =
               getReconTopics(envStr, "-1", "", null, "false", false).getResultSet();
 
-          for (TopicRequestsResponseModel topicRequestModel : results) {
+          for (TopicSyncResponseModel topicRequestModel : results) {
             reconStr
                 .append(topicRequestModel.getTopicname())
                 .append(topicRequestModel.getEnvironmentName())
@@ -118,7 +125,7 @@ public class TopicSyncControllerService {
       throws Exception {
     SyncTopicsList syncTopicsList = new SyncTopicsList();
 
-    List<TopicRequestsResponseModel> topicRequestModelList =
+    List<TopicSyncResponseModel> topicRequestModelList =
         getSyncTopics(envId, pageNo, currentPage, topicNameSearch, showAllTopics, isBulkOption)
             .getResultSet();
 
@@ -145,7 +152,9 @@ public class TopicSyncControllerService {
 
     syncTopicsList.setResultSet(topicRequestModelList);
     syncTopicsList.setAllTopicsCount(allTopicsCount);
-
+    syncTopicsList.setAllTopicWarningsCount(
+        Long.valueOf(topicRequestModelList.stream().filter(req -> !req.isValidatedTopic()).count())
+            .intValue());
     return syncTopicsList;
   }
 
@@ -176,7 +185,7 @@ public class TopicSyncControllerService {
             .sorted(new TopicControllerService.TopicNameSyncComparator())
             .collect(Collectors.toList());
 
-    List<TopicRequestsResponseModel> deletedTopicsFromClusterList = new ArrayList<>();
+    List<TopicSyncResponseModel> deletedTopicsFromClusterList = new ArrayList<>();
     List<Integer> sizeOfTopics = new ArrayList<>();
 
     if (isReconciliation) {
@@ -184,6 +193,12 @@ public class TopicSyncControllerService {
           getSyncTopicListRecon(
               topicsList, deletedTopicsFromClusterList, env, isBulkOption, tenantId));
       syncTopicsList.setAllTopicsCount(topicsList.size());
+      syncTopicsList.setAllTopicWarningsCount(
+          Long.valueOf(
+                  syncTopicsList.getResultSet().stream()
+                      .filter(req -> !req.isValidatedTopic())
+                      .count())
+              .intValue());
     } else {
       syncTopicsList.setResultSet(
           getSyncTopicList(
@@ -196,14 +211,20 @@ public class TopicSyncControllerService {
               sizeOfTopics,
               tenantId));
       syncTopicsList.setAllTopicsCount(sizeOfTopics.get(0));
+      syncTopicsList.setAllTopicWarningsCount(
+          Long.valueOf(
+                  syncTopicsList.getResultSet().stream()
+                      .filter(req -> !req.isValidatedTopic())
+                      .count())
+              .intValue());
     }
 
     return syncTopicsList;
   }
 
-  private List<TopicRequestsResponseModel> getSyncTopicList(
+  private List<TopicSyncResponseModel> getSyncTopicList(
       List<TopicConfig> topicsList,
-      List<TopicRequestsResponseModel> deletedTopicsFromClusterList,
+      List<TopicSyncResponseModel> deletedTopicsFromClusterList,
       String pageNo,
       String currentPage,
       String env,
@@ -235,26 +256,26 @@ public class TopicSyncControllerService {
       }
     }
     // topics which exist on cluster and not in kw, with no recon option.
-    List<TopicRequestsResponseModel> topicRequestModelList = getTopicRequestModels(topicsListMap);
+    List<TopicSyncResponseModel> topicRequestModelList = getTopicSyncModels(topicsListMap, env);
     topicRequestModelList.addAll(deletedTopicsFromClusterList);
 
     sizeOfTopics.add(topicRequestModelList.size());
     return getPagedTopicReqModels(pageNo, currentPage, topicRequestModelList, tenantId);
   }
 
-  private List<TopicRequestsResponseModel> getPagedTopicReqModels(
+  private List<TopicSyncResponseModel> getPagedTopicReqModels(
       String pageNo,
       String currentPage,
-      List<TopicRequestsResponseModel> topicRequestModels,
+      List<TopicSyncResponseModel> totalTopicSyncList,
       int tenantId) {
-    List<TopicRequestsResponseModel> topicRequestModelList = new ArrayList<>();
+    List<TopicSyncResponseModel> pagedTopicSyncList = new ArrayList<>();
 
-    int totalRecs = topicRequestModels.size();
+    int totalRecs = totalTopicSyncList.size();
     int recsPerPage = 20;
 
     int totalPages =
-        topicRequestModels.size() / recsPerPage
-            + (topicRequestModels.size() % recsPerPage > 0 ? 1 : 0);
+        totalTopicSyncList.size() / recsPerPage
+            + (totalTopicSyncList.size() % recsPerPage > 0 ? 1 : 0);
 
     pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
     int requestPageNo = Integer.parseInt(pageNo);
@@ -267,21 +288,21 @@ public class TopicSyncControllerService {
     for (int i = 0; i < totalRecs; i++) {
 
       if (i >= startVar && i < lastVar) {
-        TopicRequestsResponseModel mp = topicRequestModels.get(i);
+        TopicSyncResponseModel mp = totalTopicSyncList.get(i);
 
         mp.setTotalNoPages(totalPages + "");
         mp.setAllPageNos(numList);
         mp.setCurrentPage(pageNo);
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId()));
-        topicRequestModelList.add(mp);
+        pagedTopicSyncList.add(mp);
       }
     }
-    return topicRequestModelList;
+    return pagedTopicSyncList;
   }
 
-  private List<TopicRequestsResponseModel> getSyncTopicListRecon(
+  private List<TopicSyncResponseModel> getSyncTopicListRecon(
       List<TopicConfig> clusterTopicsList,
-      List<TopicRequestsResponseModel> deletedTopicsFromClusterList,
+      List<TopicSyncResponseModel> deletedTopicsFromClusterList,
       String env,
       boolean isBulkOption,
       int tenantId) {
@@ -314,22 +335,53 @@ public class TopicSyncControllerService {
     }
 
     // topics which exist in cluster and not in kw.
-    List<TopicRequestsResponseModel> topicRequestModelList = getTopicRequestModels(topicsListMap);
-    topicRequestModelList.addAll(deletedTopicsFromClusterList);
+    List<TopicSyncResponseModel> topicSyncModelList = getTopicSyncModels(topicsListMap, env);
+    topicSyncModelList.addAll(deletedTopicsFromClusterList);
 
-    return topicRequestModelList;
+    return topicSyncModelList;
   }
 
-  private List<TopicRequestsResponseModel> getTopicRequestModels(List<TopicRequest> topicsList) {
-    List<TopicRequestsResponseModel> topicRequestModelList = new ArrayList<>();
-    TopicRequestsResponseModel topicRequestModel;
+  private List<TopicSyncResponseModel> getTopicSyncModels(
+      List<TopicRequest> topicsList, String envId) {
+    List<TopicSyncResponseModel> topicSyncList = new ArrayList<>();
+    TopicSyncResponseModel topicSyncModel;
+
+    Env env = getEnvDetails(envId);
+
+    String topicPrefix = "";
+    String topicSuffix = "";
+    Pattern topicRegex = null;
+    int maxRepFactor = 0, maxPartitions = 0;
+    if (env.getParams() != null) {
+      topicPrefix = getValueOrDefault(env.getParams().getTopicPrefix(), "");
+      topicSuffix = getValueOrDefault(env.getParams().getTopicSuffix(), "");
+      topicRegex = Pattern.compile(getValueOrDefault(env.getParams().getTopicRegex(), ""));
+      maxPartitions = Integer.parseInt(getValueOrDefault(env.getParams().getMaxPartitions(), "0"));
+      maxRepFactor = Integer.parseInt(getValueOrDefault(env.getParams().getMaxRepFactor(), "0"));
+    }
 
     for (TopicRequest topicReq : topicsList) {
-      topicRequestModel = new TopicRequestsResponseModel();
-      copyProperties(topicReq, topicRequestModel);
-      topicRequestModelList.add(topicRequestModel);
+      topicSyncModel = new TopicSyncResponseModel();
+      copyProperties(topicReq, topicSyncModel);
+      if (env.getParams() != null) {
+        topicSyncModel.setValidationStatus(
+            doesTopicConformToEnvValidation(
+                topicSyncModel,
+                topicPrefix,
+                topicSuffix,
+                topicRegex,
+                env.getParams().isApplyRegex(),
+                maxRepFactor,
+                maxPartitions));
+        topicSyncModel.setValidatedTopic(StringUtils.isEmpty(topicSyncModel.getValidationStatus()));
+      } else {
+        // no validation set so set boolean to true
+        topicSyncModel.setValidatedTopic(true);
+      }
+
+      topicSyncList.add(topicSyncModel);
     }
-    return topicRequestModelList;
+    return topicSyncList;
   }
 
   private boolean createTopicRequest(
@@ -384,7 +436,7 @@ public class TopicSyncControllerService {
 
   private void updateClusterDeletedTopicsList(
       List<TopicConfig> clusterTopicsList,
-      List<TopicRequestsResponseModel> deletedTopicsFromClusterList,
+      List<TopicSyncResponseModel> deletedTopicsFromClusterList,
       List<Topic> topicsFromSOT,
       List<String> teamList,
       int tenantId) {
@@ -393,7 +445,7 @@ public class TopicSyncControllerService {
       clusterTopicsList.forEach(
           hashMapTopicObj -> clusterTopicStringList.add(hashMapTopicObj.getTopicName()));
 
-      Map<String, TopicRequestsResponseModel> sotTopics = new HashMap<>();
+      Map<String, TopicSyncResponseModel> sotTopics = new HashMap<>();
 
       List<String> sotTopicStringList = new ArrayList<>();
       for (Topic topicObj : topicsFromSOT) {
@@ -402,22 +454,22 @@ public class TopicSyncControllerService {
         possibleTeams.add(SYNC_102);
 
         sotTopicStringList.add(topicObj.getTopicname());
-        TopicRequestsResponseModel topicRequestModel = new TopicRequestsResponseModel();
-        topicRequestModel.setTopicname(topicObj.getTopicname());
-        topicRequestModel.setEnvironment(topicObj.getEnvironment());
-        topicRequestModel.setTopicpartitions(topicObj.getNoOfPartitions());
-        topicRequestModel.setReplicationfactor(topicObj.getNoOfReplicas());
-        topicRequestModel.setTeamId(topicObj.getTeamId());
-        topicRequestModel.setTeamname(
+        TopicSyncResponseModel topicSyncModel = new TopicSyncResponseModel();
+        topicSyncModel.setTopicname(topicObj.getTopicname());
+        topicSyncModel.setEnvironment(topicObj.getEnvironment());
+        topicSyncModel.setTopicpartitions(topicObj.getNoOfPartitions());
+        topicSyncModel.setReplicationfactor(topicObj.getNoOfReplicas());
+        topicSyncModel.setTeamId(topicObj.getTeamId());
+        topicSyncModel.setTeamname(
             manageDatabase.getTeamNameFromTeamId(tenantId, topicObj.getTeamId()));
-        topicRequestModel.setPossibleTeams(possibleTeams);
-        topicRequestModel.setSequence("" + topicObj.getTopicid());
-        topicRequestModel.setRemarks("DELETED");
+        topicSyncModel.setPossibleTeams(possibleTeams);
+        topicSyncModel.setSequence("" + topicObj.getTopicid());
+        topicSyncModel.setRemarks("DELETED");
 
         // tenant teams
         if (teamList.contains(
             manageDatabase.getTeamNameFromTeamId(tenantId, topicObj.getTeamId()))) {
-          sotTopics.put(topicObj.getTopicname(), topicRequestModel);
+          sotTopics.put(topicObj.getTopicname(), topicSyncModel);
         }
       }
 
@@ -1138,5 +1190,71 @@ public class TopicSyncControllerService {
   private boolean checkInPromotionOrder(String envId, String orderOfEnvs) {
     List<String> orderedEnv = Arrays.asList(orderOfEnvs.split(","));
     return orderedEnv.contains(envId);
+  }
+
+  private String doesTopicConformToEnvValidation(
+      TopicSyncResponseModel topicRequestReq,
+      String topicPrefix,
+      String topicSuffix,
+      Pattern topicRegex,
+      boolean applyRegex,
+      int maxRepFactor,
+      int maxPartitions) {
+    String validationResponse = "";
+
+    if (!applyRegex) {
+      if (topicPrefix != null
+          && !topicPrefix.isBlank()
+          && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {
+        validationResponse +=
+            String.format(
+                TOPICS_SYNC_ERR_105, "prefix", topicPrefix, topicRequestReq.getTopicname());
+      }
+
+      if (topicSuffix != null
+          && !topicSuffix.isBlank()
+          && !topicRequestReq.getTopicname().endsWith(topicSuffix)) {
+        validationResponse +=
+            String.format(
+                TOPICS_SYNC_ERR_105, "suffix", topicSuffix, topicRequestReq.getTopicname());
+      }
+    } else {
+      if (topicRegex != null && !isRegexAMatch(topicRequestReq, topicRegex)) {
+
+        validationResponse +=
+            String.format(TOPICS_SYNC_ERR_105, "regex", topicRegex, topicRequestReq.getTopicname());
+      }
+    }
+
+    if (Integer.parseInt(getValueOrDefault(topicRequestReq.getReplicationfactor(), "0"))
+        > maxRepFactor) {
+      validationResponse +=
+          String.format(TOPICS_SYNC_ERR_106, maxRepFactor, topicRequestReq.getReplicationfactor());
+    }
+    if (topicRequestReq.getTopicpartitions() != null
+        && topicRequestReq.getTopicpartitions().intValue() > maxPartitions) {
+      validationResponse +=
+          String.format(
+              TOPICS_SYNC_ERR_107, maxPartitions, topicRequestReq.getTopicpartitions().intValue());
+    } else if (topicRequestReq.getTopicpartitions() == null) {
+      validationResponse +=
+          String.format(
+              TOPICS_SYNC_ERR_108, maxPartitions, topicRequestReq.getTopicpartitions().intValue());
+    }
+
+    return validationResponse;
+  }
+
+  private static String getValueOrDefault(List<String> params, String defaultValue) {
+    return (params != null && params.size() > 0) ? params.get(0) : defaultValue;
+  }
+
+  private static String getValueOrDefault(String param, String defaultValue) {
+    return (param != null) ? param : defaultValue;
+  }
+
+  private boolean isRegexAMatch(TopicSyncResponseModel topicRequestReq, Pattern topicRegex) {
+    Matcher m = topicRegex.matcher(topicRequestReq.getTopicname());
+    return m.matches();
   }
 }

@@ -105,7 +105,7 @@ describe("IpOrPrincipalField", () => {
     await userEvent.type(multiInput, "hello");
     await userEvent.tab();
 
-    const newOption = screen.getByRole("button", { name: "hello" });
+    const newOption = screen.getByRole("button", { name: "Remove hello" });
     expect(newOption).toBeVisible();
     expect(newOption).toBeEnabled();
     expect(console.error).not.toHaveBeenCalled();

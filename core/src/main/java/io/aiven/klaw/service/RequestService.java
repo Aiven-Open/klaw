@@ -44,7 +44,7 @@ public class RequestService {
     } catch (Exception ex) {
       return ApiResponse.builder()
           .success(false)
-          .message(String.format(REQ_SER_ERR_101, reqId))
+          .message(String.format(REQ_SER_ERR_101, reqId) + " " + ex.getMessage())
           .build();
     }
   }

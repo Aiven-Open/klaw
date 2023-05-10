@@ -6696,14 +6696,135 @@
           "resultSet" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/TopicRequestsResponseModel"
+              "$ref" : "#/components/schemas/TopicSyncResponseModel"
             }
           },
           "allTopicsCount" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "allTopicWarningsCount" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         }
+      },
+      "TopicSyncResponseModel" : {
+        "properties" : {
+          "environment" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teamname" : {
+            "type" : "string"
+          },
+          "requestOperationType" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+          },
+          "requestStatus" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          },
+          "requesttime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "requesttimestring" : {
+            "type" : "string"
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "approvingTeamDetails" : {
+            "type" : "string"
+          },
+          "approver" : {
+            "type" : "string"
+          },
+          "approvingtime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "topicname" : {
+            "type" : "string"
+          },
+          "topicpartitions" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "replicationfactor" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "topicid" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "deleteAssociatedSchema" : {
+            "type" : "boolean"
+          },
+          "advancedTopicConfigEntries" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TopicConfigEntry"
+            }
+          },
+          "approvingTeamId" : {
+            "type" : "string"
+          },
+          "sequence" : {
+            "type" : "string"
+          },
+          "possibleTeams" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "validationStatus" : {
+            "type" : "string"
+          },
+          "validatedTopic" : {
+            "type" : "boolean"
+          },
+          "deletable" : {
+            "type" : "boolean"
+          },
+          "editable" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "advancedTopicConfigEntries", "allPageNos", "approvingTeamDetails", "currentPage", "deleteAssociatedSchema", "description", "environment", "environmentName", "replicationfactor", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicid", "topicname", "topicpartitions", "totalNoPages" ]
       },
       "KafkaConnectorModelResponse" : {
         "properties" : {
