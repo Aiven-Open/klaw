@@ -2,7 +2,7 @@ package io.aiven.klaw.clusterapi.services;
 
 import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_124;
 import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_125;
-import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_12£;
+import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUSTER_API_ERR_12;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
@@ -140,9 +140,9 @@ public class KafkaConnectService {
           reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
     } catch (HttpServerErrorException | HttpClientErrorException e) {
 
-      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_12£);
+      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_12);
     } catch (Exception ex) {
-      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_12£).build();
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_12).build();
     }
     if (responseNew.getStatusCodeValue() == 201) {
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
