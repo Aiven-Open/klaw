@@ -3,9 +3,17 @@ import { cleanup, screen, within } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 
+const isFeatureFlagActiveMock = jest.fn();
+
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
 const testChildren = <div data-testid={"test-children"}></div>;
 
 describe("Layout.tsx", () => {
+  isFeatureFlagActiveMock.mockReturnValue(true);
+
   describe("renders the layout component with all needed elements", () => {
     beforeAll(() => {
       customRender(<Layout>{testChildren}</Layout>, {

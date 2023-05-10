@@ -9,6 +9,8 @@ import people from "@aivenio/aquarium/icons/people";
 import { useNavigate } from "react-router-dom";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { Routes } from "src/app/router_utils";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 const requestNewEntityPaths: { [key: string]: string } = {
   topic: Routes.TOPIC_REQUEST,
@@ -19,39 +21,44 @@ const requestNewEntityPaths: { [key: string]: string } = {
 
 function HeaderNavigation() {
   const navigate = useNavigate();
+  const dropDownEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_TOPNAV_DROPDOWN
+  );
 
   return (
     <Box display={"flex"} colGap={"l2"} alignItems="center">
-      <DropdownMenu
-        onAction={(key) => {
-          if (requestNewEntityPaths[key] !== undefined) {
-            navigate(requestNewEntityPaths[key]);
-          }
-        }}
-      >
-        <DropdownMenu.Trigger>
-          <PrimaryDropdownButton
-            aria-label="Request a new"
-            tooltip="Request a new"
-          >
-            Request a new
-          </PrimaryDropdownButton>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Items>
-          <DropdownMenu.Item key="topic" icon={codeBlock}>
-            Topic
-          </DropdownMenu.Item>
-          <DropdownMenu.Item key="acl" icon={people}>
-            ACL
-          </DropdownMenu.Item>
-          <DropdownMenu.Item key="schema" icon={code}>
-            Schema
-          </DropdownMenu.Item>
-          <DropdownMenu.Item key="connector" icon={layoutGroupBy}>
-            Kafka connector
-          </DropdownMenu.Item>
-        </DropdownMenu.Items>
-      </DropdownMenu>
+      {dropDownEnabled && (
+        <DropdownMenu
+          onAction={(key) => {
+            if (requestNewEntityPaths[key] !== undefined) {
+              navigate(requestNewEntityPaths[key]);
+            }
+          }}
+        >
+          <DropdownMenu.Trigger>
+            <PrimaryDropdownButton
+              aria-label="Request a new"
+              tooltip="Request a new"
+            >
+              Request a new
+            </PrimaryDropdownButton>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Items>
+            <DropdownMenu.Item key="topic" icon={codeBlock}>
+              Topic
+            </DropdownMenu.Item>
+            <DropdownMenu.Item key="acl" icon={people}>
+              ACL
+            </DropdownMenu.Item>
+            <DropdownMenu.Item key="schema" icon={code}>
+              Schema
+            </DropdownMenu.Item>
+            <DropdownMenu.Item key="connector" icon={layoutGroupBy}>
+              Kafka connector
+            </DropdownMenu.Item>
+          </DropdownMenu.Items>
+        </DropdownMenu>
+      )}
       <nav aria-label={"Quick links"}>
         <Box component={"ul"} display={"flex"} colGap={"l2"}>
           <li>

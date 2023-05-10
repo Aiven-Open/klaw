@@ -7,6 +7,12 @@ import {
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
 
+const isFeatureFlagActiveMock = jest.fn();
+
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
 const quickLinksNavItems = [
   { name: "Go to approve requests", linkTo: Routes.APPROVALS },
   {
@@ -17,6 +23,8 @@ const quickLinksNavItems = [
 ];
 
 describe("HeaderNavigation.tsx", () => {
+  isFeatureFlagActiveMock.mockReturnValue(true);
+
   describe("shows all necessary elements", () => {
     beforeAll(() => {
       customRender(<HeaderNavigation />, { memoryRouter: true });
