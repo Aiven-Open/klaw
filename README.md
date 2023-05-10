@@ -23,9 +23,9 @@ For the versions available, see the [tags on this repository](https://github.com
 ## Features:
 
 - Topics (approval): Create, Update, Delete, Promote
-  - React UI - New look and feel for Browse topics, Create topic Request
-  - React UI - New look and feel for Approving topics, ACLs, Schemas
-  - React UI - New look and feel for viewing 'My team's Requests' for topics, ACLs and Schemas 
+  - React UI - New look and feel for Browse topics, Create topic Request, Acl Request, Schema Request and Connector Request
+  - React UI - New look and feel for Approving Topics, ACLs, Schemas and Connectors
+  - React UI - New look and feel for viewing 'My team's Requests' for topics, ACLs, Schemas and Connectors
   
 - Acls (approval):  Create,Delete
   - React UI - Create Acl Request 
@@ -70,7 +70,7 @@ For the versions available, see the [tags on this repository](https://github.com
   - Ability to switch between different teams
 
 - Topic naming conventions
-  - Enforce prefix and suffixes per environment
+  - Enforce prefix, suffixes and/or regex per environment
 
 - Excel report (for your team and all teams, depending on the role)
   - Topics per cluster (for teams)
