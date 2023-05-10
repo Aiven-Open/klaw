@@ -26,7 +26,7 @@ public class EmailConfig {
   @Value("${spring.mail.password:null}")
   private String smtpFromPassword;
 
-  @Value("${spring.mail.properties.mail.smtp.auth:null}")
+  @Value("${spring.mail.properties.mail.smtp.auth:false}")
   private boolean smtpAuthentication;
 
   @Value("${spring.mail.properties.mail.smtp.starttls.enable:null}")
