@@ -276,7 +276,11 @@ describe("Form", () => {
 
     describe("handles a select with a placeholder where a certain value is required", () => {
       const schema = z.object({
-        formFieldSelect: z.string().min(1, "Form field is required"),
+        formFieldSelect: z.string({
+          errorMap: () => ({
+            message: "Form field is required",
+          }),
+        }),
       });
       type Schema = z.infer<typeof schema>;
 
@@ -336,7 +340,7 @@ describe("Form", () => {
         );
       });
 
-      it("should sync an empty value to form state when choosing option", async () => {
+      it("should not sync any value to form state when choosing option", async () => {
         const select = screen.getByRole("combobox", { name: "NativeSelect" });
 
         await userEvent.click(select);
@@ -344,7 +348,7 @@ describe("Form", () => {
         await userEvent.tab();
 
         await submit();
-        assertSubmitted({ formFieldSelect: "" });
+        assertSubmitted({});
       });
     });
   });

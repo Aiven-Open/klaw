@@ -52,6 +52,14 @@ const routes: Array<RouteObject> = [
     element: <AclRequest />,
   },
   {
+    path: Routes.SCHEMA_REQUEST,
+    element: <SchemaRequest />,
+  },
+  {
+    path: Routes.ACL_REQUEST,
+    element: <AclRequest />,
+  },
+  {
     path: Routes.TOPIC_SCHEMA_REQUEST,
     element: <SchemaRequest />,
   },

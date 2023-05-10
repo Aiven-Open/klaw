@@ -32,12 +32,12 @@ Example:
 
 
 ### 2. Add your flag to the `FeatureFlag` enum
-Add the environment variable to be part of `FeatureFlag` enum defined in [useFeatureFlag.ts](../src/services/feature-flags/hook/useFeatureFlag.ts) like this:
+Add the environment variable to be part of `FeatureFlag` enum defined in [coral/src/services/feature-flags/types.ts](../src/services/feature-flags/types.ts) like this:
 
 ```
-// useFeatureFlag.ts
+// src/services/feature-flags/types.ts
 enum FeatureFlag {
-  FEATURE_FLAG_EXAMPLE_FLAG = "FEATURE_FLAG_FEATURE_FLAG_EXAMPLE_FLAG",
+  FEATURE_FLAG_EXAMPLE_FLAG = "FEATURE_FLAG_EXAMPLE_FLAG",
 }
 ```
 
@@ -48,8 +48,7 @@ enum FeatureFlag {
 If you're developing a feature that required adding a new route, you can use our helper.
 
 1. Add your new route 
-2. 
-Add your route in [router-utils.ts](../src/app/router.tsx)
+2. Add your route in [router-utils.ts](../src/app/router.tsx)
 
 ```tsx
 enum Routes {

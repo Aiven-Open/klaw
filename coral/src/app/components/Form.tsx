@@ -408,7 +408,19 @@ function _NativeSelect<T extends FieldValues>({
             {...baseNativeProps}
             name={name}
             disabled={disabled || isSubmitting}
+            aria-readonly={props.readOnly}
             onBlur={(option) => {
+              // Prevent from setting empty string value in form when blurring out of the component
+              // Without selecting a value other than the placeholder
+              // ie: clicking outside, tabbing out
+              // This allows to:
+              // - not set an empty value which may throw off the rest of validation in the form
+              // - keep the field validation in case of required field
+              if (option.target.value === "") {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                return form.trigger(name);
+              }
+
               // eslint-disable-next-line @typescript-eslint/no-explicit-any
               form.setValue(name, option.target.value as any, {
                 shouldValidate: true,

@@ -10,13 +10,21 @@ const SchemaRequest = () => {
 
   return (
     <Layout>
-      {topicName && (
-        <>
-          <PreviewBanner linkTarget={`/requestSchema?topicname=${topicName}`} />
-          <PageHeader title={`Request new schema for topic "${topicName}"`} />
-          <TopicSchemaRequest topicName={topicName} />
-        </>
-      )}
+      <PreviewBanner
+        linkTarget={
+          topicName === undefined
+            ? `/requestSchema`
+            : `/requestSchema?topicname=${topicName}`
+        }
+      />
+      <PageHeader
+        title={
+          topicName === undefined
+            ? `Request new schema`
+            : `Request new schema for topic "${topicName}"`
+        }
+      />
+      <TopicSchemaRequest topicName={topicName} />
     </Layout>
   );
 };

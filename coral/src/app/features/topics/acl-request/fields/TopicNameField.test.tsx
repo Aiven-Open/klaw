@@ -41,17 +41,21 @@ describe("TopicNameField", () => {
     expect(options).toHaveLength(mockedTopicNames.length + 1);
   });
 
-  it("renders disabled NativeSelect when topicNames is empty array", () => {
+  it("renders readonly NativeSelect when readOnly prop is true", () => {
     cleanup();
 
-    renderForm(<TopicNameField topicNames={[]} />, {
-      schema,
-      onSubmit,
-      onError,
-    });
+    renderForm(
+      <TopicNameField topicNames={mockedTopicNames} readOnly={true} />,
+      {
+        schema,
+        onSubmit,
+        onError,
+      }
+    );
 
     const select = screen.getByRole("combobox");
 
     expect(select).toBeDisabled();
+    expect(select).toHaveAttribute("aria-readonly", "true");
   });
 });

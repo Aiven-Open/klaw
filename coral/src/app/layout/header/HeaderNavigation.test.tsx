@@ -1,12 +1,20 @@
+import { cleanup, screen, within } from "@testing-library/react";
 import HeaderNavigation from "src/app/layout/header/HeaderNavigation";
-import { cleanup, screen, render, within } from "@testing-library/react";
+import { Routes } from "src/app/router_utils";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
 
+const isFeatureFlagActiveMock = jest.fn();
+
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
 const quickLinksNavItems = [
-  { name: "Go to approval requests", linkTo: "/execTopics" },
+  { name: "Go to approve requests", linkTo: Routes.APPROVALS },
   {
     name: "Go to Klaw documentation page",
     linkTo: "https://www.klaw-project.io/docs",
@@ -15,9 +23,11 @@ const quickLinksNavItems = [
 ];
 
 describe("HeaderNavigation.tsx", () => {
+  isFeatureFlagActiveMock.mockReturnValue(true);
+
   describe("shows all necessary elements", () => {
     beforeAll(() => {
-      render(<HeaderNavigation />);
+      customRender(<HeaderNavigation />, { memoryRouter: true });
     });
 
     afterAll(cleanup);
@@ -29,7 +39,7 @@ describe("HeaderNavigation.tsx", () => {
     });
 
     quickLinksNavItems.forEach((item) => {
-      it(`renders a link to ${item}`, () => {
+      it(`renders a link to ${item.name}`, () => {
         const nav = screen.getByRole("navigation", { name: "Quick links" });
         const link = within(nav).getByRole("link", { name: item.name });
 
@@ -47,34 +57,41 @@ describe("HeaderNavigation.tsx", () => {
   });
 
   describe("enables user to navigate with keyboard only", () => {
-    const allHeaderLinks = quickLinksNavItems.map((link) => link.name);
+    const allHeaderElements = [
+      "Request a new",
+      ...quickLinksNavItems.map((link) => link.name),
+    ];
 
-    describe("user can navigate through links", () => {
+    describe("user can navigate through elements", () => {
       beforeEach(() => {
-        render(<HeaderNavigation />);
+        customRender(<HeaderNavigation />, { memoryRouter: true });
         const navigation = screen.getByRole("navigation");
         navigation.focus();
       });
 
       afterEach(cleanup);
 
-      allHeaderLinks.forEach((headerLink, index) => {
+      allHeaderElements.forEach((headerElement, index) => {
         const numbersOfTabs = index + 1;
-        it(`sets focus on ${headerLink} when user tabs ${numbersOfTabs} times`, async () => {
-          const link = screen.getByRole("link", { name: headerLink });
-          expect(link).not.toHaveFocus();
+        it(`sets focus on ${headerElement} when user tabs ${numbersOfTabs} times`, async () => {
+          const element =
+            headerElement !== "Request a new"
+              ? screen.getByRole("link", { name: headerElement })
+              : screen.getByRole("button", { name: headerElement });
+
+          expect(element).not.toHaveFocus();
 
           await tabThroughForward(numbersOfTabs);
 
-          expect(link).toHaveFocus();
+          expect(element).toHaveFocus();
         });
       });
     });
 
     describe("user can navigate backward through links", () => {
       beforeEach(() => {
-        render(<HeaderNavigation />);
-        const lastElement = allHeaderLinks[allHeaderLinks.length - 1];
+        customRender(<HeaderNavigation />, { memoryRouter: true });
+        const lastElement = allHeaderElements[allHeaderElements.length - 1];
         const lastNavItem = screen.getByRole("link", {
           name: lastElement,
         });
@@ -83,17 +100,20 @@ describe("HeaderNavigation.tsx", () => {
 
       afterEach(cleanup);
 
-      const allHeaderLinksReversed = [...allHeaderLinks].reverse();
-      allHeaderLinksReversed.forEach((headerLink, index) => {
+      const allHeaderElementsReversed = [...allHeaderElements].reverse();
+      allHeaderElementsReversed.forEach((headerElement, index) => {
         const numbersOfTabs = index;
 
-        it(`sets focus on ${headerLink} when user shift+tabs ${numbersOfTabs} times`, async () => {
-          const link = screen.getByRole("link", { name: headerLink });
-          index > 0 && expect(link).not.toHaveFocus();
+        it(`sets focus on ${headerElement} when user shift+tabs ${numbersOfTabs} times`, async () => {
+          const element =
+            headerElement !== "Request a new"
+              ? screen.getByRole("link", { name: headerElement })
+              : screen.getByRole("button", { name: headerElement });
+          index > 0 && expect(element).not.toHaveFocus();
 
           await tabThroughBackward(numbersOfTabs);
 
-          expect(link).toHaveFocus();
+          expect(element).toHaveFocus();
         });
       });
     });

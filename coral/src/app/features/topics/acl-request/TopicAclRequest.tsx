@@ -26,6 +26,7 @@ const TopicAclRequest = () => {
     defaultValues: {
       topicname: topicName,
       aclType: "PRODUCER",
+      aclPatternType: topicName !== undefined ? "LITERAL" : undefined,
     },
   });
 
@@ -122,7 +123,10 @@ const TopicAclRequest = () => {
     return <SkeletonForm />;
   }
 
-  const currentTopicNames = selectedEnvironment?.topicNames || [];
+  const currentTopicNames =
+    selectedEnvironment === undefined && topicName !== undefined
+      ? [topicName]
+      : selectedEnvironment?.topicNames;
 
   return (
     <Box maxWidth={"7xl"}>
@@ -132,9 +136,12 @@ const TopicAclRequest = () => {
             <AclTypeField aclType={aclType} handleChange={setAclType} />
           )}
           topicConsumerForm={topicConsumerForm}
-          topicNames={currentTopicNames}
+          topicNames={currentTopicNames || []}
           environments={extendedEnvironments}
           isAivenCluster={selectedEnvironment?.isAivenCluster}
+          // This prop is true when user navigated to /topic/{topicName}/subscribe
+          // False when navigating to /request/acl
+          isSubscription={topicName !== undefined}
         />
       ) : (
         <TopicProducerForm
@@ -142,9 +149,12 @@ const TopicAclRequest = () => {
             <AclTypeField aclType={aclType} handleChange={setAclType} />
           )}
           topicProducerForm={topicProducerForm}
-          topicNames={currentTopicNames}
+          topicNames={currentTopicNames || []}
           environments={extendedEnvironments}
           isAivenCluster={selectedEnvironment?.isAivenCluster}
+          // This prop is true when user navigated to /topic/{topicName}/subscribe
+          // False when navigating to /request/acl
+          isSubscription={topicName !== undefined}
         />
       )}
     </Box>

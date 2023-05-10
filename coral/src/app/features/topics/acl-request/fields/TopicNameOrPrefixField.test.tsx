@@ -25,6 +25,26 @@ describe("TopicNameOrPrefixField", () => {
     onError.mockClear();
   });
 
+  it("renders a readonly field with information when no pattern type is chosen", () => {
+    const result = renderForm(
+      <TopicNameOrPrefixField
+        topicNames={mockedTopicNames}
+        aclPatternType={undefined}
+      />,
+      {
+        schema: producerSchema,
+        onSubmit,
+        onError,
+      }
+    );
+    const field = result.getByRole("textbox");
+    expect(field).toBeVisible();
+    expect(field).toHaveAttribute("readonly");
+    expect(field).toHaveValue(
+      "Select environment and topic pattern type first"
+    );
+  });
+
   it("renders a TopicNameField (producer form)", () => {
     const result = renderForm(
       <TopicNameOrPrefixField
@@ -43,6 +63,26 @@ describe("TopicNameOrPrefixField", () => {
     expect(field).toBeVisible();
     expect(field).toBeEnabled();
     expect(options).toHaveLength(mockedTopicNames.length + 1);
+  });
+
+  it("renders a readonly TopicNameField (producer form)", () => {
+    const result = renderForm(
+      <TopicNameOrPrefixField
+        topicNames={mockedTopicNames}
+        aclPatternType={producerLiteral}
+        readOnly={true}
+      />,
+      {
+        schema: producerSchema,
+        onSubmit,
+        onError,
+      }
+    );
+    const field = result.getByRole("combobox");
+
+    expect(field).toBeVisible();
+    expect(field).toBeDisabled();
+    expect(field).toHaveAttribute("aria-readonly", "true");
   });
 
   it("renders a text field (producer form)", () => {

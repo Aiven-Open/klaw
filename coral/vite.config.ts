@@ -134,6 +134,9 @@ export default defineConfig(({ mode }) => {
       "process.env": {
         ROUTER_BASENAME: getRouterBasename(environment),
         API_BASE_URL: getApiBaseUrl(environment),
+        FEATURE_FLAG_TOPNAV_DROPDOWN: ["development", "remote-api"]
+          .includes(mode)
+          .toString(),
       },
     },
     css: {

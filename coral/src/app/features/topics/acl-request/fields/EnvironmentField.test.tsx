@@ -1,7 +1,7 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import EnvironmentField from "src/app/features/topics/acl-request/fields/EnvironmentField";
 import { environment } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
-import { createEnvironment } from "src/domain/environment/environment-test-helper";
+import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
 
@@ -9,15 +9,28 @@ const schema = z.object({
   environment,
 });
 
-const mockedEnvironments = [
-  createEnvironment({
+const mockedEnvironments: ExtendedEnvironment[] = [
+  {
     name: "DEV",
     id: "1",
-  }),
-  createEnvironment({
+    topicNames: ["hello", "there"],
+    isAivenCluster: true,
+    type: "kafka",
+  },
+  {
     name: "TST",
     id: "2",
-  }),
+    topicNames: ["hello", "there", "general"],
+    isAivenCluster: true,
+    type: "kafka",
+  },
+  {
+    name: "NOTOPIC",
+    id: "3",
+    topicNames: [],
+    isAivenCluster: true,
+    type: "kafka",
+  },
 ];
 
 describe("EnvironmentField", () => {
@@ -58,5 +71,21 @@ describe("EnvironmentField", () => {
 
     expect(select).toHaveDisplayValue("-- Please select --");
     expect(options).toHaveLength(mockedEnvironments.length + 1);
+  });
+
+  it("renders disabled option if an environment has no topics", () => {
+    renderForm(<EnvironmentField environments={mockedEnvironments} />, {
+      schema,
+      onSubmit,
+      onError,
+    });
+    const select = screen.getByRole("combobox", {
+      name: "Environment *",
+    });
+    const disabledOption = within(select).getByRole("option", {
+      name: "NOTOPIC (no topic available)",
+    });
+
+    expect(disabledOption).toBeDisabled();
   });
 });
