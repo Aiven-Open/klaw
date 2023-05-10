@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -238,7 +239,7 @@ public class AclSyncControllerServiceTest {
         .thenReturn(getAclsSOT0().get(0));
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(apiResponseResponseEntity);
-    when(handleDbRequests.updateJsonParams(anyString(), anyInt(), anyInt()))
+    when(handleDbRequests.updateJsonParams(anyMap(), anyInt(), anyInt()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
     SyncBackAcls syncBackAcls = getSyncBackAcls(envSelected);

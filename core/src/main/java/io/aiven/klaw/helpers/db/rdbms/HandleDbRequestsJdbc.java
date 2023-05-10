@@ -688,7 +688,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   public String updateAclRequest(
-      AclRequests aclReq, String approver, String jsonParams, boolean saveReqOnly) {
+      AclRequests aclReq, String approver, Map<String, String> jsonParams, boolean saveReqOnly) {
     return jdbcUpdateHelper.updateAclRequest(aclReq, approver, jsonParams, saveReqOnly);
   }
 
@@ -932,7 +932,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String updateJsonParams(String jsonParams, Integer req_no, int tenantId) {
+  public String updateJsonParams(Map<String, String> jsonParams, Integer req_no, int tenantId) {
     return jdbcUpdateHelper.updateJsonParams(jsonParams, req_no, tenantId);
   }
 }

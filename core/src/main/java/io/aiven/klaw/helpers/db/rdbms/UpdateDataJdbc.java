@@ -41,6 +41,7 @@ import io.aiven.klaw.repository.UserInfoRepo;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -254,7 +255,7 @@ public class UpdateDataJdbc {
         });
   }
 
-  public String updateJsonParams(String jsonParams, int reqNo, int tenantId) {
+  public String updateJsonParams(Map<String, String> jsonParams, int reqNo, int tenantId) {
     AclID aclID = new AclID();
     aclID.setReq_no(reqNo);
     aclID.setTenantId(tenantId);
@@ -270,7 +271,7 @@ public class UpdateDataJdbc {
   }
 
   public String updateAclRequest(
-      AclRequests aclReq, String approver, String jsonParams, boolean saveReqOnly) {
+      AclRequests aclReq, String approver, Map<String, String> jsonParams, boolean saveReqOnly) {
     log.debug("updateAclRequest {} {}", aclReq.getTopicname(), approver);
     aclReq.setApprover(approver);
     aclReq.setRequestStatus(RequestStatus.APPROVED.value);
@@ -283,7 +284,7 @@ public class UpdateDataJdbc {
     return processMultipleAcls(aclReq, jsonParams);
   }
 
-  private String processMultipleAcls(AclRequests aclReq, String jsonParams) {
+  private String processMultipleAcls(AclRequests aclReq, Map<String, String> jsonParams) {
     List<Acl> acls;
     if (aclReq.getAcl_ip() != null) {
       String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");

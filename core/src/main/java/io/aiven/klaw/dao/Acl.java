@@ -1,12 +1,15 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.helpers.AivenAclIdConverter;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -65,7 +68,8 @@ public class Acl implements Serializable {
   private String otherParams;
 
   @Column(name = "jsonparams")
-  private String jsonParams;
+  @Convert(converter = AivenAclIdConverter.class)
+  private Map<String, String> jsonParams;
 
   @Column(name = "aclipprincipletype")
   private AclIPPrincipleType aclIpPrincipleType;

@@ -3,7 +3,6 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.*;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
@@ -598,8 +597,7 @@ public class ClusterApiService {
 
         if (Objects.equals(RequestOperationType.DELETE.value, aclReq.getRequestOperationType())
             && null != aclReq.getJsonParams()) {
-          Map<String, String> jsonObj =
-              OBJECT_MAPPER.readValue(aclReq.getJsonParams(), new TypeReference<>() {});
+          Map<String, String> jsonObj = aclReq.getJsonParams();
           String aivenAclKey = "aivenaclid";
           if (jsonObj.containsKey(aivenAclKey)) {
             clusterAclRequest =

@@ -282,7 +282,10 @@ public interface HandleDbRequests {
   String updateConnectorRequestStatus(KafkaConnectorRequest topicRequest, String approver);
 
   String updateAclRequest(
-      AclRequests aclRequests, String approver, String jsonParams, boolean saveReqOnly);
+      AclRequests aclRequests,
+      String approver,
+      Map<String, String> jsonParams,
+      boolean saveReqOnly);
 
   void updateNewUserRequest(String username, String approver, boolean isApprove);
 
@@ -387,5 +390,5 @@ public interface HandleDbRequests {
 
   List<KwClusters> getClusters();
 
-  String updateJsonParams(String jsonParams, Integer req_no, int tenantId);
+  String updateJsonParams(Map<String, String> jsonParams, Integer req_no, int tenantId);
 }

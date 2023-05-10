@@ -226,13 +226,14 @@ public class AclSyncControllerService {
                 .get(env.getClusterId());
         // Update aivenaclid in klaw metadata
         if (kwClusters.getKafkaFlavor().equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
-          String jsonParams = "{}", aivenAclIdKey = "aivenaclid";
+          Map<String, String> jsonParams = new HashMap<>();
+          String aivenAclIdKey = "aivenaclid";
           if (Objects.requireNonNull(responseBody).isSuccess()) {
             Object responseData = responseBody.getData();
             if (responseData instanceof Map) {
               Map<String, String> dataMap = (Map<String, String>) responseData;
               if (dataMap.containsKey(aivenAclIdKey)) {
-                jsonParams = "{\"" + aivenAclIdKey + "\":\"" + dataMap.get(aivenAclIdKey) + "\"}";
+                jsonParams = dataMap;
               }
             }
           }
@@ -250,7 +251,7 @@ public class AclSyncControllerService {
             Integer aclId = Integer.parseInt(resultMapReq.get("aclId"));
             aclReq.setReq_no(aclId);
             // Approve request
-            String emptyJsonParams = "{}";
+            Map<String, String> emptyJsonParams = new HashMap<>();
             manageDatabase
                 .getHandleDbRequests()
                 .updateAclRequest(aclReq, userName, emptyJsonParams, true);

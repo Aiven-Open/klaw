@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -489,7 +490,7 @@ public class AclControllerServiceTest {
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
-    when(handleDbRequests.updateAclRequest(any(), any(), anyString(), anyBoolean()))
+    when(handleDbRequests.updateAclRequest(any(), any(), anyMap(), anyBoolean()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -518,7 +519,7 @@ public class AclControllerServiceTest {
             .build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
-    when(handleDbRequests.updateAclRequest(any(), any(), anyString(), anyBoolean()))
+    when(handleDbRequests.updateAclRequest(any(), any(), anyMap(), anyBoolean()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -581,7 +582,7 @@ public class AclControllerServiceTest {
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
-    when(handleDbRequests.updateAclRequest(any(), any(), anyString(), anyBoolean()))
+    when(handleDbRequests.updateAclRequest(any(), any(), anyMap(), anyBoolean()))
         .thenThrow(new RuntimeException("Error"));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);

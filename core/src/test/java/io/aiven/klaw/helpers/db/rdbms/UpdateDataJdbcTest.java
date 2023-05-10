@@ -19,6 +19,7 @@ import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -130,7 +131,7 @@ public class UpdateDataJdbcTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     String result =
         updateData.updateAclRequest(
-            utilMethods.getAclRequestCreate("testtopic"), "uiuser2", "{}", false);
+            utilMethods.getAclRequestCreate("testtopic"), "uiuser2", new HashMap<>(), false);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
@@ -138,7 +139,8 @@ public class UpdateDataJdbcTest {
   public void updateAclRequest1() {
     when(deleteDataJdbcHelper.deletePrevAclRecs(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     String result =
-        updateData.updateAclRequest(utilMethods.getAclRequest("testtopic"), "uiuser2", "{}", false);
+        updateData.updateAclRequest(
+            utilMethods.getAclRequest("testtopic"), "uiuser2", new HashMap<>(), false);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
