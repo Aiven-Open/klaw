@@ -699,7 +699,7 @@ public class AclControllerService {
             updateServiceAccountsForTeam(aclReq, tenantId);
           }
         }
-        updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
+        updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams, false);
       } else {
         updateAclReqStatus = ApiResultStatus.FAILURE.value;
       }

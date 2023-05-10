@@ -129,7 +129,8 @@ public class UpdateDataJdbcTest {
     when(insertDataJdbcHelper.insertIntoAclsSOT(any(), eq(false)))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     String result =
-        updateData.updateAclRequest(utilMethods.getAclRequestCreate("testtopic"), "uiuser2", "{}");
+        updateData.updateAclRequest(
+            utilMethods.getAclRequestCreate("testtopic"), "uiuser2", "{}", false);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
@@ -137,7 +138,7 @@ public class UpdateDataJdbcTest {
   public void updateAclRequest1() {
     when(deleteDataJdbcHelper.deletePrevAclRecs(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     String result =
-        updateData.updateAclRequest(utilMethods.getAclRequest("testtopic"), "uiuser2", "{}");
+        updateData.updateAclRequest(utilMethods.getAclRequest("testtopic"), "uiuser2", "{}", false);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 

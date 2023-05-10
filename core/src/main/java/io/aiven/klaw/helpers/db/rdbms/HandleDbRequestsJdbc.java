@@ -687,8 +687,9 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcUpdateHelper.declineAclRequest(aclReq, approver);
   }
 
-  public String updateAclRequest(AclRequests aclReq, String approver, String jsonParams) {
-    return jdbcUpdateHelper.updateAclRequest(aclReq, approver, jsonParams);
+  public String updateAclRequest(
+      AclRequests aclReq, String approver, String jsonParams, boolean saveReqOnly) {
+    return jdbcUpdateHelper.updateAclRequest(aclReq, approver, jsonParams, saveReqOnly);
   }
 
   @Override
@@ -928,5 +929,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public List<KwClusters> getClusters() {
     return jdbcSelectHelper.getClusters();
+  }
+
+  @Override
+  public String updateJsonParams(String jsonParams, Integer req_no, int tenantId) {
+    return jdbcUpdateHelper.updateJsonParams(jsonParams, req_no, tenantId);
   }
 }

@@ -216,6 +216,31 @@ public class AclSyncControllerService {
       } else if (resultAclNullCheck.contains("Acl already exists")) {
         logUpdateSyncBackTopics.add(String.format(ACL_SYNC_ERR_103, aclFound.getTopicname()));
       } else {
+        Env env =
+            manageDatabase
+                .getHandleDbRequests()
+                .getEnvDetails(syncBackAcls.getSourceEnv(), tenantId);
+        KwClusters kwClusters =
+            manageDatabase
+                .getClusters(KafkaClustersType.of(env.getType()), tenantId)
+                .get(env.getClusterId());
+        // Update aivenaclid in klaw metadata
+        if (kwClusters.getKafkaFlavor().equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
+          String jsonParams = "{}", aivenAclIdKey = "aivenaclid";
+          if (Objects.requireNonNull(responseBody).isSuccess()) {
+            Object responseData = responseBody.getData();
+            if (responseData instanceof Map) {
+              Map<String, String> dataMap = (Map<String, String>) responseData;
+              if (dataMap.containsKey(aivenAclIdKey)) {
+                jsonParams = "{\"" + aivenAclIdKey + "\":\"" + dataMap.get(aivenAclIdKey) + "\"}";
+              }
+            }
+          }
+
+          manageDatabase
+              .getHandleDbRequests()
+              .updateJsonParams(jsonParams, aclFound.getReq_no(), tenantId);
+        }
         if (!Objects.equals(syncBackAcls.getSourceEnv(), syncBackAcls.getTargetEnv())) {
           logUpdateSyncBackTopics.add(String.format(ACL_SYNC_ERR_104, aclFound.getTopicname()));
           // Create request
@@ -228,7 +253,7 @@ public class AclSyncControllerService {
             String emptyJsonParams = "{}";
             manageDatabase
                 .getHandleDbRequests()
-                .updateAclRequest(aclReq, userName, emptyJsonParams);
+                .updateAclRequest(aclReq, userName, emptyJsonParams, true);
           }
         }
       }

@@ -489,7 +489,7 @@ public class AclControllerServiceTest {
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
-    when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
+    when(handleDbRequests.updateAclRequest(any(), any(), anyString(), anyBoolean()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -518,7 +518,7 @@ public class AclControllerServiceTest {
             .build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
-    when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
+    when(handleDbRequests.updateAclRequest(any(), any(), anyString(), anyBoolean()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -581,7 +581,7 @@ public class AclControllerServiceTest {
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
-    when(handleDbRequests.updateAclRequest(any(), any(), anyString()))
+    when(handleDbRequests.updateAclRequest(any(), any(), anyString(), anyBoolean()))
         .thenThrow(new RuntimeException("Error"));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
