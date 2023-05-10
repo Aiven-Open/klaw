@@ -150,7 +150,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               name={"topicname"}
               labelText={"Topic name"}
               readOnly={topicName !== undefined}
-              defaultValue={topicName}
             >
               {topicNames.map((topic) => {
                 return (
