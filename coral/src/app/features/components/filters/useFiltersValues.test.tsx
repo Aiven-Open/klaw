@@ -7,19 +7,7 @@ describe("useFiltersValues.tsx", () => {
     afterEach(() => {
       cleanup();
     });
-    it("gets the correct topic filter value", () => {
-      const {
-        result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => (
-          <MemoryRouter initialEntries={["/?topic=topictest"]}>
-            {children}
-          </MemoryRouter>
-        ),
-      });
 
-      expect(current.topic).toBe("topictest");
-    });
     it("gets the correct environment filter value", () => {
       const {
         result: { current },
@@ -117,18 +105,7 @@ describe("useFiltersValues.tsx", () => {
       afterEach(() => {
         cleanup();
       });
-      it("gets the correct topic filter value", () => {
-        const {
-          result: { current },
-        } = renderHook(
-          () => useFiltersValues({ defaultTopic: "defaultTest" }),
-          {
-            wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
-          }
-        );
 
-        expect(current.topic).toBe("defaultTest");
-      });
       it("gets the correct environment filter value", () => {
         const {
           result: { current },
@@ -138,6 +115,7 @@ describe("useFiltersValues.tsx", () => {
 
         expect(current.environment).toBe("2");
       });
+
       it("gets the correct aclType filter value", () => {
         const {
           result: { current },
@@ -147,6 +125,7 @@ describe("useFiltersValues.tsx", () => {
 
         expect(current.aclType).toBe("CONSUMER");
       });
+
       it("gets the correct status filter value", () => {
         const {
           result: { current },
@@ -156,6 +135,7 @@ describe("useFiltersValues.tsx", () => {
 
         expect(current.status).toBe("DELETED");
       });
+
       it("gets the correct team filter value", () => {
         const {
           result: { current },
@@ -165,6 +145,7 @@ describe("useFiltersValues.tsx", () => {
 
         expect(current.teamId).toBe("2");
       });
+
       it("gets the correct showOnlyMyRequests filter value", () => {
         const {
           result: { current },
@@ -177,6 +158,7 @@ describe("useFiltersValues.tsx", () => {
 
         expect(current.showOnlyMyRequests).toBe(false);
       });
+
       it("gets the correct operationType filter value", () => {
         const {
           result: { current },
@@ -189,6 +171,7 @@ describe("useFiltersValues.tsx", () => {
 
         expect(current.requestType).toBe("CREATE");
       });
+
       it("gets the correct search filter value", () => {
         const {
           result: { current },
@@ -205,20 +188,7 @@ describe("useFiltersValues.tsx", () => {
       window.history.pushState({}, "", "/");
       cleanup();
     });
-    it("sets the correct topic filter value", () => {
-      const {
-        result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-      });
 
-      current.setFilterValue({
-        name: "topic",
-        value: "hellotopic",
-      });
-
-      expect(window.location.search).toBe("?topic=hellotopic&page=1");
-    });
     it("sets the correct environment filter value", () => {
       const {
         result: { current },

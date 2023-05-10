@@ -10,7 +10,7 @@ import RequestDetailsModal from "src/app/features/components/RequestDetailsModal
 import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestDetails";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
-import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import {
   approveSchemaRequest,
@@ -30,7 +30,7 @@ function SchemaApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, topic, requestType } = useFiltersValues({
+  const { environment, status, search, requestType } = useFiltersValues({
     defaultStatus: "CREATED",
   });
 
@@ -62,7 +62,7 @@ function SchemaApprovals() {
       currentPage,
       status,
       environment,
-      topic,
+      search,
       requestType,
     ],
     queryFn: () =>
@@ -70,7 +70,7 @@ function SchemaApprovals() {
         requestStatus: status,
         pageNo: currentPage.toString(),
         env: environment,
-        search: topic,
+        search: search,
         operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
@@ -272,7 +272,7 @@ function SchemaApprovals() {
           />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,
-          <TopicFilter key={"topic"} />,
+          <SearchTopicFilter key={"topic"} />,
         ]}
         table={table}
         pagination={pagination}

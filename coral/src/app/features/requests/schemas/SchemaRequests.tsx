@@ -10,7 +10,7 @@ import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFi
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
-import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { SchemaRequestTable } from "src/app/features/requests/schemas/components/SchemaRequestTable";
@@ -31,7 +31,7 @@ function SchemaRequests() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { topic, environment, status, showOnlyMyRequests, requestType } =
+  const { search, environment, status, showOnlyMyRequests, requestType } =
     useFiltersValues();
 
   const [modals, setModals] = useState<{
@@ -53,7 +53,7 @@ function SchemaRequests() {
       currentPage,
       environment,
       status,
-      topic,
+      search,
       showOnlyMyRequests,
       requestType,
     ],
@@ -62,7 +62,7 @@ function SchemaRequests() {
         pageNo: String(currentPage),
         env: environment,
         requestStatus: status !== defaultStatus ? status : undefined,
-        search: topic,
+        search: search,
         isMyRequest: showOnlyMyRequests,
         operationType: requestType !== defaultType ? requestType : undefined,
       }),
@@ -170,7 +170,7 @@ function SchemaRequests() {
           />,
           <StatusFilter key={"request-status"} defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,
-          <TopicFilter key={"topic"} />,
+          <SearchTopicFilter key={"topic"} />,
           <MyRequestsFilter key={"show-only-my-requests"} />,
         ]}
         table={

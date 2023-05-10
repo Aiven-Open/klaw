@@ -11,7 +11,7 @@ import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFi
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
-import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { AclRequestsTable } from "src/app/features/requests/acls/components/AclRequestsTable";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
@@ -27,7 +27,7 @@ function AclRequests() {
     : 1;
 
   const {
-    topic,
+    search,
     environment,
     aclType,
     status,
@@ -62,7 +62,7 @@ function AclRequests() {
     queryKey: [
       "aclRequests",
       currentPage,
-      topic,
+      search,
       environment,
       aclType,
       status,
@@ -72,7 +72,7 @@ function AclRequests() {
     queryFn: () =>
       getAclRequests({
         pageNo: String(currentPage),
-        search: topic,
+        search: search,
         env: environment,
         aclType,
         requestStatus: status,
@@ -176,7 +176,7 @@ function AclRequests() {
           <AclTypeFilter key="aclType" />,
           <StatusFilter key="status" defaultStatus="ALL" />,
           <RequestTypeFilter key="operationType" />,
-          <TopicFilter key="search" />,
+          <SearchTopicFilter key="search" />,
           <MyRequestsFilter key="myRequests" />,
         ]}
         table={

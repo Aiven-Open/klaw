@@ -348,11 +348,12 @@ describe("ConnectorRequests", () => {
         queryClient: true,
         memoryRouter: true,
       });
-      const search = screen.getByRole("search");
+
+      const search = screen.getByRole("search", {
+        name: "Search Connector name",
+      });
       expect(search).toBeVisible();
-      expect(search).toHaveAccessibleDescription(
-        'Search for an partial match in name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
-      );
+
       await userEvent.type(search, "abc");
       await waitFor(() => {
         expect(getConnectorRequests).toHaveBeenLastCalledWith({
