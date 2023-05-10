@@ -11,6 +11,8 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawRestException;
+import io.aiven.klaw.error.RestErrorResponse;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
@@ -84,6 +86,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 @Service
@@ -390,7 +395,7 @@ public class ClusterApiService {
       String kafkaConnectHost,
       String clusterIdentification,
       int tenantId)
-      throws KlawException {
+      throws KlawException, KlawRestException {
     log.info("approveConnectorRequests {} {}", connectorConfig, kafkaConnectHost);
     getClusterApiProperties(tenantId);
     ResponseEntity<ApiResponse> response;
@@ -436,15 +441,29 @@ public class ClusterApiService {
         }
       }
 
-    } catch (Exception e) {
-      log.error("approveConnectorRequests {} ", connectorName, e);
+    } catch (HttpServerErrorException | HttpClientErrorException e) {
+      log.error("approveConnectorRequests {} {}", connectorName, e.getMessage());
       if (e.getMessage().contains(CLUSTER_API_ERR_120)
           || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return CLUSTER_API_ERR_118;
       }
+      String errorResponse = getRestErrorResponse(e, CLUSTER_API_ERR_118);
+      throw new KlawRestException(errorResponse);
+    } catch (Exception ex) {
       throw new KlawException(CLUSTER_API_ERR_105);
     }
     return ApiResultStatus.FAILURE.value;
+  }
+
+  private String getRestErrorResponse(HttpStatusCodeException e, String defaultErrorMsg) {
+    RestErrorResponse errorResponse = null;
+    try {
+      errorResponse = e.getResponseBodyAs(RestErrorResponse.class);
+    } catch (Exception ex) {
+      log.error("Exception caught trying to process error message: ", ex);
+      return defaultErrorMsg;
+    }
+    return errorResponse.getMessage();
   }
 
   public ResponseEntity<ApiResponse> approveTopicRequests(
@@ -498,7 +517,7 @@ public class ClusterApiService {
                 .build();
       } else {
         uri = clusterConnUrl + URI_DELETE_TOPICS;
-        if (deleteAssociatedSchema) {
+        if (deleteAssociatedSchema && envSelected.getAssociatedEnv() != null) {
           // get associated schema env
           Env schemaEnvSelected =
               manageDatabase

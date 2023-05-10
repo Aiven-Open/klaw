@@ -129,6 +129,8 @@ public class KlawErrorMessages {
 
   public static final String CLUSTER_API_ERR_121 = "Connection refused";
 
+  public static final String CLUSTER_API_ERR_122 = "doesn't match connector name in the URL";
+
   // Env clusters tenants service
   public static final String ENV_CLUSTER_TNT_ERR_101 =
       "Failure. Please choose a different name. This environment name already exists.";

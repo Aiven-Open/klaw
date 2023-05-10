@@ -1,6 +1,7 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -88,7 +89,7 @@ public class KafkaConnectController {
       value = "/execConnectorRequests",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> approveTopicRequests(
-      @RequestParam("connectorId") String connectorId) throws KlawException {
+      @RequestParam("connectorId") String connectorId) throws KlawException, KlawRestException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.approveConnectorRequests(connectorId), HttpStatus.OK);
   }

@@ -350,6 +350,52 @@ public class KafkaConnectControllerServiceTest {
             eq(true));
   }
 
+  @Test
+  @Order(10)
+  public void getRequests_() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+
+    when(handleDbRequests.getAllConnectorRequests(
+            anyString(),
+            eq(null),
+            eq(RequestStatus.CREATED),
+            eq(null),
+            eq(null),
+            eq(101),
+            eq(true)))
+        .thenReturn(generateKafkaConnectorRequests(50));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    List<KafkaConnectorRequestsResponseModel> ordered_response =
+        kafkaConnectControllerService.getConnectorRequests(
+            "1",
+            "1",
+            RequestStatus.CREATED,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.ASC_REQUESTED_TIME,
+            null,
+            true);
+
+    assertThat(ordered_response).hasSize(10);
+
+    verify(handleDbRequests, times(1))
+        .getAllConnectorRequests(
+            anyString(),
+            eq(null),
+            eq(RequestStatus.CREATED),
+            eq(null),
+            eq(null),
+            eq(101),
+            eq(true));
+  }
+
   private static List<KafkaConnectorRequest> generateKafkaConnectorRequests(int number) {
     List<KafkaConnectorRequest> reqs = new ArrayList<>();
     for (int i = 0; i < number; i++) {

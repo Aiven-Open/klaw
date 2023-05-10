@@ -63,7 +63,7 @@ public class KafkaConnectController {
       return new ResponseEntity<>(result, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(
-          ApiResponse.builder().success(false).message("Unable to register connector").build(),
+          ApiResponse.builder().success(false).message(e.getMessage()).build(),
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
