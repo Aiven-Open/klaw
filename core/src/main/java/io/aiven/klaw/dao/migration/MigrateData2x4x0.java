@@ -54,8 +54,9 @@ public class MigrateData2x4x0 {
 
     try {
 
-      //Setting for every property as this is the first introduction of the new column with eanbled true/false.
-      //In the future an if statement to only change the property being deprecated should be used.
+      // Setting for every property as this is the first introduction of the new column with eanbled
+      // true/false.
+      // In the future an if statement to only change the property being deprecated should be used.
       properties.forEach(
           property -> property.setEnabled(!deprecatedKwProperties().contains(property.getKwKey())));
       insertDataJdbc.insertDefaultKwProperties(properties);
