@@ -1043,3 +1043,16 @@ databaseChangeLog:
                 - column:
                     name: envparams
                     type: CLOB
+    - changeSet:
+        id: 10-05-2023 Add a column to allow deprecation of unused or replaced properties
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              tableName: kwproperties
+              columns:
+                - column:
+                    constraints:
+                      nullable: false
+                    name: enabled
+                    type: boolean
+                    defaultValue: true

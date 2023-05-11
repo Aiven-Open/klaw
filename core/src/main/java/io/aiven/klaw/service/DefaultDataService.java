@@ -75,7 +75,8 @@ public class DefaultDataService {
             "klaw.mail.topicrequest.content",
             tenantId,
             KwConstants.MAIL_TOPICREQUEST_CONTENT,
-            "Email notification body for a new Topic request");
+            "Email notification body for a new Topic request",
+            true);
     kwPropertiesList.add(kwProperties1);
 
     KwProperties kwProperties2 =
@@ -83,7 +84,8 @@ public class DefaultDataService {
             "klaw.mail.topicdeleterequest.content",
             tenantId,
             KwConstants.MAIL_TOPICDELETEREQUEST_CONTENT,
-            "Email notification body for Topic delete request");
+            "Email notification body for Topic delete request",
+            true);
     kwPropertiesList.add(kwProperties2);
 
     KwProperties kwProperties3 =
@@ -91,7 +93,8 @@ public class DefaultDataService {
             "klaw.mail.topicclaimrequest.content",
             tenantId,
             KwConstants.MAIL_TOPICCLAIMREQUEST_CONTENT,
-            "Email notification body for a new claim request");
+            "Email notification body for a new claim request",
+            true);
     kwPropertiesList.add(kwProperties3);
 
     KwProperties kwProperties4 =
@@ -99,7 +102,8 @@ public class DefaultDataService {
             "klaw.mail.topicrequestapproval.content",
             tenantId,
             KwConstants.MAIL_TOPICREQUESTAPPROVAL_CONTENT,
-            "Email notification body for Topic request approval");
+            "Email notification body for Topic request approval",
+            true);
     kwPropertiesList.add(kwProperties4);
 
     KwProperties kwProperties5 =
@@ -107,7 +111,8 @@ public class DefaultDataService {
             "klaw.mail.topicrequestdenial.content",
             tenantId,
             KwConstants.MAIL_TOPICREQUESTDENIAL_CONTENT,
-            "Email notification body for Topic request decline");
+            "Email notification body for Topic request decline",
+            true);
     kwPropertiesList.add(kwProperties5);
 
     KwProperties kwProperties6 =
@@ -115,7 +120,8 @@ public class DefaultDataService {
             "klaw.mail.aclrequest.content",
             tenantId,
             KwConstants.MAIL_ACLREQUEST_CONTENT,
-            "Email notification body for new Acl request");
+            "Email notification body for new Acl request",
+            true);
     kwPropertiesList.add(kwProperties6);
 
     KwProperties kwProperties7 =
@@ -123,7 +129,8 @@ public class DefaultDataService {
             "klaw.mail.aclrequestdelete.content",
             tenantId,
             KwConstants.MAIL_ACLREQUESTDELETE_CONTENT,
-            "Email notification body for Acl delete request");
+            "Email notification body for Acl delete request",
+            true);
     kwPropertiesList.add(kwProperties7);
 
     KwProperties kwProperties8 =
@@ -131,7 +138,8 @@ public class DefaultDataService {
             "klaw.mail.aclrequestapproval.content",
             tenantId,
             KwConstants.MAIL_ACLREQUESTAPPROVAL_CONTENT,
-            "Email notification body for Acl request approval");
+            "Email notification body for Acl request approval",
+            true);
     kwPropertiesList.add(kwProperties8);
 
     KwProperties kwProperties9 =
@@ -139,7 +147,8 @@ public class DefaultDataService {
             "klaw.mail.aclrequestdenial.content",
             tenantId,
             KwConstants.MAIL_ACLREQUESTDENIAL_CONTENT,
-            "Email notification body for Acl request decline");
+            "Email notification body for Acl request decline",
+            true);
     kwPropertiesList.add(kwProperties9);
 
     KwProperties kwProperties10 =
@@ -147,7 +156,8 @@ public class DefaultDataService {
             "klaw.mail.registeruser.content",
             tenantId,
             KwConstants.MAIL_REGISTERUSER_CONTENT,
-            "Email notification body for new user request to be approved.");
+            "Email notification body for new user request to be approved.",
+            true);
     kwPropertiesList.add(kwProperties10);
 
     KwProperties kwProperties11 =
@@ -155,7 +165,8 @@ public class DefaultDataService {
             "klaw.mail.registeruser.saas.content",
             tenantId,
             KwConstants.MAIL_REGISTERUSER_SAAS_CONTENT,
-            "Email notification body for new user request");
+            "Email notification body for new user request",
+            true);
     kwPropertiesList.add(kwProperties11);
 
     KwProperties kwProperties12 =
@@ -163,7 +174,8 @@ public class DefaultDataService {
             "klaw.mail.registerusertouser.content",
             tenantId,
             KwConstants.MAIL_REGISTERUSERTOUSER_CONTENT,
-            "Email notification body for new user request to actual user.");
+            "Email notification body for new user request to actual user.",
+            true);
     kwPropertiesList.add(kwProperties12);
 
     KwProperties kwProperties13 =
@@ -171,7 +183,8 @@ public class DefaultDataService {
             "klaw.mail.registerusertouser.saas.content",
             tenantId,
             KwConstants.MAIL_REGISTERUSERTOUSER_SAAS_CONTENT,
-            "Email notification body for new SaaS user request to actual user.");
+            "Email notification body for new SaaS user request to actual user.",
+            true);
     kwPropertiesList.add(kwProperties13);
 
     KwProperties kwProperties14 =
@@ -179,7 +192,8 @@ public class DefaultDataService {
             "klaw.mail.recontopics.content",
             tenantId,
             KwConstants.MAIL_RECONTOPICS_CONTENT,
-            "Email notification body for reconciliation of topics.");
+            "Email notification body for reconciliation of topics.",
+            true);
     kwPropertiesList.add(kwProperties14);
 
     KwProperties kwProperties15 =
@@ -187,7 +201,8 @@ public class DefaultDataService {
             "klaw.mail.newuseradded.content",
             tenantId,
             KwConstants.MAIL_NEWUSERADDED_CONTENT,
-            "Email notification body after a new user is added");
+            "Email notification body after a new user is added",
+            true);
     kwPropertiesList.add(kwProperties15);
 
     KwProperties kwProperties16 =
@@ -195,7 +210,8 @@ public class DefaultDataService {
             "klaw.mail.passwordreset.content",
             tenantId,
             KwConstants.MAIL_PASSWORDRESET_CONTENT,
-            "Email notification body for password reset");
+            "Email notification body for password reset",
+            true);
     kwPropertiesList.add(kwProperties16);
 
     KwProperties kwProperties18 =
@@ -203,7 +219,8 @@ public class DefaultDataService {
             "klaw.reports.location",
             tenantId,
             KwConstants.REPORTS_LOCATION,
-            "Temporary location of reports");
+            "Temporary location of reports",
+            true);
     kwPropertiesList.add(kwProperties18);
 
     KwProperties kwProperties20 =
@@ -211,12 +228,13 @@ public class DefaultDataService {
             "klaw.getschemas.enable",
             tenantId,
             KwConstants.GETSCHEMAS_ENABLE,
-            "Enable View or retrieve schemas");
+            "Enable View or retrieve schemas",
+            true);
     kwPropertiesList.add(kwProperties20);
 
     KwProperties kwProperties21 =
         new KwProperties(
-            "klaw.clusterapi.url", tenantId, KwConstants.CLUSTERAPI_URL, "Cluster Api URL");
+            "klaw.clusterapi.url", tenantId, KwConstants.CLUSTERAPI_URL, "Cluster Api URL", true);
     kwPropertiesList.add(kwProperties21);
 
     KwProperties kwProperties22 =
@@ -224,7 +242,8 @@ public class DefaultDataService {
             "klaw.tenant.config",
             tenantId,
             KwConstants.TENANT_CONFIG,
-            "Base sync cluster, order of topic promotion environments, topic request envs");
+            "Base sync cluster, order of topic promotion environments, topic request envs",
+            true);
     kwPropertiesList.add(kwProperties22);
 
     KwProperties kwProperties23 =
@@ -232,7 +251,8 @@ public class DefaultDataService {
             "klaw.adduser.roles",
             tenantId,
             KwConstants.ADDUSER_ROLES,
-            "Allowed roles when adding a new user.");
+            "Allowed roles when adding a new user.",
+            true);
     kwPropertiesList.add(kwProperties23);
 
     KwProperties kwProperties24 =
@@ -240,7 +260,8 @@ public class DefaultDataService {
             "klaw.envs.standardnames",
             tenantId,
             KwConstants.ENVS_STANDARDNAMES,
-            "Standard names of environments");
+            "Standard names of environments",
+            true);
     kwPropertiesList.add(kwProperties24);
 
     KwProperties kwProperties19 =
@@ -248,12 +269,13 @@ public class DefaultDataService {
             "klaw.mail.notifications.enable",
             tenantId,
             KwConstants.MAIL_NOTIFICATIONS_ENABLE,
-            "Smtp Config Enable email notifications");
+            "Smtp Config Enable email notifications",
+            true);
     kwPropertiesList.add(kwProperties19);
 
     KwProperties kwProperties33 =
         new KwProperties(
-            "klaw.broadcast.text", tenantId, "", "Broadcast text to all your tenant users");
+            "klaw.broadcast.text", tenantId, "", "Broadcast text to all your tenant users", true);
     kwPropertiesList.add(kwProperties33);
 
     KwProperties kwProperties34 =
@@ -261,7 +283,8 @@ public class DefaultDataService {
             "klaw.mail.registerusertouser.saasadmin.content",
             tenantId,
             KwConstants.MAIL_REGISTERUSERTOUSER_SAAS_ADMIN_CONTENT,
-            "Email notification body for new SaaS user request to actual user.");
+            "Email notification body for new SaaS user request to actual user.",
+            true);
     kwPropertiesList.add(kwProperties34);
 
     return kwPropertiesList;

@@ -1262,16 +1262,17 @@ public class SelectDataJdbc {
     List<KwTenants> tenants = getTenants();
 
     for (KwTenants tenant : tenants) {
-      List<KwProperties> kwProps = kwPropertiesRepo.findAllByTenantId(tenant.getTenantId());
-
+      List<KwProperties> kwProps =
+          kwPropertiesRepo.findAllByTenantIdAndEnabledTrue(tenant.getTenantId());
+      log.info("Kw Props output : {}", kwProps);
       Map<String, Map<String, String>> fullMap = new HashMap<>();
       for (KwProperties kwProp : kwProps) {
         mapProps = new HashMap<>();
         mapProps.put("kwkey", kwProp.getKwKey());
         mapProps.put("kwvalue", kwProp.getKwValue());
         mapProps.put("kwdesc", kwProp.getKwDesc());
-        mapProps.put("kwtenantid", kwProp.getTenantId() + "");
-
+        mapProps.put("kwtenantid", String.valueOf(kwProp.getTenantId()));
+        mapProps.put("enabled", String.valueOf(kwProp.isEnabled()));
         fullMap.put(kwProp.getKwKey(), mapProps);
       }
       tenantProps.put(tenant.getTenantId(), fullMap);
@@ -1281,7 +1282,7 @@ public class SelectDataJdbc {
   }
 
   public List<KwProperties> selectAllKwPropertiesPerTenant(int tenantId) {
-    return kwPropertiesRepo.findAllByTenantId(tenantId);
+    return kwPropertiesRepo.findAllByTenantIdAndEnabledTrue(tenantId);
   }
 
   public Integer getNextTopicRequestId(String idType, int tenantId) {

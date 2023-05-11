@@ -9,4 +9,6 @@ public interface KwPropertiesRepo extends CrudRepository<KwProperties, KwPropert
   List<KwProperties> findAllByKwKeyAndTenantId(String kwKey, int tenantId);
 
   List<KwProperties> findAllByTenantId(int tenantId);
+
+  List<KwProperties> findAllByTenantIdAndEnabledTrue(int tenantId);
 }

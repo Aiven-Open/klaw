@@ -156,9 +156,10 @@ public class ServerConfigService {
       KwPropertiesResponse kwPropertiesResponse = new KwPropertiesResponse();
       kwKey = stringStringEntry.getKey();
       kwVal = stringStringEntry.getValue().get("kwvalue");
+      boolean kwEnabled = Boolean.parseBoolean(stringStringEntry.getValue().get("enabled"));
       kwPropertiesResponse.setKwkey(kwKey);
 
-      if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey)) {
+      if (KwConstants.TENANT_CONFIG_PROPERTY.equals(kwKey) && kwEnabled) {
         TenantConfig dynamicObj;
         try {
           OBJECT_MAPPER.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -176,7 +177,7 @@ public class ServerConfigService {
           kwPropertiesResponse.setKwvalue(kwVal);
           kwPropertiesResponse.setKwdesc(stringStringEntry.getValue().get("kwdesc"));
         }
-      } else {
+      } else if (kwEnabled) {
         kwPropertiesResponse.setKwvalue(kwVal);
         kwPropertiesResponse.setKwdesc(stringStringEntry.getValue().get("kwdesc"));
 

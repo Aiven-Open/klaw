@@ -342,6 +342,7 @@ public class ServerConfigServiceTest {
     map.put("kwvalue", mapper.writeValueAsString(config));
     map.put("kwkey", KLAW_TENANT_CONFIG);
     map.put("kwdes", "Desc");
+    map.put("enabled", "true");
     map.put("tenantid", "101");
     dbObject.put(KLAW_TENANT_CONFIG, map);
 
@@ -392,6 +393,7 @@ public class ServerConfigServiceTest {
     map.put("kwvalue", mapper.writeValueAsString(config));
     map.put("kwkey", KLAW_TENANT_CONFIG);
     map.put("kwdes", "Desc");
+    map.put("enabled", "true");
     map.put("tenantid", "101");
     dbObject.put(KLAW_TENANT_CONFIG, map);
 

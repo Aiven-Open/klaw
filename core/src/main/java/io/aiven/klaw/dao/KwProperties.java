@@ -33,4 +33,7 @@ public class KwProperties implements Serializable {
 
   @Column(name = "kwdesc")
   private String kwDesc;
+
+  @Column(name = "enabled")
+  private boolean enabled;
 }
