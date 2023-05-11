@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyMap;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -19,12 +20,15 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
+import io.aiven.klaw.model.SyncBackAcls;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +40,8 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -201,6 +207,56 @@ public class AclSyncControllerServiceTest {
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
 
     assertThat(aclList).isEmpty();
+  }
+
+  @Test
+  @Order(8)
+  public void updateSyncBackAcls() throws KlawException {
+    String envSelected = "1";
+    Map<String, String> aivenAclId = new HashMap<>();
+    aivenAclId.put("aivenaclid", "test1234");
+    ApiResponse apiResponse =
+        ApiResponse.builder()
+            .success(true)
+            .data(aivenAclId)
+            .message(ApiResultStatus.SUCCESS.value)
+            .build();
+    ResponseEntity<ApiResponse> apiResponseResponseEntity =
+        new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    Env env = utilMethods.getEnvLists().get(0);
+    env.setType("kafka");
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
+    when(clustersHashMap.get(any())).thenReturn(kwClusters);
+    when(kwClusters.getKafkaFlavor()).thenReturn(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt()))
+        .thenReturn(getAclsSOT0().get(0));
+    when(clusterApiService.approveAclRequests(any(), anyInt()))
+        .thenReturn(apiResponseResponseEntity);
+    when(handleDbRequests.updateJsonParams(anyMap(), anyInt(), anyInt()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+
+    SyncBackAcls syncBackAcls = getSyncBackAcls(envSelected);
+
+    ApiResponse apiResponseActual = aclSyncControllerService.updateSyncBackAcls(syncBackAcls);
+    assertThat(apiResponseActual.isSuccess()).isTrue();
+  }
+
+  private static SyncBackAcls getSyncBackAcls(String envSelected) {
+    SyncBackAcls syncBackAcls = new SyncBackAcls();
+    String[] aclIds = new String[1];
+    aclIds[0] = "1001";
+    syncBackAcls.setAclIds(aclIds);
+    syncBackAcls.setTypeOfSync("SELECTED_ACLS");
+    syncBackAcls.setSourceEnv(envSelected);
+    syncBackAcls.setTargetEnv(envSelected);
+    return syncBackAcls;
   }
 
   private List<Team> getAvailableTeams() {

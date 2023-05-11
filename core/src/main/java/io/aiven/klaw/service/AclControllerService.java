@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -690,16 +691,17 @@ public class AclControllerService {
     try {
       ApiResponse responseBody = Objects.requireNonNull(response).getBody();
       if (Objects.requireNonNull(responseBody).isSuccess()) {
-        String jsonParams = "", aivenAclIdKey = "aivenaclid";
+        Map<String, String> jsonParams = new HashMap<>();
+        String aivenAclIdKey = "aivenaclid";
         Object responseData = responseBody.getData();
         if (responseData instanceof Map) {
           Map<String, String> dataMap = (Map<String, String>) responseData;
           if (dataMap.containsKey(aivenAclIdKey)) {
-            jsonParams = "{\"" + aivenAclIdKey + "\":\"" + dataMap.get(aivenAclIdKey) + "\"}";
+            jsonParams = dataMap;
             updateServiceAccountsForTeam(aclReq, tenantId);
           }
         }
-        updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams);
+        updateAclReqStatus = dbHandle.updateAclRequest(aclReq, userDetails, jsonParams, false);
       } else {
         updateAclReqStatus = ApiResultStatus.FAILURE.value;
       }

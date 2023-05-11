@@ -3,6 +3,7 @@ package io.aiven.klaw.helpers.db.rdbms;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclID;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.KwKafkaConnector;
@@ -23,6 +24,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
@@ -39,6 +41,7 @@ import io.aiven.klaw.repository.UserInfoRepo;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +65,9 @@ public class UpdateDataJdbc {
 
   @Autowired(required = false)
   private AclRequestsRepo aclRequestsRepo;
+
+  @Autowired(required = false)
+  private AclRepo aclRepo;
 
   @Autowired(required = false)
   private UserInfoRepo userInfoRepo;
@@ -249,17 +255,36 @@ public class UpdateDataJdbc {
         });
   }
 
-  public String updateAclRequest(AclRequests aclReq, String approver, String jsonParams) {
+  public String updateJsonParams(Map<String, String> jsonParams, int reqNo, int tenantId) {
+    AclID aclID = new AclID();
+    aclID.setReq_no(reqNo);
+    aclID.setTenantId(tenantId);
+
+    Optional<Acl> acl = aclRepo.findById(aclID);
+    acl.ifPresent(
+        value -> {
+          value.setJsonParams(jsonParams);
+          aclRepo.save(acl.get());
+        });
+
+    return ApiResultStatus.SUCCESS.value;
+  }
+
+  public String updateAclRequest(
+      AclRequests aclReq, String approver, Map<String, String> jsonParams, boolean saveReqOnly) {
     log.debug("updateAclRequest {} {}", aclReq.getTopicname(), approver);
     aclReq.setApprover(approver);
     aclReq.setRequestStatus(RequestStatus.APPROVED.value);
     aclReq.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     aclRequestsRepo.save(aclReq);
+    if (saveReqOnly) {
+      return ApiResultStatus.SUCCESS.value;
+    }
 
     return processMultipleAcls(aclReq, jsonParams);
   }
 
-  private String processMultipleAcls(AclRequests aclReq, String jsonParams) {
+  private String processMultipleAcls(AclRequests aclReq, Map<String, String> jsonParams) {
     List<Acl> acls;
     if (aclReq.getAcl_ip() != null) {
       String[] aclListIp = aclReq.getAcl_ip().split("<ACL>");

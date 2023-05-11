@@ -822,7 +822,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                         title: "Success: ",
                         text: "Password is displayed above !!"
                     });
-                    $scope.alert = "Password : " + output.data.password;
+                    $scope.alert = "Password : " + output.password;
                 }
 
             }).error(
