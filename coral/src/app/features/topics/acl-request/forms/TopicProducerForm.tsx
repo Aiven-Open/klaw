@@ -141,6 +141,7 @@ const TopicProducerForm = ({
             <EnvironmentField
               environments={environments}
               selectedTopic={topicname}
+              prefixed={aclPatternType === "PREFIXED"}
             />
           </GridItem>
 

@@ -5,13 +5,23 @@ import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries
 interface EnvironmentFieldProps {
   environments: ExtendedEnvironment[];
   selectedTopic?: string;
+  prefixed?: boolean;
 }
 
 const getOptions = (
   environments: ExtendedEnvironment[],
+  prefixed: boolean,
   topicName?: string
 ) => {
   return environments.map((env) => {
+    if (prefixed) {
+      return (
+        <Option key={env.id} value={env.id}>
+          {env.name}
+        </Option>
+      );
+    }
+
     if (env.topicNames.length === 0) {
       return (
         <Option key={env.id} value={env.id} disabled>
@@ -39,6 +49,7 @@ const getOptions = (
 const EnvironmentField = ({
   environments,
   selectedTopic,
+  prefixed = false,
 }: EnvironmentFieldProps) => {
   return (
     <NativeSelect
@@ -47,7 +58,7 @@ const EnvironmentField = ({
       placeholder={"-- Please select --"}
       required
     >
-      {getOptions(environments, selectedTopic)}
+      {getOptions(environments, prefixed, selectedTopic)}
     </NativeSelect>
   );
 };
