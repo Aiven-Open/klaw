@@ -18,15 +18,13 @@ const getAllEnvironmentsForTopicAndAcl = async (): Promise<Environment[]> => {
     .then(transformEnvironmentApiResponse);
 };
 
-const getEnvironmentsForTopicAndAclRequest = async (): Promise<
-  Environment[]
-> => {
+const getEnvironmentsForTopicRequest = async (): Promise<Environment[]> => {
   return api
     .get<KlawApiResponse<"getEnvsBaseCluster">>(API_PATHS.getEnvsBaseCluster)
     .then(transformEnvironmentApiResponse);
 };
 
-const getTopicAndAclEnvironmentsForTeam = (): Promise<Environment[]> => {
+const getEnvironmentsForTopicRequestByTeam = (): Promise<Environment[]> => {
   return api
     .get<KlawApiResponse<"getEnvsBaseClusterFilteredForTeam">>(
       API_PATHS.getEnvsBaseClusterFilteredForTeam
@@ -72,9 +70,9 @@ const getClusterInfo = async ({
 
 export {
   getAllEnvironmentsForTopicAndAcl,
-  getEnvironmentsForTopicAndAclRequest,
+  getEnvironmentsForTopicRequest,
   getClusterInfo,
-  getTopicAndAclEnvironmentsForTeam,
+  getEnvironmentsForTopicRequestByTeam,
   getAllEnvironmentsForSchema,
   getEnvironmentsForSchemaRequest,
   getAllEnvironmentsForConnector,

@@ -1,11 +1,11 @@
 import {
   getAllEnvironmentsForTopicAndAcl,
-  getEnvironmentsForTopicAndAclRequest,
+  getEnvironmentsForTopicRequest,
   getAllEnvironmentsForSchema,
   getEnvironmentsForSchemaRequest,
   getAllEnvironmentsForConnector,
 } from "src/domain/environment/environment-api";
-import { mockgetEnvironmentsForTopicAndAclRequest } from "src/domain/environment/environment-api.msw";
+import { mockgetEnvironmentsForTopicRequest } from "src/domain/environment/environment-api.msw";
 import {
   ALL_ENVIRONMENTS_VALUE,
   Environment,
@@ -13,8 +13,8 @@ import {
 
 export {
   getAllEnvironmentsForTopicAndAcl,
-  getEnvironmentsForTopicAndAclRequest,
-  mockgetEnvironmentsForTopicAndAclRequest,
+  getEnvironmentsForTopicRequest,
+  mockgetEnvironmentsForTopicRequest,
   ALL_ENVIRONMENTS_VALUE,
   getAllEnvironmentsForSchema,
   getEnvironmentsForSchemaRequest,

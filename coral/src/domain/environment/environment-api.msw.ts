@@ -25,7 +25,7 @@ function mockgetAllEnvironmentsForTopicAndAcl({
   );
 }
 
-function mockgetEnvironmentsForTopicAndAclRequest({
+function mockgetEnvironmentsForTopicRequest({
   mswInstance,
   response,
 }: MockApi<"getEnvsBaseCluster">) {
@@ -37,7 +37,7 @@ function mockgetEnvironmentsForTopicAndAclRequest({
   );
 }
 
-function mockgetTopicAndAclEnvironmentsForTeam({
+function mockgetEnvironmentsForTopicRequestByTeam({
   mswInstance,
   response,
 }: MockApi<"getEnvsBaseClusterFilteredForTeam">) {
@@ -80,8 +80,8 @@ const getMockedResponseGetClusterInfoFromEnv = (
 
 export {
   mockgetAllEnvironmentsForTopicAndAcl,
-  mockgetEnvironmentsForTopicAndAclRequest,
-  mockgetTopicAndAclEnvironmentsForTeam,
+  mockgetEnvironmentsForTopicRequest,
+  mockgetEnvironmentsForTopicRequestByTeam,
   mockedEnvironmentResponse,
   mockGetClusterInfoFromEnv,
   getMockedResponseGetClusterInfoFromEnv,
