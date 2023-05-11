@@ -178,6 +178,9 @@ export default defineConfig(({ mode }) => {
         "./test-setup/mock-monaco-editor.tsx",
         // "./test-setup/mock-ds-icon-component.tsx",
       ],
+      deps: {
+        inline: ["@aivenio/aquarium"],
+      },
     },
   };
 });

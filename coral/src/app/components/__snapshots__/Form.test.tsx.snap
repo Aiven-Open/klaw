@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
 <div>
@@ -64,6 +64,90 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
           <input
             class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
             id="input-21"
+            name="formFieldsCustomName"
+            type="text"
+          />
+        </span>
+      </label>
+      <p
+        class="block mt-1 mb-3 typography-caption"
+      >
+         
+      </p>
+    </div>
+    <button
+      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4"
+      title="Submit"
+      type="submit"
+    />
+  </form>
+</div>
+`;
+
+exports[`Form > <PasswordInput> > should render <PasswordInput> 1`] = `
+<div>
+  <form>
+    <div
+      style="display: flex; flex-direction: column;"
+    >
+      <label
+        class="w-full"
+        for="input-1219"
+        id="input-1219-label"
+      >
+        <span
+          class="inline-block mb-2 typography-small-strong text-grey-60"
+        >
+          PasswordInput
+        </span>
+        <span
+          class="relative block"
+        >
+          <input
+            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
+            id="input-1219"
+            name="password"
+            type="password"
+          />
+        </span>
+      </label>
+      <p
+        class="block mt-1 mb-3 typography-caption"
+      >
+         
+      </p>
+    </div>
+    <button
+      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4"
+      title="Submit"
+      type="submit"
+    />
+  </form>
+</div>
+`;
+
+exports[`Form > <TextInput> > should render <TextInput> 1`] = `
+<div>
+  <form>
+    <div
+      style="display: flex; flex-direction: column;"
+    >
+      <label
+        class="w-full"
+        for="input-33"
+        id="input-33-label"
+      >
+        <span
+          class="inline-block mb-2 typography-small-strong text-grey-60"
+        >
+          TextInput
+        </span>
+        <span
+          class="relative block"
+        >
+          <input
+            class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
+            id="input-33"
             name="formFieldsCustomName"
             type="text"
           />
