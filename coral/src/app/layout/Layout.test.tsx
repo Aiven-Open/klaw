@@ -1,5 +1,5 @@
-import Layout from "src/app/layout/Layout";
 import { cleanup, screen, within } from "@testing-library/react";
+import Layout from "src/app/layout/Layout";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 
@@ -9,15 +9,13 @@ jest.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
 
-const testChildren = <div data-testid={"test-children"}></div>;
-
 describe("Layout.tsx", () => {
   isFeatureFlagActiveMock.mockReturnValue(true);
 
   describe("renders the layout component with all needed elements", () => {
     beforeAll(() => {
-      customRender(<Layout>{testChildren}</Layout>, {
-        memoryRouter: true,
+      customRender(<Layout />, {
+        browserRouter: true,
         queryClient: true,
       });
     });
@@ -41,19 +39,11 @@ describe("Layout.tsx", () => {
       const nav = screen.getByRole("navigation", { name: "Main navigation" });
       expect(nav).toBeVisible();
     });
-
-    it("renders its children in the main section", () => {
-      const main = screen.getByRole("main");
-      const child = within(main).getByTestId("test-children");
-
-      expect(main).toBeVisible();
-      expect(child).toBeVisible();
-    });
   });
 
   describe("enables user to navigate all navigation element with keyboard", () => {
     beforeEach(() => {
-      customRender(<Layout>{testChildren}</Layout>, {
+      customRender(<Layout />, {
         memoryRouter: true,
         queryClient: true,
       });

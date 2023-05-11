@@ -1,10 +1,11 @@
-import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
+import { useRef } from "react";
+import { Outlet } from "react-router-dom";
 import HeaderNavigation from "src/app/layout/header/HeaderNavigation";
-import SkipLink from "src/app/layout/skip-link/SkipLink";
-import { ReactNode, useRef } from "react";
+import MainNavigation from "src/app/layout/main-navigation/MainNavigation";
 import { BasePage } from "src/app/layout/page/BasePage";
+import SkipLink from "src/app/layout/skip-link/SkipLink";
 
-function Layout({ children }: { children: ReactNode }) {
+function Layout() {
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -12,7 +13,11 @@ function Layout({ children }: { children: ReactNode }) {
       <SkipLink mainContent={ref} />
       <BasePage
         headerContent={<HeaderNavigation />}
-        content={<div ref={ref}>{children}</div>}
+        content={
+          <div ref={ref}>
+            <Outlet />
+          </div>
+        }
         sidebar={<MainNavigation />}
       />
     </>
