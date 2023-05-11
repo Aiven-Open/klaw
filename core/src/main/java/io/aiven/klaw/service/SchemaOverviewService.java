@@ -163,8 +163,13 @@ public class SchemaOverviewService extends BaseOverviewService {
             // A team owns a topic across all environments so we can assume if the search returned
             // one or more topics it is owned by this users team.
             if (topics.size() > 0) {
+
               // Set Promotion Details
-              processSchemaPromotionDetails(schemaOverview, tenantId, schemaEnv, kafkaEnvIds);
+              processSchemaPromotionDetails(
+                  schemaOverview,
+                  tenantId,
+                  schemaEnv,
+                  topics.stream().map(topic -> topic.getEnvironment()).toList());
               log.info("Getting schema details for: " + topicNameSearch);
             }
           }
@@ -182,7 +187,7 @@ public class SchemaOverviewService extends BaseOverviewService {
 
   private void processSchemaPromotionDetails(
       SchemaOverview schemaOverview, int tenantId, Env schemaEnv, List<String> kafkaEnvIds) {
-    log.info("SchemaEnv Id {}", schemaEnv.getId());
+    log.debug("SchemaEnv Id {} KafkaEnvIds {}", schemaEnv.getId(), kafkaEnvIds);
     Map<String, String> promotionDetails = new HashMap<>();
     generatePromotionDetails(
         tenantId,
