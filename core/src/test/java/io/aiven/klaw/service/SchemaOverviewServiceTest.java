@@ -117,9 +117,9 @@ public class SchemaOverviewServiceTest {
     when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
     when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
             eq(TESTTOPIC), eq(10), eq(101)))
-        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1"), createTopic(TESTTOPIC, "2")));
     SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", List.of("1", "2"));
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", List.of("1"));
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").containsKey("status")).isTrue();
