@@ -17,12 +17,10 @@ import { getAivenServiceAccounts } from "src/domain/acl/acl-api";
 import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-jest.mock("src/domain/acl/acl-api");
+vi.mock("src/domain/acl/acl-api");
 
 const mockGetAivenServiceAccounts =
-  getAivenServiceAccounts as jest.MockedFunction<
-    typeof getAivenServiceAccounts
-  >;
+  getAivenServiceAccounts as vi.MockedFunction<typeof getAivenServiceAccounts>;
 const mockedAivenServiceAccountsResponse = ["bsisko", "odo", "quark"];
 
 const mockedEnvironments: ExtendedEnvironment[] = [

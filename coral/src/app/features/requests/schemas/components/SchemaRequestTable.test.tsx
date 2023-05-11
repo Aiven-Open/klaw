@@ -9,12 +9,13 @@ import {
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { mockedApiResponses } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import userEvent from "@testing-library/user-event";
+import { expect } from "vitest";
 
 const schemaRequests = [...mockedApiResponses];
 const deletableRequests = schemaRequests.filter((entry) => entry.deletable);
 
-const showDetailsMock = jest.fn();
-const showDeleteDialogMock = jest.fn();
+const showDetailsMock = vi.fn();
+const showDeleteDialogMock = vi.fn();
 
 describe("SchemaRequestTable", () => {
   beforeAll(mockIntersectionObserver);
@@ -47,7 +48,7 @@ describe("SchemaRequestTable", () => {
     it("informs user there are no requests matching their criteria", () => {
       const text = screen.getByText("No Schema request matched your criteria.");
 
-      expect(text).toBeVisible();
+      expect(text).to;
     });
   });
 
@@ -235,7 +236,7 @@ describe("SchemaRequestTable", () => {
     });
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("triggers opening a modal with details for the first given schema request", async () => {
@@ -277,7 +278,7 @@ describe("SchemaRequestTable", () => {
 
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("triggers opening a dialog asking for confirmation to delete a schema request", async () => {

@@ -6,8 +6,8 @@ import { z } from "zod";
 import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/form-schemas/topic-schema-request-form";
 import { readFile } from "src/app/features/topics/schema-request/utils/read-file";
 
-jest.mock("src/app/features/topics/schema-request/utils/read-file");
-const mockReadFiles = readFile as jest.MockedFunction<typeof readFile>;
+vi.mock("src/app/features/topics/schema-request/utils/read-file");
+const mockReadFiles = readFile as vi.MockedFunction<typeof readFile>;
 
 describe("TopicSchema", () => {
   const formElementName: keyof TopicRequestFormSchema = "schemafull";
@@ -15,8 +15,8 @@ describe("TopicSchema", () => {
     schemafull: z.instanceof(File),
   });
 
-  const mockedOnSubmit = jest.fn();
-  const mockedOnError = jest.fn();
+  const mockedOnSubmit = vi.fn();
+  const mockedOnError = vi.fn();
   const labelUpload = "Upload AVRO schema file";
   const emptyError = "File missing: Upload the AVRO schema file.";
 
@@ -39,7 +39,7 @@ describe("TopicSchema", () => {
 
     afterAll(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("shows a required file upload input", () => {
@@ -79,7 +79,7 @@ describe("TopicSchema", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -147,7 +147,7 @@ describe("TopicSchema", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 

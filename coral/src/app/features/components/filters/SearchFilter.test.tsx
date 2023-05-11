@@ -60,7 +60,7 @@ describe("SearchFilter.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -81,7 +81,7 @@ describe("SearchFilter.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -107,7 +107,7 @@ describe("SearchFilter.tsx", () => {
     afterEach(() => {
       // resets url to get to clean state again
       window.history.pushState({}, "No page title", "/");
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

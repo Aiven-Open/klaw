@@ -7,9 +7,9 @@ import {
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { AuthUser } from "src/domain/auth-user";
 
-const getAuthMock = jest.fn();
-jest.mock("src/domain/auth-user", () => ({
-  ...jest.requireActual("src/domain/auth-user"),
+const getAuthMock = vi.fn();
+vi.mock("src/domain/auth-user", () => ({
+  ...vi.importActual("src/domain/auth-user"),
   getAuth: () => getAuthMock(),
 }));
 
@@ -41,7 +41,7 @@ describe("AuthProvider.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -71,7 +71,7 @@ describe("AuthProvider.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

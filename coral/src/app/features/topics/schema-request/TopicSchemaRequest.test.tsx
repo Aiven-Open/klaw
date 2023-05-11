@@ -14,28 +14,28 @@ import { createSchemaRequest } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-jest.mock("src/domain/schema-request/schema-request-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
-jest.mock("src/domain/topic/topic-api.ts");
+vi.mock("src/domain/schema-request/schema-request-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/topic/topic-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as jest.MockedFunction<
+  getEnvironmentsForSchemaRequest as vi.MockedFunction<
     typeof getEnvironmentsForSchemaRequest
   >;
-const mockCreateSchemaRequest = createSchemaRequest as jest.MockedFunction<
+const mockCreateSchemaRequest = createSchemaRequest as vi.MockedFunction<
   typeof createSchemaRequest
 >;
-const mockGetTopicNames = getTopicNames as jest.MockedFunction<
+const mockGetTopicNames = getTopicNames as vi.MockedFunction<
   typeof getTopicNames
 >;
 
-const mockedUsedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+const mockedUsedNavigate = vi.fn();
+vi.mock("react-router-dom", () => ({
+  ...vi.importActual("react-router-dom"),
   useNavigate: () => mockedUsedNavigate,
 }));
 
-const useQuerySpy = jest.spyOn(ReactQuery, "useQuery");
+const useQuerySpy = vi.spyOn(ReactQuery, "useQuery");
 
 const testTopicName = "my-awesome-topic";
 
@@ -63,7 +63,7 @@ describe("TopicSchemaRequest", () => {
   };
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("checks if topicName passed from url is part of topics user can request schemas for", () => {
@@ -71,7 +71,7 @@ describe("TopicSchemaRequest", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockCreateSchemaRequest.mockImplementation(vi.fn());
     });
 
     afterEach(() => {
@@ -120,7 +120,7 @@ describe("TopicSchemaRequest", () => {
       //@ts-ignore
       useQuerySpy.mockReturnValue({ data: [], isLoading: true });
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
-      mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
@@ -154,7 +154,7 @@ describe("TopicSchemaRequest", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
@@ -277,7 +277,7 @@ describe("TopicSchemaRequest", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
@@ -349,7 +349,7 @@ describe("TopicSchemaRequest", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(
@@ -460,7 +460,7 @@ describe("TopicSchemaRequest", () => {
     const originalConsoleError = console.error;
 
     beforeEach(async () => {
-      console.error = jest.fn();
+      console.error = vi.fn();
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );

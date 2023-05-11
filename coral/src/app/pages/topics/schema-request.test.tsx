@@ -8,18 +8,18 @@ import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
 import { createSchemaRequest } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 
-jest.mock("src/domain/schema-request/schema-request-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
-jest.mock("src/domain/topic/topic-api.ts");
+vi.mock("src/domain/schema-request/schema-request-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/topic/topic-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as jest.MockedFunction<
+  getEnvironmentsForSchemaRequest as vi.MockedFunction<
     typeof getEnvironmentsForSchemaRequest
   >;
-const mockCreateSchemaRequest = createSchemaRequest as jest.MockedFunction<
+const mockCreateSchemaRequest = createSchemaRequest as vi.MockedFunction<
   typeof createSchemaRequest
 >;
-const mockGetTopicNames = getTopicNames as jest.MockedFunction<
+const mockGetTopicNames = getTopicNames as vi.MockedFunction<
   typeof getTopicNames
 >;
 
@@ -29,7 +29,7 @@ describe("SchemaRequest", () => {
 
     beforeAll(() => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
-      mockCreateSchemaRequest.mockImplementation(jest.fn());
+      mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([topicName]);
       // @TODO if we decide to go with this kind of dynamic routes,
       // this should be enabled by customRender!

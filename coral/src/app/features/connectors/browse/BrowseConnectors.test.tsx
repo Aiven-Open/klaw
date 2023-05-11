@@ -10,18 +10,18 @@ import { createEnvironment } from "src/domain/environment/environment-test-helpe
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { getTeams } from "src/domain/team";
 
-jest.mock("src/domain/connector/connector-api.ts");
-jest.mock("src/domain/team/team-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/connector/connector-api.ts");
+vi.mock("src/domain/team/team-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetConnectors = getConnectors as jest.MockedFunction<
+const mockGetConnectors = getConnectors as vi.MockedFunction<
   typeof getConnectors
 >;
 
-const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
+const mockGetTeams = getTeams as vi.MockedFunction<typeof getTeams>;
 
 const mockGetSyncConnectorsEnvironments =
-  getAllEnvironmentsForConnector as jest.MockedFunction<
+  getAllEnvironmentsForConnector as vi.MockedFunction<
     typeof getAllEnvironmentsForConnector
   >;
 
@@ -146,7 +146,7 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     afterAll(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -197,7 +197,7 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     afterAll(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -236,7 +236,7 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -280,7 +280,7 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -341,7 +341,7 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -400,7 +400,7 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 

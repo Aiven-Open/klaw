@@ -7,11 +7,11 @@ describe("Modal.tsx", () => {
   const mockChildren = <div>This is child content</div>;
   const mockPrimary = {
     text: "Primary action 1",
-    onClick: jest.fn(),
+    onClick: vi.fn(),
   };
 
   describe("renders a default modal with all necessary elements", () => {
-    afterEach(jest.clearAllMocks);
+    afterEach(vi.clearAllMocks);
 
     describe("renders all necessary elements", () => {
       beforeAll(() => {
@@ -149,7 +149,7 @@ describe("Modal.tsx", () => {
     describe("handles a secondary action", () => {
       const mockSecondary = {
         text: "this is the secondary action",
-        onClick: jest.fn(),
+        onClick: vi.fn(),
       };
 
       beforeEach(() => {
@@ -206,7 +206,7 @@ describe("Modal.tsx", () => {
     });
 
     describe("adds option to close the modal without triggering an action", () => {
-      const mockClose = jest.fn();
+      const mockClose = vi.fn();
 
       beforeEach(() => {
         render(
@@ -252,10 +252,10 @@ describe("Modal.tsx", () => {
     });
 
     describe("handles Modal actions isLoading state", () => {
-      const mockClose = jest.fn();
+      const mockClose = vi.fn();
       const mockSecondary = {
         text: "this is the secondary action",
-        onClick: jest.fn(),
+        onClick: vi.fn(),
         loading: true,
       };
 
@@ -288,10 +288,10 @@ describe("Modal.tsx", () => {
     });
 
     describe("handles Modal actions disabled state", () => {
-      const mockClose = jest.fn();
+      const mockClose = vi.fn();
       const mockSecondary = {
         text: "this is the secondary action",
-        onClick: jest.fn(),
+        onClick: vi.fn(),
         disabled: true,
       };
 

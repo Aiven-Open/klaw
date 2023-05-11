@@ -18,17 +18,18 @@ import { mockedEnvironmentResponse } from "src/domain/environment/environment-ap
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { vi } from "vitest";
 
-jest.mock("src/domain/acl/acl-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/acl/acl-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
 
 const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
     typeof getAllEnvironmentsForTopicAndAcl
   >;
 
 const mockGetAclRequestsForApprover =
-  getAclRequestsForApprover as jest.MockedFunction<
+  getAclRequestsForApprover as vi.MockedFunction<
     typeof getAclRequestsForApprover
   >;
 
@@ -115,13 +116,13 @@ describe("AclApprovals", () => {
     mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
   });
   afterAll(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("shows loading or error state for fetching acls requests", () => {
     const originalConsoleError = console.error;
     beforeEach(() => {
-      console.error = jest.fn();
+      console.error = vi.fn();
       mockGetEnvironments.mockResolvedValue([]);
     });
     afterEach(() => {
@@ -183,7 +184,7 @@ describe("AclApprovals", () => {
 
     afterAll(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("render a Pagination component", async () => {
@@ -253,7 +254,7 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -453,7 +454,7 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

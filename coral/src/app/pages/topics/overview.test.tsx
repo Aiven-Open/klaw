@@ -1,9 +1,9 @@
 import { cleanup, screen, render } from "@testing-library/react";
 import { TopicOverviewPage } from "src/app/pages/topics/overview";
 
-const mockedUsedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+const mockedUsedNavigate = vi.fn();
+vi.mock("react-router-dom", () => ({
+  ...vi.importActual("react-router-dom"),
   useNavigate: () => mockedUsedNavigate,
 }));
 

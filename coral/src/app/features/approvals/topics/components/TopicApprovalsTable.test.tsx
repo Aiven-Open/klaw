@@ -10,7 +10,7 @@ import {
 } from "src/domain/requests/requests-types";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
-const mockedApproveRequest = jest.fn();
+const mockedApproveRequest = vi.fn();
 
 const mockedRequests: TopicRequest[] = [
   {
@@ -103,11 +103,11 @@ describe("TopicApprovalsTable", () => {
       render(
         <TopicApprovalsTable
           requests={[]}
-          onDetails={jest.fn()}
+          onDetails={vi.fn()}
           onApprove={mockedApproveRequest}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
@@ -122,11 +122,11 @@ describe("TopicApprovalsTable", () => {
       render(
         <TopicApprovalsTable
           requests={mockedRequests}
-          onDetails={jest.fn()}
+          onDetails={vi.fn()}
           onApprove={mockedApproveRequest}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
@@ -199,11 +199,11 @@ describe("TopicApprovalsTable", () => {
       render(
         <TopicApprovalsTable
           requests={mockedRequests}
-          onDetails={jest.fn()}
+          onDetails={vi.fn()}
           onApprove={mockedApproveRequest}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
@@ -275,11 +275,11 @@ describe("TopicApprovalsTable", () => {
       render(
         <TopicApprovalsTable
           requests={mockedRequests}
-          onDetails={jest.fn()}
+          onDetails={vi.fn()}
           onApprove={mockedApproveRequest}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
@@ -309,11 +309,11 @@ describe("TopicApprovalsTable", () => {
         <TopicApprovalsTable
           requests={requestsWithStatusCreated}
           actionsDisabled
-          onDetails={jest.fn()}
+          onDetails={vi.fn()}
           onApprove={mockedApproveRequest}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
@@ -361,11 +361,11 @@ describe("TopicApprovalsTable", () => {
       render(
         <TopicApprovalsTable
           requests={mockedRequests}
-          onDetails={jest.fn()}
-          onApprove={jest.fn()}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDetails={vi.fn()}
+          onApprove={vi.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );
@@ -396,15 +396,15 @@ describe("TopicApprovalsTable", () => {
   });
 
   describe("user is unable to trigger action if some action is already in progress", () => {
-    const isBeingApproved = jest.fn(() => true);
-    const isBeingDeclined = jest.fn(() => true);
+    const isBeingApproved = vi.fn(() => true);
+    const isBeingDeclined = vi.fn(() => true);
     beforeEach(() => {
       render(
         <TopicApprovalsTable
           requests={mockedRequests}
-          onDetails={jest.fn()}
-          onApprove={jest.fn()}
-          onDecline={jest.fn()}
+          onDetails={vi.fn()}
+          onApprove={vi.fn()}
+          onDecline={vi.fn()}
           isBeingApproved={isBeingApproved}
           isBeingDeclined={isBeingDeclined}
           ariaLabel={"Topic approval requests, page 1 of 10"}
@@ -437,16 +437,16 @@ describe("TopicApprovalsTable", () => {
   });
 
   describe("user is able to view request details", () => {
-    const onDetails = jest.fn();
+    const onDetails = vi.fn();
     beforeEach(() => {
       render(
         <TopicApprovalsTable
           requests={mockedRequests}
           onDetails={onDetails}
-          onApprove={jest.fn()}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onApprove={vi.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Topic approval requests, page 1 of 10"}
         />
       );

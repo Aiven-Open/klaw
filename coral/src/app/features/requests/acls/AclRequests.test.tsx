@@ -14,17 +14,17 @@ import { createEnvironment } from "src/domain/environment/environment-test-helpe
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-jest.mock("src/domain/acl/acl-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/acl/acl-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetAclRequests = getAclRequests as jest.MockedFunction<
+const mockGetAclRequests = getAclRequests as vi.MockedFunction<
   typeof getAclRequests
 >;
-const mockDeleteAclRequests = deleteAclRequest as jest.MockedFunction<
+const mockDeleteAclRequests = deleteAclRequest as vi.MockedFunction<
   typeof deleteAclRequest
 >;
 const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
     typeof getAllEnvironmentsForTopicAndAcl
   >;
 
@@ -117,7 +117,7 @@ describe("AclRequests", () => {
 
   afterEach(() => {
     cleanup();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it("makes a request to the api to get the team's ACL requests", () => {
@@ -138,7 +138,7 @@ describe("AclRequests", () => {
     });
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("fetches the right page number if a page is set in search params", async () => {
@@ -258,7 +258,7 @@ describe("AclRequests", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -294,7 +294,7 @@ describe("AclRequests", () => {
   describe("user can filter ACL requests based on the topic name", () => {
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("populates the filter from the url search parameters", () => {
@@ -641,7 +641,7 @@ describe("AclRequests", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -722,7 +722,7 @@ describe("AclRequests", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 

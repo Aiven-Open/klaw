@@ -4,9 +4,9 @@ import RequestsResourceTabs from "src/app/features/requests/RequestsResourceTabs
 import { RequestsTabEnum } from "src/app/router_utils";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+const mockedNavigate = vi.fn();
+vi.mock("react-router-dom", () => ({
+  ...vi.importActual("react-router-dom"),
   useNavigate: () => mockedNavigate,
 }));
 

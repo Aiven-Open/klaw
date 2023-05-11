@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`TableLayout renders the necessary DOM and CSS to create layout renders correct DOM with optional pagination 1`] = `
 {

@@ -20,16 +20,13 @@ import { mockIntersectionObserver } from "src/services/test-utils/mock-intersect
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 
-jest.mock("src/domain/team/team-api.ts");
-jest.mock("src/domain/topic/topic-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/team/team-api.ts");
+vi.mock("src/domain/topic/topic-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
-const mockGetTopics = getTopics as jest.MockedFunction<typeof getTopics>;
-const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
+const mockGetTeams = vi.mocked(getTeams);
+const mockGetTopics = vi.mocked(getTopics);
+const mockGetEnvironments = vi.mocked(getAllEnvironmentsForTopicAndAcl);
 
 const filterByEnvironmentLabel = "Filter by Environment";
 const filterByTeamLabel = "Filter by team";
@@ -101,7 +98,7 @@ describe("BrowseTopics.tsx", () => {
     });
 
     afterAll(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -160,7 +157,7 @@ describe("BrowseTopics.tsx", () => {
     });
 
     afterAll(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -184,7 +181,7 @@ describe("BrowseTopics.tsx", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -223,7 +220,7 @@ describe("BrowseTopics.tsx", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -283,7 +280,7 @@ describe("BrowseTopics.tsx", () => {
 
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("shows a select element for team with `All teams` preselected", () => {
@@ -339,7 +336,7 @@ describe("BrowseTopics.tsx", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 

@@ -81,11 +81,11 @@ describe("AclApprovalsTable", () => {
       <AclApprovalsTable
         aclRequests={aclRequests}
         ariaLabel={"ACL approval requests, page 1 of 10"}
-        isBeingApproved={jest.fn()}
-        isBeingDeclined={jest.fn()}
-        onApprove={jest.fn()}
-        onDecline={jest.fn()}
-        onDetails={jest.fn()}
+        isBeingApproved={vi.fn()}
+        isBeingDeclined={vi.fn()}
+        onApprove={vi.fn()}
+        onDecline={vi.fn()}
+        onDetails={vi.fn()}
         {...props}
       />
     );
@@ -213,7 +213,7 @@ describe("AclApprovalsTable", () => {
   });
 
   it("has column for action to view request details", async () => {
-    const onDetails = jest.fn();
+    const onDetails = vi.fn();
     renderFromProps({ onDetails });
     await userEvent.click(
       within(within(getNthRow(1)).getAllByRole("cell")[10]).getByRole(
@@ -227,7 +227,7 @@ describe("AclApprovalsTable", () => {
   });
 
   it("has column for action to approve request", async () => {
-    const onApprove = jest.fn();
+    const onApprove = vi.fn();
     renderFromProps({ onApprove });
     await userEvent.click(
       within(within(getNthRow(1)).getAllByRole("cell")[11]).getByRole(
@@ -241,7 +241,7 @@ describe("AclApprovalsTable", () => {
   });
 
   it("has column for action to decline request", async () => {
-    const onDecline = jest.fn();
+    const onDecline = vi.fn();
     renderFromProps({ onDecline });
     await userEvent.click(
       within(within(getNthRow(1)).getAllByRole("cell")[12]).getByRole(
@@ -346,8 +346,8 @@ describe("AclApprovalsTable", () => {
   });
 
   describe("user is unable to trigger action if some action is already in progress", () => {
-    const isBeingApproved = jest.fn(() => true);
-    const isBeingDeclined = jest.fn(() => true);
+    const isBeingApproved = vi.fn(() => true);
+    const isBeingDeclined = vi.fn(() => true);
     beforeEach(() => {
       renderFromProps({ aclRequests, isBeingApproved, isBeingDeclined });
     });
@@ -377,7 +377,7 @@ describe("AclApprovalsTable", () => {
   });
 
   describe("user is able to view request details", () => {
-    const onDetails = jest.fn();
+    const onDetails = vi.fn();
     beforeEach(() => {
       renderFromProps({ aclRequests, onDetails });
     });

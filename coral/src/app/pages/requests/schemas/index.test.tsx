@@ -5,14 +5,14 @@ import { cleanup, screen, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
 
-jest.mock("src/domain/environment/environment-api.ts");
-jest.mock("src/domain/schema-request/schema-request-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/schema-request/schema-request-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as jest.MockedFunction<
+  getEnvironmentsForSchemaRequest as vi.MockedFunction<
     typeof getEnvironmentsForSchemaRequest
   >;
-const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
+const mockGetSchemaRequests = getSchemaRequests as vi.MockedFunction<
   typeof getSchemaRequests
 >;
 

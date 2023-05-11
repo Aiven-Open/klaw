@@ -32,7 +32,7 @@ describe("topic-api", () => {
       });
     });
     it("calls api.post with correct payload", () => {
-      const postSpy = jest.spyOn(api, "post");
+      const postSpy = vi.spyOn(api, "post");
       const env: Environment = {
         name: "DEV",
         id: "1",
@@ -76,7 +76,7 @@ describe("topic-api", () => {
       });
     });
     it("calls api.get with correct arguments", async () => {
-      const getSpy = jest.spyOn(api, "get");
+      const getSpy = vi.spyOn(api, "get");
       const params: Pick<
         KlawApiRequestQueryParameters<"getTopicRequestsForApprover">,
         "pageNo" | "requestStatus"

@@ -23,25 +23,26 @@ import { createEnvironment } from "src/domain/environment/environment-test-helpe
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
-jest.mock("src/domain/environment/environment-api.ts");
-jest.mock("src/domain/connector/connector-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/connector/connector-api.ts");
 
 const mockGetConnectorEnvironmentRequest =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
     typeof getAllEnvironmentsForTopicAndAcl
   >;
 
-const mockGetConnectorRequests = getConnectorRequests as jest.MockedFunction<
+const mockGetConnectorRequests = getConnectorRequests as vi.MockedFunction<
   typeof getConnectorRequests
 >;
 
 const mockGetSyncConnectorsEnvironments =
-  getAllEnvironmentsForConnector as jest.MockedFunction<
+  getAllEnvironmentsForConnector as vi.MockedFunction<
     typeof getAllEnvironmentsForConnector
   >;
 
-const mockDeleteConnectorRequest =
-  deleteConnectorRequest as jest.MockedFunction<typeof deleteConnectorRequest>;
+const mockDeleteConnectorRequest = deleteConnectorRequest as vi.MockedFunction<
+  typeof deleteConnectorRequest
+>;
 
 const mockGetConnectorRequestsResponse = transformConnectorRequestApiResponse([
   {
@@ -94,7 +95,7 @@ describe("ConnectorRequests", () => {
 
   afterEach(() => {
     cleanup();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it("makes a request to the api to get the teams connector requests", () => {
@@ -110,7 +111,7 @@ describe("ConnectorRequests", () => {
     beforeEach(() => {
       // used to swallow a console.error that _should_ happen
       // while making sure to not swallow other console.errors
-      console.error = jest.fn();
+      console.error = vi.fn();
 
       mockGetConnectorEnvironmentRequest.mockResolvedValue(
         mockedEnvironmentResponse
@@ -125,7 +126,7 @@ describe("ConnectorRequests", () => {
     afterEach(() => {
       console.error = originalConsoleError;
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("shows a loading state instead of a table while connector requests are being fetched", () => {
@@ -174,7 +175,7 @@ describe("ConnectorRequests", () => {
     });
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("fetches the right page number if a page is set in search params", async () => {
@@ -293,7 +294,7 @@ describe("ConnectorRequests", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -327,7 +328,7 @@ describe("ConnectorRequests", () => {
   describe("user can filter connector requests based on the connector name", () => {
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("populates the filter from the url search parameters", () => {
@@ -388,7 +389,7 @@ describe("ConnectorRequests", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -425,7 +426,7 @@ describe("ConnectorRequests", () => {
   describe("user can filter connector requests to only display users own requests", () => {
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("populates the MyRequests filter from the url search parameters", () => {
@@ -505,7 +506,7 @@ describe("ConnectorRequests", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -561,7 +562,7 @@ describe("ConnectorRequests", () => {
 
     afterEach(() => {
       console.error = originalConsoleError;
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -601,7 +602,7 @@ describe("ConnectorRequests", () => {
   describe("enables user to delete a request", () => {
     const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
+      console.error = vi.fn();
       mockGetConnectorEnvironmentRequest.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -619,7 +620,7 @@ describe("ConnectorRequests", () => {
 
     afterEach(() => {
       console.error = originalConsoleError;
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -777,7 +778,7 @@ describe("ConnectorRequests", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 

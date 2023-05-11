@@ -28,7 +28,7 @@ describe("Login", () => {
 
     afterAll(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       server.resetHandlers();
     });
 
@@ -59,7 +59,7 @@ describe("Login", () => {
 
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       server.resetHandlers();
     });
 
@@ -110,7 +110,7 @@ describe("Login", () => {
 
     it("user sees error message if username or password is wrong", async () => {
       const originalConsoleError = console.error;
-      console.error = jest.fn();
+      console.error = vi.fn();
 
       const usernameInput = screen.getByRole("textbox", { name: /Username/ });
       const passwordInput = screen.getByLabelText(/Password/);

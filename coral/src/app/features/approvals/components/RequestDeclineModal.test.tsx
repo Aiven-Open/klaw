@@ -3,9 +3,9 @@ import userEvent from "@testing-library/user-event";
 import RequestDeclineModal from "src/app/features/approvals/components/RequestDeclineModal";
 
 const baseProps = {
-  onClose: jest.fn(),
-  onSubmit: jest.fn(),
-  onCancel: jest.fn(),
+  onClose: vi.fn(),
+  onSubmit: vi.fn(),
+  onCancel: vi.fn(),
 };
 
 describe("RequestDeclineModal.test", () => {

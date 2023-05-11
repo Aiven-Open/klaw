@@ -63,7 +63,7 @@ const createdRequests = mockedConnectorRequests.filter(
   (request) => request.requestStatus === "CREATED"
 );
 
-const mockApproveRequest = jest.fn();
+const mockApproveRequest = vi.fn();
 
 describe("ConnectorApprovalsTable", () => {
   beforeAll(mockIntersectionObserver);
@@ -84,11 +84,11 @@ describe("ConnectorApprovalsTable", () => {
     render(
       <ConnectorApprovalsTable
         requests={[]}
-        onDetails={jest.fn()}
+        onDetails={vi.fn()}
         onApprove={mockApproveRequest}
-        onDecline={jest.fn()}
-        isBeingApproved={jest.fn()}
-        isBeingDeclined={jest.fn()}
+        onDecline={vi.fn()}
+        isBeingApproved={vi.fn()}
+        isBeingDeclined={vi.fn()}
         ariaLabel={"Connector approval requests, page 1 of 10"}
       />
     );
@@ -101,11 +101,11 @@ describe("ConnectorApprovalsTable", () => {
       render(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
-          onDetails={jest.fn()}
-          onApprove={jest.fn()}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDetails={vi.fn()}
+          onApprove={vi.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
         />
       );
@@ -214,11 +214,11 @@ describe("ConnectorApprovalsTable", () => {
       render(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
-          onDetails={jest.fn()}
-          onApprove={jest.fn()}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDetails={vi.fn()}
+          onApprove={vi.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
         />
       );
@@ -283,22 +283,22 @@ describe("ConnectorApprovalsTable", () => {
   });
 
   describe("triggers opening of a modal with all details if user clicks button for overview", () => {
-    const onDetails = jest.fn();
+    const onDetails = vi.fn();
     beforeEach(() => {
       render(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
           onDetails={onDetails}
-          onApprove={jest.fn()}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onApprove={vi.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
         />
       );
     });
     afterEach(() => {
-      cleanup(), jest.clearAllMocks();
+      cleanup(), vi.clearAllMocks();
     });
     it("triggers details action for the corresponding request when clicked", async () => {
       const table = screen.getByRole("table", {
@@ -317,17 +317,17 @@ describe("ConnectorApprovalsTable", () => {
   });
 
   describe("user is able to approve and decline pending requests", () => {
-    const onApprove = jest.fn();
-    const onDecline = jest.fn();
+    const onApprove = vi.fn();
+    const onDecline = vi.fn();
     beforeEach(() => {
       render(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
-          onDetails={jest.fn()}
+          onDetails={vi.fn()}
           onApprove={onApprove}
           onDecline={onDecline}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
         />
       );
@@ -366,11 +366,11 @@ describe("ConnectorApprovalsTable", () => {
       render(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
-          onDetails={jest.fn()}
-          onApprove={jest.fn()}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDetails={vi.fn()}
+          onApprove={vi.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
         />
       );
@@ -401,15 +401,15 @@ describe("ConnectorApprovalsTable", () => {
   });
 
   describe("user is unable to approve a request if the action is already in progress", () => {
-    const isBeingApproved = jest.fn(() => true);
-    const isBeingDeclined = jest.fn(() => true);
+    const isBeingApproved = vi.fn(() => true);
+    const isBeingDeclined = vi.fn(() => true);
     beforeEach(() => {
       render(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
-          onDetails={jest.fn()}
-          onApprove={jest.fn()}
-          onDecline={jest.fn()}
+          onDetails={vi.fn()}
+          onApprove={vi.fn()}
+          onDecline={vi.fn()}
           isBeingApproved={isBeingApproved}
           isBeingDeclined={isBeingDeclined}
           ariaLabel={"Connector approval requests, page 1 of 10"}
@@ -456,11 +456,11 @@ describe("ConnectorApprovalsTable", () => {
         <ConnectorApprovalsTable
           requests={requestsWithStatusCreated}
           actionsDisabled={true}
-          onDetails={jest.fn()}
+          onDetails={vi.fn()}
           onApprove={mockApproveRequest}
-          onDecline={jest.fn()}
-          isBeingApproved={jest.fn()}
-          isBeingDeclined={jest.fn()}
+          onDecline={vi.fn()}
+          isBeingApproved={vi.fn()}
+          isBeingDeclined={vi.fn()}
           ariaLabel={"Connector approval requests, page 1 of 10"}
         />
       );

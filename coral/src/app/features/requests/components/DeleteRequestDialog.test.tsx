@@ -3,8 +3,8 @@ import { DeleteRequestDialog } from "src/app/features/requests/components/Delete
 import userEvent from "@testing-library/user-event";
 
 describe("DeleteRequestDialog", () => {
-  const cancelMock = jest.fn();
-  const deleteRequestMock = jest.fn();
+  const cancelMock = vi.fn();
+  const deleteRequestMock = vi.fn();
 
   describe("shows all necessary elements", () => {
     beforeAll(() => {
@@ -119,7 +119,7 @@ describe("DeleteRequestDialog", () => {
 
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("calls the given cancel function when user clicks button to cancel the deletion of the request", async () => {
@@ -154,7 +154,7 @@ describe("DeleteRequestDialog", () => {
 
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("Cancel button should be disabled", async () => {

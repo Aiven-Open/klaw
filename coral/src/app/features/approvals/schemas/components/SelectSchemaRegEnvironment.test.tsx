@@ -10,10 +10,10 @@ import userEvent from "@testing-library/user-event";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { SelectSchemaRegEnvironment } from "src/app/features/approvals/schemas/components/SelectSchemaRegEnvironment";
 
-jest.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as jest.MockedFunction<
+  getEnvironmentsForSchemaRequest as vi.MockedFunction<
     typeof getEnvironmentsForSchemaRequest
   >;
 
@@ -30,7 +30,7 @@ describe("SelectSchemaRegEnvironment.tsx", () => {
   });
 
   describe("renders all necessary elements", () => {
-    const mockedOnChange = jest.fn();
+    const mockedOnChange = vi.fn();
 
     beforeAll(async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([
@@ -89,7 +89,7 @@ describe("SelectSchemaRegEnvironment.tsx", () => {
   });
 
   describe("handles user selecting a environment", () => {
-    const mockedOnChange = jest.fn();
+    const mockedOnChange = vi.fn();
 
     beforeEach(async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([
@@ -110,7 +110,7 @@ describe("SelectSchemaRegEnvironment.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

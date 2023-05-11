@@ -148,14 +148,14 @@ describe("FileInput.tsx", () => {
       type: "image/jpeg",
     });
 
-    const onChangeMock = jest.fn();
+    const onChangeMock = vi.fn();
 
     beforeEach(() => {
       render(<FileInput {...requiredProps} onChange={onChangeMock} />);
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

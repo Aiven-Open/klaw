@@ -19,19 +19,19 @@ import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/uti
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
-jest.mock("src/domain/environment/environment-api.ts");
-jest.mock("src/domain/topic/topic-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/topic/topic-api.ts");
 
 const mockGetTopicRequestEnvironments =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
     typeof getAllEnvironmentsForTopicAndAcl
   >;
 
-const mockGetTopicRequests = getTopicRequests as jest.MockedFunction<
+const mockGetTopicRequests = getTopicRequests as vi.MockedFunction<
   typeof getTopicRequests
 >;
 
-const mockDeleteTopicRequest = deleteTopicRequest as jest.MockedFunction<
+const mockDeleteTopicRequest = deleteTopicRequest as vi.MockedFunction<
   typeof deleteTopicRequest
 >;
 
@@ -80,7 +80,7 @@ describe("TopicRequests", () => {
 
   afterEach(() => {
     cleanup();
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   it("makes a request to the api to get the teams topic requests", () => {
@@ -94,7 +94,7 @@ describe("TopicRequests", () => {
   describe("user can filter topic requests based on the topic name", () => {
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("populates the filter from the url search parameters", () => {
@@ -136,7 +136,7 @@ describe("TopicRequests", () => {
   describe("user can filter topic requests to only display users own requests", () => {
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("populates the MyRequests filter from the url search parameters", () => {
@@ -209,7 +209,7 @@ describe("TopicRequests", () => {
     });
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("fetches the right page number if a page is set in search params", async () => {
@@ -328,7 +328,7 @@ describe("TopicRequests", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -375,7 +375,7 @@ describe("TopicRequests", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -427,7 +427,7 @@ describe("TopicRequests", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -478,7 +478,7 @@ describe("TopicRequests", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -552,7 +552,7 @@ describe("TopicRequests", () => {
   describe("enables user to delete a request", () => {
     const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
+      console.error = vi.fn();
       mockGetTopicRequestEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -568,7 +568,7 @@ describe("TopicRequests", () => {
 
     afterEach(() => {
       console.error = originalConsoleError;
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -727,7 +727,7 @@ describe("TopicRequests", () => {
 
     afterEach(() => {
       console.error = originalConsoleError;
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

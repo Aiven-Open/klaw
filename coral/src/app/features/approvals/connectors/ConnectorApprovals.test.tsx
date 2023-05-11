@@ -15,28 +15,24 @@ import { transformEnvironmentApiResponse } from "src/domain/environment/environm
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-jest.mock("src/domain/connector/connector-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/connector/connector-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
 
 const mockGetSyncConnectorsEnvironments =
-  getAllEnvironmentsForConnector as jest.MockedFunction<
+  getAllEnvironmentsForConnector as vi.MockedFunction<
     typeof getAllEnvironmentsForConnector
   >;
 
 const mockGetConnectorRequestsForApprover =
-  getConnectorRequestsForApprover as jest.MockedFunction<
+  getConnectorRequestsForApprover as vi.MockedFunction<
     typeof getConnectorRequestsForApprover
   >;
 
 const mockDeclineConnectorRequest =
-  declineConnectorRequest as jest.MockedFunction<
-    typeof declineConnectorRequest
-  >;
+  declineConnectorRequest as vi.MockedFunction<typeof declineConnectorRequest>;
 
 const mockApproveConnectorRequest =
-  approveConnectorRequest as jest.MockedFunction<
-    typeof approveConnectorRequest
-  >;
+  approveConnectorRequest as vi.MockedFunction<typeof approveConnectorRequest>;
 
 const mockedEnvironments = [
   {
@@ -132,7 +128,7 @@ describe("ConnectorApprovals", () => {
     beforeEach(() => {
       // used to swallow a console.error that _should_ happen
       // while making sure to not swallow other console.errors
-      console.error = jest.fn();
+      console.error = vi.fn();
 
       mockGetConnectorRequestsForApprover.mockResolvedValue({
         entries: [],
@@ -145,7 +141,7 @@ describe("ConnectorApprovals", () => {
     afterEach(() => {
       console.error = originalConsoleError;
       cleanup();
-      // jest.clearAllMocks();
+      // vi.clearAllMocks();
     });
 
     it("shows a loading state instead of a table while Kafka connector requests are being fetched", () => {
@@ -200,7 +196,7 @@ describe("ConnectorApprovals", () => {
 
     afterAll(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("shows a select to filter by environment with default", () => {
@@ -252,7 +248,7 @@ describe("ConnectorApprovals", () => {
 
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("fetches the right page number if a page is set in search params", async () => {
@@ -364,7 +360,7 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -397,7 +393,7 @@ describe("ConnectorApprovals", () => {
 
     const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
+      console.error = vi.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -415,7 +411,7 @@ describe("ConnectorApprovals", () => {
 
     afterEach(() => {
       console.error = originalConsoleError;
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -565,7 +561,7 @@ describe("ConnectorApprovals", () => {
 
     const orignalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
+      console.error = vi.fn();
 
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
@@ -584,7 +580,7 @@ describe("ConnectorApprovals", () => {
 
     afterEach(() => {
       console.error = orignalConsoleError;
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 

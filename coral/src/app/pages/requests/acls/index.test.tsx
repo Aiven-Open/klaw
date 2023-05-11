@@ -5,14 +5,14 @@ import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import AclRequestsPage from "src/app/pages/requests/acls/index";
 import { getAclRequests } from "src/domain/acl/acl-api";
 
-jest.mock("src/domain/environment/environment-api.ts");
-jest.mock("src/domain/acl/acl-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/acl/acl-api.ts");
 
 const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
     typeof getAllEnvironmentsForTopicAndAcl
   >;
-const mockGetAclRequests = getAclRequests as jest.MockedFunction<
+const mockGetAclRequests = getAclRequests as vi.MockedFunction<
   typeof getAclRequests
 >;
 

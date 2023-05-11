@@ -3,9 +3,9 @@ import userEvent from "@testing-library/user-event";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
 
 describe("AclTypeField", () => {
-  const onSubmit = jest.fn();
-  const onError = jest.fn();
-  const handleChange = jest.fn();
+  const onSubmit = vi.fn();
+  const onError = vi.fn();
+  const handleChange = vi.fn();
 
   afterEach(() => {
     cleanup();

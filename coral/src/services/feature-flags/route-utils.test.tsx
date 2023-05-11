@@ -3,15 +3,15 @@ import { FeatureFlag } from "src/services/feature-flags/types";
 import { Routes } from "src/app/router_utils";
 import { Navigate, RouteObject } from "react-router-dom";
 
-const isFeatureFlagActiveMock = jest.fn();
+const isFeatureFlagActiveMock = vi.fn();
 
-jest.mock("src/services/feature-flags/utils", () => ({
+vi.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
 
 describe("route-utils", () => {
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("createRouteBehindFeatureFlag", () => {
@@ -37,7 +37,7 @@ describe("route-utils", () => {
       });
 
       afterAll(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
       });
 
       it("sets the right path in the object", () => {
@@ -65,7 +65,7 @@ describe("route-utils", () => {
       });
 
       afterAll(() => {
-        jest.restoreAllMocks();
+        vi.restoreAllMocks();
       });
 
       it("sets the right path in the object", () => {

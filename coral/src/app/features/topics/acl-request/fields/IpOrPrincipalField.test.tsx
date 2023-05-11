@@ -14,21 +14,19 @@ const schema = z.object({
   aclIpPrincipleType,
 });
 
-jest.mock("src/domain/acl/acl-api");
+vi.mock("src/domain/acl/acl-api");
 
 const mockGetAivenServiceAccounts =
-  getAivenServiceAccounts as jest.MockedFunction<
-    typeof getAivenServiceAccounts
-  >;
+  getAivenServiceAccounts as vi.MockedFunction<typeof getAivenServiceAccounts>;
 const mockedAivenServiceAccountsResponse = ["bsisko", "odo", "quark"];
 
 describe("IpOrPrincipalField", () => {
-  const onSubmit = jest.fn();
-  const onError = jest.fn();
+  const onSubmit = vi.fn();
+  const onError = vi.fn();
 
   const originalConsoleError = console.error;
   beforeEach(() => {
-    console.error = jest.fn();
+    console.error = vi.fn();
   });
 
   afterEach(() => {

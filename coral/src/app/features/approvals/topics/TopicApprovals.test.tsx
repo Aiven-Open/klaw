@@ -13,20 +13,20 @@ import { TopicRequestApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-jest.mock("src/domain/topic/topic-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
-jest.mock("src/domain/team/team-api");
+vi.mock("src/domain/topic/topic-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/team/team-api");
 
 const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
     typeof getAllEnvironmentsForTopicAndAcl
   >;
 
 const mockGetTopicRequestsForApprover =
-  getTopicRequestsForApprover as jest.MockedFunction<
+  getTopicRequestsForApprover as vi.MockedFunction<
     typeof getTopicRequestsForApprover
   >;
-const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
+const mockGetTeams = getTeams as vi.MockedFunction<typeof getTeams>;
 
 const mockedTopicRequestsResponse: TopicRequest[] = [
   {
@@ -132,13 +132,13 @@ describe("TopicApprovals", () => {
     mockIntersectionObserver();
   });
   afterAll(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe("handles loading and error state when fetching the requests", () => {
     const originalConsoleError = console.error;
     beforeEach(() => {
-      console.error = jest.fn();
+      console.error = vi.fn();
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTeams.mockResolvedValue([]);
     });
@@ -208,7 +208,7 @@ describe("TopicApprovals", () => {
 
     afterAll(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("shows a select to filter by teams with default", () => {
@@ -265,7 +265,7 @@ describe("TopicApprovals", () => {
     });
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("fetches the right page number if a page is set in search params", async () => {
@@ -383,7 +383,7 @@ describe("TopicApprovals", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -429,7 +429,7 @@ describe("TopicApprovals", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -524,7 +524,7 @@ describe("TopicApprovals", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

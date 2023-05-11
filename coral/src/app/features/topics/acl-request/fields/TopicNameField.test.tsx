@@ -11,8 +11,8 @@ const schema = z.object({
 const mockedTopicNames = ["topic-one", "topic-two", "topic-three"];
 
 describe("TopicNameField", () => {
-  const onSubmit = jest.fn();
-  const onError = jest.fn();
+  const onSubmit = vi.fn();
+  const onError = vi.fn();
 
   beforeAll(() => {
     renderForm(<TopicNameField topicNames={mockedTopicNames} />, {

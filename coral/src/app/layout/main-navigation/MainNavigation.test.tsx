@@ -15,7 +15,7 @@ const authUser: AuthUser = {
   username: "i-am-test-user",
 };
 
-jest.mock("src/app/context-provider/AuthProvider", () => ({
+vi.mock("src/app/context-provider/AuthProvider", () => ({
   useAuthContext: () => {
     return authUser;
   },

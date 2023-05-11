@@ -7,7 +7,7 @@ describe("SkipLink.tsx", () => {
   let div: HTMLDivElement;
 
   beforeEach(() => {
-    mockedScrollFunction = jest.fn();
+    mockedScrollFunction = vi.fn();
     div = document.createElement("div");
 
     const mainContentRef = {
@@ -23,7 +23,7 @@ describe("SkipLink.tsx", () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
     cleanup();
   });
 

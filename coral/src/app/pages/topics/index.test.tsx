@@ -15,20 +15,20 @@ import { TopicApiResponse } from "src/domain/topic/topic-types";
 import { mockedResponseTransformed } from "src/domain/topic/topic-api.msw";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
-const mockedNavigator = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+const mockedNavigator = vi.fn();
+vi.mock("react-router-dom", () => ({
+  ...vi.importActual("react-router-dom"),
   useNavigate: () => mockedNavigator,
 }));
 
-jest.mock("src/domain/team/team-api.ts");
-jest.mock("src/domain/topic/topic-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/team/team-api.ts");
+vi.mock("src/domain/topic/topic-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
-const mockGetTopics = getTopics as jest.MockedFunction<typeof getTopics>;
+const mockGetTeams = getTeams as vi.MockedFunction<typeof getTeams>;
+const mockGetTopics = getTopics as vi.MockedFunction<typeof getTopics>;
 const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
     typeof getAllEnvironmentsForTopicAndAcl
   >;
 

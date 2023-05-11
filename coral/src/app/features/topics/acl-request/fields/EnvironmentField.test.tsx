@@ -34,8 +34,8 @@ const mockedEnvironments: ExtendedEnvironment[] = [
 ];
 
 describe("EnvironmentField", () => {
-  const onSubmit = jest.fn();
-  const onError = jest.fn();
+  const onSubmit = vi.fn();
+  const onError = vi.fn();
 
   afterEach(() => {
     cleanup();

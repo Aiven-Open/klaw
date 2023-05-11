@@ -16,23 +16,23 @@ import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-reque
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-jest.mock("src/domain/schema-request/schema-request-api.ts");
-jest.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/schema-request/schema-request-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getAllEnvironmentsForSchema as jest.MockedFunction<
+  getAllEnvironmentsForSchema as vi.MockedFunction<
     typeof getAllEnvironmentsForSchema
   >;
 
 const mockGetSchemaRequestsForApprover =
-  getSchemaRequestsForApprover as jest.MockedFunction<
+  getSchemaRequestsForApprover as vi.MockedFunction<
     typeof getSchemaRequestsForApprover
   >;
 
-const mockDeclineSchemaRequest = declineSchemaRequest as jest.MockedFunction<
+const mockDeclineSchemaRequest = declineSchemaRequest as vi.MockedFunction<
   typeof declineSchemaRequest
 >;
-const mockApproveSchemaRequest = approveSchemaRequest as jest.MockedFunction<
+const mockApproveSchemaRequest = approveSchemaRequest as vi.MockedFunction<
   typeof approveSchemaRequest
 >;
 
@@ -125,7 +125,7 @@ describe("SchemaApprovals", () => {
     beforeEach(() => {
       // used to swallow a console.error that _should_ happen
       // while making sure to not swallow other console.errors
-      console.error = jest.fn();
+      console.error = vi.fn();
 
       mockGetSchemaRequestsForApprover.mockResolvedValue({
         entries: [],
@@ -138,7 +138,7 @@ describe("SchemaApprovals", () => {
     afterEach(() => {
       console.error = originalConsoleError;
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("shows a loading state instead of a table while schema requests are being fetched", () => {
@@ -193,7 +193,7 @@ describe("SchemaApprovals", () => {
 
     afterAll(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("shows a select to filter by environment with default", () => {
@@ -243,7 +243,7 @@ describe("SchemaApprovals", () => {
 
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     it("fetches the right page number if a page is set in search params", async () => {
@@ -355,7 +355,7 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -401,7 +401,7 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -523,7 +523,7 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -610,7 +610,7 @@ describe("SchemaApprovals", () => {
 
     const originalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
+      console.error = vi.fn();
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -628,7 +628,7 @@ describe("SchemaApprovals", () => {
 
     afterEach(() => {
       console.error = originalConsoleError;
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -778,7 +778,7 @@ describe("SchemaApprovals", () => {
 
     const orignalConsoleError = console.error;
     beforeEach(async () => {
-      console.error = jest.fn();
+      console.error = vi.fn();
 
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
@@ -797,7 +797,7 @@ describe("SchemaApprovals", () => {
 
     afterEach(() => {
       console.error = orignalConsoleError;
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 

@@ -17,7 +17,7 @@ describe("Pagination.tsx", () => {
           <Pagination
             activePage={activePage}
             totalPages={totalPages}
-            setActivePage={jest.fn()}
+            setActivePage={vi.fn()}
           />
         );
       });
@@ -108,7 +108,7 @@ describe("Pagination.tsx", () => {
     });
 
     describe("handles updating the pages`", () => {
-      const mockedSetActivePage = jest.fn();
+      const mockedSetActivePage = vi.fn();
       beforeEach(() => {
         render(
           <Pagination
@@ -120,7 +120,7 @@ describe("Pagination.tsx", () => {
       });
 
       afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
         cleanup();
       });
 
@@ -164,7 +164,7 @@ describe("Pagination.tsx", () => {
     });
 
     describe("enables keyboard only navigation", () => {
-      const mockSetActivePage = jest.fn();
+      const mockSetActivePage = vi.fn();
       beforeEach(() => {
         render(
           <Pagination
@@ -178,7 +178,7 @@ describe("Pagination.tsx", () => {
       });
 
       afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
         cleanup();
       });
 
@@ -224,7 +224,7 @@ describe("Pagination.tsx", () => {
           <Pagination
             activePage={activePage}
             totalPages={totalPages}
-            setActivePage={jest.fn()}
+            setActivePage={vi.fn()}
           />
         );
       });
@@ -280,7 +280,7 @@ describe("Pagination.tsx", () => {
     });
 
     describe("handles updating the pages`", () => {
-      const mockedSetActivePage = jest.fn();
+      const mockedSetActivePage = vi.fn();
       beforeEach(() => {
         render(
           <Pagination
@@ -292,7 +292,7 @@ describe("Pagination.tsx", () => {
       });
 
       afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
         cleanup();
       });
 
@@ -334,7 +334,7 @@ describe("Pagination.tsx", () => {
     });
 
     describe("enables keyboard only navigation", () => {
-      const mockSetActivePage = jest.fn();
+      const mockSetActivePage = vi.fn();
       beforeEach(() => {
         render(
           <Pagination
@@ -348,7 +348,7 @@ describe("Pagination.tsx", () => {
       });
 
       afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
         cleanup();
       });
 
@@ -434,7 +434,7 @@ describe("Pagination.tsx", () => {
           <Pagination
             activePage={activePage}
             totalPages={totalPages}
-            setActivePage={jest.fn()}
+            setActivePage={vi.fn()}
           />
         );
       });
@@ -508,7 +508,7 @@ describe("Pagination.tsx", () => {
     });
 
     describe("handles updating the pages`", () => {
-      const mockedSetActivePage = jest.fn();
+      const mockedSetActivePage = vi.fn();
       beforeEach(() => {
         render(
           <Pagination
@@ -520,7 +520,7 @@ describe("Pagination.tsx", () => {
       });
 
       afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
         cleanup();
       });
 
@@ -564,7 +564,7 @@ describe("Pagination.tsx", () => {
     });
 
     describe("enables keyboard only navigation", () => {
-      const mockSetActivePage = jest.fn();
+      const mockSetActivePage = vi.fn();
       beforeEach(() => {
         render(
           <Pagination
@@ -578,7 +578,7 @@ describe("Pagination.tsx", () => {
       });
 
       afterEach(() => {
-        jest.resetAllMocks();
+        vi.resetAllMocks();
         cleanup();
       });
 

@@ -28,7 +28,7 @@ const placeholder = "Please select";
 const helperText = "There is an error";
 
 describe("ComplexNativeSelect.tsx", () => {
-  const onBlurMock = jest.fn();
+  const onBlurMock = vi.fn();
 
   const requiredProps = {
     options: testOptions,
@@ -185,7 +185,7 @@ describe("ComplexNativeSelect.tsx", () => {
 
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("enables user to select an option with mouse", async () => {

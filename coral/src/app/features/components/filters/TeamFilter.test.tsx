@@ -5,9 +5,9 @@ import TeamFilter from "src/app/features/components/filters/TeamFilter";
 import { getTeams } from "src/domain/team/team-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-jest.mock("src/domain/team/team-api");
+vi.mock("src/domain/team/team-api");
 
-const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
+const mockGetTeams = getTeams as vi.MockedFunction<typeof getTeams>;
 
 const mockedTeamsResponse = [
   {
@@ -102,7 +102,7 @@ describe("TeamFilter.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -132,7 +132,7 @@ describe("TeamFilter.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -167,7 +167,7 @@ describe("TeamFilter.tsx", () => {
     afterEach(() => {
       // resets url to get to clean state again
       window.history.pushState({}, "No page title", "/");
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

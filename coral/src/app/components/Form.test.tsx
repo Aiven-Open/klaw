@@ -18,8 +18,8 @@ import { renderForm } from "src/services/test-utils/render-form";
 import { z } from "zod";
 
 describe("Form", () => {
-  const onSubmit = jest.fn();
-  const onError = jest.fn();
+  const onSubmit = vi.fn();
+  const onError = vi.fn();
   let results: RenderResult;
   let user: ReturnType<typeof userEvent.setup>;
 

@@ -14,9 +14,9 @@ import { server } from "src/services/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { objectHasProperty } from "src/services/type-utils";
 
-const mockedUsedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+const mockedUsedNavigate = vi.fn();
+vi.mock("react-router-dom", () => ({
+  ...vi.importActual("react-router-dom"),
   useNavigate: () => mockedUsedNavigate,
 }));
 
@@ -26,7 +26,7 @@ describe("<TopicRequest />", () => {
 
   beforeAll(() => {
     server.listen();
-    console.error = jest.fn();
+    console.error = vi.fn();
   });
 
   afterAll(() => {
@@ -1076,7 +1076,7 @@ describe("<TopicRequest />", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     describe("handles an error from the api", () => {
@@ -1091,7 +1091,7 @@ describe("<TopicRequest />", () => {
       });
 
       it("renders an error message", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
 
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
@@ -1131,7 +1131,7 @@ describe("<TopicRequest />", () => {
       });
 
       it("creates a new topic request when input was valid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
 
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
@@ -1156,7 +1156,7 @@ describe("<TopicRequest />", () => {
       });
 
       it("errors and does not create a new topic request when input was invalid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
 
         await user.clear(screen.getByLabelText("Topic name*"));
 
@@ -1175,7 +1175,7 @@ describe("<TopicRequest />", () => {
       });
 
       it("shows a dialog informing user that request was successful", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
 
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
@@ -1195,7 +1195,7 @@ describe("<TopicRequest />", () => {
       });
 
       it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
 
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
@@ -1259,7 +1259,7 @@ describe("<TopicRequest />", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 

@@ -86,8 +86,8 @@ describe("AclRequestsTable", () => {
     render(
       <AclRequestsTable
         requests={mockedRequests}
-        onDetails={jest.fn()}
-        onDelete={jest.fn()}
+        onDetails={vi.fn()}
+        onDelete={vi.fn()}
         ariaLabel={"ACL requests, page 1 of 22"}
         {...props}
       />
@@ -181,7 +181,7 @@ describe("AclRequestsTable", () => {
   });
 
   it("has column for action to view request details", async () => {
-    const onDetails = jest.fn();
+    const onDetails = vi.fn();
     renderFromProps({ onDetails });
     await userEvent.click(
       within(within(getNthRow(1)).getAllByRole("cell")[8]).getByRole("button", {
@@ -192,7 +192,7 @@ describe("AclRequestsTable", () => {
   });
 
   it("has column for action to delete request", async () => {
-    const onDelete = jest.fn();
+    const onDelete = vi.fn();
     renderFromProps({ onDelete });
     await userEvent.click(
       within(within(getNthRow(2)).getAllByRole("cell")[9]).getByRole("button", {
@@ -203,7 +203,7 @@ describe("AclRequestsTable", () => {
   });
 
   it("disables the delete button for a request if the request is not deletable", () => {
-    const onDelete = jest.fn();
+    const onDelete = vi.fn();
     const nonDeletableRequest = { ...mockedRequests[0], deletable: false };
     renderFromProps({ requests: [nonDeletableRequest], onDelete });
     expect(

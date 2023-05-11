@@ -10,10 +10,10 @@ describe("Dialog.tsx", () => {
   const textContent = "This is the content given!";
   const mockPrimary = {
     text: "Primary action 1",
-    onClick: jest.fn(),
+    onClick: vi.fn(),
   };
 
-  afterEach(jest.clearAllMocks);
+  afterEach(vi.clearAllMocks);
 
   describe("shows a default modal with headline, text and one button", () => {
     beforeAll(() => {
@@ -62,7 +62,7 @@ describe("Dialog.tsx", () => {
   describe("shows a second button dependent on a prop", () => {
     const mockSecondary = {
       text: "Secondary action 1",
-      onClick: jest.fn(),
+      onClick: vi.fn(),
     };
 
     beforeAll(() => {
@@ -160,7 +160,7 @@ describe("Dialog.tsx", () => {
   describe("enables user to use buttons", () => {
     const mockSecondary = {
       text: "Secondary action 1",
-      onClick: jest.fn(),
+      onClick: vi.fn(),
     };
 
     beforeEach(() => {
@@ -180,7 +180,7 @@ describe("Dialog.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

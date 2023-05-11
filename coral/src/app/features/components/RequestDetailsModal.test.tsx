@@ -3,12 +3,12 @@ import userEvent from "@testing-library/user-event";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 
 const primaryActionText = "Approve";
-const primaryActionOnClick = jest.fn();
+const primaryActionOnClick = vi.fn();
 const secondaryActionText = "Decline";
-const secondaryActionOnClick = jest.fn();
+const secondaryActionOnClick = vi.fn();
 
 const baseProps = {
-  onClose: jest.fn(),
+  onClose: vi.fn(),
   actions: {
     primary: {
       text: primaryActionText,

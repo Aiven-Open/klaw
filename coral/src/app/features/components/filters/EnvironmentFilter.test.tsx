@@ -10,20 +10,20 @@ import {
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-jest.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
 
 const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
     typeof getAllEnvironmentsForTopicAndAcl
   >;
 
 const mockGetSchemaRegistryEnvironments =
-  getAllEnvironmentsForSchema as jest.MockedFunction<
+  getAllEnvironmentsForSchema as vi.MockedFunction<
     typeof getAllEnvironmentsForSchema
   >;
 
 const mockGetSyncConnectorsEnvironments =
-  getAllEnvironmentsForConnector as jest.MockedFunction<
+  getAllEnvironmentsForConnector as vi.MockedFunction<
     typeof getAllEnvironmentsForConnector
   >;
 
@@ -49,7 +49,7 @@ describe("EnvironmentFilter.tsx", () => {
     });
     afterEach(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("fetches from the getAllEnvironmentsForTopicAndAcl endpoint", () => {
@@ -123,7 +123,7 @@ describe("EnvironmentFilter.tsx", () => {
 
     afterAll(() => {
       cleanup();
-      jest.resetAllMocks();
+      vi.resetAllMocks();
     });
 
     it("shows a select element for Kafka Environments", () => {
@@ -181,7 +181,7 @@ describe("EnvironmentFilter.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -216,7 +216,7 @@ describe("EnvironmentFilter.tsx", () => {
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 
@@ -257,7 +257,7 @@ describe("EnvironmentFilter.tsx", () => {
     afterEach(() => {
       // resets url to get to clean state again
       window.history.pushState({}, "No page title", "/");
-      jest.resetAllMocks();
+      vi.resetAllMocks();
       cleanup();
     });
 

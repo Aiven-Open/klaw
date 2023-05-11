@@ -2,9 +2,9 @@ import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
 import { renderHook } from "@testing-library/react";
 import { FeatureFlag } from "src/services/feature-flags/types";
 
-const isFeatureFlagActiveMock = jest.fn();
+const isFeatureFlagActiveMock = vi.fn();
 
-jest.mock("src/services/feature-flags/utils", () => ({
+vi.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
 
@@ -18,7 +18,7 @@ describe("useFeatureFlag", () => {
       isFeatureFlagActiveMock.mockReturnValue(false);
     });
     afterAll(() => {
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
     });
 
     it("returns false", async () => {
@@ -33,7 +33,7 @@ describe("useFeatureFlag", () => {
       isFeatureFlagActiveMock.mockReturnValue(true);
     });
     afterAll(() => {
-      jest.restoreAllMocks();
+      vi.restoreAllMocks();
     });
 
     it("returns true", async () => {

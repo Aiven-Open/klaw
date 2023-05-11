@@ -18,9 +18,9 @@ class Deferred<T> {
   }
 }
 
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+const mockedNavigate = vi.fn();
+vi.mock("react-router-dom", () => ({
+  ...vi.importActual("react-router-dom"),
   useNavigate: () => mockedNavigate,
 }));
 
@@ -34,7 +34,7 @@ const mockedRequestsWaitingForApproval: RequestsWaitingForApproval = {
 
 describe("ApprovalResourceTabs", () => {
   let user: ReturnType<typeof userEvent.setup>;
-  const getSpy = jest
+  const getSpy = vi
     .spyOn(requestApi, "getRequestsWaitingForApproval")
     .mockImplementation(() => {
       throw Error("getNotificationCounts return must be mocked");

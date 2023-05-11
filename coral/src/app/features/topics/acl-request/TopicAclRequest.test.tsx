@@ -20,16 +20,25 @@ import api from "src/services/api";
 import { server } from "src/services/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedNavigate,
-}));
+const mockedNavigate = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const actual = (await vi.importActual("react-router-dom")) as Record<
+    string,
+    unknown
+  >;
+  return { ...actual, useNavigate: () => mockedNavigate };
+});
 
-jest.mock("src/domain/acl/acl-api", () => ({
-  ...jest.requireActual("src/domain/acl/acl-api"),
-  getAivenServiceAccounts: jest.fn().mockReturnValue(["account"]),
-}));
+vi.mock("src/domain/acl/acl-api", async () => {
+  const actual = (await vi.importActual("src/domain/acl/acl-api")) as Record<
+    string,
+    unknown
+  >;
+  return {
+    ...actual,
+    getAivenServiceAccounts: vi.fn().mockReturnValue(["account"]),
+  };
+});
 
 const dataSetup = ({ isAivenCluster }: { isAivenCluster: boolean }) => {
   mockgetAllEnvironmentsForTopicAndAcl({
@@ -202,7 +211,7 @@ describe("<TopicAclRequest />", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -742,7 +751,7 @@ describe("<TopicAclRequest />", () => {
   });
 
   describe("/topic/:topicName/subscribe: Form submission (TopicProducerForm)", () => {
-    const locationAssignSpy = jest.fn();
+    const locationAssignSpy = vi.fn();
     let originalLocation: Location;
 
     beforeAll(() => {
@@ -779,7 +788,7 @@ describe("<TopicAclRequest />", () => {
 
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     describe("when user cancels form input", () => {
@@ -886,7 +895,7 @@ describe("<TopicAclRequest />", () => {
     describe("when API returns an error", () => {
       const originalConsoleError = console.error;
       beforeEach(async () => {
-        console.error = jest.fn();
+        console.error = vi.fn();
         mockCreateAclRequest({
           mswInstance: server,
           response: {
@@ -901,7 +910,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders an error message", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -976,7 +985,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("creates a new acl request when input was valid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -1021,7 +1030,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -1053,7 +1062,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("shows a dialog informing user that request was successful", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -1092,7 +1101,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -1159,7 +1168,7 @@ describe("<TopicAclRequest />", () => {
 
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     describe("when user cancels form input", () => {
@@ -1266,7 +1275,7 @@ describe("<TopicAclRequest />", () => {
     describe("when API returns an error", () => {
       const originalConsoleError = console.error;
       beforeEach(async () => {
-        console.error = jest.fn();
+        console.error = vi.fn();
         mockCreateAclRequest({
           mswInstance: server,
           response: {
@@ -1281,7 +1290,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders an error message", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -1369,7 +1378,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("creates a new acl request when input was valid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -1432,7 +1441,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -1462,7 +1471,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("shows a dialog informing user that request was successful", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -1516,7 +1525,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -1672,7 +1681,7 @@ describe("<TopicAclRequest />", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -2250,7 +2259,7 @@ describe("<TopicAclRequest />", () => {
   });
 
   describe("/request/acl: Form submission (TopicProducerForm)", () => {
-    const locationAssignSpy = jest.fn();
+    const locationAssignSpy = vi.fn();
     let originalLocation: Location;
 
     beforeAll(() => {
@@ -2278,7 +2287,7 @@ describe("<TopicAclRequest />", () => {
 
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     describe("when user cancels form input", () => {
@@ -2385,7 +2394,7 @@ describe("<TopicAclRequest />", () => {
     describe("when API returns an error", () => {
       const originalConsoleError = console.error;
       beforeEach(async () => {
-        console.error = jest.fn();
+        console.error = vi.fn();
         mockCreateAclRequest({
           mswInstance: server,
           response: {
@@ -2400,7 +2409,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders an error message", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -2475,7 +2484,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("creates a new acl request when input was valid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -2520,7 +2529,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -2552,7 +2561,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("shows a dialog informing user that request was successful", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -2591,7 +2600,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -2649,7 +2658,7 @@ describe("<TopicAclRequest />", () => {
 
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     describe("when user cancels form input", () => {
@@ -2756,7 +2765,7 @@ describe("<TopicAclRequest />", () => {
     describe("when API returns an error", () => {
       const originalConsoleError = console.error;
       beforeEach(async () => {
-        console.error = jest.fn();
+        console.error = vi.fn();
         mockCreateAclRequest({
           mswInstance: server,
           response: {
@@ -2771,7 +2780,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders an error message", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -2870,7 +2879,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("creates a new acl request when input was valid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -2944,7 +2953,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
           name: "Submit request",
@@ -2974,7 +2983,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("shows a dialog informing user that request was successful", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {
@@ -3039,7 +3048,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
+        const spyPost = vi.spyOn(api, "post");
         await assertSkeleton();
 
         const aclConsumerTypeInput = screen.getByRole("radio", {

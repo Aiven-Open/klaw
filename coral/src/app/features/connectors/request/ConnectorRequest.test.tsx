@@ -7,20 +7,21 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { createConnectorRequest } from "src/domain/connector";
 import { getAllEnvironmentsForConnector } from "src/domain/environment";
 
-jest.mock("src/domain/environment/environment-api.ts");
-jest.mock("src/domain/connector/connector-api.ts");
+vi.mock("src/domain/environment/environment-api.ts");
+vi.mock("src/domain/connector/connector-api.ts");
 
 const mockGetConnectorEnvironmentRequest =
-  getAllEnvironmentsForConnector as jest.MockedFunction<
+  getAllEnvironmentsForConnector as vi.MockedFunction<
     typeof getAllEnvironmentsForConnector
   >;
 
-const mockCreateConnectorRequest =
-  createConnectorRequest as jest.MockedFunction<typeof createConnectorRequest>;
+const mockCreateConnectorRequest = createConnectorRequest as vi.MockedFunction<
+  typeof createConnectorRequest
+>;
 
-const mockedUsedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+const mockedUsedNavigate = vi.fn();
+vi.mock("react-router-dom", () => ({
+  ...vi.importActual("react-router-dom"),
   useNavigate: () => mockedUsedNavigate,
 }));
 
@@ -29,7 +30,7 @@ describe("<ConnectorRequest />", () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   beforeEach(() => {
-    console.error = jest.fn();
+    console.error = vi.fn();
     user = userEvent.setup();
   });
 
@@ -360,7 +361,7 @@ describe("<ConnectorRequest />", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
@@ -373,7 +374,7 @@ describe("<ConnectorRequest />", () => {
       });
 
       afterEach(() => {
-        jest.clearAllMocks();
+        vi.clearAllMocks();
         cleanup();
       });
 
@@ -511,7 +512,7 @@ describe("<ConnectorRequest />", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       cleanup();
     });
 
