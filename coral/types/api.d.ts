@@ -3466,7 +3466,7 @@ export type operations = {
       200: {
         content: {
           "application/json": {
-            [key: string]: unknown | undefined;
+            [key: string]: unknown;
           };
         };
       };

@@ -15,7 +15,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "noErrorTruncation": true
+    "noErrorTruncation": true,
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
+    "typeRoots": ["./node_modules/@types"]
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]

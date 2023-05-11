@@ -170,5 +170,14 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    test: {
+      globals: true,
+      environment: "jsdom",
+      setupFiles: [
+        "./test-setup/setup-files-after-env.ts",
+        "./test-setup/mock-monaco-editor.tsx",
+        // "./test-setup/mock-ds-icon-component.tsx",
+      ],
+    },
   };
 });
