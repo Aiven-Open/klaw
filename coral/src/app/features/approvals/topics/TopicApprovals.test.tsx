@@ -237,12 +237,9 @@ describe("TopicApprovals", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
 
       expect(search).toBeVisible();
-      expect(search).toHaveAccessibleDescription(
-        'Search for an partial match for topic name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
-      );
     });
 
     it("shows a table with all topic requests and a header row", () => {
@@ -535,7 +532,9 @@ describe("TopicApprovals", () => {
       expect(screen.getByLabelText("Filter by Environment")).toBeVisible();
       expect(screen.getByLabelText("Filter by status")).toBeVisible();
       expect(screen.getByLabelText("Filter by team")).toBeVisible();
-      expect(screen.getByRole("search")).toBeVisible();
+      expect(
+        screen.getByRole("search", { name: "Search Topic name" })
+      ).toBeVisible();
     });
 
     it("filters by Environment", async () => {
@@ -634,7 +633,7 @@ describe("TopicApprovals", () => {
     });
 
     it("filters by Topic", async () => {
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
 
       expect(search).toBeEnabled();
 
@@ -662,7 +661,7 @@ describe("TopicApprovals", () => {
       await userEvent.selectOptions(select, option);
       expect(select).toHaveDisplayValue("Ospo");
 
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", { name: "Search Topic name" });
       expect(search).toBeEnabled();
       await userEvent.type(search, "topicname");
       expect(search).toHaveValue("topicname");

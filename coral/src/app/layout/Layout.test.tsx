@@ -3,9 +3,17 @@ import { cleanup, screen, within } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 
+const isFeatureFlagActiveMock = jest.fn();
+
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
 const testChildren = <div data-testid={"test-children"}></div>;
 
 describe("Layout.tsx", () => {
+  isFeatureFlagActiveMock.mockReturnValue(true);
+
   describe("renders the layout component with all needed elements", () => {
     beforeAll(() => {
       customRender(<Layout>{testChildren}</Layout>, {
@@ -73,14 +81,25 @@ describe("Layout.tsx", () => {
       expect(homeLink).toHaveFocus();
     });
 
-    it("sets focus on the first element of the quick link navigation if user tabs 3 times", async () => {
+    it("sets focus on the Create a new entity dropdown of the quick link navigation if user tabs 3 times", async () => {
+      const dropdown = screen.getByRole("button", {
+        name: "Request a new",
+      });
+
+      expect(dropdown).not.toHaveFocus();
+      await tabThroughForward(3);
+
+      expect(dropdown).toHaveFocus();
+    });
+
+    it("sets focus on the first element of the quick link navigation if user tabs 4 times", async () => {
       const quickLinks = screen.getByRole("navigation", {
         name: "Quick links",
       });
       const link = within(quickLinks).getAllByRole("link")[0];
 
       expect(link).not.toHaveFocus();
-      await tabThroughForward(3);
+      await tabThroughForward(4);
 
       expect(link).toHaveFocus();
     });

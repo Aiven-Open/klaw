@@ -1,30 +1,30 @@
+import { Alert, Box, Button } from "@aivenio/aquarium";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Dialog } from "src/app/components/Dialog";
 import {
-  useForm,
   Form,
   NativeSelect,
   SubmitButton,
   Textarea,
+  useForm,
 } from "src/app/components/Form";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  Environment,
-  getEnvironmentsForSchemaRequest,
-} from "src/domain/environment";
+import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
 import {
   TopicRequestFormSchema,
   topicRequestFormSchema,
 } from "src/app/features/topics/schema-request/form-schemas/topic-schema-request-form";
-import { TopicSchema } from "src/app/features/topics/schema-request/components/TopicSchema";
-import { Alert, Box, Button } from "@aivenio/aquarium";
+import {
+  Environment,
+  getEnvironmentsForSchemaRequest,
+} from "src/domain/environment";
 import { createSchemaRequest } from "src/domain/schema-request";
-import { useNavigate } from "react-router-dom";
+import { TopicNames, getTopicNames } from "src/domain/topic";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { getTopicNames, TopicNames } from "src/domain/topic";
-import { Dialog } from "src/app/components/Dialog";
-import { useState } from "react";
 
 type TopicSchemaRequestProps = {
-  topicName: string;
+  topicName?: string;
   // ‼️this property is ONLY for testing purpose!
   schemafullValueForTest?: string;
 };
@@ -51,10 +51,20 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     },
   });
 
-  useQuery<TopicNames, Error>(["topic-names"], {
-    queryFn: () => getTopicNames({ onlyMyTeamTopics: true }),
+  const { data: topicNames, isLoading: topicNamesIsLoading } = useQuery<
+    TopicNames,
+    Error
+  >(["topic-names"], {
+    queryFn: () =>
+      getTopicNames({
+        onlyMyTeamTopics: true,
+      }),
     keepPreviousData: true,
     onSuccess: (data) => {
+      if (topicName === undefined) {
+        return;
+      }
+
       const topicExists = data?.includes(topicName);
       if (!topicExists) {
         navigate("/topics");
@@ -94,6 +104,17 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   return (
     <>
+      {!topicNamesIsLoading && topicNames === undefined && (
+        <Box marginBottom={"l1"}>
+          {" "}
+          <Alert type="error">Could not fetch topic names.</Alert>
+        </Box>
+      )}
+      {!environmentsIsLoading && environments === undefined && (
+        <Box marginBottom={"l1"}>
+          <Alert type="error">Could not fetch environments.</Alert>
+        </Box>
+      )}
       {successModalOpen && (
         <Dialog
           title={"Schema request successful!"}
@@ -120,22 +141,32 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           ariaLabel={"Request a new schema"}
           onSubmit={onSubmitForm}
         >
-          <NativeSelect<TopicRequestFormSchema>
-            name={"topicname"}
-            labelText={"Topic name"}
-            readOnly={true}
-            aria-readonly={true}
-          >
-            <option value={topicName}>{topicName}</option>
-          </NativeSelect>
+          {topicNamesIsLoading || topicNames === undefined ? (
+            <div data-testid={"topicNames-select-loading"}>
+              <NativeSelect.Skeleton />
+            </div>
+          ) : (
+            <NativeSelect<TopicRequestFormSchema>
+              name={"topicname"}
+              labelText={"Topic name"}
+              readOnly={topicName !== undefined}
+              defaultValue={topicName}
+            >
+              {topicNames.map((topic) => {
+                return (
+                  <option key={topic} value={topic}>
+                    {topic}
+                  </option>
+                );
+              })}
+            </NativeSelect>
+          )}
 
-          {environmentsIsLoading && (
+          {environmentsIsLoading || environments === undefined ? (
             <div data-testid={"environments-select-loading"}>
               <NativeSelect.Skeleton />
             </div>
-          )}
-
-          {environments && (
+          ) : (
             <NativeSelect<TopicRequestFormSchema>
               name={"environment"}
               labelText={"Environment"}

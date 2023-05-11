@@ -13,7 +13,7 @@ import { DeleteRequestDialog } from "src/app/features/requests/components/Delete
 import { parseErrorMsg } from "src/services/mutation-utils";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import TopicDetailsModalContent from "src/app/features/components/TopicDetailsModalContent";
-import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
@@ -30,7 +30,7 @@ function TopicRequests() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { topic, environment, status, showOnlyMyRequests, requestType } =
+  const { search, environment, status, showOnlyMyRequests, requestType } =
     useFiltersValues();
 
   const [modals, setModals] = useState<{
@@ -45,14 +45,14 @@ function TopicRequests() {
       currentPage,
       environment,
       status,
-      topic,
+      search,
       showOnlyMyRequests,
       requestType,
     ],
     queryFn: () =>
       getTopicRequests({
         pageNo: String(currentPage),
-        search: topic,
+        search: search,
         env: environment,
         requestStatus: status,
         isMyRequest: showOnlyMyRequests,
@@ -160,7 +160,7 @@ function TopicRequests() {
           />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,
-          <TopicFilter key={"topic"} />,
+          <SearchTopicFilter key={"topic"} />,
           <MyRequestsFilter key={"isMyRequest"} />,
         ]}
         table={

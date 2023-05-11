@@ -1,12 +1,56 @@
 import { Option } from "@aivenio/aquarium";
 import { NativeSelect } from "src/app/components/Form";
-import { Environment } from "src/domain/environment";
+import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 
 interface EnvironmentFieldProps {
-  environments: Environment[];
+  environments: ExtendedEnvironment[];
+  selectedTopic?: string;
+  prefixed?: boolean;
 }
 
-const EnvironmentField = ({ environments }: EnvironmentFieldProps) => {
+const getOptions = (
+  environments: ExtendedEnvironment[],
+  prefixed: boolean,
+  topicName?: string
+) => {
+  return environments.map((env) => {
+    if (prefixed) {
+      return (
+        <Option key={env.id} value={env.id}>
+          {env.name}
+        </Option>
+      );
+    }
+
+    if (env.topicNames.length === 0) {
+      return (
+        <Option key={env.id} value={env.id} disabled>
+          {env.name} (no topic available)
+        </Option>
+      );
+    }
+
+    if (topicName !== undefined && !env.topicNames.includes(topicName)) {
+      return (
+        <Option key={env.id} value={env.id} disabled>
+          {env.name} (unavailable for selected topic)
+        </Option>
+      );
+    }
+
+    return (
+      <Option key={env.id} value={env.id}>
+        {env.name}
+      </Option>
+    );
+  });
+};
+
+const EnvironmentField = ({
+  environments,
+  selectedTopic,
+  prefixed = false,
+}: EnvironmentFieldProps) => {
   return (
     <NativeSelect
       name="environment"
@@ -14,11 +58,7 @@ const EnvironmentField = ({ environments }: EnvironmentFieldProps) => {
       placeholder={"-- Please select --"}
       required
     >
-      {environments.map((env) => (
-        <Option key={env.id} value={env.id}>
-          {env.name}
-        </Option>
-      ))}
+      {getOptions(environments, prefixed, selectedTopic)}
     </NativeSelect>
   );
 };

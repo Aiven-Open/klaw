@@ -4,12 +4,14 @@ import {
   Divider,
   Grid,
   GridItem,
+  Input,
   SecondaryButton,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { Dialog } from "src/app/components/Dialog";
 import {
   Form,
   SubmitButton,
@@ -22,17 +24,17 @@ import IpOrPrincipalField from "src/app/features/topics/acl-request/fields/IpOrP
 import RemarksField from "src/app/features/topics/acl-request/fields/RemarksField";
 import TopicNameField from "src/app/features/topics/acl-request/fields/TopicNameField";
 import { TopicConsumerFormSchema } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-consumer";
+import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 import { createAclRequest } from "src/domain/acl/acl-api";
-import { Environment } from "src/domain/environment";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { Dialog } from "src/app/components/Dialog";
 
 // eslint-disable-next-line import/exports-last
 export interface TopicConsumerFormProps {
   topicConsumerForm: UseFormReturn<TopicConsumerFormSchema>;
   topicNames: string[];
-  environments: Environment[];
+  environments: ExtendedEnvironment[];
   renderAclTypeField: () => JSX.Element;
+  isSubscription: boolean;
   isAivenCluster?: boolean;
 }
 
@@ -42,12 +44,14 @@ const TopicConsumerForm = ({
   environments,
   renderAclTypeField,
   isAivenCluster,
+  isSubscription,
 }: TopicConsumerFormProps) => {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const navigate = useNavigate();
-  const { aclIpPrincipleType, environment } = topicConsumerForm.getValues();
+  const { aclIpPrincipleType, environment, topicname } =
+    topicConsumerForm.getValues();
   const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
 
   // Reset values of acl_ip and acl_ssl when user switches between IP or Principal
@@ -136,7 +140,10 @@ const TopicConsumerForm = ({
         <Grid cols="2" minWidth={"fit"} colGap={"9"}>
           <GridItem>{renderAclTypeField()}</GridItem>
           <GridItem>
-            <EnvironmentField environments={environments} />
+            <EnvironmentField
+              environments={environments}
+              selectedTopic={topicname}
+            />
           </GridItem>
 
           <GridItem colSpan={"span-2"} paddingBottom={"l2"}>
@@ -144,7 +151,19 @@ const TopicConsumerForm = ({
           </GridItem>
 
           <GridItem>
-            <TopicNameField topicNames={topicNames} />
+            {environment === undefined ? (
+              <Input
+                labelText="Topic name"
+                defaultValue="Select environment first"
+                height={45}
+                readOnly
+              />
+            ) : (
+              <TopicNameField
+                topicNames={topicNames}
+                readOnly={isSubscription}
+              />
+            )}
           </GridItem>
           <GridItem>
             {hideConsumerGroupField ? (

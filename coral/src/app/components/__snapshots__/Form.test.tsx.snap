@@ -8,8 +8,8 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
     >
       <label
         class="w-full"
-        for="input-1183"
-        id="input-1183-label"
+        for="input-1177"
+        id="input-1177-label"
       >
         <span
           class="inline-block mb-2 typography-small-strong text-grey-60"
@@ -21,7 +21,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
         >
           <input
             class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
-            id="input-1183"
+            id="input-1177"
             name="password"
             type="password"
           />
@@ -34,7 +34,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
       </p>
     </div>
     <button
-      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative typography-default-strong py-3 px-4"
+      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4"
       title="Submit"
       type="submit"
     />
@@ -76,7 +76,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
       </p>
     </div>
     <button
-      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative typography-default-strong py-3 px-4"
+      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4"
       title="Submit"
       type="submit"
     />

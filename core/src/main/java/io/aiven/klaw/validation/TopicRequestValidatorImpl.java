@@ -18,6 +18,8 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_115;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_116;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_117;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_118;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_119;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_120;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 
 import io.aiven.klaw.dao.Topic;
@@ -37,7 +39,9 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 @Slf4j
 public class TopicRequestValidatorImpl
@@ -46,6 +50,9 @@ public class TopicRequestValidatorImpl
   @Autowired private CommonUtilsService commonUtilsService;
   @Autowired private MailUtils mailService;
   @Autowired private TopicControllerService topicControllerService;
+
+  @Value("${klaw.validation.min.size.topicName:3}")
+  private int minimumTopicNameSize;
 
   private PermissionType permissionType;
 
@@ -224,12 +231,10 @@ public class TopicRequestValidatorImpl
       String topicPrefix = getValueOrDefault(params.getTopicPrefix(), "");
       String topicSuffix = getValueOrDefault(params.getTopicSuffix(), "");
       String topicRegex = getValueOrDefault(params.getTopicRegex(), "");
-
+      String topicName = topicRequestReq.getTopicname();
       try {
         if (!params.isApplyRegex()) {
-          if (topicPrefix != null
-              && !topicPrefix.isBlank()
-              && !topicRequestReq.getTopicname().startsWith(topicPrefix)) {
+          if (topicPrefix != null && !topicPrefix.isBlank() && !topicName.startsWith(topicPrefix)) {
             log.error(
                 "Topic prefix {} does not match. {}", topicPrefix, topicRequestReq.getTopicname());
             updateConstraint(
@@ -238,9 +243,7 @@ public class TopicRequestValidatorImpl
             return false;
           }
 
-          if (topicSuffix != null
-              && !topicSuffix.isBlank()
-              && !topicRequestReq.getTopicname().endsWith(topicSuffix)) {
+          if (topicSuffix != null && !topicSuffix.isBlank() && !topicName.endsWith(topicSuffix)) {
             log.error(
                 "Topic suffix {} does not match. {}", topicSuffix, topicRequestReq.getTopicname());
             updateConstraint(
@@ -248,6 +251,39 @@ public class TopicRequestValidatorImpl
                 String.format(TOPICS_VLD_ERR_116, topicRequestReq.getTopicname()));
             return false;
           }
+          // It will return before here if any other validation is not met.
+          topicName = StringUtils.removeStart(topicName, topicPrefix);
+          // if the prefix is set it will be removed by now, so we just need to see if there was any
+          // over lap in the prefix.
+          if (topicPrefix != null
+              && topicSuffix != null
+              && topicName.length() < topicSuffix.length()) {
+            log.error(
+                "Topic Suffix and Topic Prefix overlap there is a requirement for {} characters minimum to be unique between the prefix and suffix.",
+                topicRequestReq.getTopicname(),
+                minimumTopicNameSize);
+            updateConstraint(
+                constraintValidatorContext,
+                String.format(
+                    TOPICS_VLD_ERR_120, topicRequestReq.getTopicname(), minimumTopicNameSize));
+
+            return false;
+          }
+          topicName = StringUtils.removeEnd(topicName, topicSuffix);
+
+          // Check topic name without prefix or suffix meets minimum length requirements
+          if (topicName.length() < minimumTopicNameSize) {
+            log.error(
+                "Topic name: {} is not long enough when prefix and suffix's are excluded. {} characters minimum are required to be unique.",
+                topicRequestReq.getTopicname(),
+                minimumTopicNameSize);
+            updateConstraint(
+                constraintValidatorContext,
+                String.format(
+                    TOPICS_VLD_ERR_119, topicRequestReq.getTopicname(), minimumTopicNameSize));
+            return false;
+          }
+
         } else {
           if (topicRegex != null
               && !topicRegex.isBlank()

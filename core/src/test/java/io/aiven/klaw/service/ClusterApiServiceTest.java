@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.AclRequests;
@@ -15,6 +16,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
@@ -60,7 +62,10 @@ public class ClusterApiServiceTest {
 
   public static final String SCHEMAFULL = "{schema}";
   public static final String BOOTSRAP_SERVERS = "clusters";
+  public static final String FAILED_TO_EXECUTE_SUCCESSFULLY = "Failed to execute successfully";
   private UtilMethods utilMethods;
+
+  ObjectMapper objectMapper = new ObjectMapper();
 
   @Mock HandleDbRequestsJdbc handleDbRequests;
 
@@ -439,6 +444,78 @@ public class ClusterApiServiceTest {
 
     assertThatThrownBy(() -> clusterApiService.postSchema(schemaRequest, envSel, topicName, 1))
         .isInstanceOf(KlawException.class);
+  }
+
+  @Test
+  @Order(14)
+  public void approveConnectorRequestsSuccess() throws KlawException, KlawRestException {
+    ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ResponseEntity<ApiResponse> response =
+        new ResponseEntity<>(
+            ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build(), HttpStatus.OK);
+
+    String topicName = "testtopic";
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
+    when(clustersHashMap.get(any())).thenReturn(kwClusters);
+    when(kwClusters.getBootstrapServers()).thenReturn(BOOTSRAP_SERVERS);
+    when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
+    when(kwClusters.getClusterName()).thenReturn("cluster");
+
+    when(restTemplate.exchange(
+            anyString(), eq(HttpMethod.POST), any(), any(ParameterizedTypeReference.class)))
+        .thenReturn(response);
+
+    String response1 =
+        clusterApiService.approveConnectorRequests(
+            topicName,
+            KafkaSupportedProtocol.PLAINTEXT,
+            RequestOperationType.CREATE.value,
+            "1",
+            "",
+            "1",
+            101);
+    assertThat(Objects.requireNonNull(response1)).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  @Order(15)
+  public void approveConnectorRequests_ISE() throws KlawException, KlawRestException {
+    ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ResponseEntity<ApiResponse> response =
+        new ResponseEntity<>(
+            ApiResponse.builder()
+                .message(ApiResultStatus.FAILURE.value)
+                .message(FAILED_TO_EXECUTE_SUCCESSFULLY)
+                .build(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+
+    String topicName = "testtopic";
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
+    when(clustersHashMap.get(any())).thenReturn(kwClusters);
+    when(kwClusters.getBootstrapServers()).thenReturn(BOOTSRAP_SERVERS);
+    when(kwClusters.getProtocol()).thenReturn(KafkaSupportedProtocol.PLAINTEXT);
+    when(kwClusters.getClusterName()).thenReturn("cluster");
+
+    when(restTemplate.exchange(
+            anyString(), eq(HttpMethod.POST), any(), any(ParameterizedTypeReference.class)))
+        .thenReturn(response);
+
+    String response1 =
+        clusterApiService.approveConnectorRequests(
+            topicName,
+            KafkaSupportedProtocol.PLAINTEXT,
+            RequestOperationType.CREATE.value,
+            "1",
+            "",
+            "1",
+            101);
+    assertThat(Objects.requireNonNull(response1)).isEqualTo(FAILED_TO_EXECUTE_SUCCESSFULLY);
   }
 
   private Set<String> getTopics() {

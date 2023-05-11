@@ -81,6 +81,8 @@ public class KwConstants {
 
   public static final String ORDER_OF_TOPIC_ENVS = "ORDER_OF_ENVS";
 
+  public static final String ORDER_OF_KAFKA_CONNECT_ENVS = "ORDER_OF_KAFKA_CONNECT_ENVS";
+
   public static final int DAYS_EXPIRY_DEFAULT_TENANT = 365 * 10;
   public static final int DAYS_TRIAL_PERIOD = 7;
 

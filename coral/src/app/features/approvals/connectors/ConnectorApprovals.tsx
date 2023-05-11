@@ -9,7 +9,6 @@ import { ConnectorRequestDetails } from "src/app/features/components/ConnectorDe
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
-import SearchFilter from "src/app/features/components/filters/SearchFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
@@ -19,6 +18,7 @@ import {
   getConnectorRequestsForApprover,
 } from "src/domain/connector";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 
 const defaultType = "ALL";
 
@@ -273,7 +273,7 @@ function ConnectorApprovals() {
           />,
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,
-          <SearchFilter key={"search"} />,
+          <SearchConnectorFilter key={"search"} />,
         ]}
         table={table}
         pagination={pagination}

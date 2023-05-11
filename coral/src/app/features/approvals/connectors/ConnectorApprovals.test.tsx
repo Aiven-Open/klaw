@@ -220,12 +220,11 @@ describe("ConnectorApprovals", () => {
     });
 
     it("shows a search input to search for topic names", () => {
-      const search = screen.getByRole("search");
+      const search = screen.getByRole("search", {
+        name: "Search Connector name",
+      });
 
       expect(search).toBeVisible();
-      expect(search).toHaveAccessibleDescription(
-        'Search for an partial match in name. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.'
-      );
     });
 
     it("shows a table with all Kafka connector requests and a header row", () => {

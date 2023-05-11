@@ -3,15 +3,19 @@ import { NativeSelect } from "src/app/components/Form";
 
 interface TopicNameFieldProps {
   topicNames: string[];
+  readOnly?: boolean;
 }
 
-const TopicNameField = ({ topicNames }: TopicNameFieldProps) => {
+const TopicNameField = ({
+  topicNames,
+  readOnly = false,
+}: TopicNameFieldProps) => {
   return (
     <NativeSelect
       name="topicname"
       labelText="Topic name"
       placeholder={"-- Select Topic --"}
-      disabled={topicNames.length === 0}
+      readOnly={readOnly}
       required
     >
       {topicNames.map((name) => (

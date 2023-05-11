@@ -8,7 +8,7 @@ import {
   getConnectorRequests,
 } from "src/domain/connector";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
-import SearchFilter from "src/app/features/components/filters/SearchFilter";
+import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
@@ -154,13 +154,13 @@ function ConnectorRequests() {
       )}
       <TableLayout
         filters={[
-          <SearchFilter key="connector" />,
           <EnvironmentFilter
             key="environment"
             environmentEndpoint="getAllEnvironmentsForConnector"
           />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,
+          <SearchConnectorFilter key="connector" />,
           <MyRequestsFilter key={"isMyRequest"} />,
         ]}
         table={

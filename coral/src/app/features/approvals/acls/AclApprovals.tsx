@@ -11,7 +11,7 @@ import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
-import TopicFilter from "src/app/features/components/filters/TopicFilter";
+import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
@@ -32,11 +32,10 @@ function AclApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { aclType, environment, status, topic, requestType } = useFiltersValues(
-    {
+  const { aclType, environment, status, search, requestType } =
+    useFiltersValues({
       defaultStatus: "CREATED",
-    }
-  );
+    });
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -70,7 +69,7 @@ function AclApprovals() {
       aclType,
       environment,
       status,
-      topic,
+      search,
       requestType,
     ],
     queryFn: () =>
@@ -79,7 +78,7 @@ function AclApprovals() {
         env: environment,
         requestStatus: status,
         aclType,
-        search: topic,
+        search: search,
         operationType: requestType !== defaultType ? requestType : undefined,
       }),
     keepPreviousData: true,
@@ -247,7 +246,7 @@ function AclApprovals() {
           <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
           <RequestTypeFilter key={"requestType"} />,
           <AclTypeFilter key={"aclType"} />,
-          <TopicFilter key={"topic"} />,
+          <SearchTopicFilter key={"topic"} />,
         ]}
         table={
           <AclApprovalsTable

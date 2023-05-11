@@ -30,7 +30,7 @@ describe("SchemaRequest", () => {
     beforeAll(() => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockCreateSchemaRequest.mockImplementation(jest.fn());
-      mockGetTopicNames.mockResolvedValue([]);
+      mockGetTopicNames.mockResolvedValue([topicName]);
       // @TODO if we decide to go with this kind of dynamic routes,
       // this should be enabled by customRender!
       const queryClient = getQueryClientForTests();
@@ -68,8 +68,8 @@ describe("SchemaRequest", () => {
       expect(form).toBeVisible();
     });
 
-    it("shows the form for this specific topic", () => {
-      const input = screen.getByRole("combobox", {
+    it("shows the form for this specific topic", async () => {
+      const input = await screen.findByRole("combobox", {
         name: "Topic name",
       });
 

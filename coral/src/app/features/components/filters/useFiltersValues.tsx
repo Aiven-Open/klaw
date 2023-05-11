@@ -6,7 +6,6 @@ import {
 } from "src/domain/requests/requests-types";
 
 type SetFiltersParams =
-  | { name: "topic"; value: string }
   | { name: "environment"; value: string }
   | { name: "aclType"; value: AclType | "ALL" }
   | { name: "status"; value: RequestStatus }
@@ -17,7 +16,6 @@ type SetFiltersParams =
 
 type UseFiltersValuesParams =
   | {
-      defaultTopic?: string;
       defaultEnvironment?: string;
       defaultAclType?: AclType | "ALL";
       defaultStatus?: RequestStatus;
@@ -28,10 +26,21 @@ type UseFiltersValuesParams =
     }
   | undefined;
 
-const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
+type UseFilterValuesReturn = {
+  environment: string;
+  aclType: AclType | "ALL";
+  status: RequestStatus;
+  teamId: string;
+  showOnlyMyRequests: boolean;
+  requestType: RequestOperationType | "ALL";
+  search: string;
+  setFilterValue: ({ name, value }: SetFiltersParams) => void;
+};
+const useFiltersValues = (
+  defaultValues: UseFiltersValuesParams = {}
+): UseFilterValuesReturn => {
   const [searchParams, setSearchParams] = useSearchParams();
   const {
-    defaultTopic = "",
     defaultEnvironment = "ALL",
     defaultAclType = "ALL",
     defaultStatus = "ALL",
@@ -41,7 +50,6 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
     defaultSearch = "",
   } = defaultValues;
 
-  const topic = searchParams.get("topic") ?? defaultTopic;
   const environment = searchParams.get("environment") ?? defaultEnvironment;
   const aclType =
     (searchParams.get("aclType") as AclType | "ALL") ?? defaultAclType;
@@ -74,7 +82,6 @@ const useFiltersValues = (defaultValues: UseFiltersValuesParams = {}) => {
   };
 
   return {
-    topic,
     environment,
     aclType,
     status,

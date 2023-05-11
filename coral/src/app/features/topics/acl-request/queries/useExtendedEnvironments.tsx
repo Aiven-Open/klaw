@@ -62,4 +62,5 @@ const useExtendedEnvironments = () => {
   };
 };
 
+export type { ExtendedEnvironment };
 export default useExtendedEnvironments;

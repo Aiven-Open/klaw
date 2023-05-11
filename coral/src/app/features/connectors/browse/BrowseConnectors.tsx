@@ -6,7 +6,7 @@ import { getConnectors } from "src/domain/connector/connector-api";
 import { useSearchParams } from "react-router-dom";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
-import SearchFilter from "src/app/features/components/filters/SearchFilter";
+import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
 
 function BrowseConnectors() {
@@ -55,7 +55,7 @@ function BrowseConnectors() {
           key={"environment"}
           environmentEndpoint={"getAllEnvironmentsForConnector"}
         />,
-        <SearchFilter key="connector-name" />,
+        <SearchConnectorFilter key="connector-name" />,
       ]}
       table={
         <ConnectorTable

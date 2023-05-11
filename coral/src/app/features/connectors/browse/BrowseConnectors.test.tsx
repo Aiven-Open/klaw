@@ -405,12 +405,14 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     it("fetches new data when when user enters text in input", async () => {
-      const input = screen.getByRole("search");
-      expect(input).toHaveValue("");
+      const search = screen.getByRole("search", {
+        name: "Search Connector name",
+      });
+      expect(search).toHaveValue("");
 
-      await userEvent.type(input, testSearchInput);
+      await userEvent.type(search, testSearchInput);
 
-      expect(input).toHaveValue(testSearchInput);
+      expect(search).toHaveValue(testSearchInput);
 
       await waitFor(() =>
         expect(mockGetConnectors).toHaveBeenNthCalledWith(2, {
@@ -421,13 +423,15 @@ describe("BrowseConnectors.tsx", () => {
     });
 
     it("enables user to navigate to search input with keyboard", async () => {
-      const input = screen.getByRole("search");
+      const search = screen.getByRole("search", {
+        name: "Search Connector name",
+      });
 
-      expect(input).toHaveValue("");
+      expect(search).toHaveValue("");
 
-      await tabNavigateTo({ targetElement: input });
+      await tabNavigateTo({ targetElement: search });
 
-      expect(input).toHaveFocus();
+      expect(search).toHaveFocus();
     });
   });
 });

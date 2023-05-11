@@ -63,20 +63,20 @@ public class KafkaConnectController {
       return new ResponseEntity<>(result, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(
-          ApiResponse.builder().success(false).message("Unable to register connector").build(),
+          ApiResponse.builder().success(false).message(e.getMessage()).build(),
           HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 
   @PostMapping(value = "/updateConnector")
-  public ResponseEntity<Map<String, String>> updateConnector(
+  public ResponseEntity<ApiResponse> updateConnector(
       @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest) {
     return new ResponseEntity<>(
         kafkaConnectService.updateConnector(clusterConnectorRequest), HttpStatus.OK);
   }
 
   @PostMapping(value = "/deleteConnector")
-  public ResponseEntity<Map<String, String>> deleteConnector(
+  public ResponseEntity<ApiResponse> deleteConnector(
       @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest) {
     return new ResponseEntity<>(
         kafkaConnectService.deleteConnector(clusterConnectorRequest), HttpStatus.OK);
