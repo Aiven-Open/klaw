@@ -87,7 +87,7 @@ function ConnectorRequest() {
         </Dialog>
       )}
 
-      <Box maxWidth={"7xl"}>
+      <Box>
         {connectorRequestMutation.isError && (
           <Box marginBottom={"l1"} role="alert">
             <Alert type="error">
