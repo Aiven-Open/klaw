@@ -7,7 +7,7 @@ import {
 } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
-import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { createSchemaRequest } from "src/domain/schema-request";
@@ -19,8 +19,8 @@ jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getSchemaRegistryEnvironments as jest.MockedFunction<
-    typeof getSchemaRegistryEnvironments
+  getEnvironmentsForSchemaRequest as jest.MockedFunction<
+    typeof getEnvironmentsForSchemaRequest
   >;
 const mockCreateSchemaRequest = createSchemaRequest as jest.MockedFunction<
   typeof createSchemaRequest

@@ -2,7 +2,7 @@ import { NativeSelect, Option } from "@aivenio/aquarium";
 import {
   ALL_ENVIRONMENTS_VALUE,
   Environment,
-  getSchemaRegistryEnvironments,
+  getEnvironmentsForSchemaRequest,
 } from "src/domain/environment";
 import { useQuery } from "@tanstack/react-query";
 
@@ -16,7 +16,7 @@ function SelectSchemaRegEnvironment(props: SelectSchemaRegEnvironmentProps) {
 
   const { data: environments, isLoading } = useQuery<Environment[], Error>({
     queryKey: ["schemaRegistryEnvironments"],
-    queryFn: () => getSchemaRegistryEnvironments(),
+    queryFn: () => getEnvironmentsForSchemaRequest(),
   });
 
   if (isLoading || !environments) {

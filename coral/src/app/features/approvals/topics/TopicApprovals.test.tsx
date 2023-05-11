@@ -2,7 +2,7 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import TopicApprovals from "src/app/features/approvals/topics/TopicApprovals";
-import { getEnvironments } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { getTeams } from "src/domain/team/team-api";
@@ -17,9 +17,10 @@ jest.mock("src/domain/topic/topic-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/team/team-api");
 
-const mockGetEnvironments = getEnvironments as jest.MockedFunction<
-  typeof getEnvironments
->;
+const mockGetEnvironments =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
+  >;
 
 const mockGetTopicRequestsForApprover =
   getTopicRequestsForApprover as jest.MockedFunction<

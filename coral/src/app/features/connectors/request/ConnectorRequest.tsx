@@ -28,7 +28,7 @@ import {
 import { createConnectorRequest } from "src/domain/connector";
 import {
   Environment,
-  getSyncConnectorsEnvironments,
+  getAllEnvironmentsForConnector,
 } from "src/domain/environment";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
@@ -45,8 +45,8 @@ function ConnectorRequest() {
     Environment[],
     Error
   >({
-    queryKey: ["getSyncConnectorsEnvironments"],
-    queryFn: () => getSyncConnectorsEnvironments(),
+    queryKey: ["getAllEnvironmentsForConnector"],
+    queryFn: () => getAllEnvironmentsForConnector(),
   });
 
   const connectorRequestMutation = useMutation(createConnectorRequest, {

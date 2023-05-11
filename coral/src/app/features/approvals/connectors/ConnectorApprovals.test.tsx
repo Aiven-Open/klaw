@@ -9,7 +9,7 @@ import {
   getConnectorRequestsForApprover,
 } from "src/domain/connector";
 import { transformConnectorRequestApiResponse } from "src/domain/connector/connector-transformer";
-import { getSyncConnectorsEnvironments } from "src/domain/environment";
+import { getAllEnvironmentsForConnector } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
@@ -19,8 +19,8 @@ jest.mock("src/domain/connector/connector-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetSyncConnectorsEnvironments =
-  getSyncConnectorsEnvironments as jest.MockedFunction<
-    typeof getSyncConnectorsEnvironments
+  getAllEnvironmentsForConnector as jest.MockedFunction<
+    typeof getAllEnvironmentsForConnector
   >;
 
 const mockGetConnectorRequestsForApprover =

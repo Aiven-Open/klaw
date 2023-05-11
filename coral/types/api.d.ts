@@ -358,7 +358,7 @@ export type paths = {
     get: operations["getEnvsPaginated"];
   };
   "/getEnvsForSchemaRequests": {
-    get: operations["getRequestForSchemas"];
+    get: operations["getEnvsForSchemaRequests"];
   };
   "/getEnvsBaseCluster": {
     get: operations["getEnvsBaseCluster"];
@@ -3179,7 +3179,7 @@ export type operations = {
       };
     };
   };
-  getRequestForSchemas: {
+  getEnvsForSchemaRequests: {
     responses: {
       /** @description OK */
       200: {

@@ -156,7 +156,7 @@ function TopicRequests() {
         filters={[
           <EnvironmentFilter
             key="environments"
-            environmentEndpoint={"getEnvironments"}
+            environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
           />,
           <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
           <RequestTypeFilter key={"request-type"} />,

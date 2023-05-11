@@ -2,7 +2,7 @@ import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TopicRequest from "src/app/features/topics/request/TopicRequest";
-import { mockGetEnvironmentsForTeam } from "src/domain/environment/environment-api.msw";
+import { mockgetEnvironmentsForTopicRequestByTeam } from "src/domain/environment/environment-api.msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import {
   defaultgetTopicAdvancedConfigOptionsResponse,
@@ -41,7 +41,7 @@ describe("<TopicRequest />", () => {
   describe("Environment select", () => {
     describe("renders all necessary elements by default", () => {
       beforeAll(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -102,7 +102,7 @@ describe("<TopicRequest />", () => {
 
     describe("when field is clicked", () => {
       beforeEach(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -168,7 +168,7 @@ describe("<TopicRequest />", () => {
   describe("Topic name", () => {
     describe("informs user about valid input with placeholder per default", () => {
       beforeAll(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -221,7 +221,7 @@ describe("<TopicRequest />", () => {
 
     describe("informs user about valid input with placeholder when regex should be applied", () => {
       beforeAll(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -274,7 +274,7 @@ describe("<TopicRequest />", () => {
 
     describe("informs user about valid input with a prefix is needed", () => {
       beforeAll(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -327,7 +327,7 @@ describe("<TopicRequest />", () => {
 
     describe("when topic name does not have enough characters", () => {
       beforeAll(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -381,7 +381,7 @@ describe("<TopicRequest />", () => {
 
     describe("when topic name does not match the default pattern", () => {
       beforeAll(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -435,7 +435,7 @@ describe("<TopicRequest />", () => {
 
     describe("when environment params have topicPrefix defined", () => {
       beforeEach(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -526,7 +526,7 @@ describe("<TopicRequest />", () => {
 
     describe("when environment params have topicSuffix defined", () => {
       beforeAll(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -584,7 +584,7 @@ describe("<TopicRequest />", () => {
   describe("Replication factor", () => {
     describe("renders all necessary elements on default", () => {
       beforeAll(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -664,7 +664,7 @@ describe("<TopicRequest />", () => {
 
     describe("when environment is changed", () => {
       beforeEach(() => {
-        mockGetEnvironmentsForTeam({
+        mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
             data: [
@@ -789,7 +789,7 @@ describe("<TopicRequest />", () => {
 
   describe("Topic partitions", () => {
     beforeAll(() => {
-      mockGetEnvironmentsForTeam({
+      mockgetEnvironmentsForTopicRequestByTeam({
         mswInstance: server,
         response: {
           data: [
@@ -865,7 +865,7 @@ describe("<TopicRequest />", () => {
 
   describe("when environment is changed", () => {
     beforeEach(() => {
-      mockGetEnvironmentsForTeam({
+      mockgetEnvironmentsForTopicRequestByTeam({
         mswInstance: server,
         response: {
           data: [
@@ -972,7 +972,7 @@ describe("<TopicRequest />", () => {
 
   describe("AdvancedConfiguration", () => {
     beforeAll(() => {
-      mockGetEnvironmentsForTeam({
+      mockgetEnvironmentsForTopicRequestByTeam({
         mswInstance: server,
         response: {
           data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],
@@ -1021,7 +1021,7 @@ describe("<TopicRequest />", () => {
 
   describe("form submission", () => {
     beforeAll(async () => {
-      mockGetEnvironmentsForTeam({
+      mockgetEnvironmentsForTopicRequestByTeam({
         mswInstance: server,
         response: {
           data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],
@@ -1230,7 +1230,7 @@ describe("<TopicRequest />", () => {
     };
 
     beforeEach(async () => {
-      mockGetEnvironmentsForTeam({
+      mockgetEnvironmentsForTopicRequestByTeam({
         mswInstance: server,
         response: {
           data: [createMockEnvironmentDTO({ name: "DEV", id: "1" })],

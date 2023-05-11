@@ -147,7 +147,7 @@ const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
   getExtensionPeriods: "/getExtensionPeriods",
   getEnvs: "/getEnvs",
   getEnvsPaginated: "/getEnvsPaginated",
-  getRequestForSchemas: "/getEnvsForSchemaRequests",
+  getEnvsForSchemaRequests: "/getEnvsForSchemaRequests",
   getEnvsBaseCluster: "/getEnvsBaseCluster",
   getEnvsBaseClusterFilteredForTeam: "/getEnvsBaseClusterFilteredForTeam",
   getEnvParams: "/getEnvParams",

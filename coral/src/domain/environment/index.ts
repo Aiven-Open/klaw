@@ -1,19 +1,23 @@
 import {
-  getEnvironments,
-  getSchemaRegistryEnvironments,
-  getSyncConnectorsEnvironments,
+  getAllEnvironmentsForTopicAndAcl,
+  getEnvironmentsForTopicRequest,
+  getAllEnvironmentsForSchema,
+  getEnvironmentsForSchemaRequest,
+  getAllEnvironmentsForConnector,
 } from "src/domain/environment/environment-api";
-import { mockGetEnvironments } from "src/domain/environment/environment-api.msw";
+import { mockgetEnvironmentsForTopicRequest } from "src/domain/environment/environment-api.msw";
 import {
   ALL_ENVIRONMENTS_VALUE,
   Environment,
 } from "src/domain/environment/environment-types";
 
 export {
-  getEnvironments,
-  mockGetEnvironments,
+  getAllEnvironmentsForTopicAndAcl,
+  getEnvironmentsForTopicRequest,
+  mockgetEnvironmentsForTopicRequest,
   ALL_ENVIRONMENTS_VALUE,
-  getSchemaRegistryEnvironments,
-  getSyncConnectorsEnvironments,
+  getAllEnvironmentsForSchema,
+  getEnvironmentsForSchemaRequest,
+  getAllEnvironmentsForConnector,
 };
 export type { Environment };

@@ -4,7 +4,7 @@ import { getQueryClientForTests } from "src/services/test-utils/query-client-tes
 import { render } from "@testing-library/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
-import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
 import { createSchemaRequest } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 
@@ -13,8 +13,8 @@ jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getSchemaRegistryEnvironments as jest.MockedFunction<
-    typeof getSchemaRegistryEnvironments
+  getEnvironmentsForSchemaRequest as jest.MockedFunction<
+    typeof getEnvironmentsForSchemaRequest
   >;
 const mockCreateSchemaRequest = createSchemaRequest as jest.MockedFunction<
   typeof createSchemaRequest

@@ -6,7 +6,7 @@ import {
 } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import Topics from "src/app/pages/topics";
-import { getEnvironments } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabNavigateTo } from "src/services/test-utils/tabbing";
 import { getTeams } from "src/domain/team";
@@ -27,9 +27,10 @@ jest.mock("src/domain/environment/environment-api.ts");
 
 const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 const mockGetTopics = getTopics as jest.MockedFunction<typeof getTopics>;
-const mockGetEnvironments = getEnvironments as jest.MockedFunction<
-  typeof getEnvironments
->;
+const mockGetEnvironments =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
+  >;
 
 const mockGetTopicsResponse: TopicApiResponse = mockedResponseTransformed;
 

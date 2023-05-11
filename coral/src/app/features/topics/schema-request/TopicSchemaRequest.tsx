@@ -17,7 +17,7 @@ import {
 } from "src/app/features/topics/schema-request/form-schemas/topic-schema-request-form";
 import {
   Environment,
-  getSchemaRegistryEnvironments,
+  getEnvironmentsForSchemaRequest,
 } from "src/domain/environment";
 import { createSchemaRequest } from "src/domain/schema-request";
 import { TopicNames, getTopicNames } from "src/domain/topic";
@@ -77,7 +77,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     Error
   >({
     queryKey: ["schemaRegistryEnvironments"],
-    queryFn: () => getSchemaRegistryEnvironments(),
+    queryFn: () => getEnvironmentsForSchemaRequest(),
   });
 
   const schemaRequestMutation = useMutation(createSchemaRequest, {

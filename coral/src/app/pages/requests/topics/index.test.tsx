@@ -1,23 +1,24 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { cleanup, screen, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import { getEnvironments } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { getTopicRequests } from "src/domain/topic/topic-api";
 import TopicRequestsPage from "src/app/pages/requests/topics/index";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/topic/topic-api.ts");
 
-const mockGetEnvironments = getEnvironments as jest.MockedFunction<
-  typeof getEnvironments
->;
+const mockGetAllEnvironmentsForTopicAndAcl =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
+  >;
 const mockGetTopicRequests = getTopicRequests as jest.MockedFunction<
   typeof getTopicRequests
 >;
 
 describe("TopicRequestsPage", () => {
   beforeAll(async () => {
-    mockGetEnvironments.mockResolvedValue([]);
+    mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([]);
     mockGetTopicRequests.mockResolvedValue({
       entries: [],
       totalPages: 1,

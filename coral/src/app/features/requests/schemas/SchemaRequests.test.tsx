@@ -17,7 +17,7 @@ import {
   mockedEnvironmentResponse,
 } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import userEvent from "@testing-library/user-event";
-import { getSchemaRegistryEnvironments } from "src/domain/environment";
+import { getAllEnvironmentsForSchema } from "src/domain/environment";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
 
@@ -25,8 +25,8 @@ jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getSchemaRegistryEnvironments as jest.MockedFunction<
-    typeof getSchemaRegistryEnvironments
+  getAllEnvironmentsForSchema as jest.MockedFunction<
+    typeof getAllEnvironmentsForSchema
   >;
 
 const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<

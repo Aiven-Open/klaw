@@ -1,16 +1,17 @@
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { cleanup, screen, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import { getEnvironments } from "src/domain/environment";
+import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import AclRequestsPage from "src/app/pages/requests/acls/index";
 import { getAclRequests } from "src/domain/acl/acl-api";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/acl/acl-api.ts");
 
-const mockGetEnvironments = getEnvironments as jest.MockedFunction<
-  typeof getEnvironments
->;
+const mockGetEnvironments =
+  getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getAllEnvironmentsForTopicAndAcl
+  >;
 const mockGetAclRequests = getAclRequests as jest.MockedFunction<
   typeof getAclRequests
 >;
