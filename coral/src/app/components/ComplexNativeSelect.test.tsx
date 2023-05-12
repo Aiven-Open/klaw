@@ -40,7 +40,7 @@ describe("ComplexNativeSelect.tsx", () => {
     helperText,
   };
 
-  describe.only("renders an option select element with default props", () => {
+  describe("renders an option select element with default props", () => {
     beforeEach(() => {
       render(<ComplexNativeSelect<TestOption> {...requiredProps} />);
     });
