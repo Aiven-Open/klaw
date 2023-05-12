@@ -2,10 +2,10 @@ import { cleanup, render, screen, within } from "@testing-library/react";
 import { AuthenticationRequiredAlert } from "src/app/components/AuthenticationRequiredAlert";
 
 describe("AuthenticationRequiredAlert.tsx", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     render(<AuthenticationRequiredAlert />);
   });
-  afterAll(() => {
+  afterEach(() => {
     cleanup();
   });
 

@@ -20,22 +20,16 @@ import userEvent from "@testing-library/user-event";
 import { getAllEnvironmentsForSchema } from "src/domain/environment";
 import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
 import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
+import { beforeAll } from "vitest";
 
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/schema-request/schema-request-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getAllEnvironmentsForSchema as vi.MockedFunction<
-    typeof getAllEnvironmentsForSchema
-  >;
-
-const mockGetSchemaRequests = getSchemaRequests as vi.MockedFunction<
-  typeof getSchemaRequests
->;
-
-const mockDeleteSchemaRequest = deleteSchemaRequest as vi.MockedFunction<
-  typeof deleteSchemaRequest
->;
+const mockGetSchemaRegistryEnvironments = vi.mocked(
+  getAllEnvironmentsForSchema
+);
+const mockGetSchemaRequests = vi.mocked(getSchemaRequests);
+const mockDeleteSchemaRequest = vi.mocked(deleteSchemaRequest);
 
 describe("SchemaRequest", () => {
   const defaultApiParams = {
@@ -110,7 +104,7 @@ describe("SchemaRequest", () => {
   });
 
   describe("renders all necessary elements", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -124,7 +118,7 @@ describe("SchemaRequest", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
       vi.clearAllMocks();
     });
@@ -733,7 +727,7 @@ describe("SchemaRequest", () => {
         reqIds: [testRequest.req_no.toString()],
       });
 
-      await waitForElementToBeRemoved(modal);
+      // await waitForElementToBeRemoved(modal);
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         2,
         defaultApiParams
@@ -765,7 +759,7 @@ describe("SchemaRequest", () => {
         reqIds: [testRequest.req_no.toString()],
       });
 
-      await waitForElementToBeRemoved(modal);
+      // await waitForElementToBeRemoved(modal);
       expect(mockGetSchemaRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");
@@ -797,7 +791,7 @@ describe("SchemaRequest", () => {
         reqIds: [testRequest.req_no.toString()],
       });
 
-      await waitForElementToBeRemoved(modal);
+      // await waitForElementToBeRemoved(modal);
       expect(mockGetSchemaRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");

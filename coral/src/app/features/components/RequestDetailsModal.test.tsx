@@ -25,14 +25,14 @@ describe("RequestDetailsModal.test", () => {
   const headlineText = "Request details";
 
   describe("renders a Modal with correct elements when isLoading is false (before interaction)", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <RequestDetailsModal {...baseProps} isLoading={false}>
           <div>content</div>
         </RequestDetailsModal>
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a Modal", () => {
       expect(screen.getByRole("dialog")).toBeVisible();
@@ -60,14 +60,14 @@ describe("RequestDetailsModal.test", () => {
   });
 
   describe("renders a Modal with correct elements when isLoading is true", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <RequestDetailsModal {...baseProps} isLoading={true}>
           <div>content</div>
         </RequestDetailsModal>
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders correct heading", () => {
       expect(screen.getByRole("heading", { name: headlineText })).toBeVisible();
@@ -93,7 +93,7 @@ describe("RequestDetailsModal.test", () => {
   });
 
   describe("renders a Modal with correct elements when disabledActions is true", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <RequestDetailsModal
           {...baseProps}
@@ -104,7 +104,7 @@ describe("RequestDetailsModal.test", () => {
         </RequestDetailsModal>
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders correct heading", () => {
       expect(screen.getByRole("heading", { name: headlineText })).toBeVisible();
@@ -128,7 +128,7 @@ describe("RequestDetailsModal.test", () => {
   });
 
   describe("renders a Modal with correct elements when secondary is disabled", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const props = {
         ...baseProps,
         actions: {
@@ -146,7 +146,7 @@ describe("RequestDetailsModal.test", () => {
         </RequestDetailsModal>
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders correct heading", () => {
       expect(screen.getByRole("heading", { name: headlineText })).toBeVisible();
@@ -170,14 +170,14 @@ describe("RequestDetailsModal.test", () => {
   });
 
   describe("handles user interaction", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <RequestDetailsModal {...baseProps} isLoading={false}>
           <div>content</div>
         </RequestDetailsModal>
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("user can close Modal", async () => {
       const { onClose } = baseProps;

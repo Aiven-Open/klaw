@@ -13,13 +13,13 @@ describe("StatusFilter.tsx", () => {
   const testDefaultStatus = "CREATED";
 
   describe("renders all necessary elements", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       customRender(<StatusFilter defaultStatus={testDefaultStatus} />, {
         memoryRouter: true,
       });
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a select element for status", () => {
       const select = screen.getByRole("combobox", {

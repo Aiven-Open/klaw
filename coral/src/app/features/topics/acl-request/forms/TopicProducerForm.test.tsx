@@ -19,8 +19,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 vi.mock("src/domain/acl/acl-api");
 
-const mockGetAivenServiceAccounts =
-  getAivenServiceAccounts as vi.MockedFunction<typeof getAivenServiceAccounts>;
+const mockGetAivenServiceAccounts = vi.mocked(getAivenServiceAccounts);
 const mockedAivenServiceAccountsResponse = ["bsisko", "odo", "quark"];
 
 const mockedEnvironments: ExtendedEnvironment[] = [
@@ -68,7 +67,7 @@ const basePropsNotAivenCluster = {
 
 describe("<TopicProducerForm />", () => {
   describe("renders correct fields in pristine form", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const { result } = renderHook(() =>
         useForm<TopicProducerFormSchema>({
           schema: topicProducerFormSchema,
@@ -83,7 +82,7 @@ describe("<TopicProducerForm />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -189,7 +188,7 @@ describe("<TopicProducerForm />", () => {
   // The action controlling the form states affected by selecting an environment is controlled by TopicAclRequest
   // We mock it by passing the values of the form that would have changed as default values
   describe("renders correct fields in form with selected environment which is Aiven cluster", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetAivenServiceAccounts.mockResolvedValue(
         mockedAivenServiceAccountsResponse
       );
@@ -214,7 +213,7 @@ describe("<TopicProducerForm />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -324,7 +323,7 @@ describe("<TopicProducerForm />", () => {
   // The action controlling the form states affected by selecting an environment is controlled by TopicAclRequest
   // We mock it by passing the values of the form that would have changed as default values
   describe("renders correct fields in form with selected environment which is NOT Aiven cluster", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const { result } = renderHook(() =>
         useForm<TopicProducerFormSchema>({
           schema: topicProducerFormSchema,
@@ -343,7 +342,7 @@ describe("<TopicProducerForm />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -470,7 +469,7 @@ const isSubscriptionBasePropsNotAivenCluster = {
 
 describe("<TopicProducerForm />", () => {
   describe("renders correct fields in pristine form", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const { result } = renderHook(() =>
         useForm<TopicProducerFormSchema>({
           schema: topicProducerFormSchema,
@@ -490,7 +489,7 @@ describe("<TopicProducerForm />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -596,7 +595,7 @@ describe("<TopicProducerForm />", () => {
   // The action controlling the form states affected by selecting an environment is controlled by TopicAclRequest
   // We mock it by passing the values of the form that would have changed as default values
   describe("renders correct fields in form with selected environment which is Aiven cluster", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetAivenServiceAccounts.mockResolvedValue(
         mockedAivenServiceAccountsResponse
       );
@@ -622,7 +621,7 @@ describe("<TopicProducerForm />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -732,7 +731,7 @@ describe("<TopicProducerForm />", () => {
   // The action controlling the form states affected by selecting an environment is controlled by TopicAclRequest
   // We mock it by passing the values of the form that would have changed as default values
   describe("renders correct fields in form with selected environment which is NOT Aiven cluster", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const { result } = renderHook(() =>
         useForm<TopicProducerFormSchema>({
           schema: topicProducerFormSchema,
@@ -752,7 +751,7 @@ describe("<TopicProducerForm />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 

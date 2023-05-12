@@ -23,15 +23,9 @@ import { vi } from "vitest";
 vi.mock("src/domain/acl/acl-api.ts");
 vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
+const mockGetEnvironments = vi.mocked(getAllEnvironmentsForTopicAndAcl);
 
-const mockGetAclRequestsForApprover =
-  getAclRequestsForApprover as vi.MockedFunction<
-    typeof getAclRequestsForApprover
-  >;
+const mockGetAclRequestsForApprover = vi.mocked(getAclRequestsForApprover);
 
 const mockedAclRequestsForApproverApiResponse: AclRequest[] = [
   {
@@ -111,11 +105,11 @@ const mockGetAclRequestsForApproverResponseEmpty =
   transformAclRequestApiResponse([]);
 
 describe("AclApprovals", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     mockIntersectionObserver();
     mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
   });
-  afterAll(() => {
+  afterEach(() => {
     vi.resetAllMocks();
   });
 
@@ -169,7 +163,7 @@ describe("AclApprovals", () => {
   });
 
   describe("handles paginated data", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetEnvironments.mockResolvedValue([]);
       mockGetAclRequestsForApprover.mockResolvedValue(
         mockGetAclRequestsForApproverResponse
@@ -182,7 +176,7 @@ describe("AclApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
       vi.resetAllMocks();
     });

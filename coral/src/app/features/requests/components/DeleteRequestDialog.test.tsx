@@ -7,7 +7,7 @@ describe("DeleteRequestDialog", () => {
   const deleteRequestMock = vi.fn();
 
   describe("shows all necessary elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <DeleteRequestDialog
           cancel={cancelMock}
@@ -16,7 +16,7 @@ describe("DeleteRequestDialog", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows an dialog", () => {
       const dialog = screen.getByRole("dialog");
@@ -60,7 +60,7 @@ describe("DeleteRequestDialog", () => {
   });
 
   describe("shows a loading animation dependent on prop", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <DeleteRequestDialog
           cancel={cancelMock}
@@ -70,7 +70,7 @@ describe("DeleteRequestDialog", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("disables button to cancel the deletion of the request while loading", () => {
       const dialog = screen.getByRole("dialog");

@@ -14,16 +14,13 @@ vi.mock("src/domain/connector/connector-api.ts");
 vi.mock("src/domain/team/team-api.ts");
 vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetConnectors = getConnectors as vi.MockedFunction<
-  typeof getConnectors
->;
+const mockGetConnectors = vi.mocked(getConnectors);
 
-const mockGetTeams = getTeams as vi.MockedFunction<typeof getTeams>;
+const mockGetTeams = vi.mocked(getTeams);
 
-const mockGetSyncConnectorsEnvironments =
-  getAllEnvironmentsForConnector as vi.MockedFunction<
-    typeof getAllEnvironmentsForConnector
-  >;
+const mockGetSyncConnectorsEnvironments = vi.mocked(
+  getAllEnvironmentsForConnector
+);
 
 const mockConnectors: Connector[] = [
   {
@@ -127,12 +124,12 @@ const mockEnvironments = [
 ];
 
 describe("BrowseConnectors.tsx", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     mockIntersectionObserver();
   });
 
   describe("handles successful response with one page", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetTeams.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue(mockResponseDefault);
@@ -145,7 +142,7 @@ describe("BrowseConnectors.tsx", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
-    afterAll(() => {
+    afterEach(() => {
       vi.clearAllMocks();
       cleanup();
     });
@@ -179,7 +176,7 @@ describe("BrowseConnectors.tsx", () => {
   });
 
   describe("handles successful response with three pages", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetTeams.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
       mockGetConnectors.mockResolvedValue({
@@ -196,7 +193,7 @@ describe("BrowseConnectors.tsx", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
-    afterAll(() => {
+    afterEach(() => {
       vi.clearAllMocks();
       cleanup();
     });

@@ -12,10 +12,9 @@ import { SelectSchemaRegEnvironment } from "src/app/features/approvals/schemas/c
 
 vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as vi.MockedFunction<
-    typeof getEnvironmentsForSchemaRequest
-  >;
+const mockGetSchemaRegistryEnvironments = vi.mocked(
+  getEnvironmentsForSchemaRequest
+);
 
 const filterLabel = "Filter by Environment";
 
@@ -32,7 +31,7 @@ describe("SelectSchemaRegEnvironment.tsx", () => {
   describe("renders all necessary elements", () => {
     const mockedOnChange = vi.fn();
 
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([
         mockedEnvironmentDev,
         mockedEnvironmentTst,
@@ -50,7 +49,7 @@ describe("SelectSchemaRegEnvironment.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a select element for Environments", () => {
       const select = screen.getByRole("combobox", {

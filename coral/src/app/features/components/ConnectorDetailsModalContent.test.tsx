@@ -48,11 +48,11 @@ const findDefinition = (term: HTMLElement | undefined) => {
 
 describe("ConnectorRequestDetailsModalContent", () => {
   describe("renders all necessary elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<ConnectorRequestDetails request={testRequest} />);
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows the Environment", () => {
       const term = findTerm("Environment");

@@ -381,7 +381,7 @@ describe("AclApprovalsTable", () => {
     beforeEach(() => {
       renderFromProps({ aclRequests, onDetails });
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
     it("triggers details action for the corresponding request when clicked", async () => {
       const table = screen.getByRole("table", {
         name: /ACL approval requests/,

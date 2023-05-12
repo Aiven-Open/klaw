@@ -5,31 +5,23 @@ import { render } from "@testing-library/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
-import { createSchemaRequest } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 
 vi.mock("src/domain/schema-request/schema-request-api.ts");
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/topic/topic-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as vi.MockedFunction<
-    typeof getEnvironmentsForSchemaRequest
-  >;
-const mockCreateSchemaRequest = createSchemaRequest as vi.MockedFunction<
-  typeof createSchemaRequest
->;
-const mockGetTopicNames = getTopicNames as vi.MockedFunction<
-  typeof getTopicNames
->;
+const mockGetSchemaRegistryEnvironments = vi.mocked(
+  getEnvironmentsForSchemaRequest
+);
+const mockGetTopicNames = vi.mocked(getTopicNames);
 
 describe("SchemaRequest", () => {
   describe("renders the page to request a new schema for a topic", () => {
     const topicName = "my-awesome-topic";
 
-    beforeAll(() => {
+    beforeEach(() => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
-      mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([topicName]);
       // @TODO if we decide to go with this kind of dynamic routes,
       // this should be enabled by customRender!
@@ -48,7 +40,7 @@ describe("SchemaRequest", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 

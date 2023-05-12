@@ -17,16 +17,9 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 vi.mock("src/domain/acl/acl-api.ts");
 vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetAclRequests = getAclRequests as vi.MockedFunction<
-  typeof getAclRequests
->;
-const mockDeleteAclRequests = deleteAclRequest as vi.MockedFunction<
-  typeof deleteAclRequest
->;
-const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
+const mockGetAclRequests = vi.mocked(getAclRequests);
+const mockDeleteAclRequests = vi.mocked(deleteAclRequest);
+const mockGetEnvironments = vi.mocked(getAllEnvironmentsForTopicAndAcl);
 
 const mockGetAclRequestsResponse = transformAclRequestApiResponse([
   {

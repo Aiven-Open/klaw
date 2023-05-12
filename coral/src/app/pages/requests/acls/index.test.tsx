@@ -8,16 +8,11 @@ import { getAclRequests } from "src/domain/acl/acl-api";
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/acl/acl-api.ts");
 
-const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
-const mockGetAclRequests = getAclRequests as vi.MockedFunction<
-  typeof getAclRequests
->;
+const mockGetEnvironments = vi.mocked(getAllEnvironmentsForTopicAndAcl);
+const mockGetAclRequests = vi.mocked(getAclRequests);
 
 describe("AclRequestsPage", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     mockGetEnvironments.mockResolvedValue([]);
     mockGetAclRequests.mockResolvedValue({
       entries: [],
@@ -32,7 +27,7 @@ describe("AclRequestsPage", () => {
     await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
   });
 
-  afterAll(cleanup);
+  afterEach(cleanup);
 
   it("shows a preview banner to inform users about the early version of the view", () => {
     const previewBanner = screen.getByLabelText("Preview disclaimer");

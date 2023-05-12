@@ -84,10 +84,10 @@ const findTerm = (term: string) => {
 
 describe("AclDetailsModalContent", () => {
   describe("renders correct content for ACL request (IPs, Producer, Prefixed)", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<AclDetailsModalContent request={mockedIpsAclRequest} />);
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders ACL type", () => {
       expect(findTerm("ACL type")).toBeVisible();
@@ -133,10 +133,10 @@ describe("AclDetailsModalContent", () => {
   });
 
   describe("renders correct content for ACL request with Principals (Principals, Consumer, Literal", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<AclDetailsModalContent request={mockedPrincipalsAclrequest} />);
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders ACL type", () => {
       expect(findTerm("ACL type")).toBeVisible();

@@ -14,10 +14,10 @@ const TEST_FEATURE_FLAG = "TEST_FEATURE_FLAG" as unknown as FeatureFlag;
 
 describe("useFeatureFlag", () => {
   describe('when flag is defined in process Environment with value "false"', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       isFeatureFlagActiveMock.mockReturnValue(false);
     });
-    afterAll(() => {
+    afterEach(() => {
       vi.restoreAllMocks();
     });
 
@@ -29,10 +29,10 @@ describe("useFeatureFlag", () => {
     });
   });
   describe('when flag is defined in process Environment with value "true"', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       isFeatureFlagActiveMock.mockReturnValue(true);
     });
-    afterAll(() => {
+    afterEach(() => {
       vi.restoreAllMocks();
     });
 

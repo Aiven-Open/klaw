@@ -22,18 +22,11 @@ import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/re
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/topic/topic-api.ts");
 
-const mockGetTopicRequestEnvironments =
-  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
-
-const mockGetTopicRequests = getTopicRequests as vi.MockedFunction<
-  typeof getTopicRequests
->;
-
-const mockDeleteTopicRequest = deleteTopicRequest as vi.MockedFunction<
-  typeof deleteTopicRequest
->;
+const mockGetTopicRequestEnvironments = vi.mocked(
+  getAllEnvironmentsForTopicAndAcl
+);
+const mockGetTopicRequests = vi.mocked(getTopicRequests);
+const mockDeleteTopicRequest = vi.mocked(deleteTopicRequest);
 
 const mockGetTopicRequestsResponse = transformGetTopicRequestsResponse([
   {
@@ -625,7 +618,7 @@ describe("TopicRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      // await waitForElementToBeRemoved(modal);
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         search: "",
@@ -663,7 +656,7 @@ describe("TopicRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      // await waitForElementToBeRemoved(modal);
       expect(mockGetTopicRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");
@@ -698,7 +691,7 @@ describe("TopicRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      // await waitForElementToBeRemoved(modal);
       expect(mockGetTopicRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");

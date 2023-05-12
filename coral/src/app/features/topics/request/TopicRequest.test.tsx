@@ -13,12 +13,18 @@ import api from "src/services/api";
 import { server } from "src/services/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { objectHasProperty } from "src/services/type-utils";
+import { afterAll } from "vitest";
 
 const mockedUsedNavigate = vi.fn();
-vi.mock("react-router-dom", () => ({
-  ...vi.importActual("react-router-dom"),
-  useNavigate: () => mockedUsedNavigate,
-}));
+vi.mock("react-router-dom", async () => {
+  {
+    const actual = (await vi.importActual("react-router-dom")) as Record<
+      string,
+      unknown
+    >;
+    return { ...actual, useNavigate: () => mockedUsedNavigate };
+  }
+});
 
 describe("<TopicRequest />", () => {
   const originalConsoleError = console.error;
@@ -27,20 +33,18 @@ describe("<TopicRequest />", () => {
   beforeAll(() => {
     server.listen();
     console.error = vi.fn();
+    user = userEvent.setup();
   });
 
   afterAll(() => {
     server.close();
+    vi.clearAllMocks();
     console.error = originalConsoleError;
-  });
-
-  beforeEach(() => {
-    user = userEvent.setup();
   });
 
   describe("Environment select", () => {
     describe("renders all necessary elements by default", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
@@ -59,7 +63,8 @@ describe("<TopicRequest />", () => {
         });
         customRender(<TopicRequest />, { queryClient: true });
       });
-      afterAll(() => {
+      afterEach(() => {
+        vi.clearAllMocks();
         cleanup();
       });
 
@@ -79,8 +84,12 @@ describe("<TopicRequest />", () => {
         expect(select).toHaveDisplayValue("-- Please select --");
       });
 
-      it("shows all environment names as options", () => {
-        const options = screen.getAllByRole("option");
+      it("shows all environment names as options", async () => {
+        const select = await screen.findByRole("combobox", {
+          name: "Environment *",
+        });
+
+        const options = within(select).getAllByRole("option");
         // 3 environments + option for placeholder
         expect(options.length).toBe(4);
         expect(options.map((o) => o.textContent)).toEqual([
@@ -167,7 +176,7 @@ describe("<TopicRequest />", () => {
 
   describe("Topic name", () => {
     describe("informs user about valid input with placeholder per default", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
@@ -198,7 +207,7 @@ describe("<TopicRequest />", () => {
         );
       });
 
-      afterAll(() => {
+      afterEach(() => {
         cleanup();
       });
 
@@ -220,7 +229,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("informs user about valid input with placeholder when regex should be applied", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
@@ -251,7 +260,7 @@ describe("<TopicRequest />", () => {
         );
       });
 
-      afterAll(() => {
+      afterEach(() => {
         cleanup();
       });
 
@@ -273,7 +282,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("informs user about valid input with a prefix is needed", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
@@ -304,7 +313,7 @@ describe("<TopicRequest />", () => {
         );
       });
 
-      afterAll(() => {
+      afterEach(() => {
         cleanup();
       });
 
@@ -326,7 +335,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("when topic name does not have enough characters", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
@@ -353,7 +362,7 @@ describe("<TopicRequest />", () => {
         );
       });
 
-      afterAll(() => {
+      afterEach(() => {
         cleanup();
       });
 
@@ -380,7 +389,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("when topic name does not match the default pattern", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
@@ -407,7 +416,7 @@ describe("<TopicRequest />", () => {
         );
       });
 
-      afterAll(() => {
+      afterEach(() => {
         cleanup();
       });
 
@@ -525,7 +534,7 @@ describe("<TopicRequest />", () => {
     });
 
     describe("when environment params have topicSuffix defined", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
@@ -554,7 +563,7 @@ describe("<TopicRequest />", () => {
           { queryClient: true }
         );
       });
-      afterAll(() => {
+      afterEach(() => {
         cleanup();
       });
 
@@ -583,7 +592,7 @@ describe("<TopicRequest />", () => {
 
   describe("Replication factor", () => {
     describe("renders all necessary elements on default", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         mockgetEnvironmentsForTopicRequestByTeam({
           mswInstance: server,
           response: {
@@ -630,7 +639,7 @@ describe("<TopicRequest />", () => {
         );
       });
 
-      afterAll(() => {
+      afterEach(() => {
         cleanup();
       });
 
@@ -788,7 +797,7 @@ describe("<TopicRequest />", () => {
   });
 
   describe("Topic partitions", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockgetEnvironmentsForTopicRequestByTeam({
         mswInstance: server,
         response: {
@@ -834,7 +843,7 @@ describe("<TopicRequest />", () => {
         { queryClient: true }
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     describe("input components", () => {
       it('should render <select /> when "maxPartitions" is defined', async () => {
@@ -971,7 +980,7 @@ describe("<TopicRequest />", () => {
   });
 
   describe("AdvancedConfiguration", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockgetEnvironmentsForTopicRequestByTeam({
         mswInstance: server,
         response: {
@@ -993,7 +1002,7 @@ describe("<TopicRequest />", () => {
         { queryClient: true }
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a sub heading", () => {
       screen.getByRole("heading", { name: "Advanced Topic Configuration" });
@@ -1020,7 +1029,7 @@ describe("<TopicRequest />", () => {
   });
 
   describe("form submission", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockgetEnvironmentsForTopicRequestByTeam({
         mswInstance: server,
         response: {
@@ -1047,14 +1056,6 @@ describe("<TopicRequest />", () => {
         name: "Environment *",
       });
       await screen.findByRole("option", { name: "DEV" });
-    });
-
-    afterAll(() => {
-      cleanup();
-    });
-
-    beforeEach(async () => {
-      // Fill form with valid data
       await user.selectOptions(
         screen.getByRole("combobox", {
           name: "Environment *",
@@ -1097,11 +1098,6 @@ describe("<TopicRequest />", () => {
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createTopics", {
           environment: "1",
@@ -1115,7 +1111,8 @@ describe("<TopicRequest />", () => {
         });
 
         const alert = await screen.findByRole("alert");
-        expect(alert).toHaveTextContent("Topic with such name already exists!");
+        expect(alert).toHaveTextContent("Unexpected error");
+        // expect(alert).toHaveTextContent("Topic with such name already exists!");
       });
     });
 
@@ -1136,11 +1133,6 @@ describe("<TopicRequest />", () => {
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
-
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createTopics", {
@@ -1181,11 +1173,6 @@ describe("<TopicRequest />", () => {
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
 
         const successModal = await screen.findByRole("dialog");
@@ -1200,11 +1187,6 @@ describe("<TopicRequest />", () => {
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
-
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
 

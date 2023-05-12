@@ -21,12 +21,12 @@ describe("Login", () => {
   });
 
   describe("renders all necessary elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockUserAuthRequest(server);
       customRender(<LoginForm />, { queryClient: true });
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
       vi.resetAllMocks();
       server.resetHandlers();

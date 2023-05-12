@@ -1,6 +1,7 @@
 import { cleanup, render, within, screen } from "@testing-library/react";
 import { ComplexNativeSelect } from "src/app/components/ComplexNativeSelect";
 import userEvent from "@testing-library/user-event";
+import { afterEach } from "vitest";
 
 type TestOption = {
   id: string;
@@ -39,14 +40,16 @@ describe("ComplexNativeSelect.tsx", () => {
     helperText,
   };
 
-  describe("renders an option select element with default props", () => {
-    beforeAll(() => {
+  describe.only("renders an option select element with default props", () => {
+    beforeEach(() => {
       render(<ComplexNativeSelect<TestOption> {...requiredProps} />);
     });
 
-    afterAll(cleanup);
+    afterEach(() => cleanup());
 
     it("shows a select element", () => {
+      screen.debug();
+
       const select = screen.getByRole("combobox", { name: labelText });
 
       expect(select).toBeEnabled();
@@ -54,6 +57,7 @@ describe("ComplexNativeSelect.tsx", () => {
     });
 
     it("shows the value of the first option as displayed value", () => {
+      screen.debug();
       const select = screen.getByRole("combobox", { name: labelText });
 
       expect(select).toHaveDisplayValue(testOptions[0].name);
@@ -81,13 +85,13 @@ describe("ComplexNativeSelect.tsx", () => {
   });
 
   describe("renders an required select element dependent on props", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <ComplexNativeSelect<TestOption> {...requiredProps} required={true} />
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a select element", () => {
       const select = screen.getByRole("combobox", { name: labelTextRequired });

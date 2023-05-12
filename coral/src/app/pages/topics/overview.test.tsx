@@ -8,11 +8,11 @@ vi.mock("react-router-dom", () => ({
 }));
 
 describe("TopicOverviewPage", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     render(<TopicOverviewPage />);
   });
 
-  afterAll(cleanup);
+  afterEach(cleanup);
 
   it("shows the dummy placeholder text", () => {
     const text = screen.getByText("<TopicOverview /> goes here");

@@ -1,7 +1,7 @@
 import { createTopicOverviewLink } from "src/app/features/topics/browse/utils/create-topic-overview-link";
 
 describe("create-topic-overview-links", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     // deleting the global window.location allows us to set it to a URL for easier testing
     // otherwise the assignment is ignored
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment

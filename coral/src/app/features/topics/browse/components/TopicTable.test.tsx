@@ -13,7 +13,7 @@ const tableRowHeader = ["Topic", "Environments", "Team"];
 
 describe("TopicTable.tsx", () => {
   describe("shows empty state correctly", () => {
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("show empty state when there is no data", () => {
       render(
@@ -24,7 +24,7 @@ describe("TopicTable.tsx", () => {
   });
 
   describe("shows all topics as a table", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockIntersectionObserver();
       render(
         <TopicTable
@@ -34,7 +34,7 @@ describe("TopicTable.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a topic table with information about pages", async () => {
       const table = screen.getByRole("table", {
@@ -73,7 +73,7 @@ describe("TopicTable.tsx", () => {
         expect(link).toBeVisible();
         expect(link).toHaveAttribute(
           "href",
-          `http://localhost/topicOverview?topicname=${topic.topicName}`
+          `http://localhost:3000/topicOverview?topicname=${topic.topicName}`
         );
       });
 

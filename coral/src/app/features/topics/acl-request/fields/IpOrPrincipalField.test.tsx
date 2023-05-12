@@ -16,8 +16,7 @@ const schema = z.object({
 
 vi.mock("src/domain/acl/acl-api");
 
-const mockGetAivenServiceAccounts =
-  getAivenServiceAccounts as vi.MockedFunction<typeof getAivenServiceAccounts>;
+const mockGetAivenServiceAccounts = vi.mocked(getAivenServiceAccounts);
 const mockedAivenServiceAccountsResponse = ["bsisko", "odo", "quark"];
 
 describe("IpOrPrincipalField", () => {

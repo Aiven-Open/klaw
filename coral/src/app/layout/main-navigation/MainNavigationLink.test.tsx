@@ -9,7 +9,7 @@ describe("MainNavigationLink.tsx", () => {
   const mockIcon = "fake-icon" as unknown as typeof data;
 
   describe("renders a default link with required props with a string as `to`", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <MainNavigationLink
           icon={mockIcon}
@@ -19,7 +19,7 @@ describe("MainNavigationLink.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it(`renders a link with text dependent on a given property`, () => {
       const navLink = screen.getByRole("link", { name: "Link back to Klaw" });
@@ -96,12 +96,14 @@ describe("MainNavigationLink.tsx", () => {
 
       const navLink = screen.getByRole("link", { name: "Link back to Klaw" });
 
-      expect(navLink.parentNode).toHaveClass("mainNavigationLinkActive");
+      expect(navLink.parentNode).toHaveClass(
+        "  _mainNavigationLinkActive_b22086"
+      );
     });
   });
 
   describe("renders a react router <Link> when `to` belongs to `Routes`", () => {
-    afterAll(cleanup);
+    afterEach(cleanup);
     it("renders correct link content", () => {
       render(
         <MemoryRouter initialEntries={["/users/mjackson"]}>

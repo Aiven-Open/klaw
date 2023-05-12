@@ -14,7 +14,7 @@ describe("Modal.tsx", () => {
     afterEach(vi.clearAllMocks);
 
     describe("renders all necessary elements", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         render(
           <>
             <div id={"root"}></div>
@@ -25,7 +25,7 @@ describe("Modal.tsx", () => {
         );
       });
 
-      afterAll(cleanup);
+      afterEach(cleanup);
 
       it("shows a dialog", () => {
         const dialog = screen.getByRole("dialog");
@@ -329,7 +329,7 @@ describe("Modal.tsx", () => {
           <h1>This is a title</h1>
         </div>
       );
-      beforeAll(() => {
+      beforeEach(() => {
         render(
           <Modal
             title={testTitle}

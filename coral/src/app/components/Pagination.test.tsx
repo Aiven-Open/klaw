@@ -12,7 +12,7 @@ describe("Pagination.tsx", () => {
     const totalPages = 5;
 
     describe("shows all necessary elements", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         render(
           <Pagination
             activePage={activePage}
@@ -22,7 +22,7 @@ describe("Pagination.tsx", () => {
         );
       });
 
-      afterAll(cleanup);
+      afterEach(cleanup);
 
       it("shows a navigation element", () => {
         const navigation = getNavigationElement();
@@ -219,7 +219,7 @@ describe("Pagination.tsx", () => {
     const totalPages = 6;
 
     describe("shows all necessary elements", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         render(
           <Pagination
             activePage={activePage}
@@ -229,7 +229,7 @@ describe("Pagination.tsx", () => {
         );
       });
 
-      afterAll(cleanup);
+      afterEach(cleanup);
 
       it("gives information about current and total pages for assistive technology", () => {
         const navigation = getNavigationElement();
@@ -429,7 +429,7 @@ describe("Pagination.tsx", () => {
     const totalPages = 4;
 
     describe("shows all necessary elements", () => {
-      beforeAll(() => {
+      beforeEach(() => {
         render(
           <Pagination
             activePage={activePage}
@@ -439,7 +439,7 @@ describe("Pagination.tsx", () => {
         );
       });
 
-      afterAll(cleanup);
+      afterEach(cleanup);
 
       it("gives information about current and total pages for assistive technology", () => {
         const navigation = getNavigationElement();

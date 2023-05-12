@@ -117,7 +117,7 @@ describe("TopicApprovalsTable", () => {
   });
 
   describe("renders all necessary elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
@@ -131,7 +131,7 @@ describe("TopicApprovalsTable", () => {
         />
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a table with all topic requests", () => {
       const table = screen.getByRole("table", {
@@ -194,7 +194,7 @@ describe("TopicApprovalsTable", () => {
   });
 
   describe("renders all content based on the column definition", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
@@ -209,7 +209,7 @@ describe("TopicApprovalsTable", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it(`renders the right amount of cells`, () => {
       const table = screen.getByRole("table", {
@@ -270,7 +270,7 @@ describe("TopicApprovalsTable", () => {
   });
 
   describe("handles interaction with action columns", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
@@ -284,7 +284,7 @@ describe("TopicApprovalsTable", () => {
         />
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("approves request when clicking Approve button", async () => {
       const showDetails = screen.getByRole("button", {
@@ -303,7 +303,7 @@ describe("TopicApprovalsTable", () => {
       { ...mockedRequests[0], topicname: "Additional-topic", topicid: 1234 },
     ];
 
-    beforeAll(() => {
+    beforeEach(() => {
       mockIntersectionObserver();
       render(
         <TopicApprovalsTable
@@ -318,7 +318,7 @@ describe("TopicApprovalsTable", () => {
         />
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     requestsWithStatusCreated.forEach((request) => {
       it(`disables button to approve topic request for topic name ${request.topicname}`, () => {
@@ -451,7 +451,7 @@ describe("TopicApprovalsTable", () => {
         />
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
     it("triggers details action for the corresponding request when clicked", async () => {
       const table = screen.getByRole("table", {
         name: "Topic approval requests, page 1 of 10",

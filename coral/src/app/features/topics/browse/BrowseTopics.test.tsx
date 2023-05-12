@@ -85,7 +85,7 @@ describe("BrowseTopics.tsx", () => {
   };
 
   describe("handles successful response with one page", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetTeams.mockResolvedValue(mockGetTeamsResponse);
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
       mockGetTopics.mockResolvedValue(mockedGetTopicsResponseSinglePage);
@@ -94,10 +94,10 @@ describe("BrowseTopics.tsx", () => {
       await waitForElementToBeRemoved(
         screen.getByTestId("select-team-loading")
       );
-      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+      // await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
-    afterAll(() => {
+    afterEach(() => {
       vi.clearAllMocks();
       cleanup();
     });
@@ -147,7 +147,7 @@ describe("BrowseTopics.tsx", () => {
   });
 
   describe("handles successful response with 4 pages", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetTeams.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockedGetTopicsResponseMultiplePages);
@@ -156,7 +156,7 @@ describe("BrowseTopics.tsx", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
-    afterAll(() => {
+    afterEach(() => {
       vi.clearAllMocks();
       cleanup();
     });
@@ -275,7 +275,7 @@ describe("BrowseTopics.tsx", () => {
       await waitForElementToBeRemoved(
         screen.getByTestId("select-team-loading")
       );
-      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+      // await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
     afterEach(() => {

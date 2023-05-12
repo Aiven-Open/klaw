@@ -2,10 +2,10 @@ import { cleanup, render, screen } from "@testing-library/react";
 import PreviewBanner from "src/app/components/PreviewBanner";
 
 describe("PreviewBanner.tsx", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     render(<PreviewBanner linkTarget={"/browseTopics"} />);
   });
-  afterAll(() => {
+  afterEach(() => {
     cleanup();
   });
   it("has an accessible copy explaining that user is viewing preview UI", () => {

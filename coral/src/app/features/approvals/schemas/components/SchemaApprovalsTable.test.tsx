@@ -72,7 +72,7 @@ const createdRequests = mockedRequests.filter(
 const mockApproveRequest = vi.fn();
 
 describe("SchemaApprovalsTable", () => {
-  beforeAll(mockIntersectionObserver);
+  beforeEach(mockIntersectionObserver);
 
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
@@ -103,7 +103,7 @@ describe("SchemaApprovalsTable", () => {
   });
 
   describe("user is able to view all the necessary schema request data and actions", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <SchemaApprovalsTable
           requests={mockedRequests}
@@ -116,7 +116,7 @@ describe("SchemaApprovalsTable", () => {
         />
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a table with all schema requests", () => {
       const table = screen.getByRole("table", {
@@ -216,7 +216,7 @@ describe("SchemaApprovalsTable", () => {
   });
 
   describe("renders all content based on the column definition", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <SchemaApprovalsTable
           requests={mockedRequests}
@@ -230,7 +230,7 @@ describe("SchemaApprovalsTable", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it(`renders the right amount of cells`, () => {
       const table = screen.getByRole("table", {
@@ -453,7 +453,7 @@ describe("SchemaApprovalsTable", () => {
       { ...mockedRequests[0], topicname: "Additional-topic", req_no: 1234 },
     ];
 
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <SchemaApprovalsTable
           requests={requestsWithStatusCreated}
@@ -468,7 +468,7 @@ describe("SchemaApprovalsTable", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     requestsWithStatusCreated.forEach((request) => {
       it(`disables button to approve schema request for topic name ${request.topicname}`, () => {

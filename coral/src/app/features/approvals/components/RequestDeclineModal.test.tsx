@@ -10,10 +10,10 @@ const baseProps = {
 
 describe("RequestDeclineModal.test", () => {
   describe("renders a Modal with correct elements when isLoading is false (before interaction)", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<RequestDeclineModal {...baseProps} isLoading={false} />);
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a Modal", () => {
       expect(screen.getByRole("dialog")).toBeVisible();
@@ -49,10 +49,10 @@ describe("RequestDeclineModal.test", () => {
   });
 
   describe("renders a Modal with correct elements when isLoading is true", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<RequestDeclineModal {...baseProps} isLoading={true} />);
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders correct heading", () => {
       expect(
@@ -86,10 +86,10 @@ describe("RequestDeclineModal.test", () => {
   });
 
   describe("handles user interaction", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<RequestDeclineModal {...baseProps} isLoading={false} />);
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("user can close Modal", async () => {
       const { onClose } = baseProps;

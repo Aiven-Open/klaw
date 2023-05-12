@@ -19,10 +19,13 @@ class Deferred<T> {
 }
 
 const mockedNavigate = vi.fn();
-vi.mock("react-router-dom", () => ({
-  ...vi.importActual("react-router-dom"),
-  useNavigate: () => mockedNavigate,
-}));
+vi.mock("react-router-dom", async () => {
+  const actual = (await vi.importActual("react-router-dom")) as Record<
+    string,
+    unknown
+  >;
+  return { ...actual, useNavigate: () => mockedNavigate };
+});
 
 const mockedRequestsWaitingForApproval: RequestsWaitingForApproval = {
   TOPIC: 1,
@@ -47,7 +50,7 @@ describe("ApprovalResourceTabs", () => {
   describe("Tab badges", () => {
     let manual: Deferred<RequestsWaitingForApproval>;
 
-    beforeAll(() => {
+    beforeEach(() => {
       manual = new Deferred();
       getSpy.mockReturnValue(manual.promise);
       customRender(
@@ -56,9 +59,10 @@ describe("ApprovalResourceTabs", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
+
     describe("while is notification count request is in flight", () => {
       it("renders a tab for Topics", () => {
         screen.getByRole("tab", { name: "Topics" });
@@ -75,38 +79,39 @@ describe("ApprovalResourceTabs", () => {
       it("renders a tab for Connectors", () => {
         screen.getByRole("tab", { name: "Connectors" });
       });
+    });
 
-      describe("when notification count request resolves", () => {
-        beforeAll(() => {
-          manual.resolve(mockedRequestsWaitingForApproval);
+    describe("when notification count request resolves", () => {
+      beforeEach(() => {
+        manual.resolve(mockedRequestsWaitingForApproval);
+      });
+
+      it("renders correct pending approvals for Topics", async () => {
+        await screen.findByRole("tab", {
+          name: "Topics, 1 approval waiting",
         });
+      });
 
-        it("renders correct pending approvals for Topics", async () => {
-          await screen.findByRole("tab", {
-            name: "Topics, 1 approval waiting",
-          });
+      it("renders correct pending approvals for ACLs", async () => {
+        await screen.findByRole("tab", {
+          name: "ACLs, no pending approvals",
         });
+      });
 
-        it("renders correct pending approvals for ACLs", async () => {
-          await screen.findByRole("tab", {
-            name: "ACLs, no pending approvals",
-          });
+      it("renders correct pending approvals for Schemas", async () => {
+        await screen.findByRole("tab", {
+          name: "Schemas, 3 approvals waiting",
         });
+      });
 
-        it("renders correct pending approvals for Schemas", async () => {
-          await screen.findByRole("tab", {
-            name: "Schemas, 3 approvals waiting",
-          });
-        });
-
-        it("renders correct pending approvals for Connectors", async () => {
-          await screen.findByRole("tab", {
-            name: "Connectors, 2 approvals waiting",
-          });
+      it("renders correct pending approvals for Connectors", async () => {
+        await screen.findByRole("tab", {
+          name: "Connectors, 2 approvals waiting",
         });
       });
     });
   });
+
   describe("Tab navigation", () => {
     beforeEach(() => {
       user = userEvent.setup();

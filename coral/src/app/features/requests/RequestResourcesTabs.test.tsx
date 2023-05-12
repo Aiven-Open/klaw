@@ -5,10 +5,13 @@ import { RequestsTabEnum } from "src/app/router_utils";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedNavigate = vi.fn();
-vi.mock("react-router-dom", () => ({
-  ...vi.importActual("react-router-dom"),
-  useNavigate: () => mockedNavigate,
-}));
+vi.mock("react-router-dom", async () => {
+  const actual = (await vi.importActual("react-router-dom")) as Record<
+    string,
+    unknown
+  >;
+  return { ...actual, useNavigate: () => mockedNavigate };
+});
 
 describe("RequestResourcesTabs", () => {
   let user: ReturnType<typeof userEvent.setup>;

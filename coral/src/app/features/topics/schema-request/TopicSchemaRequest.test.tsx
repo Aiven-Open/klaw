@@ -1,4 +1,3 @@
-import * as ReactQuery from "@tanstack/react-query";
 import { waitFor, within } from "@testing-library/react";
 import {
   cleanup,
@@ -18,24 +17,25 @@ vi.mock("src/domain/schema-request/schema-request-api.ts");
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/topic/topic-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as vi.MockedFunction<
-    typeof getEnvironmentsForSchemaRequest
-  >;
-const mockCreateSchemaRequest = createSchemaRequest as vi.MockedFunction<
-  typeof createSchemaRequest
->;
-const mockGetTopicNames = getTopicNames as vi.MockedFunction<
-  typeof getTopicNames
->;
+const mockGetSchemaRegistryEnvironments = vi.mocked(
+  getEnvironmentsForSchemaRequest
+);
+const mockCreateSchemaRequest = vi.mocked(createSchemaRequest);
+const mockGetTopicNames = vi.mocked(getTopicNames);
 
 const mockedUsedNavigate = vi.fn();
-vi.mock("react-router-dom", () => ({
-  ...vi.importActual("react-router-dom"),
-  useNavigate: () => mockedUsedNavigate,
-}));
+vi.mock("react-router-dom", async () => {
+  const actual = (await vi.importActual("react-router-dom")) as Record<
+    string,
+    unknown
+  >;
+  return {
+    ...actual,
+    useNavigate: () => mockedUsedNavigate,
+  };
+});
 
-const useQuerySpy = vi.spyOn(ReactQuery, "useQuery");
+// const useQuerySpy = vi.spyOn(ReactQuery, "useQuery");
 
 const testTopicName = "my-awesome-topic";
 
@@ -71,12 +71,12 @@ describe("TopicSchemaRequest", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockImplementation(vi.fn());
+      // mockCreateSchemaRequest.mockImplementation(vi.fn());
     });
 
     afterEach(() => {
       cleanup();
-      useQuerySpy.mockRestore();
+      // useQuerySpy.mockRestore();
     });
 
     it("does not redirect user if topicName prop does is part of list of topicNames", async () => {
@@ -115,12 +115,12 @@ describe("TopicSchemaRequest", () => {
   });
 
   describe("handles loading and update state", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
-      useQuerySpy.mockReturnValue({ data: [], isLoading: true });
+      // useQuerySpy.mockReturnValue({ data: [], isLoading: true });
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
-      mockCreateSchemaRequest.mockImplementation(vi.fn());
+      // mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
@@ -128,9 +128,9 @@ describe("TopicSchemaRequest", () => {
       });
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
-      useQuerySpy.mockRestore();
+      // useQuerySpy.mockRestore();
     });
 
     it("shows a form to request a schema", () => {
@@ -150,11 +150,11 @@ describe("TopicSchemaRequest", () => {
   });
 
   describe("renders all necessary elements", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockImplementation(vi.fn());
+      // mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
@@ -165,7 +165,7 @@ describe("TopicSchemaRequest", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -277,7 +277,7 @@ describe("TopicSchemaRequest", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockImplementation(vi.fn());
+      // mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
@@ -349,7 +349,7 @@ describe("TopicSchemaRequest", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedGetSchemaRegistryEnvironments
       );
-      mockCreateSchemaRequest.mockImplementation(vi.fn());
+      // mockCreateSchemaRequest.mockImplementation(vi.fn());
       mockGetTopicNames.mockResolvedValue([testTopicName]);
 
       customRender(
@@ -627,9 +627,9 @@ describe("TopicSchemaRequest", () => {
         within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
 
       await userEvent.upload(fileInput, testFile);
-      const editor = screen.getByRole("textbox");
+      const editor = screen.getByTestId("topic-schema");
 
-      await waitFor(() => expect(editor).toHaveDisplayValue(""));
+      await waitFor(() => expect(editor).toHaveDisplayValue(["{}"]));
     });
 
     it("enables the submit button if user filled all required inputs", async () => {

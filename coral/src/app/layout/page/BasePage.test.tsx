@@ -7,11 +7,11 @@ describe("BasePage.tsx", () => {
   const sidebarElement = <div data-testid={"sidebar-element"} />;
 
   describe("renders a basic page layout with dedicated, required slots", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<BasePage content={contentElement} />);
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a header element", () => {
       const heading = screen.getByRole("banner");
@@ -35,7 +35,7 @@ describe("BasePage.tsx", () => {
   });
 
   describe("renders additional elements as slots based on props", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <BasePage
           headerContent={headerContentElement}
@@ -45,7 +45,7 @@ describe("BasePage.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a given component as header content inside the header", () => {
       const header = screen.getByRole("banner");

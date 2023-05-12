@@ -9,13 +9,13 @@ const aclTypesForFilter = ["ALL", "CONSUMER", "PRODUCER"];
 const filterLabel = "Filter by ACL type";
 describe("AclTypeFilter.tsx", () => {
   describe("renders all necessary elements", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       customRender(<AclTypeFilter />, {
         memoryRouter: true,
       });
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a select element for ACL type", () => {
       const select = screen.getByRole("combobox", {

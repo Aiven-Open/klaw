@@ -17,16 +17,10 @@ vi.mock("src/domain/topic/topic-api.ts");
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/team/team-api");
 
-const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
+const mockGetEnvironments = vi.mocked(getAllEnvironmentsForTopicAndAcl);
 
-const mockGetTopicRequestsForApprover =
-  getTopicRequestsForApprover as vi.MockedFunction<
-    typeof getTopicRequestsForApprover
-  >;
-const mockGetTeams = getTeams as vi.MockedFunction<typeof getTeams>;
+const mockGetTopicRequestsForApprover = vi.mocked(getTopicRequestsForApprover);
+const mockGetTeams = vi.mocked(getTeams);
 
 const mockedTopicRequestsResponse: TopicRequest[] = [
   {
@@ -128,10 +122,10 @@ const mockGetEnvironmentResponse = transformEnvironmentApiResponse(
 );
 
 describe("TopicApprovals", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     mockIntersectionObserver();
   });
-  afterAll(() => {
+  afterEach(() => {
     vi.resetAllMocks();
   });
 
@@ -193,7 +187,7 @@ describe("TopicApprovals", () => {
   });
 
   describe("renders all necessary elements ", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
       mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
@@ -206,7 +200,7 @@ describe("TopicApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
       vi.clearAllMocks();
     });

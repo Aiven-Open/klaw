@@ -7,7 +7,7 @@ import { TopicRequestFormSchema } from "src/app/features/topics/schema-request/f
 import { readFile } from "src/app/features/topics/schema-request/utils/read-file";
 
 vi.mock("src/app/features/topics/schema-request/utils/read-file");
-const mockReadFiles = readFile as vi.MockedFunction<typeof readFile>;
+const mockReadFiles = vi.mocked(readFile);
 
 describe("TopicSchema", () => {
   const formElementName: keyof TopicRequestFormSchema = "schemafull";
@@ -29,7 +29,7 @@ describe("TopicSchema", () => {
   );
 
   describe("renders all necessary elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       renderForm(<TopicSchema name={formElementName} required={true} />, {
         schema: formSchema,
         onSubmit: mockedOnSubmit,
@@ -37,7 +37,7 @@ describe("TopicSchema", () => {
       });
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
       vi.clearAllMocks();
     });

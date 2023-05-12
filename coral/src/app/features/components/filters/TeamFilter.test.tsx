@@ -7,7 +7,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 vi.mock("src/domain/team/team-api");
 
-const mockGetTeams = getTeams as vi.MockedFunction<typeof getTeams>;
+const mockGetTeams = vi.mocked(getTeams);
 
 const mockedTeamsResponse = [
   {
@@ -39,7 +39,7 @@ const mockedTeamsResponse = [
 const filterLabel = "Filter by team";
 describe("TeamFilter.tsx", () => {
   describe("renders default view when no query is set", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
 
       customRender(<TeamFilter />, {
@@ -51,7 +51,7 @@ describe("TeamFilter.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a select element for Team", () => {
       const select = screen.getByRole("combobox", {

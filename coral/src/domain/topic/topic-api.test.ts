@@ -11,6 +11,7 @@ import {
 import { KlawApiRequestQueryParameters } from "types/utils";
 import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { Environment } from "src/domain/environment";
+import { afterAll } from "vitest";
 
 describe("topic-api", () => {
   beforeAll(() => {

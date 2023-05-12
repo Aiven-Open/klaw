@@ -15,10 +15,10 @@ const mockPagination = <div data-testid={"pagination"} />;
 
 describe("TableLayout", () => {
   describe("renders all necessary elements with required props", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<TableLayout filters={mockFilter} table={mockTable} />);
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders all elements passed as filterElements", () => {
       const filterElements = screen.getAllByTestId("filter-element");

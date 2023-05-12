@@ -176,10 +176,10 @@ export default defineConfig(({ mode }) => {
       setupFiles: [
         "./test-setup/setup-files-after-env.ts",
         "./test-setup/mock-monaco-editor.tsx",
-        // "./test-setup/mock-ds-icon-component.tsx",
+        "./test-setup/mock-ds-icon-component.tsx",
       ],
       deps: {
-        inline: ["@aivenio/aquarium"],
+        inline: ["@aivenio/aquarium", "msw"],
       },
     },
   };

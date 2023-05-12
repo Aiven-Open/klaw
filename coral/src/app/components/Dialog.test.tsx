@@ -16,7 +16,7 @@ describe("Dialog.tsx", () => {
   afterEach(vi.clearAllMocks);
 
   describe("shows a default modal with headline, text and one button", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <>
           <div id={"root"}></div>
@@ -31,7 +31,7 @@ describe("Dialog.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a dialog", () => {
       const dialog = screen.getByRole("dialog");
@@ -65,7 +65,7 @@ describe("Dialog.tsx", () => {
       onClick: vi.fn(),
     };
 
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <>
           <div id={"root"}></div>
@@ -81,7 +81,7 @@ describe("Dialog.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a button with a given secondary action", () => {
       const button = screen.getByRole("button", { name: mockPrimary.text });
@@ -99,7 +99,7 @@ describe("Dialog.tsx", () => {
   });
 
   describe("shows different header icons and colors dependent on type prop", () => {
-    afterEach(cleanup);
+    afterAll(cleanup);
 
     it("shows a confirmation header", () => {
       render(

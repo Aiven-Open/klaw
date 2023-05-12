@@ -66,7 +66,7 @@ const createdRequests = mockedConnectorRequests.filter(
 const mockApproveRequest = vi.fn();
 
 describe("ConnectorApprovalsTable", () => {
-  beforeAll(mockIntersectionObserver);
+  beforeEach(mockIntersectionObserver);
 
   const columnsFieldMap = [
     { columnHeader: "Connector name", relatedField: "connectorName" },
@@ -97,7 +97,7 @@ describe("ConnectorApprovalsTable", () => {
   });
 
   describe("user is able to view all the necessary Kafka connector request data and actions", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
@@ -110,7 +110,7 @@ describe("ConnectorApprovalsTable", () => {
         />
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a table with all Kafka connector requests", () => {
       const table = screen.getByRole("table", {
@@ -210,7 +210,7 @@ describe("ConnectorApprovalsTable", () => {
   });
 
   describe("renders all content based on the column definition", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <ConnectorApprovalsTable
           requests={mockedConnectorRequests}
@@ -224,7 +224,7 @@ describe("ConnectorApprovalsTable", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it(`renders the right amount of cells`, () => {
       const table = screen.getByRole("table", {
@@ -451,7 +451,7 @@ describe("ConnectorApprovalsTable", () => {
       },
     ];
 
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <ConnectorApprovalsTable
           requests={requestsWithStatusCreated}
@@ -466,7 +466,7 @@ describe("ConnectorApprovalsTable", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     requestsWithStatusCreated.forEach((request) => {
       it(`disables button to approve Kafka connector request for topic name ${request.connectorName}`, () => {

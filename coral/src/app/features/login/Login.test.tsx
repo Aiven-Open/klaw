@@ -4,10 +4,10 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("Login", () => {
   describe("renders all necessary elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       customRender(<Login />, { queryClient: true });
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a headline", () => {
       const headline = screen.getByRole("heading", { name: "Login page" });

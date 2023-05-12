@@ -8,7 +8,7 @@ describe("SearchFilter.tsx", () => {
   const description = "This is a description for screenreaders";
 
   describe("renders default view when no query is set", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       customRender(
         <SearchFilter placeholder={placeholder} description={description} />,
         {
@@ -17,7 +17,7 @@ describe("SearchFilter.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a search input", () => {
       const searchInput = screen.getByRole("search", { name: placeholder });

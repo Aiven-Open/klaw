@@ -26,7 +26,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
   });
 
   describe('renders a collapsed submenu when "expanded" is not explicit set', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
           {testMainNavigationLinks}
@@ -34,7 +34,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it(`renders a button with information about collapsed submenu for assistive technology`, () => {
       const button = screen.getByRole("button", {
@@ -87,7 +87,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
   });
 
   describe('renders a expanded submenu when "expanded" is set to true', () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <MainNavigationSubmenuList
           icon={mockIcon}
@@ -99,7 +99,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it(`renders a button with information about expanded submenu for assistive technology`, () => {
       const button = screen.getByRole("button", {

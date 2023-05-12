@@ -26,11 +26,11 @@ describe("HeaderNavigation.tsx", () => {
   isFeatureFlagActiveMock.mockReturnValue(true);
 
   describe("shows all necessary elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       customRender(<HeaderNavigation />, { memoryRouter: true });
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a navigation element with quick links", () => {
       const nav = screen.getByRole("navigation", { name: "Quick links" });

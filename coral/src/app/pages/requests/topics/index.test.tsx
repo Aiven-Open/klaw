@@ -8,16 +8,13 @@ import TopicRequestsPage from "src/app/pages/requests/topics/index";
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/topic/topic-api.ts");
 
-const mockGetAllEnvironmentsForTopicAndAcl =
-  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
-const mockGetTopicRequests = getTopicRequests as vi.MockedFunction<
-  typeof getTopicRequests
->;
+const mockGetAllEnvironmentsForTopicAndAcl = vi.mocked(
+  getAllEnvironmentsForTopicAndAcl
+);
+const mockGetTopicRequests = vi.mocked(getTopicRequests);
 
 describe("TopicRequestsPage", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue([]);
     mockGetTopicRequests.mockResolvedValue({
       entries: [],
@@ -32,7 +29,7 @@ describe("TopicRequestsPage", () => {
     await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
   });
 
-  afterAll(cleanup);
+  afterEach(cleanup);
 
   it("shows a preview banner to inform users about the early version of the view", () => {
     const previewBanner = screen.getByLabelText("Preview disclaimer");

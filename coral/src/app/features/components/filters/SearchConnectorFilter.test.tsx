@@ -3,13 +3,13 @@ import { SearchConnectorFilter } from "src/app/features/components/filters/Searc
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("SearchConnectorFilter.tsx", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     customRender(<SearchConnectorFilter />, {
       memoryRouter: true,
     });
   });
 
-  afterAll(cleanup);
+  afterEach(cleanup);
 
   it("renders a search input", () => {
     const searchInput = screen.getByRole("search", {

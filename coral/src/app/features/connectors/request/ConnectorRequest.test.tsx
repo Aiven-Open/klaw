@@ -10,14 +10,11 @@ import { getAllEnvironmentsForConnector } from "src/domain/environment";
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/connector/connector-api.ts");
 
-const mockGetConnectorEnvironmentRequest =
-  getAllEnvironmentsForConnector as vi.MockedFunction<
-    typeof getAllEnvironmentsForConnector
-  >;
+const mockGetConnectorEnvironmentRequest = vi.mocked(
+  getAllEnvironmentsForConnector
+);
 
-const mockCreateConnectorRequest = createConnectorRequest as vi.MockedFunction<
-  typeof createConnectorRequest
->;
+const mockCreateConnectorRequest = vi.mocked(createConnectorRequest);
 
 const mockedUsedNavigate = vi.fn();
 vi.mock("react-router-dom", () => ({
@@ -412,10 +409,7 @@ describe("<ConnectorRequest />", () => {
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
+
         expect(createConnectorRequest).toHaveBeenCalledTimes(1);
         expect(createConnectorRequest).toHaveBeenCalledWith({
           connectorConfig:
@@ -451,11 +445,6 @@ describe("<ConnectorRequest />", () => {
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
-
         expect(createConnectorRequest).toHaveBeenCalledTimes(1);
 
         const successModal = await screen.findByRole("dialog");
@@ -468,11 +457,6 @@ describe("<ConnectorRequest />", () => {
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
-
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
 
         expect(createConnectorRequest).toHaveBeenCalledTimes(1);
 

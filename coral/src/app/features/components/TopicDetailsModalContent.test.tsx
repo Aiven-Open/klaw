@@ -78,12 +78,12 @@ const findTerm = (term: string) => {
 
 describe("TopicDetailsModalContent", () => {
   describe("renders correct content for Topic request (description, remarks, no config)", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <TopicDetailsModalContent topicRequest={noAdvancedConfigRequest} />
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders Environment", () => {
       expect(findTerm("Environment")).toBeVisible();
@@ -132,12 +132,12 @@ describe("TopicDetailsModalContent", () => {
   });
 
   describe("renders correct content for Topic request (no description,  no remarks, with config)", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <TopicDetailsModalContent topicRequest={withAdvancedConfigRequest} />
       );
     });
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders Environment", () => {
       expect(findTerm("Environment")).toBeVisible();

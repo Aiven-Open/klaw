@@ -3,13 +3,13 @@ import { SearchTopicFilter } from "src/app/features/components/filters/SearchTop
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("SearchTopicFilter.tsx", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     customRender(<SearchTopicFilter />, {
       memoryRouter: true,
     });
   });
 
-  afterAll(cleanup);
+  afterEach(cleanup);
 
   it("renders a search input", () => {
     const searchInput = screen.getByRole("search", {

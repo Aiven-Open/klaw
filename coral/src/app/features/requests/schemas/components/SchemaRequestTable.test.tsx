@@ -18,7 +18,7 @@ const showDetailsMock = vi.fn();
 const showDeleteDialogMock = vi.fn();
 
 describe("SchemaRequestTable", () => {
-  beforeAll(mockIntersectionObserver);
+  beforeEach(mockIntersectionObserver);
 
   const columnsFieldMap = [
     { columnHeader: "Topic", relatedField: "topicname" },
@@ -32,7 +32,7 @@ describe("SchemaRequestTable", () => {
   ];
 
   describe("shows information that table is empty when requests are empty", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <SchemaRequestTable
           requests={[]}
@@ -43,7 +43,7 @@ describe("SchemaRequestTable", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("informs user there are no requests matching their criteria", () => {
       const text = screen.getByText("No Schema request matched your criteria.");
@@ -53,7 +53,7 @@ describe("SchemaRequestTable", () => {
   });
 
   describe("renders all necessary elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <SchemaRequestTable
           requests={schemaRequests}
@@ -64,7 +64,7 @@ describe("SchemaRequestTable", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a table with all schema requests", () => {
       const table = screen.getByRole("table", {
@@ -155,7 +155,7 @@ describe("SchemaRequestTable", () => {
   });
 
   describe("renders all content based on the column definition", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(
         <SchemaRequestTable
           requests={schemaRequests}
@@ -166,7 +166,7 @@ describe("SchemaRequestTable", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it(`renders the right amount of cells`, () => {
       const table = screen.getByRole("table", {

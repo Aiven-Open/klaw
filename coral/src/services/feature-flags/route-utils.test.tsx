@@ -26,7 +26,7 @@ describe("route-utils", () => {
     describe("returns a route object with redirecting when feature flag is not active", () => {
       let routeObject: RouteObject;
 
-      beforeAll(() => {
+      beforeEach(() => {
         isFeatureFlagActiveMock.mockReturnValue(false);
         routeObject = createRouteBehindFeatureFlag({
           element: TestElement,
@@ -36,7 +36,7 @@ describe("route-utils", () => {
         });
       });
 
-      afterAll(() => {
+      afterEach(() => {
         vi.restoreAllMocks();
       });
 
@@ -54,7 +54,7 @@ describe("route-utils", () => {
     describe("returns a route object with the feature flag protected component when feature flag is active", () => {
       let routeObject: RouteObject;
 
-      beforeAll(() => {
+      beforeEach(() => {
         isFeatureFlagActiveMock.mockReturnValue(true);
         routeObject = createRouteBehindFeatureFlag({
           element: TestElement,
@@ -64,7 +64,7 @@ describe("route-utils", () => {
         });
       });
 
-      afterAll(() => {
+      afterEach(() => {
         vi.restoreAllMocks();
       });
 

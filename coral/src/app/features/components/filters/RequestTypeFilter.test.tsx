@@ -11,13 +11,13 @@ const filterLabel = "Filter by request type";
 
 describe("RequestTypeFilter.tsx", () => {
   describe("renders all necessary elements", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       customRender(<RequestTypeFilter />, {
         memoryRouter: true,
       });
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a select element for request type", () => {
       const select = screen.getByRole("combobox", {

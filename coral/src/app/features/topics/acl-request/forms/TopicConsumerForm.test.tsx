@@ -19,8 +19,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 vi.mock("src/domain/acl/acl-api");
 
-const mockGetAivenServiceAccounts =
-  getAivenServiceAccounts as vi.MockedFunction<typeof getAivenServiceAccounts>;
+const mockGetAivenServiceAccounts = vi.mocked(getAivenServiceAccounts);
 const mockedAivenServiceAccountsResponse = ["bsisko", "odo", "quark"];
 
 const mockedEnvironments: ExtendedEnvironment[] = [
@@ -68,7 +67,7 @@ const basePropsNotAivenCluster = {
 
 describe("<TopicConsumerForm />", () => {
   describe("renders correct fields in pristine form", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const { result } = renderHook(() =>
         useForm<TopicConsumerFormSchema>({
           schema: topicConsumerFormSchema,
@@ -88,7 +87,7 @@ describe("<TopicConsumerForm />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -176,7 +175,7 @@ describe("<TopicConsumerForm />", () => {
   // The action controlling the form states affected by selecting an environment is controlled by TopicAclRequest
   // We mock it by passing the values of the form that would have changed as default values
   describe("renders correct fields in form with selected environment which is Aiven cluster", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockGetAivenServiceAccounts.mockResolvedValue(
         mockedAivenServiceAccountsResponse
       );
@@ -202,7 +201,7 @@ describe("<TopicConsumerForm />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -298,7 +297,7 @@ describe("<TopicConsumerForm />", () => {
   // The action controlling the form states affected by selecting an environment is controlled by TopicAclRequest
   // We mock it by passing the values of the form that would have changed as default values
   describe("renders correct fields in form with selected environment which is NOT Aiven cluster", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const { result } = renderHook(() =>
         useForm<TopicConsumerFormSchema>({
           schema: topicConsumerFormSchema,
@@ -319,7 +318,7 @@ describe("<TopicConsumerForm />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -428,7 +427,7 @@ const isSubscriptionBasePropsNotAivenCluster = {
 
 describe("<TopicConsumerForm isSubscription />", () => {
   describe("renders correct fields in pristine form", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const { result } = renderHook(() =>
         useForm<TopicConsumerFormSchema>({
           schema: topicConsumerFormSchema,
@@ -450,7 +449,7 @@ describe("<TopicConsumerForm isSubscription />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -538,7 +537,7 @@ describe("<TopicConsumerForm isSubscription />", () => {
   // The action controlling the form states affected by selecting an environment is controlled by TopicAclRequest
   // We mock it by passing the values of the form that would have changed as default values
   describe("renders correct fields in form with selected environment which is Aiven cluster", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockGetAivenServiceAccounts.mockResolvedValue(
         mockedAivenServiceAccountsResponse
       );
@@ -566,7 +565,7 @@ describe("<TopicConsumerForm isSubscription />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 
@@ -663,7 +662,7 @@ describe("<TopicConsumerForm isSubscription />", () => {
   // The action controlling the form states affected by selecting an environment is controlled by TopicAclRequest
   // We mock it by passing the values of the form that would have changed as default values
   describe("renders correct fields in form with selected environment which is NOT Aiven cluster", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       const { result } = renderHook(() =>
         useForm<TopicConsumerFormSchema>({
           schema: topicConsumerFormSchema,
@@ -686,7 +685,7 @@ describe("<TopicConsumerForm isSubscription />", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 

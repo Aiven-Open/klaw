@@ -59,7 +59,7 @@ const tableRowHeader = ["Connector", "Environments", "Team"];
 
 describe("ConnectorTable.tsx", () => {
   describe("shows empty state correctly", () => {
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("show empty state when there is no data", () => {
       render(
@@ -77,7 +77,7 @@ describe("ConnectorTable.tsx", () => {
   });
 
   describe("shows all Connectors as a table", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockIntersectionObserver();
       render(
         <ConnectorTable
@@ -87,7 +87,7 @@ describe("ConnectorTable.tsx", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a connector table with information about pages", async () => {
       const table = screen.getByRole("table", {

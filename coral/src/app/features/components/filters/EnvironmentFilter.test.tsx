@@ -12,20 +12,15 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
+const mockGetEnvironments = vi.mocked(getAllEnvironmentsForTopicAndAcl);
 
-const mockGetSchemaRegistryEnvironments =
-  getAllEnvironmentsForSchema as vi.MockedFunction<
-    typeof getAllEnvironmentsForSchema
-  >;
+const mockGetSchemaRegistryEnvironments = vi.mocked(
+  getAllEnvironmentsForSchema
+);
 
-const mockGetSyncConnectorsEnvironments =
-  getAllEnvironmentsForConnector as vi.MockedFunction<
-    typeof getAllEnvironmentsForConnector
-  >;
+const mockGetSyncConnectorsEnvironments = vi.mocked(
+  getAllEnvironmentsForConnector
+);
 
 const mockEnvironments = [
   createEnvironment({
@@ -102,7 +97,7 @@ describe("EnvironmentFilter.tsx", () => {
   });
 
   describe("renders all necessary elements", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
@@ -121,7 +116,7 @@ describe("EnvironmentFilter.tsx", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
       vi.resetAllMocks();
     });

@@ -8,16 +8,13 @@ import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/schema-request/schema-request-api.ts");
 
-const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as vi.MockedFunction<
-    typeof getEnvironmentsForSchemaRequest
-  >;
-const mockGetSchemaRequests = getSchemaRequests as vi.MockedFunction<
-  typeof getSchemaRequests
->;
+const mockGetSchemaRegistryEnvironments = vi.mocked(
+  getEnvironmentsForSchemaRequest
+);
+const mockGetSchemaRequests = vi.mocked(getSchemaRequests);
 
 describe("SchemaRequestPage", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
     mockGetSchemaRequests.mockResolvedValue({
       entries: [],
@@ -32,7 +29,7 @@ describe("SchemaRequestPage", () => {
     await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
   });
 
-  afterAll(cleanup);
+  afterEach(cleanup);
 
   it("shows a preview banner to inform users about the early version of the view", () => {
     const previewBanner = screen.getByLabelText("Preview disclaimer");

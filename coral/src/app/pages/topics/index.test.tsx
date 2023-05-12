@@ -16,31 +16,34 @@ import { mockedResponseTransformed } from "src/domain/topic/topic-api.msw";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 
 const mockedNavigator = vi.fn();
-vi.mock("react-router-dom", () => ({
-  ...vi.importActual("react-router-dom"),
-  useNavigate: () => mockedNavigator,
-}));
+vi.mock("react-router-dom", async () => {
+  const actual = (await vi.importActual("react-router-dom")) as Record<
+    string,
+    unknown
+  >;
+  return {
+    ...actual,
+    useNavigate: () => mockedNavigator,
+  };
+});
 
 vi.mock("src/domain/team/team-api.ts");
 vi.mock("src/domain/topic/topic-api.ts");
 vi.mock("src/domain/environment/environment-api.ts");
 
-const mockGetTeams = getTeams as vi.MockedFunction<typeof getTeams>;
-const mockGetTopics = getTopics as vi.MockedFunction<typeof getTopics>;
-const mockGetEnvironments =
-  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
+const mockGetTeams = vi.mocked(getTeams);
+const mockGetTopics = vi.mocked(getTopics);
+const mockGetEnvironments = vi.mocked(getAllEnvironmentsForTopicAndAcl);
 
 const mockGetTopicsResponse: TopicApiResponse = mockedResponseTransformed;
 
 describe("Topics", () => {
-  beforeAll(() => {
+  beforeEach(() => {
     mockIntersectionObserver();
   });
 
   describe("renders default view with data from API", () => {
-    beforeAll(async () => {
+    beforeEach(async () => {
       mockGetTeams.mockResolvedValue([]);
       mockGetEnvironments.mockResolvedValue([]);
       mockGetTopics.mockResolvedValue(mockGetTopicsResponse);
@@ -49,7 +52,7 @@ describe("Topics", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
     });
 

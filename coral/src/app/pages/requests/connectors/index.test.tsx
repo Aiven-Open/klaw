@@ -10,17 +10,14 @@ vi.mock("src/domain/team/team-api.ts");
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/connector/connector-api.ts");
 
-const mockGetTeams = getTeams as vi.MockedFunction<typeof getTeams>;
-const mockGetSyncConnectorsEnvironments =
-  getAllEnvironmentsForConnector as vi.MockedFunction<
-    typeof getAllEnvironmentsForConnector
-  >;
-const mockGetConnectorRequests = getConnectorRequests as vi.MockedFunction<
-  typeof getConnectorRequests
->;
+const mockGetTeams = vi.mocked(getTeams);
+const mockGetSyncConnectorsEnvironments = vi.mocked(
+  getAllEnvironmentsForConnector
+);
+const mockGetConnectorRequests = vi.mocked(getConnectorRequests);
 
 describe("ConnectorRequestsPage", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     mockGetTeams.mockResolvedValue([]);
     mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
     mockGetConnectorRequests.mockResolvedValue({
@@ -36,7 +33,7 @@ describe("ConnectorRequestsPage", () => {
     await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
   });
 
-  afterAll(cleanup);
+  afterEach(cleanup);
 
   it("shows a preview banner to inform users about the early version of the view", () => {
     const previewBanner = screen.getByLabelText("Preview disclaimer");

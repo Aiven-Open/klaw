@@ -14,7 +14,7 @@ describe("TopicNameField", () => {
   const onSubmit = vi.fn();
   const onError = vi.fn();
 
-  beforeAll(() => {
+  beforeEach(() => {
     renderForm(<TopicNameField topicNames={mockedTopicNames} />, {
       schema,
       onSubmit,
@@ -22,7 +22,7 @@ describe("TopicNameField", () => {
     });
   });
 
-  afterAll(() => {
+  afterEach(() => {
     cleanup();
     onSubmit.mockClear();
     onError.mockClear();

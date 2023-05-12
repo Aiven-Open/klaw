@@ -50,11 +50,11 @@ const findDefinition = (term: HTMLElement | undefined) => {
 
 describe("SchemaRequestDetails", () => {
   describe("renders all necessary elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<SchemaRequestDetails request={testRequest} />);
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows the Environment", () => {
       const term = findTerm("Environment");

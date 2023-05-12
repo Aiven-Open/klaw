@@ -5,10 +5,14 @@ import { vi } from "vitest";
 
 // github issue to investigate a more versatile testing approach:
 // 🐙 https://github.com/aiven/klaw/issues/475
-vi.mock("@monaco-editor/react", () => {
+vi.mock("@monaco-editor/react", async () => {
+  const actual = (await vi.importActual("@monaco-editor/react")) as Record<
+    string,
+    unknown
+  >;
   return {
     __esModule: true,
-    ...vi.importActual("@monaco-editor/react"),
+    ...actual,
     default: vi.fn((props) => {
       return (
         <textarea

@@ -20,11 +20,11 @@ const requiredProps = {
 
 describe("FileInput.tsx", () => {
   describe("renders all necessary elements with required props", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<FileInput {...requiredProps} />);
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a file upload input", () => {
       // input type=file does not have a role to look for
@@ -79,11 +79,11 @@ describe("FileInput.tsx", () => {
   });
 
   describe("renders an invalid input with an error message when valid is false", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<FileInput {...requiredProps} valid={false} />);
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a file upload input", () => {
       // input type=file does not have a role to look for
@@ -113,11 +113,11 @@ describe("FileInput.tsx", () => {
   });
 
   describe("renders a required input prop required is true", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       render(<FileInput {...requiredProps} required={true} />);
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a file upload input", () => {
       // input type=file does not have a role to look for

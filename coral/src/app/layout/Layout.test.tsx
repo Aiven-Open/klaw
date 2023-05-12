@@ -15,14 +15,14 @@ describe("Layout.tsx", () => {
   isFeatureFlagActiveMock.mockReturnValue(true);
 
   describe("renders the layout component with all needed elements", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       customRender(<Layout>{testChildren}</Layout>, {
         memoryRouter: true,
         queryClient: true,
       });
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("renders a button to skip to main content for assistive technology", () => {
       const skipLink = screen.getByRole("button", {

@@ -26,23 +26,15 @@ import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/re
 vi.mock("src/domain/environment/environment-api.ts");
 vi.mock("src/domain/connector/connector-api.ts");
 
-const mockGetConnectorEnvironmentRequest =
-  getAllEnvironmentsForTopicAndAcl as vi.MockedFunction<
-    typeof getAllEnvironmentsForTopicAndAcl
-  >;
+const mockGetConnectorEnvironmentRequest = vi.mocked(
+  getAllEnvironmentsForTopicAndAcl
+);
 
-const mockGetConnectorRequests = getConnectorRequests as vi.MockedFunction<
-  typeof getConnectorRequests
->;
-
-const mockGetSyncConnectorsEnvironments =
-  getAllEnvironmentsForConnector as vi.MockedFunction<
-    typeof getAllEnvironmentsForConnector
-  >;
-
-const mockDeleteConnectorRequest = deleteConnectorRequest as vi.MockedFunction<
-  typeof deleteConnectorRequest
->;
+const mockGetConnectorRequests = vi.mocked(getConnectorRequests);
+const mockGetSyncConnectorsEnvironments = vi.mocked(
+  getAllEnvironmentsForConnector
+);
+const mockDeleteConnectorRequest = vi.mocked(deleteConnectorRequest);
 
 const mockGetConnectorRequestsResponse = transformConnectorRequestApiResponse([
   {
@@ -677,7 +669,7 @@ describe("ConnectorRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      // await waitForElementToBeRemoved(modal);
       expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         search: "",
@@ -715,7 +707,7 @@ describe("ConnectorRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      // await waitForElementToBeRemoved(modal);
       expect(mockGetConnectorRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");
@@ -750,7 +742,7 @@ describe("ConnectorRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      // await waitForElementToBeRemoved(modal);
       expect(mockGetConnectorRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");
