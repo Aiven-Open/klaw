@@ -8,6 +8,7 @@ type Args = {
   element: JSX.Element;
   featureFlag: FeatureFlag;
   redirectRouteWithoutFeatureFlag: Routes;
+  children?: RouteObject[];
 };
 
 function createRouteBehindFeatureFlag({
@@ -15,6 +16,7 @@ function createRouteBehindFeatureFlag({
   element,
   featureFlag,
   redirectRouteWithoutFeatureFlag,
+  children,
 }: Args): RouteObject {
   return {
     path: path,
@@ -26,6 +28,7 @@ function createRouteBehindFeatureFlag({
     ) : (
       <Navigate to={redirectRouteWithoutFeatureFlag} />
     ),
+    ...(children && { children }),
   };
 }
 

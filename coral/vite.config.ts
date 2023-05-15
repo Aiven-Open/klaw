@@ -137,6 +137,9 @@ export default defineConfig(({ mode }) => {
         FEATURE_FLAG_TOPNAV_DROPDOWN: ["development", "remote-api"]
           .includes(mode)
           .toString(),
+        FEATURE_FLAG_TOPIC_OVERVIEW: ["development", "remote-api"]
+          .includes(mode)
+          .toString(),
       },
     },
     css: {
