@@ -178,7 +178,7 @@ public class MailUtils {
     formattedStr = String.format(passwordReset, username, pwd);
     subject = KLAW_ACCESS_PASSWORD_RESET_REQUESTED;
 
-    sendMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
+    sendPwdResetMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
   }
 
   void sendMailRegisteredUserSaas(
@@ -346,6 +346,35 @@ public class MailUtils {
             if (emailId != null) {
               emailService.sendSimpleMessage(
                   emailId, emailIdTeam, subject, formattedStr, tenantId, loginUrl);
+            } else {
+              log.error("Email id not found. Notification not sent !!");
+            }
+          } catch (Exception e) {
+            log.error("Email id not found. Notification not sent !! ", e);
+          }
+        });
+  }
+
+  private void sendPwdResetMail(
+      String username,
+      HandleDbRequests dbHandle,
+      String formattedStr,
+      String subject,
+      boolean registrationRequest,
+      String otherMailId,
+      int tenantId,
+      String loginUrl) {
+
+    CompletableFuture.runAsync(
+        () -> {
+          String emailId;
+
+          try {
+            emailId = dbHandle.getUsersInfo(username).getMailid();
+
+            if (emailId != null) {
+              emailService.sendSimpleMessage(
+                  emailId, null, subject, formattedStr, tenantId, loginUrl);
             } else {
               log.error("Email id not found. Notification not sent !!");
             }
