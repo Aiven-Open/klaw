@@ -3,8 +3,8 @@ name: Coral PR Pipeline
 on:
   pull_request:
     paths:
-      - "coral/**"
-      - "!coral/types/api.d.ts"
+      - 'coral/**'
+      - '!coral/types/api.d.ts'
 
 permissions:
   contents: read
@@ -28,7 +28,6 @@ jobs:
 
   test1:
     name: test1
-    working-directory: ./coral
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -41,7 +40,6 @@ jobs:
 
   test2:
     name: test2
-    working-directory: ./coral
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -54,7 +52,6 @@ jobs:
 
   test3:
     name: test3
-    working-directory: ./coral
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
