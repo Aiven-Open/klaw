@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.UtilMethods;
@@ -10,6 +11,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.MailType;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
@@ -333,7 +335,7 @@ public class MailUtils {
             if (registrationRequest) {
               emailId = otherMailId;
             } else {
-              emailId = dbHandle.getUsersInfo(username).getMailid();
+              emailId = getEmailAddressFromUsername(username);
             }
 
             try {
@@ -370,7 +372,7 @@ public class MailUtils {
           String emailId;
 
           try {
-            emailId = dbHandle.getUsersInfo(username).getMailid();
+            emailId = getEmailAddressFromUsername(username);
 
             if (emailId != null) {
               emailService.sendSimpleMessage(
@@ -382,6 +384,19 @@ public class MailUtils {
             log.error("Email id not found. Notification not sent !! ", e);
           }
         });
+  }
+
+  public String getEmailAddressFromUsername(String username) {
+
+    Optional<UserInfo> user =
+        manageDatabase.selectAllCachedUserInfo().stream()
+            .filter(u -> u.getUsername().equals(username))
+            .findFirst();
+    if (user.isPresent()) {
+      return user.get().getMailid();
+    } else {
+      return null;
+    }
   }
 
   public String sendMailToSaasAdmin(int tenantId, String userName, String period, String loginUrl) {
