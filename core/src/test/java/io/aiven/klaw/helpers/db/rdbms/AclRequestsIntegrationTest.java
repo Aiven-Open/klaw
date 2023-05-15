@@ -134,7 +134,8 @@ public class AclRequestsIntegrationTest {
     utilMethods = new UtilMethods();
     ReflectionTestUtils.setField(selectDataJdbc, "aclRequestsRepo", repo);
     ReflectionTestUtils.setField(selectDataJdbc, "schemaRequestRepo", schemaRequestRepo);
-    ReflectionTestUtils.setField(selectDataJdbc, "kafkaConnectorRequestsRepo", kafkaConnectorRequestsRepo);
+    ReflectionTestUtils.setField(
+        selectDataJdbc, "kafkaConnectorRequestsRepo", kafkaConnectorRequestsRepo);
     ReflectionTestUtils.setField(selectDataJdbc, "topicRequestsRepo", topicRequestsRepo);
     ReflectionTestUtils.setField(selectDataJdbc, "userInfoRepo", userInfoRepo);
     loadData();
@@ -626,7 +627,7 @@ public class AclRequestsIntegrationTest {
 
   @Test
   @Order(24)
-  public void getRequestsCountForCreatedStatus(){
+  public void getRequestsCountForCreatedStatus() {
     int count = selectDataJdbc.findAllComponentsCountForUser("Jackie", 101);
     assertThat(count).isEqualTo(21);
     count = selectDataJdbc.findAllComponentsCountForUser("Jackie", 103);
