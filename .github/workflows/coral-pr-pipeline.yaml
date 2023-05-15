@@ -3,8 +3,8 @@ name: Coral PR Pipeline
 on:
   pull_request:
     paths:
-      - 'coral/**'
-      - '!coral/types/api.d.ts'
+      - "coral/**"
+      - "!coral/types/api.d.ts"
 
 permissions:
   contents: read
@@ -26,18 +26,38 @@ jobs:
         working-directory: ./coral
         run: pnpm run lint
 
-  tests:
-    name: Tests
+  test1:
+    name: test1
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
         with:
           persist-credentials: false
-
       - name: Setup coral
         uses: ./.github/actions/setup-coral
+      - run: pnpm run test-ci --shard=1/3
 
-      - name: Run unittests
-        working-directory: ./coral
-        run: pnpm run test-ci
+  test2:
+    name: test2
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+        with:
+          persist-credentials: false
+      - name: Setup coral
+        uses: ./.github/actions/setup-coral
+      - run: pnpm run test-ci --shard=2/3
+
+  test3:
+    name: test3
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+        with:
+          persist-credentials: false
+      - name: Setup coral
+        uses: ./.github/actions/setup-coral
+      - run: pnpm run test-ci --shard=3/3
