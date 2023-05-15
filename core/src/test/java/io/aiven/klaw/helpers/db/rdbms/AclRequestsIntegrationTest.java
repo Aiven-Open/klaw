@@ -11,6 +11,9 @@ import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
+import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
+import io.aiven.klaw.repository.SchemaRequestRepo;
+import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +37,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class AclRequestsIntegrationTest {
 
   @Autowired private AclRequestsRepo repo;
+
+  @Autowired private SchemaRequestRepo schemaRequestRepo;
+
+  @Autowired private KwKafkaConnectorRequestsRepo kafkaConnectorRequestsRepo;
+
+  @Autowired private TopicRequestsRepo topicRequestsRepo;
+
   @Autowired private UserInfoRepo userInfoRepo;
 
   @Autowired TestEntityManager entityManager;
@@ -123,6 +133,9 @@ public class AclRequestsIntegrationTest {
     selectDataJdbc = new SelectDataJdbc();
     utilMethods = new UtilMethods();
     ReflectionTestUtils.setField(selectDataJdbc, "aclRequestsRepo", repo);
+    ReflectionTestUtils.setField(selectDataJdbc, "schemaRequestRepo", schemaRequestRepo);
+    ReflectionTestUtils.setField(selectDataJdbc, "kafkaConnectorRequestsRepo", kafkaConnectorRequestsRepo);
+    ReflectionTestUtils.setField(selectDataJdbc, "topicRequestsRepo", topicRequestsRepo);
     ReflectionTestUtils.setField(selectDataJdbc, "userInfoRepo", userInfoRepo);
     loadData();
   }
@@ -609,6 +622,15 @@ public class AclRequestsIntegrationTest {
     assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
     assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(20L);
     assertThat(operationTypeCount.get(RequestOperationType.DELETE.value)).isEqualTo(0L);
+  }
+
+  @Test
+  @Order(24)
+  public void getRequestsCountForCreatedStatus(){
+    int count = selectDataJdbc.findAllComponentsCountForUser("Jackie", 101);
+    assertThat(count).isEqualTo(21);
+    count = selectDataJdbc.findAllComponentsCountForUser("Jackie", 103);
+    assertThat(count).isEqualTo(10);
   }
 
   @Order(24)
