@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { TopicOverview } from "src/app/features/topics/overview/TopicOverview";
+import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
 
 function TopicDetailsPage() {
   const { topicName } = useParams();
@@ -10,7 +10,7 @@ function TopicDetailsPage() {
     return <></>;
   }
 
-  return <TopicOverview topicName={topicName} />;
+  return <TopicDetails topicName={topicName} />;
 }
 
 export { TopicDetailsPage };

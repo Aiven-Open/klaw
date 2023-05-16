@@ -5,7 +5,7 @@ type TopicOverviewHeaderProps = {
   topicName: string;
 };
 
-function TopicOverviewHeader(props: TopicOverviewHeaderProps) {
+function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
   const { topicName } = props;
   // @TODO get data via api
   const topicOverview = {
@@ -132,4 +132,4 @@ function TopicOverviewHeader(props: TopicOverviewHeaderProps) {
   );
 }
 
-export { TopicOverviewHeader };
+export { TopicDetailsHeader };

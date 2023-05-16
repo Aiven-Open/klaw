@@ -1,6 +1,6 @@
 import { cleanup, screen } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { TopicOverview } from "src/app/features/topics/overview/TopicOverview";
+import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { within } from "@testing-library/react/pure";
 
 const mockUseParams = jest.fn();
@@ -13,7 +13,7 @@ jest.mock("react-router-dom", () => ({
   Navigate: () => mockedNavigate(),
 }));
 
-describe("TopicOverview", () => {
+describe("TopicDetails", () => {
   const testTopic = "my-nice-topic";
 
   beforeEach(() => {
@@ -39,7 +39,7 @@ describe("TopicOverview", () => {
         },
       ]);
 
-      customRender(<TopicOverview topicName={testTopic} />, {
+      customRender(<TopicDetails topicName={testTopic} />, {
         memoryRouter: true,
       });
 
@@ -57,7 +57,7 @@ describe("TopicOverview", () => {
         },
       ]);
 
-      customRender(<TopicOverview topicName={testTopic} />, {
+      customRender(<TopicDetails topicName={testTopic} />, {
         memoryRouter: true,
       });
 
@@ -82,7 +82,7 @@ describe("TopicOverview", () => {
         },
       ]);
 
-      customRender(<TopicOverview topicName={testTopic} />, {
+      customRender(<TopicDetails topicName={testTopic} />, {
         memoryRouter: true,
       });
 
@@ -99,7 +99,7 @@ describe("TopicOverview", () => {
         },
       ]);
 
-      customRender(<TopicOverview topicName={testTopic} />, {
+      customRender(<TopicDetails topicName={testTopic} />, {
         memoryRouter: true,
       });
 

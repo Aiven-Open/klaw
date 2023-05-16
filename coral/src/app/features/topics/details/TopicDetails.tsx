@@ -4,8 +4,8 @@ import {
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
-import { TopicOverviewResourcesTabs } from "src/app/features/topics/overview/components/TopicOverviewResourceTabs";
-import { TopicOverviewHeader } from "src/app/features/topics/overview/components/TopicOverviewHeader";
+import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
+import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
 
 type TopicOverviewProps = {
   topicName: string;
@@ -25,7 +25,7 @@ function findMatchingTab(
   return undefined;
 }
 
-function TopicOverview(props: TopicOverviewProps) {
+function TopicDetails(props: TopicOverviewProps) {
   const { topicName } = props;
 
   const matches = useMatches();
@@ -35,7 +35,7 @@ function TopicOverview(props: TopicOverviewProps) {
   }
   return (
     <div>
-      <TopicOverviewHeader topicName={topicName} />
+      <TopicDetailsHeader topicName={topicName} />
 
       <TopicOverviewResourcesTabs
         currentTab={currentTab}
@@ -45,4 +45,4 @@ function TopicOverview(props: TopicOverviewProps) {
   );
 }
 
-export { TopicOverview };
+export { TopicDetails };
