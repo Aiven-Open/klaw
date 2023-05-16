@@ -1,4 +1,6 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
+import Layout from "src/app/layout/Layout";
+import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
 import ApprovalsPage from "src/app/pages/approvals";
 import AclApprovalsPage from "src/app/pages/approvals/acls";
 import ConnectorApprovalsPage from "src/app/pages/approvals/connectors";
@@ -32,92 +34,106 @@ const routes: Array<RouteObject> = [
   //   path: "/login",
   // },
   {
-    path: Routes.TOPICS,
-    element: <Topics />,
-  },
-  {
-    path: Routes.CONNECTORS,
-    element: <ConnectorsPage />,
-  },
-  {
-    path: Routes.CONNECTOR_REQUEST,
-    element: <RequestConnector />,
-  },
-  {
-    path: Routes.TOPIC_REQUEST,
-    element: <RequestTopic />,
-  },
-  {
-    path: Routes.TOPIC_ACL_REQUEST,
-    element: <AclRequest />,
-  },
-  {
-    path: Routes.SCHEMA_REQUEST,
-    element: <SchemaRequest />,
-  },
-  {
-    path: Routes.ACL_REQUEST,
-    element: <AclRequest />,
-  },
-  {
-    path: Routes.TOPIC_SCHEMA_REQUEST,
-    element: <SchemaRequest />,
-  },
-  {
-    path: Routes.REQUESTS,
-    element: <RequestsPage />,
+    path: "/",
+    element: <Layout />,
     children: [
       {
-        path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.TOPICS],
-        element: <TopicRequestsPage />,
-        id: RequestsTabEnum.TOPICS,
+        path: Routes.TOPICS,
+        element: <Topics />,
       },
       {
-        path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.ACLS],
-        element: <AclRequestsPage />,
-        id: RequestsTabEnum.ACLS,
+        path: Routes.CONNECTORS,
+        element: <ConnectorsPage />,
       },
       {
-        path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.SCHEMAS],
-        element: <SchemaRequestsPage />,
-        id: RequestsTabEnum.SCHEMAS,
+        path: Routes.REQUESTS,
+        element: <RequestsPage />,
+        children: [
+          {
+            path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.TOPICS],
+            element: <TopicRequestsPage />,
+            id: RequestsTabEnum.TOPICS,
+          },
+          {
+            path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.ACLS],
+            element: <AclRequestsPage />,
+            id: RequestsTabEnum.ACLS,
+          },
+          {
+            path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.SCHEMAS],
+            element: <SchemaRequestsPage />,
+            id: RequestsTabEnum.SCHEMAS,
+          },
+          {
+            path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.CONNECTORS],
+            element: <ConnectorRequestsPage />,
+            id: RequestsTabEnum.CONNECTORS,
+          },
+        ],
       },
       {
-        path: REQUESTS_TAB_ID_INTO_PATH[RequestsTabEnum.CONNECTORS],
-        element: <ConnectorRequestsPage />,
-        id: RequestsTabEnum.CONNECTORS,
+        path: Routes.APPROVALS,
+        element: <ApprovalsPage />,
+        children: [
+          {
+            path: APPROVALS_TAB_ID_INTO_PATH[ApprovalsTabEnum.TOPICS],
+            element: <TopicApprovalsPage />,
+            id: ApprovalsTabEnum.TOPICS,
+          },
+          {
+            path: APPROVALS_TAB_ID_INTO_PATH[ApprovalsTabEnum.ACLS],
+            element: <AclApprovalsPage />,
+            id: ApprovalsTabEnum.ACLS,
+          },
+          {
+            path: APPROVALS_TAB_ID_INTO_PATH[ApprovalsTabEnum.SCHEMAS],
+            element: <SchemaApprovalsPage />,
+            id: ApprovalsTabEnum.SCHEMAS,
+          },
+          {
+            path: APPROVALS_TAB_ID_INTO_PATH[ApprovalsTabEnum.CONNECTORS],
+            element: <ConnectorApprovalsPage />,
+            id: ApprovalsTabEnum.CONNECTORS,
+          },
+        ],
       },
     ],
   },
   {
-    path: Routes.APPROVALS,
-    element: <ApprovalsPage />,
+    path: "/",
+    element: <LayoutWithoutNav />,
     children: [
       {
-        path: APPROVALS_TAB_ID_INTO_PATH[ApprovalsTabEnum.TOPICS],
-        element: <TopicApprovalsPage />,
-        id: ApprovalsTabEnum.TOPICS,
+        path: Routes.ACL_REQUEST,
+        element: <AclRequest />,
       },
       {
-        path: APPROVALS_TAB_ID_INTO_PATH[ApprovalsTabEnum.ACLS],
-        element: <AclApprovalsPage />,
-        id: ApprovalsTabEnum.ACLS,
+        path: Routes.SCHEMA_REQUEST,
+        element: <SchemaRequest />,
       },
       {
-        path: APPROVALS_TAB_ID_INTO_PATH[ApprovalsTabEnum.SCHEMAS],
-        element: <SchemaApprovalsPage />,
-        id: ApprovalsTabEnum.SCHEMAS,
+        path: Routes.CONNECTOR_REQUEST,
+        element: <RequestConnector />,
       },
       {
-        path: APPROVALS_TAB_ID_INTO_PATH[ApprovalsTabEnum.CONNECTORS],
-        element: <ConnectorApprovalsPage />,
-        id: ApprovalsTabEnum.CONNECTORS,
+        path: Routes.TOPIC_REQUEST,
+        element: <RequestTopic />,
+      },
+
+      {
+        path: Routes.TOPIC_ACL_REQUEST,
+        element: <AclRequest />,
+      },
+      {
+        path: Routes.TOPIC_SCHEMA_REQUEST,
+        element: <SchemaRequest />,
       },
     ],
   },
   {
     path: "*",
-    element: <NotFound />,
+    element: <Layout />,
+    children: [{ path: "*", element: <NotFound /> }],
   },
 ];
 

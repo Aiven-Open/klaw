@@ -1,5 +1,5 @@
 import { cleanup, screen, within } from "@testing-library/react";
-import Layout from "src/app/layout/Layout";
+import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 
@@ -9,12 +9,12 @@ jest.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
 
-describe("Layout.tsx", () => {
+describe("LayoutWithoutNav.tsx", () => {
   isFeatureFlagActiveMock.mockReturnValue(true);
 
   describe("renders the layout component with all needed elements", () => {
     beforeAll(() => {
-      customRender(<Layout />, {
+      customRender(<LayoutWithoutNav />, {
         browserRouter: true,
         queryClient: true,
       });
@@ -35,15 +35,15 @@ describe("Layout.tsx", () => {
       expect(header).toBeVisible();
     });
 
-    it("renders the main navigation", () => {
-      const nav = screen.getByRole("navigation", { name: "Main navigation" });
-      expect(nav).toBeVisible();
+    it("does not render the main navigation", () => {
+      const nav = screen.queryByRole("navigation", { name: "Main navigation" });
+      expect(nav).not.toBeInTheDocument();
     });
   });
 
   describe("enables user to navigate all navigation element with keyboard", () => {
     beforeEach(() => {
-      customRender(<Layout />, {
+      customRender(<LayoutWithoutNav />, {
         memoryRouter: true,
         queryClient: true,
       });

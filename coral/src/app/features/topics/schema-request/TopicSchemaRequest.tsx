@@ -128,7 +128,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           &quot;Continue&quot; for an immediate redirect.
         </Dialog>
       )}
-      <Box maxWidth={"7xl"}>
+      <Box>
         {schemaRequestMutation.isError && (
           <Box marginBottom={"l1"} role="alert">
             <Alert type="error">
