@@ -1,5 +1,5 @@
 import { cleanup, screen } from "@testing-library/react";
-import { TopicOverviewPage } from "src/app/pages/topics/overview";
+import { TopicDetailsPage } from "src/app/pages/topics/details";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const testTopic = "my-nice-topic";
@@ -27,7 +27,7 @@ describe("TopicOverviewPage", () => {
         },
       ]);
 
-      customRender(<TopicOverviewPage />, {
+      customRender(<TopicDetailsPage />, {
         memoryRouter: true,
       });
     });
@@ -53,7 +53,7 @@ describe("TopicOverviewPage", () => {
       mockUseParams.mockImplementationOnce(() => {
         return {};
       });
-      customRender(<TopicOverviewPage />, {
+      customRender(<TopicDetailsPage />, {
         memoryRouter: true,
       });
     });

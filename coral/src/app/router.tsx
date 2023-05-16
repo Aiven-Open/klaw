@@ -28,7 +28,7 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
-import { TopicOverviewPage } from "src/app/pages/topics/overview";
+import { TopicDetailsPage } from "src/app/pages/topics/details";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
 
@@ -48,7 +48,7 @@ const routes: Array<RouteObject> = [
       },
       createRouteBehindFeatureFlag({
         path: Routes.TOPIC_OVERVIEW,
-        element: <TopicOverviewPage />,
+        element: <TopicDetailsPage />,
         featureFlag: FeatureFlag.FEATURE_FLAG_TOPIC_OVERVIEW,
         redirectRouteWithoutFeatureFlag: Routes.TOPICS,
         children: [
