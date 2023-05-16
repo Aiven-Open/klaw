@@ -9,21 +9,19 @@ const mockMatches = jest.fn();
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useParams: () => mockUseParams,
+  useParams: () => mockUseParams(),
+  useMatches: () => mockMatches(),
   useNavigate: () => mockedUsedNavigate,
-  useMatches: () => mockMatches,
 }));
 
 describe("TopicOverviewPage", () => {
   describe("renders the component handling header and tabs for topic-overview", () => {
     beforeAll(() => {
-      mockUseParams.mockImplementationOnce(() => {
-        return {
-          topicName: testTopic,
-        };
+      mockUseParams.mockReturnValue({
+        topicName: testTopic,
       });
 
-      mockMatches.mockImplementationOnce(() => [
+      mockMatches.mockReturnValue([
         {
           id: "TOPIC_OVERVIEW_TAB_ENUM_overview",
         },
@@ -35,7 +33,7 @@ describe("TopicOverviewPage", () => {
     });
 
     afterAll(() => {
-      jest.clearAllMocks();
+      jest.resetAllMocks();
       cleanup();
     });
 
@@ -52,13 +50,16 @@ describe("TopicOverviewPage", () => {
 
   describe("redirects user if there is no topicName param", () => {
     beforeAll(() => {
+      mockUseParams.mockImplementationOnce(() => {
+        return {};
+      });
       customRender(<TopicOverviewPage />, {
         memoryRouter: true,
       });
     });
 
     afterAll(() => {
-      jest.clearAllMocks();
+      jest.resetAllMocks();
       cleanup();
     });
 
