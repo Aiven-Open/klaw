@@ -98,11 +98,10 @@ public class SchemaOverviewServiceTest {
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3");
 
     SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", Collections.singletonList("1"));
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, Collections.singletonList("1"));
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").containsKey("status")).isTrue();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").get("status"))
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getStatus())
         .isEqualTo("NO_PROMOTION");
   }
 
@@ -119,15 +118,13 @@ public class SchemaOverviewServiceTest {
             eq(TESTTOPIC), eq(10), eq(101)))
         .thenReturn(List.of(createTopic(TESTTOPIC, "1"), createTopic(TESTTOPIC, "2")));
     SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", List.of("1"));
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, List.of("1"));
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").containsKey("status")).isTrue();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").get("status"))
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getStatus())
         .isEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").get("sourceEnv"))
-        .isEqualTo("3");
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").get("targetEnv"))
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getSourceEnv()).isEqualTo("3");
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getTargetEnv())
         .isEqualTo("test-4");
   }
 
@@ -140,7 +137,7 @@ public class SchemaOverviewServiceTest {
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("1");
 
     SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "3", Collections.singletonList("1"));
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 3, Collections.singletonList("1"));
     assertThat(returnedValue.getSchemaPromotionDetails()).isNullOrEmpty();
     assertThat(returnedValue.isSchemaExists()).isFalse();
   }
@@ -159,7 +156,7 @@ public class SchemaOverviewServiceTest {
     when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
         .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
     SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, "1", Collections.singletonList("1"));
+        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, Collections.singletonList("1"));
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
   }
@@ -200,9 +197,9 @@ public class SchemaOverviewServiceTest {
 
   private TreeMap<Integer, Map<String, Object>> createSchemaList() throws JsonProcessingException {
     String schemav2 =
-        "{\"subject\":\"2ndTopic-value\", \"version\":\"2\", \"id\":\"3\", \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
+        "{\"subject\":\"2ndTopic-value\", \"version\":\"2\", \"id\":3, \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
     String schemav1 =
-        "{\"subject\":\"2ndTopic-value\", \"version\":\"1\", \"id\":\"2\", \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
+        "{\"subject\":\"2ndTopic-value\", \"version\":\"1\", \"id\":2, \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
 
     TreeMap<Integer, Map<String, Object>> allVersionSchemas =
         new TreeMap<>(Collections.reverseOrder());

@@ -5,13 +5,14 @@ import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.response.PromotionStatus;
+import io.aiven.klaw.model.response.SchemaDetailsPerEnv;
 import io.aiven.klaw.model.response.SchemaOverview;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.SortedMap;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ public class SchemaOverviewService extends BaseOverviewService {
   }
 
   public SchemaOverview getSchemaOfTopic(
-      String topicNameSearch, String schemaVersionSearch, List<String> kafkaEnvIds) {
+      String topicNameSearch, int schemaVersionSearch, List<String> kafkaEnvIds) {
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
 
@@ -46,14 +47,14 @@ public class SchemaOverviewService extends BaseOverviewService {
 
   private void updateAvroSchema(
       String topicNameSearch,
-      String schemaVersionSearch,
+      int schemaVersionSearch,
       List<String> kafkaEnvIds,
       boolean retrieveSchemas,
       SchemaOverview schemaOverview,
       String userName,
       int tenantId) {
     if (schemaOverview.isTopicExists() && retrieveSchemas) {
-      List<Map<String, String>> schemaDetails = new ArrayList<>();
+      List<SchemaDetailsPerEnv> schemaDetails = new ArrayList<>();
       schemaOverview.setSchemaDetails(schemaDetails);
       Map<String, List<Integer>> schemaVersions = new HashMap<>();
       schemaOverview.setAllSchemaVersions(schemaVersions);
@@ -85,7 +86,8 @@ public class SchemaOverviewService extends BaseOverviewService {
       for (Env schemaEnv : schemaEnvs) {
         try {
           log.debug("UpdateAvroSchema - Process env {}", schemaEnv);
-          Map<String, String> schemaMap = new HashMap<>();
+          SchemaDetailsPerEnv schemaDetailsPerEnv = new SchemaDetailsPerEnv();
+
           KwClusters kwClusters =
               manageDatabase
                   .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
@@ -107,58 +109,56 @@ public class SchemaOverviewService extends BaseOverviewService {
             List<Integer> allVersionsList = new ArrayList<>(allVersions);
             schemaOverview.getAllSchemaVersions().put(schemaEnv.getName(), allVersionsList);
             try {
-              if (schemaVersionSearch != null
-                  && latestSchemaVersion == Integer.parseInt(schemaVersionSearch)) {
-                schemaVersionSearch = "";
+              if (latestSchemaVersion == schemaVersionSearch) {
+                schemaVersionSearch = 0;
               }
             } catch (NumberFormatException ignored) {
             }
 
             // get latest version
-            if (schemaVersionSearch != null && schemaVersionSearch.equals("")) {
+            if (schemaVersionSearch == 0) {
               hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
               schemaOfObj = (String) hashMapSchemaObj.get("schema");
-              schemaMap.put("isLatest", "true");
-              schemaMap.put("id", hashMapSchemaObj.get("id") + "");
-              schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
-              schemaMap.put("version", "" + latestSchemaVersion);
+              schemaDetailsPerEnv.setLatest(true);
+              schemaDetailsPerEnv.setId((Integer) hashMapSchemaObj.get("id"));
+              schemaDetailsPerEnv.setCompatibility(hashMapSchemaObj.get("compatibility") + "");
+              schemaDetailsPerEnv.setVersion(latestSchemaVersion);
 
               if (schemaObjects.size() > 1) {
-                schemaMap.put("showNext", "true");
-                schemaMap.put("showPrev", "false");
+                schemaDetailsPerEnv.setShowNext(true);
+                schemaDetailsPerEnv.setShowPrev(false);
                 int indexOfVersion = allVersionsList.indexOf(latestSchemaVersion);
-                schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
+                schemaDetailsPerEnv.setNextVersion(allVersionsList.get(indexOfVersion + 1));
               }
             } else {
-              hashMapSchemaObj =
-                  schemaObjects.get(Integer.parseInt(Objects.requireNonNull(schemaVersionSearch)));
+              hashMapSchemaObj = schemaObjects.get(schemaVersionSearch);
               schemaOfObj = (String) hashMapSchemaObj.get("schema");
-              schemaMap.put("isLatest", "false");
-              schemaMap.put("id", hashMapSchemaObj.get("id") + "");
-              schemaMap.put("compatibility", hashMapSchemaObj.get("compatibility") + "");
-              schemaMap.put("version", "" + schemaVersionSearch);
+              schemaDetailsPerEnv.setLatest(false);
+              schemaDetailsPerEnv.setId((Integer) hashMapSchemaObj.get("id"));
+              schemaDetailsPerEnv.setCompatibility(hashMapSchemaObj.get("compatibility") + "");
+              schemaDetailsPerEnv.setVersion(schemaVersionSearch);
 
               if (schemaObjects.size() > 1) {
-                int indexOfVersion = allVersionsList.indexOf(Integer.parseInt(schemaVersionSearch));
+                int indexOfVersion = allVersionsList.indexOf(schemaVersionSearch);
                 if (indexOfVersion + 1 == allVersionsList.size()) {
-                  schemaMap.put("showNext", "false");
-                  schemaMap.put("showPrev", "true");
-                  schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
+                  schemaDetailsPerEnv.setShowNext(false);
+                  schemaDetailsPerEnv.setShowPrev(true);
+                  schemaDetailsPerEnv.setPrevVersion(allVersionsList.get(indexOfVersion - 1));
                 } else {
-                  schemaMap.put("showNext", "true");
-                  schemaMap.put("showPrev", "true");
-                  schemaMap.put("prevVersion", "" + allVersionsList.get(indexOfVersion - 1));
-                  schemaMap.put("nextVersion", "" + allVersionsList.get(indexOfVersion + 1));
+                  schemaDetailsPerEnv.setShowNext(true);
+                  schemaDetailsPerEnv.setShowPrev(true);
+                  schemaDetailsPerEnv.setPrevVersion(allVersionsList.get(indexOfVersion - 1));
+                  schemaDetailsPerEnv.setNextVersion(allVersionsList.get(indexOfVersion + 1));
                 }
               }
             }
 
-            schemaMap.put("env", schemaEnv.getName());
+            schemaDetailsPerEnv.setEnv(schemaEnv.getName());
             dynamicObj = OBJECT_MAPPER.readValue(schemaOfObj, Object.class);
             schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
-            schemaMap.put("content", schemaOfObj);
+            schemaDetailsPerEnv.setContent(schemaOfObj);
 
-            schemaDetails.add(schemaMap);
+            schemaDetails.add(schemaDetailsPerEnv);
             schemaOverview.setSchemaExists(true);
             // A team owns a topic across all environments so we can assume if the search returned
             // one or more topics it is owned by this users team.
@@ -169,7 +169,7 @@ public class SchemaOverviewService extends BaseOverviewService {
                   schemaOverview,
                   tenantId,
                   schemaEnv,
-                  topics.stream().map(topic -> topic.getEnvironment()).toList());
+                  topics.stream().map(Topic::getEnvironment).toList());
               log.info("Getting schema details for: " + topicNameSearch);
             }
           }
@@ -188,36 +188,35 @@ public class SchemaOverviewService extends BaseOverviewService {
   private void processSchemaPromotionDetails(
       SchemaOverview schemaOverview, int tenantId, Env schemaEnv, List<String> kafkaEnvIds) {
     log.debug("SchemaEnv Id {} KafkaEnvIds {}", schemaEnv.getId(), kafkaEnvIds);
-    Map<String, String> promotionDetails = new HashMap<>();
+    PromotionStatus promotionDetails = new PromotionStatus();
     generatePromotionDetails(
         tenantId,
         promotionDetails,
         Collections.singletonList(schemaEnv.getId()),
         commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(tenantId));
     if (schemaOverview.getSchemaPromotionDetails() == null) {
-      Map<String, Map<String, String>> searchOverviewPromotionDetails = new HashMap<>();
+      Map<String, PromotionStatus> searchOverviewPromotionDetails = new HashMap<>();
       schemaOverview.setSchemaPromotionDetails(searchOverviewPromotionDetails);
     }
-    Map<String, Map<String, String>> existingPromoDetails =
-        schemaOverview.getSchemaPromotionDetails();
+    Map<String, PromotionStatus> existingPromoDetails = schemaOverview.getSchemaPromotionDetails();
     existingPromoDetails.put(schemaEnv.getName(), promotionDetails);
     // verify if topic exists in target env
     if (!verifyIfTopicExistsInTargetSchemaEnv(kafkaEnvIds, promotionDetails, tenantId)) {
-      promotionDetails.put("status", "NO_PROMOTION");
+      promotionDetails.setStatus(NO_PROMOTION);
     }
     schemaOverview.setSchemaPromotionDetails(existingPromoDetails);
   }
 
   private boolean verifyIfTopicExistsInTargetSchemaEnv(
-      List<String> kafkaEnvIds, Map<String, String> promotionDetails, int tenantId) {
-    if (!promotionDetails.containsKey("targetEnvId")) {
+      List<String> kafkaEnvIds, PromotionStatus promotionDetails, int tenantId) {
+    if (promotionDetails.getTargetEnvId() == null) {
       return false;
     }
     // get kafka env of target schema env
     String kafkaEnvId =
         manageDatabase
             .getHandleDbRequests()
-            .getEnvDetails(promotionDetails.get("targetEnvId"), tenantId)
+            .getEnvDetails(promotionDetails.getTargetEnvId(), tenantId)
             .getAssociatedEnv()
             .getId();
     return kafkaEnvIds.contains(kafkaEnvId);

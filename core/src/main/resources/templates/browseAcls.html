@@ -904,11 +904,11 @@
 															<table width="100%">
 																<tr>
 																	<td>
-																		<button ng-show="schemacontent.showPrev == 'true'"  type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.prevVersion)"><i
+																		<button ng-show="schemacontent.showPrev"  type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.prevVersion)"><i
 																				class="fas fa-fast-backward"></i></button>
-																		<button ng-show="schemacontent.isLatest == 'true'" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} (Latest) </button>
-																		<button ng-show="schemacontent.isLatest != 'true'" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} </button>
-																		<button ng-show="schemacontent.showNext == 'true'" type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.nextVersion)"><i
+																		<button ng-show="schemacontent.latest" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} (Latest) </button>
+																		<button ng-show="!schemacontent.latest" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} </button>
+																		<button ng-show="schemacontent.showNext" type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.nextVersion)"><i
 																				class="fas fa-fast-forward"></i></button>
 																	</td>
 																</tr>

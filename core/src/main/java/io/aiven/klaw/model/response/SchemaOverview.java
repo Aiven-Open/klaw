@@ -8,6 +8,6 @@ import lombok.Data;
 public class SchemaOverview extends ResourceOverviewAttributes {
   Map<String, List<Integer>> allSchemaVersions;
   Map<String, Integer> latestVersion;
-  Map<String, Map<String, String>> schemaPromotionDetails;
-  List<Map<String, String>> schemaDetails;
+  Map<String, PromotionStatus> schemaPromotionDetails;
+  List<SchemaDetailsPerEnv> schemaDetails;
 }

@@ -190,7 +190,7 @@ public class SchemaRegistryController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<SchemaOverview> getSchemaOfTopic(
       @RequestParam(value = "topicName") String topicName,
-      @RequestParam(value = "schemaVersionSearch", defaultValue = "") String schemaVersionSearch,
+      @RequestParam(value = "schemaVersionSearch", defaultValue = "0") int schemaVersionSearch,
       @RequestParam(value = "kafkaEnvIds") List<String> kafkaEnvIds) {
     return new ResponseEntity<>(
         schemaOverviewService.getSchemaOfTopic(topicName, schemaVersionSearch, kafkaEnvIds),
