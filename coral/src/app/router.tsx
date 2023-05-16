@@ -24,8 +24,13 @@ import {
   REQUESTS_TAB_ID_INTO_PATH,
   RequestsTabEnum,
   Routes,
+  TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
+  TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
+import { TopicOverviewPage } from "src/app/pages/topics/overview";
+import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -41,6 +46,57 @@ const routes: Array<RouteObject> = [
         path: Routes.TOPICS,
         element: <Topics />,
       },
+      createRouteBehindFeatureFlag({
+        path: Routes.TOPIC_OVERVIEW,
+        element: <TopicOverviewPage />,
+        featureFlag: FeatureFlag.FEATURE_FLAG_TOPIC_OVERVIEW,
+        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+        children: [
+          {
+            path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
+              TopicOverviewTabEnum.OVERVIEW
+            ],
+            element: <div>OVERVIEW</div>,
+            id: TopicOverviewTabEnum.OVERVIEW,
+          },
+          {
+            path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[TopicOverviewTabEnum.ACLS],
+            element: <div>ACLS</div>,
+            id: TopicOverviewTabEnum.ACLS,
+          },
+          {
+            path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
+              TopicOverviewTabEnum.MESSAGES
+            ],
+            element: <div>MESSAGES</div>,
+            id: TopicOverviewTabEnum.MESSAGES,
+          },
+          {
+            path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[TopicOverviewTabEnum.SCHEMA],
+            element: <div>SCHEMA</div>,
+            id: TopicOverviewTabEnum.SCHEMA,
+          },
+          {
+            path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
+              TopicOverviewTabEnum.DOCUMENTATION
+            ],
+            element: <div>DOCUMENTATION</div>,
+            id: TopicOverviewTabEnum.DOCUMENTATION,
+          },
+          {
+            path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[TopicOverviewTabEnum.HISTORY],
+            element: <div>HISTORY</div>,
+            id: TopicOverviewTabEnum.HISTORY,
+          },
+          {
+            path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
+              TopicOverviewTabEnum.SETTINGS
+            ],
+            element: <div>SETTINGS</div>,
+            id: TopicOverviewTabEnum.SETTINGS,
+          },
+        ],
+      }),
       {
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
