@@ -36,7 +36,8 @@ public class TopicContentsService {
       String consumerGroupId,
       String topicName,
       int offsetPosition,
-      String readMessagesType) {
+      String readMessagesType,
+      String clusterIdentification) {
     log.info(
         "readEvents bootStrapServers {}, protocol {}, clusterName {},  consumerGroupId {},  topicName {},\n"
             + "                                               offsetPosition {},  readMessagesType {}",
@@ -52,9 +53,12 @@ public class TopicContentsService {
     KafkaConsumer<String, String> consumer;
 
     if (consumerGroupId.equals("notdefined")) {
-      consumer = getKafkaConsumer(kwGenericConsumerGroupId, bootStrapServers, protocol);
+      consumer =
+          getKafkaConsumer(
+              kwGenericConsumerGroupId, bootStrapServers, protocol, clusterIdentification);
     } else {
-      consumer = getKafkaConsumer(consumerGroupId, bootStrapServers, protocol);
+      consumer =
+          getKafkaConsumer(consumerGroupId, bootStrapServers, protocol, clusterIdentification);
     }
 
     consumer.subscribe(Collections.singleton(topicName));
@@ -91,11 +95,11 @@ public class TopicContentsService {
   }
 
   public KafkaConsumer<String, String> getKafkaConsumer(
-      String groupId, String bootstrapServers, String protocol) {
+      String groupId, String bootstrapServers, String protocol, String clusterIdentification) {
     Properties props = new Properties();
 
     if (protocol.equals("SSL")) {
-      props = clusterApiUtils.getSslConfig("");
+      props = clusterApiUtils.getSslConfig(clusterIdentification);
       props.put("security.protocol", "SSL");
     }
     props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);

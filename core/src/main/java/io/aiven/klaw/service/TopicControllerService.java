@@ -470,8 +470,9 @@ public class TopicControllerService {
       if (stringTeamsFound.size() > 1) {
         topicTeamResponse.setError(TOPICS_ERR_110);
       } else {
-        topicTeamResponse.setTeam(
-            manageDatabase.getTeamNameFromTeamId(tenantId, stringTeamsFound.iterator().next()));
+        int teamId = stringTeamsFound.iterator().next();
+        topicTeamResponse.setTeam(manageDatabase.getTeamNameFromTeamId(tenantId, teamId));
+        topicTeamResponse.setTeamId(teamId);
       }
     } else {
       topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
