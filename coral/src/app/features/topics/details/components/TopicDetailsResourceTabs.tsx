@@ -82,7 +82,7 @@ function TopicOverviewResourcesTabs({ currentTab, topicName }: Props) {
                   <PreviewBanner
                     linkTarget={`/topicOverview?topicname=${topicName}`}
                   />
-                  <Outlet />
+                  <Outlet context={{ topicName }} />
                 </div>
               )}
             </Tabs.Tab>

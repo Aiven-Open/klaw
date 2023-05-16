@@ -31,6 +31,7 @@ import { getRouterBasename } from "src/config";
 import { TopicDetailsPage } from "src/app/pages/topics/details";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
+import { TopicOverview } from "src/app/features/topics/details/overview";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -56,7 +57,7 @@ const routes: Array<RouteObject> = [
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
               TopicOverviewTabEnum.OVERVIEW
             ],
-            element: <div>OVERVIEW</div>,
+            element: <TopicOverview />,
             id: TopicOverviewTabEnum.OVERVIEW,
           },
           {

@@ -1,4 +1,4 @@
-import { Navigate, useMatches } from "react-router-dom";
+import { Navigate, useMatches, useOutletContext } from "react-router-dom";
 import {
   isTopicsOverviewTabEnum,
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
@@ -45,4 +45,8 @@ function TopicDetails(props: TopicOverviewProps) {
   );
 }
 
-export { TopicDetails };
+function useTopicDetails() {
+  return useOutletContext<{ topicName: string }>();
+}
+
+export { TopicDetails, useTopicDetails };
