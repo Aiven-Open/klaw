@@ -31,7 +31,7 @@ function TopicDetails(props: TopicOverviewProps) {
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
   if (currentTab === undefined) {
-    return <Navigate to={`/topics`} replace={true} />;
+    return <Navigate to={`/topic/${topicName}/overview`} replace={true} />;
   }
   return (
     <div>

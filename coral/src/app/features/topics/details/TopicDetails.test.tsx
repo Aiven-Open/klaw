@@ -21,16 +21,13 @@ describe("TopicDetails", () => {
       topicName: testTopic,
     });
 
-    mockedNavigate.mockImplementation((props) => {
-      return <div data-testid={"react-router-navigate"} {...props} />;
+    mockedNavigate.mockImplementation(() => {
+      return <div data-testid={"react-router-navigate"} />;
     });
   });
 
   describe("renders the correct tab navigation based on router match", () => {
-    afterEach(() => {
-      jest.resetAllMocks();
-      cleanup();
-    });
+    afterEach(cleanup);
 
     it("shows the tablist with Overview as currently active panel", () => {
       mockMatches.mockImplementationOnce(() => [
@@ -70,13 +67,10 @@ describe("TopicDetails", () => {
   });
 
   describe("only renders header and tablist if route is matching defined tabs", () => {
-    afterEach(() => {
-      jest.resetAllMocks();
-      cleanup();
-    });
+    afterEach(cleanup);
 
     it("does render content if the route matches an existing tab", () => {
-      mockMatches.mockImplementationOnce(() => [
+      mockMatches.mockImplementation(() => [
         {
           id: "TOPIC_OVERVIEW_TAB_ENUM_overview",
         },
@@ -92,8 +86,8 @@ describe("TopicDetails", () => {
       expect(mockedNavigate).not.toHaveBeenCalled();
     });
 
-    it("redirects user to topics page if the route does not matches an existing tab", () => {
-      mockMatches.mockImplementationOnce(() => [
+    it("redirects user to topic overview if the route does not matches an existing tab", () => {
+      mockMatches.mockImplementation(() => [
         {
           id: "something",
         },
@@ -106,6 +100,7 @@ describe("TopicDetails", () => {
       const tabList = screen.queryByRole("tablist");
 
       expect(tabList).not.toBeInTheDocument();
+
       expect(mockedNavigate).toHaveBeenCalled();
     });
   });
