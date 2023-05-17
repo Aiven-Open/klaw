@@ -32,7 +32,7 @@ public class ConfigUtils {
                 "/feedback**",
                 "/resetPassword",
                 "/reset/token",
-                "reset/password",
+                "/reset/password",
                 "/getRoles",
                 "/getTenantsInfo",
                 "/getBasicInfo",
