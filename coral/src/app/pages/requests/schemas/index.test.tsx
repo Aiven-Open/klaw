@@ -3,14 +3,14 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import SchemaRequestsPage from "src/app/pages/requests/schemas/index";
 import { cleanup, screen, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
+import { getAllEnvironmentsForSchema } from "src/domain/environment";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/schema-request/schema-request-api.ts");
 
 const mockGetSchemaRegistryEnvironments =
-  getEnvironmentsForSchemaRequest as jest.MockedFunction<
-    typeof getEnvironmentsForSchemaRequest
+  getAllEnvironmentsForSchema as jest.MockedFunction<
+    typeof getAllEnvironmentsForSchema
   >;
 const mockGetSchemaRequests = getSchemaRequests as jest.MockedFunction<
   typeof getSchemaRequests

@@ -2,6 +2,7 @@ import isString from "lodash/isString";
 
 enum Routes {
   TOPICS = "/topics",
+  TOPIC_OVERVIEW = "/topic/:topicName",
   CONNECTORS = "/connectors",
   CONNECTOR_REQUEST = "/connectors/request",
   TOPIC_REQUEST = "/topics/request",
@@ -11,6 +12,16 @@ enum Routes {
   SCHEMA_REQUEST = "/request/schema",
   REQUESTS = "/requests",
   APPROVALS = "/approvals",
+}
+
+enum TopicOverviewTabEnum {
+  OVERVIEW = "TOPIC_OVERVIEW_TAB_ENUM_overview",
+  ACLS = "TOPIC_OVERVIEW_TAB_ENUM_acls",
+  MESSAGES = "TOPIC_OVERVIEW_TAB_ENUM_messages",
+  SCHEMA = "TOPIC_OVERVIEW_TAB_ENUM_schemas",
+  DOCUMENTATION = "TOPIC_OVERVIEW_TAB_ENUM_documentation",
+  HISTORY = "TOPIC_OVERVIEW_TAB_ENUM_history",
+  SETTINGS = "TOPIC_OVERVIEW_TAB_ENUM_settings",
 }
 
 enum RequestsTabEnum {
@@ -27,6 +38,16 @@ enum ApprovalsTabEnum {
   CONNECTORS = "APPROVALS_TAB_ENUM_connectors",
 }
 
+const TOPIC_OVERVIEW_TAB_ID_INTO_PATH = {
+  [TopicOverviewTabEnum.OVERVIEW]: "overview",
+  [TopicOverviewTabEnum.ACLS]: "subscriptions",
+  [TopicOverviewTabEnum.MESSAGES]: "messages",
+  [TopicOverviewTabEnum.SCHEMA]: "schema",
+  [TopicOverviewTabEnum.DOCUMENTATION]: "documentation",
+  [TopicOverviewTabEnum.HISTORY]: "history",
+  [TopicOverviewTabEnum.SETTINGS]: "settings",
+} as const;
+
 const REQUESTS_TAB_ID_INTO_PATH = {
   [RequestsTabEnum.TOPICS]: "topics",
   [RequestsTabEnum.ACLS]: "acls",
@@ -40,6 +61,18 @@ const APPROVALS_TAB_ID_INTO_PATH = {
   [ApprovalsTabEnum.SCHEMAS]: "schemas",
   [ApprovalsTabEnum.CONNECTORS]: "connectors",
 } as const;
+
+function isTopicsOverviewTabEnum(
+  value: unknown
+): value is TopicOverviewTabEnum {
+  if (isString(value)) {
+    return Object.prototype.hasOwnProperty.call(
+      TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
+      value
+    );
+  }
+  return false;
+}
 
 function isRequestsTabEnum(value: unknown): value is RequestsTabEnum {
   if (isString(value)) {
@@ -64,9 +97,12 @@ function isApprovalsTabEnum(value: unknown): value is ApprovalsTabEnum {
 export {
   RequestsTabEnum,
   ApprovalsTabEnum,
+  TopicOverviewTabEnum,
   Routes,
   REQUESTS_TAB_ID_INTO_PATH,
   APPROVALS_TAB_ID_INTO_PATH,
+  TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   isRequestsTabEnum,
   isApprovalsTabEnum,
+  isTopicsOverviewTabEnum,
 };
