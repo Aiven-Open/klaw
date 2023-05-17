@@ -17,6 +17,7 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -284,11 +285,14 @@ public abstract class BaseOverviewService {
   }
 
   protected void generatePromotionDetails(
-      int tenantId, Map<String, String> hashMap, List<String> envList, String orderOfEnvs) {
+      int tenantId,
+      PromotionStatus schemaPromotionStatus,
+      List<String> envList,
+      String orderOfEnvs) {
     if (envList != null && envList.size() > 0) {
       // tenant filtering
       if (orderOfEnvs == null || orderOfEnvs.equals("")) {
-        hashMap.put("status", NO_PROMOTION);
+        schemaPromotionStatus.setStatus(NO_PROMOTION);
         return;
       }
       envList.sort(Comparator.comparingInt(Objects.requireNonNull(orderOfEnvs)::indexOf));
@@ -297,16 +301,16 @@ public abstract class BaseOverviewService {
       List<String> orderedEnvsList = Arrays.asList(orderOfEnvs.split(","));
 
       if (orderedEnvsList.indexOf(lastEnv) == orderedEnvsList.size() - 1) {
-        hashMap.put("status", NO_PROMOTION);
+        schemaPromotionStatus.setStatus(NO_PROMOTION);
       } else {
         if (orderedEnvsList.size() > 0) {
-          hashMap.put("status", ApiResultStatus.SUCCESS.value);
-          hashMap.put("sourceEnv", lastEnv);
+          schemaPromotionStatus.setStatus(ApiResultStatus.SUCCESS.value);
+          schemaPromotionStatus.setSourceEnv(lastEnv);
           String targetEnv = orderedEnvsList.get(orderedEnvsList.indexOf(lastEnv) + 1);
-          hashMap.put("targetEnv", getEnvDetails(targetEnv, tenantId).getName());
-          hashMap.put("targetEnvId", targetEnv);
+          schemaPromotionStatus.setTargetEnv(getEnvDetails(targetEnv, tenantId).getName());
+          schemaPromotionStatus.setTargetEnvId(targetEnv);
         } else {
-          hashMap.put("status", NO_PROMOTION);
+          schemaPromotionStatus.setStatus(NO_PROMOTION);
         }
       }
     }

@@ -14,13 +14,12 @@ import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.response.EnvIdInfo;
+import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -277,25 +276,25 @@ public class TopicOverviewService extends BaseOverviewService {
           lastItem.setShowDeleteTopic(lastItem.isTopicDeletable());
         }
       } else {
-        Map<String, String> hashMap = new HashMap<>();
-        hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-        topicOverview.setTopicPromotionDetails(hashMap);
+        PromotionStatus promotionStatus = new PromotionStatus();
+        promotionStatus.setStatus(ApiResultStatus.NOT_AUTHORIZED.value);
+        topicOverview.setTopicPromotionDetails(promotionStatus);
       }
     } catch (Exception e) {
-      Map<String, String> hashMap = new HashMap<>();
-      hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-      topicOverview.setTopicPromotionDetails(hashMap);
+      PromotionStatus promotionStatus = new PromotionStatus();
+      promotionStatus.setStatus(ApiResultStatus.NOT_AUTHORIZED.value);
+      topicOverview.setTopicPromotionDetails(promotionStatus);
     }
   }
 
-  private Map<String, String> getTopicPromotionEnv(
+  private PromotionStatus getTopicPromotionEnv(
       String topicSearch, List<Topic> topics, int tenantId, String environmentId) {
-    Map<String, String> hashMap = new HashMap<>();
+    PromotionStatus promotionStatus = new PromotionStatus();
     try {
       if (topics == null) {
         topics = manageDatabase.getHandleDbRequests().getTopics(topicSearch, tenantId);
       }
-      hashMap.put("topicName", topicSearch);
+      promotionStatus.setTopicName(topicSearch);
       String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
       List<String> envOrderList = getOrderedEnvsList(orderEnvs);
 
@@ -303,25 +302,25 @@ public class TopicOverviewService extends BaseOverviewService {
         List<String> envList =
             topics.stream().map(Topic::getEnvironment).collect(Collectors.toList());
 
-        generatePromotionDetails(tenantId, hashMap, envList, orderEnvs);
+        generatePromotionDetails(tenantId, promotionStatus, envList, orderEnvs);
         // Ex : If topic exists in D, T, then promotion to A is displayed when topic overview is for
         // T env
-        if (hashMap.containsKey("targetEnvId")) {
-          String targetEnvId = hashMap.get("targetEnvId");
+        if (promotionStatus.getTargetEnvId() != null) {
+          String targetEnvId = promotionStatus.getTargetEnvId();
           if (!((envOrderList.indexOf(targetEnvId) - envOrderList.indexOf(environmentId)) == 1)
               || !envOrderList.contains(environmentId)) {
-            hashMap.put("status", NO_PROMOTION);
+            promotionStatus.setStatus(NO_PROMOTION);
           }
         }
 
-        return hashMap;
+        return promotionStatus;
       }
     } catch (Exception e) {
       log.error("getTopicPromotionEnv error ", e);
-      hashMap.put("status", ApiResultStatus.FAILURE.value);
-      hashMap.put("error", TOPIC_OVW_ERR_101);
+      promotionStatus.setStatus(ApiResultStatus.FAILURE.value);
+      promotionStatus.setError(TOPIC_OVW_ERR_101);
     }
 
-    return hashMap;
+    return promotionStatus;
   }
 }

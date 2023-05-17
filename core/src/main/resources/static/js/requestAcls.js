@@ -348,6 +348,17 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                             );
                         }
 
+        $scope.verifyIfTopicExistsOnEnv = function(topicPrefixPattern){
+            if($scope.alltopics){
+                for (let i = 0; i < $scope.alltopics.length; i++) {
+                    if($scope.alltopics[i].startsWith(topicPrefixPattern)){
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
 
         $scope.getTopicTeam = function(topicName) {
 
@@ -465,6 +476,11 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 $scope.addAcl.topicname = $scope.addAcl.topicpattern;
                 aclpatterntypetype = 'PREFIXED';
                 $scope.getTopicTeam($scope.addAcl.topicpattern);
+                if(!$scope.verifyIfTopicExistsOnEnv($scope.addAcl.topicpattern)){
+                    $scope.alertnote = "There are no topics in the selected environment with this prefix.";
+                    $scope.showAlertToast();
+                    return;
+                }
             }
             else
                 aclpatterntypetype = 'LITERAL';

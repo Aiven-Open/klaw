@@ -259,7 +259,8 @@ public class ClusterApiService {
                   clusterIdentification,
                   consumerGroupId,
                   topic,
-                  offsetId);
+                  offsetId,
+                  clusterIdentification);
 
       ResponseEntity<Map<String, String>> resultBody =
           getRestTemplate()

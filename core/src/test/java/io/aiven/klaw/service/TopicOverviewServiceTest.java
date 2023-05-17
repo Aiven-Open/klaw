@@ -191,8 +191,7 @@ public class TopicOverviewServiceTest {
     TopicOverview returnedValue =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getTopicPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(returnedValue.getTopicPromotionDetails().getStatus()).isEqualTo(NO_PROMOTION);
   }
 
   @Test
@@ -211,11 +210,10 @@ public class TopicOverviewServiceTest {
     TopicOverview returnedValue =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(returnedValue.getTopicPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getTopicPromotionDetails().containsKey("status")).isTrue();
-    assertThat(returnedValue.getTopicPromotionDetails().get("status"))
+    assertThat(returnedValue.getTopicPromotionDetails().getStatus())
         .isEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(returnedValue.getTopicPromotionDetails().get("sourceEnv")).isEqualTo("1");
-    assertThat(returnedValue.getTopicPromotionDetails().get("targetEnv")).isEqualTo("test-2");
+    assertThat(returnedValue.getTopicPromotionDetails().getSourceEnv()).isEqualTo("1");
+    assertThat(returnedValue.getTopicPromotionDetails().getTargetEnv()).isEqualTo("test-2");
   }
 
   @Test
@@ -229,7 +227,7 @@ public class TopicOverviewServiceTest {
 
     TopicOverview returnedValue =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
-    assertThat(returnedValue.getTopicPromotionDetails()).isNullOrEmpty();
+    assertThat(returnedValue.getTopicPromotionDetails()).isNull();
     assertThat(returnedValue.isTopicExists()).isFalse();
   }
 
@@ -340,7 +338,7 @@ public class TopicOverviewServiceTest {
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(3);
     assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
-    assertThat(topicOverview.getTopicPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus()).isEqualTo(NO_PROMOTION);
     assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
         .isTrue(); // topic can be deleted
 
@@ -352,7 +350,7 @@ public class TopicOverviewServiceTest {
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
     assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
     assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
-    assertThat(topicOverview.getTopicPromotionDetails().get("status"))
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus())
         .isEqualTo(ApiResultStatus.SUCCESS.value);
 
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
@@ -364,7 +362,7 @@ public class TopicOverviewServiceTest {
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
     assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
-    assertThat(topicOverview.getTopicPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus()).isEqualTo(NO_PROMOTION);
     assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
         .isFalse(); // topic can't be deleted
   }

@@ -715,7 +715,7 @@
 															</div>
 
 															<div class="p-2 border-left" style="width:5%">
-																<a ng-show="aclRequest.showDeleteAcl == true && aclRequest.topictype == 'Consumer'" class="mytooltip" href="javascript:void(0)">
+																<a ng-show="aclRequest.showDeleteAcl == true && aclRequest.topictype == 'Consumer' && aclRequest.kafkaFlavorType != 'AIVEN_FOR_APACHE_KAFKA'" class="mytooltip" href="javascript:void(0)">
 																	<button  type="button" class="btn btn-instagram waves-effect btn-rounded waves-light" ng-click="getOffsetValues(aclRequest.environment, topicSelectedParam, aclRequest.consumergroup)">
 																		<i class="fa fa-info-circle"></i>
 																	</button>
@@ -904,11 +904,11 @@
 															<table width="100%">
 																<tr>
 																	<td>
-																		<button ng-show="schemacontent.showPrev == 'true'"  type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.prevVersion)"><i
+																		<button ng-show="schemacontent.showPrev"  type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.prevVersion)"><i
 																				class="fas fa-fast-backward"></i></button>
-																		<button ng-show="schemacontent.isLatest == 'true'" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} (Latest) </button>
-																		<button ng-show="schemacontent.isLatest != 'true'" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} </button>
-																		<button ng-show="schemacontent.showNext == 'true'" type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.nextVersion)"><i
+																		<button ng-show="schemacontent.latest" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} (Latest) </button>
+																		<button ng-show="!schemacontent.latest" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} </button>
+																		<button ng-show="schemacontent.showNext" type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.nextVersion)"><i
 																				class="fas fa-fast-forward"></i></button>
 																	</td>
 																</tr>
