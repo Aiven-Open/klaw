@@ -1,21 +1,21 @@
 package io.aiven.klaw.model.response;
 
-import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.TopicHistory;
-import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicOverviewInfo;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Data;
 
 @Data
 public class TopicOverview extends ResourceOverviewAttributes {
-  List<TopicInfo> topicInfoList;
-  List<AclInfo> aclInfoList;
-  List<AclInfo> prefixedAclInfoList;
-  List<AclInfo> transactionalAclInfoList;
+  @NotNull private List<TopicOverviewInfo> topicInfoList;
+  private List<AclOverviewInfo> aclInfoList;
+  private List<AclOverviewInfo> prefixedAclInfoList;
+  private List<AclOverviewInfo> transactionalAclInfoList;
   private List<TopicHistory> topicHistoryList;
-  PromotionStatus topicPromotionDetails;
-  List<EnvIdInfo> availableEnvironments;
+  @NotNull private PromotionStatus topicPromotionDetails;
+  @NotNull private List<EnvIdInfo> availableEnvironments;
 
-  String topicDocumentation;
-  Integer topicIdForDocumentation;
+  private String topicDocumentation;
+  @NotNull private Integer topicIdForDocumentation;
 }

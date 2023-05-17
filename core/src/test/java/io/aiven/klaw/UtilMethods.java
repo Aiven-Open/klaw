@@ -32,6 +32,7 @@ import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.EnvModelResponse;
@@ -238,6 +239,15 @@ public class UtilMethods {
   public List<AclInfo> getAclInfoList() {
     List<AclInfo> allTopicReqs = new ArrayList<>();
     AclInfo topicRequest = new AclInfo();
+    topicRequest.setTeamname("Seahorses");
+    topicRequest.setTopictype(AclType.PRODUCER.value);
+    allTopicReqs.add(topicRequest);
+    return allTopicReqs;
+  }
+
+  public List<AclOverviewInfo> getAclOverviewInfoList() {
+    List<AclOverviewInfo> allTopicReqs = new ArrayList<>();
+    AclOverviewInfo topicRequest = new AclOverviewInfo();
     topicRequest.setTeamname("Seahorses");
     topicRequest.setTopictype(AclType.PRODUCER.value);
     allTopicReqs.add(topicRequest);
@@ -752,12 +762,12 @@ public class UtilMethods {
   public TopicOverview getTopicOverview() {
     TopicOverview topicOverview = new TopicOverview();
 
-    List<TopicInfo> allTopicReqs = new ArrayList<>();
-    TopicInfo topicRequest = new TopicInfo();
+    List<TopicOverviewInfo> allTopicReqs = new ArrayList<>();
+    TopicOverviewInfo topicRequest = new TopicOverviewInfo();
     topicRequest.setTeamname("Seahorses");
     allTopicReqs.add(topicRequest);
 
-    topicOverview.setAclInfoList(getAclInfoList());
+    topicOverview.setAclInfoList(getAclOverviewInfoList());
     topicOverview.setTopicInfoList(allTopicReqs);
     return topicOverview;
   }

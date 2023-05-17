@@ -21,13 +21,13 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
-import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -128,7 +128,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
     when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
-    List<AclInfo> aclList =
+    List<AclOverviewInfo> aclList =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
@@ -165,7 +165,7 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
 
-    List<AclInfo> aclList =
+    List<AclOverviewInfo> aclList =
         topicOverviewService
             .getTopicOverview(topicNameSearch, "1", AclGroupBy.NONE)
             .getAclInfoList();
@@ -259,7 +259,7 @@ public class TopicOverviewServiceTest {
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
     when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
-    List<AclInfo> aclList =
+    List<AclOverviewInfo> aclList =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
@@ -303,7 +303,7 @@ public class TopicOverviewServiceTest {
 
     if (AclGroupBy.TEAM.equals(groupBy)) {
       String previousTeam = returnedValue.getAclInfoList().get(0).getTeamname();
-      for (AclInfo info : returnedValue.getAclInfoList()) {
+      for (AclOverviewInfo info : returnedValue.getAclInfoList()) {
         assertThat(previousTeam).isLessThanOrEqualTo(info.getTeamname());
       }
     } else if (AclGroupBy.NONE.equals(groupBy)) {

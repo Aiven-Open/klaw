@@ -8,11 +8,11 @@ import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.TopicHistory;
-import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
@@ -82,12 +82,12 @@ public class TopicOverviewService extends BaseOverviewService {
       syncCluster = null;
     }
 
-    List<TopicInfo> topicInfoList = new ArrayList<>();
+    List<TopicOverviewInfo> topicInfoList = new ArrayList<>();
     List<TopicHistory> topicHistoryList = new ArrayList<>();
     enrichTopicOverview(
-        tenantId, topics, topicOverview, syncCluster, topicInfoList, topicHistoryList);
-    List<AclInfo> aclInfo = new ArrayList<>();
-    List<AclInfo> prefixedAclsInfo = new ArrayList<>();
+        tenantId, topics, topicOverview, syncCluster, topicInfoList, topicHistoryList, topicName);
+    List<AclOverviewInfo> aclInfo = new ArrayList<>();
+    List<AclOverviewInfo> prefixedAclsInfo = new ArrayList<>();
     List<Topic> topicsSearchList = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
     // tenant filtering
     Integer topicOwnerTeamId =
@@ -172,22 +172,22 @@ public class TopicOverviewService extends BaseOverviewService {
       HandleDbRequests handleDb,
       int tenantId,
       Integer loggedInUserTeam,
-      List<TopicInfo> topicInfoList,
-      List<AclInfo> aclInfo,
-      List<AclInfo> prefixedAclsInfo,
+      List<TopicOverviewInfo> topicInfoList,
+      List<AclOverviewInfo> aclInfo,
+      List<AclOverviewInfo> prefixedAclsInfo,
       Integer topicOwnerTeamId) {
     List<Acl> prefixedAcls = new ArrayList<>();
     List<Acl> aclsFromSOT = new ArrayList<>();
     List<Acl> allPrefixedAcls;
-    List<AclInfo> tmpAclPrefixed;
-    List<AclInfo> tmpAcl;
+    List<AclOverviewInfo> tmpAclPrefixed;
+    List<AclOverviewInfo> tmpAcl;
 
-    for (TopicInfo topicInfo : topicInfoList) {
+    for (TopicOverviewInfo topicInfo : topicInfoList) {
       aclsFromSOT.addAll(getAclsFromSOT(topicInfo.getEnvId(), topicNameSearch, false, tenantId));
 
       tmpAcl =
           applyFiltersAclsForSOT(loggedInUserTeam, aclsFromSOT, tenantId).stream()
-              .collect(Collectors.groupingBy(AclInfo::getTopicname))
+              .collect(Collectors.groupingBy(AclOverviewInfo::getTopicname))
               .get(topicNameSearch);
 
       if (tmpAcl != null) {
@@ -217,16 +217,19 @@ public class TopicOverviewService extends BaseOverviewService {
       List<Topic> topics,
       TopicOverview topicOverview,
       String syncCluster,
-      List<TopicInfo> topicInfoList,
-      List<TopicHistory> topicHistoryList) {
+      List<TopicOverviewInfo> topicInfoList,
+      List<TopicHistory> topicHistoryList,
+      String topicName) {
     ArrayList<TopicHistory> topicHistoryFromTopic;
     for (Topic topic : topics) {
-      TopicInfo topicInfo = new TopicInfo();
+      TopicOverviewInfo topicInfo = new TopicOverviewInfo();
+      topicInfo.setTopicName(topicName);
       topicInfo.setEnvName(getEnvDetails(topic.getEnvironment(), tenantId).getName());
       topicInfo.setEnvId(topic.getEnvironment());
       topicInfo.setNoOfPartitions(topic.getNoOfPartitions());
       topicInfo.setNoOfReplicas(topic.getNoOfReplicas());
       topicInfo.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topic.getTeamId()));
+      topicInfo.setTeamId(topic.getTeamId());
 
       if (syncCluster != null && syncCluster.equals(topic.getEnvironment())) {
         topicOverview.setTopicDocumentation(topic.getDocumentation());
@@ -258,8 +261,8 @@ public class TopicOverviewService extends BaseOverviewService {
       Integer loggedInUserTeam,
       List<Topic> originalSetTopics,
       TopicOverview topicOverview,
-      List<TopicInfo> topicInfoList,
-      List<AclInfo> aclInfo,
+      List<TopicOverviewInfo> topicInfoList,
+      List<AclOverviewInfo> aclInfo,
       Integer topicOwnerTeam,
       String environmentId) {
     try {
@@ -268,7 +271,7 @@ public class TopicOverviewService extends BaseOverviewService {
             getTopicPromotionEnv(topicNameSearch, originalSetTopics, tenantId, environmentId));
 
         if (topicInfoList.size() > 0) {
-          TopicInfo lastItem = topicInfoList.get(topicInfoList.size() - 1);
+          TopicOverviewInfo lastItem = topicInfoList.get(topicInfoList.size() - 1);
           lastItem.setTopicDeletable(
               aclInfo.stream()
                   .noneMatch(
