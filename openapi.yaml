@@ -621,6 +621,72 @@
         }
       }
     },
+    "/reset/token" : {
+      "post" : {
+        "tags" : [ "users-teams-controller" ],
+        "operationId" : "resetToken",
+        "parameters" : [ {
+          "name" : "username",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResetPasswordInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reset/password" : {
+      "post" : {
+        "tags" : [ "users-teams-controller" ],
+        "operationId" : "resetPasswordWithToken",
+        "parameters" : [ {
+          "name" : "token",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "password",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "username",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResetPasswordInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/request/delete" : {
       "post" : {
         "tags" : [ "request-controller" ],
@@ -5452,14 +5518,14 @@
       },
       "ResetPasswordInfo" : {
         "properties" : {
-          "passwordSent" : {
+          "tokenSent" : {
             "type" : "string"
           },
           "userFound" : {
             "type" : "string"
           }
         },
-        "required" : [ "passwordSent", "userFound" ]
+        "required" : [ "tokenSent", "userFound" ]
       },
       "RequestVerdict" : {
         "properties" : {

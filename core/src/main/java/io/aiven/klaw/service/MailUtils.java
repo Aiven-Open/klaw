@@ -26,6 +26,8 @@ public class MailUtils {
 
   public static final String KLAW_ACCESS_PASSWORD_RESET_REQUESTED =
       "Klaw Access - Password reset requested";
+  public static final String KLAW_ACCESS_PASSWORD_CHANGED =
+      "Klaw Access - Password has been updated";
   public static final String NEW_USER_REGISTRATION_REQUEST = "New User Registration request";
   public static final String KLAW_USER_REGISTRATION_REQUEST = "Klaw User Registration request";
   public static final String KLAW_REGISTRATION_REQUEST = "Klaw Registration request";
@@ -47,6 +49,8 @@ public class MailUtils {
   private static final String ACL_REQ_DENY_KEY = "klaw.mail.aclrequestdenial.content";
   private static final String NEW_USER_ADDED_KEY = "klaw.mail.newuseradded.content";
   private static final String PWD_RESET_KEY = "klaw.mail.passwordreset.content";
+
+  private static final String PWD_CHANGED_KEY = "klaw.mail.passwordchanged.content";
   private static final String REGISTER_USER_KEY = "klaw.mail.registeruser.content";
   private static final String REGISTER_USER_SAAS_KEY = "klaw.mail.registeruser.saas.content";
   private static final String REGISTER_USER_TOUSER_KEY = "klaw.mail.registerusertouser.content";
@@ -174,11 +178,25 @@ public class MailUtils {
   }
 
   void sendMailResetPwd(
-      String username, String pwd, HandleDbRequests dbHandle, int tenantId, String loginUrl) {
+      String username,
+      String resetToken,
+      HandleDbRequests dbHandle,
+      int tenantId,
+      String loginUrl) {
     String formattedStr, subject;
     String passwordReset = manageDatabase.getKwPropertyValue(PWD_RESET_KEY, tenantId);
-    formattedStr = String.format(passwordReset, username, pwd);
+    formattedStr = String.format(passwordReset, resetToken);
     subject = KLAW_ACCESS_PASSWORD_RESET_REQUESTED;
+
+    sendPwdResetMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
+  }
+
+  void sendMailPwdChanged(
+      String username, HandleDbRequests dbHandle, int tenantId, String loginUrl) {
+    String formattedStr, subject;
+    String passwordChanged = manageDatabase.getKwPropertyValue(PWD_CHANGED_KEY, tenantId);
+    formattedStr = String.format(passwordChanged, username);
+    subject = KLAW_ACCESS_PASSWORD_CHANGED;
 
     sendPwdResetMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
   }

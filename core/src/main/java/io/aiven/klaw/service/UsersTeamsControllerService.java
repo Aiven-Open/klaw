@@ -283,32 +283,54 @@ public class UsersTeamsControllerService {
     return sb.toString();
   }
 
-  public ResetPasswordInfo resetPassword(String username) {
-    log.info("resetPassword {}", username);
+  //  public ResetPasswordInfo resetPassword(String userName,String token, String password) { }
+
+  public ResetPasswordInfo resetPasswordGenerateToken(String username) {
+    log.info("resetPasswordGenerateToken {}", username);
     ResetPasswordInfo resetPasswordInfo = new ResetPasswordInfo();
     UserInfoModelResponse userInfoModel = getUserInfoDetails(username);
-    resetPasswordInfo.setPasswordSent("false");
+    resetPasswordInfo.setTokenSent("false");
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     if (userInfoModel == null) {
       resetPasswordInfo.setUserFound("false");
     } else {
       resetPasswordInfo.setUserFound("true");
-      String newGeneratedPwd = generateRandomWord(15);
-      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-      UserDetails updatePwdUserDetails = inMemoryUserDetailsManager.loadUserByUsername(username);
-      inMemoryUserDetailsManager.updatePassword(
-          updatePwdUserDetails, encoder.encode(newGeneratedPwd));
-      String pwdUpdated = dbHandle.updatePassword(username, encodePwd(newGeneratedPwd));
-      if (ApiResultStatus.SUCCESS.value.equals(pwdUpdated)) {
-        resetPasswordInfo.setPasswordSent("true");
+      String resetToken = dbHandle.generatePasswordResetToken(username);
+      if (!ApiResultStatus.FAILURE.value.equals(resetToken)) {
+        resetPasswordInfo.setTokenSent("true");
         mailService.sendMailResetPwd(
             username,
-            newGeneratedPwd,
+            resetToken,
             dbHandle,
             userInfoModel.getTenantId(),
             commonUtilsService.getLoginUrl());
+      }
+    }
+    return resetPasswordInfo;
+  }
+
+  public ResetPasswordInfo resetPassword(String username, String password, String resetToken) {
+    log.info("resetPassword {}", username);
+    ResetPasswordInfo resetPasswordInfo = new ResetPasswordInfo();
+    UserInfoModelResponse userInfoModel = getUserInfoDetails(username);
+    resetPasswordInfo.setTokenSent("false");
+    HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+
+    if (userInfoModel == null) {
+      resetPasswordInfo.setUserFound("false");
+    } else {
+      resetPasswordInfo.setUserFound("true");
+      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
+      String pwdUpdated = dbHandle.resetPassword(username, resetToken, encodePwd(password));
+
+      if (ApiResultStatus.SUCCESS.value.equals(pwdUpdated)) {
+        UserDetails updatePwdUserDetails = inMemoryUserDetailsManager.loadUserByUsername(username);
+        inMemoryUserDetailsManager.updatePassword(updatePwdUserDetails, encoder.encode(password));
+        resetPasswordInfo.setTokenSent("true");
+        mailService.sendMailPwdChanged(
+            username, dbHandle, userInfoModel.getTenantId(), commonUtilsService.getLoginUrl());
       }
     }
     return resetPasswordInfo;

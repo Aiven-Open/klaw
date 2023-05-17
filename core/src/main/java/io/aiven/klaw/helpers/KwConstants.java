@@ -58,7 +58,10 @@ public class KwConstants {
   public static final String MAIL_NEWUSERADDED_CONTENT =
       "Dear User, \\nYou have been given access to Klaw. \\n\\nUser name : %s \\nPassword : %s";
   public static final String MAIL_PASSWORDRESET_CONTENT =
-      "Dear User, \\nYou have requested for reset password on your Klaw account. \\n\\nUser name : %s \\nYour new Password : %s ";
+      "Dear User, \\nYou have requested a password reset on your Klaw account. \\n\\nUse your Reset Token to update your password : %s \\nIt will be valid for 10 minutes.\\n\\nIf you no longer wish to change your password ignore this email.";
+
+  public static final String MAIL_PASSWORDCHANGED_CONTENT =
+      "Dear User, \\nYour password has been changed.\\nIf you did not request a password change please contact your administrator.";
 
   public static final String REPORTS_LOCATION = "/tmp/";
   public static final String MAIL_NOTIFICATIONS_ENABLE = "true";

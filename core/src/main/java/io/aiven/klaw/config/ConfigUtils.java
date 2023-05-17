@@ -31,6 +31,8 @@ public class ConfigUtils {
                 "/getDbAuth",
                 "/feedback**",
                 "/resetPassword",
+                "/reset/token",
+                "reset/password",
                 "/getRoles",
                 "/getTenantsInfo",
                 "/getBasicInfo",

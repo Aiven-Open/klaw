@@ -301,6 +301,10 @@ public interface HandleDbRequests {
 
   String updatePassword(String username, String pwd);
 
+  String resetPassword(String username, String resetToken, String pwd);
+
+  String generatePasswordResetToken(String username);
+
   String updateUser(UserInfo userInfo);
 
   String updateUserTeam(String userId, int teamId);

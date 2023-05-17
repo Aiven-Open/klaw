@@ -263,7 +263,13 @@ public class DefaultDataService {
             KwConstants.MAIL_REGISTERUSERTOUSER_SAAS_ADMIN_CONTENT,
             "Email notification body for new SaaS user request to actual user.");
     kwPropertiesList.add(kwProperties34);
-
+    KwProperties kwProperties35 =
+        new KwProperties(
+            "klaw.mail.passwordchanged.content",
+            tenantId,
+            KwConstants.MAIL_PASSWORDCHANGED_CONTENT,
+            "Email notification body for password update.");
+    kwPropertiesList.add(kwProperties35);
     return kwPropertiesList;
   }
 
