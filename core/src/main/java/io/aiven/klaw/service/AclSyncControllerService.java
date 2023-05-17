@@ -17,6 +17,7 @@ import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
 import io.aiven.klaw.model.SyncBackAcls;
+import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclPermissionType;
 import io.aiven.klaw.model.enums.AclType;
@@ -44,6 +45,8 @@ import org.springframework.stereotype.Service;
 public class AclSyncControllerService {
 
   private int TOPIC_COUNTER = 0;
+
+  private static String AIVEN_ACL_ID_KEY = "aivenaclid";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired private final MailUtils mailService;
@@ -73,7 +76,6 @@ public class AclSyncControllerService {
     Acl t;
 
     if (syncAclUpdates != null && syncAclUpdates.size() > 0) {
-
       Map<String, SyncAclUpdates> stringSyncAclUpdatesHashMap = new HashMap<>();
 
       // remove duplicates
@@ -98,8 +100,14 @@ public class AclSyncControllerService {
 
         t = new Acl();
 
-        if (syncAclUpdateItem.getReq_no() != null)
+        if (syncAclUpdateItem.getReq_no() != null) {
           t.setReq_no(Integer.parseInt(syncAclUpdateItem.getReq_no()));
+        }
+        if (syncAclUpdateItem.getAclId() != null) {
+          Map<String, String> jsonParams = new HashMap<>();
+          jsonParams.put(AIVEN_ACL_ID_KEY, syncAclUpdateItem.getAclId());
+          t.setJsonParams(jsonParams);
+        }
         t.setTopicname(syncAclUpdateItem.getTopicName());
         t.setConsumergroup(syncAclUpdateItem.getConsumerGroup());
         t.setAclip(syncAclUpdateItem.getAclIp());
@@ -110,6 +118,11 @@ public class AclSyncControllerService {
         t.setAclType(syncAclUpdateItem.getAclType());
         t.setAclPatternType(AclPatternType.LITERAL.value);
         t.setTenantId(tenantId);
+        if (syncAclUpdateItem.getAclSsl() != null && syncAclUpdateItem.getAclSsl().length() > 0) {
+          t.setAclIpPrincipleType(AclIPPrincipleType.PRINCIPAL);
+        } else {
+          t.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+        }
 
         listTopics.add(t);
       }
@@ -227,12 +240,11 @@ public class AclSyncControllerService {
         // Update aivenaclid in klaw metadata
         if (kwClusters.getKafkaFlavor().equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
           Map<String, String> jsonParams = new HashMap<>();
-          String aivenAclIdKey = "aivenaclid";
           if (Objects.requireNonNull(responseBody).isSuccess()) {
             Object responseData = responseBody.getData();
             if (responseData instanceof Map) {
               Map<String, String> dataMap = (Map<String, String>) responseData;
-              if (dataMap.containsKey(aivenAclIdKey)) {
+              if (dataMap.containsKey(AIVEN_ACL_ID_KEY)) {
                 jsonParams = dataMap;
               }
             }
@@ -464,6 +476,9 @@ public class AclSyncControllerService {
       mp.setEnvironment(env);
       mp.setPossibleTeams(teamList);
       mp.setTeamname("");
+      if (aclListItem.containsKey(AIVEN_ACL_ID_KEY)) {
+        mp.setAclId(aclListItem.get(AIVEN_ACL_ID_KEY));
+      }
 
       String tmpPermType = aclListItem.get("operation");
 

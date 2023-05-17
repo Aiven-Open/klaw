@@ -13,4 +13,5 @@ public class SyncAclUpdates {
   private String aclSsl;
   private String aclType;
   private String envSelected;
+  private String aclId; // aiven acl id
 }

@@ -201,7 +201,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                 }
 
         $scope.updatedSyncArray = [];
-        $scope.getDetails = function(sequence, req_no, teamselected, topic, consumergroup, acl_ip, acl_ssl, acltype) {
+        $scope.getDetails = function(sequence, req_no, teamselected, topic, consumergroup, acl_ip, acl_ssl, acltype, aclId) {
 
             var serviceInput = {};
 
@@ -214,6 +214,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             serviceInput['aclSsl'] = acl_ssl;
             serviceInput['aclType'] = acltype;
             serviceInput['envSelected'] = $scope.getAcls.envName;
+            serviceInput['aclId'] = aclId;
 
             $scope.updatedSyncArray.push(serviceInput);
         }
