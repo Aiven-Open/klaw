@@ -176,7 +176,7 @@ describe("SwitchTeamsDropdown", () => {
       expect(menuItems[0]).toHaveTextContent(testTeams[0].teamname);
     });
 
-    it("enables user to change their team", async () => {
+    it("shows a dialog for the user to confirm they want to switch team", async () => {
       const button = screen.getByRole("button", { name: "Change your team" });
       await userEvent.click(button);
       const menu = screen.getByRole("menu", { name: "Change your team" });
@@ -186,10 +186,60 @@ describe("SwitchTeamsDropdown", () => {
 
       await userEvent.click(newTeamItem);
 
-      expect(mockUpdateTeamFn).toHaveBeenCalledWith({
-        userName: testUsername,
-        teamId: testTeams[1].teamId,
+      const dialog = screen.getByRole("dialog");
+
+      expect(dialog).toBeVisible();
+      expect(dialog).toHaveTextContent(
+        "You are updating the team you are signed in with"
+      );
+    });
+
+    it('removes modal without changes when user clicks "cancel"', async () => {
+      const button = screen.getByRole("button", { name: "Change your team" });
+      await userEvent.click(button);
+      const menu = screen.getByRole("menu", { name: "Change your team" });
+      const newTeamItem = within(menu).getByRole("menuitem", {
+        name: testTeams[1].teamname,
       });
+
+      await userEvent.click(newTeamItem);
+
+      const dialog = screen.getByRole("dialog");
+      expect(dialog).toBeVisible();
+
+      const cancel = within(dialog).getByRole("button", { name: "Cancel" });
+
+      await userEvent.click(cancel);
+
+      // the dialog is remove fast, so using waitForElementToBeRemoved
+      // would be flaky
+      const dialogAfter = screen.queryByRole("dialog");
+      expect(dialogAfter).not.toBeInTheDocument();
+
+      expect(mockUpdateTeamFn).not.toHaveBeenCalled();
+    });
+
+    it('changes teams when user clicks "cancel"', async () => {
+      const button = screen.getByRole("button", { name: "Change your team" });
+      await userEvent.click(button);
+      const menu = screen.getByRole("menu", { name: "Change your team" });
+      const newTeamItem = within(menu).getByRole("menuitem", {
+        name: testTeams[1].teamname,
+      });
+
+      await userEvent.click(newTeamItem);
+
+      const dialog = screen.getByRole("dialog");
+      expect(dialog).toBeVisible();
+
+      const confirm = within(dialog).getByRole("button", {
+        name: "Change team",
+      });
+
+      await userEvent.click(confirm);
+
+      await waitForElementToBeRemoved(dialog);
+      expect(mockUpdateTeamFn).toHaveBeenCalled();
     });
   });
 });

@@ -1,6 +1,8 @@
 import { Box, Button, DropdownMenu, Skeleton } from "@aivenio/aquarium";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTeamsOfUser, updateTeam } from "src/domain/team/team-api";
+import { Dialog } from "src/app/components/Dialog";
+import { useState } from "react";
 
 type SwitchTeamsDropdownProps = {
   userName: string;
@@ -12,6 +14,11 @@ function SwitchTeamsDropdown({
   currentTeam,
 }: SwitchTeamsDropdownProps) {
   const queryClient = useQueryClient();
+
+  const [modal, setModal] = useState<{
+    open: boolean;
+    newTeamId: number | null;
+  }>({ open: false, newTeamId: null });
 
   const { data: teams, isLoading: teamsLoading } = useQuery(
     ["user-teams"],
@@ -25,12 +32,25 @@ function SwitchTeamsDropdown({
         await queryClient.refetchQueries();
       },
       onError(error: Error) {
+        //@ TODO error notification when we have toasts!
         console.error(error);
+      },
+      onSettled() {
+        setModal({ open: false, newTeamId: null });
       },
     }
   );
 
-  if (teamsLoading || updateIsLoading) {
+  function changeTeams(teamId: number | null) {
+    if (teamId) {
+      updateTeamForUser({
+        userName: userName,
+        teamId: teamId,
+      });
+    }
+  }
+
+  if (teamsLoading) {
     return (
       <div data-testid={"teams-loading"}>
         <Skeleton />
@@ -44,13 +64,29 @@ function SwitchTeamsDropdown({
 
   return (
     <>
+      {modal.open && (
+        <Dialog
+          title={"Switching teams"}
+          primaryAction={{
+            text: "Change team",
+            onClick: () => changeTeams(modal.newTeamId),
+            loading: updateIsLoading,
+          }}
+          secondaryAction={{
+            text: "Cancel",
+            onClick: () => setModal({ open: false, newTeamId: null }),
+            disabled: updateIsLoading,
+          }}
+          type={"confirmation"}
+        >
+          You are updating the team you are signed in with.
+        </Dialog>
+      )}
+
       <DropdownMenu
-        onAction={(teamId) => {
-          updateTeamForUser({
-            userName: userName,
-            teamId: Number(teamId),
-          });
-        }}
+        onAction={(newTeamId) =>
+          setModal({ open: true, newTeamId: Number(newTeamId) })
+        }
       >
         <DropdownMenu.Trigger>
           <Button.SecondaryDropdown dense>
