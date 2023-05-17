@@ -55,7 +55,7 @@ import org.springframework.stereotype.Component;
 public class UpdateDataJdbc {
 
   @Value("${klaw.reset.password.token.ttl:600000}")
-  public int TOKEN_TTL;
+  public int tokenTTL;
 
   @Autowired(required = false)
   private TopicRequestsRepo topicRequestsRepo;
@@ -370,7 +370,7 @@ public class UpdateDataJdbc {
     Optional<UserInfo> userRec = userInfoRepo.findById(username);
     if (userRec.isPresent()
         && userRec.get().getResetToken().equals(resetToken)
-        && isTimeStampStillValid(userRec.get().getResetTokenGeneratedAt(), TOKEN_TTL)) {
+        && isTimeStampStillValid(userRec.get().getResetTokenGeneratedAt(), tokenTTL)) {
 
       UserInfo userInfo = userRec.get();
       userInfo.setPwd(password);
