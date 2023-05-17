@@ -1,15 +1,14 @@
 import { PageHeader } from "@aivenio/aquarium";
-import PreviewBanner from "src/app/components/PreviewBanner";
-import Layout from "src/app/layout/Layout";
-import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
 import { useParams } from "react-router-dom";
+import PreviewBanner from "src/app/components/PreviewBanner";
+import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
 
 const SchemaRequest = () => {
   // @TODO: should we add verification that this is a real topic name?
   const { topicName } = useParams();
 
   return (
-    <Layout>
+    <>
       <PreviewBanner
         linkTarget={
           topicName === undefined
@@ -25,7 +24,7 @@ const SchemaRequest = () => {
         }
       />
       <TopicSchemaRequest topicName={topicName} />
-    </Layout>
+    </>
   );
 };
 

@@ -1,4 +1,6 @@
 import omitBy from "lodash/omitBy";
+import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
+import { transformAdvancedConfigEntries } from "src/app/features/topics/request/utils";
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
@@ -15,14 +17,12 @@ import {
   TopicRequestApiResponse,
 } from "src/domain/topic/topic-types";
 import api, { API_PATHS } from "src/services/api";
+import { convertQueryValuesToString } from "src/services/api-helper";
 import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
-import { convertQueryValuesToString } from "src/services/api-helper";
-import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
-import { transformAdvancedConfigEntries } from "src/app/features/topics/request/utils";
 
 const getTopics = async (
   params: KlawApiRequestQueryParameters<"getTopics">
@@ -204,6 +204,25 @@ const deleteTopicRequest = ({
   });
 };
 
+const getTopicOverview = ({
+  topicName,
+  environmentId,
+  groupBy,
+}: KlawApiRequestQueryParameters<"getTopicOverview">) => {
+  const queryParams = convertQueryValuesToString({
+    topicName,
+    ...(environmentId && { environmentId }),
+    ...(groupBy && {
+      groupBy,
+    }),
+  });
+
+  return api.get<KlawApiResponse<"getTopicOverview">>(
+    API_PATHS.getTopicOverview,
+    new URLSearchParams(queryParams)
+  );
+};
+
 export {
   getTopics,
   getTopicNames,
@@ -215,4 +234,5 @@ export {
   approveTopicRequest,
   declineTopicRequest,
   deleteTopicRequest,
+  getTopicOverview,
 };

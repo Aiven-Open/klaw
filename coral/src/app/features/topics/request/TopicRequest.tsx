@@ -99,7 +99,7 @@ function TopicRequest() {
           &quot;Continue&quot; for an immediate redirect.
         </Dialog>
       )}
-      <Box maxWidth={"7xl"}>
+      <Box>
         {isError && (
           <Box marginBottom={"l1"} role="alert">
             <Alert type="error">{parseErrorMsg(error)}</Alert>

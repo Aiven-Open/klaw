@@ -2,11 +2,10 @@ import { PageHeader } from "@aivenio/aquarium";
 import { Navigate, useMatches } from "react-router-dom";
 import ApprovalResourceTabs from "src/app/features/approvals/components/ApprovalResourceTabs";
 import {
-  ApprovalsTabEnum,
   APPROVALS_TAB_ID_INTO_PATH,
+  ApprovalsTabEnum,
   isApprovalsTabEnum,
 } from "src/app/router_utils";
-import Layout from "src/app/layout/Layout";
 
 const ApprovalsPage = () => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,10 +15,10 @@ const ApprovalsPage = () => {
     return <Navigate to={`/approvals/topics`} replace={true} />;
   }
   return (
-    <Layout>
+    <>
       <PageHeader title={"Approve requests"} />
       <ApprovalResourceTabs currentTab={currentTab} />
-    </Layout>
+    </>
   );
 
   function findMatchingTab(

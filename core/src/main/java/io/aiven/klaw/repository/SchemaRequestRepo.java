@@ -33,7 +33,7 @@ public interface SchemaRequestRepo
 
   @Query(
       value =
-          "select count(*) from kwschemarequests where (requestor = :userId or approver = :userId) and tenantid = :tenantId",
+          "select count(*) from kwschemarequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created'",
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForUserId(
       @Param("userId") String userId, @Param("tenantId") Integer tenantId);
