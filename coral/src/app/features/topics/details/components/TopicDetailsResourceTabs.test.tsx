@@ -17,7 +17,7 @@ const testMapTabs = [
     title: "Overview",
   },
   {
-    linkTo: "acls",
+    linkTo: "subscriptions",
     title: "Subscriptions",
   },
   {

@@ -40,7 +40,7 @@ enum ApprovalsTabEnum {
 
 const TOPIC_OVERVIEW_TAB_ID_INTO_PATH = {
   [TopicOverviewTabEnum.OVERVIEW]: "overview",
-  [TopicOverviewTabEnum.ACLS]: "acls",
+  [TopicOverviewTabEnum.ACLS]: "subscriptions",
   [TopicOverviewTabEnum.MESSAGES]: "messages",
   [TopicOverviewTabEnum.SCHEMA]: "schema",
   [TopicOverviewTabEnum.DOCUMENTATION]: "documentation",
