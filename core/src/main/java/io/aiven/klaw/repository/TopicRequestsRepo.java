@@ -33,7 +33,7 @@ public interface TopicRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwtopicrequests where (requestor = :userId or approver = :userId) and tenantid = :tenantId and topicstatus='created'",
+          "select count(*) from kwtopicrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created'",
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForUserId(
       @Param("userId") String userId, @Param("tenantId") Integer tenantId);
