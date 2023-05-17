@@ -40,14 +40,15 @@ public class TopicContentsService {
       String clusterIdentification) {
     log.info(
         "readEvents bootStrapServers {}, protocol {}, clusterName {},  consumerGroupId {},  topicName {},\n"
-            + "                                               offsetPosition {},  readMessagesType {}",
+            + "                                               offsetPosition {},  readMessagesType {} clusterIdentification {}",
         bootStrapServers,
         protocol,
         clusterName,
         consumerGroupId,
         topicName,
         offsetPosition,
-        readMessagesType);
+        readMessagesType,
+        clusterIdentification);
 
     Map<Long, String> eventMap = new TreeMap<>();
     KafkaConsumer<String, String> consumer;
