@@ -9,14 +9,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.TopicHistory;
-import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
@@ -57,24 +57,24 @@ public abstract class BaseOverviewService {
     this.mailService = mailService;
   }
 
-  protected List<AclInfo> getAclInfoList(
+  protected List<AclOverviewInfo> getAclInfoList(
       int tenantId,
       TopicOverview topicOverview,
-      List<TopicInfo> topicInfoList,
-      List<AclInfo> aclInfo,
-      List<AclInfo> prefixedAclsInfo,
+      List<TopicOverviewInfo> topicInfoList,
+      List<AclOverviewInfo> aclInfo,
+      List<AclOverviewInfo> prefixedAclsInfo,
       AclGroupBy groupBy) {
     aclInfo = aclInfo.stream().distinct().collect(Collectors.toList());
-    List<AclInfo> transactionalAcls =
+    List<AclOverviewInfo> transactionalAcls =
         aclInfo.stream()
             .filter(aclRec -> aclRec.getTransactionalId() != null)
             .collect(Collectors.toList());
 
-    for (AclInfo aclInfo1 : aclInfo) {
+    for (AclOverviewInfo aclInfo1 : aclInfo) {
       aclInfo1.setEnvironmentName(getEnvDetails(aclInfo1.getEnvironment(), tenantId).getName());
     }
 
-    for (AclInfo aclInfo2 : prefixedAclsInfo) {
+    for (AclOverviewInfo aclInfo2 : prefixedAclsInfo) {
       aclInfo2.setEnvironmentName(getEnvDetails(aclInfo2.getEnvironment(), tenantId).getName());
     }
 
@@ -92,13 +92,13 @@ public abstract class BaseOverviewService {
     return topicOverview.getAclInfoList();
   }
 
-  private List<AclInfo> sortAclInfo(List<AclInfo> aclInfo, AclGroupBy groupBy) {
+  private List<AclOverviewInfo> sortAclInfo(List<AclOverviewInfo> aclInfo, AclGroupBy groupBy) {
     // merge reduce
     if (groupBy.equals(AclGroupBy.TEAM)) {
       aclInfo = mergeReduceAclInfo(aclInfo);
       aclInfo.sort(
-          Comparator.comparing(AclInfo::getTeamname, nullSafeStringComparator)
-              .thenComparing(AclInfo::getConsumergroup, nullSafeStringComparator));
+          Comparator.comparing(AclOverviewInfo::getTeamname, nullSafeStringComparator)
+              .thenComparing(AclOverviewInfo::getConsumergroup, nullSafeStringComparator));
     }
 
     return aclInfo;
@@ -111,14 +111,14 @@ public abstract class BaseOverviewService {
    * @param aclInfo List of AclInfo supplied to be reduced and merged
    * @return The processed and reduced AclInfo List
    */
-  private List<AclInfo> mergeReduceAclInfo(List<AclInfo> aclInfo) {
+  private List<AclOverviewInfo> mergeReduceAclInfo(List<AclOverviewInfo> aclInfo) {
     // recursively get Env Per Team
     return mergeReduceByTeam(aclInfo);
   }
 
-  private List<AclInfo> mergeReduceByTeam(List<AclInfo> aclInfo) {
-    List<AclInfo> organisedList = new ArrayList<>();
-    Map<String, List<AclInfo>> teams = new HashMap<>();
+  private List<AclOverviewInfo> mergeReduceByTeam(List<AclOverviewInfo> aclInfo) {
+    List<AclOverviewInfo> organisedList = new ArrayList<>();
+    Map<String, List<AclOverviewInfo>> teams = new HashMap<>();
 
     aclInfo.forEach(acl -> reduceAclByProperty(teams, acl.getTeamname(), acl));
 
@@ -127,9 +127,9 @@ public abstract class BaseOverviewService {
     return organisedList;
   }
 
-  private List<AclInfo> mergeReduceByEnv(List<AclInfo> aclInfo) {
-    List<AclInfo> organisedList = new ArrayList<>();
-    Map<String, List<AclInfo>> processedAcls = new HashMap<>();
+  private List<AclOverviewInfo> mergeReduceByEnv(List<AclOverviewInfo> aclInfo) {
+    List<AclOverviewInfo> organisedList = new ArrayList<>();
+    Map<String, List<AclOverviewInfo>> processedAcls = new HashMap<>();
 
     aclInfo.forEach(acl -> reduceAclByProperty(processedAcls, acl.getEnvironmentName(), acl));
     // recursively  merge and reduce By ConsumerGroup
@@ -137,9 +137,9 @@ public abstract class BaseOverviewService {
     return organisedList;
   }
 
-  private List<AclInfo> mergeReduceByConsumerGroups(List<AclInfo> aclInfo) {
-    List<AclInfo> organisedList = new ArrayList<>();
-    Map<String, List<AclInfo>> processedAcls = new HashMap<>();
+  private List<AclOverviewInfo> mergeReduceByConsumerGroups(List<AclOverviewInfo> aclInfo) {
+    List<AclOverviewInfo> organisedList = new ArrayList<>();
+    Map<String, List<AclOverviewInfo>> processedAcls = new HashMap<>();
 
     aclInfo.forEach(acl -> reduceAclByProperty(processedAcls, acl.getConsumergroup(), acl));
     // Merge Reduce All ACls with the same Team/env/Consumer group together.
@@ -148,7 +148,7 @@ public abstract class BaseOverviewService {
   }
 
   private void reduceAclByProperty(
-      Map<String, List<AclInfo>> processedAcls, String aclProperty, AclInfo acl) {
+      Map<String, List<AclOverviewInfo>> processedAcls, String aclProperty, AclOverviewInfo acl) {
     if (processedAcls.containsKey(aclProperty)) {
       processedAcls.get(aclProperty).add(acl);
     } else {
@@ -157,11 +157,11 @@ public abstract class BaseOverviewService {
     }
   }
 
-  private List<AclInfo> mergeReduceAcls(List<AclInfo> aclInfo) {
-    AclInfo producerIp = null, producerPrincipal = null;
-    AclInfo consumerIp = null, consumerPrincipal = null;
+  private List<AclOverviewInfo> mergeReduceAcls(List<AclOverviewInfo> aclInfo) {
+    AclOverviewInfo producerIp = null, producerPrincipal = null;
+    AclOverviewInfo consumerIp = null, consumerPrincipal = null;
 
-    for (AclInfo info : aclInfo) {
+    for (AclOverviewInfo info : aclInfo) {
       if (info.getTopictype().equals(AclType.PRODUCER.value)) {
         if (info.getAcl_ip() != null && !info.getAcl_ip().isEmpty()) {
           producerIp = initializeAclInfo(producerIp, info);
@@ -184,12 +184,12 @@ public abstract class BaseOverviewService {
     return addToListIfNotNull(producerIp, producerPrincipal, consumerIp, consumerPrincipal);
   }
 
-  private List<AclInfo> addToListIfNotNull(
-      AclInfo producerIp,
-      AclInfo producerPrincipal,
-      AclInfo consumerIp,
-      AclInfo consumerPrincipal) {
-    List<AclInfo> buildList = new ArrayList<>();
+  private List<AclOverviewInfo> addToListIfNotNull(
+      AclOverviewInfo producerIp,
+      AclOverviewInfo producerPrincipal,
+      AclOverviewInfo consumerIp,
+      AclOverviewInfo consumerPrincipal) {
+    List<AclOverviewInfo> buildList = new ArrayList<>();
     if (producerIp != null) {
       buildList.add(producerIp);
     }
@@ -205,9 +205,9 @@ public abstract class BaseOverviewService {
     return buildList;
   }
 
-  private AclInfo initializeAclInfo(AclInfo newAcl, AclInfo info) {
+  private AclOverviewInfo initializeAclInfo(AclOverviewInfo newAcl, AclOverviewInfo info) {
     if (newAcl == null) {
-      newAcl = new AclInfo();
+      newAcl = new AclOverviewInfo();
       copyProperties(info, newAcl);
       newAcl.setAcl_ips(new HashSet<>());
       newAcl.setAcl_ssls(new HashSet<>());
@@ -219,15 +219,15 @@ public abstract class BaseOverviewService {
     return newAcl;
   }
 
-  protected List<AclInfo> applyFiltersAclsForSOT(
+  protected List<AclOverviewInfo> applyFiltersAclsForSOT(
       Integer loggedInUserTeam, List<Acl> aclsFromSOT, int tenantId) {
 
-    List<AclInfo> aclList = new ArrayList<>();
-    AclInfo mp;
+    List<AclOverviewInfo> aclList = new ArrayList<>();
+    AclOverviewInfo mp;
 
     for (Acl aclSotItem : aclsFromSOT) {
       if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) {
-        mp = new AclInfo();
+        mp = new AclOverviewInfo();
         mp.setEnvironment(aclSotItem.getEnvironment());
         Env envDetails = getEnvDetails(aclSotItem.getEnvironment(), tenantId);
         mp.setEnvironmentName(envDetails.getName());
@@ -235,6 +235,7 @@ public abstract class BaseOverviewService {
 
         mp.setTransactionalId(aclSotItem.getTransactionalId());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
+        mp.setTeamid(aclSotItem.getTeamId());
         mp.setConsumergroup(aclSotItem.getConsumergroup());
         mp.setTopictype(aclSotItem.getAclType());
         mp.setAclPatternType(aclSotItem.getAclPatternType());

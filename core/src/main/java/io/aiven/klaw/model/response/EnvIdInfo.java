@@ -1,10 +1,11 @@
 package io.aiven.klaw.model.response;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class EnvIdInfo {
-  private String id;
+  @NotNull private String id;
 
-  private String name;
+  @NotNull private String name;
 }

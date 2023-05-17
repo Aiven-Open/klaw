@@ -933,63 +933,76 @@ export type components = {
       deletable?: boolean;
       editable?: boolean;
     };
-    AclInfo: {
-      sequence?: string;
-      req_no?: string;
+    AclOverviewInfo: {
+      req_no: string;
+      aclPatternType: string;
+      environment: string;
+      environmentName: string;
+      /** @enum {string} */
+      kafkaFlavorType: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
+      showDeleteAcl: boolean;
+      /** Format: int32 */
+      teamid: number;
+      teamname: string;
+      topicname: string;
+      topictype: string;
       acl_ip?: string;
       acl_ssl?: string;
       acl_ips?: (string)[];
       acl_ssls?: (string)[];
-      topicname?: string;
-      topictype?: string;
       consumergroup?: string;
-      environment?: string;
-      environmentName?: string;
-      teamname?: string;
-      /** Format: int32 */
-      teamid?: number;
-      operation?: string;
-      permission?: string;
       transactionalId?: string;
-      aclPatternType?: string;
-      totalNoPages?: string;
-      allPageNos?: (string)[];
-      possibleTeams?: (string)[];
-      currentPage?: string;
-      showDeleteAcl?: boolean;
-      /** @enum {string} */
-      kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
     };
     EnvIdInfo: {
-      id?: string;
-      name?: string;
+      id: string;
+      name: string;
+    };
+    PromotionStatus: {
+      status: string;
+      sourceEnv?: string;
+      targetEnv?: string;
+      targetEnvId?: string;
+      topicName?: string;
+      error?: string;
     };
     TopicHistory: {
-      environmentName?: string;
-      teamName?: string;
-      requestedBy?: string;
-      requestedTime?: string;
-      approvedBy?: string;
-      approvedTime?: string;
-      remarks?: string;
+      environmentName: string;
+      teamName: string;
+      requestedBy: string;
+      requestedTime: string;
+      approvedBy: string;
+      approvedTime: string;
+      remarks: string;
     };
     TopicOverview: {
-      topicExists?: boolean;
-      schemaExists?: boolean;
-      prefixAclsExists?: boolean;
-      txnAclsExists?: boolean;
-      topicInfoList?: (components["schemas"]["TopicInfo"])[];
-      aclInfoList?: (components["schemas"]["AclInfo"])[];
-      prefixedAclInfoList?: (components["schemas"]["AclInfo"])[];
-      transactionalAclInfoList?: (components["schemas"]["AclInfo"])[];
+      topicExists: boolean;
+      schemaExists: boolean;
+      prefixAclsExists: boolean;
+      txnAclsExists: boolean;
+      topicInfoList: (components["schemas"]["TopicOverviewInfo"])[];
+      aclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
+      prefixedAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
+      transactionalAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       topicHistoryList?: (components["schemas"]["TopicHistory"])[];
-      topicPromotionDetails?: {
-        [key: string]: string | undefined;
-      };
-      availableEnvironments?: (components["schemas"]["EnvIdInfo"])[];
+      topicPromotionDetails: components["schemas"]["PromotionStatus"];
+      availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       topicDocumentation?: string;
       /** Format: int32 */
-      topicIdForDocumentation?: number;
+      topicIdForDocumentation: number;
+    };
+    TopicOverviewInfo: {
+      topicName: string;
+      /** Format: int32 */
+      noOfPartitions: number;
+      noOfReplicas: string;
+      teamname: string;
+      /** Format: int32 */
+      teamId: number;
+      envId: string;
+      showEditTopic: boolean;
+      showDeleteTopic: boolean;
+      topicDeletable: boolean;
+      envName: string;
     };
     TopicDetailsPerEnv: {
       topicExists: boolean;
@@ -1142,6 +1155,33 @@ export type components = {
       /** @enum {string} */
       clusterType?: "ALL" | "KAFKA" | "SCHEMA_REGISTRY" | "KAFKA_CONNECT";
     };
+    AclInfo: {
+      sequence?: string;
+      req_no?: string;
+      acl_ip?: string;
+      acl_ssl?: string;
+      acl_ips?: (string)[];
+      acl_ssls?: (string)[];
+      topicname?: string;
+      topictype?: string;
+      consumergroup?: string;
+      environment?: string;
+      environmentName?: string;
+      teamname?: string;
+      /** Format: int32 */
+      teamid?: number;
+      operation?: string;
+      permission?: string;
+      transactionalId?: string;
+      aclPatternType?: string;
+      totalNoPages?: string;
+      allPageNos?: (string)[];
+      possibleTeams?: (string)[];
+      currentPage?: string;
+      showDeleteAcl?: boolean;
+      /** @enum {string} */
+      kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
+    };
     SchemaRequestsResponseModel: {
       environment: string;
       environmentName: string;
@@ -1175,11 +1215,27 @@ export type components = {
       deletable?: boolean;
       editable?: boolean;
     };
+    SchemaDetailsPerEnv: {
+      /** Format: int32 */
+      id?: number;
+      /** Format: int32 */
+      version?: number;
+      /** Format: int32 */
+      nextVersion?: number;
+      /** Format: int32 */
+      prevVersion?: number;
+      compatibility?: string;
+      content?: string;
+      env?: string;
+      showNext?: boolean;
+      showPrev?: boolean;
+      latest?: boolean;
+    };
     SchemaOverview: {
-      topicExists?: boolean;
-      schemaExists?: boolean;
-      prefixAclsExists?: boolean;
-      txnAclsExists?: boolean;
+      topicExists: boolean;
+      schemaExists: boolean;
+      prefixAclsExists: boolean;
+      txnAclsExists: boolean;
       allSchemaVersions?: {
         [key: string]: (number)[] | undefined;
       };
@@ -1187,13 +1243,9 @@ export type components = {
         [key: string]: number | undefined;
       };
       schemaPromotionDetails?: {
-        [key: string]: ({
-          [key: string]: string | undefined;
-        }) | undefined;
+        [key: string]: components["schemas"]["PromotionStatus"] | undefined;
       };
-      schemaDetails?: ({
-          [key: string]: string | undefined;
-        })[];
+      schemaDetails?: (components["schemas"]["SchemaDetailsPerEnv"])[];
     };
     KwReport: {
       data?: string;
@@ -3003,7 +3055,7 @@ export type operations = {
     parameters: {
       query: {
         topicName: string;
-        schemaVersionSearch?: string;
+        schemaVersionSearch?: number;
         kafkaEnvIds: (string)[];
       };
     };

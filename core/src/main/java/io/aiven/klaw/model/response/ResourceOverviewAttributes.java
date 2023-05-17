@@ -1,11 +1,12 @@
 package io.aiven.klaw.model.response;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class ResourceOverviewAttributes {
-  boolean topicExists;
-  boolean schemaExists;
-  boolean prefixAclsExists;
-  boolean txnAclsExists;
+  @NotNull boolean topicExists;
+  @NotNull boolean schemaExists;
+  @NotNull boolean prefixAclsExists;
+  @NotNull boolean txnAclsExists;
 }
