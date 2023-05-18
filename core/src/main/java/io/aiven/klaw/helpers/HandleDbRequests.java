@@ -165,6 +165,7 @@ public interface HandleDbRequests {
       String env,
       String status,
       String search,
+      boolean showRequestsOfAllTeams,
       boolean isMyRequest);
 
   SchemaRequest getSchemaRequest(int avroSchemaId, int tenantId);

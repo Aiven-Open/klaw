@@ -134,9 +134,11 @@ public class SelectDataJdbc {
     }
 
     for (AclRequests row : aclListSub) {
+
       Integer teamId;
       String rowRequestOperationType = row.getRequestOperationType();
       if (isApproval) {
+        teamSelected = showRequestsOfAllTeams ? null : teamSelected;
         if ("requestor_subscriptions".equals(role)) {
           teamId = row.getRequestingteam();
         } else {
@@ -228,10 +230,11 @@ public class SelectDataJdbc {
       String env,
       String status,
       String wildcardSearch,
+      boolean showRequestsOfAllTeams,
       boolean isMyRequest) {
-    if (log.isDebugEnabled()) {
-      log.debug(
-          "selectSchemaRequests isApproval {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}, isMyRequest: {}",
+    if (log.isInfoEnabled()) {
+      log.info(
+          "selectSchemaRequests isApproval {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}, showRequestsOfAllTeams {}, isMyRequest: {}",
           isApproval,
           requestor,
           tenantId,
@@ -239,6 +242,7 @@ public class SelectDataJdbc {
           env,
           status,
           wildcardSearch,
+          showRequestsOfAllTeams,
           isMyRequest);
     }
     List<SchemaRequest> schemaList = new ArrayList<>();
@@ -251,7 +255,7 @@ public class SelectDataJdbc {
                   topic,
                   env,
                   status != null ? status : RequestStatus.CREATED.value,
-                  teamSelected,
+                  showRequestsOfAllTeams ? null : teamSelected,
                   tenantId,
                   isMyRequest ? requestor : null,
                   requestOperationType));
@@ -526,7 +530,7 @@ public class SelectDataJdbc {
           Lists.newArrayList(
               findTopicRequestsByExample(
                   requestOperationType != null ? requestOperationType.value : null,
-                  teamSelected,
+                  showRequestsOfAllTeams ? null : teamSelected,
                   env,
                   status,
                   tenantId,
@@ -555,7 +559,7 @@ public class SelectDataJdbc {
                     env,
                     status,
                     tenantId,
-                    String.valueOf(teamSelected),
+                    showRequestsOfAllTeams ? null : String.valueOf(teamSelected),
                     isMyRequest ? requestor : null));
         topicRequestListSub.addAll(claimTopicReqs);
       }
@@ -712,7 +716,7 @@ public class SelectDataJdbc {
                   env,
                   status,
                   tenantId,
-                  String.valueOf(teamSelected),
+                  showRequestsOfAllTeams ? null : String.valueOf(teamSelected),
                   isMyRequest ? requestor : null));
 
       topicRequestListSub =
@@ -1730,9 +1734,5 @@ public class SelectDataJdbc {
 
   public List<KafkaConnectorRequest> getAllConnectorRequests() {
     return Lists.newArrayList(kafkaConnectorRequestsRepo.findAll());
-  }
-
-  public List<RegisterUserInfo> getAllRegisterUsersInfo() {
-    return Lists.newArrayList(registerInfoRepo.findAll());
   }
 }
