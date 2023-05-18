@@ -232,8 +232,8 @@ public class SelectDataJdbc {
       String wildcardSearch,
       boolean showRequestsOfAllTeams,
       boolean isMyRequest) {
-    if (log.isInfoEnabled()) {
-      log.info(
+    if (log.isDebugEnabled()) {
+      log.debug(
           "selectSchemaRequests isApproval {} Requestor: {} , tenantIf:{} , topic: {}, env: {}, status: {}, wildcardSearch: {}, showRequestsOfAllTeams {}, isMyRequest: {}",
           isApproval,
           requestor,

@@ -427,11 +427,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return allUsersAllTenants;
   }
 
-  public Optional<UserInfo> selectUserInfo(String username, int tenantid) {
-    List<UserInfo> users = usersPerTenant.get(tenantid);
-    return users.stream().filter(u -> u.getUsername().equals(username)).findFirst();
-  }
-
   private void loadEnvsForAllTenants() {
     envsOfTenantsMap = new HashMap<>(); // key is tenantid, value is list of envs
     for (Integer tenantId : tenantMap.keySet()) {
