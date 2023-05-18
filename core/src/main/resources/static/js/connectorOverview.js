@@ -352,7 +352,8 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                 serviceInput['teamName'] = $scope.teamname;
                 serviceInput['remarks'] = "Connector promotion."
                 serviceInput['connectortype'] = 'Create';
-                serviceInput['description'] = $scope.topicSelectedParam + " connector."
+                serviceInput['description'] = $scope.topicSelectedParam + " connector.";
+                serviceInput['requestOperationType'] = "PROMOTE";
 
                 swal({
                         title: "Are you sure?",
