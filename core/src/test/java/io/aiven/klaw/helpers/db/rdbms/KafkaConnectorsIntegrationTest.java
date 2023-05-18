@@ -752,6 +752,29 @@ public class KafkaConnectorsIntegrationTest {
     assertThat(requests).hasSize(Integer.valueOf(number));
   }
 
+  @Order(32)
+  @ParameterizedTest
+  @CsvSource({"James,31", "Jackie,31", "John,31"})
+  public void getConnectorRequests_GetAllTeamsRequestsInTenantcy(String requestor, String number) {
+    // allreqs true so only requests from your team will be returned.
+    List<KafkaConnectorRequest> requests =
+        selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            false, requestor, null, null, true, 101, null, null, false);
+
+    assertThat(requests).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(33)
+  @Test
+  public void getConnectorRequests_GetAllTeamsRequestsInTenantcy() {
+    // allreqs true so only requests from your team will be returned.
+    List<KafkaConnectorRequest> requests =
+        selectDataJdbc.selectFilteredKafkaConnectorRequests(
+            false, "Jackie", null, null, true, 103, null, null, false);
+
+    assertThat(requests).hasSize(Integer.valueOf(10));
+  }
+
   private void generateData(
       int number,
       int tenantId,

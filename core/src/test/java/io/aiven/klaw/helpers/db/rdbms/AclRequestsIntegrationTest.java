@@ -63,7 +63,8 @@ public class AclRequestsIntegrationTest {
         RequestOperationType.CREATE,
         AclType.CONSUMER,
         RequestStatus.CREATED.value,
-        1);
+        1,
+        "Jackie");
     generateData(
         10,
         103,
@@ -74,7 +75,8 @@ public class AclRequestsIntegrationTest {
         RequestOperationType.CREATE,
         AclType.CONSUMER,
         RequestStatus.CREATED.value,
-        11);
+        11,
+        "Jackie");
     generateData(
         10,
         101,
@@ -85,7 +87,8 @@ public class AclRequestsIntegrationTest {
         RequestOperationType.CREATE,
         AclType.CONSUMER,
         RequestStatus.CREATED.value,
-        21);
+        21,
+        "Jackie");
     generateData(
         10,
         101,
@@ -96,7 +99,8 @@ public class AclRequestsIntegrationTest {
         RequestOperationType.CREATE,
         AclType.CONSUMER,
         RequestStatus.DECLINED.value,
-        31);
+        31,
+        "Jackie");
     generateData(
         1,
         101,
@@ -107,7 +111,8 @@ public class AclRequestsIntegrationTest {
         RequestOperationType.DELETE,
         AclType.PRODUCER,
         RequestStatus.CREATED.value,
-        41);
+        41,
+        "Jackie");
     UserInfo user = new UserInfo();
     user.setTenantId(101);
     user.setTeamId(101);
@@ -126,6 +131,44 @@ public class AclRequestsIntegrationTest {
     entityManager.persistAndFlush(user);
     entityManager.persistAndFlush(user2);
     entityManager.persistAndFlush(user3);
+
+    UserInfo user4 = new UserInfo();
+    user4.setTenantId(104);
+    user4.setTeamId(104);
+    user4.setRole("USER");
+    user4.setUsername("Gorph");
+    entityManager.persistAndFlush(user4);
+    UserInfo user5 = new UserInfo();
+    user5.setTenantId(104);
+    user5.setTeamId(104);
+    user5.setRole("USER");
+    user5.setUsername("Turf");
+    entityManager.persistAndFlush(user5);
+
+    generateData(
+        10,
+        104,
+        104,
+        104,
+        "firsttopic",
+        "dev",
+        RequestOperationType.CREATE,
+        AclType.CONSUMER,
+        RequestStatus.CREATED.value,
+        1,
+        "Gorph");
+    generateData(
+        10,
+        104,
+        104,
+        104,
+        "firsttopic",
+        "dev",
+        RequestOperationType.CREATE,
+        AclType.PRODUCER,
+        RequestStatus.CREATED.value,
+        11,
+        "Gorph");
   }
 
   @BeforeEach
@@ -708,6 +751,38 @@ public class AclRequestsIntegrationTest {
     assertThat(james).hasSize(Integer.valueOf(number));
   }
 
+  @Order(27)
+  @ParameterizedTest
+  @CsvSource({"James,31", "Jackie,0", "John,31"})
+  public void getAclRequests_GetAllTeamsRequestsInTenantcy(String requestor, String number) {
+
+    List<AclRequests> james =
+        selectDataJdbc.selectFilteredAclRequests(
+            true, requestor, null, null, null, true, null, null, null, null, false, 101);
+
+    for (AclRequests req : james) {
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(28)
+  @Test
+  public void getAclRequests_GetAllTeamsRequestsInTenantcyNewTenant() {
+
+    int tenantId = 104;
+    List<AclRequests> requests =
+        selectDataJdbc.selectFilteredAclRequests(
+            true, "Turf", null, null, null, true, null, null, null, null, false, tenantId);
+
+    for (AclRequests req : requests) {
+      assertThat(req.getTenantId()).isEqualTo(tenantId);
+    }
+
+    assertThat(requests).hasSize(Integer.valueOf(20));
+  }
+
   private void generateData(
       int number,
       int tenantId,
@@ -718,7 +793,8 @@ public class AclRequestsIntegrationTest {
       RequestOperationType requestOperationType,
       AclType aclType,
       String status,
-      int requestNumber) {
+      int requestNumber,
+      String requestor) {
 
     for (int i = 0; i < number; i++) {
       AclRequests acl = new AclRequests();
@@ -728,7 +804,7 @@ public class AclRequestsIntegrationTest {
       acl.setReq_no(requestNumber++);
       acl.setTopicname(topicName);
       acl.setEnvironment(env);
-      acl.setRequestor("Jackie");
+      acl.setRequestor(requestor);
       acl.setRequestOperationType(aclType.value);
       acl.setRequestOperationType(requestOperationType.value); // Create/Delete ..
       acl.setAclType(aclType.value);

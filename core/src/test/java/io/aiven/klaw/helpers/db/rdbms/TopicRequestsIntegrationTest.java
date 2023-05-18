@@ -880,6 +880,39 @@ public class TopicRequestsIntegrationTest {
     assertThat(james).hasSize(Integer.valueOf(number));
   }
 
+  @Order(33)
+  @ParameterizedTest
+  @CsvSource({"John,39", "James,39", "Jackie,39"})
+  public void getTopicRequests_GetAllTeamsRequestsInTenantcy(String requestor, String number) {
+
+    List<TopicRequest> james =
+        selectDataJdbc.selectFilteredTopicRequests(
+            false, requestor, RequestStatus.ALL.value, true, 101, null, null, null, null, false);
+
+    for (TopicRequest req : james) {
+
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(34)
+  @Test
+  public void getTopicRequests_GetAllTeamsRequestsInTenantcy_newTenant() {
+
+    List<TopicRequest> james =
+        selectDataJdbc.selectFilteredTopicRequests(
+            false, "Jackie", RequestStatus.CREATED.value, true, 104, null, null, null, null, false);
+
+    for (TopicRequest req : james) {
+
+      assertThat(req.getTenantId()).isEqualTo(104);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(7));
+  }
+
   private void generateData(
       int number,
       int teamId,

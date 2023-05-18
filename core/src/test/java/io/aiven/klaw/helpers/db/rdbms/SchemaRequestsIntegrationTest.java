@@ -92,6 +92,17 @@ public class SchemaRequestsIntegrationTest {
         RequestOperationType.DELETE,
         500,
         "James"); // Team2
+
+    generateData(
+        7,
+        103,
+        104,
+        "firsttopic99",
+        "dev",
+        RequestStatus.CREATED,
+        RequestOperationType.DELETE,
+        500,
+        "James"); // Team2
   }
 
   public void setupUserInformation() {
@@ -656,7 +667,7 @@ public class SchemaRequestsIntegrationTest {
 
     List<SchemaRequest> james =
         selectDataJdbc.selectFilteredSchemaRequests(
-            false, "James", 101, null, null, null, requestStatus, null, false, false);
+            false, "James", 101, null, null, null, requestStatus, null, true, false);
 
     for (SchemaRequest req : james) {
       assertThat(req.getRequestStatus()).isEqualTo(requestStatus);
@@ -664,6 +675,56 @@ public class SchemaRequestsIntegrationTest {
     }
 
     assertThat(james).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(29)
+  @ParameterizedTest
+  @CsvSource({"James,15", "Jackie,0", "John,15"})
+  public void getSchemaRequestsForApproval_GetAllTeamsRequestsInTenantcy(
+      String requestor, String number) {
+
+    List<SchemaRequest> james =
+        selectDataJdbc.selectFilteredSchemaRequests(
+            true,
+            requestor,
+            101,
+            RequestOperationType.CREATE,
+            null,
+            null,
+            RequestStatus.ALL.value,
+            null,
+            true,
+            false);
+
+    for (SchemaRequest req : james) {
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(29)
+  @Test
+  public void getSchemaRequestsForApproval_GetAllTeamsRequestsInTenantcy_NewTenant() {
+
+    List<SchemaRequest> james =
+        selectDataJdbc.selectFilteredSchemaRequests(
+            true,
+            "Jackie",
+            104,
+            RequestOperationType.DELETE,
+            null,
+            null,
+            RequestStatus.ALL.value,
+            null,
+            true,
+            false);
+
+    for (SchemaRequest req : james) {
+      assertThat(req.getTenantId()).isEqualTo(104);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(7));
   }
 
   private void generateData(
