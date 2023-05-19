@@ -125,7 +125,17 @@ public class UtilControllerService {
     }
     List<SchemaRequest> allSchemaReqs =
         reqsHandle.getAllSchemaRequests(
-            true, requestor, tenantId, null, null, null, null, null, false);
+            true,
+            requestor,
+            tenantId,
+            null,
+            null,
+            null,
+            null,
+            null,
+            !commonUtilsService.isNotAuthorizedUser(
+                getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS),
+            false);
 
     List<AclRequests> allAclReqs;
     List<TopicRequest> allTopicReqs;

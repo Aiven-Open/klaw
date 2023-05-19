@@ -136,6 +136,7 @@ public class SchemaRegistryControllerServiceTest {
             eq(null),
             eq("all"),
             eq(null),
+            eq(true),
             eq(false)))
         .thenReturn(getSchemasReqs());
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
@@ -648,6 +649,7 @@ public class SchemaRegistryControllerServiceTest {
             eq(null),
             eq(null),
             eq(null),
+            eq(true),
             eq(false)))
         .thenReturn(getSchemasReqs(40));
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
@@ -695,6 +697,7 @@ public class SchemaRegistryControllerServiceTest {
             eq(null),
             eq(null),
             eq(null),
+            eq(true),
             eq(false)))
         .thenReturn(getSchemasReqs(40));
     when(rolesPermissionsControllerService.getApproverRoles(anyString(), anyInt()))
