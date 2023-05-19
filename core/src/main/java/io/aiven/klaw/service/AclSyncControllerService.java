@@ -524,6 +524,7 @@ public class AclSyncControllerService {
             && Objects.equals(aclListItem.get("principle"), acl_ssl)
             && Objects.equals(aclSotItem.getAclType(), mp.getTopictype())) {
           mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
+          mp.setTeamid(aclSotItem.getTeamId());
           mp.setReq_no(aclSotItem.getReq_no() + "");
           break;
         }
@@ -531,6 +532,10 @@ public class AclSyncControllerService {
 
       if (mp.getTeamname() == null) {
         mp.setTeamname("Unknown");
+      }
+
+      if (!verifyIfTopicExists(aclListItem, aclsFromSOT)) {
+        continue;
       }
 
       if (isReconciliation) {
@@ -545,6 +550,19 @@ public class AclSyncControllerService {
       }
     }
     return aclListMap;
+  }
+
+  private boolean verifyIfTopicExists(
+      Map<String, String> aclListItemFromCluster, List<Acl> aclsFromLocalMetadata) {
+    String topicName;
+    if ("topic".equalsIgnoreCase(aclListItemFromCluster.get("resourceType"))) {
+      topicName = aclListItemFromCluster.get("resourceName");
+      String finalTopicName = topicName;
+      return aclsFromLocalMetadata.stream()
+          .anyMatch(acl -> acl.getTopicname().equals(finalTopicName));
+    }
+
+    return false;
   }
 
   private List<String> tenantFiltering(List<String> teamList) {

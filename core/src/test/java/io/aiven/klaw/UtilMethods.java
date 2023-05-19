@@ -254,6 +254,32 @@ public class UtilMethods {
     return allTopicReqs;
   }
 
+  public List<Map<String, String>> getClusterSyncAcls() {
+    Set<Map<String, String>> acls = new HashSet<>();
+
+    HashMap<String, String> aclbindingMap;
+
+    aclbindingMap = new HashMap<>();
+    aclbindingMap.put("host", "2.1.2.2");
+    aclbindingMap.put("principle", "User:*");
+    aclbindingMap.put("operation", AclPermissionType.READ.value);
+    aclbindingMap.put("permissionType", "ALLOW");
+    aclbindingMap.put("resourceType", "TOPIC");
+    aclbindingMap.put("resourceName", "testtopic1001");
+    acls.add(aclbindingMap);
+
+    aclbindingMap = new HashMap<>();
+    aclbindingMap.put("host", "2.1.2.2");
+    aclbindingMap.put("principle", "User:*");
+    aclbindingMap.put("operation", AclPermissionType.READ.value);
+    aclbindingMap.put("permissionType", "ALLOW");
+    aclbindingMap.put("resourceType", "GROUP");
+    aclbindingMap.put("resourceName", "mygrp2");
+    acls.add(aclbindingMap);
+
+    return new ArrayList<>(acls);
+  }
+
   public List<Map<String, String>> getClusterAcls() {
     Set<Map<String, String>> acls = new HashSet<>();
 
@@ -283,6 +309,26 @@ public class UtilMethods {
     aclbindingMap.put("permissionType", "ALLOW");
     aclbindingMap.put("resourceType", "GROUP");
     aclbindingMap.put("resourceName", "mygrp1");
+    acls.add(aclbindingMap);
+
+    return new ArrayList<>(acls);
+  }
+
+  public List<Map<String, String>> getClusterAclsNonApacheKafka() {
+    Set<Map<String, String>> acls = new HashSet<>();
+
+    HashMap<String, String> aclbindingMap;
+
+    aclbindingMap = new HashMap<>();
+    aclbindingMap.put("host", "*");
+    aclbindingMap.put("principle", "testuser1234");
+    aclbindingMap.put("consumerGroup", "-na-");
+    aclbindingMap.put("operation", AclPermissionType.READ.value);
+    aclbindingMap.put("permissionType", "ALLOW");
+    aclbindingMap.put("resourceType", "TOPIC");
+    aclbindingMap.put("resourceName", "testtopic1");
+    aclbindingMap.put("aivenaclid", "aclid12345");
+
     acls.add(aclbindingMap);
 
     return new ArrayList<>(acls);
@@ -744,6 +790,7 @@ public class UtilMethods {
     syncAclUpdates.setAclIp("12.2.4.55");
     syncAclUpdates.setTeamSelected("Team2");
     syncAclUpdates.setEnvSelected("DEV");
+    syncAclUpdates.setAclId("aclid12345");
 
     SyncAclUpdates syncAclUpdates1 = new SyncAclUpdates();
     syncAclUpdates1.setTopicName("testtopic1");
@@ -752,6 +799,7 @@ public class UtilMethods {
     syncAclUpdates1.setAclIp("12.2.4.55");
     syncAclUpdates1.setTeamSelected("Team2");
     syncAclUpdates1.setEnvSelected("1");
+    syncAclUpdates1.setAclId("aclid12346");
 
     syncUpdatesList.add(syncAclUpdates);
     syncUpdatesList.add(syncAclUpdates1);
