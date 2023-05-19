@@ -1043,3 +1043,16 @@ databaseChangeLog:
                 - column:
                     name: envparams
                     type: CLOB
+    - changeSet:
+        id: 15-05-2023 Password Token and Generation Time
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              columns:
+                - column:
+                    name: resettoken
+                    type: VARCHAR(36)
+                - column:
+                    name: resettokengeneratedat
+                    type: TIMESTAMP
+              tableName: kwusers

@@ -711,6 +711,15 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public String resetPassword(String username, String resetToken, String pwd) {
+    return jdbcUpdateHelper.resetPassword(username, pwd, resetToken);
+  }
+
+  public String generatePasswordResetToken(String username) {
+    return jdbcUpdateHelper.generatePasswordResetToken(username);
+  }
+
+  @Override
   public String updateUser(UserInfo userInfo) {
     return jdbcUpdateHelper.updateUser(userInfo);
   }

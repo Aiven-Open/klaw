@@ -595,11 +595,51 @@
         }
       }
     },
-    "/resetPassword" : {
+    "/reset/token" : {
       "post" : {
         "tags" : [ "users-teams-controller" ],
-        "operationId" : "resetPassword",
+        "operationId" : "resetToken",
         "parameters" : [ {
+          "name" : "username",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ResetPasswordInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/reset/password" : {
+      "post" : {
+        "tags" : [ "users-teams-controller" ],
+        "operationId" : "resetPasswordWithToken",
+        "parameters" : [ {
+          "name" : "token",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "password",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
           "name" : "username",
           "in" : "query",
           "required" : true,
@@ -5453,14 +5493,14 @@
       },
       "ResetPasswordInfo" : {
         "properties" : {
-          "passwordSent" : {
-            "type" : "string"
+          "tokenSent" : {
+            "type" : "boolean"
           },
           "userFound" : {
-            "type" : "string"
+            "type" : "boolean"
           }
         },
-        "required" : [ "passwordSent", "userFound" ]
+        "required" : [ "tokenSent", "userFound" ]
       },
       "RequestVerdict" : {
         "properties" : {

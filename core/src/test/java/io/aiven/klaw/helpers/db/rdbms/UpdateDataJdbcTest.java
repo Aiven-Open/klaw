@@ -18,14 +18,19 @@ import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -33,6 +38,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(SpringExtension.class)
 public class UpdateDataJdbcTest {
 
+  public static final int TOKEN_TTL = 60000;
   @Mock private TopicRequestsRepo topicRequestsRepo;
 
   @Mock private KwKafkaConnectorRepo kafkaConnectorRepo;
@@ -54,6 +60,8 @@ public class UpdateDataJdbcTest {
 
   private UtilMethods utilMethods;
 
+  @Captor private ArgumentCaptor<UserInfo> userCaptor;
+
   @Mock UserInfo userInfo;
 
   @BeforeEach
@@ -70,6 +78,7 @@ public class UpdateDataJdbcTest {
     ReflectionTestUtils.setField(updateData, "topicRepo", topicRepo);
     ReflectionTestUtils.setField(updateData, "kafkaConnectorRepo", kafkaConnectorRepo);
     ReflectionTestUtils.setField(updateData, "messageSchemaRepo", messageSchemaRepo);
+    ReflectionTestUtils.setField(updateData, "tokenTTL", TOKEN_TTL);
   }
 
   @Test
@@ -156,6 +165,88 @@ public class UpdateDataJdbcTest {
     when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
     String result = updateData.updatePassword(user, "pwd");
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void resetPassword_withSuccess() {
+    String user = "uiuser1";
+    String resetToken = UUID.randomUUID().toString();
+    when(userInfo.getResetTokenGeneratedAt()).thenReturn(Timestamp.from(Instant.now()));
+    when(userInfo.getResetToken()).thenReturn(resetToken);
+    when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
+
+    String result = updateData.resetPassword(user, "newPWD", resetToken);
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void resetPassword_withFailureIncorrectToken() {
+    String user = "uiuser1";
+    String resetToken = UUID.randomUUID().toString();
+    when(userInfo.getResetTokenGeneratedAt()).thenReturn(Timestamp.from(Instant.now()));
+    when(userInfo.getResetToken()).thenReturn(resetToken);
+    when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
+
+    String result = updateData.resetPassword(user, "newPWD", UUID.randomUUID().toString());
+    assertThat(result).isEqualTo(ApiResultStatus.FAILURE.value);
+  }
+
+  @Test
+  public void resetPassword_withFailureTokenTimeout() {
+    String user = "uiuser1";
+    String resetToken = UUID.randomUUID().toString();
+    Timestamp timestamp = Timestamp.from(Instant.now());
+    // reset token timeout is the length of the time to live plus a second old.
+    when(userInfo.getResetTokenGeneratedAt())
+        .thenReturn(new Timestamp(timestamp.getTime() - (TOKEN_TTL + 1)));
+    when(userInfo.getResetToken()).thenReturn(resetToken);
+    when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
+
+    String result = updateData.resetPassword(user, "newPWD", resetToken);
+    assertThat(result).isEqualTo(ApiResultStatus.FAILURE.value);
+  }
+
+  @Test
+  public void resetPassword_withSucess() {
+    String user = "uiuser1";
+    String resetToken = UUID.randomUUID().toString();
+    Timestamp timestamp = Timestamp.from(Instant.now());
+    // reset token timeout half the length of the
+    when(userInfo.getResetTokenGeneratedAt())
+        .thenReturn(new Timestamp(timestamp.getTime() - (TOKEN_TTL / 2)));
+    when(userInfo.getResetToken()).thenReturn(resetToken);
+    when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
+    String result = updateData.resetPassword(user, "newPWD", resetToken);
+
+    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void generateToken_withSucess() {
+    String user = "uiuser1";
+    UserInfo info = new UserInfo();
+    info.setTenantId(101);
+    info.setRole("User");
+    info.setUsername(user);
+    when(userInfoRepo.findById(user)).thenReturn(Optional.of(info));
+
+    String result = updateData.generatePasswordResetToken(user);
+    assertThat(result).isNotEqualTo(ApiResultStatus.FAILURE.value);
+    verify(userInfoRepo, times(1)).save(userCaptor.capture());
+    UserInfo savedUser = userCaptor.getValue();
+    assertThat(savedUser.getResetTokenGeneratedAt()).isEqualToIgnoringSeconds(Instant.now());
+    assertThat(savedUser.getResetToken()).isNotNull();
+    assertThat(savedUser.getResetToken()).isEqualTo(result);
+  }
+
+  @Test
+  public void generateToken_withFailureNoSuchUser() {
+    String user = "uiuser1";
+
+    when(userInfoRepo.findById(user)).thenReturn(Optional.empty());
+    String result = updateData.generatePasswordResetToken(user);
+    assertThat(result).isEqualTo(ApiResultStatus.FAILURE.value);
+    verify(userInfoRepo, times(0)).save(any());
   }
 
   @Test
