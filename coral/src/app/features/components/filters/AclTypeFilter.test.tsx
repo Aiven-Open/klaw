@@ -105,7 +105,7 @@ describe("AclTypeFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve ACL type in url", () => {
+  describe("updates the search param to preserve ACL type in url (paginated)", () => {
     const consumerAcl = "CONSUMER";
 
     beforeEach(async () => {
@@ -140,6 +140,42 @@ describe("AclTypeFilter.tsx", () => {
         expect(window.location.search).toEqual(
           `?aclType=${consumerAcl}&page=1`
         );
+      });
+    });
+  });
+  describe("updates the search param to preserve ACL type in url (not paginated)", () => {
+    const consumerAcl = "CONSUMER";
+
+    beforeEach(async () => {
+      customRender(<AclTypeFilter paginated={false} />, {
+        queryClient: true,
+        browserRouter: true,
+      });
+    });
+
+    afterEach(() => {
+      // resets url to get to clean state again
+      window.history.pushState({}, "No page title", "/");
+      cleanup();
+    });
+
+    it("shows no search param by default", async () => {
+      expect(window.location.search).toEqual("");
+    });
+
+    it(`sets "?aclType=${consumerAcl}" as search param when user selected it`, async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterLabel,
+      });
+
+      const option = screen.getByRole("option", {
+        name: consumerAcl,
+      });
+
+      await userEvent.selectOptions(select, option);
+
+      await waitFor(() => {
+        expect(window.location.search).toEqual(`?aclType=${consumerAcl}`);
       });
     });
   });

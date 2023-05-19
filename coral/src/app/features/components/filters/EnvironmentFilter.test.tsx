@@ -234,7 +234,7 @@ describe("EnvironmentFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve environment in url", () => {
+  describe("updates the search param to preserve environment in url (paginated)", () => {
     beforeEach(async () => {
       mockGetEnvironments.mockResolvedValue(mockEnvironments);
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
@@ -294,6 +294,71 @@ describe("EnvironmentFilter.tsx", () => {
 
       await waitFor(() => {
         expect(window.location.search).toEqual("?page=1");
+      });
+    });
+  });
+
+  describe("updates the search param to preserve environment in url (not paginated)", () => {
+    beforeEach(async () => {
+      mockGetEnvironments.mockResolvedValue(mockEnvironments);
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
+      mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
+
+      customRender(
+        <EnvironmentFilter
+          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+          paginated={false}
+        />,
+        {
+          queryClient: true,
+          browserRouter: true,
+        }
+      );
+      await waitForElementToBeRemoved(
+        screen.getByTestId("select-environment-loading")
+      );
+    });
+
+    afterEach(() => {
+      // resets url to get to clean state again
+      window.history.pushState({}, "No page title", "/");
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("shows no search param by default", async () => {
+      expect(window.location.search).toEqual("");
+    });
+
+    it(`sets "${mockEnvironments[1].name}" as search param when user selected it`, async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterLabel,
+      });
+
+      const option = screen.getByRole("option", {
+        name: mockEnvironments[1].name,
+      });
+
+      await userEvent.selectOptions(select, option);
+
+      await waitFor(() => {
+        expect(window.location.search).toEqual(
+          `?environment=${mockEnvironments[1].id}`
+        );
+      });
+    });
+
+    it("removes environment search param when user chooses All environment", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterLabel,
+      });
+
+      const option = screen.getByRole("option", { name: "All Environments" });
+
+      await userEvent.selectOptions(select, option);
+
+      await waitFor(() => {
+        expect(window.location.search).toEqual("");
       });
     });
   });
