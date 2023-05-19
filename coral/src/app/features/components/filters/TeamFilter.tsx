@@ -3,7 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { getTeams } from "src/domain/team/team-api";
 
-function TeamFilter() {
+interface TeamFilterProps {
+  paginated?: boolean;
+}
+
+function TeamFilter({ paginated = true }: TeamFilterProps) {
   const { data: topicTeams } = useQuery(["topic-get-teams"], {
     queryFn: () => getTeams(),
   });
@@ -22,7 +26,11 @@ function TeamFilter() {
         labelText="Filter by team"
         value={teamId}
         onChange={(event) =>
-          setFilterValue({ name: "teamId", value: event.target.value })
+          setFilterValue({
+            name: "teamId",
+            value: event.target.value,
+            paginated,
+          })
         }
       >
         <Option key={"ALL"} value={"ALL"}>

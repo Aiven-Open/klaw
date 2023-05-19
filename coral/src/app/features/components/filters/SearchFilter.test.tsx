@@ -94,7 +94,7 @@ describe("SearchFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve topic in url", () => {
+  describe("updates the search param to preserve topic in url (paginated)", () => {
     beforeEach(async () => {
       customRender(
         <SearchFilter placeholder={placeholder} description={description} />,
@@ -124,6 +124,44 @@ describe("SearchFilter.tsx", () => {
 
       await waitFor(() => {
         expect(window.location.search).toEqual(`?search=testing&page=1`);
+      });
+    });
+  });
+
+  describe("updates the search param to preserve topic in url (not paginated)", () => {
+    beforeEach(async () => {
+      customRender(
+        <SearchFilter
+          placeholder={placeholder}
+          description={description}
+          paginated={false}
+        />,
+        {
+          browserRouter: true,
+        }
+      );
+    });
+
+    afterEach(() => {
+      // resets url to get to clean state again
+      window.history.pushState({}, "No page title", "/");
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("shows no search param by default", async () => {
+      expect(window.location.search).toEqual("");
+    });
+
+    it("sets `testing` as search param when user types in search input", async () => {
+      const searchInput = screen.getByRole("search", { name: placeholder });
+
+      await userEvent.type(searchInput, "testing");
+
+      expect(searchInput).toHaveValue("testing");
+
+      await waitFor(() => {
+        expect(window.location.search).toEqual(`?search=testing`);
       });
     });
   });

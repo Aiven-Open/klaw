@@ -43,7 +43,7 @@ describe("MyRequestsFilter", () => {
     });
   });
 
-  it("sets the showOnlyMyRequests and page search parameter when user toggles the switch", async () => {
+  it("sets the showOnlyMyRequests and page search parameter when user toggles the switch (paginated)", async () => {
     window.history.replaceState(null, "", "/");
     customRender(<MyRequestsFilter />, {
       browserRouter: true,
@@ -59,7 +59,7 @@ describe("MyRequestsFilter", () => {
     );
   });
 
-  it("unsets the showOnlyMyRequests and page search parameter when user untoggles the switch", async () => {
+  it("unsets the showOnlyMyRequests and page search parameter when user untoggles the switch (paginated)", async () => {
     window.history.replaceState(null, "", "/?showOnlyMyRequests=true");
     customRender(<MyRequestsFilter />, {
       browserRouter: true,
@@ -73,5 +73,37 @@ describe("MyRequestsFilter", () => {
     await userEvent.click(showMyRequests);
     await waitFor(() => expect(showMyRequests).not.toBeChecked());
     await waitFor(() => expect(window.location.search).toEqual("?page=1"));
+  });
+
+  it("sets the showOnlyMyRequests and page search parameter when user toggles the switch (not paginated)", async () => {
+    window.history.replaceState(null, "", "/");
+    customRender(<MyRequestsFilter paginated={false} />, {
+      browserRouter: true,
+    });
+    await waitFor(() => expect(window.location.search).toEqual(""));
+    const showMyRequests = screen.getByRole("checkbox", {
+      name: "Show only my requests",
+    });
+    await userEvent.click(showMyRequests);
+    await waitFor(() => expect(showMyRequests).toBeChecked());
+    await waitFor(() =>
+      expect(window.location.search).toEqual("?showOnlyMyRequests=true")
+    );
+  });
+
+  it("unsets the showOnlyMyRequests and page search parameter when user untoggles the switch", async () => {
+    window.history.replaceState(null, "", "/?showOnlyMyRequests=true");
+    customRender(<MyRequestsFilter paginated={false} />, {
+      browserRouter: true,
+    });
+    await waitFor(() =>
+      expect(window.location.search).toEqual("?showOnlyMyRequests=true")
+    );
+    const showMyRequests = screen.getByRole("checkbox", {
+      name: "Show only my requests",
+    });
+    await userEvent.click(showMyRequests);
+    await waitFor(() => expect(showMyRequests).not.toBeChecked());
+    await waitFor(() => expect(window.location.search).toEqual(""));
   });
 });

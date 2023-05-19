@@ -5,7 +5,11 @@ import { AclType } from "src/domain/acl";
 type AclTypeForFilter = AclType | "ALL";
 const aclTypesForFilter: AclTypeForFilter[] = ["ALL", "CONSUMER", "PRODUCER"];
 
-function AclTypeFilter() {
+interface AclTypeFilterProps {
+  paginated?: boolean;
+}
+
+function AclTypeFilter({ paginated }: AclTypeFilterProps) {
   const { aclType, setFilterValue } = useFiltersValues();
 
   return (
@@ -15,7 +19,11 @@ function AclTypeFilter() {
       defaultValue={aclType}
       onChange={(e) => {
         const selectedType = e.target.value as AclTypeForFilter;
-        return setFilterValue({ name: "aclType", value: selectedType });
+        return setFilterValue({
+          name: "aclType",
+          value: selectedType,
+          paginated,
+        });
       }}
     >
       {aclTypesForFilter.map((type) => {

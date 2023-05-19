@@ -6,13 +6,17 @@ import {
 } from "src/domain/requests/requests-types";
 
 type SetFiltersParams =
-  | { name: "environment"; value: string }
-  | { name: "aclType"; value: AclType | "ALL" }
-  | { name: "status"; value: RequestStatus }
-  | { name: "teamId"; value: string }
-  | { name: "showOnlyMyRequests"; value: boolean }
-  | { name: "requestType"; value: RequestOperationType | "ALL" }
-  | { name: "search"; value: string };
+  | { name: "environment"; value: string; paginated?: boolean }
+  | { name: "aclType"; value: AclType | "ALL"; paginated?: boolean }
+  | { name: "status"; value: RequestStatus; paginated?: boolean }
+  | { name: "teamId"; value: string; paginated?: boolean }
+  | { name: "showOnlyMyRequests"; value: boolean; paginated?: boolean }
+  | {
+      name: "requestType";
+      value: RequestOperationType | "ALL";
+      paginated?: boolean;
+    }
+  | { name: "search"; value: string; paginated?: boolean };
 
 type UseFiltersValuesParams =
   | {
@@ -34,8 +38,9 @@ type UseFilterValuesReturn = {
   showOnlyMyRequests: boolean;
   requestType: RequestOperationType | "ALL";
   search: string;
-  setFilterValue: ({ name, value }: SetFiltersParams) => void;
+  setFilterValue: ({ name, value, paginated }: SetFiltersParams) => void;
 };
+
 const useFiltersValues = (
   defaultValues: UseFiltersValuesParams = {}
 ): UseFilterValuesReturn => {
@@ -64,21 +69,27 @@ const useFiltersValues = (
     defaultRequestType;
   const search = searchParams.get("search") ?? defaultSearch;
 
-  const setFilterValue = ({ name, value }: SetFiltersParams) => {
+  const setFilterValue = ({
+    name,
+    value,
+    paginated = true,
+  }: SetFiltersParams) => {
+    const parsedValue = typeof value === "boolean" ? String(value) : value;
+    searchParams.set(name, parsedValue);
+
     if (
       (value === "ALL" && name !== "status") ||
       value === "" ||
       value === false
     ) {
       searchParams.delete(name);
-      searchParams.set("page", "1");
-      setSearchParams(searchParams);
-    } else {
-      const parsedValue = typeof value === "boolean" ? String(value) : value;
-      searchParams.set(name, parsedValue);
-      searchParams.set("page", "1");
-      setSearchParams(searchParams);
     }
+
+    if (paginated) {
+      searchParams.set("page", "1");
+    }
+
+    setSearchParams(searchParams);
   };
 
   return {

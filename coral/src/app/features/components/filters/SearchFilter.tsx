@@ -6,9 +6,14 @@ import type { ChangeEvent } from "react";
 type SearchFilterProps = {
   placeholder: string;
   description: string;
+  paginated?: boolean;
 };
 
-function SearchFilter({ placeholder, description }: SearchFilterProps) {
+function SearchFilter({
+  placeholder,
+  description,
+  paginated,
+}: SearchFilterProps) {
   const { search, setFilterValue } = useFiltersValues();
   return (
     <>
@@ -24,6 +29,7 @@ function SearchFilter({ placeholder, description }: SearchFilterProps) {
             setFilterValue({
               name: "search",
               value: String(event.target.value).trim(),
+              paginated,
             }),
           500
         )}

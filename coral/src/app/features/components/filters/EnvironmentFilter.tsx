@@ -16,6 +16,7 @@ type EnvironmentEndpoint =
 interface EnvironmentFilterProps {
   isSchemaRegistryEnvironments?: boolean;
   environmentEndpoint: EnvironmentEndpoint;
+  paginated?: boolean;
 }
 
 const environmentEndpointMap: {
@@ -26,7 +27,10 @@ const environmentEndpointMap: {
   getAllEnvironmentsForConnector: getAllEnvironmentsForConnector,
 };
 
-function EnvironmentFilter({ environmentEndpoint }: EnvironmentFilterProps) {
+function EnvironmentFilter({
+  environmentEndpoint,
+  paginated,
+}: EnvironmentFilterProps) {
   const { environment, setFilterValue } = useFiltersValues();
 
   const { data: environments } = useQuery<Environment[], HTTPError>(
@@ -48,7 +52,11 @@ function EnvironmentFilter({ environmentEndpoint }: EnvironmentFilterProps) {
         labelText="Filter by Environment"
         value={environment}
         onChange={(event) =>
-          setFilterValue({ name: "environment", value: event.target.value })
+          setFilterValue({
+            name: "environment",
+            value: event.target.value,
+            paginated,
+          })
         }
       >
         <Option key={"ALL"} value={"ALL"}>

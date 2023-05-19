@@ -149,7 +149,7 @@ describe("TeamFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve team in url", () => {
+  describe("updates the search param to preserve team in url (paginated)", () => {
     const optionToSelect = "DevRel";
     const optionId = "1004";
 
@@ -186,6 +186,47 @@ describe("TeamFilter.tsx", () => {
 
       await waitFor(() => {
         expect(window.location.search).toEqual(`?teamId=${optionId}&page=1`);
+      });
+    });
+  });
+
+  describe("updates the search param to preserve team in url (not paginated)", () => {
+    const optionToSelect = "DevRel";
+    const optionId = "1004";
+
+    beforeEach(async () => {
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+      customRender(<TeamFilter paginated={false} />, {
+        queryClient: true,
+        browserRouter: true,
+      });
+      await waitFor(() => {
+        expect(screen.getByRole("combobox")).toBeVisible();
+      });
+    });
+
+    afterEach(() => {
+      // resets url to get to clean state again
+      window.history.pushState({}, "No page title", "/");
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("shows no search param by default", async () => {
+      expect(window.location.search).toEqual("");
+    });
+
+    it("sets `teamId=1` as search param when user selected it", async () => {
+      const select = screen.getByRole("combobox", {
+        name: filterLabel,
+      });
+
+      const option = screen.getByRole("option", { name: optionToSelect });
+
+      await userEvent.selectOptions(select, option);
+
+      await waitFor(() => {
+        expect(window.location.search).toEqual(`?teamId=${optionId}`);
       });
     });
   });
