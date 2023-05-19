@@ -9,7 +9,10 @@ import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.MailType;
+import io.aiven.klaw.model.enums.PermissionType;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -109,19 +112,22 @@ public class MailUtils {
                 getUserName(SecurityContextHolder.getContext().getAuthentication().getPrincipal()))
             .getTenantId();
     loadKwProps(tenantId);
-
+    Boolean requiresApproval = false;
     switch (mailType) {
       case TOPIC_CREATE_REQUESTED -> {
         formattedStr = String.format(topicRequestMail, "'" + topicName + "'");
         subject = "Create Topic Request";
+        requiresApproval = true;
       }
       case TOPIC_DELETE_REQUESTED -> {
         formattedStr = String.format(topicDeleteRequestMail, "'" + topicName + "'");
         subject = "Delete Topic Request";
+        requiresApproval = true;
       }
       case TOPIC_CLAIM_REQUESTED -> {
         formattedStr = String.format(topicClaimRequestMail, "'" + topicName + "'");
         subject = "Claim Topic Request";
+        requiresApproval = true;
       }
       case TOPIC_REQUEST_APPROVED -> {
         formattedStr = String.format(topicRequestApproved, "'" + topicName + "'");
@@ -135,10 +141,12 @@ public class MailUtils {
       case ACL_REQUESTED -> {
         formattedStr = String.format(aclRequestMail, "'" + acl + "'", "'" + topicName + "'");
         subject = "New Acl Request";
+        requiresApproval = true;
       }
       case ACL_DELETE_REQUESTED -> {
         formattedStr = String.format(aclDeleteRequestMail, "'" + acl + "'", "'" + topicName + "'");
         subject = "Acl Delete Request";
+        requiresApproval = true;
       }
       case ACL_REQUEST_APPROVED -> {
         formattedStr = String.format(aclRequestApproved, "'" + acl + "'", "'" + topicName + "'");
@@ -157,9 +165,25 @@ public class MailUtils {
         formattedStr = "Acl Request processing failed : " + acl + ", " + topicName;
         subject = "Request processing failed.";
       }
+      case CONNECTOR_CLAIM_REQUESTED,
+          CONNECTOR_REQUEST_DENIED,
+          CONNECTOR_DELETE_REQUESTED,
+          SCHEMA_REQUESTED -> {
+        // all remaining requests that require approvals are grouped here.
+        requiresApproval = true;
+      }
     }
 
-    sendMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
+    sendMail(
+        username,
+        dbHandle,
+        formattedStr,
+        subject,
+        false,
+        requiresApproval,
+        null,
+        tenantId,
+        loginUrl);
   }
 
   void sendMail(String username, String pwd, HandleDbRequests dbHandle, String loginUrl) {
@@ -174,7 +198,7 @@ public class MailUtils {
     formattedStr = String.format(newUserAdded, username, pwd);
     subject = "Access to Klaw";
 
-    sendMail(username, dbHandle, formattedStr, subject, false, null, tenantId, loginUrl);
+    sendMail(username, dbHandle, formattedStr, subject, false, false, null, tenantId, loginUrl);
   }
 
   void sendMailResetPwd(
@@ -255,6 +279,7 @@ public class MailUtils {
         formattedStr,
         subject,
         true,
+        false,
         registerUserInfo.getMailid(),
         tenantId,
         loginUrl);
@@ -296,6 +321,7 @@ public class MailUtils {
           formattedStr,
           subject,
           true,
+          false,
           registerUserInfo.getMailid(),
           tenantId,
           loginUrl);
@@ -340,6 +366,7 @@ public class MailUtils {
       String formattedStr,
       String subject,
       boolean registrationRequest,
+      boolean requiresApproval,
       String otherMailId,
       int tenantId,
       String loginUrl) {
@@ -349,6 +376,8 @@ public class MailUtils {
           String emailId;
 
           String emailIdTeam = null;
+          Integer teamId = null;
+          List<String> allApprovers = null;
           try {
             if (registrationRequest) {
               emailId = otherMailId;
@@ -358,14 +387,19 @@ public class MailUtils {
 
             try {
               List<Team> allTeams = dbHandle.getAllTeamsOfUsers(username, tenantId);
-              if (!allTeams.isEmpty()) emailIdTeam = allTeams.get(0).getTeammail();
+              if (!allTeams.isEmpty()) {
+                emailIdTeam = allTeams.get(0).getTeammail();
+                teamId = allTeams.get(0).getTeamId();
+              }
             } catch (Exception e) {
               log.error("Exception :", e);
             }
-
+            if (requiresApproval) {
+              allApprovers = getAllUsersWithPermissionToApproveRequest(tenantId, username, teamId);
+            }
             if (emailId != null) {
               emailService.sendSimpleMessage(
-                  emailId, emailIdTeam, subject, formattedStr, tenantId, loginUrl);
+                  emailId, emailIdTeam, allApprovers, subject, formattedStr, tenantId, loginUrl);
             } else {
               log.error("Email id not found. Notification not sent !!");
             }
@@ -415,6 +449,34 @@ public class MailUtils {
     } else {
       return null;
     }
+  }
+
+  private List<String> getAllUsersWithPermissionToApproveRequest(
+      int tenantId, String username, Integer teamId) {
+
+    Map<String, List<String>> rolesToPermissions =
+        manageDatabase.getRolesPermissionsPerTenant(tenantId);
+
+    List<String> roles = new ArrayList<>();
+
+    rolesToPermissions.forEach(
+        (k, v) -> {
+          if (v.contains(PermissionType.APPROVE_ALL_REQUESTS_TEAMS.name())) {
+            roles.add(k);
+          }
+        });
+
+    // Prevent duplicates only show from the correct tenant, that is not the usernae of the
+    // requestor and that is not on the same team as they have already received that email.
+    return manageDatabase.selectAllCachedUserInfo().stream()
+        .filter(
+            user ->
+                user.getTenantId() == tenantId
+                    && !user.getUsername().equals(username)
+                    && roles.contains(user.getRole())
+                    && (teamId == null || !user.getTeamId().equals(teamId)))
+        .map(u -> u.getMailid())
+        .toList();
   }
 
   public String sendMailToSaasAdmin(int tenantId, String userName, String period, String loginUrl) {
