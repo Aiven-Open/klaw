@@ -7,7 +7,6 @@ import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscri
 import { getTopicOverview } from "src/domain/topic/topic-api";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 
-// eslint-disable-next-line import/exports-last
 type SubscriptionOptions =
   | "aclInfoList"
   | "prefixedAclInfoList"
@@ -32,9 +31,8 @@ const TopicSubscriptions = () => {
     queryFn: () => getTopicOverview({ topicName, environmentId: "2" }),
   });
 
-  const [selectedSubs, setSelectedSubs] = useState<
-    "aclInfoList" | "prefixedAclInfoList" | "transactionalAclInfoList"
-  >("aclInfoList");
+  const [selectedSubs, setSelectedSubs] =
+    useState<SubscriptionOptions>("aclInfoList");
 
   const filteredData: AclOverviewInfo[] = useMemo(() => {
     if (data === undefined) {
