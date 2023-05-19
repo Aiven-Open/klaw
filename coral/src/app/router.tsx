@@ -1,4 +1,6 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
+import { TopicOverview } from "src/app/features/topics/details/overview";
+import TopicSubscriptions from "src/app/features/topics/details/subscriptions/TopicSubscriptions";
 import Layout from "src/app/layout/Layout";
 import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
 import ApprovalsPage from "src/app/pages/approvals";
@@ -16,6 +18,7 @@ import SchemaRequestsPage from "src/app/pages/requests/schemas";
 import TopicRequestsPage from "src/app/pages/requests/topics";
 import Topics from "src/app/pages/topics";
 import AclRequest from "src/app/pages/topics/acl-request";
+import { TopicDetailsPage } from "src/app/pages/topics/details";
 import RequestTopic from "src/app/pages/topics/request";
 import SchemaRequest from "src/app/pages/topics/schema-request";
 import {
@@ -28,10 +31,8 @@ import {
   TopicOverviewTabEnum,
 } from "src/app/router_utils";
 import { getRouterBasename } from "src/config";
-import { TopicDetailsPage } from "src/app/pages/topics/details";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
-import { TopicOverview } from "src/app/features/topics/details/overview";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -62,7 +63,7 @@ const routes: Array<RouteObject> = [
           },
           {
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[TopicOverviewTabEnum.ACLS],
-            element: <div>ACLS</div>,
+            element: <TopicSubscriptions />,
             id: TopicOverviewTabEnum.ACLS,
           },
           {
