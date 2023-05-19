@@ -411,7 +411,8 @@ public class ClusterApiService {
 
       String uri;
 
-      if (RequestOperationType.CREATE.value.equals(connectorType)) {
+      if (RequestOperationType.CREATE.value.equals(connectorType)
+          || RequestOperationType.PROMOTE.value.equals(connectorType)) {
         uri = clusterConnUrl + URI_POST_CONNECTOR;
       } else if (RequestOperationType.UPDATE.value.equals(connectorType)) {
         uri = clusterConnUrl + URI_UPDATE_CONNECTOR;

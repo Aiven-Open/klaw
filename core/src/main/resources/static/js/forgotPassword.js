@@ -50,36 +50,83 @@ app.controller("forgotPwdCtrl", function($scope, $http, $location, $window) {
                 );
         }
 
-        $scope.resetPassword = function() {
-            if(!$scope.forgotPwdUsername)
-                {
-                    $scope.alertnote = "Please enter your username.";
-                    $scope.showAlertToast();
-                    return;
+        $scope.generateToken = function() {
+                    if(!$scope.forgotPwdUsername)
+                        {
+                            $scope.alertnote = "Please enter your username.";
+                            $scope.showAlertToast();
+                            return;
+                        }
+
+                    $http({
+                            method: "POST",
+                            url: "reset/token",
+                            headers : { 'Content-Type' : 'application/json' },
+                            params: {'username' : $scope.forgotPwdUsername },
+                            data: {'username' : $scope.forgotPwdUsername}
+                        }).success(function(output) {
+                            $scope.userFound = output.userFound;
+                            if($scope.userFound == 'false')
+                                $scope.alert = 'User not found !';
+                            else if($scope.userFound == 'true' && output.tokenSent == 'false'){
+                                $scope.alert = 'An issue occurred while resetting password. Please contact Admin !';
+                            }
+                            else {
+                                $scope.alert = 'A password reset token has been sent to your account to reset your password.';
+                                $scope.tokenSent = 'true';
+                                }
+                        }).error(
+                            function(error)
+                            {
+                                $scope.alert = 'User not found !'
+                            }
+                        );
                 }
 
-            $http({
-                    method: "POST",
-                    url: "resetPassword",
-                    headers : { 'Content-Type' : 'application/json' },
-                    params: {'username' : $scope.forgotPwdUsername },
-                    data: {'username' : $scope.forgotPwdUsername}
-                }).success(function(output) {
-                    $scope.userFound = output.userFound;
-                    if($scope.userFound == 'false')
-                        $scope.alert = 'User not found !';
-                    else if($scope.userFound == 'true' && output.passwordSent == 'false'){
-                        $scope.alert = 'An issue occurred while resetting password. Please contact Admin !';
-                    }
-                    else
-                        $scope.alert = 'Dear User, an email is sent to your configured email id with a new Password !';
-                }).error(
-                    function(error)
-                    {
-                        $scope.alert = 'User not found !'
-                    }
-                );
-        }
+                $scope.resetPassword = function() {
+                            if(!$scope.forgotPwdUsername || !$scope.password || !$scope.confirmationPassword || !$scope.resetToken)
+                                {
+                                    $scope.alertnote = "Please ensure you have filled out your username, password, confirmation password and reset token.";
+                                    $scope.showAlertToast();
+                                    return;
+                                } else if($scope.password !== $scope.confirmationPassword )
+{
+                                    $scope.alertnote = "Password and confirmation password must match!";
+                                    $scope.showAlertToast();
+                                    return;
+                                }
+                            $http({
+                                    method: "POST",
+                                    url: "reset/password",
+                                    headers : { 'Content-Type' : 'application/json' },
+                                    params: {'username' : $scope.forgotPwdUsername,
+                                              'password' : $scope.password,
+                                              'token' : $scope.resetToken},
+                                    data: {'username' : $scope.forgotPwdUsername}
+                                }).success(function(output) {
+                                    $scope.userFound = output.userFound;
+                                    if($scope.userFound == 'false')
+                                        $scope.alert = 'User not found !';
+                                    else if($scope.userFound == 'true' && output.tokenSent == 'false'){
+                                        $scope.alert = 'An issue occurred while resetting password. Please contact Admin !';
+                                    }
+                                    else {
 
+                                        $scope.alert = 'Your password has been reset.';
+                                        $scope.tokenSent = 'true';
+                                        $scope.delay(1000).then(() => $window.location.href = $window.location.origin + "/login");
+
+                                        }
+                                }).error(
+                                    function(error)
+                                    {
+                                        $scope.alert = 'User not found !'
+                                    }
+                                );
+                        }
+
+                $scope.delay = function(time) {
+                  return new Promise(resolve => setTimeout(resolve, time));
+                }
 }
 );

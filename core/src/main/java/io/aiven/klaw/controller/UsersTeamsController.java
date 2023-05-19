@@ -233,11 +233,22 @@ public class UsersTeamsController {
   }
 
   @PostMapping(
-      value = "/resetPassword",
+      value = "/reset/token",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ResetPasswordInfo> resetPassword(
+  public ResponseEntity<ResetPasswordInfo> resetToken(@RequestParam("username") String username) {
+    return new ResponseEntity<>(
+        usersTeamsControllerService.resetPasswordGenerateToken(username), HttpStatus.OK);
+  }
+
+  @PostMapping(
+      value = "/reset/password",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ResetPasswordInfo> resetPasswordWithToken(
+      @RequestParam("token") String token,
+      @RequestParam("password") String password,
       @RequestParam("username") String username) {
-    return new ResponseEntity<>(usersTeamsControllerService.resetPassword(username), HttpStatus.OK);
+    return new ResponseEntity<>(
+        usersTeamsControllerService.resetPassword(username, password, token), HttpStatus.OK);
   }
 
   /*

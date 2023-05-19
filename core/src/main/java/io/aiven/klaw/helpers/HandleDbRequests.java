@@ -165,6 +165,7 @@ public interface HandleDbRequests {
       String env,
       String status,
       String search,
+      boolean showRequestsOfAllTeams,
       boolean isMyRequest);
 
   SchemaRequest getSchemaRequest(int avroSchemaId, int tenantId);
@@ -300,6 +301,10 @@ public interface HandleDbRequests {
   String declineAclRequest(AclRequests aclRequests, String approver);
 
   String updatePassword(String username, String pwd);
+
+  String resetPassword(String username, String resetToken, String pwd);
+
+  String generatePasswordResetToken(String username);
 
   String updateUser(UserInfo userInfo);
 

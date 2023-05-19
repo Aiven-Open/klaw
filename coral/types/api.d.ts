@@ -65,8 +65,11 @@ export type paths = {
   "/saveConnectorDocumentation": {
     post: operations["saveConnectorDocumentation"];
   };
-  "/resetPassword": {
-    post: operations["resetPassword"];
+  "/reset/token": {
+    post: operations["resetToken"];
+  };
+  "/reset/password": {
+    post: operations["resetPasswordWithToken"];
   };
   "/request/delete": {
     /**
@@ -637,8 +640,8 @@ export type components = {
       documentation: string;
     };
     ResetPasswordInfo: {
-      passwordSent: string;
-      userFound: string;
+      tokenSent: boolean;
+      userFound: boolean;
     };
     RequestVerdict: {
       reason?: string;
@@ -1801,9 +1804,26 @@ export type operations = {
       };
     };
   };
-  resetPassword: {
+  resetToken: {
     parameters: {
       query: {
+        username: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ResetPasswordInfo"];
+        };
+      };
+    };
+  };
+  resetPasswordWithToken: {
+    parameters: {
+      query: {
+        token: string;
+        password: string;
         username: string;
       };
     };

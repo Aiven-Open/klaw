@@ -75,8 +75,10 @@ public class SchemaRegistryControllerService {
       Order order,
       boolean isMyRequest) {
     log.debug("getSchemaRequests page {} requestsType {}", pageNo, requestStatus);
+
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
+
     List<SchemaRequest> schemaReqs =
         manageDatabase
             .getHandleDbRequests()
@@ -89,6 +91,10 @@ public class SchemaRegistryControllerService {
                 env,
                 requestStatus,
                 search,
+                isApproval
+                    ? !commonUtilsService.isNotAuthorizedUser(
+                        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)
+                    : false,
                 isMyRequest);
 
     // tenant filtering
@@ -482,7 +488,8 @@ public class SchemaRegistryControllerService {
     List<SchemaRequest> schemaReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getAllSchemaRequests(false, userName, tenantId, null, null, null, null, null, false);
+            .getAllSchemaRequests(
+                false, userName, tenantId, null, null, null, null, null, false, false);
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());

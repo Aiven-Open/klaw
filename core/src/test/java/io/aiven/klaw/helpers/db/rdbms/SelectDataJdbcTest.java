@@ -120,7 +120,7 @@ public class SelectDataJdbcTest {
 
     List<SchemaRequest> schemaRequestsActual =
         selectData.selectFilteredSchemaRequests(
-            false, requestor, 1, null, null, null, null, null, false);
+            false, requestor, 1, null, null, null, null, null, false, false);
     verify(schemaRequestRepo, times(1)).findAll(schemaRequestCaptor.capture());
     Example<SchemaRequest> value = schemaRequestCaptor.getValue();
     assertThat(schemaRequestsActual).isEmpty();
@@ -142,7 +142,7 @@ public class SelectDataJdbcTest {
 
     List<SchemaRequest> schemaRequestsActual =
         selectData.selectFilteredSchemaRequests(
-            false, requestor, 1, null, null, null, null, null, true);
+            false, requestor, 1, null, null, null, null, null, false, true);
     verify(schemaRequestRepo, times(1)).findAll(schemaRequestCaptor.capture());
     Example<SchemaRequest> value = schemaRequestCaptor.getValue();
     assertThat(schemaRequestsActual).isEmpty();

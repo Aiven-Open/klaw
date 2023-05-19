@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class ResetPasswordInfo {
 
-  @NotNull private String passwordSent;
+  @NotNull private boolean tokenSent;
 
-  @NotNull private String userFound;
+  @NotNull private boolean userFound;
 }

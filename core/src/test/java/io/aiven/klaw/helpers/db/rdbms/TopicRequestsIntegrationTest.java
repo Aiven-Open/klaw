@@ -322,7 +322,7 @@ public class TopicRequestsIntegrationTest {
             true, "James", "deleted", true, 101, null, null, null, null, false);
     List<TopicRequest> james2 =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "James", "declined", true, 101, null, null, null, null, false);
+            true, "James", "declined", false, 101, null, null, null, null, false);
     List<TopicRequest> john =
         selectDataJdbc.selectFilteredTopicRequests(
             true, "John", "created", true, 103, null, null, null, null, false);
@@ -348,15 +348,15 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "James", "ALL", true, 101, null, null, null, "first", false);
+            true, "James", "ALL", false, 101, null, null, null, "first", false);
 
     List<TopicRequest> john =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "John", "ALL", true, 101, null, null, null, "second", false);
+            true, "John", "ALL", false, 101, null, null, null, "second", false);
 
     List<TopicRequest> all =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "James", "ALL", true, 101, null, null, null, "topic", false);
+            true, "James", "ALL", false, 101, null, null, null, "topic", false);
 
     assertThat(james.size()).isEqualTo(22);
     for (TopicRequest req : james) {
@@ -389,7 +389,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "James", "ALL", true, 101, Integer.valueOf(101), null, null, null, false);
+            true, "James", "ALL", false, 101, Integer.valueOf(101), null, null, null, false);
 
     List<TopicRequest> john =
         selectDataJdbc.selectFilteredTopicRequests(
@@ -516,10 +516,10 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "James", null, true, 101, null, null, null, null, false);
+            true, "James", null, false, 101, null, null, null, null, false);
     List<TopicRequest> john =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "John", null, true, 103, null, null, null, null, false);
+            true, "John", null, false, 103, null, null, null, null, false);
 
     assertThat(james.size()).isEqualTo(32);
     for (TopicRequest req : james) {
@@ -537,10 +537,19 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> james =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "James", RequestStatus.CREATED.value, true, 101, null, null, "dev", null, false);
+            true, "James", RequestStatus.CREATED.value, false, 101, null, null, "dev", null, false);
     List<TopicRequest> john =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "John", RequestStatus.DECLINED.value, true, 103, null, null, "test", null, false);
+            true,
+            "John",
+            RequestStatus.DECLINED.value,
+            false,
+            103,
+            null,
+            null,
+            "test",
+            null,
+            false);
 
     assertThat(james.size()).isEqualTo(17);
     for (TopicRequest req : james) {
@@ -557,7 +566,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> jackie =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "Jackie", "all", true, 101, null, null, null, null, false);
+            true, "Jackie", "all", false, 101, null, null, null, null, false);
 
     assertThat(jackie.size()).isEqualTo(0);
   }
@@ -579,7 +588,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> joan =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "Joan", RequestStatus.CREATED.value, true, 104, null, null, null, null, false);
+            true, "Joan", RequestStatus.CREATED.value, false, 104, null, null, null, null, false);
 
     assertThat(joan.size()).isEqualTo(7);
     for (TopicRequest req : joan) {
@@ -611,7 +620,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> resultSet =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "James", RequestStatus.ALL.value, true, 101, null, null, null, null, false);
+            true, "James", RequestStatus.ALL.value, false, 101, null, null, null, null, false);
 
     assertThat(resultSet.size()).isEqualTo(32);
     for (TopicRequest req : resultSet) {
@@ -650,7 +659,7 @@ public class TopicRequestsIntegrationTest {
 
     List<TopicRequest> resultSet =
         selectDataJdbc.selectFilteredTopicRequests(
-            true, "John", RequestStatus.ALL.value, true, 101, null, null, null, null, false);
+            true, "John", RequestStatus.ALL.value, false, 101, null, null, null, null, false);
 
     assertThat(resultSet.size()).isEqualTo(7);
     for (TopicRequest req : resultSet) {
@@ -869,6 +878,39 @@ public class TopicRequestsIntegrationTest {
     }
 
     assertThat(james).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(33)
+  @ParameterizedTest
+  @CsvSource({"John,39", "James,39", "Jackie,39"})
+  public void getTopicRequests_GetAllTeamsRequestsInTenantcy(String requestor, String number) {
+
+    List<TopicRequest> james =
+        selectDataJdbc.selectFilteredTopicRequests(
+            false, requestor, RequestStatus.ALL.value, true, 101, null, null, null, null, false);
+
+    for (TopicRequest req : james) {
+
+      assertThat(req.getTenantId()).isEqualTo(101);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(number));
+  }
+
+  @Order(34)
+  @Test
+  public void getTopicRequests_GetAllTeamsRequestsInTenantcy_newTenant() {
+
+    List<TopicRequest> james =
+        selectDataJdbc.selectFilteredTopicRequests(
+            false, "Jackie", RequestStatus.CREATED.value, true, 104, null, null, null, null, false);
+
+    for (TopicRequest req : james) {
+
+      assertThat(req.getTenantId()).isEqualTo(104);
+    }
+
+    assertThat(james).hasSize(Integer.valueOf(7));
   }
 
   private void generateData(

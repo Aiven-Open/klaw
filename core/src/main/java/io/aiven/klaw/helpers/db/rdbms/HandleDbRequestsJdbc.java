@@ -363,7 +363,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   @Override
   public List<SchemaRequest> getAllSchemaRequests(
-      boolean allReqs,
+      boolean isApproval,
       String requestor,
       int tenantId,
       RequestOperationType requestOperationType,
@@ -371,9 +371,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       String env,
       String status,
       String search,
+      boolean showRequestsOfAllTeams,
       boolean isMyRequest) {
     return jdbcSelectHelper.selectFilteredSchemaRequests(
-        allReqs,
+        isApproval,
         requestor,
         tenantId,
         requestOperationType,
@@ -381,6 +382,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         env,
         status,
         search,
+        showRequestsOfAllTeams,
         isMyRequest);
   }
 
@@ -708,6 +710,15 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public String updatePassword(String username, String pwd) {
     return jdbcUpdateHelper.updatePassword(username, pwd);
+  }
+
+  @Override
+  public String resetPassword(String username, String resetToken, String pwd) {
+    return jdbcUpdateHelper.resetPassword(username, pwd, resetToken);
+  }
+
+  public String generatePasswordResetToken(String username) {
+    return jdbcUpdateHelper.generatePasswordResetToken(username);
   }
 
   @Override

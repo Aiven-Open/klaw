@@ -366,7 +366,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
             {
                 if(topicName && topicName.length < 3)
                 {
-                    $scope.alertnote = "Topic prefix should be atleast 3 characters.";
+                    $scope.alertnote = "Topic prefix should be at least 3 characters.";
                     $scope.showAlertToast();
                     return;
                 }

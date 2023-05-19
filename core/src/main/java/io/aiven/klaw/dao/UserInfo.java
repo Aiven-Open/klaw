@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,4 +49,10 @@ public class UserInfo implements Serializable {
 
   @Column(name = "otherparams")
   private String otherParams;
+
+  @Column(name = "resettoken")
+  private String resetToken;
+
+  @Column(name = "resettokengeneratedat")
+  private Timestamp resetTokenGeneratedAt;
 }

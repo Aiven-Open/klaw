@@ -39,17 +39,23 @@ import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
 public class UpdateDataJdbc {
+
+  @Value("${klaw.reset.password.token.ttl:600000}")
+  public int tokenTTL;
 
   @Autowired(required = false)
   private TopicRequestsRepo topicRequestsRepo;
@@ -351,8 +357,45 @@ public class UpdateDataJdbc {
     if (userRec.isPresent()) {
       UserInfo userInfo = userRec.get();
       userInfo.setPwd(password);
+      userInfo.setResetToken(null);
+      userInfo.setResetTokenGeneratedAt(null);
       userInfoRepo.save(userInfo);
       return ApiResultStatus.SUCCESS.value;
+    }
+    return ApiResultStatus.FAILURE.value;
+  }
+
+  public String resetPassword(String username, String password, String resetToken) {
+    log.debug("resetPassword {}, token {}", username, resetToken);
+    Optional<UserInfo> userRec = userInfoRepo.findById(username);
+    if (userRec.isPresent()
+        && userRec.get().getResetToken().equals(resetToken)
+        && isTimeStampStillValid(userRec.get().getResetTokenGeneratedAt(), tokenTTL)) {
+
+      UserInfo userInfo = userRec.get();
+      userInfo.setPwd(password);
+      userInfo.setResetToken(null);
+      userInfo.setResetTokenGeneratedAt(null);
+      userInfoRepo.save(userInfo);
+      return ApiResultStatus.SUCCESS.value;
+    } else {
+      log.warn(
+          "Password for {} not reset as token was no longer valid or supplied token was invalid.",
+          username);
+    }
+    return ApiResultStatus.FAILURE.value;
+  }
+
+  public String generatePasswordResetToken(String username) {
+    log.debug("generatePasswordResetCode for {}", username);
+    Optional<UserInfo> userRec = userInfoRepo.findById(username);
+    if (userRec.isPresent()) {
+      String resetToken = String.valueOf(UUID.randomUUID());
+      UserInfo userInfo = userRec.get();
+      userInfo.setResetToken(resetToken);
+      userInfo.setResetTokenGeneratedAt(Timestamp.from(Instant.now()));
+      userInfoRepo.save(userInfo);
+      return resetToken;
     }
     return ApiResultStatus.FAILURE.value;
   }
@@ -552,5 +595,17 @@ public class UpdateDataJdbc {
       tenantRepo.save(kwTenant.get());
     }
     return ApiResultStatus.SUCCESS.value;
+  }
+
+  /**
+   * @param startTime Time that the token was generated at
+   * @param tokenTTL Duration the token is valid for in milliseconds
+   * @return Wether the token is still valid.
+   */
+  private boolean isTimeStampStillValid(Timestamp startTime, long tokenTTL) {
+    // Taking the time at this instant if we add the amount of time this token is valid for to the
+    // token
+    // We expext that the instant.now() will be before the tokens end of life time.
+    return Timestamp.from(Instant.now()).before(new Timestamp(startTime.getTime() + tokenTTL));
   }
 }
