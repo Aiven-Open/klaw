@@ -192,14 +192,11 @@ export const TopicSubscriptionsTable = ({
       No subscription matched your criteria.
     </EmptyState>
   ) : (
-    <>
-      Number of rows: {rows.length}
-      <DataTable
-        ariaLabel={"Topic subscriptions"}
-        columns={columns}
-        rows={rows}
-        noWrap={false}
-      />
-    </>
+    <DataTable
+      ariaLabel={"Topic subscriptions"}
+      columns={columns}
+      rows={rows}
+      noWrap={false}
+    />
   );
 };
