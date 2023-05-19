@@ -10,6 +10,7 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
@@ -71,10 +72,21 @@ public class EmailService {
           + "\t</tr>\n"
           + "</table></html>";
 
-  @Async("notificationsThreadPool")
   public void sendSimpleMessage(
       String to, String cc, String subject, String text, int tenantId, String loginUrl) {
 
+    sendSimpleMessage(to, cc, null, subject, text, tenantId, loginUrl);
+  }
+
+  @Async("notificationsThreadPool")
+  public void sendSimpleMessage(
+      String to,
+      String cc,
+      List<String> bcc,
+      String subject,
+      String text,
+      int tenantId,
+      String loginUrl) {
     String emailNotificationsEnabled =
         manageDatabase.getKwPropertyValue(EMAIL_NOTIFICATIONS_ENABLED_KEY, DEFAULT_TENANT_ID);
     try {
@@ -82,6 +94,11 @@ public class EmailService {
       message.setRecipients(Message.RecipientType.TO, to);
       if (cc != null) {
         message.setRecipients(Message.RecipientType.CC, cc);
+      }
+      if (bcc != null && !bcc.isEmpty()) {
+        for (String bccAddress : bcc) {
+          message.setRecipients(Message.RecipientType.BCC, bccAddress);
+        }
       }
 
       message.setSubject(subject);
