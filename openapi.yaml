@@ -595,32 +595,6 @@
         }
       }
     },
-    "/resetPassword" : {
-      "post" : {
-        "tags" : [ "users-teams-controller" ],
-        "operationId" : "resetPassword",
-        "parameters" : [ {
-          "name" : "username",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ResetPasswordInfo"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/reset/token" : {
       "post" : {
         "tags" : [ "users-teams-controller" ],
@@ -5519,10 +5493,10 @@
       "ResetPasswordInfo" : {
         "properties" : {
           "tokenSent" : {
-            "type" : "string"
+            "type" : "boolean"
           },
           "userFound" : {
-            "type" : "string"
+            "type" : "boolean"
           }
         },
         "required" : [ "tokenSent", "userFound" ]

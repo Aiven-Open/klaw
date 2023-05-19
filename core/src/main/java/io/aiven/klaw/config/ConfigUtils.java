@@ -30,7 +30,6 @@ public class ConfigUtils {
                 "/forgotPassword",
                 "/getDbAuth",
                 "/feedback**",
-                "/resetPassword",
                 "/reset/token",
                 "/reset/password",
                 "/getRoles",

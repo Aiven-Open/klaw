@@ -289,16 +289,16 @@ public class UsersTeamsControllerService {
     log.info("resetPasswordGenerateToken {}", username);
     ResetPasswordInfo resetPasswordInfo = new ResetPasswordInfo();
     UserInfoModelResponse userInfoModel = getUserInfoDetails(username);
-    resetPasswordInfo.setTokenSent("false");
+    resetPasswordInfo.setTokenSent(false);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     if (userInfoModel == null) {
-      resetPasswordInfo.setUserFound("false");
+      resetPasswordInfo.setUserFound(false);
     } else {
-      resetPasswordInfo.setUserFound("true");
+      resetPasswordInfo.setUserFound(true);
       String resetToken = dbHandle.generatePasswordResetToken(username);
       if (!ApiResultStatus.FAILURE.value.equals(resetToken)) {
-        resetPasswordInfo.setTokenSent("true");
+        resetPasswordInfo.setTokenSent(true);
         mailService.sendMailResetPwd(
             username,
             resetToken,
@@ -314,13 +314,13 @@ public class UsersTeamsControllerService {
     log.info("resetPassword {}", username);
     ResetPasswordInfo resetPasswordInfo = new ResetPasswordInfo();
     UserInfoModelResponse userInfoModel = getUserInfoDetails(username);
-    resetPasswordInfo.setTokenSent("false");
+    resetPasswordInfo.setTokenSent(false);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
 
     if (userInfoModel == null) {
-      resetPasswordInfo.setUserFound("false");
+      resetPasswordInfo.setUserFound(false);
     } else {
-      resetPasswordInfo.setUserFound("true");
+      resetPasswordInfo.setUserFound(true);
       PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
       String pwdUpdated = dbHandle.resetPassword(username, resetToken, encodePwd(password));
@@ -328,7 +328,7 @@ public class UsersTeamsControllerService {
       if (ApiResultStatus.SUCCESS.value.equals(pwdUpdated)) {
         UserDetails updatePwdUserDetails = inMemoryUserDetailsManager.loadUserByUsername(username);
         inMemoryUserDetailsManager.updatePassword(updatePwdUserDetails, encoder.encode(password));
-        resetPasswordInfo.setTokenSent("true");
+        resetPasswordInfo.setTokenSent(true);
         mailService.sendMailPwdChanged(
             username, dbHandle, userInfoModel.getTenantId(), commonUtilsService.getLoginUrl());
       }

@@ -147,8 +147,8 @@ public class UsersTeamsControllerServiceTest {
     verify(handleDbRequests, times(1)).resetPassword(eq(OCTOPUS), eq(resetToken), anyString());
     verify(inMemoryUserDetailsManager, times(1))
         .updatePassword(any(UserDetails.class), anyString());
-    assertThat(passwordReset.getUserFound()).isEqualTo("true");
-    assertThat(passwordReset.getTokenSent()).isEqualTo("true");
+    assertThat(passwordReset.isUserFound()).isEqualTo(true);
+    assertThat(passwordReset.isTokenSent()).isEqualTo(true);
   }
 
   @Test
@@ -166,8 +166,8 @@ public class UsersTeamsControllerServiceTest {
     verify(handleDbRequests, times(1)).resetPassword(eq(OCTOPUS), eq(resetToken), anyString());
     verify(inMemoryUserDetailsManager, times(0))
         .updatePassword(any(UserDetails.class), anyString());
-    assertThat(passwordReset.getUserFound()).isEqualTo("true");
-    assertThat(passwordReset.getTokenSent()).isEqualTo("false");
+    assertThat(passwordReset.isUserFound()).isTrue();
+    assertThat(passwordReset.isTokenSent()).isFalse();
   }
 
   @Test
@@ -179,8 +179,8 @@ public class UsersTeamsControllerServiceTest {
     ResetPasswordInfo passwordReset =
         usersTeamsControllerService.resetPassword(OCTOPUS, newPW, resetToken);
 
-    assertThat(passwordReset.getUserFound()).isEqualTo("false");
-    assertThat(passwordReset.getTokenSent()).isEqualTo("false");
+    assertThat(passwordReset.isUserFound()).isEqualTo(false);
+    assertThat(passwordReset.isTokenSent()).isEqualTo(false);
   }
 
   @Test
@@ -192,8 +192,8 @@ public class UsersTeamsControllerServiceTest {
     ResetPasswordInfo passwordReset =
         usersTeamsControllerService.resetPasswordGenerateToken(OCTOPUS);
 
-    assertThat(passwordReset.getUserFound()).isEqualTo("false");
-    assertThat(passwordReset.getTokenSent()).isEqualTo("false");
+    assertThat(passwordReset.isUserFound()).isEqualTo(false);
+    assertThat(passwordReset.isTokenSent()).isEqualTo(false);
   }
 
   @Test
@@ -204,8 +204,8 @@ public class UsersTeamsControllerServiceTest {
     when(handleDbRequests.generatePasswordResetToken(OCTOPUS)).thenReturn(resetToken);
 
     ResetPasswordInfo resetInfo = usersTeamsControllerService.resetPasswordGenerateToken(OCTOPUS);
-    assertThat(resetInfo.getUserFound()).isEqualTo("true");
-    assertThat(resetInfo.getTokenSent()).isEqualTo("true");
+    assertThat(resetInfo.isUserFound()).isEqualTo(true);
+    assertThat(resetInfo.isTokenSent()).isEqualTo(true);
   }
 
   @Test
@@ -217,8 +217,8 @@ public class UsersTeamsControllerServiceTest {
         .thenReturn(ApiResultStatus.FAILURE.value);
 
     ResetPasswordInfo resetInfo = usersTeamsControllerService.resetPasswordGenerateToken(OCTOPUS);
-    assertThat(resetInfo.getUserFound()).isEqualTo("true");
-    assertThat(resetInfo.getTokenSent()).isEqualTo("false");
+    assertThat(resetInfo.isUserFound()).isEqualTo(true);
+    assertThat(resetInfo.isTokenSent()).isEqualTo(false);
   }
 
   @Test

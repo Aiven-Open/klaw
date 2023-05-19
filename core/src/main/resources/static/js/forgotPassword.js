@@ -89,9 +89,12 @@ app.controller("forgotPwdCtrl", function($scope, $http, $location, $window) {
                                     $scope.alertnote = "Please ensure you have filled out your username, password, confirmation password and reset token.";
                                     $scope.showAlertToast();
                                     return;
+                                } else if($scope.password !== $scope.confirmationPassword )
+{
+                                    $scope.alertnote = "Password and confirmation password must match!";
+                                    $scope.showAlertToast();
+                                    return;
                                 }
-                                if($scope.password)
-
                             $http({
                                     method: "POST",
                                     url: "reset/password",
@@ -108,8 +111,11 @@ app.controller("forgotPwdCtrl", function($scope, $http, $location, $window) {
                                         $scope.alert = 'An issue occurred while resetting password. Please contact Admin !';
                                     }
                                     else {
-                                        $scope.alert = 'A password reset token has been sent to your account to reset your password.';
+
+                                        $scope.alert = 'Your password has been reset.';
                                         $scope.tokenSent = 'true';
+                                        $scope.delay(1000).then(() => $window.location.href = $window.location.origin + "/login");
+
                                         }
                                 }).error(
                                     function(error)
@@ -119,5 +125,8 @@ app.controller("forgotPwdCtrl", function($scope, $http, $location, $window) {
                                 );
                         }
 
+                $scope.delay = function(time) {
+                  return new Promise(resolve => setTimeout(resolve, time));
+                }
 }
 );
