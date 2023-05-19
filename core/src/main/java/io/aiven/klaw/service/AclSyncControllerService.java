@@ -12,6 +12,7 @@ import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
@@ -471,6 +472,12 @@ public class AclSyncControllerService {
     List<String> teamList = new ArrayList<>();
     teamList = tenantFiltering(teamList);
 
+    List<String> topicListInSelectedEnv =
+        manageDatabase.getTopicsForTenant(tenantId).stream()
+            .filter(topic -> topic.getEnvironment().equals(env))
+            .map(Topic::getTopicname)
+            .toList();
+
     for (Map<String, String> aclListItem : aclList) {
       AclInfo mp = new AclInfo();
       mp.setEnvironment(env);
@@ -534,7 +541,7 @@ public class AclSyncControllerService {
         mp.setTeamname("Unknown");
       }
 
-      if (!verifyIfTopicExists(aclListItem, aclsFromSOT)) {
+      if (!verifyIfTopicExists(aclListItem, topicListInSelectedEnv)) {
         continue;
       }
 
@@ -553,13 +560,11 @@ public class AclSyncControllerService {
   }
 
   private boolean verifyIfTopicExists(
-      Map<String, String> aclListItemFromCluster, List<Acl> aclsFromLocalMetadata) {
+      Map<String, String> aclListItemFromCluster, List<String> topicListInSelectedEnv) {
     String topicName;
     if ("topic".equalsIgnoreCase(aclListItemFromCluster.get("resourceType"))) {
       topicName = aclListItemFromCluster.get("resourceName");
-      String finalTopicName = topicName;
-      return aclsFromLocalMetadata.stream()
-          .anyMatch(acl -> acl.getTopicname().equals(finalTopicName));
+      return topicListInSelectedEnv.contains(topicName);
     }
 
     return false;

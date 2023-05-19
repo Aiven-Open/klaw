@@ -14,6 +14,7 @@ import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -170,6 +171,10 @@ public class AclSyncControllerServiceTest {
         .thenReturn(utilMethods.getClusterAcls());
     when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic1");
+    t1.setEnvironment(envSelected);
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
     when(handleDbRequests.getSyncAcls(anyString(), anyInt())).thenReturn(getAclsSOT0());
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(clustersHashMap);
@@ -196,6 +201,10 @@ public class AclSyncControllerServiceTest {
         .thenReturn(utilMethods.getClusterAclsNonApacheKafka());
     when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic1");
+    t1.setEnvironment(envSelected);
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
     when(handleDbRequests.getSyncAcls(anyString(), anyInt()))
         .thenReturn(getAclsSOT0NonApacheKafka());
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
@@ -316,6 +325,7 @@ public class AclSyncControllerServiceTest {
     aclReq.setAclssl(null);
     aclReq.setConsumergroup("mygrp1");
     aclReq.setAclType(AclType.CONSUMER.value);
+    aclReq.setEnvironment("1");
 
     aclList.add(aclReq);
 
