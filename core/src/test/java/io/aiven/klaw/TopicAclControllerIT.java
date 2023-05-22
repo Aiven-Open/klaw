@@ -835,7 +835,7 @@ public class TopicAclControllerIT {
   @Order(25)
   @Test
   public void getAclsToBeSynced() throws Exception {
-    List<Map<String, String>> aclInfo = utilMethods.getClusterAcls();
+    List<Map<String, String>> aclInfo = utilMethods.getClusterSyncAcls();
 
     when(clusterApiService.getAcls(
             anyString(), any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyInt()))

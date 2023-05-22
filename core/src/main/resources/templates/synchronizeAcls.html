@@ -559,7 +559,7 @@
 									<td ng-show="resultBrowset.teamname == ''">
 										<select class="form-control custom-select" ng-change="getDetails(resultBrowset.sequence, resultBrowset.req_no,
 										 resultBrowset.teamname,resultBrowset.topicname,resultBrowset.consumergroup,resultBrowset.acl_ip,
-										 resultBrowset.acl_ssl,resultBrowset.topictype)"
+										 resultBrowset.acl_ssl,resultBrowset.topictype, resultBrowset.aclId)"
 												ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
 												ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 											<option value="" selected="selected">

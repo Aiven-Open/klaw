@@ -25,6 +25,7 @@ public class AclInfo {
   private String permission;
   private String transactionalId;
   private String aclPatternType;
+  private String aclId; // aiven acl id
   private String totalNoPages;
   private List<String> allPageNos;
   private List<String> possibleTeams;

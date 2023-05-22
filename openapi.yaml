@@ -5369,6 +5369,9 @@
           },
           "envSelected" : {
             "type" : "string"
+          },
+          "aclId" : {
+            "type" : "string"
           }
         }
       },
@@ -6663,10 +6666,10 @@
           "titleForReport" : {
             "type" : "string"
           },
-          "xaxisLabel" : {
+          "yaxisLabel" : {
             "type" : "string"
           },
-          "yaxisLabel" : {
+          "xaxisLabel" : {
             "type" : "string"
           }
         }
@@ -7092,6 +7095,9 @@
             "type" : "string"
           },
           "aclPatternType" : {
+            "type" : "string"
+          },
+          "aclId" : {
             "type" : "string"
           },
           "totalNoPages" : {

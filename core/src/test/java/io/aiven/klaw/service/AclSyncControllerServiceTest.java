@@ -14,6 +14,7 @@ import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -166,10 +167,14 @@ public class AclSyncControllerServiceTest {
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(clusterApiService.getAcls(anyString(), any(), any(KafkaSupportedProtocol.class), anyInt()))
+    when(clusterApiService.getAcls(anyString(), any(), any(), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
     when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
         .thenReturn(getAvailableTeams());
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic1");
+    t1.setEnvironment(envSelected);
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
     when(handleDbRequests.getSyncAcls(anyString(), anyInt())).thenReturn(getAclsSOT0());
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(clustersHashMap);
@@ -180,11 +185,42 @@ public class AclSyncControllerServiceTest {
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
 
-    assertThat(aclList).isEmpty();
+    assertThat(aclList.size()).isEqualTo(1);
   }
 
   @Test
   @Order(7)
+  public void getAclsSyncTrueNonApacheKafka() throws KlawException {
+    String envSelected = "1", pageNo = "1", topicNameSearch = "testtopic1";
+
+    stubUserInfo();
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(clusterApiService.getAcls(anyString(), any(), any(), anyInt()))
+        .thenReturn(utilMethods.getClusterAclsNonApacheKafka());
+    when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
+        .thenReturn(getAvailableTeams());
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic1");
+    t1.setEnvironment(envSelected);
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
+    when(handleDbRequests.getSyncAcls(anyString(), anyInt()))
+        .thenReturn(getAclsSOT0NonApacheKafka());
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
+    when(clustersHashMap.get(any())).thenReturn(kwClusters);
+    when(kwClusters.getBootstrapServers()).thenReturn("clusters");
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
+
+    List<AclInfo> aclList =
+        aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
+
+    assertThat(aclList.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(8)
   public void getAclsSyncTrue2() throws KlawException {
     String envSelected = "1", pageNo = "1", topicNameSearch = "test";
 
@@ -210,7 +246,7 @@ public class AclSyncControllerServiceTest {
   }
 
   @Test
-  @Order(8)
+  @Order(9)
   public void updateSyncBackAcls() throws KlawException {
     String envSelected = "1";
     Map<String, String> aivenAclId = new HashMap<>();
@@ -288,6 +324,24 @@ public class AclSyncControllerServiceTest {
     aclReq.setAclip("2.1.2.1");
     aclReq.setAclssl(null);
     aclReq.setConsumergroup("mygrp1");
+    aclReq.setAclType(AclType.CONSUMER.value);
+    aclReq.setEnvironment("1");
+
+    aclList.add(aclReq);
+
+    return aclList;
+  }
+
+  private List<Acl> getAclsSOT0NonApacheKafka() {
+    List<Acl> aclList = new ArrayList();
+
+    Acl aclReq = new Acl();
+    aclReq.setReq_no(1001);
+    aclReq.setTopicname("testtopic1");
+    aclReq.setTeamId(1);
+    aclReq.setAclip("*");
+    aclReq.setAclssl(null);
+    aclReq.setConsumergroup("-na-");
     aclReq.setAclType(AclType.CONSUMER.value);
 
     aclList.add(aclReq);

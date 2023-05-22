@@ -595,6 +595,7 @@ export type components = {
       aclSsl?: string;
       aclType?: string;
       envSelected?: string;
+      aclId?: string;
     };
     KwRolesPermissionsModel: {
       /** Format: int32 */
@@ -1030,8 +1031,8 @@ export type components = {
       options?: components["schemas"]["Options"];
       series?: (string)[];
       titleForReport?: string;
-      xaxisLabel?: string;
       yaxisLabel?: string;
+      xaxisLabel?: string;
     };
     Options: {
       title?: components["schemas"]["Title"];
@@ -1177,6 +1178,7 @@ export type components = {
       permission?: string;
       transactionalId?: string;
       aclPatternType?: string;
+      aclId?: string;
       totalNoPages?: string;
       allPageNos?: (string)[];
       possibleTeams?: (string)[];
