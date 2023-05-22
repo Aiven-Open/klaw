@@ -108,7 +108,7 @@ public class KlawErrorMessages {
   public static final String CLUSTER_API_ERR_112 =
       "Could not validate schema. Please contact Administrator.";
 
-  public static final String CLUSTER_API_ERR_113 = "Could not get schema.";
+  public static final String CLUSTER_API_ERR_113 = "Could not get schema(s).";
 
   public static final String CLUSTER_API_ERR_114 = "Could not get Connector Details. %s";
 

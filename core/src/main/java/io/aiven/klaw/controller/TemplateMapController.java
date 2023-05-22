@@ -378,6 +378,15 @@ public class TemplateMapController {
     return checkAuth("synchronizeTopics.html", request, response, abstractAuthenticationToken);
   }
 
+  @RequestMapping(value = "/synchronizeSchemas", method = RequestMethod.GET)
+  public String synchronizeSchemas(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("synchronizeSchemas.html", request, response, abstractAuthenticationToken);
+  }
+
   @RequestMapping(value = "/syncConnectors", method = RequestMethod.GET)
   public String syncConnectors(
       ModelMap model,

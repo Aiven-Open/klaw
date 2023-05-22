@@ -454,7 +454,7 @@ public class UtilControllerService {
         }
       }
 
-      String syncTopicsAcls, syncConnectors;
+      String syncTopicsAcls, syncConnectors, syncSchemas;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_TOPICS)
           || commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_SUBSCRIPTIONS)) {
@@ -467,6 +467,12 @@ public class UtilControllerService {
         syncConnectors = "NotAuthorized";
       } else {
         syncConnectors = ApiResultStatus.AUTHORIZED.value;
+      }
+
+      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_SCHEMAS)) {
+        syncSchemas = "NotAuthorized";
+      } else {
+        syncSchemas = ApiResultStatus.AUTHORIZED.value;
       }
 
       String addDeleteEditTenants;
@@ -584,6 +590,7 @@ public class UtilControllerService {
       authenticationInfo.setAddTeams(addTeams);
       authenticationInfo.setSyncTopicsAcls(syncTopicsAcls);
       authenticationInfo.setSyncConnectors(syncConnectors);
+      authenticationInfo.setSyncSchemas(syncSchemas);
       authenticationInfo.setApproveAtleastOneRequest(approveAtleastOneRequest);
       authenticationInfo.setApproveDeclineTopics(approveDeclineTopics);
       authenticationInfo.setApproveDeclineSubscriptions(approveDeclineSubscriptions);

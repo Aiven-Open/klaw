@@ -489,7 +489,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
     when(commonUtilsService.deriveCurrentPage("1", "", 0)).thenReturn("0");
-    List<Topic> topics = generateTopics(14);
+    List<Topic> topics = utilMethods.generateTopics(14);
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -521,7 +521,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
     when(commonUtilsService.deriveCurrentPage("1", "", 0)).thenReturn("0");
-    List<Topic> topics = generateTopics(14);
+    List<Topic> topics = utilMethods.generateTopics(14);
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -549,7 +549,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(13);
+    List<Topic> topics = utilMethods.generateTopics(13);
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -582,7 +582,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(14);
+    List<Topic> topics = utilMethods.generateTopics(14);
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -614,7 +614,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(12);
+    List<Topic> topics = utilMethods.generateTopics(12);
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -647,7 +647,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(14);
+    List<Topic> topics = utilMethods.generateTopics(14);
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -679,7 +679,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(12);
+    List<Topic> topics = utilMethods.generateTopics(12);
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -741,7 +741,8 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+    List<Topic> topics =
+        utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -814,7 +815,8 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+    List<Topic> topics =
+        utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -887,7 +889,8 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+    List<Topic> topics =
+        utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -962,7 +965,8 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
+    List<Topic> topics =
+        utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -1009,7 +1013,7 @@ public class TopicSyncControllerServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
     when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
-    List<Topic> topics = generateTopics(Arrays.copyOfRange(namesOfTopics, 0, 1));
+    List<Topic> topics = utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, 1));
 
     // from the cluster
     when(clusterApiService.getAllTopics(
@@ -1061,30 +1065,6 @@ public class TopicSyncControllerServiceTest {
       topic.setTopicName(topicNames[i]);
       topic.setPartitions("9");
       topic.setReplicationFactor("3");
-      topics.add(topic);
-    }
-    return topics;
-  }
-
-  private List<Topic> generateTopics(int numberOfTopics) {
-    String[] topicNames = new String[numberOfTopics];
-    for (int i = 0; i < numberOfTopics; i++) {
-      topicNames[i] = "Topic" + i;
-    }
-    return generateTopics(topicNames);
-  }
-
-  private List<Topic> generateTopics(String... topicNames) {
-    List<Topic> topics = new ArrayList<>();
-
-    for (int i = 0; i < topicNames.length; i++) {
-      Topic topic = new Topic();
-      topic.setTopicname(topicNames[i]);
-      topic.setTenantId(101);
-      topic.setTopicid(i);
-      topic.setTeamId(10);
-      topic.setNoOfReplicas("3");
-      topic.setNoOfPartitions(6);
       topics.add(topic);
     }
     return topics;
