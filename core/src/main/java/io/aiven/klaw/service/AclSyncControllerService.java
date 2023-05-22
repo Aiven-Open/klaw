@@ -45,6 +45,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class AclSyncControllerService {
 
+  public static final String TOPIC_RESOURCE = "topic";
   private int TOPIC_COUNTER = 0;
 
   private static String AIVEN_ACL_ID_KEY = "aivenaclid";
@@ -500,7 +501,7 @@ public class AclSyncControllerService {
         }
       }
 
-      if ("topic".equalsIgnoreCase(aclListItem.get("resourceType"))) {
+      if (TOPIC_RESOURCE.equalsIgnoreCase(aclListItem.get("resourceType"))) {
         mp.setTopicname(aclListItem.get("resourceName"));
       }
 
@@ -562,7 +563,7 @@ public class AclSyncControllerService {
   private boolean verifyIfTopicExists(
       Map<String, String> aclListItemFromCluster, List<String> topicListInSelectedEnv) {
     String topicName;
-    if ("topic".equalsIgnoreCase(aclListItemFromCluster.get("resourceType"))) {
+    if (TOPIC_RESOURCE.equalsIgnoreCase(aclListItemFromCluster.get("resourceType"))) {
       topicName = aclListItemFromCluster.get("resourceName");
       return topicListInSelectedEnv.contains(topicName);
     }
