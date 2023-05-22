@@ -1,5 +1,6 @@
 package io.aiven.klaw.clusterapi.services;
 
+import static io.aiven.klaw.clusterapi.services.SchemaService.SCHEMA_VALUE_URI;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -14,6 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
+import io.aiven.klaw.clusterapi.models.SchemaOfTopic;
+import io.aiven.klaw.clusterapi.models.SchemasOfClusterResponse;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
@@ -23,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
@@ -311,6 +315,73 @@ class SchemaServiceTest {
         .isEqualTo(
             ApiResultStatus.FAILURE.value
                 + " Invalid Schema. Unable to validate Schema Compatibility.");
+  }
+
+  @Test
+  public void getSchemasOfCluster() throws JsonProcessingException {
+    String dev = "Dev";
+    String subjectsUrl = dev + "/subjects";
+    String topic1 = "test1", topic2 = "test2";
+    Set<Integer> topic1Versions = Set.of(1, 2);
+    Set<Integer> topic2Versions = Set.of(1, 2, 3);
+
+    when(getAdminClient.getRequestDetails(eq(subjectsUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(subjectsUrl, restTemplate));
+    when(getAdminClient.createHeaders(eq("19"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
+        .thenReturn(new HttpHeaders());
+    this.mockRestServiceServer
+        .expect(requestTo("/" + subjectsUrl))
+        .andRespond(
+            withSuccess(
+                mapper.writeValueAsString(
+                    List.of(topic1 + SCHEMA_VALUE_URI, topic2 + SCHEMA_VALUE_URI)),
+                MediaType.APPLICATION_JSON));
+    this.mockRestServiceServer
+        .expect(requestTo("/" + subjectsUrl + "/" + topic1 + SCHEMA_VALUE_URI + "/versions"))
+        .andRespond(
+            withSuccess(mapper.writeValueAsString(topic1Versions), MediaType.APPLICATION_JSON));
+    this.mockRestServiceServer
+        .expect(requestTo("/" + subjectsUrl + "/" + topic2 + SCHEMA_VALUE_URI + "/versions"))
+        .andRespond(
+            withSuccess(mapper.writeValueAsString(topic2Versions), MediaType.APPLICATION_JSON));
+    when(getAdminClient.getRequestDetails(
+            eq(subjectsUrl + "/" + topic1 + SCHEMA_VALUE_URI + "/versions"),
+            eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(
+            Pair.of(subjectsUrl + "/" + topic1 + SCHEMA_VALUE_URI + "/versions", restTemplate));
+    when(getAdminClient.getRequestDetails(
+            eq(subjectsUrl + "/" + topic2 + SCHEMA_VALUE_URI + "/versions"),
+            eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(
+            Pair.of(subjectsUrl + "/" + topic2 + SCHEMA_VALUE_URI + "/versions", restTemplate));
+
+    SchemasOfClusterResponse schemasOfClusterResponse =
+        schemaService.getSchemasOfCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
+    assertThat(schemasOfClusterResponse.getSchemaOfTopicList().size()).isEqualTo(2);
+    assertThat(schemasOfClusterResponse.getSchemaOfTopicList())
+        .extracting(SchemaOfTopic::getTopic)
+        .containsExactlyInAnyOrder(topic1, topic2);
+    assertThat(schemasOfClusterResponse.getSchemaOfTopicList())
+        .extracting(SchemaOfTopic::getSchemaVersions)
+        .containsExactlyInAnyOrder(topic1Versions, topic2Versions);
+  }
+
+  @Test
+  public void getSchemasOfClusterNoSchemas() throws JsonProcessingException {
+    String dev = "Dev";
+    String subjectsUrl = dev + "/subjects";
+
+    when(getAdminClient.getRequestDetails(eq(subjectsUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(subjectsUrl, restTemplate));
+    when(getAdminClient.createHeaders(eq("19"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
+        .thenReturn(new HttpHeaders());
+    this.mockRestServiceServer
+        .expect(requestTo("/" + subjectsUrl))
+        .andRespond(withSuccess(mapper.writeValueAsString(List.of()), MediaType.APPLICATION_JSON));
+
+    SchemasOfClusterResponse schemasOfClusterResponse =
+        schemaService.getSchemasOfCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
+    assertThat(schemasOfClusterResponse.getSchemaOfTopicList().size()).isEqualTo(0);
   }
 
   private static ClusterTopicRequest deleteTopicRequest(String topicName) {

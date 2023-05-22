@@ -6,6 +6,8 @@ import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.RegisterSchemaCustomResponse;
 import io.aiven.klaw.clusterapi.models.RegisterSchemaResponse;
 import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
+import io.aiven.klaw.clusterapi.models.SchemaOfTopic;
+import io.aiven.klaw.clusterapi.models.SchemasOfClusterResponse;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
@@ -17,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
@@ -41,7 +44,10 @@ public class SchemaService {
   private static final ParameterizedTypeReference<Map<String, Object>> GET_SCHEMA_TYPEREF =
       new ParameterizedTypeReference<>() {};
 
-  private static final ParameterizedTypeReference<List<Integer>> GET_SCHEMAVERSIONS_TYPEREF =
+  private static final ParameterizedTypeReference<Set<Integer>> GET_SCHEMAVERSIONS_TYPEREF =
+      new ParameterizedTypeReference<>() {};
+
+  private static final ParameterizedTypeReference<List<String>> GET_SUBJECTS_TYPEREF =
       new ParameterizedTypeReference<>() {};
 
   public static final String SCHEMA_REGISTRY_CONTENT_TYPE =
@@ -215,7 +221,7 @@ public class SchemaService {
         return null;
       }
 
-      List<Integer> versionsList =
+      Set<Integer> versionsList =
           getSchemaVersions(environmentVal, topicName, protocol, clusterIdentification);
       String schemaCompatibility =
           getSubjectSchemaCompatibility(environmentVal, topicName, protocol, clusterIdentification);
@@ -264,7 +270,7 @@ public class SchemaService {
     }
   }
 
-  private List<Integer> getSchemaVersions(
+  private Set<Integer> getSchemaVersions(
       String environmentVal,
       String topicName,
       KafkaSupportedProtocol protocol,
@@ -289,7 +295,7 @@ public class SchemaService {
       Map<String, String> params = new HashMap<>();
       HttpEntity<Object> request = createSchemaRegistryRequest(clusterIdentification);
 
-      ResponseEntity<List<Integer>> responseList =
+      ResponseEntity<Set<Integer>> responseList =
           reqDetails
               .getRight()
               .exchange(
@@ -302,7 +308,7 @@ public class SchemaService {
       return responseList.getBody();
     } catch (Exception e) {
       log.error("Error in getting versions ", e);
-      return Collections.emptyList();
+      return Collections.emptySet();
     }
   }
 
@@ -570,5 +576,43 @@ public class SchemaService {
         clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.SCHEMA_REGISTRY);
     headers.set("Content-Type", SCHEMA_REGISTRY_CONTENT_TYPE);
     return new HttpEntity<>(params, headers);
+  }
+
+  public SchemasOfClusterResponse getSchemasOfCluster(
+      String bootstrapServers, KafkaSupportedProtocol protocol, String clusterIdentification) {
+    log.info(
+        "bootstrapServers {} protocol {} clusterIdentification {}",
+        bootstrapServers,
+        protocol,
+        clusterIdentification);
+    SchemasOfClusterResponse schemasOfClusterResponse = new SchemasOfClusterResponse();
+    String suffixUrl = bootstrapServers + "/" + SCHEMA_SUBJECTS_URI;
+    Pair<String, RestTemplate> reqDetails = clusterApiUtils.getRequestDetails(suffixUrl, protocol);
+
+    Map<String, String> params = new HashMap<>();
+    HttpEntity<Object> request = createSchemaRegistryRequest(clusterIdentification);
+
+    ResponseEntity<List<String>> responseList =
+        reqDetails
+            .getRight()
+            .exchange(reqDetails.getLeft(), HttpMethod.GET, request, GET_SUBJECTS_TYPEREF, params);
+
+    List<SchemaOfTopic> schemaOfTopicList = new ArrayList<>();
+    List<String> subjectList = responseList.getBody();
+    if (subjectList != null) {
+      for (String subject : subjectList) {
+        if (subject.indexOf(SCHEMA_VALUE_URI) > 0) {
+          subject = subject.substring(0, subject.indexOf(SCHEMA_VALUE_URI));
+          Set<Integer> schemaVersions =
+              getSchemaVersions(bootstrapServers, subject, protocol, clusterIdentification);
+          SchemaOfTopic schemaOfTopic = new SchemaOfTopic();
+          schemaOfTopic.setTopic(subject);
+          schemaOfTopic.setSchemaVersions(schemaVersions);
+          schemaOfTopicList.add(schemaOfTopic);
+        }
+      }
+    }
+    schemasOfClusterResponse.setSchemaOfTopicList(schemaOfTopicList);
+    return schemasOfClusterResponse;
   }
 }

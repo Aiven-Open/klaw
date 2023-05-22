@@ -3,7 +3,6 @@ package io.aiven.klaw.clusterapi.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -13,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.UtilMethods;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
-import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
@@ -39,7 +37,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.client.RestClientException;
 
 @ExtendWith(SpringExtension.class)
 public class ClusterApiControllerTest {
@@ -65,7 +62,6 @@ public class ClusterApiControllerTest {
             utilComponentsService,
             apacheKafkaAclService,
             apacheKafkaTopicService,
-            schemaService,
             monitoringService,
             aivenApiService,
             confluentCloudApiService);
@@ -272,93 +268,5 @@ public class ClusterApiControllerTest {
         .andExpect(status().is5xxServerError())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.message", containsString("Error creating acls")));
-  }
-
-  @Test
-  public void postSchema() throws Exception {
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getSchema());
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
-    when(schemaService.registerSchema(any(ClusterSchemaRequest.class))).thenReturn(apiResponse);
-
-    mvc.perform(
-            post("/topics/postSchema")
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
-  }
-
-  @Test
-  public void postSchemaFail() throws Exception {
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getSchema());
-
-    when(schemaService.registerSchema(any(ClusterSchemaRequest.class)))
-        .thenThrow(new RuntimeException("Error registering schema"));
-
-    mvc.perform(
-            post("/topics/postSchema")
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8))
-        .andExpect(status().is5xxServerError());
-  }
-
-  @Test
-  public void validateSchemaCompaitbility_ReturnSuccess() throws Exception {
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getSchema());
-
-    when(schemaService.checkSchemaCompatibility(
-            anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString()))
-        .thenReturn(
-            ApiResponse.builder()
-                .message(ApiResultStatus.SUCCESS.value + " Schema is compatible.")
-                .build());
-
-    mvc.perform(
-            post("/topics/schema/validate/compatibility")
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().string(containsString(ApiResultStatus.SUCCESS.value)));
-  }
-
-  @Test
-  public void validateSchemaCompaitbility_ReturnFailure() throws Exception {
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getSchema());
-
-    when(schemaService.checkSchemaCompatibility(
-            anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString()))
-        .thenReturn(
-            ApiResponse.builder()
-                .message(ApiResultStatus.FAILURE.value + "  Schema is not compatible.")
-                .build());
-
-    mvc.perform(
-            post("/topics/schema/validate/compatibility")
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8))
-        .andExpect(status().is2xxSuccessful())
-        .andExpect(content().string(containsString(ApiResultStatus.FAILURE.value)));
-  }
-
-  @Test
-  public void validateSchemaCompaitbility_throwsError_ReturnInternalServerError() throws Exception {
-    String jsonReq = new ObjectMapper().writer().writeValueAsString(utilMethods.getSchema());
-
-    when(schemaService.checkSchemaCompatibility(
-            anyString(), anyString(), any(KafkaSupportedProtocol.class), anyString(), anyString()))
-        .thenThrow(RestClientException.class);
-
-    mvc.perform(
-            post("/topics/schema/validate/compatibility")
-                .content(jsonReq)
-                .contentType(MediaType.APPLICATION_JSON)
-                .characterEncoding(StandardCharsets.UTF_8))
-        .andExpect(status().is5xxServerError());
   }
 }

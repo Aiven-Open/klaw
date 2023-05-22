@@ -374,7 +374,7 @@ public class UtilComponentsServiceTest {
     RegisterSchemaResponse registerSchemaResponse = new RegisterSchemaResponse();
     registerSchemaResponse.setId(1);
 
-    ResponseEntity<List<Integer>> response2 = new ResponseEntity<>(List.of(1), HttpStatus.OK);
+    ResponseEntity<Set<Integer>> response2 = new ResponseEntity<>(Set.of(1), HttpStatus.OK);
     when(clusterApiUtils.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
     when(clusterApiUtils.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
     when(restTemplate.postForEntity(anyString(), any(), eq(RegisterSchemaResponse.class)))
@@ -383,7 +383,7 @@ public class UtilComponentsServiceTest {
             anyString(),
             eq(HttpMethod.GET),
             any(),
-            eq(new ParameterizedTypeReference<List<Integer>>() {}),
+            eq(new ParameterizedTypeReference<Set<Integer>>() {}),
             anyMap()))
         .thenReturn(response2);
 

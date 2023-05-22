@@ -2,7 +2,6 @@ package io.aiven.klaw.clusterapi.controller;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
-import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.OffsetDetails;
 import io.aiven.klaw.clusterapi.models.ServiceAccountDetails;
@@ -17,7 +16,6 @@ import io.aiven.klaw.clusterapi.services.ApacheKafkaAclService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaTopicService;
 import io.aiven.klaw.clusterapi.services.ConfluentCloudApiService;
 import io.aiven.klaw.clusterapi.services.MonitoringService;
-import io.aiven.klaw.clusterapi.services.SchemaService;
 import io.aiven.klaw.clusterapi.services.UtilComponentsService;
 import jakarta.validation.Valid;
 import java.util.HashMap;
@@ -47,8 +45,6 @@ public class ClusterApiController {
   ApacheKafkaAclService apacheKafkaAclService;
 
   ApacheKafkaTopicService apacheKafkaTopicService;
-
-  SchemaService schemaService;
 
   MonitoringService monitoringService;
 
@@ -165,20 +161,6 @@ public class ClusterApiController {
             .success(true)
             .build();
     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-  }
-
-  @RequestMapping(
-      value = "/getSchema/{bootstrapServers}/{protocol}/{clusterIdentification}/{topicName}",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<Integer, Map<String, Object>>> getSchema(
-      @PathVariable String bootstrapServers,
-      @Valid @PathVariable KafkaSupportedProtocol protocol,
-      @PathVariable String topicName,
-      @PathVariable String clusterIdentification) {
-    Map<Integer, Map<String, Object>> schema =
-        schemaService.getSchema(bootstrapServers, protocol, clusterIdentification, topicName);
-    return new ResponseEntity<>(schema, HttpStatus.OK);
   }
 
   @RequestMapping(
@@ -362,44 +344,6 @@ public class ClusterApiController {
     return new ResponseEntity<>(
         ApiResponse.builder().success(false).message("Not a valid request").build(),
         HttpStatus.INTERNAL_SERVER_ERROR);
-  }
-
-  /**
-   * Register a schema on schema registry. If force register is enabled - Get subject compatibility
-   * - Set subject compatibility to NONE, if it's not NONE or NOT SET - Register schema - If subject
-   * compatibility is NOT_SET, get global compatibility - Apply global compatibility on subject
-   * level If force register is not enabled - Register schema
-   */
-  @PostMapping(
-      value = "/postSchema",
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> postSchema(
-      @RequestBody @Valid ClusterSchemaRequest clusterSchemaRequest) {
-    try {
-      return new ResponseEntity<>(
-          schemaService.registerSchema(clusterSchemaRequest), HttpStatus.OK);
-    } catch (Exception e) {
-      return handleException(e);
-    }
-  }
-
-  @PostMapping(
-      value = "/schema/validate/compatibility",
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> schemaCompatibilityValidation(
-      @RequestBody @Valid ClusterSchemaRequest clusterSchemaRequest) {
-    try {
-      return new ResponseEntity<>(
-          schemaService.checkSchemaCompatibility(
-              clusterSchemaRequest.getFullSchema(),
-              clusterSchemaRequest.getTopicName(),
-              clusterSchemaRequest.getProtocol(),
-              clusterSchemaRequest.getEnv(),
-              clusterSchemaRequest.getClusterIdentification()),
-          HttpStatus.OK);
-    } catch (Exception e) {
-      return handleException(e);
-    }
   }
 
   private static ResponseEntity<ApiResponse> handleException(Exception e) {
