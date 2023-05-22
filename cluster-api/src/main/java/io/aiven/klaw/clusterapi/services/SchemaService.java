@@ -6,8 +6,8 @@ import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.RegisterSchemaCustomResponse;
 import io.aiven.klaw.clusterapi.models.RegisterSchemaResponse;
 import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
-import io.aiven.klaw.clusterapi.models.SchemaOfTopic;
-import io.aiven.klaw.clusterapi.models.SchemasOfClusterResponse;
+import io.aiven.klaw.clusterapi.models.SchemaInfoOfTopic;
+import io.aiven.klaw.clusterapi.models.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
@@ -578,14 +578,14 @@ public class SchemaService {
     return new HttpEntity<>(params, headers);
   }
 
-  public SchemasOfClusterResponse getSchemasOfCluster(
+  public SchemasInfoOfClusterResponse getSchemasOfCluster(
       String bootstrapServers, KafkaSupportedProtocol protocol, String clusterIdentification) {
     log.info(
         "bootstrapServers {} protocol {} clusterIdentification {}",
         bootstrapServers,
         protocol,
         clusterIdentification);
-    SchemasOfClusterResponse schemasOfClusterResponse = new SchemasOfClusterResponse();
+    SchemasInfoOfClusterResponse schemasInfoOfClusterResponse = new SchemasInfoOfClusterResponse();
     String suffixUrl = bootstrapServers + "/" + SCHEMA_SUBJECTS_URI;
     Pair<String, RestTemplate> reqDetails = clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
@@ -597,7 +597,7 @@ public class SchemaService {
             .getRight()
             .exchange(reqDetails.getLeft(), HttpMethod.GET, request, GET_SUBJECTS_TYPEREF, params);
 
-    List<SchemaOfTopic> schemaOfTopicList = new ArrayList<>();
+    List<SchemaInfoOfTopic> schemaInfoOfTopicList = new ArrayList<>();
     List<String> subjectList = responseList.getBody();
     if (subjectList != null) {
       for (String subject : subjectList) {
@@ -605,14 +605,14 @@ public class SchemaService {
           subject = subject.substring(0, subject.indexOf(SCHEMA_VALUE_URI));
           Set<Integer> schemaVersions =
               getSchemaVersions(bootstrapServers, subject, protocol, clusterIdentification);
-          SchemaOfTopic schemaOfTopic = new SchemaOfTopic();
-          schemaOfTopic.setTopic(subject);
-          schemaOfTopic.setSchemaVersions(schemaVersions);
-          schemaOfTopicList.add(schemaOfTopic);
+          SchemaInfoOfTopic schemaInfoOfTopic = new SchemaInfoOfTopic();
+          schemaInfoOfTopic.setTopic(subject);
+          schemaInfoOfTopic.setSchemaVersions(schemaVersions);
+          schemaInfoOfTopicList.add(schemaInfoOfTopic);
         }
       }
     }
-    schemasOfClusterResponse.setSchemaOfTopicList(schemaOfTopicList);
-    return schemasOfClusterResponse;
+    schemasInfoOfClusterResponse.setSchemaInfoOfTopicList(schemaInfoOfTopicList);
+    return schemasInfoOfClusterResponse;
   }
 }

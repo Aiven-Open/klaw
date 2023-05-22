@@ -4,7 +4,7 @@ import java.util.Set;
 import lombok.Data;
 
 @Data
-public class SchemaOfTopic {
+public class SchemaInfoOfTopic {
   String topic;
   Set<Integer> schemaVersions;
 }

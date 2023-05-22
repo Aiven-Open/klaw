@@ -15,8 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
-import io.aiven.klaw.clusterapi.models.SchemaOfTopic;
-import io.aiven.klaw.clusterapi.models.SchemasOfClusterResponse;
+import io.aiven.klaw.clusterapi.models.SchemaInfoOfTopic;
+import io.aiven.klaw.clusterapi.models.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
@@ -355,14 +355,14 @@ class SchemaServiceTest {
         .thenReturn(
             Pair.of(subjectsUrl + "/" + topic2 + SCHEMA_VALUE_URI + "/versions", restTemplate));
 
-    SchemasOfClusterResponse schemasOfClusterResponse =
+    SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
         schemaService.getSchemasOfCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
-    assertThat(schemasOfClusterResponse.getSchemaOfTopicList().size()).isEqualTo(2);
-    assertThat(schemasOfClusterResponse.getSchemaOfTopicList())
-        .extracting(SchemaOfTopic::getTopic)
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(2);
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
+        .extracting(SchemaInfoOfTopic::getTopic)
         .containsExactlyInAnyOrder(topic1, topic2);
-    assertThat(schemasOfClusterResponse.getSchemaOfTopicList())
-        .extracting(SchemaOfTopic::getSchemaVersions)
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
+        .extracting(SchemaInfoOfTopic::getSchemaVersions)
         .containsExactlyInAnyOrder(topic1Versions, topic2Versions);
   }
 
@@ -379,9 +379,9 @@ class SchemaServiceTest {
         .expect(requestTo("/" + subjectsUrl))
         .andRespond(withSuccess(mapper.writeValueAsString(List.of()), MediaType.APPLICATION_JSON));
 
-    SchemasOfClusterResponse schemasOfClusterResponse =
+    SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
         schemaService.getSchemasOfCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
-    assertThat(schemasOfClusterResponse.getSchemaOfTopicList().size()).isEqualTo(0);
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(0);
   }
 
   private static ClusterTopicRequest deleteTopicRequest(String topicName) {

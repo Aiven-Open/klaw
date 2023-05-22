@@ -2,7 +2,7 @@ package io.aiven.klaw.clusterapi.controller;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
-import io.aiven.klaw.clusterapi.models.SchemasOfClusterResponse;
+import io.aiven.klaw.clusterapi.models.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.SchemaService;
 import jakarta.validation.Valid;
@@ -55,7 +55,7 @@ public class SchemaRegistryController {
           "/schemas/bootstrapServers/{bootstrapServers}/protocol/{protocol}/clusterIdentification/{clusterIdentification}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<SchemasOfClusterResponse> getSchemasOfCluster(
+  public ResponseEntity<SchemasInfoOfClusterResponse> getSchemasOfCluster(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterIdentification) {

@@ -4,6 +4,6 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class SchemasOfClusterResponse {
-  List<SchemaOfTopic> schemaOfTopicList;
+public class SchemasInfoOfClusterResponse {
+  List<SchemaInfoOfTopic> schemaInfoOfTopicList;
 }
