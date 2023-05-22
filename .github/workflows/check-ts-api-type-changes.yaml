@@ -1,0 +1,35 @@
+# ℹ️
+# This workflow runs for pull_requests that are based on main
+# if there is a change in coral, including file `coral/types/api.d.ts`
+#    - 1. it runs the coral setup
+#    - 2. it runs the typescript compiler
+#       - if ok: ends the workflow ✅
+#       - if tsc has errors: fails the workflow ⛔️
+
+
+# This workflow ensures that our type definition for APIs are always in
+# sync and that API changes don't break things in coral.
+
+name: Typescript checks
+
+on:
+  pull_request:
+    paths:
+      - 'coral/**'
+
+jobs:
+  typecheck:
+    name: Type check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
+        with:
+          persist-credentials: false
+
+      - name: Setup coral
+        uses: ./.github/actions/setup-coral
+
+      - name: Run tsc
+        working-directory: ./coral
+        run: pnpm tsc
