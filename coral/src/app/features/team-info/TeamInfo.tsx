@@ -5,7 +5,7 @@ import { SwitchTeamsDropdown } from "src/app/features/team-info/SwitchTeamsDropd
 function TeamInfo() {
   const authUser = useAuthContext();
 
-  function getTeamData() {
+  function renderTeamData() {
     if (!authUser) {
       return <></>;
     }
@@ -36,7 +36,7 @@ function TeamInfo() {
           Team
         </Typography.SmallTextBold>
       </Box>
-      {getTeamData()}
+      {renderTeamData()}
     </Box>
   );
 }
