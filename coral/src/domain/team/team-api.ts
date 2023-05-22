@@ -19,6 +19,11 @@ const updateTeam = ({
   return api.post<
     KlawApiResponse<"updateUserTeamFromSwitchTeams">,
     KlawApiRequest<"updateUserTeamFromSwitchTeams">
+    // The openapi definition claims that it needs the full UserModel
+    // but for this it only needs username and teamId. We don't have
+    // the full UserModel available in coral and
+    // since it contains passwords we decided against that.
+    // follow up in BE needed for this
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
   >(API_PATHS.updateUserTeamFromSwitchTeams, payload);
