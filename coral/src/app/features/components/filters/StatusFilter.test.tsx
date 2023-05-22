@@ -118,7 +118,7 @@ describe("StatusFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve status in url (paginated)", () => {
+  describe("updates the search param to preserve status in url", () => {
     const deletedStatus = "DELETED";
     const deletedName = requestStatusNameMap["DELETED"];
 
@@ -154,47 +154,6 @@ describe("StatusFilter.tsx", () => {
         expect(window.location.search).toEqual(
           `?status=${deletedStatus}&page=1`
         );
-      });
-    });
-  });
-
-  describe("updates the search param to preserve status in url (not paginated)", () => {
-    const deletedStatus = "DELETED";
-    const deletedName = requestStatusNameMap["DELETED"];
-
-    beforeEach(async () => {
-      customRender(
-        <StatusFilter defaultStatus={"CREATED"} paginated={false} />,
-        {
-          queryClient: true,
-          browserRouter: true,
-        }
-      );
-    });
-
-    afterEach(() => {
-      // resets url to get to clean state again
-      window.history.pushState({}, "No page title", "/");
-      cleanup();
-    });
-
-    it("shows no search param by default", async () => {
-      expect(window.location.search).toEqual("");
-    });
-
-    it(`sets "?status=${deletedStatus}" as search param when user selected it`, async () => {
-      const select = screen.getByRole("combobox", {
-        name: filterLabel,
-      });
-
-      const option = screen.getByRole("option", {
-        name: deletedName,
-      });
-
-      await userEvent.selectOptions(select, option);
-
-      await waitFor(() => {
-        expect(window.location.search).toEqual(`?status=${deletedStatus}`);
       });
     });
   });

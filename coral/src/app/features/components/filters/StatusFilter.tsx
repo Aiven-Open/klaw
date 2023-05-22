@@ -8,11 +8,10 @@ import { RequestStatus } from "src/domain/requests/requests-types";
 
 type StatusFilterProps = {
   defaultStatus: RequestStatus;
-  paginated?: boolean;
 };
 
 function StatusFilter(props: StatusFilterProps) {
-  const { defaultStatus, paginated } = props;
+  const { defaultStatus } = props;
 
   const { status, setFilterValue } = useFiltersValues({ defaultStatus });
 
@@ -23,7 +22,7 @@ function StatusFilter(props: StatusFilterProps) {
       defaultValue={status}
       onChange={(e) => {
         const status = e.target.value as RequestStatus;
-        return setFilterValue({ name: "status", value: status, paginated });
+        return setFilterValue({ name: "status", value: status });
       }}
     >
       {statusList.map((status) => {

@@ -183,7 +183,7 @@ describe("useFiltersValues.tsx", () => {
       });
     });
   });
-  describe("should set correct filter values when using setFilterValue (paginated)", () => {
+  describe("should set correct filter values when using setFilterValue", () => {
     afterEach(() => {
       window.history.pushState({}, "", "/");
       cleanup();
@@ -286,118 +286,6 @@ describe("useFiltersValues.tsx", () => {
       });
 
       expect(window.location.search).toBe("?search=abc&page=1");
-    });
-  });
-  describe("should set correct filter values when using setFilterValue (not paginated)", () => {
-    afterEach(() => {
-      window.history.pushState({}, "", "/");
-      cleanup();
-    });
-
-    it("sets the correct environment filter value", () => {
-      const {
-        result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-      });
-
-      current.setFilterValue({
-        name: "environment",
-        value: "1",
-        paginated: false,
-      });
-
-      expect(window.location.search).toBe("?environment=1");
-    });
-    it("sets the correct aclType filter value", () => {
-      const {
-        result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-      });
-
-      current.setFilterValue({
-        name: "aclType",
-        value: "PRODUCER",
-        paginated: false,
-      });
-
-      expect(window.location.search).toBe("?aclType=PRODUCER");
-    });
-    it("sets the correct status filter value", () => {
-      const {
-        result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-      });
-
-      current.setFilterValue({
-        name: "status",
-        value: "CREATED",
-        paginated: false,
-      });
-
-      expect(window.location.search).toBe("?status=CREATED");
-    });
-    it("sets the correct team filter value", () => {
-      const {
-        result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-      });
-
-      current.setFilterValue({
-        name: "teamId",
-        value: "2",
-        paginated: false,
-      });
-
-      expect(window.location.search).toBe("?teamId=2");
-    });
-    it("sets the correct showOnlyMyRequests filter value", () => {
-      const {
-        result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-      });
-
-      current.setFilterValue({
-        name: "showOnlyMyRequests",
-        value: true,
-        paginated: false,
-      });
-
-      expect(window.location.search).toBe("?showOnlyMyRequests=true");
-    });
-    it("sets the correct operationType filter value", () => {
-      const {
-        result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-      });
-
-      current.setFilterValue({
-        name: "requestType",
-        value: "CREATE",
-        paginated: false,
-      });
-
-      expect(window.location.search).toBe("?requestType=CREATE");
-    });
-    it("sets the correct search filter value", () => {
-      const {
-        result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
-      });
-
-      current.setFilterValue({
-        name: "search",
-        value: "abc",
-        paginated: false,
-      });
-
-      expect(window.location.search).toBe("?search=abc");
     });
   });
 });

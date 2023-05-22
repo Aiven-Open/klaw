@@ -106,7 +106,7 @@ describe("RequestTypeFilter.tsx", () => {
     });
   });
 
-  describe("updates the search param to preserve request type in url (paginated)", () => {
+  describe("updates the search param to preserve request type in url", () => {
     const defaultRequestType = "DELETE";
     const deleteName = requestOperationTypeNameMap[defaultRequestType];
 
@@ -158,62 +158,6 @@ describe("RequestTypeFilter.tsx", () => {
 
       await waitFor(() => {
         expect(window.location.search).toEqual(`?page=1`);
-      });
-    });
-  });
-
-  describe("updates the search param to preserve request type in url (not paginated)", () => {
-    const defaultRequestType = "DELETE";
-    const deleteName = requestOperationTypeNameMap[defaultRequestType];
-
-    beforeEach(async () => {
-      customRender(<RequestTypeFilter paginated={false} />, {
-        queryClient: true,
-        browserRouter: true,
-      });
-    });
-
-    afterEach(() => {
-      // resets url to get to clean state again
-      window.history.pushState({}, "No page title", "/");
-      cleanup();
-    });
-
-    it("shows no search param by default", async () => {
-      expect(window.location.search).toEqual("");
-    });
-
-    it(`sets "?requestType=${defaultRequestType}" as search param when user selected it`, async () => {
-      const select = screen.getByRole("combobox", {
-        name: filterLabel,
-      });
-
-      const option = screen.getByRole("option", {
-        name: deleteName,
-      });
-
-      await userEvent.selectOptions(select, option);
-
-      await waitFor(() => {
-        expect(window.location.search).toEqual(
-          `?requestType=${defaultRequestType}`
-        );
-      });
-    });
-
-    it(`unsets "?requestType" as search param when user selects All request types`, async () => {
-      const select = screen.getByRole("combobox", {
-        name: filterLabel,
-      });
-
-      const allOption = screen.getByRole("option", {
-        name: "All request types",
-      });
-
-      await userEvent.selectOptions(select, allOption);
-
-      await waitFor(() => {
-        expect(window.location.search).toEqual(``);
       });
     });
   });

@@ -12,21 +12,13 @@ type RequestOperationTypeOptions = ResolveIntersectionTypes<
   RequestOperationType | "ALL"
 >;
 
-interface RequestTypeFilterProps {
-  paginated?: boolean;
-}
-
-function RequestTypeFilter({ paginated }: RequestTypeFilterProps) {
+function RequestTypeFilter() {
   const { requestType, setFilterValue } = useFiltersValues();
 
   const handleChangeRequestType = (e: ChangeEvent<HTMLSelectElement>) => {
     const nextOperationType = e.target.value as RequestOperationTypeOptions;
 
-    setFilterValue({
-      name: "requestType",
-      value: nextOperationType,
-      paginated,
-    });
+    setFilterValue({ name: "requestType", value: nextOperationType });
   };
 
   return (
