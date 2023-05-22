@@ -361,53 +361,171 @@ public class MailUtils {
   }
 
   private void sendMail(
-      String username,
-      HandleDbRequests dbHandle,
-      String formattedStr,
-      String subject,
-      boolean registrationRequest,
-      boolean requiresApproval,
-      String otherMailId,
-      int tenantId,
-      String loginUrl) {
+          String username,
+          HandleDbRequests dbHandle,
+          String formattedStr,
+          String subject,
+          boolean registrationRequest,
+          boolean requiresApproval,
+          String otherMailId,
+          int tenantId,
+          String loginUrl) {
 
     CompletableFuture.runAsync(
-        () -> {
-          String emailId;
+            () -> {
+              String emailId;
 
-          String emailIdTeam = null;
-          Integer teamId = null;
-          List<String> allApprovers = null;
-          try {
-            if (registrationRequest) {
-              emailId = otherMailId;
-            } else {
-              emailId = getEmailAddressFromUsername(username);
-            }
+              String emailIdTeam = null;
+              Integer teamId = null;
+              List<String> allApprovers = null;
+              try {
+                if (registrationRequest) {
+                  emailId = otherMailId;
+                } else {
+                  emailId = getEmailAddressFromUsername(username);
+                }
 
-            try {
-              List<Team> allTeams = dbHandle.getAllTeamsOfUsers(username, tenantId);
-              if (!allTeams.isEmpty()) {
-                emailIdTeam = allTeams.get(0).getTeammail();
-                teamId = allTeams.get(0).getTeamId();
+                try {
+                  List<Team> allTeams = dbHandle.getAllTeamsOfUsers(username, tenantId);
+                  if (!allTeams.isEmpty()) {
+                    emailIdTeam = allTeams.get(0).getTeammail();
+                    teamId = allTeams.get(0).getTeamId();
+                  }
+                } catch (Exception e) {
+                  log.error("Exception :", e);
+                }
+                if (requiresApproval) {
+                  allApprovers = getAllUsersWithPermissionToApproveRequest(tenantId, username, teamId);
+                }
+                if (emailId != null) {
+                  emailService.sendSimpleMessage(
+                          List.of(emailId), List.of(emailIdTeam), allApprovers, subject, formattedStr, tenantId, loginUrl);
+                } else {
+                  log.error("Email id not found. Notification not sent !!");
+                }
+              } catch (Exception e) {
+                log.error("Email id not found. Notification not sent !! ", e);
               }
-            } catch (Exception e) {
-              log.error("Exception :", e);
-            }
-            if (requiresApproval) {
-              allApprovers = getAllUsersWithPermissionToApproveRequest(tenantId, username, teamId);
-            }
-            if (emailId != null) {
-              emailService.sendSimpleMessage(
-                  emailId, emailIdTeam, allApprovers, subject, formattedStr, tenantId, loginUrl);
-            } else {
-              log.error("Email id not found. Notification not sent !!");
-            }
-          } catch (Exception e) {
-            log.error("Email id not found. Notification not sent !! ", e);
-          }
-        });
+            });
   }
+
+  private void sendRequestMail(
+          String approverUsername,
+          String requesterUsername,
+          HandleDbRequests dbHandle,
+          String formattedStr,
+          String subject,
+          boolean requiresApproval,
+          int tenantId,
+          String loginUrl) {
+
+    CompletableFuture.runAsync(
+            () -> {
+              String requesterEmail,approverEmail;
+
+              String approverTeamEmail = null, requesterTeamEmail =null;
+              Integer teamId = null;
+              List<String> bcc = null, to = null, cc = null;
+              try {
+
+                requesterEmail = getEmailAddressFromUsername(requesterUsername);
+                approverEmail = approverUsername!=null?getEmailAddressFromUsername(approverUsername):null;
+
+
+                try {
+                  List<Team> approverTeam = dbHandle.getAllTeamsOfUsers(approverUsername, tenantId);
+                  if (!approverTeam.isEmpty()) {
+                    approverTeamEmail = approverTeam.get(0).getTeammail();
+                  }
+
+                  List<Team> requesterTeam = dbHandle.getAllTeamsOfUsers(requesterUsername, tenantId);
+                  if (!requesterTeam.isEmpty()) {
+                    requesterTeamEmail = requesterTeam.get(0).getTeammail();
+                    teamId = requesterTeam.get(0).getTeamId();
+                  }
+                } catch (Exception e) {
+                  log.error("Exception :", e);
+                }
+
+                if (requiresApproval) {
+                  bcc = getAllUsersWithPermissionToApproveRequest(tenantId, requesterUsername, teamId);
+                  to = List.of(approverTeamEmail);
+                  cc = List.of(requesterEmail,requesterTeamEmail);
+                } else {
+                  cc = List.of(approverTeamEmail,approverEmail);
+                  to = List.of(requesterEmail,requesterTeamEmail);
+                }
+                if ( to != null || cc !=null || bcc !=null ) {
+                  emailService.sendSimpleMessage(
+                          to, cc, bcc, subject, formattedStr, tenantId, loginUrl);
+                } else {
+                  log.error("No valid email id found. Notification not sent !!");
+                }
+              } catch (Exception e) {
+                log.error("Email id not found. Notification not sent !! ", e);
+              }
+            });
+  }
+
+  private void sendClaimRequestMail(
+          String approverUsername,
+          String requestorUsername,
+          Integer resourceOwnerTeamId,
+          HandleDbRequests dbHandle,
+          String formattedStr,
+          String subject,
+          boolean requiresApproval,
+          int tenantId,
+          String loginUrl) {
+
+    CompletableFuture.runAsync(
+            () -> {
+              String requesterEmail,approverEmail;
+
+              String approverTeamEmail = null, requesterTeamEmail =null;
+              List<String> bcc = null, to = null, cc = null;
+              try {
+
+                requesterEmail = getEmailAddressFromUsername(requestorUsername);
+                approverEmail = approverUsername!=null?getEmailAddressFromUsername(approverUsername):null;
+
+
+                try {
+                  Team approverTeam = dbHandle.getTeamDetails(resourceOwnerTeamId,tenantId);
+                  if (approverTeam != null) {
+                    approverTeamEmail = approverTeam.getTeammail();
+                  }
+
+                  List<Team> requesterTeam = dbHandle.getAllTeamsOfUsers(requestorUsername, tenantId);
+                  if (!requesterTeam.isEmpty()) {
+                    requesterTeamEmail = requesterTeam.get(0).getTeammail();
+
+                  }
+                } catch (Exception e) {
+                  log.error("Exception :", e);
+                }
+
+                if (requiresApproval) {
+                  bcc = getAllUsersWithPermissionToApproveRequest(tenantId, requestorUsername, resourceOwnerTeamId);
+                  to = List.of(approverTeamEmail);
+                  cc = List.of(requesterEmail,requesterTeamEmail);
+                } else {
+                  cc = List.of(approverTeamEmail,approverEmail);
+                  to = List.of(requesterEmail,requesterTeamEmail);
+                }
+                if ( to != null || cc !=null || bcc !=null ) {
+                  emailService.sendSimpleMessage(
+                          to, cc, bcc, subject, formattedStr, tenantId, loginUrl);
+                } else {
+                  log.error("No valid email id found. Notification not sent !!");
+                }
+              } catch (Exception e) {
+                log.error("Email id not found. Notification not sent !! ", e);
+              }
+            });
+  }
+
+
 
   private void sendPwdResetMail(
       String username,
