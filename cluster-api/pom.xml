@@ -25,7 +25,7 @@
         <guava.version>31.1-jre</guava.version>
         <kafka.client.version>3.4.0</kafka.client.version>
         <mockserver.version>5.15.0</mockserver.version>
-        <spring-kafka-test.version>3.0.6</spring-kafka-test.version>
+        <spring-kafka-test.version>3.0.7</spring-kafka-test.version>
     </properties>
 
     <dependencies>
