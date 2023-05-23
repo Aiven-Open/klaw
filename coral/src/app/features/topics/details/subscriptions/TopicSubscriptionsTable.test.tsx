@@ -85,7 +85,6 @@ const userSubsColumnNames = [
   "IP addresses",
   "ACL type",
   "Team",
-  "Requested on",
   "Delete",
 ];
 
@@ -95,7 +94,6 @@ const prefixedSubsColumnNames = [
   "IP addresses",
   "ACL type",
   "Team",
-  "Requested on",
   "Delete",
 ];
 const transactionalSubsColumnNames = [
@@ -104,7 +102,6 @@ const transactionalSubsColumnNames = [
   "IP addresses",
   "ACL type",
   "Team",
-  "Requested on",
   "Delete",
 ];
 
