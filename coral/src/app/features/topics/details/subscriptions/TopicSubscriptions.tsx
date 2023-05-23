@@ -56,8 +56,7 @@ const TopicSubscriptions = () => {
       const teamFilter = teamId === "ALL" || currentTeamId === teamId;
       const searchFilter =
         search === "" ||
-        // @TODO: add date requested when available in data
-        JSON.stringify(pick(sub, "acl_ssl", "acl_ip", "topictype", "teamname"))
+        JSON.stringify(pick(sub, "acl_ssl", "acl_ip"))
           .toLowerCase()
           .includes(search.toLowerCase());
       const aclTypeFilter =
@@ -73,8 +72,8 @@ const TopicSubscriptions = () => {
         <AclTypeFilter key="aclType" />,
         <SearchFilter
           key="search"
-          placeholder="Search"
-          description={`Search for a partial match on any data point. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
+          placeholder="Search principal or IP"
+          description={`Search for a partial match principals or IPs. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
         />,
         <RadioButtonGroup
           name="Subscription options"
