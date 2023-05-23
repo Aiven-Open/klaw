@@ -229,6 +229,8 @@ public interface HandleDbRequests {
 
   String insertProductDetails(ProductDetails productDetails);
 
+  String insertIntoMessageSchemaSOT(List<MessageSchema> schemaList);
+
   Integer getNextTopicRequestId(String idType, int tenantId);
 
   Integer getNextConnectorRequestId(String idType, int tenantId);
@@ -337,6 +339,8 @@ public interface HandleDbRequests {
   String deleteTeamRequest(Integer teamId, int tenantId);
 
   String deleteSchemaRequest(int schemaId, String userName, int tenantId);
+
+  void deleteSchemas(Topic topicObj);
 
   String deleteAllUsers(int tenantId);
 

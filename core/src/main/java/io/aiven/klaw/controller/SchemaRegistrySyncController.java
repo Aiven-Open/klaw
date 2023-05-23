@@ -1,5 +1,7 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SyncSchemaUpdates;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import io.aiven.klaw.service.SchemaRegistrySyncControllerService;
 import lombok.extern.slf4j.Slf4j;
@@ -7,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,5 +44,14 @@ public class SchemaRegistrySyncController {
         schemaRegistrySyncControllerService.getSchemasOfEnvironment(
             kafkaEnvId, pageNo, currentPage),
         HttpStatus.OK);
+  }
+
+  @PostMapping(
+      value = "/schemas/updateDbFromCluster",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> updateSyncTopics(
+      @RequestBody SyncSchemaUpdates syncSchemaUpdates) throws Exception {
+    return new ResponseEntity<>(
+        schemaRegistrySyncControllerService.updateDbFromCluster(syncSchemaUpdates), HttpStatus.OK);
   }
 }

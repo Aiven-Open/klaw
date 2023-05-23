@@ -535,6 +535,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public String insertIntoMessageSchemaSOT(List<MessageSchema> schemaList) {
+    return jdbcInsertHelper.insertIntoMessageSchemaSOT(schemaList);
+  }
+
+  @Override
   public Integer getNextTopicRequestId(String idType, int tenantId) {
     return jdbcSelectHelper.getNextTopicRequestId(idType, tenantId);
   }
@@ -796,6 +801,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public String deleteSchemaRequest(int schemaId, String userName, int tenantId) {
     return jdbcDeleteHelper.deleteSchemaRequest(schemaId, userName, tenantId);
+  }
+
+  @Override
+  public void deleteSchemas(Topic topicObj) {
+    jdbcDeleteHelper.deleteSchemas(topicObj);
   }
 
   @Override

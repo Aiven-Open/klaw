@@ -578,7 +578,7 @@ public class SchemaService {
     return new HttpEntity<>(params, headers);
   }
 
-  public SchemasInfoOfClusterResponse getSchemasOfCluster(
+  public SchemasInfoOfClusterResponse getAllSchemasInfoFromCluster(
       String bootstrapServers, KafkaSupportedProtocol protocol, String clusterIdentification) {
     log.info(
         "bootstrapServers {} protocol {} clusterIdentification {}",

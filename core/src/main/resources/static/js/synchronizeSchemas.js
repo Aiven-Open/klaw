@@ -281,14 +281,12 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
             $scope.updatedSyncArray.push(serviceInput);
         }
 
-        $scope.synchTopics = function() {
-
+        $scope.synchSchemas = function() {
             var serviceInput = {};
-
-            if(!$scope.getTopics.envName)
+            if(!$scope.getSchemas.envName)
                    return;
 
-            if($scope.updatedSyncArray.length == 0)
+            if($scope.updatedTopicIdsArray.length === 0)
             {
                 swal({
                        title: "",
@@ -298,13 +296,15 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                    });
                 return;
             }
+            serviceInput['topicList'] = $scope.updatedTopicIdsArray;
+            serviceInput['kafkaEnvSelected'] = $scope.getSchemas.envName;
 
-               var warningMsg="";
-               if($scope.topicsWithWarning.length > 0) {
-               warningMsg = "This selection contains the following topic(s) "+ $scope.topicsWithWarning + " which have validation warnings.";
-               } else {
-                warningMsg = "You would like to Synchronize topics with this selection ? ";
-               }
+           var warningMsg="";
+           if($scope.topicsWithWarning.length > 0) {
+           warningMsg = "This selection contains the following topic(s) "+ $scope.topicsWithWarning + " which have validation warnings.";
+           } else {
+            warningMsg = "You would like to Synchronize schemas with this selection ? ";
+           }
 
 
             swal({
@@ -319,17 +319,16 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                     closeOnCancel: true
                 }).then(function(isConfirm){
 
-                    if (isConfirm.dismiss != "cancel") {
+                    if (isConfirm.dismiss !== "cancel") {
                         $scope.ShowSpinnerStatus = true;
                         $http({
                             method: "POST",
-                            url: "updateSyncTopics",
+                            url: "schemas/updateDbFromCluster",
                             headers : { 'Content-Type' : 'application/json' },
-                            params: {'updatedSyncTopics' : $scope.updatedSyncArray},
-                            data:  $scope.updatedSyncArray
+                            data:  serviceInput
                         }).success(function(output) {
                             $scope.ShowSpinnerStatus = false;
-                            $scope.alert = "Topic Sync Request : "+output.message;
+                            $scope.alert = "Schema Sync Request : "+output.message;
                             $scope.updatedSyncArray = [];
 
                              if(output.success){
@@ -339,6 +338,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                             		   timer: 2000,
                             		   showConfirmButton: false
                             	   });
+                              $scope.getSchemas('1');
                             }else $scope.showSubmitFailed('','');
                         }).error(
                             function(error)
@@ -353,9 +353,6 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                 });
 
         };
-
-	// We add the "time" query parameter to prevent IE
-	// from caching ajax results
 
 	$scope.getSchemas = function(pageNoSelected) {
 
@@ -378,7 +375,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
 		}).success(function(output) {
 		    $scope.ShowSpinnerStatusTopics = false;
 			$scope.resultBrowse = output["schemaSubjectInfoResponseList"];
-			if($scope.resultBrowse != null && $scope.resultBrowse.length != 0){
+			if($scope.resultBrowse != null && $scope.resultBrowse.length !== 0){
                 $scope.resultPages = $scope.resultBrowse[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
                 $scope.currentPageSelected = $scope.resultBrowse[0].currentPage;

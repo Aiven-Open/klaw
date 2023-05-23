@@ -5,10 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SyncSchemaUpdates;
 import io.aiven.klaw.model.cluster.SchemaInfoOfTopic;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
@@ -18,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -205,5 +210,66 @@ public class SchemaRegistrySyncControllerService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  public ApiResponse updateDbFromCluster(SyncSchemaUpdates syncSchemaUpdates) throws Exception {
+    log.info("syncSchemaUpdates {}", syncSchemaUpdates);
+    String userDetails = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userDetails);
+
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
+    }
+    Env kafkaEnv =
+        manageDatabase
+            .getHandleDbRequests()
+            .getEnvDetails(syncSchemaUpdates.getKafkaEnvSelected(), tenantId);
+    Env schemaEnvSelected =
+        manageDatabase
+            .getHandleDbRequests()
+            .getEnvDetails(kafkaEnv.getAssociatedEnv().getId(), tenantId);
+    KwClusters kwClusters =
+        manageDatabase
+            .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+            .get(schemaEnvSelected.getClusterId());
+
+    for (String topicName : syncSchemaUpdates.getTopicList()) {
+      TreeMap<Integer, Map<String, Object>> schemaObject =
+          clusterApiService.getAvroSchema(
+              kwClusters.getBootstrapServers(),
+              kwClusters.getProtocol(),
+              kwClusters.getClusterName() + kwClusters.getClusterId(),
+              topicName,
+              tenantId);
+
+      int teamId = commonUtilsService.getTopicsForTopicName(topicName, tenantId).get(0).getTeamId();
+
+      // delete all versions of topic
+      Topic topic = new Topic();
+      topic.setEnvironment(schemaEnvSelected.getId());
+      topic.setTenantId(tenantId);
+      topic.setTopicname(topicName);
+      manageDatabase.getHandleDbRequests().deleteSchemas(topic);
+
+      // insert all versions of topic
+      List<MessageSchema> schemaList = new ArrayList<>();
+      for (Integer schemaVersion : schemaObject.keySet()) {
+        MessageSchema messageSchema = new MessageSchema();
+        messageSchema.setEnvironment(schemaEnvSelected.getId());
+        messageSchema.setTopicname(topicName);
+        messageSchema.setTenantId(tenantId);
+        messageSchema.setSchemaversion(schemaVersion + "");
+        messageSchema.setSchemafull((String) schemaObject.get(schemaVersion).get("schema"));
+        messageSchema.setTeamId(teamId);
+        schemaList.add(messageSchema);
+      }
+
+      manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(schemaList);
+    }
+
+    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
   }
 }
