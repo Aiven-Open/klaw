@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -101,6 +102,8 @@ public class MailUtils {
       String acl,
       String reasonToDecline,
       String username,
+      String approverUsername,
+      Integer ownerTeamId,
       HandleDbRequests dbHandle,
       MailType mailType,
       String loginUrl) {
@@ -165,23 +168,60 @@ public class MailUtils {
         formattedStr = "Acl Request processing failed : " + acl + ", " + topicName;
         subject = "Request processing failed.";
       }
-      case CONNECTOR_CLAIM_REQUESTED,
-          CONNECTOR_REQUEST_DENIED,
-          CONNECTOR_DELETE_REQUESTED,
-          SCHEMA_REQUESTED -> {
+      case SCHEMA_REQUESTED -> {
+        requiresApproval = true;
+        subject = "New Schema Request";
+        formattedStr = "New Schema Request on " + topicName;
+      }
+      case CONNECTOR_DELETE_REQUESTED, CONNECTOR_CREATE_REQUESTED -> {
         // all remaining requests that require approvals are grouped here.
         requiresApproval = true;
+        subject = "New Connector Request";
+        formattedStr = "New Connector Request on " + topicName;
+      }
+      case SCHEMA_REQUEST_APPROVED -> {
+        subject = "Schema Request Approved";
+        formattedStr = "Schema Request on " + topicName + " approved by " + approverUsername;
+      }
+      case SCHEMA_REQUEST_DENIED -> {
+        subject = "Schema Request Denied";
+        formattedStr =
+            "Schema Request on "
+                + topicName
+                + " denied by "
+                + approverUsername
+                + "because : "
+                + reasonToDecline;
+      }
+      case CONNECTOR_REQUEST_DENIED -> {
+        subject = "Connector Request Denied";
+        formattedStr =
+            "Connector Request on "
+                + topicName
+                + " denied by "
+                + approverUsername
+                + "because : "
+                + reasonToDecline;
+      }
+      case CONNECTOR_REQUEST_APPROVED -> {
+        subject = "Connector Request Approved";
+        formattedStr = "Connector Request on " + topicName + " approved by " + approverUsername;
+      }
+      case CONNECTOR_CLAIM_REQUESTED -> {
+        requiresApproval = true;
+        subject = "New Connector Claim Request";
+        formattedStr = "New Claim on Connector " + topicName;
       }
     }
 
-    sendMail(
+    sendRequestMail(
+        approverUsername,
         username,
+        ownerTeamId,
         dbHandle,
         formattedStr,
         subject,
-        false,
         requiresApproval,
-        null,
         tenantId,
         loginUrl);
   }
@@ -361,171 +401,146 @@ public class MailUtils {
   }
 
   private void sendMail(
-          String username,
-          HandleDbRequests dbHandle,
-          String formattedStr,
-          String subject,
-          boolean registrationRequest,
-          boolean requiresApproval,
-          String otherMailId,
-          int tenantId,
-          String loginUrl) {
+      String username,
+      HandleDbRequests dbHandle,
+      String formattedStr,
+      String subject,
+      boolean registrationRequest,
+      boolean requiresApproval,
+      String otherMailId,
+      int tenantId,
+      String loginUrl) {
 
     CompletableFuture.runAsync(
-            () -> {
-              String emailId;
+        () -> {
+          String emailId;
 
-              String emailIdTeam = null;
-              Integer teamId = null;
-              List<String> allApprovers = null;
-              try {
-                if (registrationRequest) {
-                  emailId = otherMailId;
-                } else {
-                  emailId = getEmailAddressFromUsername(username);
-                }
+          String emailIdTeam = null;
+          Integer teamId = null;
+          List<String> allApprovers = null;
+          try {
+            if (registrationRequest) {
+              emailId = otherMailId;
+            } else {
+              emailId = getEmailAddressFromUsername(username);
+            }
 
-                try {
-                  List<Team> allTeams = dbHandle.getAllTeamsOfUsers(username, tenantId);
-                  if (!allTeams.isEmpty()) {
-                    emailIdTeam = allTeams.get(0).getTeammail();
-                    teamId = allTeams.get(0).getTeamId();
-                  }
-                } catch (Exception e) {
-                  log.error("Exception :", e);
-                }
-                if (requiresApproval) {
-                  allApprovers = getAllUsersWithPermissionToApproveRequest(tenantId, username, teamId);
-                }
-                if (emailId != null) {
-                  emailService.sendSimpleMessage(
-                          List.of(emailId), List.of(emailIdTeam), allApprovers, subject, formattedStr, tenantId, loginUrl);
-                } else {
-                  log.error("Email id not found. Notification not sent !!");
-                }
-              } catch (Exception e) {
-                log.error("Email id not found. Notification not sent !! ", e);
+            try {
+              List<Team> allTeams = dbHandle.getAllTeamsOfUsers(username, tenantId);
+              if (!allTeams.isEmpty()) {
+                emailIdTeam = allTeams.get(0).getTeammail();
+                teamId = allTeams.get(0).getTeamId();
               }
-            });
+            } catch (Exception e) {
+              log.error("Exception :", e);
+            }
+            if (requiresApproval) {
+              allApprovers = getAllUsersWithPermissionToApproveRequest(tenantId, username, teamId);
+            }
+            if (emailId != null) {
+              emailService.sendSimpleMessage(
+                  List.of(emailId),
+                  List.of(emailIdTeam),
+                  allApprovers,
+                  subject,
+                  formattedStr,
+                  tenantId,
+                  loginUrl);
+            } else {
+              log.error("Email id not found. Notification not sent !!");
+            }
+          } catch (Exception e) {
+            log.error("Email id not found. Notification not sent !! ", e);
+          }
+        });
   }
 
   private void sendRequestMail(
-          String approverUsername,
-          String requesterUsername,
-          HandleDbRequests dbHandle,
-          String formattedStr,
-          String subject,
-          boolean requiresApproval,
-          int tenantId,
-          String loginUrl) {
+      String approverUsername,
+      String requesterUsername,
+      Integer resourceOwnerTeamId,
+      HandleDbRequests dbHandle,
+      String formattedStr,
+      String subject,
+      boolean requiresApproval,
+      int tenantId,
+      String loginUrl) {
 
     CompletableFuture.runAsync(
-            () -> {
-              String requesterEmail,approverEmail;
+        () -> {
+          String requesterEmail, approverEmail;
 
-              String approverTeamEmail = null, requesterTeamEmail =null;
-              Integer teamId = null;
-              List<String> bcc = null, to = null, cc = null;
-              try {
+          String approverTeamEmail = null, requesterTeamEmail = null;
+          Integer teamId = null;
+          List<String> bcc = new ArrayList<>(), to = new ArrayList<>(), cc = new ArrayList<>();
+          try {
 
-                requesterEmail = getEmailAddressFromUsername(requesterUsername);
-                approverEmail = approverUsername!=null?getEmailAddressFromUsername(approverUsername):null;
+            requesterEmail = getEmailAddressFromUsername(requesterUsername);
+            approverEmail =
+                approverUsername != null ? getEmailAddressFromUsername(approverUsername) : null;
 
+            try {
 
-                try {
-                  List<Team> approverTeam = dbHandle.getAllTeamsOfUsers(approverUsername, tenantId);
-                  if (!approverTeam.isEmpty()) {
-                    approverTeamEmail = approverTeam.get(0).getTeammail();
-                  }
+              approverTeamEmail =
+                  getApproverTeamEmail(dbHandle, resourceOwnerTeamId, approverUsername, tenantId);
+              List<Team> requesterTeam = dbHandle.getAllTeamsOfUsers(requesterUsername, tenantId);
 
-                  List<Team> requesterTeam = dbHandle.getAllTeamsOfUsers(requesterUsername, tenantId);
-                  if (!requesterTeam.isEmpty()) {
-                    requesterTeamEmail = requesterTeam.get(0).getTeammail();
-                    teamId = requesterTeam.get(0).getTeamId();
-                  }
-                } catch (Exception e) {
-                  log.error("Exception :", e);
-                }
-
-                if (requiresApproval) {
-                  bcc = getAllUsersWithPermissionToApproveRequest(tenantId, requesterUsername, teamId);
-                  to = List.of(approverTeamEmail);
-                  cc = List.of(requesterEmail,requesterTeamEmail);
-                } else {
-                  cc = List.of(approverTeamEmail,approverEmail);
-                  to = List.of(requesterEmail,requesterTeamEmail);
-                }
-                if ( to != null || cc !=null || bcc !=null ) {
-                  emailService.sendSimpleMessage(
-                          to, cc, bcc, subject, formattedStr, tenantId, loginUrl);
-                } else {
-                  log.error("No valid email id found. Notification not sent !!");
-                }
-              } catch (Exception e) {
-                log.error("Email id not found. Notification not sent !! ", e);
+              if (!requesterTeam.isEmpty()) {
+                requesterTeamEmail = requesterTeam.get(0).getTeammail();
+                teamId = requesterTeam.get(0).getTeamId();
               }
-            });
+
+              if (requesterTeamEmail.equalsIgnoreCase(approverTeamEmail)
+                  || (approverTeamEmail == null && requesterTeamEmail != null)) {
+                approverTeamEmail = requesterTeamEmail;
+                requesterTeamEmail = null;
+              }
+            } catch (Exception e) {
+              log.error("Exception :", e);
+            }
+
+            if (requiresApproval) {
+              bcc = getAllUsersWithPermissionToApproveRequest(tenantId, requesterUsername, teamId);
+              CollectionUtils.addIgnoreNull(to, approverTeamEmail);
+
+              CollectionUtils.addIgnoreNull(cc, requesterTeamEmail);
+              CollectionUtils.addIgnoreNull(cc, requesterEmail);
+            } else {
+              CollectionUtils.addIgnoreNull(cc, approverTeamEmail);
+              CollectionUtils.addIgnoreNull(cc, approverEmail);
+
+              CollectionUtils.addIgnoreNull(to, requesterEmail);
+              CollectionUtils.addIgnoreNull(to, requesterTeamEmail);
+            }
+            if (to != null || cc != null || bcc != null) {
+              emailService.sendSimpleMessage(
+                  to, cc, bcc, subject, formattedStr, tenantId, loginUrl);
+            } else {
+              log.error("No valid email id found. Notification not sent !!");
+            }
+          } catch (Exception e) {
+            log.error("Email id not found. Notification not sent !! ", e);
+          }
+        });
   }
 
-  private void sendClaimRequestMail(
-          String approverUsername,
-          String requestorUsername,
-          Integer resourceOwnerTeamId,
-          HandleDbRequests dbHandle,
-          String formattedStr,
-          String subject,
-          boolean requiresApproval,
-          int tenantId,
-          String loginUrl) {
-
-    CompletableFuture.runAsync(
-            () -> {
-              String requesterEmail,approverEmail;
-
-              String approverTeamEmail = null, requesterTeamEmail =null;
-              List<String> bcc = null, to = null, cc = null;
-              try {
-
-                requesterEmail = getEmailAddressFromUsername(requestorUsername);
-                approverEmail = approverUsername!=null?getEmailAddressFromUsername(approverUsername):null;
-
-
-                try {
-                  Team approverTeam = dbHandle.getTeamDetails(resourceOwnerTeamId,tenantId);
-                  if (approverTeam != null) {
-                    approverTeamEmail = approverTeam.getTeammail();
-                  }
-
-                  List<Team> requesterTeam = dbHandle.getAllTeamsOfUsers(requestorUsername, tenantId);
-                  if (!requesterTeam.isEmpty()) {
-                    requesterTeamEmail = requesterTeam.get(0).getTeammail();
-
-                  }
-                } catch (Exception e) {
-                  log.error("Exception :", e);
-                }
-
-                if (requiresApproval) {
-                  bcc = getAllUsersWithPermissionToApproveRequest(tenantId, requestorUsername, resourceOwnerTeamId);
-                  to = List.of(approverTeamEmail);
-                  cc = List.of(requesterEmail,requesterTeamEmail);
-                } else {
-                  cc = List.of(approverTeamEmail,approverEmail);
-                  to = List.of(requesterEmail,requesterTeamEmail);
-                }
-                if ( to != null || cc !=null || bcc !=null ) {
-                  emailService.sendSimpleMessage(
-                          to, cc, bcc, subject, formattedStr, tenantId, loginUrl);
-                } else {
-                  log.error("No valid email id found. Notification not sent !!");
-                }
-              } catch (Exception e) {
-                log.error("Email id not found. Notification not sent !! ", e);
-              }
-            });
+  public String getApproverTeamEmail(
+      HandleDbRequests dbHandle,
+      Integer resourceOwnerTeamId,
+      String approverUsername,
+      int tenantId) {
+    Team approverTeam = dbHandle.getTeamDetails(resourceOwnerTeamId, tenantId);
+    if (approverTeam != null) {
+      return approverTeam.getTeammail();
+    } else {
+      List<Team> approverTeamList = dbHandle.getAllTeamsOfUsers(approverUsername, tenantId);
+      if (!approverTeamList.isEmpty()) {
+        return approverTeamList.get(0).getTeammail();
+      } else {
+        return null;
+      }
+    }
   }
-
-
 
   private void sendPwdResetMail(
       String username,

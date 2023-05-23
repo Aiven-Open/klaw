@@ -206,7 +206,9 @@ public class AclControllerService {
       aclRequestsDao.setAcl_ip(null);
     }
   }
-
+  /*
+  TODO ACL can be owned by a different team so make sure correct team is added in there.
+   */
   private ApiResponse executeAclRequestModel(
       String userDetails, AclRequests aclRequestsDao, MailType mailType) throws KlawException {
     try {
@@ -218,7 +220,9 @@ public class AclControllerService {
             aclRequestsDao.getTopicname(),
             aclRequestsDao.getAclType(),
             "",
+            aclRequestsDao.getRequestor(),
             userDetails,
+            aclRequestsDao.getTeamId(),
             manageDatabase.getHandleDbRequests(),
             mailType,
             commonUtilsService.getLoginUrl());
@@ -648,6 +652,8 @@ public class AclControllerService {
         aclReq.getAclType(),
         "",
         aclReq.getRequestor(),
+        aclReq.getApprover(),
+        aclReq.getTeamId(),
         dbHandle,
         notifyUserType,
         commonUtilsService.getLoginUrl());
@@ -798,6 +804,8 @@ public class AclControllerService {
           aclReq.getAclType(),
           reasonToDecline,
           aclReq.getRequestor(),
+          aclReq.getApprover(),
+          aclReq.getTeamId(),
           dbHandle,
           ACL_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());

@@ -70,6 +70,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -140,6 +141,8 @@ public class TopicControllerService {
         null,
         "",
         userName,
+        null,
+        NumberUtils.toInt(topicRequestReq.getApprovingTeamId(), -1),
         dbHandle,
         TOPIC_CREATE_REQUESTED,
         commonUtilsService.getLoginUrl());
@@ -239,6 +242,8 @@ public class TopicControllerService {
             null,
             "",
             userName,
+            null,
+            NumberUtils.toInt(topicRequestReq.getApprovingTeamId(), -1),
             dbHandle,
             TOPIC_DELETE_REQUESTED,
             commonUtilsService.getLoginUrl());
@@ -293,25 +298,23 @@ public class TopicControllerService {
     topicRequestReq.setApprovingTeamId(topicOwnerTeamId + "");
     topicRequestReq.setRemarks(TOPICS_108);
 
+    String approverName = null;
+    Integer approverTeamId = null;
+    if (topicOwnerContact.isPresent()) {
+      approverName = topicOwnerContact.get().getUsername();
+      approverTeamId = topicOwnerContact.get().getTeamId();
+    }
+
     mailService.sendMail(
         topicRequestReq.getTopicname(),
         null,
         "",
         userName,
+        approverName,
+        approverTeamId,
         dbHandle,
         TOPIC_CLAIM_REQUESTED,
         commonUtilsService.getLoginUrl());
-
-    topicOwnerContact.ifPresent(
-        userInfo ->
-            mailService.sendMail(
-                topicRequestReq.getTopicname(),
-                null,
-                "",
-                userInfo.getUsername(),
-                dbHandle,
-                TOPIC_CLAIM_REQUESTED,
-                commonUtilsService.getLoginUrl()));
 
     try {
       String result = dbHandle.requestForTopic(topicRequestReq).get("result");
@@ -778,6 +781,8 @@ public class TopicControllerService {
           null,
           "",
           topicRequest.getRequestor(),
+          topicRequest.getApprover(),
+          NumberUtils.toInt(topicRequest.getApprovingTeamId(), -1),
           dbHandle,
           TOPIC_REQUEST_APPROVED,
           commonUtilsService.getLoginUrl());
@@ -877,6 +882,8 @@ public class TopicControllerService {
           null,
           reasonForDecline,
           topicRequest.getRequestor(),
+          topicRequest.getApprover(),
+          NumberUtils.toInt(topicRequest.getApprovingTeamId(), -1),
           dbHandle,
           TOPIC_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());

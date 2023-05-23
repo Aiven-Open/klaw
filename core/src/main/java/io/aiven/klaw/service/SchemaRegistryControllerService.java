@@ -299,6 +299,8 @@ public class SchemaRegistryControllerService {
             null,
             "",
             schemaRequest.getRequestor(),
+            schemaRequest.getApprover(),
+            schemaRequest.getTeamId(),
             dbHandle,
             SCHEMA_REQUEST_APPROVED,
             commonUtilsService.getLoginUrl());
@@ -353,6 +355,8 @@ public class SchemaRegistryControllerService {
           null,
           reasonForDecline,
           schemaRequest.getRequestor(),
+          schemaRequest.getApprover(),
+          schemaRequest.getTeamId(),
           dbHandle,
           SCHEMA_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());
@@ -527,6 +531,8 @@ public class SchemaRegistryControllerService {
           null,
           "",
           schemaRequest.getRequestor(),
+          null,
+          schemaRequest.getTeamId(),
           dbHandle,
           SCHEMA_REQUESTED,
           commonUtilsService.getLoginUrl());

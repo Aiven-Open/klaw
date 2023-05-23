@@ -80,7 +80,7 @@ public class EmailService {
 
   @Async("notificationsThreadPool")
   public void sendSimpleMessage(
-          List<String> to,
+      List<String> to,
       List<String> cc,
       List<String> bcc,
       String subject,
@@ -91,9 +91,9 @@ public class EmailService {
         manageDatabase.getKwPropertyValue(EMAIL_NOTIFICATIONS_ENABLED_KEY, DEFAULT_TENANT_ID);
     try {
       MimeMessage message = emailSender.createMimeMessage();
-      addEmailRecipientsToEmail(to, message,Message.RecipientType.TO);
-      addEmailRecipientsToEmail(cc, message,Message.RecipientType.CC);
-      addEmailRecipientsToEmail(bcc, message,Message.RecipientType.BCC);
+      addEmailRecipientsToEmail(to, message, Message.RecipientType.TO);
+      addEmailRecipientsToEmail(cc, message, Message.RecipientType.CC);
+      addEmailRecipientsToEmail(bcc, message, Message.RecipientType.BCC);
 
       message.setSubject(subject);
       Address address = new InternetAddress(noReplyMailId);
@@ -134,11 +134,13 @@ public class EmailService {
     }
   }
 
-  private static void addEmailRecipientsToEmail(List<String> addresses, MimeMessage message, Message.RecipientType recipientType) throws MessagingException {
-    if(addresses !=null && !addresses.isEmpty()) {
-     for(String address : addresses) {
-       message.setRecipients(recipientType, address);
-     }
+  private static void addEmailRecipientsToEmail(
+      List<String> addresses, MimeMessage message, Message.RecipientType recipientType)
+      throws MessagingException {
+    if (addresses != null && !addresses.isEmpty()) {
+      for (String address : addresses) {
+        message.setRecipients(recipientType, address);
+      }
     }
   }
 }

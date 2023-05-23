@@ -56,6 +56,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -225,6 +226,8 @@ public class KafkaConnectControllerService {
         null,
         "",
         userName,
+        null,
+        NumberUtils.toInt(topicRequestDao.getApprovingTeamId(), -1),
         dbHandle,
         CONNECTOR_CREATE_REQUESTED,
         commonUtilsService.getLoginUrl());
@@ -630,6 +633,8 @@ public class KafkaConnectControllerService {
             null,
             "",
             connectorRequest.getRequestor(),
+            connectorRequest.getApprover(),
+            NumberUtils.toInt(connectorRequest.getApprovingTeamId(), -1),
             dbHandle,
             CONNECTOR_REQUEST_APPROVED,
             commonUtilsService.getLoginUrl());
@@ -718,6 +723,8 @@ public class KafkaConnectControllerService {
           null,
           reasonForDecline,
           connectorRequest.getRequestor(),
+          connectorRequest.getApprover(),
+          NumberUtils.toInt(connectorRequest.getApprovingTeamId(), -1),
           dbHandle,
           CONNECTOR_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());
@@ -790,6 +797,8 @@ public class KafkaConnectControllerService {
           null,
           "",
           userDetails,
+          kafkaConnectorRequest.getApprover(),
+          NumberUtils.toInt(kafkaConnectorRequest.getApprovingTeamId(), -1),
           dbHandle,
           CONNECTOR_DELETE_REQUESTED,
           commonUtilsService.getLoginUrl());
@@ -921,25 +930,22 @@ public class KafkaConnectControllerService {
     connectorRequest.setRemarks(KAFKA_CONNECT_ERR_118);
     connectorRequest.setTenantId(tenantId);
 
+    String approverName = null;
+    Integer approverTeamId = null;
+    if (topicOwnerContact.isPresent()) {
+      approverName = topicOwnerContact.get().getUsername();
+      approverTeamId = topicOwnerContact.get().getTeamId();
+    }
     mailService.sendMail(
         connectorRequest.getConnectorName(),
         null,
         "",
         userDetails,
+        approverName,
+        approverTeamId,
         dbHandle,
         CONNECTOR_CLAIM_REQUESTED,
         commonUtilsService.getLoginUrl());
-
-    topicOwnerContact.ifPresent(
-        userInfo ->
-            mailService.sendMail(
-                connectorRequest.getConnectorName(),
-                null,
-                "",
-                userInfo.getUsername(),
-                dbHandle,
-                CONNECTOR_CLAIM_REQUESTED,
-                commonUtilsService.getLoginUrl()));
 
     try {
       String res =
