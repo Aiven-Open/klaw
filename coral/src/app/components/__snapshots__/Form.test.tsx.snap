@@ -4,6 +4,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
 <div>
   <form>
     <div
+      class="Aquarium-Input"
       style="display: flex; flex-direction: column;"
     >
       <label
@@ -12,12 +13,12 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
         id="input-1177-label"
       >
         <span
-          class="inline-block mb-2 typography-small-strong text-grey-60"
+          class="inline-flex items-center mb-2 typography-small-strong text-grey-60"
         >
           PasswordInput
         </span>
         <span
-          class="relative block"
+          class="Aquarium-InputBase relative block"
         >
           <input
             class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
@@ -34,7 +35,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
       </p>
     </div>
     <button
-      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4"
+      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
       title="Submit"
       type="submit"
     />
@@ -46,6 +47,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
 <div>
   <form>
     <div
+      class="Aquarium-Input"
       style="display: flex; flex-direction: column;"
     >
       <label
@@ -54,12 +56,12 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
         id="input-21-label"
       >
         <span
-          class="inline-block mb-2 typography-small-strong text-grey-60"
+          class="inline-flex items-center mb-2 typography-small-strong text-grey-60"
         >
           TextInput
         </span>
         <span
-          class="relative block"
+          class="Aquarium-InputBase relative block"
         >
           <input
             class="block w-full rounded-sm disabled:cursor-not-allowed disabled:border-grey-20 disabled:bg-grey-5 typography-small text-grey-70 disabled:text-grey-40 placeholder:text-grey-40 focus:outline-none px-3 py-3 border border-grey-20 hover:border-grey-50 focus:border-info-70"
@@ -76,7 +78,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
       </p>
     </div>
     <button
-      class="text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4"
+      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
       title="Submit"
       type="submit"
     />
