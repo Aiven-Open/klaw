@@ -10,6 +10,7 @@ import io.aiven.klaw.model.response.DashboardStats;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface HandleDbRequests {
 
@@ -370,6 +371,8 @@ public interface HandleDbRequests {
   int getAllTopicsCountInAllTenants();
 
   int getAllComponentsCountForUser(String userName, int tenantId);
+
+  Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId);
 
   List<Topic> getAllTopics();
 

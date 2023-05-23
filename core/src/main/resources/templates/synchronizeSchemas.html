@@ -465,10 +465,10 @@
 										 role="tab"><span class="hidden-sm-up"><i class="ti-file"></i></span> <span
 						class="hidden-xs-down">Individual Options</span></a>
 				</li>
-				<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#bulksync"
-										 role="tab"><span class="hidden-sm-up"><i class="ti-files"></i></span> <span
-						class="hidden-xs-down">Bulk Options</span></a>
-				</li>
+<!--				<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#bulksync"-->
+<!--										 role="tab"><span class="hidden-sm-up"><i class="ti-files"></i></span> <span-->
+<!--						class="hidden-xs-down">Bulk Options</span></a>-->
+<!--				</li>-->
 			</ul>
 
 			<div class="tab-content"  ng-show="dashboardDetails.syncSchemas=='Authorized'">
@@ -484,16 +484,16 @@
 												<h3 class="card-title">Synchronize Schemas - From Cluster</h3>
 											</td>
 											<td>
-												<table border="0">
-													<tr>
-														<td><h6 class="card-title">Show All</h6></td>
-														<td><label class="custom-control custom-checkbox">
-															<input type="checkbox" value="false" ng-click="getSchemas(1,'true');"
-																   ng-init="false" ng-model="showAllTopics" class="custom-control-input">
-															<span class="custom-control-label"></span>
-														</label></td>
-													</tr>
-												</table>
+<!--												<table border="0">-->
+<!--													<tr>-->
+<!--														<td><h6 class="card-title">Show All</h6></td>-->
+<!--														<td><label class="custom-control custom-checkbox">-->
+<!--															<input type="checkbox" value="false" ng-click="getSchemas(1,'true');"-->
+<!--																   ng-init="false" ng-model="showAllTopics" class="custom-control-input">-->
+<!--															<span class="custom-control-label"></span>-->
+<!--														</label></td>-->
+<!--													</tr>-->
+<!--												</table>-->
 											</td>
 											<td>
 												<select class="form-control custom-select" ng-change="getSchemas(1,'true');"
@@ -554,10 +554,11 @@
 									<table class="table color-table table-hover success-table"  ng-show="resultPages != null"   style="table-layout:fixed;">
 										<thead>
 										<tr>
-											<th>TopicName</th>
-											<th>Versions</th>
-											<th>Team</th>
-											<th width="7%">Info</th>
+											<th width = "25%">TopicName</th>
+											<th width = "25%">Versions</th>
+											<th width = "25%">Team</th>
+											<th width = "15%">Info</th>
+											<th width = "10%">Sync to Klaw</th>
 										</tr>
 										</thead>
 										<tbody>
@@ -573,20 +574,25 @@
 												{{ resultBrowset.teamname }}
 											</td>
 
-											<td ng-show="resultBrowset.remarks == 'ADDED'">
+											<td ng-show="resultBrowset.remarks == 'NOT_IN_SYNC'">
 												<span class="badge badge-info"></span>
 												<a class="mytooltip" href="javascript:void(0)" style="color:blue;">
-													<i ng-show="resultBrowset.validatedTopic != true"  class="fa fa-exclamation-triangle" style="color: #FFBF00"></i>
-													<i ng-show="resultBrowset.validatedTopic == true"  class="far fa-plus-square"></i>
-													<span class="tooltip-content3">Schema new on cluster. {{resultBrowset.validationStatus}}</span>
+													<i class="fa fa-exclamation-triangle" style="color: #FFBF00"></i>
+													<span class="tooltip-content3">Schemas differ on cluster.</span>
 												</a>
 											</td>
-											<td ng-show="resultBrowset.remarks != 'DELETED' && resultBrowset.remarks != 'ADDED'">
+											<td ng-show="resultBrowset.remarks == 'IN_SYNC'">
 												<a class="mytooltip" href="javascript:void(0)" style="color:green;">
 													<i class="fas fa-chess-rook"></i>
 													<span class="tooltip-content3">Schema synchronized.</span>
 												</a>
 											</td>
+
+											<td><label class="custom-control custom-checkbox">
+												<input type="checkbox" value="false" ng-click="updateTopicIds(resultBrowset.topic, syncTopicCbId[$index].topicname);"
+													   ng-init="syncTopicCbId[$index].topicname=false" ng-model="syncTopicCbId[$index].topicname" class="custom-control-input">
+												<span class="custom-control-label"></span>
+											</label></td>
 										</tr>
 
 										</tbody>
@@ -625,244 +631,244 @@
 						</div>
 					</div>
 				</div>
-				<div class="tab-pane" id="bulksync" role="tabpanel">
-					<div class="row">
-						<div class="col-lg-12">
-							<div class="card">
-								<div class="card-body">
-									<table class="table table-hover color-table success-table" width="100%">
-										<tr>
-											<td align="left"><h3 class="card-title">Synchronize Schemas - From Cluster</h3>
-											</td>
-											<td>
-												<table border="0">
-													<tr>
-														<td><h6 class="card-title">Show All</h6></td>
-														<td><label class="custom-control custom-checkbox">
-															<input type="checkbox" value="false" ng-click="getTopicsBulk(1,'true');"
-																   ng-init="false" ng-model="showAllTopics" class="custom-control-input">
-															<span class="custom-control-label"></span>
-														</label></td>
-													</tr>
-												</table>
-											</td>
-											<td>
-												<select class="form-control custom-select" ng-change="getTopicsBulk(1);"
-														ng-model="getTopicsBulk.envName" ng-options="env.id as env.name for env in allenvs">
-													<option value="" selected="selected">
-														Select Environment</option>
-												</select>
-											</td>
+<!--				<div class="tab-pane" id="bulksync" role="tabpanel">-->
+<!--					<div class="row">-->
+<!--						<div class="col-lg-12">-->
+<!--							<div class="card">-->
+<!--								<div class="card-body">-->
+<!--									<table class="table table-hover color-table success-table" width="100%">-->
+<!--										<tr>-->
+<!--											<td align="left"><h3 class="card-title">Synchronize Schemas - From Cluster</h3>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<table border="0">-->
+<!--													<tr>-->
+<!--														<td><h6 class="card-title">Show All</h6></td>-->
+<!--														<td><label class="custom-control custom-checkbox">-->
+<!--															<input type="checkbox" value="false" ng-click="getTopicsBulk(1,'true');"-->
+<!--																   ng-init="false" ng-model="showAllTopics" class="custom-control-input">-->
+<!--															<span class="custom-control-label"></span>-->
+<!--														</label></td>-->
+<!--													</tr>-->
+<!--												</table>-->
+<!--											</td>-->
+<!--											<td>-->
+<!--												<select class="form-control custom-select" ng-change="getTopicsBulk(1);"-->
+<!--														ng-model="getTopicsBulk.envName" ng-options="env.id as env.name for env in allenvs">-->
+<!--													<option value="" selected="selected">-->
+<!--														Select Environment</option>-->
+<!--												</select>-->
+<!--											</td>-->
 
-											<td>
-												<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics1" ng-keydown="$event.keyCode === 13 && getTopicsBulk(1);" ng-model="getTopicsBulk.topicnamesearch">
-											</td>
-										</tr>
-									</table>
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- Row -->
+<!--											<td>-->
+<!--												<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics1" ng-keydown="$event.keyCode === 13 && getTopicsBulk(1);" ng-model="getTopicsBulk.topicnamesearch">-->
+<!--											</td>-->
+<!--										</tr>-->
+<!--									</table>-->
+<!--								</div>-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
+<!--					&lt;!&ndash; Row &ndash;&gt;-->
 
-					<div class="row" ng-show="resultBrowseBulk.length==0">
-						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-							<div class="ribbon-wrapper card">
-								<div class="ribbon ribbon-warning">Notification</div>
-								<p class="ribbon-content">No schemas/differences found !! Please check kafka connectivity or if you have selected the right cluster/topics.</p>
-							</div>
-						</div>
-					</div>
+<!--					<div class="row" ng-show="resultBrowseBulk.length==0">-->
+<!--						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >-->
+<!--							<div class="ribbon-wrapper card">-->
+<!--								<div class="ribbon ribbon-warning">Notification</div>-->
+<!--								<p class="ribbon-content">No schemas/differences found !! Please check kafka connectivity or if you have selected the right cluster/topics.</p>-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
 
-					<div class="row" ng-show="alertbulk != null && alertbulk != ''" ng-init="">
-						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-							<div class="ribbon-wrapper card">
-								<div ng-show="alertbulk.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>
-								<div ng-show="alertbulk.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>
-								<p class="ribbon-content">{{ alertbulk }}</p>
-							</div>
-						</div>
-					</div>
+<!--					<div class="row" ng-show="alertbulk != null && alertbulk != ''" ng-init="">-->
+<!--						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >-->
+<!--							<div class="ribbon-wrapper card">-->
+<!--								<div ng-show="alertbulk.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>-->
+<!--								<div ng-show="alertbulk.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>-->
+<!--								<p class="ribbon-content">{{ alertbulk }}</p>-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
 
-					<div class="row">
-						<div ng-if="ShowSpinnerStatusTopicsBulk" class="loader">
-						</div>
-					</div>
+<!--					<div class="row">-->
+<!--						<div ng-if="ShowSpinnerStatusTopicsBulk" class="loader">-->
+<!--						</div>-->
+<!--					</div>-->
 
-					<div class="row" align="center" ng-show="resultBrowseBulk.length>0 && dashboardDetails.syncTopicsAcls==='Authorized'">
-						<div class="col-lg-12">
-							<div class="card">
-								<div class="card-body">
+<!--					<div class="row" align="center" ng-show="resultBrowseBulk.length>0 && dashboardDetails.syncTopicsAcls==='Authorized'">-->
+<!--						<div class="col-lg-12">-->
+<!--							<div class="card">-->
+<!--								<div class="card-body">-->
 
-									<hr size="1" color="black">
-									<table class="table color-table table-hover success-table"  ng-show="resultPagesBulk != null" style="table-layout:fixed;">
-										<thead>
-										<tr>
-											<th width="8%">Select</th>
-											<th>TopicName</th>
-											<th>Partitions</th>
-											<th>Replication Factor</th>
-											<th>Team</th>
-											<th width="7%">Info</th>
-										</tr>
-										</thead>
-										<tbody>
-										<tr ng-repeat="resultBrowset in resultBrowseBulk" id="{{resultBrowset.topicname}}" class="gradeX">
-											<td>
-												<label class="custom-control custom-checkbox">
-													<input type="checkbox" value="false" ng-click="updateTopicIds(resultBrowset.topicname, resultBrowset.topicpartitions,
-													 resultBrowset.replicationfactor, syncTopicCbId[$index].topicname, resultBrowset.validatedTopic)"
-														   ng-init="syncTopicCbId[$index].topicname=false" ng-model="syncTopicCbId[$index].topicname" class="custom-control-input">
-													<span class="custom-control-label"></span>
-												</label>
-											</td>
-											<td>{{ resultBrowset.topicname}}</td>
-											<td>{{ resultBrowset.topicpartitions}}</td>
-											<td>{{ resultBrowset.replicationfactor}}</td>
-											<td>
-												{{resultBrowset.teamname}}
-											</td>
-											<td ng-show="resultBrowset.remarks == 'ADDED'">
-												<span class="badge badge-info"></span>
-												<a class="mytooltip" href="javascript:void(0)" style="color:blue;">
-													<i ng-show="resultBrowset.validatedTopic != true"  class="fa fa-exclamation-triangle" style="color: #FFBF00"></i>
-													<i ng-show="resultBrowset.validatedTopic == true"  class="far fa-plus-square"></i>
-													<span class="tooltip-content3">TOPIC NEW ON CLUSTER {{resultBrowset.validationStatus}}</span>
-												</a>
-											</td>
-											<td ng-show="resultBrowset.remarks == 'DELETED'">
-												<a class="mytooltip" href="javascript:void(0)" style="color:red;">
-													<i class="fas fa-stopwatch"></i>
-													<span class="tooltip-content3">TOPIC DELETED ON CLUSTER</span>
-												</a>
-											</td>
-											<td ng-show="resultBrowset.remarks != 'DELETED' && resultBrowset.remarks != 'ADDED'">
-												<a class="mytooltip" href="javascript:void(0)" style="color:green;">
-													<i class="fas fa-chess-rook"></i>
-													<span class="tooltip-content3">TOPIC SYNCHRONIZED</span>
-												</a>
-											</td>
-										</tr>
+<!--									<hr size="1" color="black">-->
+<!--									<table class="table color-table table-hover success-table"  ng-show="resultPagesBulk != null" style="table-layout:fixed;">-->
+<!--										<thead>-->
+<!--										<tr>-->
+<!--											<th width="8%">Select</th>-->
+<!--											<th>TopicName</th>-->
+<!--											<th>Partitions</th>-->
+<!--											<th>Replication Factor</th>-->
+<!--											<th>Team</th>-->
+<!--											<th width="7%">Info</th>-->
+<!--										</tr>-->
+<!--										</thead>-->
+<!--										<tbody>-->
+<!--										<tr ng-repeat="resultBrowset in resultBrowseBulk" id="{{resultBrowset.topicname}}" class="gradeX">-->
+<!--											<td>-->
+<!--												<label class="custom-control custom-checkbox">-->
+<!--													<input type="checkbox" value="false" ng-click="updateTopicIds(resultBrowset.topicname, resultBrowset.topicpartitions,-->
+<!--													 resultBrowset.replicationfactor, syncTopicCbId[$index].topicname, resultBrowset.validatedTopic)"-->
+<!--														   ng-init="syncTopicCbId[$index].topicname=false" ng-model="syncTopicCbId[$index].topicname" class="custom-control-input">-->
+<!--													<span class="custom-control-label"></span>-->
+<!--												</label>-->
+<!--											</td>-->
+<!--											<td>{{ resultBrowset.topicname}}</td>-->
+<!--											<td>{{ resultBrowset.topicpartitions}}</td>-->
+<!--											<td>{{ resultBrowset.replicationfactor}}</td>-->
+<!--											<td>-->
+<!--												{{resultBrowset.teamname}}-->
+<!--											</td>-->
+<!--											<td ng-show="resultBrowset.remarks == 'ADDED'">-->
+<!--												<span class="badge badge-info"></span>-->
+<!--												<a class="mytooltip" href="javascript:void(0)" style="color:blue;">-->
+<!--													<i ng-show="resultBrowset.validatedTopic != true"  class="fa fa-exclamation-triangle" style="color: #FFBF00"></i>-->
+<!--													<i ng-show="resultBrowset.validatedTopic == true"  class="far fa-plus-square"></i>-->
+<!--													<span class="tooltip-content3">TOPIC NEW ON CLUSTER {{resultBrowset.validationStatus}}</span>-->
+<!--												</a>-->
+<!--											</td>-->
+<!--											<td ng-show="resultBrowset.remarks == 'DELETED'">-->
+<!--												<a class="mytooltip" href="javascript:void(0)" style="color:red;">-->
+<!--													<i class="fas fa-stopwatch"></i>-->
+<!--													<span class="tooltip-content3">TOPIC DELETED ON CLUSTER</span>-->
+<!--												</a>-->
+<!--											</td>-->
+<!--											<td ng-show="resultBrowset.remarks != 'DELETED' && resultBrowset.remarks != 'ADDED'">-->
+<!--												<a class="mytooltip" href="javascript:void(0)" style="color:green;">-->
+<!--													<i class="fas fa-chess-rook"></i>-->
+<!--													<span class="tooltip-content3">TOPIC SYNCHRONIZED</span>-->
+<!--												</a>-->
+<!--											</td>-->
+<!--										</tr>-->
 
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</div>
-					</div>
+<!--										</tbody>-->
+<!--									</table>-->
+<!--								</div>-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
 
-                    <div class="dataTables_paginate paging_simple_numbers"  ng-show="resultPageSelectedBulk != null && resultBrowseBulk.length>0">
-                        <ul class="pagination">
-                            <li class="paginate_button page-item active" disabled>
-                                <a href="#" class="page-link">Pages</a>
-                            </li>
-                            <li class="paginate_button page-item" ng-repeat="allPages in resultPagesBulk">
-                                <a ng-show="currentPageSelectedBulk == allPages" href="#" class="page-link text-success" ng-click="getTopicsBulk(allPages)">
-                                    <b>{{allPages}}</b></a>
-                                <a ng-show="currentPageSelectedBulk != allPages" href="#" class="page-link" ng-click="getTopicsBulk(allPages)">
-                                    {{allPages}}</a>
-                            </li>
-                        </ul>
-                    </div>
-					<!-- Row -->
+<!--                    <div class="dataTables_paginate paging_simple_numbers"  ng-show="resultPageSelectedBulk != null && resultBrowseBulk.length>0">-->
+<!--                        <ul class="pagination">-->
+<!--                            <li class="paginate_button page-item active" disabled>-->
+<!--                                <a href="#" class="page-link">Pages</a>-->
+<!--                            </li>-->
+<!--                            <li class="paginate_button page-item" ng-repeat="allPages in resultPagesBulk">-->
+<!--                                <a ng-show="currentPageSelectedBulk == allPages" href="#" class="page-link text-success" ng-click="getTopicsBulk(allPages)">-->
+<!--                                    <b>{{allPages}}</b></a>-->
+<!--                                <a ng-show="currentPageSelectedBulk != allPages" href="#" class="page-link" ng-click="getTopicsBulk(allPages)">-->
+<!--                                    {{allPages}}</a>-->
+<!--                            </li>-->
+<!--                        </ul>-->
+<!--                    </div>-->
+<!--					&lt;!&ndash; Row &ndash;&gt;-->
 
-					<div id="alertbarbulk">{{ alertnotebulk }}</div>
+<!--					<div id="alertbarbulk">{{ alertnotebulk }}</div>-->
 
-                    <div class="row" ng-show="resultPageSelectedBulk != null && resultBrowseBulk.length>0 && dashboardDetails.syncBackTopics == 'Authorized'">
-                        <div class="col-lg-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    You are about to assign Topics to a selected Team, in the selected source Environment.
+<!--                    <div class="row" ng-show="resultPageSelectedBulk != null && resultBrowseBulk.length>0 && dashboardDetails.syncBackTopics == 'Authorized'">-->
+<!--                        <div class="col-lg-12">-->
+<!--                            <div class="card">-->
+<!--                                <div class="card-body">-->
+<!--                                    You are about to assign Topics to a selected Team, in the selected source Environment.-->
 
-                                    <hr size="1" color="black"><br>
-                                    <div class="form-body">
-                                        <div class="row">
-                                            <div class="col-md-4">
-                                                <div class="mb-2">
-                                                    <label class="custom-control custom-radio">
-                                                        <input class="radio-col-orange" ng-change="onSelectSyncTopics('SELECTED_TOPICS')" ng-model="typeOfSync" name="typeOfSync"
-                                                               type="radio" id="radio_lit" value="SELECTED_TOPICS" checked/>
-                                                        <label for="radio_lit">Synchronize above selected ({{ updatedTopicIdsArray.length }}) topics</label>
-                                                    </label>
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label class="custom-control custom-radio">
-                                                        <input class="radio-col-orange" ng-change="onSelectSyncTopics('ALL_TOPICS')" ng-model="typeOfSync"
-                                                               name="typeOfSync" type="radio" id="radio_pre" value="ALL_TOPICS" />
-                                                        <label for="radio_pre">Synchronize all topics ({{ allTopicsCount }}) of source Environment</label>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label class="control-label">Select Source Environment (Cluster)</label>
-                                                    <select class="form-control custom-select" ng-change="getTopicsBulk(1);"
-                                                            ng-model="getTopicsBulk.envName" ng-options="env.id as env.name for env in allenvs">
-                                                        <option value="" selected="selected">
-                                                            Select Environment</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="form-group">
-                                                    <label class="control-label">Select Team</label>
-                                                    <select class="form-control custom-select" ng-model="getTopicsBulk.team"
-                                                            ng-options="team as team for team in resultBrowseBulk[0].possibleTeams">
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <br>
+<!--                                    <hr size="1" color="black"><br>-->
+<!--                                    <div class="form-body">-->
+<!--                                        <div class="row">-->
+<!--                                            <div class="col-md-4">-->
+<!--                                                <div class="mb-2">-->
+<!--                                                    <label class="custom-control custom-radio">-->
+<!--                                                        <input class="radio-col-orange" ng-change="onSelectSyncTopics('SELECTED_TOPICS')" ng-model="typeOfSync" name="typeOfSync"-->
+<!--                                                               type="radio" id="radio_lit" value="SELECTED_TOPICS" checked/>-->
+<!--                                                        <label for="radio_lit">Synchronize above selected ({{ updatedTopicIdsArray.length }}) topics</label>-->
+<!--                                                    </label>-->
+<!--                                                </div>-->
+<!--                                                <div class="mb-2">-->
+<!--                                                    <label class="custom-control custom-radio">-->
+<!--                                                        <input class="radio-col-orange" ng-change="onSelectSyncTopics('ALL_TOPICS')" ng-model="typeOfSync"-->
+<!--                                                               name="typeOfSync" type="radio" id="radio_pre" value="ALL_TOPICS" />-->
+<!--                                                        <label for="radio_pre">Synchronize all topics ({{ allTopicsCount }}) of source Environment</label>-->
+<!--                                                    </label>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                            <div class="col-md-4">-->
+<!--                                                <div class="form-group">-->
+<!--                                                    <label class="control-label">Select Source Environment (Cluster)</label>-->
+<!--                                                    <select class="form-control custom-select" ng-change="getTopicsBulk(1);"-->
+<!--                                                            ng-model="getTopicsBulk.envName" ng-options="env.id as env.name for env in allenvs">-->
+<!--                                                        <option value="" selected="selected">-->
+<!--                                                            Select Environment</option>-->
+<!--                                                    </select>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                            <div class="col-md-4">-->
+<!--                                                <div class="form-group">-->
+<!--                                                    <label class="control-label">Select Team</label>-->
+<!--                                                    <select class="form-control custom-select" ng-model="getTopicsBulk.team"-->
+<!--                                                            ng-options="team as team for team in resultBrowseBulk[0].possibleTeams">-->
+<!--                                                    </select>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                    <br>-->
 
-                                    <div class="row" ng-show="alertnotebulk != null && alertnotebulk != ''">
-                                        <div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-                                            <div class="ribbon-wrapper card">
-                                                <div class="ribbon ribbon-warning">Notification</div>
-                                                <p class="ribbon-content">{{ alertnotebulk }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
+<!--                                    <div class="row" ng-show="alertnotebulk != null && alertnotebulk != ''">-->
+<!--                                        <div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >-->
+<!--                                            <div class="ribbon-wrapper card">-->
+<!--                                                <div class="ribbon ribbon-warning">Notification</div>-->
+<!--                                                <p class="ribbon-content">{{ alertnotebulk }}</p>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
 
-                                    <div class="row" ng-show="alertbulk != null && alertbulk != ''">
-                                        <div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-                                            <div class="ribbon-wrapper card">
-                                                <div ng-show="alertbulk.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>
-                                                <div ng-show="alertbulk.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>
-                                                <p class="ribbon-content">{{ alertbulk }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
+<!--                                    <div class="row" ng-show="alertbulk != null && alertbulk != ''">-->
+<!--                                        <div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >-->
+<!--                                            <div class="ribbon-wrapper card">-->
+<!--                                                <div ng-show="alertbulk.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>-->
+<!--                                                <div ng-show="alertbulk.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>-->
+<!--                                                <p class="ribbon-content">{{ alertbulk }}</p>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
 
-                                    <br>
-                                    <div class="form-actions" ng-show="enableCreateTopicsButton == true">
-                                        <button ng-click="syncTopicsBulk();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
-                                            Synchronize</button>
-                                        <a href="index"><button type="button" class="btn btn-outline-inverse">Cancel</button></a>
-                                    </div>
+<!--                                    <br>-->
+<!--                                    <div class="form-actions" ng-show="enableCreateTopicsButton == true">-->
+<!--                                        <button ng-click="syncTopicsBulk();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>-->
+<!--                                            Synchronize</button>-->
+<!--                                        <a href="index"><button type="button" class="btn btn-outline-inverse">Cancel</button></a>-->
+<!--                                    </div>-->
 
-                                </div>
-								<div class="row">
+<!--                                </div>-->
+<!--								<div class="row">-->
 
-									<div ng-if="ShowSpinnerStatus" class="loader">
-									</div>
-								</div>
-                            </div>
-                        </div>
-                    </div>
-
-
-					<div class="row" ng-show="syncbulklog != '' && syncbulklog != null && resultBrowseBulk.length>0">
-						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-							<div class="ribbon-wrapper card">
-								<div class="ribbon ribbon-success">Log</div>
-								<p ng-repeat="syncbulklog in syncbulklog track by $index" class="ribbon-content">{{ syncbulklog }}</p>
-							</div>
-						</div>
-					</div>
+<!--									<div ng-if="ShowSpinnerStatus" class="loader">-->
+<!--									</div>-->
+<!--								</div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
 
-				</div>
+<!--					<div class="row" ng-show="syncbulklog != '' && syncbulklog != null && resultBrowseBulk.length>0">-->
+<!--						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >-->
+<!--							<div class="ribbon-wrapper card">-->
+<!--								<div class="ribbon ribbon-success">Log</div>-->
+<!--								<p ng-repeat="syncbulklog in syncbulklog track by $index" class="ribbon-content">{{ syncbulklog }}</p>-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
+
+
+<!--				</div>-->
 			</div>
 			<!-- ============================================================== -->
 			<!-- End Right sidebar -->

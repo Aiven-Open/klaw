@@ -15,7 +15,9 @@ import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,13 +46,17 @@ public class SchemaRegistrySyncControllerService {
       String kafkaEnvId, String pageNo, String currentPage) throws Exception {
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
-      return null;
-    }
     SyncSchemasList syncSchemasList = new SyncSchemasList();
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
+      return syncSchemasList;
+    }
+
     List<SchemaSubjectInfoResponse> schemaSubjectInfoResponseList = new ArrayList<>();
 
     Env kafkaEnv = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
+    if (kafkaEnv.getAssociatedEnv() == null) {
+      return syncSchemasList;
+    }
     Env schemaEnvSelected =
         manageDatabase
             .getHandleDbRequests()
@@ -80,7 +86,8 @@ public class SchemaRegistrySyncControllerService {
       }
 
       schemaSubjectInfoResponseList =
-          filterTopicsNotInDb(schemaSubjectInfoResponseList, topicsFromSOT);
+          filterTopicsNotInDb(
+              schemaSubjectInfoResponseList, topicsFromSOT, schemaEnvSelected.getId(), tenantId);
       syncSchemasList.setSchemaSubjectInfoResponseList(
           getPagedResponse(pageNo, currentPage, schemaSubjectInfoResponseList, tenantId));
       return syncSchemasList;
@@ -91,8 +98,15 @@ public class SchemaRegistrySyncControllerService {
   }
 
   private List<SchemaSubjectInfoResponse> filterTopicsNotInDb(
-      List<SchemaSubjectInfoResponse> schemaSubjectInfoResponseList, List<Topic> topicsFromSOT) {
+      List<SchemaSubjectInfoResponse> schemaSubjectInfoResponseList,
+      List<Topic> topicsFromSOT,
+      String schemaEnvId,
+      int tenantId) {
     List<SchemaSubjectInfoResponse> updatedList = new ArrayList<>();
+    Map<String, Set<String>> topicSchemaVersions =
+        manageDatabase
+            .getHandleDbRequests()
+            .getTopicAndVersionsForEnvAndTenantId(schemaEnvId, tenantId);
     for (SchemaSubjectInfoResponse schemaSubjectInfoResponse : schemaSubjectInfoResponseList) {
       Optional<Topic> optionalTopic =
           topicsFromSOT.stream()
@@ -100,10 +114,41 @@ public class SchemaRegistrySyncControllerService {
               .findAny();
       if (optionalTopic.isPresent()) {
         schemaSubjectInfoResponse.setTeamId(optionalTopic.get().getTeamId());
+        validateSchemas(
+            schemaSubjectInfoResponse,
+            topicSchemaVersions.get(schemaSubjectInfoResponse.getTopic()));
         updatedList.add(schemaSubjectInfoResponse);
       }
     }
     return updatedList;
+  }
+
+  private void validateSchemas(
+      SchemaSubjectInfoResponse schemaSubjectInfoResponse, Set<String> schemaVersionsOnDb) {
+    Set<Integer> schemaVersionsOnCluster = schemaSubjectInfoResponse.getSchemaVersions();
+
+    String notInSync = "NOT_IN_SYNC";
+    String inSync = "IN_SYNC";
+
+    if (schemaVersionsOnDb == null) {
+      schemaSubjectInfoResponse.setRemarks(notInSync);
+      return;
+    }
+
+    if (schemaVersionsOnCluster.size() != schemaVersionsOnDb.size()) {
+      schemaSubjectInfoResponse.setRemarks(notInSync);
+      return;
+    } else {
+
+      schemaSubjectInfoResponse.setRemarks(inSync);
+    }
+
+    schemaVersionsOnCluster.forEach(
+        ver -> {
+          if (!schemaVersionsOnDb.contains(ver + "")) {
+            schemaSubjectInfoResponse.setRemarks(notInSync);
+          }
+        });
   }
 
   private List<SchemaSubjectInfoResponse> getPagedResponse(

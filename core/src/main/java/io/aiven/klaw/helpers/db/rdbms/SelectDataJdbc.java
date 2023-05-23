@@ -15,10 +15,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -1620,6 +1622,25 @@ public class SelectDataJdbc {
     return allCountsMap;
   }
 
+  public Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId) {
+    Map<String, Set<String>> topicSchemaVersionsMap = new HashMap<>();
+    List<Object[]> topicSchemaData =
+        messageSchemaRepo.findTopicAndVersionsForEnvAndTenantId(envId, tenantId);
+    for (Object[] topicSchemaDatum : topicSchemaData) {
+      String topicName = (String) topicSchemaDatum[0];
+
+      if (topicSchemaVersionsMap.containsKey(topicName)) {
+        topicSchemaVersionsMap.get(topicName).add((String) topicSchemaDatum[1]);
+      } else {
+        Set<String> versionSet = new HashSet<>();
+        versionSet.add((String) topicSchemaDatum[1]);
+        topicSchemaVersionsMap.put(topicName, versionSet);
+      }
+    }
+
+    return topicSchemaVersionsMap;
+  }
+
   // teamId is requestedBy. For 'connectors' all the requests are assigned to the same team
   public Map<String, Map<String, Long>> getConnectorRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId, String requestor) {
@@ -1660,7 +1681,7 @@ public class SelectDataJdbc {
     return allCountsMap;
   }
 
-  private static void updateCountsForNonExistingRequestTypes(
+  private void updateCountsForNonExistingRequestTypes(
       Map<String, Long> operationTypeCountsMap, Map<String, Long> statusCountsMap) {
     for (RequestStatus requestStatus : RequestStatus.values()) {
       if (!statusCountsMap.containsKey(requestStatus.value))
@@ -1672,7 +1693,7 @@ public class SelectDataJdbc {
     }
   }
 
-  private static void updateMap(Map<String, Long> countsMap, List<Object[]> requestObjList) {
+  private void updateMap(Map<String, Long> countsMap, List<Object[]> requestObjList) {
     requestObjList.forEach(reqObj -> countsMap.put((String) reqObj[0], (Long) reqObj[1]));
   }
 

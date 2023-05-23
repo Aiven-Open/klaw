@@ -462,27 +462,11 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
         }
 
 	    $scope.updatedTopicIdsArray = [];
-
-	    $scope.updatedTopicDetailsArray = [];
-
-    	$scope.updateTopicIds = function(topicId, topicPartitions, topicReplicationFactor, isTopicSelected, isValidTopic){
+    	$scope.updateTopicIds = function(topicId, isTopicSelected){
     	    if($scope.updatedTopicIdsArray.includes(topicId) && !isTopicSelected)
                 $scope.updatedTopicIdsArray.splice($scope.updatedTopicIdsArray.indexOf(topicId), 1);
             else if(isTopicSelected)
                 $scope.updatedTopicIdsArray.push(topicId);
-
-            var serviceInput = {};
-            serviceInput['topicName'] = topicId;
-            serviceInput['topicPartitions'] = topicPartitions;
-            serviceInput['topicReplicationFactor'] = topicReplicationFactor;
-            if(!isValidTopic && isTopicSelected) {
-             $scope.topicsWithWarningBulk.push(topicId);
-             } else if(!isValidTopic && !isTopicSelected) {
-                $scope.topicsWithWarningBulk.splice($scope.topicsWithWarningBulk.indexOf(topicId), 1);
-             }
-
-
-            $scope.updatedTopicDetailsArray.push(serviceInput);
     	}
 
     	$scope.enableCreateTopicsButton = false;
