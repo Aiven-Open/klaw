@@ -415,6 +415,8 @@ public class MailUtils {
 
     CompletableFuture.runAsync(
         () -> {
+          List to = new ArrayList<>();
+          List cc = new ArrayList<>();
           String emailId;
 
           String emailIdTeam = null;
@@ -425,6 +427,7 @@ public class MailUtils {
               emailId = otherMailId;
             } else {
               emailId = getEmailAddressFromUsername(username);
+              CollectionUtils.addIgnoreNull(cc, otherMailId);
             }
 
             try {
@@ -441,10 +444,9 @@ public class MailUtils {
             }
             if (emailId != null) {
               log.info("emailId: {} Team: {}", emailId, emailIdTeam);
-              List to = new ArrayList<>();
-              List cc = new ArrayList<>();
+
               CollectionUtils.addIgnoreNull(to, emailId);
-              CollectionUtils.addIgnoreNull(cc, emailIdTeam);
+              CollectionUtils.addIgnoreNull(to, emailIdTeam);
               emailService.sendSimpleMessage(
                   to, cc, allApprovers, subject, formattedStr, tenantId, loginUrl);
             } else {

@@ -588,7 +588,12 @@ public class UsersTeamsControllerService {
       userInfo.setPwd(newUser.getUserPassword());
       String result = dbHandle.addNewUser(userInfo);
 
+      if (ApiResultStatus.SUCCESS.value.equals(result)) {
+        manageDatabase.addUserToCache(userInfo);
+      }
+
       if (isExternal) {
+
         if ("".equals(newUser.getUserPassword())) {
           mailService.sendMail(
               newUser.getUsername(),
