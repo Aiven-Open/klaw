@@ -282,9 +282,9 @@ public class MailUtils {
             registrationRequest, registerUserInfo.getUsername(), registerUserInfo.getFullname());
 
     subject = NEW_USER_REGISTRATION_REQUEST;
-    if (!Objects.equals(registerUserInfo.getMailid(), kwAdminMailId))
+    if (!Objects.equals(registerUserInfo.getMailid(), kwAdminMailId)) {
       sendMailToAdmin(subject, formattedStr, tenantId, loginUrl);
-
+    }
     // Sending to user
     if (KwConstants.INFRATEAM.equals(registerUserInfo.getTeam())) {
       registrationRequest =
@@ -341,8 +341,9 @@ public class MailUtils {
               registerUserInfo.getRole());
 
       subject = NEW_USER_REGISTRATION_REQUEST;
-      if (!Objects.equals(registerUserInfo.getMailid(), kwAdminMailId))
+      if (!Objects.equals(registerUserInfo.getMailid(), kwAdminMailId)) {
         sendMailToAdmin(subject, formattedStr, tenantId, loginUrl);
+      }
 
       // Sending to user
       registrationRequest = manageDatabase.getKwPropertyValue(REGISTER_USER_TOUSER_KEY, tenantId);
@@ -391,6 +392,7 @@ public class MailUtils {
   }
 
   public void sendMailToAdmin(String subject, String mailContent, int tenantId, String loginUrl) {
+    log.info("SendMailToAdmin : {}", kwAdminMailId);
     CompletableFuture.runAsync(
         () -> {
           if (kwAdminMailId != null) {
@@ -438,14 +440,13 @@ public class MailUtils {
               allApprovers = getAllUsersWithPermissionToApproveRequest(tenantId, username, teamId);
             }
             if (emailId != null) {
+              log.info("emailId: {} Team: {}", emailId, emailIdTeam);
+              List to = new ArrayList<>();
+              List cc = new ArrayList<>();
+              CollectionUtils.addIgnoreNull(to, emailId);
+              CollectionUtils.addIgnoreNull(cc, emailIdTeam);
               emailService.sendSimpleMessage(
-                  List.of(emailId),
-                  List.of(emailIdTeam),
-                  allApprovers,
-                  subject,
-                  formattedStr,
-                  tenantId,
-                  loginUrl);
+                  to, cc, allApprovers, subject, formattedStr, tenantId, loginUrl);
             } else {
               log.error("Email id not found. Notification not sent !!");
             }
@@ -490,7 +491,8 @@ public class MailUtils {
                 teamId = requesterTeam.get(0).getTeamId();
               }
 
-              if (requesterTeamEmail.equalsIgnoreCase(approverTeamEmail)
+              if (requesterTeamEmail != null
+                      && requesterTeamEmail.equalsIgnoreCase(approverTeamEmail)
                   || (approverTeamEmail == null && requesterTeamEmail != null)) {
                 approverTeamEmail = requesterTeamEmail;
                 requesterTeamEmail = null;
@@ -533,6 +535,7 @@ public class MailUtils {
     if (approverTeam != null) {
       return approverTeam.getTeammail();
     } else {
+
       List<Team> approverTeamList = dbHandle.getAllTeamsOfUsers(approverUsername, tenantId);
       if (!approverTeamList.isEmpty()) {
         return approverTeamList.get(0).getTeammail();
