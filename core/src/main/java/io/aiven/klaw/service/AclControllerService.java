@@ -206,9 +206,7 @@ public class AclControllerService {
       aclRequestsDao.setAcl_ip(null);
     }
   }
-  /*
-  TODO ACL can be owned by a different team so make sure correct team is added in there.
-   */
+
   private ApiResponse executeAclRequestModel(
       String userDetails, AclRequests aclRequestsDao, MailType mailType) throws KlawException {
     try {

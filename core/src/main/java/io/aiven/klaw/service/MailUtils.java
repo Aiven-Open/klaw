@@ -392,7 +392,7 @@ public class MailUtils {
   }
 
   public void sendMailToAdmin(String subject, String mailContent, int tenantId, String loginUrl) {
-    log.info("SendMailToAdmin : {}", kwAdminMailId);
+
     CompletableFuture.runAsync(
         () -> {
           if (kwAdminMailId != null) {
@@ -443,7 +443,7 @@ public class MailUtils {
               allApprovers = getAllUsersWithPermissionToApproveRequest(tenantId, username, teamId);
             }
             if (emailId != null) {
-              log.info("emailId: {} Team: {}", emailId, emailIdTeam);
+              log.debug("emailId: {} Team: {}", emailId, emailIdTeam);
 
               CollectionUtils.addIgnoreNull(to, emailId);
               CollectionUtils.addIgnoreNull(to, emailIdTeam);
