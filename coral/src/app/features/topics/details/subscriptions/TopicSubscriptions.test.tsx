@@ -160,42 +160,38 @@ describe("TopicSubscriptions.tsx", () => {
     jest.clearAllMocks();
   });
 
-  describe("should render a table and radios to switch between different kind of subscriptions", () => {
+  describe("should render a table and buttons to switch between different kind of subscriptions", () => {
     it("should render a Table", () => {
       const table = screen.getByRole("table", {
         name: "Topic subscriptions",
       });
       expect(table).toBeVisible();
     });
-    it("should render enabled and checked User subscriptions radio, ", () => {
-      const radio = screen.getByRole("radio", {
-        name: "User subs",
+    it("should render enabled and checked User subscriptions button, ", () => {
+      const button = screen.getByRole("button", {
+        name: "User subs.",
       });
-      expect(radio).toBeVisible();
-      expect(radio).toBeEnabled();
-      expect(radio).toBeChecked();
+      expect(button).toBeVisible();
+      expect(button).toBeEnabled();
     });
-    it("should render enabled  Prefixed subs radio, ", () => {
-      const radio = screen.getByRole("radio", {
-        name: "Prefixed subs",
+    it("should render enabled  Prefixed subs button, ", () => {
+      const button = screen.getByRole("button", {
+        name: "Prefixed subs.",
       });
-      expect(radio).toBeVisible();
-      expect(radio).toBeEnabled();
+      expect(button).toBeVisible();
+      expect(button).toBeEnabled();
     });
-    it("should render enabled Transactional subs radio, ", () => {
-      const radio = screen.getByRole("radio", {
-        name: "Transactional subs",
+    it("should render enabled Transactional subs button, ", () => {
+      const button = screen.getByRole("button", {
+        name: "Transactional subs.",
       });
-      expect(radio).toBeVisible();
-      expect(radio).toBeEnabled();
+      expect(button).toBeVisible();
+      expect(button).toBeEnabled();
     });
   });
 
-  describe("should render the correct data in Table when sub radio are clicked", () => {
+  describe("should render the correct data in Table when sub button are clicked", () => {
     it("should render User subscriptions in Table, ", () => {
-      const radio = screen.getByRole("radio", {
-        name: "User subs",
-      });
       const rows = screen.getAllByRole("row");
       const rowOne = screen.getByText("aivtopic3user");
       const rowTwo = screen.getByText("declineme");
@@ -203,7 +199,6 @@ describe("TopicSubscriptions.tsx", () => {
       const prefixedRow = screen.queryByText("aivendemot");
       const transactionalRow = screen.queryByText("tsttxnid");
 
-      expect(radio).toBeChecked();
       expect(rows).toHaveLength(4);
       expect(rowOne).toBeVisible();
       expect(rowTwo).toBeVisible();
@@ -213,13 +208,13 @@ describe("TopicSubscriptions.tsx", () => {
     });
 
     it("should render Prefixed subscriptions in Table, ", async () => {
-      const radio = screen.getByRole("radio", {
-        name: "Prefixed subs",
+      const button = screen.getByRole("button", {
+        name: "Prefixed subs.",
       });
 
-      await userEvent.click(radio);
+      await userEvent.click(button);
 
-      expect(radio).toBeChecked();
+      expect(button).toHaveFocus();
 
       const rows = screen.getAllByRole("row");
       const rowOne = screen.getByText("aivendemot");
@@ -233,13 +228,13 @@ describe("TopicSubscriptions.tsx", () => {
     });
 
     it("should render Prefixed subscriptions in Table, ", async () => {
-      const radio = screen.getByRole("radio", {
-        name: "Transactional subs",
+      const button = screen.getByRole("button", {
+        name: "Transactional subs.",
       });
 
-      await userEvent.click(radio);
+      await userEvent.click(button);
 
-      expect(radio).toBeChecked();
+      expect(button).toHaveFocus();
 
       const rows = screen.getAllByRole("row");
       const rowOne = screen.getByText("tsttxnid");
