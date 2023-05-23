@@ -16,6 +16,7 @@ type SubscriptionOptions =
 interface TopicSubscriptionsTableProps {
   selectedSubs: SubscriptionOptions;
   filteredData: AclOverviewInfo[];
+  onDelete: (req_no: string) => void;
 }
 
 interface AclInfoListRow {
@@ -69,7 +70,8 @@ const getRows = (
 };
 
 const getColumns = (
-  selectedSubs: SubscriptionOptions
+  selectedSubs: SubscriptionOptions,
+  onDelete: TopicSubscriptionsTableProps["onDelete"]
 ): Array<DataTableColumn<AclInfoListRow>> => {
   const additionalColumns: {
     [key in
@@ -163,9 +165,9 @@ const getColumns = (
       action: ({ id, showDeleteAcl }) => ({
         text: "Delete",
         icon: deleteIcon,
-        onClick: () => console.log("Delete", id),
+        onClick: () => onDelete(id),
         disabled: !showDeleteAcl,
-        "aria-label": `Delete ACL request`,
+        "aria-label": `Create deletion request for request ${id}`,
       }),
     },
   ];
@@ -183,9 +185,10 @@ const getColumns = (
 export const TopicSubscriptionsTable = ({
   selectedSubs,
   filteredData,
+  onDelete,
 }: TopicSubscriptionsTableProps) => {
   const rows = getRows(selectedSubs, filteredData);
-  const columns = getColumns(selectedSubs);
+  const columns = getColumns(selectedSubs, onDelete);
 
   return rows.length === 0 ? (
     <EmptyState title="No subscriptions">

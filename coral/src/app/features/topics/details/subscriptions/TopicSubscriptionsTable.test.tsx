@@ -1,7 +1,8 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
 
 const mockUserSubs: AclOverviewInfo[] = [
   {
@@ -108,6 +109,8 @@ const transactionalSubsColumnNames = [
   "Delete",
 ];
 
+const mockOnDelete = jest.fn();
+
 describe("TopicSubscriptionsTable.tsx", () => {
   beforeAll(() => {
     mockIntersectionObserver();
@@ -120,7 +123,11 @@ describe("TopicSubscriptionsTable.tsx", () => {
   describe("should render empty state when no data is passed", () => {
     it("renders empty state when passed empty data", () => {
       render(
-        <TopicSubscriptionsTable filteredData={[]} selectedSubs="aclInfoList" />
+        <TopicSubscriptionsTable
+          onDelete={mockOnDelete}
+          filteredData={[]}
+          selectedSubs="aclInfoList"
+        />
       );
       const emptyStateMessage = screen.getByText(
         "No subscription matched your criteria."
@@ -134,6 +141,7 @@ describe("TopicSubscriptionsTable.tsx", () => {
     it("renders correct columns for User subscriptions", () => {
       render(
         <TopicSubscriptionsTable
+          onDelete={mockOnDelete}
           filteredData={mockUserSubs}
           selectedSubs="aclInfoList"
         />
@@ -147,6 +155,7 @@ describe("TopicSubscriptionsTable.tsx", () => {
     it("renders correct columns for Prefixed subscriptions", () => {
       render(
         <TopicSubscriptionsTable
+          onDelete={mockOnDelete}
           filteredData={mockedPrefixedSubs}
           selectedSubs="prefixedAclInfoList"
         />
@@ -160,6 +169,7 @@ describe("TopicSubscriptionsTable.tsx", () => {
     it("renders correct columns for Transactional subscriptions", () => {
       render(
         <TopicSubscriptionsTable
+          onDelete={mockOnDelete}
           filteredData={mockedTransactionalSubs}
           selectedSubs="transactionalAclInfoList"
         />
@@ -169,6 +179,27 @@ describe("TopicSubscriptionsTable.tsx", () => {
         screen.getByRole("columnheader", { name })
       );
       expect(columns).toHaveLength(transactionalSubsColumnNames.length);
+    });
+  });
+
+  describe("should call onDelete when clicking Delete button", () => {
+    afterEach(cleanup);
+    it("calls onDelete when clicking Delete button", async () => {
+      render(
+        <TopicSubscriptionsTable
+          onDelete={mockOnDelete}
+          filteredData={mockUserSubs}
+          selectedSubs="aclInfoList"
+        />
+      );
+      const firstDataRow = screen.getAllByRole("row")[1];
+      const button = within(firstDataRow).getByRole("button", {
+        name: "Create deletion request for request 1006",
+      });
+
+      await userEvent.click(button);
+
+      expect(mockOnDelete).toHaveBeenCalledWith("1006");
     });
   });
 });

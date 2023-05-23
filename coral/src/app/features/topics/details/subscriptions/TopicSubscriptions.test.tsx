@@ -1,20 +1,28 @@
 import {
   cleanup,
   screen,
+  waitFor,
   waitForElementToBeRemoved,
+  within,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TopicSubscriptions from "src/app/features/topics/details/subscriptions/TopicSubscriptions";
+import { createAclDeletionRequest } from "src/domain/acl/acl-api";
 import { getTopicOverview } from "src/domain/topic/topic-api";
 import { TopicOvervieApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/topic/topic-api.ts");
+jest.mock("src/domain/acl/acl-api.ts");
 
 const mockGetTopicOverview = getTopicOverview as jest.MockedFunction<
   typeof getTopicOverview
 >;
+const mockCreateDeleteAclRequest =
+  createAclDeletionRequest as jest.MockedFunction<
+    typeof createAclDeletionRequest
+  >;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -246,5 +254,58 @@ describe("TopicSubscriptions.tsx", () => {
       expect(userRow).toBeNull();
       expect(prefixedRow).toBeNull();
     });
+  });
+
+  describe("should allow creating a delete request for a subscription", () => {
+    it("should render a modal when clicking the Delete button", async () => {
+      const firstDataRow = screen.getAllByRole("row")[1];
+      const button = within(firstDataRow).getByRole("button", {
+        name: "Create deletion request for request 1064",
+      });
+
+      await userEvent.click(button);
+
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+    });
+
+    it("should close the modal when clicking its Cancel button", async () => {
+      const firstDataRow = screen.getAllByRole("row")[1];
+      const button = within(firstDataRow).getByRole("button", {
+        name: "Create deletion request for request 1064",
+      });
+
+      await userEvent.click(button);
+
+      const modal = screen.getByRole("dialog");
+
+      const cancelButton = within(modal).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(cancelButton);
+
+      expect(modal).not.toBeInTheDocument();
+    });
+  });
+
+  it("should create a delete request when clicking the modal's Create button", async () => {
+    const firstDataRow = screen.getAllByRole("row")[1];
+    const button = within(firstDataRow).getByRole("button", {
+      name: "Create deletion request for request 1064",
+    });
+
+    await userEvent.click(button);
+
+    const modal = screen.getByRole("dialog");
+    const createButton = within(modal).getByRole("button", {
+      name: "Create deletion request",
+    });
+
+    await userEvent.click(createButton);
+
+    expect(mockCreateDeleteAclRequest).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(modal).not.toBeInTheDocument());
   });
 });

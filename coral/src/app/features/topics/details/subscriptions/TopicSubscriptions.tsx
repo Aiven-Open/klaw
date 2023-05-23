@@ -1,11 +1,18 @@
-import { SegmentedControl, SegmentedControlGroup } from "@aivenio/aquarium";
-import { useQuery } from "@tanstack/react-query";
+import {
+  Alert,
+  SegmentedControl,
+  SegmentedControlGroup,
+} from "@aivenio/aquarium";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
+import { Dialog } from "src/app/components/Dialog";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
+import { createAclDeletionRequest } from "src/domain/acl/acl-api";
 import { getTopicOverview } from "src/domain/topic/topic-api";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 type SubscriptionOptions =
   | "aclInfoList"
@@ -22,17 +29,52 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
 const TopicSubscriptions = () => {
   // @ TODO get environment from useTopicDetails too when it is implemented
   const { topicName } = useTopicDetails();
+
+  const [deleteModal, setDeleteModal] = useState<{
+    isOpen: boolean;
+    req_no: string | null;
+  }>({ isOpen: false, req_no: null });
+
   const {
     data,
     isLoading: dataIsLoading,
+    isRefetching: dataIsRefetching,
     isError,
     error,
   } = useQuery(["topic-overview"], {
-    queryFn: () => getTopicOverview({ topicName, environmentId: "2" }),
+    queryFn: () => getTopicOverview({ topicName, environmentId: "1" }),
   });
+
+  const { isLoading: deleteIsLoading, mutate: deleteRequest } = useMutation({
+    mutationFn: createAclDeletionRequest,
+    onSuccess: () => {
+      setErrorMessage("");
+      setDeleteModal({ isOpen: false, req_no: null });
+    },
+    onError: (error: Error) => {
+      setErrorMessage(parseErrorMsg(error));
+    },
+  });
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [selectedSubs, setSelectedSubs] =
     useState<SubscriptionOptions>("aclInfoList");
+
+  const openDeleteModal = (req_no: string) => {
+    setDeleteModal({ isOpen: true, req_no });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ isOpen: false, req_no: null });
+  };
+
+  const handleDelete = (req_no: string | null) => {
+    if (req_no === null) {
+      throw Error("Cannot delete request with req_no null");
+    }
+    deleteRequest({ req_no });
+  };
 
   const filteredData: AclOverviewInfo[] = useMemo(() => {
     if (data === undefined) {
@@ -49,45 +91,72 @@ const TopicSubscriptions = () => {
   }, [selectedSubs, data]);
 
   return (
-    <TableLayout
-      filters={[
-        <SegmentedControlGroup
-          name="Subscription options"
-          key="subscription-options"
-          onChange={(value: string) => {
-            if (isSubscriptionsOption(value)) {
-              setSelectedSubs(value);
-            }
+    <>
+      {deleteModal.isOpen && deleteModal.req_no !== null && (
+        <Dialog
+          title={"Deletion request"}
+          primaryAction={{
+            text: "Create deletion request",
+            onClick: () => handleDelete(deleteModal.req_no),
+            loading: deleteIsLoading || dataIsRefetching,
           }}
-          value={selectedSubs}
+          secondaryAction={{
+            text: "Cancel",
+            onClick: closeDeleteModal,
+            disabled: deleteIsLoading || dataIsRefetching,
+          }}
+          type={"danger"}
         >
-          <SegmentedControl name="User subscriptions" value="aclInfoList">
-            User subs.
-          </SegmentedControl>
-          <SegmentedControl
-            name="Prefixed subscriptions"
-            value="prefixedAclInfoList"
+          Are you sure you want to create a deletion request?
+        </Dialog>
+      )}
+      {errorMessage !== "" && (
+        <div role="alert">
+          <Alert type="error">{errorMessage}</Alert>
+        </div>
+      )}
+
+      <TableLayout
+        filters={[
+          <SegmentedControlGroup
+            name="Subscription options"
+            key="subscription-options"
+            onChange={(value: string) => {
+              if (isSubscriptionsOption(value)) {
+                setSelectedSubs(value);
+              }
+            }}
+            value={selectedSubs}
           >
-            Prefixed subs.
-          </SegmentedControl>
-          <SegmentedControl
-            name="Transactional subscriptions"
-            value="transactionalAclInfoList"
-          >
-            Transactional subs.
-          </SegmentedControl>
-        </SegmentedControlGroup>,
-      ]}
-      table={
-        <TopicSubscriptionsTable
-          selectedSubs={selectedSubs}
-          filteredData={filteredData}
-        />
-      }
-      isLoading={dataIsLoading}
-      isErrorLoading={isError}
-      errorMessage={error}
-    />
+            <SegmentedControl name="User subscriptions" value="aclInfoList">
+              User subs.
+            </SegmentedControl>
+            <SegmentedControl
+              name="Prefixed subscriptions"
+              value="prefixedAclInfoList"
+            >
+              Prefixed subs.
+            </SegmentedControl>
+            <SegmentedControl
+              name="Transactional subscriptions"
+              value="transactionalAclInfoList"
+            >
+              Transactional subs.
+            </SegmentedControl>
+          </SegmentedControlGroup>,
+        ]}
+        table={
+          <TopicSubscriptionsTable
+            selectedSubs={selectedSubs}
+            filteredData={filteredData}
+            onDelete={openDeleteModal}
+          />
+        }
+        isLoading={dataIsLoading}
+        isErrorLoading={isError}
+        errorMessage={error}
+      />
+    </>
   );
 };
 
