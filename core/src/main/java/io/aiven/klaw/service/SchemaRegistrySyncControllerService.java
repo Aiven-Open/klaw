@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
@@ -15,6 +16,7 @@ import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import java.util.ArrayList;
@@ -39,7 +41,10 @@ public class SchemaRegistrySyncControllerService {
 
   @Autowired private CommonUtilsService commonUtilsService;
 
-  @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+  public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
+      OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
 
   public SchemaRegistrySyncControllerService(
       ClusterApiService clusterApiService, MailUtils mailService) {
@@ -108,7 +113,7 @@ public class SchemaRegistrySyncControllerService {
       String schemaEnvId,
       int tenantId) {
     List<SchemaSubjectInfoResponse> updatedList = new ArrayList<>();
-    Map<String, Set<String>> topicSchemaVersions =
+    Map<String, Set<String>> topicSchemaVersionsInDb =
         manageDatabase
             .getHandleDbRequests()
             .getTopicAndVersionsForEnvAndTenantId(schemaEnvId, tenantId);
@@ -121,7 +126,7 @@ public class SchemaRegistrySyncControllerService {
         schemaSubjectInfoResponse.setTeamId(optionalTopic.get().getTeamId());
         validateSchemas(
             schemaSubjectInfoResponse,
-            topicSchemaVersions.get(schemaSubjectInfoResponse.getTopic()));
+            topicSchemaVersionsInDb.get(schemaSubjectInfoResponse.getTopic()));
         updatedList.add(schemaSubjectInfoResponse);
       }
     }
@@ -144,7 +149,6 @@ public class SchemaRegistrySyncControllerService {
       schemaSubjectInfoResponse.setRemarks(notInSync);
       return;
     } else {
-
       schemaSubjectInfoResponse.setRemarks(inSync);
     }
 
@@ -191,17 +195,6 @@ public class SchemaRegistrySyncControllerService {
       }
     }
     return pagedTopicSyncList;
-  }
-
-  private String prettyPrintUglyJsonString(String json) {
-    ObjectMapper mapper = new ObjectMapper();
-
-    try {
-      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mapper.readTree(json));
-    } catch (JsonProcessingException e) {
-      log.error("Unable to pretty print json : ", e);
-    }
-    return json;
   }
 
   private String getUserName() {
@@ -270,6 +263,57 @@ public class SchemaRegistrySyncControllerService {
       manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(schemaList);
     }
 
-    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.builder()
+        .success(true)
+        .message("Topics " + syncSchemaUpdates.getTopicList())
+        .build();
+  }
+
+  public SchemaDetailsResponse getSchemaOfTopic(
+      String topicName, int schemaVersion, String kafkaEnvId) throws Exception {
+    String userName = getUserName();
+    SchemaDetailsResponse schemaDetailsResponse = new SchemaDetailsResponse();
+    int tenantId = commonUtilsService.getTenantId(userName);
+
+    Env kafkaEnv = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
+    Env schemaEnvSelected =
+        manageDatabase
+            .getHandleDbRequests()
+            .getEnvDetails(kafkaEnv.getAssociatedEnv().getId(), tenantId);
+    KwClusters kwClusters =
+        manageDatabase
+            .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+            .get(schemaEnvSelected.getClusterId());
+
+    TreeMap<Integer, Map<String, Object>> schemaObject =
+        clusterApiService.getAvroSchema(
+            kwClusters.getBootstrapServers(),
+            kwClusters.getProtocol(),
+            kwClusters.getClusterName() + kwClusters.getClusterId(),
+            topicName,
+            tenantId);
+    if (schemaObject.containsKey(schemaVersion)) {
+      Object dynamicObj =
+          OBJECT_MAPPER.readValue(
+              (String) schemaObject.get(schemaVersion).get("schema"), Object.class);
+      String jsonSchema = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
+      schemaDetailsResponse.setSchemaContent(jsonSchema);
+      schemaDetailsResponse.setSchemaVersion(schemaVersion + "");
+      schemaDetailsResponse.setTopicName(topicName);
+      schemaDetailsResponse.setEnvName(kafkaEnv.getName());
+    }
+
+    return schemaDetailsResponse;
+  }
+
+  private String prettyPrintUglyJsonString(String json) {
+    ObjectMapper mapper = new ObjectMapper();
+
+    try {
+      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mapper.readTree(json));
+    } catch (JsonProcessingException e) {
+      log.error("Unable to pretty print json : ", e);
+    }
+    return json;
   }
 }

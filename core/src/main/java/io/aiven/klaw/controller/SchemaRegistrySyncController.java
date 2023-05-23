@@ -2,6 +2,7 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncSchemaUpdates;
+import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import io.aiven.klaw.service.SchemaRegistrySyncControllerService;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,13 @@ public class SchemaRegistrySyncController {
         HttpStatus.OK);
   }
 
+  /**
+   * Store schemas of all versions in metadata db
+   *
+   * @param syncSchemaUpdates topic list and environment
+   * @return
+   * @throws Exception
+   */
   @PostMapping(
       value = "/schemas/updateDbFromCluster",
       produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -53,5 +61,28 @@ public class SchemaRegistrySyncController {
       @RequestBody SyncSchemaUpdates syncSchemaUpdates) throws Exception {
     return new ResponseEntity<>(
         schemaRegistrySyncControllerService.updateDbFromCluster(syncSchemaUpdates), HttpStatus.OK);
+  }
+
+  /**
+   * Retrieve schema of a topic and specific version
+   *
+   * @param topicName
+   * @param schemaVersion
+   * @param kafkaEnvId kafka environment id
+   * @return
+   * @throws Exception
+   */
+  @RequestMapping(
+      value = "/schemas/schemaOfTopic",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<SchemaDetailsResponse> getSchemaOfTopic(
+      @RequestParam(value = "topicName") String topicName,
+      @RequestParam(value = "schemaVersion", defaultValue = "1") int schemaVersion,
+      @RequestParam(value = "kafkaEnvId") String kafkaEnvId)
+      throws Exception {
+    return new ResponseEntity<>(
+        schemaRegistrySyncControllerService.getSchemaOfTopic(topicName, schemaVersion, kafkaEnvId),
+        HttpStatus.OK);
   }
 }

@@ -354,6 +354,39 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
 
         };
 
+    $scope.getSchemaOfTopic = function(topic, schemaVersion){
+        $http({
+            method: "GET",
+            url: "schemas/schemaOfTopic",
+            headers : { 'Content-Type' : 'application/json' },
+            params: {
+                    'kafkaEnvId' : $scope.getSchemas.envName,
+                    'topicName' : topic,
+                    'schemaVersion' : schemaVersion
+            }
+        }).success(function(output) {
+
+            $scope.displaySchema = true;
+            $scope.selectedTopic = topic;
+            $scope.selectedSchemaVersion = schemaVersion;
+            $scope.selectedSchemaContent = "Env : " + output.envName + "\n" +
+                "Topic : " + $scope.selectedTopic + "\n" +
+                "Version : " + $scope.selectedSchemaVersion + "\n" +
+                "Schema : " + output.schemaContent;
+
+            $scope.alert = "";
+        }).error(
+            function(error)
+            {
+                $scope.ShowSpinnerStatusTopics = false;
+                $scope.resultBrowse = [];
+                $scope.handleErrorMessage(error);
+            }
+        );
+
+
+    }
+
 	$scope.getSchemas = function(pageNoSelected) {
 
         if(!$scope.getSchemas.envName)

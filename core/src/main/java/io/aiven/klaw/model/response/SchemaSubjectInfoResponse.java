@@ -9,6 +9,7 @@ import lombok.Data;
 @Data
 public class SchemaSubjectInfoResponse implements Serializable {
   private String topic;
+
   private Set<Integer> schemaVersions;
 
   private String teamname;

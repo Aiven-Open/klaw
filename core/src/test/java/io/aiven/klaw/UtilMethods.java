@@ -1,5 +1,7 @@
 package io.aiven.klaw;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.ActivityLog;
@@ -53,11 +55,13 @@ import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpHeaders;
@@ -978,6 +982,29 @@ public class UtilMethods {
     schemasInfoOfClusterResponse.setSchemaInfoOfTopicList(schemaInfoOfTopicList);
 
     return schemasInfoOfClusterResponse;
+  }
+
+  public Map<String, Set<String>> getTopicSchemaVersionsInDb() {
+    Map<String, Set<String>> topicSchemaVersions = new HashMap<>();
+    topicSchemaVersions.put("Topic0", Set.of("1", "2"));
+    topicSchemaVersions.put("Topic1", Set.of("1", "2", "3"));
+    return topicSchemaVersions;
+  }
+
+  public TreeMap<Integer, Map<String, Object>> createSchemaList() throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+
+    String schemav2 =
+        "{\"subject\":\"2ndTopic-value\", \"version\":\"2\", \"id\":3, \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
+    String schemav1 =
+        "{\"subject\":\"2ndTopic-value\", \"version\":\"1\", \"id\":2, \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
+
+    TreeMap<Integer, Map<String, Object>> allVersionSchemas =
+        new TreeMap<>(Collections.reverseOrder());
+    allVersionSchemas.put(1, mapper.readValue(schemav1, Map.class));
+    allVersionSchemas.put(2, mapper.readValue(schemav2, Map.class));
+
+    return allVersionSchemas;
   }
 
   public SyncSchemasList getSchemasSyncInfoOfEnv() {

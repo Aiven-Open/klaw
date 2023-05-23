@@ -565,7 +565,7 @@
 										<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topic}}" class="gradeX">
 											<td>{{ resultBrowset.topic}}</td>
 											<td>
-												<a ng-repeat="schemaVersion in resultBrowset.schemaVersions" id="{{resultBrowset.schemaVersion}}" class="gradeX">
+												<a href="#" ng-click="getSchemaOfTopic(resultBrowset.topic, schemaVersion)" ng-repeat="schemaVersion in resultBrowset.schemaVersions" id="{{resultBrowset.schemaVersion}}" class="gradeX">
 													{{schemaVersion}} &nbsp;
 												</a>
 											</td>
@@ -627,9 +627,23 @@
 									Save</button>
 								<a href="index"><button type="button" class="btn btn-outline-inverse">Cancel</button></a>
 							</div>
-
 						</div>
 					</div>
+
+					<br>
+
+					<div class="row" align="center" ng-show = "displaySchema">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<textarea class="form-control" disabled
+											  style="background-color:#ffffff;color:black;"
+											  rows="10">{{ selectedSchemaContent }}</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+
 				</div>
 <!--				<div class="tab-pane" id="bulksync" role="tabpanel">-->
 <!--					<div class="row">-->

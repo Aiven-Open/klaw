@@ -17,10 +17,13 @@ import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SyncSchemaUpdates;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -84,10 +87,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     ReflectionTestUtils.setField(schemaRegistrySyncControllerService, "mailService", mailService);
     ReflectionTestUtils.setField(
         schemaRegistrySyncControllerService, "commonUtilsService", commonUtilsService);
-    ReflectionTestUtils.setField(
-        schemaRegistrySyncControllerService,
-        "rolesPermissionsControllerService",
-        rolesPermissionsControllerService);
 
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     loginMock();
@@ -102,27 +101,116 @@ public class SchemaRegistrySyncControllerServiceTest {
   }
 
   @Test
-  public void getSchemasOfEnvironment() throws Exception {
+  public void getSchemasOfEnvironmentNotInSync() throws Exception {
     stubUserInfo();
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+
     Env env = utilMethods.getEnvLists().get(0);
     env.setAssociatedEnv(new EnvTag("1", "SCH"));
     env.setType("kafka");
-    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
-    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    List<Topic> topics = utilMethods.generateTopics(14);
 
+    List<Topic> topics = utilMethods.generateTopics(14);
     Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
     kwClustersMap.put(1, utilMethods.getKwClusters());
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+
     when(clusterApiService.getSchemasFromCluster(anyString(), any(), anyString(), anyInt()))
         .thenReturn(utilMethods.getSchemasInfoOfEnv());
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
-    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+
     SyncSchemasList schemasInfoOfClusterResponse =
         schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "");
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(2);
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
+        .isEqualTo("NOT_IN_SYNC");
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(1).getRemarks())
+        .isEqualTo("NOT_IN_SYNC");
+  }
+
+  @Test
+  public void getSchemasOfEnvironmentInSyncAndNotInSync() throws Exception {
+    stubUserInfo();
+
+    Env env = utilMethods.getEnvLists().get(0);
+    env.setAssociatedEnv(new EnvTag("1", "SCH"));
+    env.setType("kafka");
+
+    List<Topic> topics = utilMethods.generateTopics(14);
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    kwClustersMap.put(1, utilMethods.getKwClusters());
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+
+    when(clusterApiService.getSchemasFromCluster(anyString(), any(), anyString(), anyInt()))
+        .thenReturn(utilMethods.getSchemasInfoOfEnv());
+    when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
+
+    Map<String, Set<String>> topicSchemaVersionsInDb = utilMethods.getTopicSchemaVersionsInDb();
+    when(handleDbRequests.getTopicAndVersionsForEnvAndTenantId(anyString(), anyInt()))
+        .thenReturn(topicSchemaVersionsInDb);
+
+    SyncSchemasList schemasInfoOfClusterResponse =
+        schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "");
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(2);
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
+        .isEqualTo("IN_SYNC");
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(1).getRemarks())
+        .isEqualTo("IN_SYNC");
+
+    // All schemas don't exist
+    topicSchemaVersionsInDb.put("Topic0", Set.of("1")); // remove a version from db
+    topicSchemaVersionsInDb.put("Topic1", Set.of("1", "2")); // remove a version from db
+    when(handleDbRequests.getTopicAndVersionsForEnvAndTenantId(anyString(), anyInt()))
+        .thenReturn(topicSchemaVersionsInDb);
+    schemasInfoOfClusterResponse =
+        schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "");
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
+        .isEqualTo("NOT_IN_SYNC");
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(1).getRemarks())
+        .isEqualTo("NOT_IN_SYNC");
+  }
+
+  @Test
+  public void updateDbFromCluster() throws Exception {
+    stubUserInfo();
+    String topicName = "2ndTopic";
+
+    Env env = utilMethods.getEnvLists().get(0);
+    env.setAssociatedEnv(new EnvTag("1", "SCH"));
+    env.setType("kafka");
+
+    SyncSchemaUpdates syncSchemaUpdates = new SyncSchemaUpdates();
+    syncSchemaUpdates.setKafkaEnvSelected("1");
+    syncSchemaUpdates.setTopicList(List.of("2ndTopic"));
+
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    kwClustersMap.put(1, utilMethods.getKwClusters());
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+
+    when(clusterApiService.getAvroSchema(anyString(), any(), anyString(), anyString(), anyInt()))
+        .thenReturn(utilMethods.createSchemaList());
+    List<Topic> topicList = utilMethods.getTopics();
+    topicList.get(0).setTopicname(topicName);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
+
+    ApiResponse apiResponse =
+        schemaRegistrySyncControllerService.updateDbFromCluster(syncSchemaUpdates);
+    assertThat(apiResponse.isSuccess()).isTrue();
+    assertThat(apiResponse.getMessage()).isEqualTo("Topics " + syncSchemaUpdates.getTopicList());
   }
 
   private void stubUserInfo() {
