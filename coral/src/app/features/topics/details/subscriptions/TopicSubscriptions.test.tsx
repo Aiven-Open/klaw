@@ -9,7 +9,7 @@ import userEvent from "@testing-library/user-event";
 import TopicSubscriptions from "src/app/features/topics/details/subscriptions/TopicSubscriptions";
 import { getTeams } from "src/domain/team";
 import { getTopicOverview } from "src/domain/topic/topic-api";
-import { TopicOvervieApiResponse } from "src/domain/topic/topic-types";
+import { TopicOverviewApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -26,7 +26,7 @@ jest.mock("react-router-dom", () => ({
   useOutletContext: () => ({ topicName: "aiventopic1" }),
 }));
 
-const mockGetTopicOverviewResponse: TopicOvervieApiResponse = {
+const mockGetTopicOverviewResponse: TopicOverviewApiResponse = {
   topicExists: true,
   schemaExists: false,
   prefixAclsExists: false,

@@ -34,7 +34,7 @@ type TopicRequestApiResponse = ResolveIntersectionTypes<
 >;
 
 type AclOverviewInfo = KlawApiModel<"AclOverviewInfo">;
-type TopicOvervieApiResponse = KlawApiResponse<"getTopicOverview">;
+type TopicOverviewApiResponse = KlawApiResponse<"getTopicOverview">;
 
 export type {
   Topic,
@@ -46,6 +46,6 @@ export type {
   TopicRequestOperationTypes,
   TopicRequestStatus,
   TopicRequestApiResponse,
-  TopicOvervieApiResponse,
+  TopicOverviewApiResponse,
   AclOverviewInfo,
 };
