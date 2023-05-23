@@ -485,6 +485,9 @@ const post = <
   if (data === undefined) {
     return withoutPayloadAndWithVerb(HTTPMethod.POST, pathname);
   }
+  if (data instanceof URLSearchParams) {
+    return withoutPayloadAndWithVerb(HTTPMethod.POST, pathname, data);
+  }
   return withPayloadAndVerb(HTTPMethod.POST, pathname, data);
 };
 
