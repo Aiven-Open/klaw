@@ -1,6 +1,11 @@
 import { SegmentedControl, SegmentedControlGroup } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
+import pick from "lodash/pick";
 import { useMemo, useState } from "react";
+import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
+import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
+import TeamFilter from "src/app/features/components/filters/TeamFilter";
+import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
@@ -22,6 +27,7 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
 const TopicSubscriptions = () => {
   // @ TODO get environment from useTopicDetails too when it is implemented
   const { topicName } = useTopicDetails();
+  const { search, teamId, aclType } = useFiltersValues();
   const {
     data,
     isLoading: dataIsLoading,
@@ -45,12 +51,30 @@ const TopicSubscriptions = () => {
       return [];
     }
 
-    return subs;
-  }, [selectedSubs, data]);
+    return subs.filter((sub) => {
+      const currentTeamId = String(sub.teamid);
+      const teamFilter = teamId === "ALL" || currentTeamId === teamId;
+      const searchFilter =
+        search === "" ||
+        JSON.stringify(pick(sub, "acl_ssl", "acl_ip"))
+          .toLowerCase()
+          .includes(search.toLowerCase());
+      const aclTypeFilter =
+        aclType === "ALL" || sub.topictype?.toUpperCase() === aclType;
+      return teamFilter && aclTypeFilter && searchFilter;
+    });
+  }, [search, teamId, aclType, selectedSubs, data]);
 
   return (
     <TableLayout
       filters={[
+        <TeamFilter key="team" />,
+        <AclTypeFilter key="aclType" />,
+        <SearchFilter
+          key="search"
+          placeholder="Search principal or IP"
+          description={`Search for a partial match principals or IPs. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
+        />,
         <SegmentedControlGroup
           name="Subscription options"
           key="subscription-options"
