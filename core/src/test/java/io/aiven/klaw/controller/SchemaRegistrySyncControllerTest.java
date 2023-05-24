@@ -116,7 +116,8 @@ public class SchemaRegistrySyncControllerTest {
     schemaDetailsResponse.setEnvName(topicEnv);
     schemaDetailsResponse.setTopicName(topicName);
 
-    when(schemaRegistrySyncControllerService.getSchemaOfTopic(anyString(), anyInt(), anyString()))
+    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromCluster(
+            anyString(), anyInt(), anyString()))
         .thenReturn(schemaDetailsResponse);
 
     mvc.perform(
@@ -133,7 +134,8 @@ public class SchemaRegistrySyncControllerTest {
   public void getSchemaOfTopicNoContent() throws Exception {
     SchemaDetailsResponse schemaDetailsResponse = new SchemaDetailsResponse();
 
-    when(schemaRegistrySyncControllerService.getSchemaOfTopic(anyString(), anyInt(), anyString()))
+    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromCluster(
+            anyString(), anyInt(), anyString()))
         .thenReturn(schemaDetailsResponse);
 
     mvc.perform(

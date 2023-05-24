@@ -287,7 +287,7 @@ public class SchemaRegistrySyncControllerService {
         .build();
   }
 
-  public SchemaDetailsResponse getSchemaOfTopic(
+  public SchemaDetailsResponse getSchemaOfTopicFromCluster(
       String topicName, int schemaVersion, String kafkaEnvId) throws Exception {
     String userName = getUserName();
     SchemaDetailsResponse schemaDetailsResponse = new SchemaDetailsResponse();

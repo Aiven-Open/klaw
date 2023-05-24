@@ -2169,7 +2169,7 @@
     "/schemas/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}" : {
       "get" : {
         "tags" : [ "schema-registry-sync-controller" ],
-        "operationId" : "getSchemaOfTopic",
+        "operationId" : "getSchemaOfTopicFromCluster",
         "parameters" : [ {
           "name" : "topicName",
           "in" : "path",
@@ -3504,7 +3504,7 @@
     "/getSchemaOfTopic" : {
       "get" : {
         "tags" : [ "schema-registry-controller" ],
-        "operationId" : "getSchemaOfTopic_1",
+        "operationId" : "getSchemaOfTopic",
         "parameters" : [ {
           "name" : "topicName",
           "in" : "query",

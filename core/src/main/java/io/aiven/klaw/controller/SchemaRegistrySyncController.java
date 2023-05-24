@@ -78,13 +78,14 @@ public class SchemaRegistrySyncController {
       value = "/schemas/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<SchemaDetailsResponse> getSchemaOfTopic(
+  public ResponseEntity<SchemaDetailsResponse> getSchemaOfTopicFromCluster(
       @PathVariable(value = "topicName") String topicName,
       @PathVariable(value = "schemaVersion") int schemaVersion,
       @PathVariable(value = "kafkaEnvId") String kafkaEnvId)
       throws Exception {
     return new ResponseEntity<>(
-        schemaRegistrySyncControllerService.getSchemaOfTopic(topicName, schemaVersion, kafkaEnvId),
+        schemaRegistrySyncControllerService.getSchemaOfTopicFromCluster(
+            topicName, schemaVersion, kafkaEnvId),
         HttpStatus.OK);
   }
 }

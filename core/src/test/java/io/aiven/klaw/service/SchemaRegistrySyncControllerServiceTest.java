@@ -249,7 +249,8 @@ public class SchemaRegistrySyncControllerServiceTest {
         .thenReturn(utilMethods.createSchemaList());
 
     SchemaDetailsResponse schemaDetailsResponse =
-        schemaRegistrySyncControllerService.getSchemaOfTopic(topicName, schemaVersion, kafkaEnvId);
+        schemaRegistrySyncControllerService.getSchemaOfTopicFromCluster(
+            topicName, schemaVersion, kafkaEnvId);
     assertThat(schemaDetailsResponse.getSchemaContent()).contains("klaw.avro"); // namespace
   }
 
