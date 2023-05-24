@@ -416,6 +416,8 @@
 							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeAcls">Acls from cluster</a></li>
 							<li ng-show="dashboardDetails.syncBackTopics == 'Authorized'"><a href="syncBackTopics">Topics to cluster</a></li>
 							<li ng-show="dashboardDetails.syncBackAcls == 'Authorized'"><a href="syncBackAcls">Acls to cluster</a></li>
+							<li ng-show="dashboardDetails.syncSchemas == 'Authorized'"><a href="synchronizeSchemas">Schemas from cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackSchemas == 'Authorized'"><a href="syncBackSchemas">Schemas to cluster</a></li>
 							<li ng-show="dashboardDetails.syncConnectors == 'Authorized'"><a href="syncConnectors">Connectors from cluster</a></li>
 						</ul>
 					</li>
@@ -484,16 +486,16 @@
 												<h3 class="card-title">Synchronize Schemas - From Cluster</h3>
 											</td>
 											<td>
-<!--												<table border="0">-->
-<!--													<tr>-->
-<!--														<td><h6 class="card-title">Show All</h6></td>-->
-<!--														<td><label class="custom-control custom-checkbox">-->
-<!--															<input type="checkbox" value="false" ng-click="getSchemas(1,'true');"-->
-<!--																   ng-init="false" ng-model="showAllTopics" class="custom-control-input">-->
-<!--															<span class="custom-control-label"></span>-->
-<!--														</label></td>-->
-<!--													</tr>-->
-<!--												</table>-->
+												<table border="0">
+													<tr>
+														<td><h6 class="card-title">Show All</h6></td>
+														<td><label class="custom-control custom-checkbox">
+															<input type="checkbox" value="false" ng-click="getSchemas(1,'true');"
+																   ng-init="false" ng-model="showAllTopics" class="custom-control-input">
+															<span class="custom-control-label"></span>
+														</label></td>
+													</tr>
+												</table>
 											</td>
 											<td>
 												<select class="form-control custom-select" ng-change="getSchemas(1,'true');"
@@ -522,7 +524,7 @@
 						</div>
 					</div>
 
-					<div class="row" ng-show="resultBrowse.length==0">
+					<div class="row" ng-show="resultBrowse.length == 0 && !ShowSpinnerStatusTopics">
 						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 							<div class="ribbon-wrapper card">
 								<div class="ribbon ribbon-warning">Notification</div>

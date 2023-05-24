@@ -1,6 +1,5 @@
 package io.aiven.klaw.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
@@ -33,6 +32,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class SchemaRegistrySyncControllerService {
+
+  private static final String NOT_IN_SYNC = "NOT_IN_SYNC";
+  private static final String IN_SYNC = "IN_SYNC";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired ClusterApiService clusterApiService;
@@ -53,7 +55,12 @@ public class SchemaRegistrySyncControllerService {
   }
 
   public SyncSchemasList getSchemasOfEnvironment(
-      String kafkaEnvId, String pageNo, String currentPage) throws Exception {
+      String kafkaEnvId,
+      String pageNo,
+      String currentPage,
+      String topicNameSearch,
+      boolean showAllTopics)
+      throws Exception {
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
     SyncSchemasList syncSchemasList = new SyncSchemasList();
@@ -98,6 +105,14 @@ public class SchemaRegistrySyncControllerService {
       schemaSubjectInfoResponseList =
           filterTopicsNotInDb(
               schemaSubjectInfoResponseList, topicsFromSOT, schemaEnvSelected.getId(), tenantId);
+
+      if (!showAllTopics) {
+        schemaSubjectInfoResponseList =
+            schemaSubjectInfoResponseList.stream()
+                .filter(schema -> schema.getRemarks().equals(NOT_IN_SYNC))
+                .toList();
+      }
+
       syncSchemasList.setSchemaSubjectInfoResponseList(
           getPagedResponse(pageNo, currentPage, schemaSubjectInfoResponseList, tenantId));
       return syncSchemasList;
@@ -137,25 +152,22 @@ public class SchemaRegistrySyncControllerService {
       SchemaSubjectInfoResponse schemaSubjectInfoResponse, Set<String> schemaVersionsOnDb) {
     Set<Integer> schemaVersionsOnCluster = schemaSubjectInfoResponse.getSchemaVersions();
 
-    String notInSync = "NOT_IN_SYNC";
-    String inSync = "IN_SYNC";
-
     if (schemaVersionsOnDb == null) {
-      schemaSubjectInfoResponse.setRemarks(notInSync);
+      schemaSubjectInfoResponse.setRemarks(NOT_IN_SYNC);
       return;
     }
 
     if (schemaVersionsOnCluster.size() != schemaVersionsOnDb.size()) {
-      schemaSubjectInfoResponse.setRemarks(notInSync);
+      schemaSubjectInfoResponse.setRemarks(NOT_IN_SYNC);
       return;
     } else {
-      schemaSubjectInfoResponse.setRemarks(inSync);
+      schemaSubjectInfoResponse.setRemarks(IN_SYNC);
     }
 
     schemaVersionsOnCluster.forEach(
         ver -> {
           if (!schemaVersionsOnDb.contains(ver + "")) {
-            schemaSubjectInfoResponse.setRemarks(notInSync);
+            schemaSubjectInfoResponse.setRemarks(NOT_IN_SYNC);
           }
         });
   }
@@ -304,16 +316,5 @@ public class SchemaRegistrySyncControllerService {
     }
 
     return schemaDetailsResponse;
-  }
-
-  private String prettyPrintUglyJsonString(String json) {
-    ObjectMapper mapper = new ObjectMapper();
-
-    try {
-      return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mapper.readTree(json));
-    } catch (JsonProcessingException e) {
-      log.error("Unable to pretty print json : ", e);
-    }
-    return json;
   }
 }

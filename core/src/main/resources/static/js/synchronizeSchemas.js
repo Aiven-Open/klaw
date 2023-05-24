@@ -403,6 +403,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
             headers : { 'Content-Type' : 'application/json' },
             params: {'envId' : $scope.getSchemas.envName,
              'topicnamesearch' : $scope.getSchemas.topicnamesearch,
+                'showAllTopics' : $scope.showAllTopics,
                 'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected}
 		}).success(function(output) {

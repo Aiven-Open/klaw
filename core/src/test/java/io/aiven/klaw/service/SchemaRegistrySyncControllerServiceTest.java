@@ -124,7 +124,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(handleDbRequests.getSyncTopics(eq("1"), eq(null), eq(101))).thenReturn(topics);
 
     SyncSchemasList schemasInfoOfClusterResponse =
-        schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "");
+        schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "", "", true);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
         .isEqualTo("NOT_IN_SYNC");
@@ -160,7 +160,7 @@ public class SchemaRegistrySyncControllerServiceTest {
         .thenReturn(topicSchemaVersionsInDb);
 
     SyncSchemasList schemasInfoOfClusterResponse =
-        schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "");
+        schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "", "", true);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
         .isEqualTo("IN_SYNC");
@@ -173,7 +173,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(handleDbRequests.getTopicAndVersionsForEnvAndTenantId(anyString(), anyInt()))
         .thenReturn(topicSchemaVersionsInDb);
     schemasInfoOfClusterResponse =
-        schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "");
+        schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "", "", true);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
         .isEqualTo("NOT_IN_SYNC");
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(1).getRemarks())

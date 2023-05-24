@@ -38,12 +38,13 @@ public class SchemaRegistrySyncController {
   public ResponseEntity<SyncSchemasList> getSchemasOfEnvironment(
       @RequestParam(value = "envId") String kafkaEnvId,
       @RequestParam(value = "pageNo") String pageNo,
+      @RequestParam(value = "showAllTopics", defaultValue = "false") boolean showAllTopics,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch)
       throws Exception {
     return new ResponseEntity<>(
         schemaRegistrySyncControllerService.getSchemasOfEnvironment(
-            kafkaEnvId, pageNo, currentPage),
+            kafkaEnvId, pageNo, currentPage, topicNameSearch, showAllTopics),
         HttpStatus.OK);
   }
 

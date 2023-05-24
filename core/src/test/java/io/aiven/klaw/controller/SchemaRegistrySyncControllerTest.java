@@ -1,6 +1,8 @@
 package io.aiven.klaw.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,7 +57,7 @@ public class SchemaRegistrySyncControllerTest {
   public void getSchemasInfoOfAnEnvironment() throws Exception {
     SyncSchemasList schemasInfoOfClusterResponse = utilMethods.getSchemasSyncInfoOfEnv();
     when(schemaRegistrySyncControllerService.getSchemasOfEnvironment(
-            anyString(), anyString(), anyString()))
+            anyString(), anyString(), anyString(), any(), anyBoolean()))
         .thenReturn(schemasInfoOfClusterResponse);
 
     String res =
@@ -63,6 +65,7 @@ public class SchemaRegistrySyncControllerTest {
                 MockMvcRequestBuilders.get("/schemas")
                     .param("envId", "1")
                     .param("pageNo", "1")
+                    .param("showAllTopics", "false")
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
