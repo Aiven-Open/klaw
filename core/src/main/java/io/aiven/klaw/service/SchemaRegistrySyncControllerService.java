@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SCH_SYNC_ERR_101;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
@@ -113,6 +115,13 @@ public class SchemaRegistrySyncControllerService {
                 .toList();
       }
 
+      if (topicNameSearch != null && topicNameSearch.trim().length() > 0) {
+        schemaSubjectInfoResponseList =
+            schemaSubjectInfoResponseList.stream()
+                .filter(schema -> schema.getTopic().contains(topicNameSearch.trim()))
+                .toList();
+      }
+
       syncSchemasList.setSchemaSubjectInfoResponseList(
           getPagedResponse(pageNo, currentPage, schemaSubjectInfoResponseList, tenantId));
       return syncSchemasList;
@@ -209,14 +218,6 @@ public class SchemaRegistrySyncControllerService {
     return pagedTopicSyncList;
   }
 
-  private String getUserName() {
-    return mailService.getUserName(getPrincipal());
-  }
-
-  private Object getPrincipal() {
-    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-  }
-
   public ApiResponse updateDbFromCluster(SyncSchemaUpdates syncSchemaUpdates) throws Exception {
     log.info("syncSchemaUpdates {}", syncSchemaUpdates);
     String userDetails = getUserName();
@@ -232,6 +233,11 @@ public class SchemaRegistrySyncControllerService {
         manageDatabase
             .getHandleDbRequests()
             .getEnvDetails(syncSchemaUpdates.getKafkaEnvSelected(), tenantId);
+
+    if (kafkaEnv.getAssociatedEnv() == null) {
+      return ApiResponse.builder().success(false).message(SCH_SYNC_ERR_101).build();
+    }
+
     Env schemaEnvSelected =
         manageDatabase
             .getHandleDbRequests()
@@ -288,6 +294,9 @@ public class SchemaRegistrySyncControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     Env kafkaEnv = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
+    if (kafkaEnv.getAssociatedEnv() == null) {
+      return schemaDetailsResponse;
+    }
     Env schemaEnvSelected =
         manageDatabase
             .getHandleDbRequests()
@@ -316,5 +325,13 @@ public class SchemaRegistrySyncControllerService {
     }
 
     return schemaDetailsResponse;
+  }
+
+  private String getUserName() {
+    return mailService.getUserName(getPrincipal());
+  }
+
+  private Object getPrincipal() {
+    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 }

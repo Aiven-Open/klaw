@@ -2,6 +2,7 @@ package io.aiven.klaw.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -93,7 +94,7 @@ public class SchemaRegistrySyncControllerTest {
         .thenReturn(apiResponse);
 
     mvc.perform(
-            MockMvcRequestBuilders.post("/schemas/updateDbFromCluster")
+            MockMvcRequestBuilders.post("/schemas")
                 .content(jsonReq)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -119,14 +120,27 @@ public class SchemaRegistrySyncControllerTest {
         .thenReturn(schemaDetailsResponse);
 
     mvc.perform(
-            MockMvcRequestBuilders.get("/schemas/schemaOfTopic")
-                .param("topicName", topicName)
-                .param("schemaVersion", schemaVersion)
-                .param("kafkaEnvId", "1")
+            MockMvcRequestBuilders.get("/schemas/kafkaEnv/1/topic/testtopic/schemaVersion/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.topicName", is(topicName)))
         .andExpect(jsonPath("$.schemaContent", is(schemaContent)));
+  }
+
+  @Test
+  @Order(3)
+  public void getSchemaOfTopicNoContent() throws Exception {
+    SchemaDetailsResponse schemaDetailsResponse = new SchemaDetailsResponse();
+
+    when(schemaRegistrySyncControllerService.getSchemaOfTopic(anyString(), anyInt(), anyString()))
+        .thenReturn(schemaDetailsResponse);
+
+    mvc.perform(
+            MockMvcRequestBuilders.get("/schemas/kafkaEnv/1/topic/testtopic/schemaVersion/2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.schemaContent", is(nullValue())));
   }
 }

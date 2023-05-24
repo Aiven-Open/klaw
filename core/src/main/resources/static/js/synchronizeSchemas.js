@@ -303,7 +303,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
            if($scope.topicsWithWarning.length > 0) {
            warningMsg = "This selection contains the following topic(s) "+ $scope.topicsWithWarning + " which have validation warnings.";
            } else {
-            warningMsg = "You would like to Synchronize schemas with this selection ? ";
+            warningMsg = "Would you like to Synchronize schemas with this selection ? ";
            }
 
 
@@ -323,7 +323,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                         $scope.ShowSpinnerStatus = true;
                         $http({
                             method: "POST",
-                            url: "schemas/updateDbFromCluster",
+                            url: "schemas",
                             headers : { 'Content-Type' : 'application/json' },
                             data:  serviceInput
                         }).success(function(output) {

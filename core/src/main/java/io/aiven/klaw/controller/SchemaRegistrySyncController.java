@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,7 +57,7 @@ public class SchemaRegistrySyncController {
    * @throws Exception
    */
   @PostMapping(
-      value = "/schemas/updateDbFromCluster",
+      value = "/schemas",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> updateSyncSchemas(
       @RequestBody SyncSchemaUpdates syncSchemaUpdates) throws Exception {
@@ -74,13 +75,13 @@ public class SchemaRegistrySyncController {
    * @throws Exception
    */
   @RequestMapping(
-      value = "/schemas/schemaOfTopic",
+      value = "/schemas/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<SchemaDetailsResponse> getSchemaOfTopic(
-      @RequestParam(value = "topicName") String topicName,
-      @RequestParam(value = "schemaVersion", defaultValue = "1") int schemaVersion,
-      @RequestParam(value = "kafkaEnvId") String kafkaEnvId)
+      @PathVariable(value = "topicName") String topicName,
+      @PathVariable(value = "schemaVersion") int schemaVersion,
+      @PathVariable(value = "kafkaEnvId") String kafkaEnvId)
       throws Exception {
     return new ResponseEntity<>(
         schemaRegistrySyncControllerService.getSchemaOfTopic(topicName, schemaVersion, kafkaEnvId),

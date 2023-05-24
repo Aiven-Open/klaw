@@ -450,4 +450,7 @@ public class KlawErrorMessages {
 
   public static final String MIGRATION_ERR_101 =
       "Unable to complete Migration instructions successfully from %s";
+
+  public static final String SCH_SYNC_ERR_101 =
+      "There is no associated Schema environment configured.";
 }
