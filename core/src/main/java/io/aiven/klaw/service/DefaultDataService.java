@@ -370,10 +370,13 @@ public class DefaultDataService {
         "ADD_EDIT_DELETE_ROLES", PermissionType.ADD_EDIT_DELETE_ROLES.getDescription());
 
     defaultAdminPermissionsList.put("SYNC_TOPICS", PermissionType.SYNC_TOPICS.getDescription());
+    defaultAdminPermissionsList.put("SYNC_SCHEMAS", PermissionType.SYNC_SCHEMAS.getDescription());
     defaultAdminPermissionsList.put(
         "SYNC_SUBSCRIPTIONS", PermissionType.SYNC_SUBSCRIPTIONS.getDescription());
     defaultAdminPermissionsList.put(
         "SYNC_BACK_TOPICS", PermissionType.SYNC_BACK_TOPICS.getDescription());
+    defaultAdminPermissionsList.put(
+        "SYNC_BACK_SCHEMAS", PermissionType.SYNC_BACK_SCHEMAS.getDescription());
     defaultAdminPermissionsList.put(
         "SYNC_BACK_SUBSCRIPTIONS", PermissionType.SYNC_BACK_SUBSCRIPTIONS.getDescription());
     defaultAdminPermissionsList.put(

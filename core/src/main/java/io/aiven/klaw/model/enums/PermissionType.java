@@ -22,6 +22,8 @@ public enum PermissionType {
   SYNC_BACK_TOPICS("To Synchronize topics back to cluster"),
   SYNC_BACK_SUBSCRIPTIONS("To Synchronize subscriptions back to cluster"),
   SYNC_CONNECTORS("To Synchronize Kafka connectors From Cluster"),
+  SYNC_SCHEMAS("To Synchronize schemas From Cluster"),
+  SYNC_BACK_SCHEMAS("To Synchronize schemas back to cluster"),
 
   ADD_EDIT_DELETE_TEAMS("To add modify delete teams"),
   ADD_EDIT_DELETE_USERS("To add modify delete users"),

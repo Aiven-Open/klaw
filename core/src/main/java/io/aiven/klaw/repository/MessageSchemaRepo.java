@@ -35,4 +35,11 @@ public interface MessageSchemaRepo extends CrudRepository<MessageSchema, Message
       value = "select max(avroschemaid) from kwavroschemas where tenantid = :tenantId",
       nativeQuery = true)
   Integer getNextSchemaId(@Param("tenantId") Integer tenantId);
+
+  @Query(
+      value =
+          "select topicname, versionschema from kwavroschemas where env = :envId and tenantid = :tenantId",
+      nativeQuery = true)
+  List<Object[]> findTopicAndVersionsForEnvAndTenantId(
+      @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 }

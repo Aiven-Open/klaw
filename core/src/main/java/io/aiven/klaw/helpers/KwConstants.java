@@ -107,6 +107,8 @@ public class KwConstants {
   public static final String URI_GET_ALL_CONNECTORS = "/topics/getAllConnectors/";
   public static final String URI_POST_SCHEMA = "/topics/postSchema";
   public static final String URI_GET_SCHEMA = "/topics/getSchema/";
+
+  public static final String URI_SCHEMA = "/topics/schemas/";
   public static final String URI_GET_METRICS = "/metrics/getMetrics";
 
   public static final String URI_VALIDATE_SCHEMA = "/topics/schema/validate/compatibility";

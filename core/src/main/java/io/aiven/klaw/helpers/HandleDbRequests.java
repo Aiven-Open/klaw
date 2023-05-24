@@ -10,6 +10,7 @@ import io.aiven.klaw.model.response.DashboardStats;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 public interface HandleDbRequests {
 
@@ -228,6 +229,8 @@ public interface HandleDbRequests {
 
   String insertProductDetails(ProductDetails productDetails);
 
+  String insertIntoMessageSchemaSOT(List<MessageSchema> schemaList);
+
   Integer getNextTopicRequestId(String idType, int tenantId);
 
   Integer getNextConnectorRequestId(String idType, int tenantId);
@@ -337,6 +340,8 @@ public interface HandleDbRequests {
 
   String deleteSchemaRequest(int schemaId, String userName, int tenantId);
 
+  void deleteSchemas(Topic topicObj);
+
   String deleteAllUsers(int tenantId);
 
   String deleteAllTeams(int tenantId);
@@ -370,6 +375,8 @@ public interface HandleDbRequests {
   int getAllTopicsCountInAllTenants();
 
   int getAllComponentsCountForUser(String userName, int tenantId);
+
+  Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId);
 
   List<Topic> getAllTopics();
 

@@ -1,5 +1,7 @@
 package io.aiven.klaw;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.ActivityLog;
@@ -14,6 +16,8 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.cluster.SchemaInfoOfTopic;
+import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclPermissionType;
@@ -41,6 +45,8 @@ import io.aiven.klaw.model.response.RequestStatusCount;
 import io.aiven.klaw.model.response.RequestsCountOverview;
 import io.aiven.klaw.model.response.RequestsOperationTypeCount;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
+import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
+import io.aiven.klaw.model.response.SyncSchemasList;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicOverview;
@@ -49,11 +55,13 @@ import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpHeaders;
@@ -956,5 +964,88 @@ public class UtilMethods {
     allCountsMap.put("STATUS_COUNTS", statusCountsMap);
 
     return allCountsMap;
+  }
+
+  public SchemasInfoOfClusterResponse getSchemasInfoOfEnv() {
+    SchemasInfoOfClusterResponse schemasInfoOfClusterResponse = new SchemasInfoOfClusterResponse();
+    SchemaInfoOfTopic schemaInfoOfTopic1 = new SchemaInfoOfTopic();
+    schemaInfoOfTopic1.setTopic("Topic0");
+    schemaInfoOfTopic1.setSchemaVersions(Set.of(1, 2));
+
+    SchemaInfoOfTopic schemaInfoOfTopic2 = new SchemaInfoOfTopic();
+    schemaInfoOfTopic2.setTopic("Topic1");
+    schemaInfoOfTopic2.setSchemaVersions(Set.of(1, 2, 3));
+
+    List<SchemaInfoOfTopic> schemaInfoOfTopicList = new ArrayList<>();
+    schemaInfoOfTopicList.add(schemaInfoOfTopic1);
+    schemaInfoOfTopicList.add(schemaInfoOfTopic2);
+    schemasInfoOfClusterResponse.setSchemaInfoOfTopicList(schemaInfoOfTopicList);
+
+    return schemasInfoOfClusterResponse;
+  }
+
+  public Map<String, Set<String>> getTopicSchemaVersionsInDb() {
+    Map<String, Set<String>> topicSchemaVersions = new HashMap<>();
+    topicSchemaVersions.put("Topic0", Set.of("1", "2"));
+    topicSchemaVersions.put("Topic1", Set.of("1", "2", "3"));
+    return topicSchemaVersions;
+  }
+
+  public TreeMap<Integer, Map<String, Object>> createSchemaList() throws JsonProcessingException {
+    ObjectMapper mapper = new ObjectMapper();
+
+    String schemav2 =
+        "{\"subject\":\"2ndTopic-value\", \"version\":\"2\", \"id\":3, \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
+    String schemav1 =
+        "{\"subject\":\"2ndTopic-value\", \"version\":\"1\", \"id\":2, \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
+
+    TreeMap<Integer, Map<String, Object>> allVersionSchemas =
+        new TreeMap<>(Collections.reverseOrder());
+    allVersionSchemas.put(1, mapper.readValue(schemav1, Map.class));
+    allVersionSchemas.put(2, mapper.readValue(schemav2, Map.class));
+
+    return allVersionSchemas;
+  }
+
+  public SyncSchemasList getSchemasSyncInfoOfEnv() {
+    SyncSchemasList schemasInfoOfClusterResponse = new SyncSchemasList();
+    SchemaSubjectInfoResponse schemaInfoOfTopic1 = new SchemaSubjectInfoResponse();
+    schemaInfoOfTopic1.setTopic("test1");
+    schemaInfoOfTopic1.setSchemaVersions(Set.of(1, 2));
+
+    SchemaSubjectInfoResponse schemaInfoOfTopic2 = new SchemaSubjectInfoResponse();
+    schemaInfoOfTopic2.setTopic("test1");
+    schemaInfoOfTopic2.setSchemaVersions(Set.of(1, 2, 3));
+
+    List<SchemaSubjectInfoResponse> schemaInfoOfTopicList = new ArrayList<>();
+    schemaInfoOfTopicList.add(schemaInfoOfTopic1);
+    schemaInfoOfTopicList.add(schemaInfoOfTopic2);
+    schemasInfoOfClusterResponse.setSchemaSubjectInfoResponseList(schemaInfoOfTopicList);
+
+    return schemasInfoOfClusterResponse;
+  }
+
+  public List<Topic> generateTopics(int numberOfTopics) {
+    String[] topicNames = new String[numberOfTopics];
+    for (int i = 0; i < numberOfTopics; i++) {
+      topicNames[i] = "Topic" + i;
+    }
+    return generateTopics(topicNames);
+  }
+
+  public List<Topic> generateTopics(String... topicNames) {
+    List<Topic> topics = new ArrayList<>();
+
+    for (int i = 0; i < topicNames.length; i++) {
+      Topic topic = new Topic();
+      topic.setTopicname(topicNames[i]);
+      topic.setTenantId(101);
+      topic.setTopicid(i);
+      topic.setTeamId(10);
+      topic.setNoOfReplicas("3");
+      topic.setNoOfPartitions(6);
+      topics.add(topic);
+    }
+    return topics;
   }
 }

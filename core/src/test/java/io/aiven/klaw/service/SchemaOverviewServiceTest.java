@@ -6,8 +6,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
@@ -28,7 +26,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -62,8 +59,6 @@ public class SchemaOverviewServiceTest {
   @Mock private ClusterApiService clusterApiService;
 
   private SchemaOverviewService schemaOverviewService;
-
-  private ObjectMapper mapper = new ObjectMapper();
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -195,20 +190,6 @@ public class SchemaOverviewServiceTest {
     return cluster;
   }
 
-  private TreeMap<Integer, Map<String, Object>> createSchemaList() throws JsonProcessingException {
-    String schemav2 =
-        "{\"subject\":\"2ndTopic-value\", \"version\":\"2\", \"id\":3, \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
-    String schemav1 =
-        "{\"subject\":\"2ndTopic-value\", \"version\":\"1\", \"id\":2, \"schema\":\"{\\\"type\\\": \\\"record\\\",\\\"name\\\": \\\"klawTestAvro\\\",\\\"namespace\\\": \\\"klaw.avro\\\",\\\"fields\\\": [{\\\"name\\\": \\\"producer\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"Name of the producer\\\"},{\\\"name\\\": \\\"body\\\",\\\"type\\\": \\\"string\\\",\\\"doc\\\": \\\"The body of the message being sent.\\\"},{\\\"name\\\": \\\"timestamp\\\",\\\"type\\\": \\\"long\\\",\\\"doc\\\": \\\"time in seconds from epoc when the message was created.\\\"}],\\\"doc:\\\": \\\"A new schema for testing klaw\\\"}\", \"compatibility\": \"NOT SET\"}";
-
-    TreeMap<Integer, Map<String, Object>> allVersionSchemas =
-        new TreeMap<>(Collections.reverseOrder());
-    allVersionSchemas.put(1, mapper.readValue(schemav1, Map.class));
-    allVersionSchemas.put(2, mapper.readValue(schemav2, Map.class));
-
-    return allVersionSchemas;
-  }
-
   private void stubSchemaPromotionInfo(
       String testtopic, KafkaClustersType clusterType, int numberOfEnvs) throws Exception {
     List<Env> listOfEnvs = createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, numberOfEnvs);
@@ -218,7 +199,7 @@ public class SchemaOverviewServiceTest {
     when(manageDatabase.getClusters(eq(KafkaClustersType.SCHEMA_REGISTRY), eq(101)))
         .thenReturn(createClusterMap(numberOfEnvs));
     when(clusterApiService.getAvroSchema(any(), any(), any(), eq(testtopic), eq(101)))
-        .thenReturn(createSchemaList())
+        .thenReturn(utilMethods.createSchemaList())
         .thenReturn(null);
 
     Env kafkaEnv1 = new Env();

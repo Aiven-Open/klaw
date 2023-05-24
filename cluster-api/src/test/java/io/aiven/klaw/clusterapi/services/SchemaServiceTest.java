@@ -356,7 +356,7 @@ class SchemaServiceTest {
             Pair.of(subjectsUrl + "/" + topic2 + SCHEMA_VALUE_URI + "/versions", restTemplate));
 
     SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
-        schemaService.getSchemasOfCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
+        schemaService.getAllSchemasInfoFromCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
         .extracting(SchemaInfoOfTopic::getTopic)
@@ -380,7 +380,7 @@ class SchemaServiceTest {
         .andRespond(withSuccess(mapper.writeValueAsString(List.of()), MediaType.APPLICATION_JSON));
 
     SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
-        schemaService.getSchemasOfCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
+        schemaService.getAllSchemasInfoFromCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(0);
   }
 

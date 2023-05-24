@@ -17,6 +17,7 @@ import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
 import io.aiven.klaw.model.cluster.ClusterTopicRequest;
+import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.AclsNativeType;
@@ -840,6 +841,43 @@ public class ClusterApiService {
       return allVersionSchemas;
     } catch (Exception e) {
       log.error("Error from getAvroSchema ", e);
+      throw new KlawException(CLUSTER_API_ERR_113);
+    }
+  }
+
+  public SchemasInfoOfClusterResponse getSchemasFromCluster(
+      String schemaRegistryHost,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      int tenantId)
+      throws Exception {
+    log.info("getAvroSchemas {}", schemaRegistryHost);
+    getClusterApiProperties(tenantId);
+
+    try {
+      String uriGetTopicsFull =
+          clusterConnUrl
+              + String.join(
+                  URL_DELIMITER,
+                  URI_SCHEMA,
+                  "bootstrapServers",
+                  schemaRegistryHost,
+                  "protocol",
+                  protocol.getName(),
+                  "clusterIdentification",
+                  clusterIdentification);
+
+      ResponseEntity<SchemasInfoOfClusterResponse> responseEntity =
+          getRestTemplate()
+              .exchange(
+                  uriGetTopicsFull,
+                  HttpMethod.GET,
+                  getHttpEntity(),
+                  new ParameterizedTypeReference<>() {});
+
+      return responseEntity.getBody();
+    } catch (Exception e) {
+      log.error("Error from getSchemasFromCluster ", e);
       throw new KlawException(CLUSTER_API_ERR_113);
     }
   }

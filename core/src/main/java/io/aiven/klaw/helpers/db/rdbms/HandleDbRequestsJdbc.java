@@ -11,6 +11,7 @@ import io.aiven.klaw.model.response.DashboardStats;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
@@ -534,6 +535,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public String insertIntoMessageSchemaSOT(List<MessageSchema> schemaList) {
+    return jdbcInsertHelper.insertIntoMessageSchemaSOT(schemaList);
+  }
+
+  @Override
   public Integer getNextTopicRequestId(String idType, int tenantId) {
     return jdbcSelectHelper.getNextTopicRequestId(idType, tenantId);
   }
@@ -798,6 +804,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public void deleteSchemas(Topic topicObj) {
+    jdbcDeleteHelper.deleteSchemas(topicObj);
+  }
+
+  @Override
   public String deleteAllUsers(int tenantId) {
     return jdbcDeleteHelper.deleteAllUsers(tenantId);
   }
@@ -875,6 +886,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public int getAllComponentsCountForUser(String userId, int tenantId) {
     return jdbcSelectHelper.findAllComponentsCountForUser(userId, tenantId);
+  }
+
+  @Override
+  public Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId) {
+    return jdbcSelectHelper.getTopicAndVersionsForEnvAndTenantId(envId, tenantId);
   }
 
   @Override

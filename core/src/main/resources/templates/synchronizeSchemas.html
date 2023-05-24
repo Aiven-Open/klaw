@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-
-<html ng-app="connectorOverviewApp" ng-controller="connectorOverviewCtrl">
+<html lang="en">
+<html ng-app="synchronizeSchemasApp" ng-controller="synchronizeSchemasCtrl">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,20 +20,23 @@
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-	<title>Connector Overview | Kafka Self-service Topic Management Portal</title>
+	<title>Synchronize Schemas | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
-
+	<!--
+<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
+	<link rel="stylesheet" type="text/css"
+		  href="assets/plugins/datatables.net-bs4/css/responsive.dataTables.min.css">
+		  -->
 	<!-- Custom CSS -->
 	<link href="assets/css/style.css" rel="stylesheet">
 	<!-- You can change the theme colors from here -->
 	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
 	<link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
-	<link href="assets/plugins/text-angular/textAngular.css" rel="stylesheet" type="text/css">
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
-	<script src="js/connectorOverview.js"></script>
+	<script src="js/synchronizeSchemas.js"></script>
 	<link rel="stylesheet" href="assets/css/custom.css" />
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -45,7 +48,36 @@
 	<![endif]-->
 </head>
 
-<body class="fix-header card-no-border logo-center" ng-init="getAuth();getConnectorDetails();">
+<style>
+		#myBtn {
+        position: fixed;
+        bottom: 50px;
+        float: right;
+        right: 7%;
+        left: 93%;
+
+    }
+/*On Hover Color Change*/
+    #myBtn:hover {
+        background-color: #7dbbf1;
+    }
+
+    #myBtns {
+        position: fixed;
+        bottom: 150px;
+        float: right;
+        right: 7%;
+        left: 93%;
+
+    }
+/*On Hover Color Change*/
+    #myBtns:hover {
+        background-color: #7dbbf1;
+    }
+
+	</style>
+
+<body class="fix-header card-no-border logo-center" ng-init="getAuth();">
 <!-- ============================================================== -->
 <!-- Preloader - style you can find in spinners.css -->
 <!-- ============================================================== -->
@@ -79,11 +111,6 @@
 				<!-- toggle and nav items -->
 				<!-- ============================================================== -->
 				<ul class="navbar-nav mr-auto mt-md-0">
-					<!-- This is  -->
-
-					<!-- ============================================================== -->
-					<!-- Search -->
-					<!-- ============================================================== -->
 					<a href="index"><img class="header-logo" src="assets/images/klaw_logo.png"/></a>
 
 				</ul>
@@ -91,6 +118,7 @@
 				<!-- User profile and search -->
 				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
+					<!-- ============================================================== -->
 					<li class="nav-item d-none d-md-block search-box"> <a
 							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
 							href="requestTopics"><i class="mdi mdi-plus"></i></a>
@@ -164,7 +192,6 @@
 						</div>
 					</li>
 
-					<!-- Profile -->
 					<!-- ============================================================== -->
 					<li class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
@@ -198,9 +225,9 @@
 					<!-- ============================================================== -->
 					<li class="nav-item dropdown mega-dropdown">
 						<a
-								class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
-								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
-								class="mdi mdi-help-circle"></i></a>
+							class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
+							data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+							class="mdi mdi-help-circle"></i></a>
 						<div class="dropdown-menu scale-up-left">
 							<ul class="mega-dropdown-menu row">
 								<li class="col-lg-6">
@@ -317,8 +344,6 @@
 			</div>
 		</nav>
 	</header>
-
-	<!-- ============================================================== -->
 	<!-- Left Sidebar - style you can find in sidebar.scss  -->
 	<!-- ============================================================== -->
 	<aside class="left-sidebar">
@@ -337,10 +362,10 @@
 							<li><a href="serverConfig">Settings</a></li>
 						</ul>
 					</li>
-					<li  ng-show="dashboardDetails.viewTopics=='Authorized'">
-						<a class="has-arrow" href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
+					<li ng-show="dashboardDetails.viewTopics=='Authorized'">
+						<a class="has-arrow " href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
 					</li>
-					<li class="active" ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
+              					<li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
 						<a class="has-arrow " href="kafkaConnectors" aria-expanded="false"><i class="mdi mdi-lan-connect"></i><span class="hide-menu">Apache Kafka Connect</span></a>
 					</li>
 					<li class="two-column" ng-show="dashboardDetails.requestItems=='Authorized'">
@@ -384,28 +409,28 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li class="two-column" ng-show="dashboardDetails.syncTopicsAcls == 'Authorized' || dashboardDetails.syncBackTopics == 'Authorized' || dashboardDetails.syncConnectors == 'Authorized'">
+					<li class="two-column active" ng-show="dashboardDetails.syncTopicsAcls=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Synchronize</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeTopics">Topics from cluster</a></li>
 							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeAcls">Acls from cluster</a></li>
 							<li ng-show="dashboardDetails.syncBackTopics == 'Authorized'"><a href="syncBackTopics">Topics to cluster</a></li>
 							<li ng-show="dashboardDetails.syncBackAcls == 'Authorized'"><a href="syncBackAcls">Acls to cluster</a></li>
-                            <li ng-show="dashboardDetails.syncSchemas == 'Authorized'"><a href="synchronizeSchemas">Schemas from cluster</a></li>
-                            <li ng-show="dashboardDetails.syncBackSchemas == 'Authorized'"><a href="syncBackSchemas">Schemas to cluster</a></li>
+							<li ng-show="dashboardDetails.syncSchemas == 'Authorized'"><a href="synchronizeSchemas">Schemas from cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackSchemas == 'Authorized'"><a href="syncBackSchemas">Schemas to cluster</a></li>
 							<li ng-show="dashboardDetails.syncConnectors == 'Authorized'"><a href="syncConnectors">Connectors from cluster</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li ng-show="dashboardDetails.approveAtleastOneRequest=='Authorized'">
+					<li  ng-show="dashboardDetails.approveAtleastOneRequest=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Approve</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="dashboardDetails.approveDeclineTopics=='Authorized'"><a href="execTopics">Topic Request</a></li>
 							<li ng-show="dashboardDetails.approveDeclineSubscriptions=='Authorized'"><a href="execAcls">Acl Request</a></li>
 							<li ng-show="dashboardDetails.approveDeclineSchemas=='Authorized'"><a href="execSchemas">Schema Request</a></li>
 					<li ng-show="dashboardDetails.approveDeclineConnectors=='Authorized'"><a href="execConnectors">KafkaConnect Request</a></li>
-							  <li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
+      						<li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
 						</ul>
 					</li>
 
@@ -418,256 +443,216 @@
 		</div>
 		<!-- End Sidebar scroll-->
 	</aside>
-
-	<!-- ============================================================== -->
-	<!-- Page wrapper  -->
 	<!-- ============================================================== -->
 	<div class="page-wrapper">
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid">
+		<div class="container-fluid" ng-init="getEnvs();">
+
 			<div class="row page-titles">
 			</div>
 
-			<div class="row" ng-show="alertTopicDelete != null && alertTopicDelete != ''">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card">
-						<div ng-show="alertTopicDelete.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>
-						<div ng-show="alertTopicDelete.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{ alertTopicDelete }} </p>
-					</div>
-				</div>
-			</div>
-
-			<!-- Row -->
-
-			<div class="row" ng-show="connectorOverview!=null && connectorOverview.length!=0">
-				<div class="col-lg-12">
-					<div class="card">
-						<div class="card-body">
-							<table width="100%">
-								<tr>
-									<td align="left"><h4 class="card-title">Connector : {{ topicSelectedParam }}</h4></td>
-									<td align="right" width="15%">
-										<button ng-show="connectorOverview[0].teamName != teamname && dashboardDetails.requestItems=='Authorized'" type="button" ng-click="onClaimConnector(topicSelectedParam, connectorOverview[0].environmentId);"
-												class="btn waves-effect waves-light btn-rounded btn-sm btn-info">Claim Connector</button>
-									</td>
-									<td align="right" width="15%">
-										<a href="kafkaConnectors?envSelected={{envSelectedParam}}">
-											<button type="button"
-													class="btn waves-effect waves-light btn-rounded btn-sm btn-secondary">Back to Connectors</button>
-
-										</a>
-									</td>
-								</tr>
-								<tr>
-									<td align="left"><span class="badge badge-warning">{{ connectorOverview[0].teamName}}</span></td>
-									<td></td>
-								</tr>
-							</table>
-							<hr size="1" color="black">
-							<div>
-								<table class="table table-hover color-table success-table">
-									<thead><tr>
-										<th align="left" width="10%">Environment</th>
-										<th align="left" width="70%">Connector Config</th>
-										<th width="5%"></th>
-										<th width="20">
-									</tr>
-									</thead>
-									<tbody>
-									<tr ng-repeat="resultB in connectorOverview">
-										<td ng-show="resultB.environmentName == 'DEV'" align="left" width="15%">
-											<span class="badge badge-success">{{ resultB.environmentName}}</span>
-										</td>
-										<td ng-show="resultB.environmentName == 'TST'" align="left" width="15%">
-											<span class="badge badge-warning">{{ resultB.environmentName}}</span>
-										</td>
-										<td ng-show="resultB.environmentName == 'PRD'" align="left" width="15%">
-											<span class="badge badge-danger">{{ resultB.environmentName}}</span>
-										</td>
-										<td ng-show="resultB.environmentName != 'DEV' && resultB.environmentName != 'TST' && resultB.environmentName != 'PRD'" align="left" width="15%">
-											<span class="badge badge-primary">{{ resultB.environmentName}}</span>
-										</td>
-
-										<td align="left" width="70%">
-											<textarea class="form-control" style="background-color:#ffffff;color:black;" disabled  rows="6">{{ resultB.connectorConfig}}</textarea>
-										</td>
-										<td width="5%"></td>
-										<td align="right" width="10%">
-											<div class="p-2" style="width:5%">
-												<a href="requestConnector?connectorName={{topicSelectedParam}}&env={{resultB.environmentId}}">
-													<button ng-show="resultB.showEditConnector == true"
-															type="button" class="btn btn-sm btn-outline-secondary btn-circle"><i class="fas fa-edit"></i>
-													</button>
-												</a>
-											</div>
-										</td>
-										<td align="right" width="10%" style="padding-right:5%">
-											<div class="p-2" style="width:5%">
-												<button ng-show="resultB.showDeleteConnector == true"
-														ng-click="onDeleteConnector(resultB.environmentId, resultB.connectorDeletable)" type="button" class="btn btn-sm btn-outline-danger btn-circle"><i class="fas fa-times"></i>
-												</button>
-											</div>
-										</td>
-
-									</tr>
-									</tbody>
-								</table>
-							</div>
-
-							<div ng-show="promotionDetails.status ==='success'">
-								<table width="100%" class="table color-table success-table">
-									<tr>
-										<td width="15%">
-
-										</td>
-										<td align="left" width="65%">
-											<div ng-show="firstPromote == 'true'" class="form-group has-success">
-												<textarea class="form-control" ng-model="promotionDetails.sourceConnectorConfig" style="background-color:#ffffff;color:black;"  rows="6">{{ promotionDetails.sourceConnectorConfig }}</textarea>
-											</div>
-										</td>
-
-										<td width="5%"></td>
-										<td width="20%" align="right">
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'false'"
-														type="button"
-														ng-click="onFirstPromote(promotionDetails.targetEnvId)"
-														class="btn btn-rounded btn-block btn-outline-info">
-													Promote to {{promotionDetails.targetEnv}}
-												</button>
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'true'"
-														type="button"
-														ng-click="onFinalPromote(promotionDetails.targetEnvId)"
-														class="btn btn-rounded btn-block btn-outline-info">
-													Submit Promotion to {{promotionDetails.targetEnv}}
-												</button>
-										</td>
-									</tr>
-								</table>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="row" ng-show="alert != null && alert != ''" ng-init="">
+			<div class="row" ng-show="dashboardDetails.syncTopicsAcls!='Authorized'">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">{{alert}}</p>
+						<p class="ribbon-content">You are not authorized to access this page !!</p>
 					</div>
 				</div>
 			</div>
 
-			<!-- Tab -->
-			<div class="row">
-				<div class="col-lg-12">
-					<div class="card">
-						<div class="card-body pb-0">
-							<table width="100%"><tr>
-								<td align="left">
-									<ul class="nav nav-tabs customtab2" role="tablist">
+			<ul class="nav nav-tabs customtab2" role="tablist"  ng-show="dashboardDetails.syncTopicsAcls=='Authorized'">
+				<li class="nav-item"> <a class="nav-link active" data-toggle="tab" href="#individualsync"
+										 role="tab"><span class="hidden-sm-up"><i class="ti-file"></i></span> <span
+						class="hidden-xs-down">Individual Options</span></a>
+				</li>
+<!--				<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#bulksync"-->
+<!--										 role="tab"><span class="hidden-sm-up"><i class="ti-files"></i></span> <span-->
+<!--						class="hidden-xs-down">Bulk Options</span></a>-->
+<!--				</li>-->
+			</ul>
 
-										<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#docs"
-																 role="tab"><span class="hidden-sm-up"><i class="ti-book"></i></span> <span
-												class="hidden-xs-down">Documentation</span></a>
-										</li>
-										<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#history"
-																 role="tab"><span class="hidden-sm-up"><i class="ti-bookmark-alt"></i></span> <span
-												class="hidden-xs-down">History</span></a>
-										</li>
-									</ul>
-								</td>
-								<td align="right">
+			<div class="tab-content"  ng-show="dashboardDetails.syncSchemas=='Authorized'">
+				<div class="tab-pane active" id="individualsync" role="tabpanel">
 
-								</td>
-							</tr>
-							</table>
+					<div class="row">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<table class="table color-table success-table" width="100%">
+										<tr>
+											<td align="left">
+												<h3 class="card-title">Synchronize Schemas - From Cluster</h3>
+											</td>
+											<td>
+												<table border="0">
+													<tr>
+														<td><h6 class="card-title">Show All</h6></td>
+														<td><label class="custom-control custom-checkbox">
+															<input type="checkbox" value="false" ng-click="getSchemas(1,'true');"
+																   ng-init="false" ng-model="showAllTopics" class="custom-control-input">
+															<span class="custom-control-label"></span>
+														</label></td>
+													</tr>
+												</table>
+											</td>
+											<td>
+												<select class="form-control custom-select" ng-change="getSchemas(1,'true');"
+														ng-model="getSchemas.envName" ng-options="env.id as env.name for env in allenvs">
+													<option value="" selected="selected">
+														Select Environment</option>
+												</select>
 
-							<!-- Tab panes -->
-							<div class="tab-content">
-								<div class="tab-pane active  p-3" id="docs" role="tabpanel">
-
-									<div ng-show="topicDocumentation == null" class="ribbon-wrapper card">
-										<div class="ribbon ribbon-warning">Notification</div>
-										<p class="ribbon-content">No documentaion available !!</p>
-									</div>
-
-									<div ng-show="topicDocumentation == null && addDocsVar != 'true'" class="row button-group">
-										<div ng-show="connectorOverview[0].teamName == teamname" class="col-lg-2 col-md-4">
-											<button type="button" ng-click="addDocs();"
-													class="btn waves-effect waves-light btn-block btn-secondary">Add Documentation</button>
-										</div>
-									</div>
-
-									<div ng-show="addDocsVar == 'true'">
-										<div class="form-group">
-
-											<div text-angular ng-model="topicDocumentation"></div>
-
-										</div>
-
-										<div class="form-actions">
-											<button ng-click="saveDocs();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
-												Save</button>
-											<button type="button" ng-click="cancelSaveDocs();" class="btn btn-outline-inverse">Cancel</button>
-										</div>
-
-									</div>
-
-									<div ng-show="tmpTopicDocumentation != null  && addDocsVar != 'true'">
-										<!-- Display topic documentation -->
-										<div id="topicDocId" markdown=1></div>
-
-										<div ng-show="connectorOverview[0].teamName == teamname" class="form-actions">
-											<button ng-click="updateDocs();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
-												Update</button>
-										</div>
-									</div>
-
+											</td>
+											<td>
+												<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics" ng-keydown="$event.keyCode === 13 && getSchemas(1,'true');" ng-model="getSchemas.topicnamesearch">
+											</td>
+										</tr>
+									</table>
 								</div>
-								<div class="tab-pane  p-3" id="history" role="tabpanel">
+							</div>
+						</div>
+					</div>
 
-									<div ng-show="topicHistoryList.length == 0" class="ribbon-wrapper card">
-										<div class="ribbon ribbon-warning">Notification</div>
-										<p class="ribbon-content">No history available !!</p>
-									</div>
+					<div class="row" ng-show="allenvs.length == 0">
+						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+							<div class="ribbon-wrapper card">
+								<div class="ribbon ribbon-warning">Notification</div>
+								<p class="ribbon-content">No environments ?: Go to Dashboard -> Settings -> Configure property klaw.tenant.config</p>
+							</div>
+						</div>
+					</div>
 
-									<table class="table table-hover color-table success-table" ng-show="topicHistoryList.length != 0">
-										<thead><tr>
-											<th align="left" width="14%">Team</th>
-											<th align="left" width="14%">Environment</th>
-											<th align="left" width="14%">Requested by</th>
-											<th align="left" width="14%">Requested Time</th>
-											<th align="left" width="14%">Approved by</th>
-											<th align="left" width="14%">Approved Time</th>
-											<th align="left" width="14%">Remarks</th>
+					<div class="row" ng-show="resultBrowse.length == 0 && !ShowSpinnerStatusTopics">
+						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+							<div class="ribbon-wrapper card">
+								<div class="ribbon ribbon-warning">Notification</div>
+								<p class="ribbon-content">No schemas/differences found !! Please check kafka connectivity or if you have selected the right cluster.</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="row" ng-show="alert != null && alert != ''" ng-init="">
+						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+							<div class="ribbon-wrapper card">
+								<div ng-show="alert.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>
+								<div ng-show="alert.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>
+								<p class="ribbon-content">{{ alert }}</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div ng-if="ShowSpinnerStatusTopics" class="loader">
+						</div>
+					</div>
+
+					<div class="row" align="center" ng-show="resultBrowse.length > 0 && dashboardDetails.syncSchemas === 'Authorized'">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<hr size="1" color="black">
+									<table class="table color-table table-hover success-table"  ng-show="resultPages != null"   style="table-layout:fixed;">
+										<thead>
+										<tr>
+											<th width = "25%">TopicName</th>
+											<th width = "25%">Versions</th>
+											<th width = "25%">Team</th>
+											<th width = "15%">Info</th>
+											<th width = "10%">Sync to Klaw</th>
 										</tr>
 										</thead>
 										<tbody>
-										<tr ng-repeat="topicHistory in topicHistoryList">
-											<td>{{ topicHistory.teamName }}</td>
-											<td><span class="badge badge-info">{{ topicHistory.environmentName }}</span></td>
-											<td>{{ topicHistory.requestedBy }}</td>
-											<td>{{ topicHistory.requestedTime }}</td>
-											<td>{{ topicHistory.approvedBy }}</td>
-											<td>{{ topicHistory.approvedTime }}</td>
-											<td><span class="badge badge-warning">{{ topicHistory.remarks }}</span></td>
+										<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.topic}}" class="gradeX">
+											<td>{{ resultBrowset.topic}}</td>
+											<td>
+												<a href="#" ng-click="getSchemaOfTopic(resultBrowset.topic, schemaVersion)" ng-repeat="schemaVersion in resultBrowset.schemaVersions" id="{{resultBrowset.schemaVersion}}" class="gradeX">
+													{{schemaVersion}} &nbsp;
+												</a>
+											</td>
+
+											<td>
+												{{ resultBrowset.teamname }}
+											</td>
+
+											<td ng-show="resultBrowset.remarks == 'NOT_IN_SYNC'">
+												<span class="badge badge-info"></span>
+												<a class="mytooltip" href="javascript:void(0)" style="color:blue;">
+													<i class="fa fa-exclamation-triangle" style="color: #FFBF00"></i>
+													<span class="tooltip-content3">Schemas differ on cluster.</span>
+												</a>
+											</td>
+											<td ng-show="resultBrowset.remarks == 'IN_SYNC'">
+												<a class="mytooltip" href="javascript:void(0)" style="color:green;">
+													<i class="fas fa-chess-rook"></i>
+													<span class="tooltip-content3">Schema synchronized.</span>
+												</a>
+											</td>
+
+											<td><label class="custom-control custom-checkbox">
+												<input type="checkbox" value="false" ng-click="updateTopicIds(resultBrowset.topic, syncTopicCbId[$index].topicname);"
+													   ng-init="syncTopicCbId[$index].topicname=false" ng-model="syncTopicCbId[$index].topicname" class="custom-control-input">
+												<span class="custom-control-label"></span>
+											</label></td>
 										</tr>
+
 										</tbody>
 									</table>
 								</div>
 							</div>
 						</div>
 					</div>
+					<!-- Row -->
+
+					<div class="dataTables_paginate paging_simple_numbers"  ng-show="resultPageSelected != null && resultBrowse.length>0">
+						<ul class="pagination">
+							<li class="paginate_button page-item active" disabled>
+								<a href="#" class="page-link">Pages</a>
+							</li>
+							<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
+								<a ng-show="currentPageSelected == allPages" href="#" class="page-link text-success" ng-click="getSchemas(allPages,'true')">
+									<b>{{allPages}}</b></a>
+								<a ng-show="currentPageSelected != allPages" href="#" class="page-link" ng-click="getSchemas(allPages,'true')">
+									{{allPages}}</a>
+							</li>
+						</ul>
+					</div>
+					<!-- Row -->
+					<div class="row">
+						<div id="successbar">{{ alert }}</div>
+<!--						<div id="alertbar">{{ alertnote }}</div>-->
+						<div class="col-lg-12" ng-show="resultBrowse.length > 0">
+
+							<div class="form-actions">
+								<button ng-click="synchSchemas();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
+									Save</button>
+								<a href="index"><button type="button" class="btn btn-outline-inverse">Cancel</button></a>
+							</div>
+						</div>
+					</div>
+
+					<br>
+
+					<div class="row" align="center" ng-show = "displaySchema">
+						<div class="col-lg-12">
+							<div class="card">
+								<div class="card-body">
+									<textarea class="form-control" disabled
+											  style="background-color:#ffffff;color:black;"
+											  rows="10">{{ selectedSchemaContent }}</textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+
 				</div>
-
 			</div>
-
-			<div id="alertbar">{{ alertnote }}</div>
+			<!-- ============================================================== -->
+			<!-- End Right sidebar -->
+			<!-- ============================================================== -->
 		</div>
+		<!-- ============================================================== -->
 		<footer class="footer">
 			<a href="https://klaw-project.io">klaw-project.io</a>
 		</footer>
@@ -675,12 +660,11 @@
 		<!-- End footer -->
 		<!-- ============================================================== -->
 	</div>
+
 	<!-- ============================================================== -->
 	<!-- End Page wrapper  -->
 	<!-- ============================================================== -->
 </div>
-<!-- ============================================================== -->
-<!-- All Jquery -->
 <!-- ============================================================== -->
 <script src="assets/plugins/jquery/jquery.min.js"></script>
 <!-- Bootstrap tether Core JavaScript -->
@@ -700,14 +684,13 @@
 <!-- ============================================================== -->
 <!-- This page plugins -->
 <!-- ============================================================== -->
-
+<!--
+<script src="assets/plugins/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
+-->
 <!-- Chart JS -->
-<script src="assets/plugins/gauge/gauge.min.js"></script>
+<!-- <script src="assets/js/widget-data.js"></script> -->
 <script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
-<script src="assets/plugins/text-angular/textAngular-rangy.min.js"></script>
-<script src="assets/plugins/text-angular/textAngular-sanitize.js"></script>
-<script src="assets/plugins/text-angular/textAngular.min.js"></script>
-
 </body>
 
 </html>

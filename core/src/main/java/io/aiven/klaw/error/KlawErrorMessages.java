@@ -108,7 +108,7 @@ public class KlawErrorMessages {
   public static final String CLUSTER_API_ERR_112 =
       "Could not validate schema. Please contact Administrator.";
 
-  public static final String CLUSTER_API_ERR_113 = "Could not get schema.";
+  public static final String CLUSTER_API_ERR_113 = "Could not get schema(s).";
 
   public static final String CLUSTER_API_ERR_114 = "Could not get Connector Details. %s";
 
@@ -450,4 +450,7 @@ public class KlawErrorMessages {
 
   public static final String MIGRATION_ERR_101 =
       "Unable to complete Migration instructions successfully from %s";
+
+  public static final String SCH_SYNC_ERR_101 =
+      "There is no associated Schema environment configured.";
 }

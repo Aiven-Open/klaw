@@ -45,9 +45,9 @@ public class SchemaRegistryController {
    * Return list of all available subjects (-value only), and schema versions on each subject, from
    * the schema registry cluster
    *
-   * @param bootstrapServers
-   * @param protocol
-   * @param clusterIdentification
+   * @param bootstrapServers schema host
+   * @param protocol schema registry host protocol
+   * @param clusterIdentification cluster id from cluster page
    * @return
    */
   @RequestMapping(
@@ -55,12 +55,13 @@ public class SchemaRegistryController {
           "/schemas/bootstrapServers/{bootstrapServers}/protocol/{protocol}/clusterIdentification/{clusterIdentification}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<SchemasInfoOfClusterResponse> getSchemasOfCluster(
+  public ResponseEntity<SchemasInfoOfClusterResponse> getSchemaInfoOfCluster(
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterIdentification) {
     return new ResponseEntity<>(
-        schemaService.getSchemasOfCluster(bootstrapServers, protocol, clusterIdentification),
+        schemaService.getAllSchemasInfoFromCluster(
+            bootstrapServers, protocol, clusterIdentification),
         HttpStatus.OK);
   }
 

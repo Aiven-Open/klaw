@@ -1,4 +1,4 @@
-package io.aiven.klaw.clusterapi.models;
+package io.aiven.klaw.model.cluster;
 
 import java.io.Serializable;
 import java.util.Set;

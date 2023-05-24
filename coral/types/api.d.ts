@@ -59,6 +59,10 @@ export type paths = {
   "/sendMessageToAdmin": {
     post: operations["sendMessageToAdmin"];
   };
+  "/schemas": {
+    get: operations["getSchemasOfEnvironment"];
+    post: operations["updateSyncSchemas"];
+  };
   "/saveTopicDocumentation": {
     post: operations["saveTopicDocumentation"];
   };
@@ -220,6 +224,9 @@ export type paths = {
   };
   "/showUserList": {
     get: operations["showUsers"];
+  };
+  "/schemas/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}": {
+    get: operations["getSchemaOfTopicFromCluster"];
   };
   "/resetMemoryCache/{tenantName}/{entityType}/{operationType}": {
     get: operations["resetMemoryCache"];
@@ -611,6 +618,10 @@ export type components = {
       kwValue?: string;
       kwDesc?: string;
     };
+    SyncSchemaUpdates: {
+      topicList?: (string)[];
+      kafkaEnvSelected?: string;
+    };
     TopicInfo: {
       /** Format: int32 */
       topicid: number;
@@ -844,6 +855,27 @@ export type components = {
       totalNoPages?: string;
       allPageNos?: (string)[];
     };
+    SchemaSubjectInfoResponse: {
+      topic?: string;
+      schemaVersions?: (number)[];
+      teamname?: string;
+      /** Format: int32 */
+      teamId?: number;
+      possibleTeams?: (string)[];
+      remarks?: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+    };
+    SyncSchemasList: {
+      schemaSubjectInfoResponseList?: (components["schemas"]["SchemaSubjectInfoResponse"])[];
+    };
+    SchemaDetailsResponse: {
+      schemaContent?: string;
+      topicName?: string;
+      schemaVersion?: string;
+      envName?: string;
+    };
     RequestEntityStatusCount: {
       /** @enum {string} */
       requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
@@ -1031,8 +1063,8 @@ export type components = {
       options?: components["schemas"]["Options"];
       series?: (string)[];
       titleForReport?: string;
-      yaxisLabel?: string;
       xaxisLabel?: string;
+      yaxisLabel?: string;
     };
     Options: {
       title?: components["schemas"]["Title"];
@@ -1390,6 +1422,7 @@ export type components = {
       addTeams: string;
       syncTopicsAcls: string;
       syncConnectors: string;
+      syncSchemas: string;
       approveAtleastOneRequest: string;
       approveDeclineTopics: string;
       approveDeclineSubscriptions: string;
@@ -1772,6 +1805,40 @@ export type operations = {
       200: {
         content: {
           "*/*": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  getSchemasOfEnvironment: {
+    parameters: {
+      query: {
+        envId: string;
+        pageNo: string;
+        showAllTopics?: boolean;
+        currentPage?: string;
+        topicnamesearch?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SyncSchemasList"];
+        };
+      };
+    };
+  };
+  updateSyncSchemas: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SyncSchemaUpdates"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };
@@ -2585,6 +2652,23 @@ export type operations = {
       200: {
         content: {
           "application/json": (components["schemas"]["UserInfoModelResponse"])[];
+        };
+      };
+    };
+  };
+  getSchemaOfTopicFromCluster: {
+    parameters: {
+      path: {
+        topicName: string;
+        schemaVersion: number;
+        kafkaEnvId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["SchemaDetailsResponse"];
         };
       };
     };
