@@ -219,6 +219,8 @@ public class AclControllerService {
             aclRequestsDao.getAclType(),
             "",
             userDetails,
+            null,
+            aclRequestsDao.getTeamId(),
             manageDatabase.getHandleDbRequests(),
             mailType,
             commonUtilsService.getLoginUrl());
@@ -648,6 +650,8 @@ public class AclControllerService {
         aclReq.getAclType(),
         "",
         aclReq.getRequestor(),
+        aclReq.getApprover(),
+        aclReq.getTeamId(),
         dbHandle,
         notifyUserType,
         commonUtilsService.getLoginUrl());
@@ -798,6 +802,8 @@ public class AclControllerService {
           aclReq.getAclType(),
           reasonToDecline,
           aclReq.getRequestor(),
+          aclReq.getApprover(),
+          aclReq.getTeamId(),
           dbHandle,
           ACL_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());

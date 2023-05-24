@@ -588,7 +588,13 @@ public class UsersTeamsControllerService {
       userInfo.setPwd(newUser.getUserPassword());
       String result = dbHandle.addNewUser(userInfo);
 
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        tenantId = commonUtilsService.getTenantId(getUserName());
+        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.CREATE);
+      }
+
       if (isExternal) {
+
         if ("".equals(newUser.getUserPassword())) {
           mailService.sendMail(
               newUser.getUsername(),
@@ -602,11 +608,6 @@ public class UsersTeamsControllerService {
               dbHandle,
               commonUtilsService.getLoginUrl());
         }
-      }
-
-      if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        tenantId = commonUtilsService.getTenantId(getUserName());
-        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.CREATE);
       }
 
       return ApiResponse.builder()

@@ -10,10 +10,12 @@ import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -74,14 +76,17 @@ public class EmailService {
 
   public void sendSimpleMessage(
       String to, String cc, String subject, String text, int tenantId, String loginUrl) {
-
-    sendSimpleMessage(to, cc, null, subject, text, tenantId, loginUrl);
+    List toList = new ArrayList<>();
+    List ccList = new ArrayList<>();
+    CollectionUtils.addIgnoreNull(toList, to);
+    CollectionUtils.addIgnoreNull(ccList, cc);
+    sendSimpleMessage(toList, ccList, null, subject, text, tenantId, loginUrl);
   }
 
   @Async("notificationsThreadPool")
   public void sendSimpleMessage(
-      String to,
-      String cc,
+      List<String> to,
+      List<String> cc,
       List<String> bcc,
       String subject,
       String text,
@@ -91,15 +96,9 @@ public class EmailService {
         manageDatabase.getKwPropertyValue(EMAIL_NOTIFICATIONS_ENABLED_KEY, DEFAULT_TENANT_ID);
     try {
       MimeMessage message = emailSender.createMimeMessage();
-      message.setRecipients(Message.RecipientType.TO, to);
-      if (cc != null) {
-        message.setRecipients(Message.RecipientType.CC, cc);
-      }
-      if (bcc != null && !bcc.isEmpty()) {
-        for (String bccAddress : bcc) {
-          message.setRecipients(Message.RecipientType.BCC, bccAddress);
-        }
-      }
+      addEmailRecipientsToEmail(to, message, Message.RecipientType.TO);
+      addEmailRecipientsToEmail(cc, message, Message.RecipientType.CC);
+      addEmailRecipientsToEmail(bcc, message, Message.RecipientType.BCC);
 
       message.setSubject(subject);
       Address address = new InternetAddress(noReplyMailId);
@@ -137,6 +136,19 @@ public class EmailService {
 
     } catch (MailException | MessagingException | UnsupportedEncodingException e) {
       log.error("Exception:", e);
+    }
+  }
+
+  private static void addEmailRecipientsToEmail(
+      List<String> addresses, MimeMessage message, Message.RecipientType recipientType)
+      throws MessagingException {
+    if (addresses != null && !addresses.isEmpty()) {
+      for (String address : addresses) {
+        if (log.isDebugEnabled()) {
+          log.debug("Add {} to recipientType {}", address, recipientType);
+        }
+        message.addRecipients(recipientType, address);
+      }
     }
   }
 }
