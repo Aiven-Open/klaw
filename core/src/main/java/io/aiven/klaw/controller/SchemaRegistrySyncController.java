@@ -58,7 +58,7 @@ public class SchemaRegistrySyncController {
   @PostMapping(
       value = "/schemas/updateDbFromCluster",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<ApiResponse> updateSyncTopics(
+  public ResponseEntity<ApiResponse> updateSyncSchemas(
       @RequestBody SyncSchemaUpdates syncSchemaUpdates) throws Exception {
     return new ResponseEntity<>(
         schemaRegistrySyncControllerService.updateDbFromCluster(syncSchemaUpdates), HttpStatus.OK);

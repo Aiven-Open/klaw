@@ -33,8 +33,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class SchemaRegistrySyncControllerService {
 
-  private static final String NOT_IN_SYNC = "NOT_IN_SYNC";
-  private static final String IN_SYNC = "IN_SYNC";
+  public static final String NOT_IN_SYNC = "NOT_IN_SYNC";
+  public static final String IN_SYNC = "IN_SYNC";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired ClusterApiService clusterApiService;

@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.service.SchemaRegistrySyncControllerService.IN_SYNC;
+import static io.aiven.klaw.service.SchemaRegistrySyncControllerService.NOT_IN_SYNC;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -19,6 +21,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncSchemaUpdates;
+import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import java.util.HashMap;
 import java.util.List;
@@ -127,9 +130,9 @@ public class SchemaRegistrySyncControllerServiceTest {
         schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "", "", true);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
-        .isEqualTo("NOT_IN_SYNC");
+        .isEqualTo(NOT_IN_SYNC);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(1).getRemarks())
-        .isEqualTo("NOT_IN_SYNC");
+        .isEqualTo(NOT_IN_SYNC);
   }
 
   @Test
@@ -163,9 +166,9 @@ public class SchemaRegistrySyncControllerServiceTest {
         schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "", "", true);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
-        .isEqualTo("IN_SYNC");
+        .isEqualTo(IN_SYNC);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(1).getRemarks())
-        .isEqualTo("IN_SYNC");
+        .isEqualTo(IN_SYNC);
 
     // All schemas don't exist
     topicSchemaVersionsInDb.put("Topic0", Set.of("1")); // remove a version from db
@@ -175,9 +178,19 @@ public class SchemaRegistrySyncControllerServiceTest {
     schemasInfoOfClusterResponse =
         schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "", "", true);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
-        .isEqualTo("NOT_IN_SYNC");
+        .isEqualTo(NOT_IN_SYNC);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(1).getRemarks())
-        .isEqualTo("NOT_IN_SYNC");
+        .isEqualTo(NOT_IN_SYNC);
+
+    // Only one schema differs, set showAllTopics to false
+    topicSchemaVersionsInDb.put("Topic0", Set.of("1")); // remove a version from db, so not-in-sync
+    topicSchemaVersionsInDb.put("Topic1", Set.of("1", "2", "3")); // make it in sync with db
+    when(handleDbRequests.getTopicAndVersionsForEnvAndTenantId(anyString(), anyInt()))
+        .thenReturn(topicSchemaVersionsInDb);
+    schemasInfoOfClusterResponse =
+        schemaRegistrySyncControllerService.getSchemasOfEnvironment("1", "1", "", "", false);
+
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(1);
   }
 
   @Test
@@ -211,6 +224,33 @@ public class SchemaRegistrySyncControllerServiceTest {
         schemaRegistrySyncControllerService.updateDbFromCluster(syncSchemaUpdates);
     assertThat(apiResponse.isSuccess()).isTrue();
     assertThat(apiResponse.getMessage()).isEqualTo("Topics " + syncSchemaUpdates.getTopicList());
+  }
+
+  @Test
+  public void getSchemaOfTopic() throws Exception {
+    int schemaVersion = 1;
+    String topicName = "2ndTopic";
+    String kafkaEnvId = "1";
+
+    stubUserInfo();
+
+    Env env = utilMethods.getEnvLists().get(0);
+    env.setAssociatedEnv(new EnvTag("1", "SCH"));
+    env.setType("kafka");
+
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    kwClustersMap.put(1, utilMethods.getKwClusters());
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+    when(clusterApiService.getAvroSchema(anyString(), any(), anyString(), anyString(), anyInt()))
+        .thenReturn(utilMethods.createSchemaList());
+
+    SchemaDetailsResponse schemaDetailsResponse =
+        schemaRegistrySyncControllerService.getSchemaOfTopic(topicName, schemaVersion, kafkaEnvId);
+    assertThat(schemaDetailsResponse.getSchemaContent()).contains("klaw.avro"); // namespace
   }
 
   private void stubUserInfo() {
