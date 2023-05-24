@@ -132,7 +132,7 @@ const TopicSubscriptions = () => {
           }}
           type={"danger"}
         >
-          Are you sure you want to delete this subscriber? This action will
+          Are you sure you want to delete this subscription? This action will
           create a deletion request for approval.
         </Dialog>
       )}
