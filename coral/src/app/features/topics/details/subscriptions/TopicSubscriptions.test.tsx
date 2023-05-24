@@ -12,6 +12,7 @@ import { getTopicOverview } from "src/domain/topic/topic-api";
 import { TopicOvervieApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { Context as AquariumContext } from "@aivenio/aquarium";
 
 jest.mock("src/domain/topic/topic-api.ts");
 jest.mock("src/domain/acl/acl-api.ts");
@@ -27,6 +28,10 @@ const mockCreateDeleteAclRequest =
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useOutletContext: () => ({ topicName: "aiventopic1" }),
+}));
+
+jest.mock("crypto", () => ({
+  randomUUID: () => null,
 }));
 
 const mockGetTopicOverviewResponse: TopicOvervieApiResponse = {
@@ -156,10 +161,16 @@ describe("TopicSubscriptions.tsx", () => {
   beforeAll(async () => {
     mockIntersectionObserver();
     mockGetTopicOverview.mockResolvedValue(mockGetTopicOverviewResponse);
-    customRender(<TopicSubscriptions />, {
-      memoryRouter: true,
-      queryClient: true,
-    });
+    customRender(
+      // Aquarium context is needed for useToast
+      <AquariumContext>
+        <TopicSubscriptions />
+      </AquariumContext>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+      }
+    );
     await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
   });
 
@@ -257,7 +268,7 @@ describe("TopicSubscriptions.tsx", () => {
   });
 
   describe("should allow creating a delete request for a subscription", () => {
-    it("should render a modal when clicking the Delete button", async () => {
+    it("should render a modal when clicking the Delete button and close it when clicking Cancel button", async () => {
       const firstDataRow = screen.getAllByRole("row")[1];
       const button = within(firstDataRow).getByRole("button", {
         name: "Create deletion request for request 1064",
@@ -268,9 +279,17 @@ describe("TopicSubscriptions.tsx", () => {
       const modal = screen.getByRole("dialog");
 
       expect(modal).toBeVisible();
+
+      const cancelButton = within(modal).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(cancelButton);
+
+      await waitFor(() => expect(modal).not.toBeVisible());
     });
 
-    it("should close the modal when clicking its Cancel button", async () => {
+    it("should render a modal when clicking the Delete button and create a delete request when clicking the modal's Create button", async () => {
       const firstDataRow = screen.getAllByRole("row")[1];
       const button = within(firstDataRow).getByRole("button", {
         name: "Create deletion request for request 1064",
@@ -279,33 +298,22 @@ describe("TopicSubscriptions.tsx", () => {
       await userEvent.click(button);
 
       const modal = screen.getByRole("dialog");
-
-      const cancelButton = within(modal).getByRole("button", {
-        name: "Cancel",
+      const createButton = within(modal).getByRole("button", {
+        name: "Create deletion request",
       });
 
-      await userEvent.click(cancelButton);
+      await userEvent.click(createButton);
 
-      expect(modal).not.toBeInTheDocument();
+      expect(mockCreateDeleteAclRequest).toHaveBeenCalledTimes(1);
+
+      await waitFor(() => expect(modal).not.toBeVisible());
+      await waitFor(() =>
+        expect(
+          screen.getByText(
+            "Subscription deletion request successfully created."
+          )
+        ).toBeVisible()
+      );
     });
-  });
-
-  it("should create a delete request when clicking the modal's Create button", async () => {
-    const firstDataRow = screen.getAllByRole("row")[1];
-    const button = within(firstDataRow).getByRole("button", {
-      name: "Create deletion request for request 1064",
-    });
-
-    await userEvent.click(button);
-
-    const modal = screen.getByRole("dialog");
-    const createButton = within(modal).getByRole("button", {
-      name: "Create deletion request",
-    });
-
-    await userEvent.click(createButton);
-
-    expect(mockCreateDeleteAclRequest).toHaveBeenCalledTimes(1);
-    await waitFor(() => expect(modal).not.toBeInTheDocument());
   });
 });

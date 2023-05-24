@@ -2,6 +2,7 @@ import {
   Alert,
   SegmentedControl,
   SegmentedControlGroup,
+  useToast,
 } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
@@ -35,6 +36,8 @@ const TopicSubscriptions = () => {
     req_no: string | null;
   }>({ isOpen: false, req_no: null });
 
+  const toast = useToast();
+
   const {
     data,
     isLoading: dataIsLoading,
@@ -50,6 +53,11 @@ const TopicSubscriptions = () => {
     onSuccess: () => {
       setErrorMessage("");
       setDeleteModal({ isOpen: false, req_no: null });
+      toast({
+        message: "Subscription deletion request successfully created.",
+        position: "bottom-left",
+        variant: "default",
+      });
     },
     onError: (error: Error) => {
       setErrorMessage(parseErrorMsg(error));
