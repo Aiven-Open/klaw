@@ -588,8 +588,9 @@ public class UsersTeamsControllerService {
       userInfo.setPwd(newUser.getUserPassword());
       String result = dbHandle.addNewUser(userInfo);
 
-      if (ApiResultStatus.SUCCESS.value.equals(result)) {
-        manageDatabase.addUserToCache(userInfo);
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        tenantId = commonUtilsService.getTenantId(getUserName());
+        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.CREATE);
       }
 
       if (isExternal) {
@@ -607,11 +608,6 @@ public class UsersTeamsControllerService {
               dbHandle,
               commonUtilsService.getLoginUrl());
         }
-      }
-
-      if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        tenantId = commonUtilsService.getTenantId(getUserName());
-        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.CREATE);
       }
 
       return ApiResponse.builder()
