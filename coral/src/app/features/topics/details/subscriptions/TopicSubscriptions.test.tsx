@@ -432,9 +432,7 @@ describe("TopicSubscriptions.tsx", () => {
       await waitFor(() => expect(modal).not.toBeVisible());
       await waitFor(() =>
         expect(
-          screen.getByText(
-            "Subscription deletion request successfully created."
-          )
+          screen.getByText("Subscription deletion request successfully created")
         ).toBeVisible()
       );
     });

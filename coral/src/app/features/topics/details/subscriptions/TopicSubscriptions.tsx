@@ -5,7 +5,7 @@ import {
   useToast,
 } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { pick } from "lodash";
+import pick from "lodash/pick";
 import { useMemo, useState } from "react";
 import { Dialog } from "src/app/components/Dialog";
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
@@ -60,7 +60,7 @@ const TopicSubscriptions = () => {
       setErrorMessage("");
       setDeleteModal({ isOpen: false, req_no: null });
       toast({
-        message: "Subscription deletion request successfully created.",
+        message: "Subscription deletion request successfully created",
         position: "bottom-left",
         variant: "default",
       });
@@ -132,7 +132,8 @@ const TopicSubscriptions = () => {
           }}
           type={"danger"}
         >
-          Are you sure you want to create a deletion request?
+          Are you sure you want to delete this subscriber? This action will
+          create a deletion request for approval.
         </Dialog>
       )}
       {errorMessage !== "" && (
