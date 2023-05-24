@@ -25,7 +25,6 @@ interface AclInfoListRow {
   ips: string[];
   aclType: AclOverviewInfo["topictype"];
   team: AclOverviewInfo["teamname"];
-  requestedOn: string;
   showDeleteAcl: AclOverviewInfo["showDeleteAcl"];
   topicname?: AclOverviewInfo["topicname"];
   transactionalId?: AclOverviewInfo["transactionalId"];
@@ -52,7 +51,6 @@ const getRows = (
         ips: acl_ip ? [acl_ip] : [],
         aclType: topictype,
         team: teamname,
-        requestedOn: "Not yet in API",
         showDeleteAcl,
       };
 
@@ -151,11 +149,6 @@ const getColumns = (
       type: "text",
       field: "team",
       headerName: "Team",
-    },
-    {
-      type: "text",
-      field: "requestedOn",
-      headerName: "Requested on",
     },
     {
       type: "action",
