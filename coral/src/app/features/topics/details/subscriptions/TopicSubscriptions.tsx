@@ -1,4 +1,4 @@
-import { RadioButton, RadioButtonGroup } from "@aivenio/aquarium";
+import { SegmentedControl, SegmentedControlGroup } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 import pick from "lodash/pick";
 import { useMemo, useState } from "react";
@@ -75,7 +75,7 @@ const TopicSubscriptions = () => {
           placeholder="Search principal or IP"
           description={`Search for a partial match principals or IPs. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
         />,
-        <RadioButtonGroup
+        <SegmentedControlGroup
           name="Subscription options"
           key="subscription-options"
           onChange={(value: string) => {
@@ -85,22 +85,22 @@ const TopicSubscriptions = () => {
           }}
           value={selectedSubs}
         >
-          <RadioButton name="User subscriptions" value="aclInfoList">
-            User subs
-          </RadioButton>
-          <RadioButton
+          <SegmentedControl name="User subscriptions" value="aclInfoList">
+            User subs.
+          </SegmentedControl>
+          <SegmentedControl
             name="Prefixed subscriptions"
             value="prefixedAclInfoList"
           >
-            Prefixed subs
-          </RadioButton>
-          <RadioButton
+            Prefixed subs.
+          </SegmentedControl>
+          <SegmentedControl
             name="Transactional subscriptions"
             value="transactionalAclInfoList"
           >
-            Transactional subs
-          </RadioButton>
-        </RadioButtonGroup>,
+            Transactional subs.
+          </SegmentedControl>
+        </SegmentedControlGroup>,
       ]}
       table={
         <TopicSubscriptionsTable

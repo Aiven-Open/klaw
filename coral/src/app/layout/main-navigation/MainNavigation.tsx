@@ -3,7 +3,7 @@ import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import cog from "@aivenio/aquarium/dist/src/icons/cog";
 import add from "@aivenio/aquarium/dist/src/icons/add";
 import database from "@aivenio/aquarium/dist/src/icons/database";
-import layoutGroupBy from "@aivenio/aquarium/dist/src/icons/layoutGroupBy";
+import dataflow02 from "@aivenio/aquarium/dist/src/icons/dataflow02";
 import list from "@aivenio/aquarium/dist/src/icons/list";
 import people from "@aivenio/aquarium/dist/src/icons/people";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
@@ -52,7 +52,7 @@ function MainNavigation() {
         </li>
         <li>
           <MainNavigationLink
-            icon={layoutGroupBy}
+            icon={dataflow02}
             to={Routes.CONNECTORS}
             linkText={"Connectors"}
             active={pathname.startsWith(Routes.CONNECTORS)}

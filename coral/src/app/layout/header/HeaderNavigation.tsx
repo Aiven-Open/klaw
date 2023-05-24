@@ -4,7 +4,7 @@ import questionMark from "@aivenio/aquarium/dist/module/icons/questionMark";
 import user from "@aivenio/aquarium/dist/module/icons/user";
 import code from "@aivenio/aquarium/icons/code";
 import codeBlock from "@aivenio/aquarium/icons/codeBlock";
-import layoutGroupBy from "@aivenio/aquarium/icons/layoutGroupBy";
+import dataflow02 from "@aivenio/aquarium/icons/dataflow02";
 import people from "@aivenio/aquarium/icons/people";
 import { useNavigate } from "react-router-dom";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
@@ -53,7 +53,7 @@ function HeaderNavigation() {
             <DropdownMenu.Item key="schema" icon={code}>
               Schema
             </DropdownMenu.Item>
-            <DropdownMenu.Item key="connector" icon={layoutGroupBy}>
+            <DropdownMenu.Item key="connector" icon={dataflow02}>
               Kafka connector
             </DropdownMenu.Item>
           </DropdownMenu.Items>
