@@ -422,10 +422,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
   }
 
-  public void addUserToCache(UserInfo newUser) {
-    allUsersAllTenants.add(newUser);
-  }
-
   public List<UserInfo> selectAllCachedUserInfo() {
     return allUsersAllTenants;
   }
