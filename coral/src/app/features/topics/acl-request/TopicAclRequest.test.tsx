@@ -103,7 +103,7 @@ describe("<TopicAclRequest />", () => {
         {
           queryClient: true,
           memoryRouter: true,
-          customRoutePath: "/topic/aivtopic1/subscribe",
+          customRoutePath: "/topic/aivtopic1/subscribe?env=1",
         }
       );
     });
@@ -119,20 +119,17 @@ describe("<TopicAclRequest />", () => {
       const aclConsumerTypeInput = screen.getByRole("radio", {
         name: "Consumer",
       });
-      // Only rendered in Producer form
-      const transactionalIdInput = screen.getByLabelText("Transactional ID");
 
       expect(aclProducerTypeInput).toBeVisible();
       expect(aclProducerTypeInput).toBeChecked();
       expect(aclConsumerTypeInput).not.toBeChecked();
-      expect(transactionalIdInput).toBeVisible();
     });
 
-    it("renders the correct AclIpPrincipleTypeField with Principal option checked when choosing an Aiven cluster environment", async () => {
+    it("renders the correct AclIpPrincipleTypeField when rendering with an Aiven cluster environment", async () => {
       await assertSkeleton();
 
       const principalField = screen.getByRole("radio", {
-        name: "Principal",
+        name: "Service account",
       });
       const ipField = screen.getByRole("radio", {
         name: "IP",
@@ -142,20 +139,6 @@ describe("<TopicAclRequest />", () => {
       expect(principalField).not.toBeChecked();
       expect(ipField).not.toBeEnabled();
       expect(ipField).not.toBeChecked();
-
-      await selectTestEnvironment();
-
-      expect(principalField).not.toBeEnabled();
-      expect(principalField).toBeChecked();
-      expect(ipField).toBeDisabled();
-      expect(ipField).not.toBeChecked();
-
-      const principalsField = await screen.findByRole("combobox", {
-        name: "Service accounts *",
-      });
-
-      expect(principalsField).toBeVisible();
-      expect(principalsField).toBeEnabled();
     });
 
     it("renders the appropriate form when switching between Producer and Consumer ACL types", async () => {
@@ -196,7 +179,7 @@ describe("<TopicAclRequest />", () => {
         {
           queryClient: true,
           memoryRouter: true,
-          customRoutePath: "/topic/aivtopic1/subscribe",
+          customRoutePath: "/topic/aivtopic1/subscribe?env=1",
         }
       );
     });
@@ -221,17 +204,13 @@ describe("<TopicAclRequest />", () => {
       });
 
       expect(ipField).toBeVisible();
-      expect(ipField).not.toBeEnabled();
+      expect(ipField).toBeEnabled();
       expect(ipField).not.toBeChecked();
       expect(principalField).toBeVisible();
-      expect(principalField).not.toBeEnabled();
+      expect(principalField).toBeEnabled();
       expect(principalField).not.toBeChecked();
       expect(hiddenIpsField).toBeNull();
       expect(hiddenPrincipalsField).toBeNull();
-
-      await selectTestEnvironment();
-
-      expect(principalField).toBeEnabled();
 
       await userEvent.click(principalField);
 
@@ -475,7 +454,7 @@ describe("<TopicAclRequest />", () => {
         {
           queryClient: true,
           memoryRouter: true,
-          customRoutePath: "/topic/aivtopic1/subscribe",
+          customRoutePath: "/topic/aivtopic1/subscribe?env=1",
         }
       );
     });
@@ -502,17 +481,13 @@ describe("<TopicAclRequest />", () => {
       });
 
       expect(ipField).toBeVisible();
-      expect(ipField).not.toBeEnabled();
+      expect(ipField).toBeEnabled();
       expect(ipField).not.toBeChecked();
       expect(principalField).toBeVisible();
-      expect(principalField).not.toBeEnabled();
+      expect(principalField).toBeEnabled();
       expect(principalField).not.toBeChecked();
       expect(hiddenIpsField).toBeNull();
       expect(hiddenPrincipalsField).toBeNull();
-
-      await selectTestEnvironment();
-
-      expect(principalField).toBeEnabled();
 
       await userEvent.click(principalField);
 
@@ -545,8 +520,6 @@ describe("<TopicAclRequest />", () => {
 
       const ipField = screen.getByRole("radio", { name: "IP" });
 
-      await selectTestEnvironment();
-
       expect(ipField).toBeEnabled();
 
       await userEvent.click(ipField);
@@ -570,8 +543,6 @@ describe("<TopicAclRequest />", () => {
       await userEvent.click(aclConsumerTypeInput);
 
       const ipField = screen.getByRole("radio", { name: "IP" });
-
-      await selectTestEnvironment();
 
       expect(ipField).toBeEnabled();
 
@@ -597,8 +568,6 @@ describe("<TopicAclRequest />", () => {
       await userEvent.click(aclConsumerTypeInput);
 
       const ipField = screen.getByRole("radio", { name: "IP" });
-
-      await selectTestEnvironment();
 
       expect(ipField).toBeEnabled();
 
@@ -643,8 +612,6 @@ describe("<TopicAclRequest />", () => {
 
       const principalField = screen.getByRole("radio", { name: "Principal" });
 
-      await selectTestEnvironment();
-
       expect(principalField).toBeEnabled();
 
       await userEvent.click(principalField);
@@ -678,8 +645,6 @@ describe("<TopicAclRequest />", () => {
       });
       await userEvent.click(aclConsumerTypeInput);
 
-      await selectTestEnvironment();
-
       const consumerGroupInput = await screen.findByRole("textbox", {
         name: "Consumer group *",
       });
@@ -703,8 +668,6 @@ describe("<TopicAclRequest />", () => {
       });
       await userEvent.click(aclConsumerTypeInput);
 
-      await selectTestEnvironment();
-
       const consumerGroupInput = await screen.findByRole("textbox", {
         name: "Consumer group *",
       });
@@ -727,8 +690,6 @@ describe("<TopicAclRequest />", () => {
         name: "Consumer",
       });
       await userEvent.click(aclConsumerTypeInput);
-
-      await selectTestEnvironment();
 
       const consumerGroupInput = await screen.findByRole("textbox", {
         name: "Consumer group *",
@@ -772,7 +733,7 @@ describe("<TopicAclRequest />", () => {
         {
           queryClient: true,
           memoryRouter: true,
-          customRoutePath: "/topic/aivtopic1/subscribe",
+          customRoutePath: "/topic/aivtopic1/subscribe?env=1",
         }
       );
     });
@@ -1152,7 +1113,7 @@ describe("<TopicAclRequest />", () => {
         {
           queryClient: true,
           memoryRouter: true,
-          customRoutePath: "/topic/aivtopic1/subscribe",
+          customRoutePath: "/topic/aivtopic1/subscribe?env=1",
         }
       );
     });

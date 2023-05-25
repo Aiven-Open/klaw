@@ -6,6 +6,7 @@ interface EnvironmentFieldProps {
   environments: ExtendedEnvironment[];
   selectedTopic?: string;
   prefixed?: boolean;
+  readOnly?: boolean;
 }
 
 const getOptions = (
@@ -50,6 +51,7 @@ const EnvironmentField = ({
   environments,
   selectedTopic,
   prefixed = false,
+  readOnly = false,
 }: EnvironmentFieldProps) => {
   return (
     <NativeSelect
@@ -57,6 +59,7 @@ const EnvironmentField = ({
       labelText="Environment"
       placeholder={"-- Please select --"}
       required
+      readOnly={readOnly}
     >
       {getOptions(environments, prefixed, selectedTopic)}
     </NativeSelect>

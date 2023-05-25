@@ -1,7 +1,7 @@
 import { Box } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useForm } from "src/app/components/Form";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
 import SkeletonForm from "src/app/features/topics/acl-request/forms/SkeletonForm";
@@ -16,9 +16,19 @@ import topicProducerFormSchema, {
 } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-producer";
 import { getTopicTeam, TopicTeam } from "src/domain/topic";
 import { AclType } from "src/domain/acl";
+import { environment } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 
 const TopicAclRequest = () => {
+  const navigate = useNavigate();
   const { topicName } = useParams();
+  const [searchParams] = useSearchParams();
+
+  // /topic/aivendemotopic/subscribe route requires an env search param to function correctly
+  // So we redirect when it is missing
+  if (topicName !== undefined && searchParams.get("env") === null) {
+    navigate(`/topic/${topicName}/subscriptions`);
+  }
+
   const [aclType, setAclType] = useState<AclType>("PRODUCER");
 
   const topicProducerForm = useForm<TopicProducerFormSchema>({
@@ -27,6 +37,7 @@ const TopicAclRequest = () => {
       topicname: topicName,
       aclType: "PRODUCER",
       aclPatternType: topicName !== undefined ? "LITERAL" : undefined,
+      environment: searchParams.get("env") ?? undefined,
     },
   });
 
@@ -37,6 +48,7 @@ const TopicAclRequest = () => {
       topicname: topicName,
       aclType: "CONSUMER",
       consumergroup: "",
+      environment: searchParams.get("env") ?? undefined,
     },
   });
 
@@ -54,6 +66,7 @@ const TopicAclRequest = () => {
             (env) => env.id === topicConsumerForm.watch("environment")
           ),
     [
+      extendedEnvironments,
       aclType,
       topicProducerForm.watch("environment"),
       topicConsumerForm.watch("environment"),
@@ -117,7 +130,7 @@ const TopicAclRequest = () => {
         });
       }
     }
-  }, [selectedEnvironment]);
+  }, [selectedEnvironment, aclType]);
 
   if (isLoadingExtendedEnvironments) {
     return <SkeletonForm />;
@@ -139,9 +152,9 @@ const TopicAclRequest = () => {
           topicNames={currentTopicNames || []}
           environments={extendedEnvironments}
           isAivenCluster={selectedEnvironment?.isAivenCluster}
-          // This prop is true when user navigated to /topic/{topicName}/subscribe
+          // This prop is true when user navigated to /topic/{topicName}/subscribe?env={id}
           // False when navigating to /request/acl
-          isSubscription={topicName !== undefined}
+          isSubscription={topicName !== undefined && environment !== undefined}
         />
       ) : (
         <TopicProducerForm
@@ -152,9 +165,9 @@ const TopicAclRequest = () => {
           topicNames={currentTopicNames || []}
           environments={extendedEnvironments}
           isAivenCluster={selectedEnvironment?.isAivenCluster}
-          // This prop is true when user navigated to /topic/{topicName}/subscribe
+          // This prop is true when user navigated to /topic/{topicName}/subscribe?env={id}
           // False when navigating to /request/acl
-          isSubscription={topicName !== undefined}
+          isSubscription={topicName !== undefined && environment !== undefined}
         />
       )}
     </Box>
