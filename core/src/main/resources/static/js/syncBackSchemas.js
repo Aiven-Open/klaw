@@ -336,11 +336,11 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
 	    $scope.alertnote = "";
 	    $scope.syncbacklog = "";
 
-        const typeOfSync = $scope.typeOfSync;
-        if(!typeOfSync)
+        const topicsSelectionType = $scope.topicsSelectionType;
+        if(!topicsSelectionType)
 	        return;
 
-        if(typeOfSync === "SELECTED_TOPICS")
+        if(topicsSelectionType === "SELECTED_TOPICS")
         {
             if($scope.updatedTopicIdsArray.length === 0)
             {
@@ -349,7 +349,7 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
                 return;
             }
         }
-        else if(typeOfSync === "ALL_TOPICS")
+        else if(topicsSelectionType === "ALL_TOPICS")
         {
             if(!$scope.allTopicsCount || $scope.allTopicsCount === 0)
             {
@@ -374,14 +374,15 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
         }
 
         var serviceInput = {};
-        serviceInput['topicIds'] = $scope.updatedTopicIdsArray;
-        serviceInput['sourceEnv'] = $scope.getTopics.envName;
-        serviceInput['targetEnv'] = $scope.targetEnvId;
-        serviceInput['typeOfSync'] = typeOfSync;
+        serviceInput['topicList'] = $scope.updatedTopicIdsArray;
+        serviceInput['sourceKafkaEnvSelected'] = $scope.getSchemas.envName;
+        serviceInput['targetKafkaEnvSelected'] = $scope.targetEnvId;
+        serviceInput['typeOfSync'] = 'SYNC_BACK_SCHEMAS';
+        serviceInput['topicsSelectionType'] = topicsSelectionType;
 
         swal({
         		title: "Are you sure?",
-        		text: "You would like to create topics based on this selection ?",
+        		text: "You would like to create schemas based on this selection ?",
         		type: "warning",
         		showCancelButton: true,
         		confirmButtonColor: "#DD6B55",
@@ -396,21 +397,21 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
 
         			$http({
                         method: "POST",
-                        url: "updateSyncBackSchemas",
+                        url: "schemas",
                         headers : { 'Content-Type' : 'application/json' },
                         data:  serviceInput
                     }).success(function(output) {
                         $scope.ShowSpinnerStatus = false;
-                        $scope.alert = "Sync back topic request : "+ output.message;
+                        $scope.alert = "Sync back schema request : "+ output.message;
                         if(output.success){
                             $scope.resetCheckBoxes();
                             $scope.syncbacklog = output.data;
-                            $scope.alert = $scope.alert + ". Errors are ignored if topics already exist on the target environment. Please verify logs.";
+                            $scope.alert = $scope.alert + ". Errors are ignored if schemas already exist on the target environment. Please verify logs.";
                         }
                          if(output.success){
                           swal({
                         		   title: "",
-                        		   text: "Sync back topic request : "+ output.message,
+                        		   text: "Sync back schema request : "+ output.message,
                         		   timer: 2000,
                         		   showConfirmButton: false
                         	   });

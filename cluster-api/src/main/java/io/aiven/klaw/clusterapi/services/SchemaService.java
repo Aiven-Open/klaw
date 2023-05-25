@@ -449,6 +449,7 @@ public class SchemaService {
     }
   }
 
+  // deletes the subject - means all the versions will be deleted
   public ApiResponse deleteSchema(ClusterTopicRequest clusterTopicRequest) {
     String suffixUrl =
         clusterTopicRequest.getSchemaEnv()

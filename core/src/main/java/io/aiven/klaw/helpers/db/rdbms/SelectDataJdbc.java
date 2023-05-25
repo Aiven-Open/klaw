@@ -1711,6 +1711,12 @@ public class SelectDataJdbc {
         tenantId, schemaEnvId, topicName, schemaVersion);
   }
 
+  public List<MessageSchema> getSchemaForTenantAndEnvAndTopic(
+      int tenantId, String schemaEnvId, String topicName) {
+    return messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(
+        tenantId, topicName, schemaEnvId);
+  }
+
   public List<KwClusters> getClusters() {
     return Lists.newArrayList(kwClusterRepo.findAll());
   }

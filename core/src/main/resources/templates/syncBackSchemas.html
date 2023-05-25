@@ -475,7 +475,7 @@
 			<div class="row" ng-show="dashboardDetails.syncBackTopics == 'Authorized'" ng-init="getEnvs();loadTeams();">
 				<div class="col-md-4">
 					<div class="form-group has-success">
-						<label class="text-success">Kafka Environment</label>
+						<label class="control-label">Kafka Environment</label>
 						<select class="form-control custom-select" ng-change="getSchemas(1,'true','tabular');"
 								ng-model="getSchemas.envName" ng-options="env.id as env.name for env in allenvs">
 							<option value="" selected="selected">
@@ -485,7 +485,7 @@
 				</div>
 				<div class="col-md-4">
 					<div class="form-group has-success">
-						<label class="text-success">Search</label>
+						<label class="control-label">Search</label>
 						<input type="text" class="form-control" placeholder="Search Topics" id="SearchTopics"
 							   ng-keydown="$event.keyCode === 13 && getSchemas(1,'true','tabular');" ng-model="getSchemas.topicnamesearch">
 
@@ -555,7 +555,7 @@
 									<tr ng-repeat="resultBrowset in resultBrowse">
 										<td>
 											<label class="custom-control custom-checkbox">
-												<input type="checkbox" value="false" ng-click="updateTopicIds(resultBrowset.topicid, syncBackTopicCbId[$index].topicIdSelected)"
+												<input type="checkbox" value="false" ng-click="updateTopicIds(resultBrowset.topic, syncBackTopicCbId[$index].topicIdSelected)"
 													   ng-init="syncBackTopicCbId[$index].topicIdSelected=false" ng-model="syncBackTopicCbId[$index].topicIdSelected" class="custom-control-input">
 												<span class="custom-control-label"></span>
 											</label>
@@ -602,29 +602,33 @@
 					<div class="card">
 						<div class="card-body">
 							You are about to create schemas on selected target environment with schemas and their versions based of source environment in metastore.
-
+							<br>
+							<text style="color:red">
+								Important : This process deletes all the existing schemas for that subject in target environment and creates new ones based on Klaw metadata.
+							<br> Ex : If version 1 already exists on target cluster, it will be deleted, and new schemas will be created starting with '2' as new version.
+							</text>
 							<hr size="1" color="black"><br>
 							<div class="form-body">
 								<div class="row">
 									<div class="col-md-4">
 										<div class="mb-2">
 											<label class="custom-control custom-radio">
-												<input class="radio-col-orange" ng-change="onSelectSyncTopics('SELECTED_TOPICS')" ng-model="typeOfSync" name="typeOfSync"
+												<input class="radio-col-orange" ng-change="onSelectSyncTopics('SELECTED_TOPICS')" ng-model="topicsSelectionType" name="topicsSelectionType"
 													   type="radio" id="radio_lit" value="SELECTED_TOPICS" checked/>
 												<label for="radio_lit">Synchronize above selected ({{ updatedTopicIdsArray.length }}) topics</label>
 											</label>
 										</div>
 										<div class="mb-2">
 											<label class="custom-control custom-radio">
-												<input class="radio-col-orange" ng-change="onSelectSyncTopics('ALL_TOPICS')" ng-model="typeOfSync"
-													   name="typeOfSync" type="radio" id="radio_pre" value="ALL_TOPICS" />
+												<input class="radio-col-orange" ng-change="onSelectSyncTopics('ALL_TOPICS')" ng-model="topicsSelectionType"
+													   name="topicsSelectionType" type="radio" id="radio_pre" value="ALL_TOPICS" />
 												<label for="radio_pre">Synchronize all schemas ({{ allTopicsCount }}) of source Environment</label>
 											</label>
 										</div>
 									</div>
 									<div class="col-md-4">
 										<div class="form-group">
-											<label class="control-label">Select Source Environment (Metastore)</label>
+											<label class="control-label">Select Source Kafka Environment (Metastore)</label>
 											<select class="form-control custom-select" ng-change="getSchemas(1,'true','tabular');"
 													ng-model="getSchemas.envName" ng-options="env.id as env.name for env in allenvs">
 												<option value="" selected="selected">
@@ -634,7 +638,7 @@
 									</div>
 									<div class="col-md-4">
 										<div class="form-group">
-											<label class="control-label">Select Target Environment</label>
+											<label class="control-label">Select Target Kafka Environment</label>
 											<select class="form-control custom-select" ng-change=""
 													ng-model="targetEnvId" ng-options="env.id as env.name for env in allenvs">
 												<option value="" selected="selected">

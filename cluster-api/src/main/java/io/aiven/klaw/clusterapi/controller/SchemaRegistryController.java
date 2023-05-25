@@ -2,6 +2,7 @@ package io.aiven.klaw.clusterapi.controller;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
+import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.SchemaService;
@@ -79,6 +80,19 @@ public class SchemaRegistryController {
     try {
       return new ResponseEntity<>(
           schemaService.registerSchema(clusterSchemaRequest), HttpStatus.OK);
+    } catch (Exception e) {
+      return handleException(e);
+    }
+  }
+
+  /** Delete the subject, all versions of schema on schema registry. */
+  @PostMapping(
+      value = "/schema/delete",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> deleteSchema(
+      @RequestBody @Valid ClusterTopicRequest clusterTopicRequest) {
+    try {
+      return new ResponseEntity<>(schemaService.deleteSchema(clusterTopicRequest), HttpStatus.OK);
     } catch (Exception e) {
       return handleException(e);
     }

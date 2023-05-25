@@ -297,7 +297,8 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                 return;
             }
             serviceInput['topicList'] = $scope.updatedTopicIdsArray;
-            serviceInput['kafkaEnvSelected'] = $scope.getSchemas.envName;
+            serviceInput['sourceKafkaEnvSelected'] = $scope.getSchemas.envName;
+            serviceInput['typeOfSync'] = 'SYNC_SCHEMAS';
 
            var warningMsg="";
            if($scope.topicsWithWarning.length > 0) {

@@ -86,11 +86,12 @@ public class SchemaRegistrySyncControllerTest {
     ApiResponse apiResponse =
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     SyncSchemaUpdates syncSchemaUpdates = new SyncSchemaUpdates();
-    syncSchemaUpdates.setKafkaEnvSelected("1");
+    syncSchemaUpdates.setSourceKafkaEnvSelected("1");
     syncSchemaUpdates.setTopicList(List.of("Topic01"));
+    syncSchemaUpdates.setTypeOfSync("SYNC_SCHEMAS");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncSchemaUpdates);
 
-    when(schemaRegistrySyncControllerService.updateDbFromCluster(eq(syncSchemaUpdates)))
+    when(schemaRegistrySyncControllerService.updateSyncSchemas(eq(syncSchemaUpdates)))
         .thenReturn(apiResponse);
 
     mvc.perform(

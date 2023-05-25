@@ -275,6 +275,9 @@ public interface HandleDbRequests {
   List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion);
 
+  List<MessageSchema> getSchemaForTenantAndEnvAndTopic(
+      int tenantId, String schemaEnvId, String topicName);
+
   /*--------------------Update */
   String updateTopicDocumentation(Topic topic);
 

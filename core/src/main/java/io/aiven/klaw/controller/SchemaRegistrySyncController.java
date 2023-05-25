@@ -65,7 +65,7 @@ public class SchemaRegistrySyncController {
   public ResponseEntity<ApiResponse> updateSyncSchemas(
       @RequestBody SyncSchemaUpdates syncSchemaUpdates) throws Exception {
     return new ResponseEntity<>(
-        schemaRegistrySyncControllerService.updateDbFromCluster(syncSchemaUpdates), HttpStatus.OK);
+        schemaRegistrySyncControllerService.updateSyncSchemas(syncSchemaUpdates), HttpStatus.OK);
   }
 
   /**

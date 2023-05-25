@@ -207,8 +207,9 @@ public class SchemaRegistrySyncControllerServiceTest {
     env.setType("kafka");
 
     SyncSchemaUpdates syncSchemaUpdates = new SyncSchemaUpdates();
-    syncSchemaUpdates.setKafkaEnvSelected("1");
+    syncSchemaUpdates.setSourceKafkaEnvSelected("1");
     syncSchemaUpdates.setTopicList(List.of("2ndTopic"));
+    syncSchemaUpdates.setTypeOfSync("SYNC_SCHEMAS");
 
     Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
     kwClustersMap.put(1, utilMethods.getKwClusters());
@@ -225,9 +226,10 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
 
     ApiResponse apiResponse =
-        schemaRegistrySyncControllerService.updateDbFromCluster(syncSchemaUpdates);
+        schemaRegistrySyncControllerService.updateSyncSchemas(syncSchemaUpdates);
     assertThat(apiResponse.isSuccess()).isTrue();
-    assertThat(apiResponse.getMessage()).isEqualTo("Topics " + syncSchemaUpdates.getTopicList());
+    assertThat(apiResponse.getMessage())
+        .isEqualTo("Topics/Schemas " + syncSchemaUpdates.getTopicList());
   }
 
   @Test

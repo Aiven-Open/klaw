@@ -8,6 +8,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.MessageSchema;
+import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
@@ -21,6 +22,7 @@ import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,6 +31,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -57,6 +60,7 @@ public class SchemaRegistrySyncControllerService {
     this.mailService = mailService;
   }
 
+  // schema versions only
   public SyncSchemasList getSchemasOfEnvironment(
       String kafkaEnvId,
       String pageNo,
@@ -78,6 +82,78 @@ public class SchemaRegistrySyncControllerService {
     }
   }
 
+  // schema versions only
+  public SyncSchemasList getSchemasOfEnvironmentFromMetadataDb(
+      String kafkaEnvId,
+      String pageNo,
+      String currentPage,
+      String topicNameSearch,
+      Integer teamId) {
+    SyncSchemasList syncSchemasList = new SyncSchemasList();
+    List<SchemaSubjectInfoResponse> schemaInfoList = new ArrayList<>();
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
+      return syncSchemasList;
+    }
+
+    Env kafkaEnv = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
+    if (kafkaEnv.getAssociatedEnv() == null) {
+      return syncSchemasList;
+    }
+    String schemaEnvId = kafkaEnv.getAssociatedEnv().getId();
+
+    List<Topic> topicList =
+        manageDatabase.getTopicsForTenant(tenantId).stream()
+            .filter(topic -> topic.getEnvironment().equals(kafkaEnvId))
+            .toList();
+
+    Map<String, Set<String>> topicSchemaVersionsInDb =
+        manageDatabase
+            .getHandleDbRequests()
+            .getTopicAndVersionsForEnvAndTenantId(schemaEnvId, tenantId);
+    String legacyTopicVersion = "1.0";
+    for (Topic topic : topicList) {
+      if (topicSchemaVersionsInDb.containsKey(topic.getTopicname())) {
+        Set<String> schemaVersions = topicSchemaVersionsInDb.get(topic.getTopicname());
+
+        if (schemaVersions.contains(legacyTopicVersion)) {
+          continue;
+        }
+
+        Set<Integer> schemaVersionsInt = new TreeSet<>();
+        schemaVersions.forEach(ver -> schemaVersionsInt.add(Integer.parseInt(ver)));
+
+        SchemaSubjectInfoResponse schemaInfo = new SchemaSubjectInfoResponse();
+        schemaInfo.setTopic(topic.getTopicname());
+        schemaInfo.setSchemaVersions(schemaVersionsInt);
+        schemaInfo.setTeamId(topic.getTeamId());
+
+        schemaInfoList.add(schemaInfo);
+      }
+    }
+
+    syncSchemasList.setAllTopicsCount(schemaInfoList.size());
+
+    if (topicNameSearch != null && topicNameSearch.trim().length() > 0) {
+      schemaInfoList =
+          schemaInfoList.stream()
+              .filter(schema -> schema.getTopic().contains(topicNameSearch.trim()))
+              .toList();
+    }
+
+    if (teamId != 0) {
+      schemaInfoList =
+          schemaInfoList.stream().filter(schema -> schema.getTeamId() == teamId).toList();
+    }
+
+    schemaInfoList = getPagedResponse(pageNo, currentPage, schemaInfoList, tenantId);
+    syncSchemasList.setSchemaSubjectInfoResponseList(schemaInfoList);
+    return syncSchemasList;
+  }
+
+  // schema versions only
   private SyncSchemasList getSchemaOfEnvironmentFromCluster(
       String kafkaEnvId,
       String pageNo,
@@ -203,8 +279,99 @@ public class SchemaRegistrySyncControllerService {
         });
   }
 
-  public ApiResponse updateDbFromCluster(SyncSchemaUpdates syncSchemaUpdates) throws Exception {
+  public ApiResponse updateSyncSchemas(SyncSchemaUpdates syncSchemaUpdates) throws Exception {
     log.info("syncSchemaUpdates {}", syncSchemaUpdates);
+
+    if (syncSchemaUpdates.getTypeOfSync().equals(PermissionType.SYNC_SCHEMAS.name())) {
+      return updateSyncSchemasToMetadata(syncSchemaUpdates);
+    } else if (syncSchemaUpdates.getTypeOfSync().equals(PermissionType.SYNC_BACK_SCHEMAS.name())) {
+      return updateSyncSchemasToCluster(syncSchemaUpdates);
+    } else {
+      return ApiResponse.builder().success(false).build();
+    }
+  }
+
+  private ApiResponse updateSyncSchemasToCluster(SyncSchemaUpdates syncSchemaUpdates)
+      throws KlawException {
+    String userDetails = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userDetails);
+
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
+      return ApiResponse.builder()
+          .success(false)
+          .message(ApiResultStatus.NOT_AUTHORIZED.value)
+          .build();
+    }
+    List<String> logArray = new ArrayList<>();
+    logArray.add("Topics/Schemas result");
+
+    for (String topicName : syncSchemaUpdates.getTopicList()) {
+      // delete all schemas
+      ResponseEntity<ApiResponse> apiResponseEntity =
+          clusterApiService.deleteSchema(
+              topicName, syncSchemaUpdates.getTargetKafkaEnvSelected(), tenantId);
+
+      logArray.add("Schemas deleted for " + topicName);
+
+      if (apiResponseEntity.getBody() != null && apiResponseEntity.getBody().isSuccess()) {
+        // create new schemas
+        Env kafkaEnv =
+            manageDatabase
+                .getHandleDbRequests()
+                .getEnvDetails(syncSchemaUpdates.getSourceKafkaEnvSelected(), tenantId);
+
+        if (kafkaEnv.getAssociatedEnv() == null) {
+          return ApiResponse.builder().success(false).message(SCH_SYNC_ERR_101).build();
+        }
+
+        List<MessageSchema> schemaList =
+            manageDatabase
+                .getHandleDbRequests()
+                .getSchemaForTenantAndEnvAndTopic(
+                    tenantId, kafkaEnv.getAssociatedEnv().getId(), topicName);
+        schemaList =
+            schemaList.stream()
+                .sorted(Comparator.comparing(a -> Integer.parseInt(a.getSchemaversion())))
+                .toList();
+
+        for (MessageSchema messageSchema : schemaList) {
+          SchemaRequest schemaRequest = new SchemaRequest();
+          schemaRequest.setForceRegister(true);
+          schemaRequest.setSchemafull(messageSchema.getSchemafull());
+
+          ResponseEntity<ApiResponse> apiResponseCreateEntity =
+              clusterApiService.postSchema(
+                  schemaRequest, kafkaEnv.getAssociatedEnv().getId(), topicName, tenantId);
+          ApiResponse apiResponse = apiResponseCreateEntity.getBody();
+          Map<String, Object> registerSchemaCustomResponse = null;
+          boolean schemaRegistered = false;
+          if (apiResponse != null
+              && apiResponse.getData() != null
+              && apiResponse.getData() instanceof Map<?, ?>) {
+            registerSchemaCustomResponse = (Map) apiResponse.getData();
+            schemaRegistered = (Boolean) registerSchemaCustomResponse.get("schemaRegistered");
+          }
+          if (registerSchemaCustomResponse != null
+              && (registerSchemaCustomResponse.containsKey("id") && schemaRegistered)) {
+            logArray.add(
+                "Schemas registered on cluster for "
+                    + topicName
+                    + " Version "
+                    + registerSchemaCustomResponse.get("version"));
+          }
+        }
+      }
+    }
+
+    return ApiResponse.builder()
+        .success(true)
+        .message(ApiResultStatus.SUCCESS.value)
+        .data(logArray)
+        .build();
+  }
+
+  private ApiResponse updateSyncSchemasToMetadata(SyncSchemaUpdates syncSchemaUpdates)
+      throws Exception {
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
 
@@ -217,7 +384,7 @@ public class SchemaRegistrySyncControllerService {
     Env kafkaEnv =
         manageDatabase
             .getHandleDbRequests()
-            .getEnvDetails(syncSchemaUpdates.getKafkaEnvSelected(), tenantId);
+            .getEnvDetails(syncSchemaUpdates.getSourceKafkaEnvSelected(), tenantId);
 
     if (kafkaEnv.getAssociatedEnv() == null) {
       return ApiResponse.builder().success(false).message(SCH_SYNC_ERR_101).build();
@@ -268,10 +435,11 @@ public class SchemaRegistrySyncControllerService {
 
     return ApiResponse.builder()
         .success(true)
-        .message("Topics " + syncSchemaUpdates.getTopicList())
+        .message("Topics/Schemas " + syncSchemaUpdates.getTopicList())
         .build();
   }
 
+  // schema content either from metadata or cluster
   public SchemaDetailsResponse getSchemaOfTopicFromSource(
       String source, String topicName, int schemaVersion, String kafkaEnvId) throws Exception {
     String userName = getUserName();
@@ -329,76 +497,6 @@ public class SchemaRegistrySyncControllerService {
     }
 
     return schemaDetailsResponse;
-  }
-
-  public SyncSchemasList getSchemasOfEnvironmentFromMetadataDb(
-      String kafkaEnvId,
-      String pageNo,
-      String currentPage,
-      String topicNameSearch,
-      Integer teamId) {
-    SyncSchemasList syncSchemasList = new SyncSchemasList();
-    List<SchemaSubjectInfoResponse> schemaInfoList = new ArrayList<>();
-    String userName = getUserName();
-    int tenantId = commonUtilsService.getTenantId(userName);
-
-    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
-      return syncSchemasList;
-    }
-
-    Env kafkaEnv = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
-    if (kafkaEnv.getAssociatedEnv() == null) {
-      return syncSchemasList;
-    }
-    String schemaEnvId = kafkaEnv.getAssociatedEnv().getId();
-
-    List<Topic> topicList =
-        manageDatabase.getTopicsForTenant(tenantId).stream()
-            .filter(topic -> topic.getEnvironment().equals(kafkaEnvId))
-            .toList();
-
-    Map<String, Set<String>> topicSchemaVersionsInDb =
-        manageDatabase
-            .getHandleDbRequests()
-            .getTopicAndVersionsForEnvAndTenantId(schemaEnvId, tenantId);
-    String legacyTopicVersion = "1.0";
-    for (Topic topic : topicList) {
-      if (topicSchemaVersionsInDb.containsKey(topic.getTopicname())) {
-        Set<String> schemaVersions = topicSchemaVersionsInDb.get(topic.getTopicname());
-
-        if (schemaVersions.contains(legacyTopicVersion)) {
-          continue;
-        }
-
-        Set<Integer> schemaVersionsInt = new TreeSet<>();
-        schemaVersions.forEach(ver -> schemaVersionsInt.add(Integer.parseInt(ver)));
-
-        SchemaSubjectInfoResponse schemaInfo = new SchemaSubjectInfoResponse();
-        schemaInfo.setTopic(topic.getTopicname());
-        schemaInfo.setSchemaVersions(schemaVersionsInt);
-        schemaInfo.setTeamId(topic.getTeamId());
-
-        schemaInfoList.add(schemaInfo);
-      }
-    }
-
-    syncSchemasList.setAllTopicsCount(schemaInfoList.size());
-
-    if (topicNameSearch != null && topicNameSearch.trim().length() > 0) {
-      schemaInfoList =
-          schemaInfoList.stream()
-              .filter(schema -> schema.getTopic().contains(topicNameSearch.trim()))
-              .toList();
-    }
-
-    if (teamId != 0) {
-      schemaInfoList =
-          schemaInfoList.stream().filter(schema -> schema.getTeamId() == teamId).toList();
-    }
-
-    schemaInfoList = getPagedResponse(pageNo, currentPage, schemaInfoList, tenantId);
-    syncSchemasList.setSchemaSubjectInfoResponseList(schemaInfoList);
-    return syncSchemasList;
   }
 
   private List<SchemaSubjectInfoResponse> getPagedResponse(
