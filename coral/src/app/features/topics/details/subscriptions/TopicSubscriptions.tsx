@@ -1,7 +1,13 @@
-import { SegmentedControl, SegmentedControlGroup } from "@aivenio/aquarium";
+import {
+  PageHeader,
+  SegmentedControl,
+  SegmentedControlGroup,
+} from "@aivenio/aquarium";
+import add from "@aivenio/aquarium/dist/src/icons/add";
 import { useQuery } from "@tanstack/react-query";
 import pick from "lodash/pick";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
@@ -11,6 +17,8 @@ import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
 import { getTopicOverview } from "src/domain/topic/topic-api";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
+
+const TEMP_ENV_VALUE = "2";
 
 type SubscriptionOptions =
   | "aclInfoList"
@@ -26,6 +34,7 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
 
 const TopicSubscriptions = () => {
   // @ TODO get environment from useTopicDetails too when it is implemented
+  const navigate = useNavigate();
   const { topicName } = useTopicDetails();
   const { search, teamId, aclType } = useFiltersValues();
   const {
@@ -34,7 +43,8 @@ const TopicSubscriptions = () => {
     isError,
     error,
   } = useQuery(["topic-overview"], {
-    queryFn: () => getTopicOverview({ topicName, environmentId: "2" }),
+    queryFn: () =>
+      getTopicOverview({ topicName, environmentId: TEMP_ENV_VALUE }),
   });
 
   const [selectedSubs, setSelectedSubs] =
@@ -49,6 +59,11 @@ const TopicSubscriptions = () => {
 
     if (subs === undefined) {
       return [];
+    }
+
+    // Early return to avoid running superfluous and potentially expensive Array.filter operations
+    if (teamId === "ALL" && search === "" && aclType === "ALL") {
+      return subs;
     }
 
     return subs.filter((sub) => {
@@ -66,52 +81,64 @@ const TopicSubscriptions = () => {
   }, [search, teamId, aclType, selectedSubs, data]);
 
   return (
-    <TableLayout
-      filters={[
-        <TeamFilter key="team" />,
-        <AclTypeFilter key="aclType" />,
-        <SearchFilter
-          key="search"
-          placeholder="Search principal or IP"
-          description={`Search for a partial match principals or IPs. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
-        />,
-        <SegmentedControlGroup
-          name="Subscription options"
-          key="subscription-options"
-          onChange={(value: string) => {
-            if (isSubscriptionsOption(value)) {
-              setSelectedSubs(value);
-            }
-          }}
-          value={selectedSubs}
-        >
-          <SegmentedControl name="User subscriptions" value="aclInfoList">
-            User subs.
-          </SegmentedControl>
-          <SegmentedControl
-            name="Prefixed subscriptions"
-            value="prefixedAclInfoList"
+    <>
+      <PageHeader
+        title="Subscriptions"
+        primaryAction={{
+          icon: add,
+          text: "Request a subscription",
+          onClick: () =>
+            navigate(`/topic/${topicName}/subscribe?env=${TEMP_ENV_VALUE}`),
+        }}
+      />
+
+      <TableLayout
+        filters={[
+          <TeamFilter key="team" />,
+          <AclTypeFilter key="aclType" />,
+          <SearchFilter
+            key="search"
+            placeholder="Search principal or IP"
+            description={`Search for a partial match principals or IPs. Searching starts automatically with a little delay while typing. Press "Escape" to delete all your input.`}
+          />,
+          <SegmentedControlGroup
+            name="Subscription options"
+            key="subscription-options"
+            onChange={(value: string) => {
+              if (isSubscriptionsOption(value)) {
+                setSelectedSubs(value);
+              }
+            }}
+            value={selectedSubs}
           >
-            Prefixed subs.
-          </SegmentedControl>
-          <SegmentedControl
-            name="Transactional subscriptions"
-            value="transactionalAclInfoList"
-          >
-            Transactional subs.
-          </SegmentedControl>
-        </SegmentedControlGroup>,
-      ]}
-      table={
-        <TopicSubscriptionsTable
-          selectedSubs={selectedSubs}
-          filteredData={filteredData}
-        />
-      }
-      isLoading={dataIsLoading}
-      isErrorLoading={isError}
-      errorMessage={error}
-    />
+            <SegmentedControl name="User subscriptions" value="aclInfoList">
+              User subs.
+            </SegmentedControl>
+            <SegmentedControl
+              name="Prefixed subscriptions"
+              value="prefixedAclInfoList"
+            >
+              Prefixed subs.
+            </SegmentedControl>
+            <SegmentedControl
+              name="Transactional subscriptions"
+              value="transactionalAclInfoList"
+            >
+              Transactional subs.
+            </SegmentedControl>
+          </SegmentedControlGroup>,
+        ]}
+        table={
+          <TopicSubscriptionsTable
+            selectedSubs={selectedSubs}
+            filteredData={filteredData}
+          />
+        }
+        isLoading={dataIsLoading}
+        isErrorLoading={isError}
+        errorMessage={error}
+      />
+    </>
   );
 };
 
