@@ -26,7 +26,8 @@ public class SchemaRegistrySyncController {
   @Autowired SchemaRegistrySyncControllerService schemaRegistrySyncControllerService;
 
   /**
-   * Retrieve schema subjects and its versions in a given kafka env (associated schema env)
+   * Retrieve schema subjects and its versions in a given kafka env (associated schema env) from
+   * cluster
    *
    * @param kafkaEnvId kafka env
    * @return
@@ -36,16 +37,18 @@ public class SchemaRegistrySyncController {
       value = "/schemas",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<SyncSchemasList> getSchemasOfEnvironment(
+  public ResponseEntity<SyncSchemasList> getSchemasOfEnvironmentFromCluster(
       @RequestParam(value = "envId") String kafkaEnvId,
       @RequestParam(value = "pageNo") String pageNo,
       @RequestParam(value = "showAllTopics", defaultValue = "false") boolean showAllTopics,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch)
+      @RequestParam(value = "topicnamesearch", required = false) String topicNameSearch,
+      @RequestParam(value = "source", defaultValue = "cluster") String source,
+      @RequestParam(value = "teamId", required = false, defaultValue = "0") Integer teamId)
       throws Exception {
     return new ResponseEntity<>(
         schemaRegistrySyncControllerService.getSchemasOfEnvironment(
-            kafkaEnvId, pageNo, currentPage, topicNameSearch, showAllTopics),
+            kafkaEnvId, pageNo, currentPage, topicNameSearch, showAllTopics, source, teamId),
         HttpStatus.OK);
   }
 
@@ -66,8 +69,9 @@ public class SchemaRegistrySyncController {
   }
 
   /**
-   * Retrieve schema of a topic and specific version
+   * Retrieve schema of a topic and specific version from cluster
    *
+   * @param source cluster or metadata
    * @param topicName
    * @param schemaVersion
    * @param kafkaEnvId kafka environment id
@@ -75,17 +79,19 @@ public class SchemaRegistrySyncController {
    * @throws Exception
    */
   @RequestMapping(
-      value = "/schemas/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
+      value =
+          "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<SchemaDetailsResponse> getSchemaOfTopicFromCluster(
+  public ResponseEntity<SchemaDetailsResponse> getSchemaOfTopicFromSource(
+      @PathVariable(value = "source") String source,
       @PathVariable(value = "topicName") String topicName,
       @PathVariable(value = "schemaVersion") int schemaVersion,
       @PathVariable(value = "kafkaEnvId") String kafkaEnvId)
       throws Exception {
     return new ResponseEntity<>(
-        schemaRegistrySyncControllerService.getSchemaOfTopicFromCluster(
-            topicName, schemaVersion, kafkaEnvId),
+        schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
+            source, topicName, schemaVersion, kafkaEnvId),
         HttpStatus.OK);
   }
 }

@@ -649,6 +649,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcSelectHelper.selectAllMetrics(metricsType, metricsName, env);
   }
 
+  @Override
+  public List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+      int tenantId, String schemaEnvId, String topicName, String schemaVersion) {
+    return jdbcSelectHelper.getSchemaForTenantAndEnvAndTopicAndVersion(
+        tenantId, schemaEnvId, topicName, schemaVersion);
+  }
+
   /*--------------------Update */
 
   @Override

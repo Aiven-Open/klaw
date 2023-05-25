@@ -66,7 +66,7 @@ public class SchemaRegistrySyncControllerTest {
   public void getSchemasInfoOfAnEnvironment() throws Exception {
     SyncSchemasList schemasInfoOfClusterResponse = utilMethods.getSchemasSyncInfoOfEnv();
     when(schemaRegistrySyncControllerService.getSchemasOfEnvironment(
-            anyString(), anyString(), anyString(), any(), anyBoolean()))
+            anyString(), anyString(), anyString(), any(), anyBoolean(), anyString(), anyInt()))
         .thenReturn(schemasInfoOfClusterResponse);
 
     mvc.perform(
@@ -116,12 +116,13 @@ public class SchemaRegistrySyncControllerTest {
     schemaDetailsResponse.setEnvName(topicEnv);
     schemaDetailsResponse.setTopicName(topicName);
 
-    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromCluster(
-            anyString(), anyInt(), anyString()))
+    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
+            anyString(), anyString(), anyInt(), anyString()))
         .thenReturn(schemaDetailsResponse);
 
     mvc.perform(
-            MockMvcRequestBuilders.get("/schemas/kafkaEnv/1/topic/testtopic/schemaVersion/1")
+            MockMvcRequestBuilders.get(
+                    "/schemas/source/cluster/kafkaEnv/1/topic/testtopic/schemaVersion/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -134,12 +135,13 @@ public class SchemaRegistrySyncControllerTest {
   public void getSchemaOfTopicNoContent() throws Exception {
     SchemaDetailsResponse schemaDetailsResponse = new SchemaDetailsResponse();
 
-    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromCluster(
-            anyString(), anyInt(), anyString()))
+    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
+            anyString(), anyString(), anyInt(), anyString()))
         .thenReturn(schemaDetailsResponse);
 
     mvc.perform(
-            MockMvcRequestBuilders.get("/schemas/kafkaEnv/1/topic/testtopic/schemaVersion/2")
+            MockMvcRequestBuilders.get(
+                    "/schemas/source/cluster/kafkaEnv/1/topic/testtopic/schemaVersion/2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())

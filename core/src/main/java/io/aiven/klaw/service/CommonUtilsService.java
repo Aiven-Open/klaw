@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -599,5 +601,13 @@ public class CommonUtilsService {
               });
         });
     return subTopicsList;
+  }
+
+  public String getKafkaEnvName(String envId, int tenantId) {
+    Optional<Env> envFound =
+        manageDatabase.getKafkaEnvList(tenantId).stream()
+            .filter(env -> Objects.equals(env.getId(), envId))
+            .findFirst();
+    return envFound.map(Env::getName).orElse(null);
   }
 }

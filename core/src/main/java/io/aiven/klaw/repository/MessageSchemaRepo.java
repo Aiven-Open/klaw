@@ -16,6 +16,9 @@ public interface MessageSchemaRepo extends CrudRepository<MessageSchema, Message
   List<MessageSchema> findAllByTenantIdAndTopicnameAndEnvironment(
       int tenantId, String topicName, String environmentId);
 
+  List<MessageSchema> findAllByTenantIdAndEnvironmentAndTopicnameAndSchemaversion(
+      int tenantId, String environmentId, String topicName, String schemaVersion);
+
   List<MessageSchema> findAllByTenantIdAndTopicnameAndSchemaversionAndEnvironment(
       int tenantId, String topicName, String schemaVersion, String environmentId);
 

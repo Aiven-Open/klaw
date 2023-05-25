@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,8 +62,29 @@ public class SchemaRegistrySyncControllerService {
       String pageNo,
       String currentPage,
       String topicNameSearch,
-      boolean showAllTopics)
+      boolean showAllTopics,
+      String source,
+      int teamId)
       throws Exception {
+
+    if (source.equals("metadata")) {
+      return getSchemasOfEnvironmentFromMetadataDb(
+          kafkaEnvId, pageNo, currentPage, topicNameSearch, teamId);
+    } else if (source.equals("cluster")) {
+      return getSchemaOfEnvironmentFromCluster(
+          kafkaEnvId, pageNo, currentPage, topicNameSearch, showAllTopics);
+    } else {
+      return new SyncSchemasList();
+    }
+  }
+
+  private SyncSchemasList getSchemaOfEnvironmentFromCluster(
+      String kafkaEnvId,
+      String pageNo,
+      String currentPage,
+      String topicNameSearch,
+      boolean showAllTopics)
+      throws KlawException {
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
     SyncSchemasList syncSchemasList = new SyncSchemasList();
@@ -181,43 +203,6 @@ public class SchemaRegistrySyncControllerService {
         });
   }
 
-  private List<SchemaSubjectInfoResponse> getPagedResponse(
-      String pageNo,
-      String currentPage,
-      List<SchemaSubjectInfoResponse> schemaInfoOfTopicList,
-      int tenantId) {
-    List<SchemaSubjectInfoResponse> pagedTopicSyncList = new ArrayList<>();
-
-    int totalRecs = schemaInfoOfTopicList.size();
-    int recsPerPage = 20;
-
-    int totalPages =
-        schemaInfoOfTopicList.size() / recsPerPage
-            + (schemaInfoOfTopicList.size() % recsPerPage > 0 ? 1 : 0);
-
-    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    List<String> numList = new ArrayList<>();
-    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-    for (int i = 0; i < totalRecs; i++) {
-
-      if (i >= startVar && i < lastVar) {
-        SchemaSubjectInfoResponse mp = schemaInfoOfTopicList.get(i);
-
-        mp.setTotalNoPages(totalPages + "");
-        mp.setAllPageNos(numList);
-        mp.setCurrentPage(pageNo);
-        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId()));
-        pagedTopicSyncList.add(mp);
-      }
-    }
-    return pagedTopicSyncList;
-  }
-
   public ApiResponse updateDbFromCluster(SyncSchemaUpdates syncSchemaUpdates) throws Exception {
     log.info("syncSchemaUpdates {}", syncSchemaUpdates);
     String userDetails = getUserName();
@@ -287,8 +272,8 @@ public class SchemaRegistrySyncControllerService {
         .build();
   }
 
-  public SchemaDetailsResponse getSchemaOfTopicFromCluster(
-      String topicName, int schemaVersion, String kafkaEnvId) throws Exception {
+  public SchemaDetailsResponse getSchemaOfTopicFromSource(
+      String source, String topicName, int schemaVersion, String kafkaEnvId) throws Exception {
     String userName = getUserName();
     SchemaDetailsResponse schemaDetailsResponse = new SchemaDetailsResponse();
     int tenantId = commonUtilsService.getTenantId(userName);
@@ -297,26 +282,45 @@ public class SchemaRegistrySyncControllerService {
     if (kafkaEnv.getAssociatedEnv() == null) {
       return schemaDetailsResponse;
     }
+
+    TreeMap<Integer, Map<String, Object>> schemaObject = null;
     Env schemaEnvSelected =
         manageDatabase
             .getHandleDbRequests()
             .getEnvDetails(kafkaEnv.getAssociatedEnv().getId(), tenantId);
-    KwClusters kwClusters =
-        manageDatabase
-            .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
-            .get(schemaEnvSelected.getClusterId());
+    Object dynamicObj = null;
 
-    TreeMap<Integer, Map<String, Object>> schemaObject =
-        clusterApiService.getAvroSchema(
-            kwClusters.getBootstrapServers(),
-            kwClusters.getProtocol(),
-            kwClusters.getClusterName() + kwClusters.getClusterId(),
-            topicName,
-            tenantId);
-    if (schemaObject.containsKey(schemaVersion)) {
-      Object dynamicObj =
-          OBJECT_MAPPER.readValue(
-              (String) schemaObject.get(schemaVersion).get("schema"), Object.class);
+    if (source.equals("cluster")) {
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+              .get(schemaEnvSelected.getClusterId());
+
+      schemaObject =
+          clusterApiService.getAvroSchema(
+              kwClusters.getBootstrapServers(),
+              kwClusters.getProtocol(),
+              kwClusters.getClusterName() + kwClusters.getClusterId(),
+              topicName,
+              tenantId);
+      if (schemaObject != null && schemaObject.containsKey(schemaVersion)) {
+        dynamicObj =
+            OBJECT_MAPPER.readValue(
+                (String) schemaObject.get(schemaVersion).get("schema"), Object.class);
+      }
+    } else if (source.equals("metadata")) {
+      List<MessageSchema> messageSchemaList =
+          manageDatabase
+              .getHandleDbRequests()
+              .getSchemaForTenantAndEnvAndTopicAndVersion(
+                  tenantId, kafkaEnv.getAssociatedEnv().getId(), topicName, schemaVersion + "");
+      if (!messageSchemaList.isEmpty()) {
+        String schemaString = messageSchemaList.get(0).getSchemafull();
+        dynamicObj = OBJECT_MAPPER.readValue(schemaString, Object.class);
+      }
+    }
+
+    if (dynamicObj != null) {
       String jsonSchema = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
       schemaDetailsResponse.setSchemaContent(jsonSchema);
       schemaDetailsResponse.setSchemaVersion(schemaVersion + "");
@@ -325,6 +329,113 @@ public class SchemaRegistrySyncControllerService {
     }
 
     return schemaDetailsResponse;
+  }
+
+  public SyncSchemasList getSchemasOfEnvironmentFromMetadataDb(
+      String kafkaEnvId,
+      String pageNo,
+      String currentPage,
+      String topicNameSearch,
+      Integer teamId) {
+    SyncSchemasList syncSchemasList = new SyncSchemasList();
+    List<SchemaSubjectInfoResponse> schemaInfoList = new ArrayList<>();
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+
+    if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
+      return syncSchemasList;
+    }
+
+    Env kafkaEnv = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
+    if (kafkaEnv.getAssociatedEnv() == null) {
+      return syncSchemasList;
+    }
+    String schemaEnvId = kafkaEnv.getAssociatedEnv().getId();
+
+    List<Topic> topicList =
+        manageDatabase.getTopicsForTenant(tenantId).stream()
+            .filter(topic -> topic.getEnvironment().equals(kafkaEnvId))
+            .toList();
+
+    Map<String, Set<String>> topicSchemaVersionsInDb =
+        manageDatabase
+            .getHandleDbRequests()
+            .getTopicAndVersionsForEnvAndTenantId(schemaEnvId, tenantId);
+    String legacyTopicVersion = "1.0";
+    for (Topic topic : topicList) {
+      if (topicSchemaVersionsInDb.containsKey(topic.getTopicname())) {
+        Set<String> schemaVersions = topicSchemaVersionsInDb.get(topic.getTopicname());
+
+        if (schemaVersions.contains(legacyTopicVersion)) {
+          continue;
+        }
+
+        Set<Integer> schemaVersionsInt = new TreeSet<>();
+        schemaVersions.forEach(ver -> schemaVersionsInt.add(Integer.parseInt(ver)));
+
+        SchemaSubjectInfoResponse schemaInfo = new SchemaSubjectInfoResponse();
+        schemaInfo.setTopic(topic.getTopicname());
+        schemaInfo.setSchemaVersions(schemaVersionsInt);
+        schemaInfo.setTeamId(topic.getTeamId());
+
+        schemaInfoList.add(schemaInfo);
+      }
+    }
+
+    syncSchemasList.setAllTopicsCount(schemaInfoList.size());
+
+    if (topicNameSearch != null && topicNameSearch.trim().length() > 0) {
+      schemaInfoList =
+          schemaInfoList.stream()
+              .filter(schema -> schema.getTopic().contains(topicNameSearch.trim()))
+              .toList();
+    }
+
+    if (teamId != 0) {
+      schemaInfoList =
+          schemaInfoList.stream().filter(schema -> schema.getTeamId() == teamId).toList();
+    }
+
+    schemaInfoList = getPagedResponse(pageNo, currentPage, schemaInfoList, tenantId);
+    syncSchemasList.setSchemaSubjectInfoResponseList(schemaInfoList);
+    return syncSchemasList;
+  }
+
+  private List<SchemaSubjectInfoResponse> getPagedResponse(
+      String pageNo,
+      String currentPage,
+      List<SchemaSubjectInfoResponse> schemaInfoOfTopicList,
+      int tenantId) {
+    List<SchemaSubjectInfoResponse> pagedTopicSyncList = new ArrayList<>();
+
+    int totalRecs = schemaInfoOfTopicList.size();
+    int recsPerPage = 20;
+
+    int totalPages =
+        schemaInfoOfTopicList.size() / recsPerPage
+            + (schemaInfoOfTopicList.size() % recsPerPage > 0 ? 1 : 0);
+
+    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
+    int requestPageNo = Integer.parseInt(pageNo);
+    int startVar = (requestPageNo - 1) * recsPerPage;
+    int lastVar = (requestPageNo) * (recsPerPage);
+
+    List<String> numList = new ArrayList<>();
+    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
+
+    for (int i = 0; i < totalRecs; i++) {
+
+      if (i >= startVar && i < lastVar) {
+        SchemaSubjectInfoResponse mp = schemaInfoOfTopicList.get(i);
+
+        mp.setTotalNoPages(totalPages + "");
+        mp.setAllPageNos(numList);
+        mp.setCurrentPage(pageNo);
+        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId()));
+        pagedTopicSyncList.add(mp);
+      }
+    }
+    return pagedTopicSyncList;
   }
 
   private String getUserName() {

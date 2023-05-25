@@ -355,9 +355,13 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
         };
 
     $scope.getSchemaOfTopic = function(topic, schemaVersion){
+
+        let source = "cluster";
+        let getSchemasUrl = "/schemas/source/" + source + "/kafkaEnv/" + $scope.getSchemas.envName + "/topic/" + topic + "/schemaVersion/" + schemaVersion;
+
         $http({
             method: "GET",
-            url: "schemas/schemaOfTopic",
+            url: getSchemasUrl,
             headers : { 'Content-Type' : 'application/json' },
             params: {
                     'kafkaEnvId' : $scope.getSchemas.envName,
@@ -365,7 +369,6 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                     'schemaVersion' : schemaVersion
             }
         }).success(function(output) {
-
             $scope.displaySchema = true;
             $scope.selectedTopic = topic;
             $scope.selectedSchemaVersion = schemaVersion;
@@ -383,8 +386,6 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                 $scope.handleErrorMessage(error);
             }
         );
-
-
     }
 
 	$scope.getSchemas = function(pageNoSelected) {
@@ -401,11 +402,14 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
 			method: "GET",
 			url: "schemas",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'envId' : $scope.getSchemas.envName,
-             'topicnamesearch' : $scope.getSchemas.topicnamesearch,
+            params: {
+                'envId' : $scope.getSchemas.envName,
+                'topicnamesearch' : $scope.getSchemas.topicnamesearch,
                 'showAllTopics' : $scope.showAllTopics,
                 'pageNo' : pageNoSelected,
-                 'currentPage' : $scope.currentPageSelected}
+                'currentPage' : $scope.currentPageSelected,
+                'source' : 'cluster'
+            }
 		}).success(function(output) {
 		    $scope.ShowSpinnerStatusTopics = false;
 			$scope.resultBrowse = output["schemaSubjectInfoResponseList"];

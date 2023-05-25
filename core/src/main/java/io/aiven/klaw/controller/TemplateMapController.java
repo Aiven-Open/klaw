@@ -531,6 +531,15 @@ public class TemplateMapController {
     return checkAuth("syncBackTopics.html", request, response, abstractAuthenticationToken);
   }
 
+  @RequestMapping(value = "/syncBackSchemas", method = RequestMethod.GET)
+  public String syncBackSchemas(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("syncBackSchemas.html", request, response, abstractAuthenticationToken);
+  }
+
   @RequestMapping(value = "/syncBackAcls", method = RequestMethod.GET)
   public String syncBackAcls(
       ModelMap model,

@@ -272,6 +272,9 @@ public interface HandleDbRequests {
 
   List<Map<String, String>> getAllMetrics(String metricsType, String metricsName, String env);
 
+  List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+      int tenantId, String schemaEnvId, String topicName, String schemaVersion);
+
   /*--------------------Update */
   String updateTopicDocumentation(Topic topic);
 

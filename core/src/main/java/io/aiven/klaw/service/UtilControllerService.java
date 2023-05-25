@@ -318,7 +318,7 @@ public class UtilControllerService {
         canShutdownKw = ApiResultStatus.AUTHORIZED.value;
       }
 
-      String syncBackTopics, syncBackAcls;
+      String syncBackTopics, syncBackAcls, syncBackSchemas;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_BACK_TOPICS)) {
         syncBackTopics = "NotAuthorized";
@@ -475,6 +475,12 @@ public class UtilControllerService {
         syncSchemas = ApiResultStatus.AUTHORIZED.value;
       }
 
+      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_BACK_SCHEMAS)) {
+        syncBackSchemas = "NotAuthorized";
+      } else {
+        syncBackSchemas = ApiResultStatus.AUTHORIZED.value;
+      }
+
       String addDeleteEditTenants;
       String addDeleteEditEnvs;
       String addDeleteEditClusters;
@@ -583,6 +589,7 @@ public class UtilControllerService {
       authenticationInfo.setRequestItems(requestItems);
       authenticationInfo.setViewKafkaConnect(viewKafkaConnect);
       authenticationInfo.setSyncBackTopics(syncBackTopics);
+      authenticationInfo.setSyncBackSchemas(syncBackSchemas);
       authenticationInfo.setSyncBackAcls(syncBackAcls);
       authenticationInfo.setUpdateServerConfig(updateServerConfig);
       authenticationInfo.setShowServerConfigEnvProperties(showServerConfigEnvProperties);

@@ -1705,6 +1705,12 @@ public class SelectDataJdbc {
     return Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
   }
 
+  public List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+      int tenantId, String schemaEnvId, String topicName, String schemaVersion) {
+    return messageSchemaRepo.findAllByTenantIdAndEnvironmentAndTopicnameAndSchemaversion(
+        tenantId, schemaEnvId, topicName, schemaVersion);
+  }
+
   public List<KwClusters> getClusters() {
     return Lists.newArrayList(kwClusterRepo.findAll());
   }
