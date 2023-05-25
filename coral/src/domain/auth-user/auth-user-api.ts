@@ -9,14 +9,10 @@ import { KlawApiResponse } from "types/utils";
 const getAuthUserMockForLogin = (
   userLogin: AuthUserLoginData
 ): Promise<AuthUser> => {
-  const data = new URLSearchParams();
-  data.append("username", userLogin.username);
-  data.append("password", userLogin.password);
-
   // /login is a path which does not currently exist, because there is no auth flow in coral currently
   // getAuthUser is used in a component that is currently never rendered (LoginForm)
   // We coerce the keyof ApiPaths to avoid TS compiling error
-  return api.post("/login" as keyof ApiPaths, data);
+  return api.post("/login" as keyof ApiPaths, userLogin);
 };
 
 function transformAuthResponse(response: KlawApiResponse<"getAuth">): AuthUser {
