@@ -1,6 +1,6 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { useFiltersContext } from "src/app/features/components/filters/useFiltersValues";
 import { getTeams } from "src/domain/team/team-api";
 
 function TeamFilter() {
@@ -8,7 +8,7 @@ function TeamFilter() {
     queryFn: () => getTeams(),
   });
 
-  const { teamId, setFilterValue } = useFiltersValues();
+  const { teamId, setFilterValue } = useFiltersContext();
 
   if (!topicTeams) {
     return (

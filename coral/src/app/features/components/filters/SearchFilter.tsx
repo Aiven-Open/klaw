@@ -1,7 +1,7 @@
 import { SearchInput } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
 import type { ChangeEvent } from "react";
+import { useFiltersContext } from "src/app/features/components/filters/useFiltersValues";
 
 type SearchFilterProps = {
   placeholder: string;
@@ -9,7 +9,7 @@ type SearchFilterProps = {
 };
 
 function SearchFilter({ placeholder, description }: SearchFilterProps) {
-  const { search, setFilterValue } = useFiltersValues();
+  const { search, setFilterValue } = useFiltersContext();
   return (
     <>
       <SearchInput

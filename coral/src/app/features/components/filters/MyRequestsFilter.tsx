@@ -1,8 +1,8 @@
 import { Switch } from "@aivenio/aquarium";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { useFiltersContext } from "src/app/features/components/filters/useFiltersValues";
 
 function MyRequestsFilter() {
-  const { showOnlyMyRequests, setFilterValue } = useFiltersValues();
+  const { showOnlyMyRequests, setFilterValue } = useFiltersContext();
 
   const handleChangeIsMyRequest = (
     event: React.ChangeEvent<HTMLInputElement>

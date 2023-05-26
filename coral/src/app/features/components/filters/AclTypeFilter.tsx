@@ -1,12 +1,12 @@
 import { NativeSelect } from "@aivenio/aquarium";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { useFiltersContext } from "src/app/features/components/filters/useFiltersValues";
 import { AclType } from "src/domain/acl";
 
 type AclTypeForFilter = AclType | "ALL";
 const aclTypesForFilter: AclTypeForFilter[] = ["ALL", "CONSUMER", "PRODUCER"];
 
 function AclTypeFilter() {
-  const { aclType, setFilterValue } = useFiltersValues();
+  const { aclType, setFilterValue } = useFiltersContext();
 
   return (
     <NativeSelect

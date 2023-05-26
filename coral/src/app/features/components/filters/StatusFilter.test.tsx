@@ -5,21 +5,25 @@ import {
   statusList,
 } from "src/app/features/approvals/utils/request-status-helper";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersValues";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const filterLabel = "Filter by status";
 
 describe("StatusFilter.tsx", () => {
   const testDefaultStatus = "CREATED";
-
+  const WrappedStatusFilter = withFiltersContext({
+    defaultValues: { status: testDefaultStatus },
+    element: <StatusFilter />,
+  });
   describe("renders all necessary elements", () => {
-    beforeAll(async () => {
-      customRender(<StatusFilter defaultStatus={testDefaultStatus} />, {
+    beforeEach(() => {
+      customRender(<WrappedStatusFilter />, {
         memoryRouter: true,
       });
     });
 
-    afterAll(cleanup);
+    afterEach(cleanup);
 
     it("shows a select element for status", () => {
       const select = screen.getByRole("combobox", {
@@ -61,7 +65,7 @@ describe("StatusFilter.tsx", () => {
     beforeEach(async () => {
       const routePath = `/?status=${declinedStatus}`;
 
-      customRender(<StatusFilter defaultStatus={"CREATED"} />, {
+      customRender(<WrappedStatusFilter />, {
         memoryRouter: true,
         queryClient: true,
         customRoutePath: routePath,
@@ -89,11 +93,15 @@ describe("StatusFilter.tsx", () => {
     const defaultStatus = "DECLINED";
     const approvedStatus = "APPROVED";
     const approvedName = requestStatusNameMap[approvedStatus];
+    const WrappedStatusFilter = withFiltersContext({
+      defaultValues: { status: defaultStatus },
+      element: <StatusFilter />,
+    });
 
     beforeEach(async () => {
-      customRender(<StatusFilter defaultStatus={defaultStatus} />, {
-        queryClient: true,
+      customRender(<WrappedStatusFilter />, {
         memoryRouter: true,
+        queryClient: true,
       });
     });
 
@@ -121,9 +129,13 @@ describe("StatusFilter.tsx", () => {
   describe("updates the search param to preserve status in url", () => {
     const deletedStatus = "DELETED";
     const deletedName = requestStatusNameMap["DELETED"];
+    const WrappedStatusFilter = withFiltersContext({
+      defaultValues: { status: "CREATED" },
+      element: <StatusFilter />,
+    });
 
     beforeEach(async () => {
-      customRender(<StatusFilter defaultStatus={"CREATED"} />, {
+      customRender(<WrappedStatusFilter />, {
         queryClient: true,
         browserRouter: true,
       });
