@@ -382,6 +382,69 @@ class SchemaServiceTest {
 
   @Test
   @Order(10)
+  public void getSchemasOfClusterCreateNewSchema() throws JsonProcessingException {
+    String dev = "Dev";
+    String subjectsUrl = dev + "/subjects";
+    String topic1 = "test1", topic2 = "test2", topic3 = "test3";
+    Set<Integer> topic1Versions = Set.of(1, 2);
+    Set<Integer> topic2Versions = Set.of(1, 2, 3);
+    Set<Integer> topic3Versions = Set.of(1);
+
+    when(getAdminClient.getRequestDetails(eq(subjectsUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(subjectsUrl, restTemplate));
+    when(getAdminClient.createHeaders(eq("19"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
+        .thenReturn(new HttpHeaders());
+
+    this.mockRestServiceServer
+        .expect(requestTo("/" + subjectsUrl + "/" + topic3 + SCHEMA_VALUE_URI + "/versions"))
+        .andRespond(
+            withSuccess(mapper.writeValueAsString(topic3Versions), MediaType.APPLICATION_JSON));
+    when(getAdminClient.getRequestDetails(
+            eq(subjectsUrl + "/" + topic3 + SCHEMA_VALUE_URI + "/versions"),
+            eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(
+            Pair.of(subjectsUrl + "/" + topic3 + SCHEMA_VALUE_URI + "/versions", restTemplate));
+
+    SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
+        schemaService.loadAllSchemasInfoFromCluster(
+            dev, KafkaSupportedProtocol.PLAINTEXT, "19", true, "CREATE", "test3");
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(3);
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
+        .extracting(SchemaInfoOfTopic::getTopic)
+        .containsExactlyInAnyOrder(topic1, topic2, topic3);
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
+        .extracting(SchemaInfoOfTopic::getSchemaVersions)
+        .containsExactlyInAnyOrder(topic1Versions, topic2Versions, topic3Versions);
+  }
+
+  @Test
+  @Order(11)
+  public void getSchemasOfClusterDeleteSchema() throws JsonProcessingException {
+    String dev = "Dev";
+    String subjectsUrl = dev + "/subjects";
+    String topic1 = "test1", topic2 = "test2", topic3 = "test3";
+    Set<Integer> topic1Versions = Set.of(1, 2);
+    Set<Integer> topic3Versions = Set.of(1);
+
+    when(getAdminClient.getRequestDetails(eq(subjectsUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
+        .thenReturn(Pair.of(subjectsUrl, restTemplate));
+    when(getAdminClient.createHeaders(eq("19"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
+        .thenReturn(new HttpHeaders());
+
+    SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
+        schemaService.loadAllSchemasInfoFromCluster(
+            dev, KafkaSupportedProtocol.PLAINTEXT, "19", true, "DELETE", topic2);
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(2);
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
+        .extracting(SchemaInfoOfTopic::getTopic)
+        .containsExactlyInAnyOrder(topic1, topic3);
+    assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
+        .extracting(SchemaInfoOfTopic::getSchemaVersions)
+        .containsExactlyInAnyOrder(topic1Versions, topic3Versions);
+  }
+
+  @Test
+  @Order(12)
   public void getSchemasOfClusterNoSchemas() throws JsonProcessingException {
     String dev = "Dev";
     String subjectsUrl = dev + "/subjects";

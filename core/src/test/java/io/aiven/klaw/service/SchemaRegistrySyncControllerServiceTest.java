@@ -9,19 +9,19 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncSchemaUpdates;
 import io.aiven.klaw.model.response.SchemaDetailsResponse;
+import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,13 +29,14 @@ import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,8 +47,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SchemaRegistrySyncControllerServiceTest {
-
-  public static final String TESTTOPIC = "topic-1";
   @Mock private UserDetails userDetails;
 
   @Mock private HandleDbRequestsJdbc handleDbRequests;
@@ -62,23 +61,12 @@ public class SchemaRegistrySyncControllerServiceTest {
 
   @Mock CommonUtilsService commonUtilsService;
 
-  @Mock RolesPermissionsControllerService rolesPermissionsControllerService;
-
   private SchemaRegistrySyncControllerService schemaRegistrySyncControllerService;
-
-  @Mock private Map<Integer, KwClusters> clustersHashMap;
-  @Mock private KwClusters kwClusters;
-
-  private ObjectMapper mapper = new ObjectMapper();
   private UtilMethods utilMethods;
-
-  private Env env;
-
-  @Captor private ArgumentCaptor<SchemaRequest> schemaRequestCaptor;
 
   @BeforeEach
   public void setUp() throws Exception {
-    this.env = new Env();
+    Env env = new Env();
     env.setId("1");
     env.setName("DEV");
     utilMethods = new UtilMethods();
@@ -104,9 +92,11 @@ public class SchemaRegistrySyncControllerServiceTest {
   }
 
   @Test
-  public void getSchemasOfEnvironmentNotInSync() throws Exception {
+  @Order(1)
+  public void getSchemasOfEnvironmentNotInSyncSourceCluster() throws Exception {
     stubUserInfo();
 
+    String source = "cluster";
     Env env = utilMethods.getEnvLists().get(0);
     env.setAssociatedEnv(new EnvTag("1", "SCH"));
     env.setType("kafka");
@@ -128,7 +118,7 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     SyncSchemasList schemasInfoOfClusterResponse =
         schemaRegistrySyncControllerService.getSchemasOfEnvironment(
-            "1", "1", "", "", true, "cluster", 0);
+            "1", "1", "", "", true, source, 0);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
         .isEqualTo(NOT_IN_SYNC);
@@ -137,9 +127,11 @@ public class SchemaRegistrySyncControllerServiceTest {
   }
 
   @Test
-  public void getSchemasOfEnvironmentInSyncAndNotInSync() throws Exception {
+  @Order(2)
+  public void getSchemasOfEnvironmentInSyncAndNotInSyncSourceCluster() throws Exception {
     stubUserInfo();
 
+    String source = "cluster";
     Env env = utilMethods.getEnvLists().get(0);
     env.setAssociatedEnv(new EnvTag("1", "SCH"));
     env.setType("kafka");
@@ -165,7 +157,7 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     SyncSchemasList schemasInfoOfClusterResponse =
         schemaRegistrySyncControllerService.getSchemasOfEnvironment(
-            "1", "1", "", "", true, "cluster", 0);
+            "1", "1", "", "", true, source, 0);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
         .isEqualTo(IN_SYNC);
@@ -179,7 +171,7 @@ public class SchemaRegistrySyncControllerServiceTest {
         .thenReturn(topicSchemaVersionsInDb);
     schemasInfoOfClusterResponse =
         schemaRegistrySyncControllerService.getSchemasOfEnvironment(
-            "1", "1", "", "", true, "cluster", 0);
+            "1", "1", "", "", true, source, 0);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(0).getRemarks())
         .isEqualTo(NOT_IN_SYNC);
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().get(1).getRemarks())
@@ -192,12 +184,73 @@ public class SchemaRegistrySyncControllerServiceTest {
         .thenReturn(topicSchemaVersionsInDb);
     schemasInfoOfClusterResponse =
         schemaRegistrySyncControllerService.getSchemasOfEnvironment(
-            "1", "1", "", "", false, "cluster", 0);
+            "1", "1", "", "", false, source, 0);
 
     assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(1);
   }
 
   @Test
+  @Order(3)
+  public void getSchemasOfEnvironmentSourceMetadata() throws Exception {
+    stubUserInfo();
+
+    String source = "metadata";
+    Env env = utilMethods.getEnvLists().get(0);
+    env.setAssociatedEnv(new EnvTag("1", "SCH"));
+    env.setType("kafka");
+
+    List<Topic> topics = utilMethods.generateTopics(14);
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
+
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(topics);
+    Map<String, Set<String>> topicSchemaVersionsInDb = utilMethods.getTopicSchemaVersionsInDb();
+    when(handleDbRequests.getTopicAndVersionsForEnvAndTenantId(anyString(), anyInt()))
+        .thenReturn(topicSchemaVersionsInDb);
+
+    SyncSchemasList schemasInfoOfClusterResponse =
+        schemaRegistrySyncControllerService.getSchemasOfEnvironment(
+            "1", "1", "", "", true, source, 0);
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(2);
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList())
+        .extracting(SchemaSubjectInfoResponse::getTopic)
+        .containsExactlyInAnyOrder("Topic0", "Topic1");
+  }
+
+  @Test
+  @Order(4)
+  public void getSchemasOfEnvironmentNoSchemasSourceMetadata() throws Exception {
+    stubUserInfo();
+
+    String source = "metadata";
+    Env env = utilMethods.getEnvLists().get(0);
+    env.setAssociatedEnv(new EnvTag("1", "SCH"));
+    env.setType("kafka");
+
+    List<Topic> topics = utilMethods.generateTopics(14);
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
+    when(commonUtilsService.deriveCurrentPage("1", "", 0)).thenReturn("1");
+
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(topics);
+    when(handleDbRequests.getTopicAndVersionsForEnvAndTenantId(anyString(), anyInt()))
+        .thenReturn(new HashMap<>());
+
+    SyncSchemasList schemasInfoOfClusterResponse =
+        schemaRegistrySyncControllerService.getSchemasOfEnvironment(
+            "1", "1", "", "", true, source, 0);
+    assertThat(schemasInfoOfClusterResponse.getSchemaSubjectInfoResponseList().size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(5)
   public void updateDbFromCluster() throws Exception {
     stubUserInfo();
     String topicName = "2ndTopic";
@@ -233,10 +286,71 @@ public class SchemaRegistrySyncControllerServiceTest {
   }
 
   @Test
-  public void getSchemaOfTopic() throws Exception {
+  @Order(6)
+  public void updateClusterFromDb() throws Exception {
+    stubUserInfo();
+    String topicName = "2ndTopic";
+
+    Env env = utilMethods.getEnvLists().get(0);
+    env.setAssociatedEnv(new EnvTag("1", "SCH"));
+    env.setType("kafka");
+
+    SyncSchemaUpdates syncSchemaUpdates = new SyncSchemaUpdates();
+    syncSchemaUpdates.setSourceKafkaEnvSelected("1");
+    syncSchemaUpdates.setTargetKafkaEnvSelected("2");
+    syncSchemaUpdates.setTopicList(List.of(topicName));
+    syncSchemaUpdates.setTypeOfSync("SYNC_BACK_SCHEMAS");
+    syncSchemaUpdates.setTopicsSelectionType("SELECTED_TOPICS");
+
+    Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
+    kwClustersMap.put(1, utilMethods.getKwClusters());
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
+
+    when(clusterApiService.getAvroSchema(anyString(), any(), anyString(), anyString(), anyInt()))
+        .thenReturn(utilMethods.createSchemaList());
+    ApiResponse apiResponseDelete = ApiResponse.builder().success(true).build();
+    ResponseEntity<ApiResponse> responseEntity =
+        new ResponseEntity<>(apiResponseDelete, HttpStatus.OK);
+
+    when(clusterApiService.deleteSchema(anyString(), anyString(), anyInt()))
+        .thenReturn(responseEntity);
+    Map<String, Object> schemaCreationResponseMap = new HashMap<>();
+    schemaCreationResponseMap.put("schemaRegistered", Boolean.TRUE);
+    schemaCreationResponseMap.put("id", "1234");
+    schemaCreationResponseMap.put("version", "1");
+    ApiResponse apiResponseCreate =
+        ApiResponse.builder().success(true).data(schemaCreationResponseMap).build();
+    ResponseEntity<ApiResponse> responseEntityCreate =
+        new ResponseEntity<>(apiResponseCreate, HttpStatus.OK);
+
+    when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt()))
+        .thenReturn(responseEntityCreate);
+
+    List<MessageSchema> schemaList = utilMethods.getMSchemas();
+    schemaList.get(0).setTopicname(topicName);
+    when(handleDbRequests.getSchemaForTenantAndEnvAndTopic(anyInt(), anyString(), anyString()))
+        .thenReturn(schemaList);
+
+    ApiResponse apiResponse =
+        schemaRegistrySyncControllerService.updateSyncSchemas(syncSchemaUpdates);
+    assertThat(apiResponse.isSuccess()).isTrue();
+    assertThat(((List<String>) apiResponse.getData()))
+        .contains("Topics/Schemas result")
+        .contains("Schemas deleted for 2ndTopic")
+        .contains("Schemas registered on cluster for 2ndTopic Version 1");
+  }
+
+  @Test
+  @Order(7)
+  public void getSchemaOfTopicFromSourceCluster() throws Exception {
     int schemaVersion = 1;
     String topicName = "2ndTopic";
     String kafkaEnvId = "1";
+    String source = "cluster";
 
     stubUserInfo();
 
@@ -256,7 +370,37 @@ public class SchemaRegistrySyncControllerServiceTest {
 
     SchemaDetailsResponse schemaDetailsResponse =
         schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
-            "cluster", topicName, schemaVersion, kafkaEnvId);
+            source, topicName, schemaVersion, kafkaEnvId);
+    assertThat(schemaDetailsResponse.getSchemaContent()).contains("klaw.avro"); // namespace
+  }
+
+  @Test
+  @Order(8)
+  public void getSchemaOfTopicFromSourceMetadata() throws Exception {
+    int schemaVersion = 1;
+    String topicName = "2ndTopic";
+    String kafkaEnvId = "1";
+    String source = "metadata";
+
+    stubUserInfo();
+
+    Env env = utilMethods.getEnvLists().get(0);
+    env.setAssociatedEnv(new EnvTag("1", "SCH"));
+    env.setType("kafka");
+
+    when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    List<MessageSchema> schemaList = utilMethods.getMSchemas();
+    schemaList.get(0).setTopicname(topicName);
+    schemaList.get(0).setSchemafull("\"namespace : klaw.avro\"");
+    when(handleDbRequests.getSchemaForTenantAndEnvAndTopicAndVersion(
+            anyInt(), anyString(), anyString(), anyString()))
+        .thenReturn(schemaList);
+
+    SchemaDetailsResponse schemaDetailsResponse =
+        schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
+            source, topicName, schemaVersion, kafkaEnvId);
     assertThat(schemaDetailsResponse.getSchemaContent()).contains("klaw.avro"); // namespace
   }
 

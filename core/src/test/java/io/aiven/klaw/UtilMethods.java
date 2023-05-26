@@ -1044,6 +1044,7 @@ public class UtilMethods {
       topic.setTeamId(10);
       topic.setNoOfReplicas("3");
       topic.setNoOfPartitions(6);
+      topic.setEnvironment("1");
       topics.add(topic);
     }
     return topics;

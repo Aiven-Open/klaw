@@ -74,6 +74,7 @@ public class SchemaRegistrySyncControllerTest {
                 .param("envId", "1")
                 .param("pageNo", "1")
                 .param("showAllTopics", "false")
+                .param("source", "cluster")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
