@@ -13,6 +13,25 @@ function TopicMessageItem({ offsetId, message }: Props) {
   const [expanded, setExpanded] = useState<boolean>(false);
   const panelTrigger = useId();
   const panelId = useId();
+
+  function getMessage(): React.ReactNode {
+    if (!message) {
+      return (
+        <Typography.SmallStrong color="grey-40">
+          <i>Empty message</i>
+        </Typography.SmallStrong>
+      );
+    } else if (expanded) {
+      return <Typography.SmallStrong>{message}</Typography.SmallStrong>;
+    } else {
+      return (
+        <Typography.SmallStrong>
+          {truncate(message, { length: 100 })}
+        </Typography.SmallStrong>
+      );
+    }
+  }
+
   return (
     <BorderBox padding={"4"} marginBottom={"4"}>
       <Box.Flex component={"h3"}>
@@ -21,6 +40,7 @@ function TopicMessageItem({ offsetId, message }: Props) {
             id={panelTrigger}
             icon={expanded ? minimizeIcon : expandIcon}
             aria-label={`Expand message ${offsetId}`}
+            disabled={!message}
             aria-expanded={expanded}
             aria-controls={panelId}
             onClick={() => setExpanded(!expanded)}
@@ -32,9 +52,7 @@ function TopicMessageItem({ offsetId, message }: Props) {
           id={panelId}
           aria-labelledby={panelTrigger}
         >
-          <Typography.SmallStrong>
-            {expanded ? message : truncate(message, { length: 100 })}
-          </Typography.SmallStrong>
+          {getMessage()}
         </Box>
       </Box.Flex>
     </BorderBox>

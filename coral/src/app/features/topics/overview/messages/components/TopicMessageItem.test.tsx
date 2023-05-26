@@ -10,6 +10,11 @@ describe("TopicMessageItem", () => {
     render(<TopicMessageItem message="Hello World" offsetId="0" />);
     screen.getByText("Hello World");
   });
+  it("indicates if the message has no content", () => {
+    render(<TopicMessageItem message="" offsetId="0" />);
+    screen.getByText("Empty message");
+    expect(screen.getByLabelText("Expand message 0")).toBeDisabled();
+  });
   it("truncates the message at 100 characters", () => {
     render(<TopicMessageItem message={"H".repeat(101)} offsetId="0" />);
     screen.getByText("H".repeat(97) + "...");
