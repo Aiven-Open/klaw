@@ -14,6 +14,12 @@ type TopicApiResponse = ResolveIntersectionTypes<Paginated<Topic[]>>;
 type Topic = KlawApiModel<"TopicInfo">;
 type TopicNames = KlawApiResponse<"getTopicsOnly">;
 type TopicTeam = KlawApiModel<"TopicTeamResponse">;
+type TopicMessages = {
+  [key: string]: string | undefined;
+};
+type NoContent = {
+  status: boolean;
+};
 
 type TopicAdvancedConfigurationOptions = {
   key: string;
@@ -48,4 +54,6 @@ export type {
   TopicRequestApiResponse,
   TopicOverviewApiResponse,
   AclOverviewInfo,
+  TopicMessages,
+  NoContent,
 };

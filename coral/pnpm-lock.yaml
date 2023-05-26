@@ -4,6 +4,7 @@ specifiers:
   '@aivenio/aquarium': ^1.20.0
   '@hookform/resolvers': ^2.9.10
   '@monaco-editor/react': ^4.5.0
+  '@peculiar/webcrypto': ^1.4.3
   '@tanstack/react-query': ^4.29.5
   '@tanstack/react-query-devtools': ^4.29.5
   '@testing-library/dom': ^8.19.0
@@ -20,6 +21,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.59.1
   '@typescript-eslint/parser': ^5.59.1
   '@vitejs/plugin-react': ^4.0.0
+  crypto: ^1.0.1
   eslint: ^8.39.0
   eslint-config-prettier: ^8.8.0
   eslint-import-resolver-typescript: ^3.5.5
@@ -55,6 +57,7 @@ dependencies:
   '@hookform/resolvers': 2.9.10_react-hook-form@7.43.9
   '@monaco-editor/react': 4.5.0_bp43pgihi2cxclx2bm2cvm6q7a
   '@tanstack/react-query': 4.29.5_biqbaboplfbrettd7655fr4n2y
+  crypto: 1.0.1
   monaco-editor: 0.37.1
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
@@ -63,6 +66,7 @@ dependencies:
   zod: 3.19.1
 
 devDependencies:
+  '@peculiar/webcrypto': 1.4.3
   '@tanstack/react-query-devtools': 4.29.5_6ufraba7zs65ngvban5jjen7be
   '@testing-library/dom': 8.19.0
   '@testing-library/jest-dom': 5.16.5
@@ -1292,6 +1296,32 @@ packages:
 
   /@open-draft/until/1.0.3:
     resolution: {integrity: sha512-Aq58f5HiWdyDlFffbbSjAlv596h/cOnt2DO1w3DOC7OJ5EHs0hd/nycJfiu9RJbT6Yk6F1knnRRXNSpxoIVZ9Q==}
+    dev: true
+
+  /@peculiar/asn1-schema/2.3.6:
+    resolution: {integrity: sha512-izNRxPoaeJeg/AyH8hER6s+H7p4itk+03QCa4sbxI3lNdseQYCuxzgsuNK8bTXChtLTjpJz6NmXKA73qLa3rCA==}
+    dependencies:
+      asn1js: 3.0.5
+      pvtsutils: 1.3.2
+      tslib: 2.5.0
+    dev: true
+
+  /@peculiar/json-schema/1.1.12:
+    resolution: {integrity: sha512-coUfuoMeIB7B8/NMekxaDzLhaYmp0HZNPEjYRm9goRou8UZIC3z21s0sL9AWoCw4EG876QyO3kYrc61WNF9B/w==}
+    engines: {node: '>=8.0.0'}
+    dependencies:
+      tslib: 2.5.0
+    dev: true
+
+  /@peculiar/webcrypto/1.4.3:
+    resolution: {integrity: sha512-VtaY4spKTdN5LjJ04im/d/joXuvLbQdgy5Z4DXF4MFZhQ+MTrejbNMkfZBp1Bs3O5+bFqnJgyGdPuZQflvIa5A==}
+    engines: {node: '>=10.12.0'}
+    dependencies:
+      '@peculiar/asn1-schema': 2.3.6
+      '@peculiar/json-schema': 1.1.12
+      pvtsutils: 1.3.2
+      tslib: 2.5.0
+      webcrypto-core: 1.7.7
     dev: true
 
   /@pkgr/utils/2.3.1:
@@ -3571,6 +3601,15 @@ packages:
       get-intrinsic: 1.1.3
     dev: true
 
+  /asn1js/3.0.5:
+    resolution: {integrity: sha512-FVnvrKJwpt9LP2lAMl8qZswRNm3T4q9CON+bxldk2iwk3FFpuwhx2FfinyitizWHsVYyaY+y5JzDR0rCMV5yTQ==}
+    engines: {node: '>=12.0.0'}
+    dependencies:
+      pvtsutils: 1.3.2
+      pvutils: 1.1.3
+      tslib: 2.5.0
+    dev: true
+
   /astral-regex/2.0.0:
     resolution: {integrity: sha512-Z7tMw1ytTXt5jqMcOP+OQteU1VuNK9Y02uuJtKQ1Sv69jXQKKg5cibLwGJow8yzZP+eAc18EmLGPal0bp36rvQ==}
     engines: {node: '>=8'}
@@ -3971,6 +4010,11 @@ packages:
       shebang-command: 2.0.0
       which: 2.0.2
     dev: true
+
+  /crypto/1.0.1:
+    resolution: {integrity: sha512-VxBKmeNcqQdiUQUW2Tzq0t377b54N2bMtXO/qiLa+6eRRmmC4qT3D4OnTGoT/U6O9aklQ/jTwbOtRMTTY8G0Ig==}
+    deprecated: This package is no longer supported. It's now a built-in Node module. If you've depended on crypto, you should switch to the one that's built-in.
+    dev: false
 
   /css-unit-converter/1.1.2:
     resolution: {integrity: sha512-IiJwMC8rdZE0+xiEZHeru6YoONC4rfPMqGm2W85jMIbkFvv5nFTwJVFHam2eFrN6txmoUYFAFXiv8ICVeTO0MA==}
@@ -6614,6 +6658,17 @@ packages:
     resolution: {integrity: sha512-t+x1zEHDjBwkDGY5v5ApnZ/utcd4XYDiJsaQQoptTXgUXX95sDg1elCdJghzicm7n2mbCBJ3uYWr6M22SO19rg==}
     dev: true
 
+  /pvtsutils/1.3.2:
+    resolution: {integrity: sha512-+Ipe2iNUyrZz+8K/2IOo+kKikdtfhRKzNpQbruF2URmqPtoqAs8g3xS7TJvFF2GcPXjh7DkqMnpVveRFq4PgEQ==}
+    dependencies:
+      tslib: 2.5.0
+    dev: true
+
+  /pvutils/1.1.3:
+    resolution: {integrity: sha512-pMpnA0qRdFp32b1sJl1wOJNxZLQ2cbQx+k6tjNtZ8CpvVhNqEPRgivZ2WOUev2YMajecdH7ctUPDvEe87nariQ==}
+    engines: {node: '>=6.0.0'}
+    dev: true
+
   /querystringify/2.2.0:
     resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
     dev: true
@@ -7719,6 +7774,16 @@ packages:
       util: 0.12.5
     optionalDependencies:
       '@zxing/text-encoding': 0.9.0
+    dev: true
+
+  /webcrypto-core/1.7.7:
+    resolution: {integrity: sha512-7FjigXNsBfopEj+5DV2nhNpfic2vumtjjgPmeDKk45z+MJwXKKfhPB7118Pfzrmh4jqOMST6Ch37iPAHoImg5g==}
+    dependencies:
+      '@peculiar/asn1-schema': 2.3.6
+      '@peculiar/json-schema': 1.1.12
+      asn1js: 3.0.5
+      pvtsutils: 1.3.2
+      tslib: 2.5.0
     dev: true
 
   /webidl-conversions/3.0.1:

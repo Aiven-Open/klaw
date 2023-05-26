@@ -1,3 +1,4 @@
+import { Context as AquariumContext } from "@aivenio/aquarium";
 import {
   cleanup,
   screen,
@@ -7,6 +8,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TopicSubscriptions from "src/app/features/topics/details/subscriptions/TopicSubscriptions";
+import { createAclDeletionRequest } from "src/domain/acl/acl-api";
 import { getTeams } from "src/domain/team";
 import { getTopicOverview } from "src/domain/topic/topic-api";
 import { TopicOverviewApiResponse } from "src/domain/topic/topic-types";
@@ -15,11 +17,16 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/topic/topic-api.ts");
 jest.mock("src/domain/team/team-api");
+jest.mock("src/domain/acl/acl-api.ts");
 
 const mockGetTopicOverview = getTopicOverview as jest.MockedFunction<
   typeof getTopicOverview
 >;
 const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
+const mockCreateDeleteAclRequest =
+  createAclDeletionRequest as jest.MockedFunction<
+    typeof createAclDeletionRequest
+  >;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -181,10 +188,16 @@ describe("TopicSubscriptions.tsx", () => {
     mockIntersectionObserver();
     mockGetTopicOverview.mockResolvedValue(mockGetTopicOverviewResponse);
     mockGetTeams.mockResolvedValue(mockedTeamsResponse);
-    customRender(<TopicSubscriptions />, {
-      memoryRouter: true,
-      queryClient: true,
-    });
+    customRender(
+      // Aquarium context is needed for useToast
+      <AquariumContext>
+        <TopicSubscriptions />
+      </AquariumContext>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+      }
+    );
     await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
   });
 
@@ -374,6 +387,54 @@ describe("TopicSubscriptions.tsx", () => {
       expect(rowOne).toBeVisible();
       expect(userRow).toBeNull();
       expect(prefixedRow).toBeNull();
+    });
+  });
+
+  describe("should allow creating a delete request for a subscription", () => {
+    it("should render a modal when clicking the Delete button and close it when clicking Cancel button", async () => {
+      const firstDataRow = screen.getAllByRole("row")[1];
+      const button = within(firstDataRow).getByRole("button", {
+        name: "Create deletion request for request 1006",
+      });
+
+      await userEvent.click(button);
+
+      const modal = screen.getByRole("dialog");
+
+      expect(modal).toBeVisible();
+
+      const cancelButton = within(modal).getByRole("button", {
+        name: "Cancel",
+      });
+
+      await userEvent.click(cancelButton);
+
+      await waitFor(() => expect(modal).not.toBeVisible());
+    });
+
+    it("should render a modal when clicking the Delete button and create a delete request when clicking the modal's Create button", async () => {
+      const firstDataRow = screen.getAllByRole("row")[1];
+      const button = within(firstDataRow).getByRole("button", {
+        name: "Create deletion request for request 1006",
+      });
+
+      await userEvent.click(button);
+
+      const modal = screen.getByRole("dialog");
+      const createButton = within(modal).getByRole("button", {
+        name: "Create deletion request",
+      });
+
+      await userEvent.click(createButton);
+
+      expect(mockCreateDeleteAclRequest).toHaveBeenCalledTimes(1);
+
+      await waitFor(() => expect(modal).not.toBeVisible());
+      await waitFor(() =>
+        expect(
+          screen.getByText("Subscription deletion request successfully created")
+        ).toBeVisible()
+      );
     });
   });
 });

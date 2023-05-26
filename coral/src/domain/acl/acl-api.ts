@@ -115,6 +115,18 @@ const deleteAclRequest = ({ reqIds }: DeleteRequestParams) => {
   );
 };
 
+const createAclDeletionRequest = (
+  params: KlawApiRequestQueryParameters<"deleteAclSubscriptionRequest">
+): Promise<KlawApiResponse<"deleteAclSubscriptionRequest">> => {
+  const parsedParams = new URLSearchParams(params);
+  type CreateAclDeletionRequestSearchParams = typeof parsedParams;
+
+  return api.post<
+    KlawApiResponse<"deleteAclSubscriptionRequest">,
+    CreateAclDeletionRequestSearchParams
+  >(API_PATHS.deleteAclSubscriptionRequest, parsedParams);
+};
+
 type GetAivenServiceAccountsParams =
   KlawApiRequestQueryParameters<"getAivenServiceAccounts">;
 type GetAivenServiceAccountsResponse =
@@ -136,4 +148,5 @@ export {
   declineAclRequest,
   deleteAclRequest,
   getAivenServiceAccounts,
+  createAclDeletionRequest,
 };

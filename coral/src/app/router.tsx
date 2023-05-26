@@ -33,6 +33,7 @@ import {
 import { getRouterBasename } from "src/config";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
+import { TopicMessagesPage } from "src/app/pages/topics/overview/messages";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -70,7 +71,7 @@ const routes: Array<RouteObject> = [
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
               TopicOverviewTabEnum.MESSAGES
             ],
-            element: <div>MESSAGES</div>,
+            element: <TopicMessagesPage />,
             id: TopicOverviewTabEnum.MESSAGES,
           },
           {
