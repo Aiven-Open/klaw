@@ -35,7 +35,7 @@ const API_BASE_URL = getHTTPBaseAPIUrl();
 
 const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
   updateSyncSchemas: "/schemas",
-  getSchemaOfTopicFromCluster: "/schemas/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
+  getSchemaOfTopicFromSource: "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
   getSchemasOfEnvironment: "/schemas",
   validateSchema: "/validate/schema",
   updateUserTeamFromSwitchTeams: "/user/updateTeam",
