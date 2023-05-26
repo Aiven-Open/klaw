@@ -23,12 +23,6 @@ const TopicAclRequest = () => {
   const { topicName } = useParams();
   const [searchParams] = useSearchParams();
 
-  // /topic/aivendemotopic/subscribe route requires an env search param to function correctly
-  // So we redirect when it is missing
-  if (topicName !== undefined && searchParams.get("env") === null) {
-    navigate(`/topic/${topicName}/subscriptions`);
-  }
-
   const [aclType, setAclType] = useState<AclType>("PRODUCER");
 
   const topicProducerForm = useForm<TopicProducerFormSchema>({
@@ -54,6 +48,18 @@ const TopicAclRequest = () => {
 
   const { isLoadingExtendedEnvironments, extendedEnvironments } =
     useExtendedEnvironments();
+
+  const currentEnv = searchParams.get("env");
+  const isNotValidEnv =
+    currentEnv === null ||
+    (!isLoadingExtendedEnvironments &&
+      extendedEnvironments.find((env) => currentEnv === env.id) === undefined);
+
+  // /topic/aivendemotopic/subscribe route requires an env search param to function correctly
+  // So we redirect when it is missing
+  if (topicName !== undefined && isNotValidEnv) {
+    navigate(`/topic/${topicName}/subscriptions`);
+  }
 
   // Will trigger infinite rerender when selecting an environment if not memoized
   const selectedEnvironment = useMemo(
