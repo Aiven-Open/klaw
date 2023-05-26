@@ -30,7 +30,10 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,6 +43,7 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
 @RestClientTest(SchemaService.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class SchemaServiceTest {
   public static final String TOPIC_COMPATIBILITY_URI_TEMPLATE =
       "/compatibility/subjects/{topic_name}-value/versions/latest";
@@ -63,6 +67,7 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(1)
   public void getSchema_returnMapWithSubjectCompatibility() throws JsonProcessingException {
     // getSchemaVersions
     String getSchemaVersionsUrl = "env/subjects/topic-value/versions";
@@ -82,6 +87,7 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(2)
   public void getSchema_returnMapWithGlobalCompatibility() throws JsonProcessingException {
     // getSchemaVersions
     String getSchemaVersionsUrl = "env/subjects/topic-value/versions";
@@ -162,6 +168,7 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(3)
   public void deleteSchema() {
     ClusterTopicRequest clusterTopicRequest = deleteTopicRequest("testtopic");
 
@@ -176,6 +183,7 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(4)
   public void checkSchemaCompatibility_ReturnSuccess() throws JsonProcessingException {
     String topicName = "Octopus";
     String dev = "Dev";
@@ -202,6 +210,7 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(5)
   public void checkSchemaCompatibility_IsNotCompatibleReturnFailure()
       throws JsonProcessingException {
     String topicName = "Octopus";
@@ -230,6 +239,7 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(6)
   public void checkSchemaCompatibility_NoExistingSchema() throws JsonProcessingException {
     String topicName = "Octopus";
     String dev = "Dev";
@@ -267,6 +277,7 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(7)
   public void checkSchemaCompatibility_UnExpectedExceptionFailure() throws JsonProcessingException {
     String topicName = "Octopus";
     String dev = "Dev";
@@ -291,6 +302,7 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(8)
   public void checkSchemaCompatibility_InvalidAvroSchema() throws JsonProcessingException {
     String topicName = "Octopus";
     String dev = "Dev";
@@ -318,6 +330,7 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(9)
   public void getSchemasOfCluster() throws JsonProcessingException {
     String dev = "Dev";
     String subjectsUrl = dev + "/subjects";
@@ -356,7 +369,8 @@ class SchemaServiceTest {
             Pair.of(subjectsUrl + "/" + topic2 + SCHEMA_VALUE_URI + "/versions", restTemplate));
 
     SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
-        schemaService.getAllSchemasInfoFromCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
+        schemaService.loadAllSchemasInfoFromCluster(
+            dev, KafkaSupportedProtocol.PLAINTEXT, "19", false, "NONE", null);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
         .extracting(SchemaInfoOfTopic::getTopic)
@@ -367,20 +381,22 @@ class SchemaServiceTest {
   }
 
   @Test
+  @Order(10)
   public void getSchemasOfClusterNoSchemas() throws JsonProcessingException {
     String dev = "Dev";
     String subjectsUrl = dev + "/subjects";
 
     when(getAdminClient.getRequestDetails(eq(subjectsUrl), eq(KafkaSupportedProtocol.PLAINTEXT)))
         .thenReturn(Pair.of(subjectsUrl, restTemplate));
-    when(getAdminClient.createHeaders(eq("19"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
+    when(getAdminClient.createHeaders(eq("20"), eq(KafkaClustersType.SCHEMA_REGISTRY)))
         .thenReturn(new HttpHeaders());
     this.mockRestServiceServer
         .expect(requestTo("/" + subjectsUrl))
         .andRespond(withSuccess(mapper.writeValueAsString(List.of()), MediaType.APPLICATION_JSON));
 
     SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
-        schemaService.getAllSchemasInfoFromCluster(dev, KafkaSupportedProtocol.PLAINTEXT, "19");
+        schemaService.loadAllSchemasInfoFromCluster(
+            dev, KafkaSupportedProtocol.PLAINTEXT, "20", false, "NONE", null);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(0);
   }
 

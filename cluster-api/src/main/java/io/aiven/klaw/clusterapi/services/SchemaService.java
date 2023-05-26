@@ -19,8 +19,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Value;
@@ -49,6 +52,9 @@ public class SchemaService {
 
   private static final ParameterizedTypeReference<List<String>> GET_SUBJECTS_TYPEREF =
       new ParameterizedTypeReference<>() {};
+
+  private static Map<String, SchemasInfoOfClusterResponse> schemasInfoOfClusterResponseMap =
+      new HashMap<>();
 
   public static final String SCHEMA_REGISTRY_CONTENT_TYPE =
       "application/vnd.schemaregistry.v1+json";
@@ -107,6 +113,22 @@ public class SchemaService {
 
       RegisterSchemaCustomResponse registerSchemaCustomResponse =
           registerSchemaPostCall(clusterSchemaRequest);
+
+      try {
+        CompletableFuture.runAsync(
+                () -> {
+                  loadAllSchemasInfoFromCluster(
+                      clusterSchemaRequest.getEnv(),
+                      clusterSchemaRequest.getProtocol(),
+                      clusterSchemaRequest.getClusterIdentification(),
+                      true,
+                      "CREATE",
+                      clusterSchemaRequest.getTopicName());
+                })
+            .get();
+      } catch (InterruptedException | ExecutionException e) {
+        log.error("Async loadAllSchemasInfoFromCluster Exception:", e);
+      }
 
       return ApiResponse.builder()
           .success(true)
@@ -470,6 +492,23 @@ public class SchemaService {
               request,
               new ParameterizedTypeReference<>() {});
       log.info("Schema deleted {}", clusterTopicRequest);
+
+      try {
+        CompletableFuture.runAsync(
+                () -> {
+                  loadAllSchemasInfoFromCluster(
+                      clusterTopicRequest.getSchemaEnv(),
+                      clusterTopicRequest.getSchemaEnvProtocol(),
+                      clusterTopicRequest.getSchemaClusterIdentification(),
+                      true,
+                      "DELETE",
+                      clusterTopicRequest.getTopicName());
+                })
+            .get();
+      } catch (InterruptedException | ExecutionException e) {
+        log.error("Async loadAllSchemasInfoFromCluster Exception:", e);
+      }
+
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } catch (RestClientException e) {
       log.error("Exception:", e);
@@ -579,13 +618,39 @@ public class SchemaService {
     return new HttpEntity<>(params, headers);
   }
 
-  public SchemasInfoOfClusterResponse getAllSchemasInfoFromCluster(
-      String bootstrapServers, KafkaSupportedProtocol protocol, String clusterIdentification) {
+  public SchemasInfoOfClusterResponse loadAllSchemasInfoFromCluster(
+      String bootstrapServers,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      boolean updateMap,
+      String updateType,
+      String topicName) {
     log.info(
         "bootstrapServers {} protocol {} clusterIdentification {}",
         bootstrapServers,
         protocol,
         clusterIdentification);
+
+    String schemasVersionsStorageKey = bootstrapServers + clusterIdentification;
+
+    if (schemasInfoOfClusterResponseMap.containsKey(schemasVersionsStorageKey) && !updateMap) {
+      return schemasInfoOfClusterResponseMap.get(schemasVersionsStorageKey);
+    }
+
+    if (!updateType.equals("NONE")
+        && !schemasInfoOfClusterResponseMap
+            .get(schemasVersionsStorageKey)
+            .getSchemaInfoOfTopicList()
+            .isEmpty()) {
+      return handleInterimUpdatesOnSchemas(
+          bootstrapServers,
+          protocol,
+          clusterIdentification,
+          updateType,
+          topicName,
+          schemasVersionsStorageKey);
+    }
+
     SchemasInfoOfClusterResponse schemasInfoOfClusterResponse = new SchemasInfoOfClusterResponse();
     String suffixUrl = bootstrapServers + "/" + SCHEMA_SUBJECTS_URI;
     Pair<String, RestTemplate> reqDetails = clusterApiUtils.getRequestDetails(suffixUrl, protocol);
@@ -613,7 +678,45 @@ public class SchemaService {
         }
       }
     }
+
     schemasInfoOfClusterResponse.setSchemaInfoOfTopicList(schemaInfoOfTopicList);
+    schemasInfoOfClusterResponseMap.put(schemasVersionsStorageKey, schemasInfoOfClusterResponse);
+
+    return schemasInfoOfClusterResponse;
+  }
+
+  private SchemasInfoOfClusterResponse handleInterimUpdatesOnSchemas(
+      String bootstrapServers,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      String updateType,
+      String topicName,
+      String schemasVersionsStorageKey) {
+    SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
+        schemasInfoOfClusterResponseMap.get(schemasVersionsStorageKey);
+    List<SchemaInfoOfTopic> schemaInfoList =
+        schemasInfoOfClusterResponse.getSchemaInfoOfTopicList();
+    Optional<SchemaInfoOfTopic> optionalSchemaInfoOfTopic =
+        schemaInfoList.stream()
+            .filter(schemaInfoOfTopic -> schemaInfoOfTopic.getTopic().equals(topicName))
+            .findFirst();
+
+    if (updateType.equals("CREATE")) {
+      Set<Integer> schemaVersions =
+          getSchemaVersions(bootstrapServers, topicName, protocol, clusterIdentification);
+
+      if (optionalSchemaInfoOfTopic.isPresent()) {
+        optionalSchemaInfoOfTopic.get().setSchemaVersions(schemaVersions);
+      } else {
+        SchemaInfoOfTopic schemaInfoOfTopic = new SchemaInfoOfTopic();
+        schemaInfoOfTopic.setTopic(topicName);
+        schemaInfoOfTopic.setSchemaVersions(schemaVersions);
+        schemaInfoList.add(schemaInfoOfTopic);
+      }
+    } else if (updateType.equals("DELETE")) {
+      optionalSchemaInfoOfTopic.ifPresent(schemaInfoList::remove);
+    }
+
     return schemasInfoOfClusterResponse;
   }
 }

@@ -605,7 +605,10 @@
 							<br>
 							<text style="color:red">
 								Important : This process deletes all the existing schemas for that subject in target environment and creates new ones based on Klaw metadata.
-							<br> Ex : If version 1 already exists on target cluster, it will be deleted, and new schemas will be created starting with '2' as new version.
+								<br> Ex : If version 1 already exists on target cluster, it will be deleted, and new schemas will be created starting with '2' as new version.
+								<br>
+								Schemas will be registered in the same ascending order of versions. If there is a compatibility failure, schemas will be force registered.
+
 							</text>
 							<hr size="1" color="black"><br>
 							<div class="form-body">

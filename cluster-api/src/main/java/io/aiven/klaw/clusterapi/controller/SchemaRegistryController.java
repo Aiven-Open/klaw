@@ -61,8 +61,8 @@ public class SchemaRegistryController {
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterIdentification) {
     return new ResponseEntity<>(
-        schemaService.getAllSchemasInfoFromCluster(
-            bootstrapServers, protocol, clusterIdentification),
+        schemaService.loadAllSchemasInfoFromCluster(
+            bootstrapServers, protocol, clusterIdentification, false, "NONE", null),
         HttpStatus.OK);
   }
 

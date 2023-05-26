@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.SCH_SYNC_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.SCH_SYNC_ERR_102;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -103,7 +104,29 @@ public class SchemaRegistrySyncControllerService {
       return syncSchemasList;
     }
     String schemaEnvId = kafkaEnv.getAssociatedEnv().getId();
+    schemaInfoList = getSchemasFromDb(kafkaEnvId, tenantId, schemaEnvId);
+    syncSchemasList.setAllTopicsCount(schemaInfoList.size());
 
+    if (topicNameSearch != null && topicNameSearch.trim().length() > 0) {
+      schemaInfoList =
+          schemaInfoList.stream()
+              .filter(schema -> schema.getTopic().contains(topicNameSearch.trim()))
+              .toList();
+    }
+
+    if (teamId != 0) {
+      schemaInfoList =
+          schemaInfoList.stream().filter(schema -> schema.getTeamId() == teamId).toList();
+    }
+
+    schemaInfoList = getPagedResponse(pageNo, currentPage, schemaInfoList, tenantId);
+    syncSchemasList.setSchemaSubjectInfoResponseList(schemaInfoList);
+    return syncSchemasList;
+  }
+
+  private List<SchemaSubjectInfoResponse> getSchemasFromDb(
+      String kafkaEnvId, int tenantId, String schemaEnvId) {
+    List<SchemaSubjectInfoResponse> schemaInfoList = new ArrayList<>();
     List<Topic> topicList =
         manageDatabase.getTopicsForTenant(tenantId).stream()
             .filter(topic -> topic.getEnvironment().equals(kafkaEnvId))
@@ -134,23 +157,7 @@ public class SchemaRegistrySyncControllerService {
       }
     }
 
-    syncSchemasList.setAllTopicsCount(schemaInfoList.size());
-
-    if (topicNameSearch != null && topicNameSearch.trim().length() > 0) {
-      schemaInfoList =
-          schemaInfoList.stream()
-              .filter(schema -> schema.getTopic().contains(topicNameSearch.trim()))
-              .toList();
-    }
-
-    if (teamId != 0) {
-      schemaInfoList =
-          schemaInfoList.stream().filter(schema -> schema.getTeamId() == teamId).toList();
-    }
-
-    schemaInfoList = getPagedResponse(pageNo, currentPage, schemaInfoList, tenantId);
-    syncSchemasList.setSchemaSubjectInfoResponseList(schemaInfoList);
-    return syncSchemasList;
+    return schemaInfoList;
   }
 
   // schema versions only
@@ -305,6 +312,23 @@ public class SchemaRegistrySyncControllerService {
     List<String> logArray = new ArrayList<>();
     logArray.add("Topics/Schemas result");
 
+    Env kafkaEnv =
+        manageDatabase
+            .getHandleDbRequests()
+            .getEnvDetails(syncSchemaUpdates.getSourceKafkaEnvSelected(), tenantId);
+
+    if (kafkaEnv.getAssociatedEnv() == null) {
+      return ApiResponse.builder().success(false).message(SCH_SYNC_ERR_101).build();
+    }
+
+    if (syncSchemaUpdates.getTopicsSelectionType().equals("ALL_TOPICS")) {
+      List<SchemaSubjectInfoResponse> schemaInfoList =
+          getSchemasFromDb(kafkaEnv.getId(), tenantId, kafkaEnv.getAssociatedEnv().getId());
+      List<String> topicList = new ArrayList<>();
+      schemaInfoList.forEach(schemaInfo -> topicList.add(schemaInfo.getTopic()));
+      syncSchemaUpdates.setTopicList(topicList);
+    }
+
     for (String topicName : syncSchemaUpdates.getTopicList()) {
       // delete all schemas
       ResponseEntity<ApiResponse> apiResponseEntity =
@@ -313,17 +337,12 @@ public class SchemaRegistrySyncControllerService {
 
       logArray.add("Schemas deleted for " + topicName);
 
-      if (apiResponseEntity.getBody() != null && apiResponseEntity.getBody().isSuccess()) {
+      // check for success or schema may not exist
+      if (apiResponseEntity.getBody() != null
+          && (apiResponseEntity.getBody().isSuccess()
+              || (!apiResponseEntity.getBody().isSuccess()
+                  && apiResponseEntity.getBody().getMessage().contains(SCH_SYNC_ERR_102)))) {
         // create new schemas
-        Env kafkaEnv =
-            manageDatabase
-                .getHandleDbRequests()
-                .getEnvDetails(syncSchemaUpdates.getSourceKafkaEnvSelected(), tenantId);
-
-        if (kafkaEnv.getAssociatedEnv() == null) {
-          return ApiResponse.builder().success(false).message(SCH_SYNC_ERR_101).build();
-        }
-
         List<MessageSchema> schemaList =
             manageDatabase
                 .getHandleDbRequests()

@@ -456,4 +456,6 @@ public class KlawErrorMessages {
 
   public static final String SCH_SYNC_ERR_101 =
       "There is no associated Schema environment configured.";
+
+  public static final String SCH_SYNC_ERR_102 = "404 Not Found";
 }
