@@ -50,14 +50,13 @@ const TopicAclRequest = () => {
     useExtendedEnvironments();
 
   const currentEnv = searchParams.get("env");
-  const isNotValidEnv =
-    currentEnv === null ||
-    (!isLoadingExtendedEnvironments &&
-      extendedEnvironments.find((env) => currentEnv === env.id) === undefined);
+  const isValidEnv =
+    !isLoadingExtendedEnvironments &&
+    extendedEnvironments.find((env) => currentEnv === env.id) !== undefined;
 
   // /topic/aivendemotopic/subscribe route requires an env search param to function correctly
   // So we redirect when it is missing
-  if (topicName !== undefined && isNotValidEnv) {
+  if (topicName !== undefined && !isValidEnv) {
     navigate(`/topic/${topicName}/subscriptions`);
   }
 
