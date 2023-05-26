@@ -412,6 +412,7 @@ describe("<TopicAclRequest />", () => {
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
+      mockedNavigate.mockClear();
       await userEvent.click(cancelButton);
 
       await waitFor(() => {
@@ -431,6 +432,7 @@ describe("<TopicAclRequest />", () => {
 
       const cancelButton = screen.getByRole("button", { name: "Cancel" });
 
+      mockedNavigate.mockClear();
       await userEvent.click(cancelButton);
 
       await waitFor(() => {
@@ -738,10 +740,7 @@ describe("<TopicAclRequest />", () => {
       );
     });
 
-    afterEach(() => {
-      cleanup();
-      jest.clearAllMocks();
-    });
+    afterEach(cleanup);
 
     describe("when user cancels form input", () => {
       beforeEach(async () => {
@@ -771,6 +770,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+        mockedNavigate.mockClear();
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
@@ -795,6 +795,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("brings the user back to the form when they do not cancel", async () => {
+        mockedNavigate.mockClear();
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
@@ -859,6 +860,7 @@ describe("<TopicAclRequest />", () => {
 
       afterEach(() => {
         console.error = originalConsoleError;
+        jest.clearAllMocks();
       });
 
       it("renders an error message", async () => {
@@ -934,6 +936,10 @@ describe("<TopicAclRequest />", () => {
             data: { success: true, message: "success" },
           },
         });
+      });
+
+      afterEach(() => {
+        jest.clearAllMocks();
       });
 
       it("creates a new acl request when input was valid", async () => {
@@ -1151,6 +1157,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it('shows a warning dialog if user clicks "Cancel" and has inputs in form', async () => {
+        mockedNavigate.mockClear();
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
@@ -1175,6 +1182,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       it("brings the user back to the form when they do not cancel", async () => {
+        mockedNavigate.mockClear();
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
