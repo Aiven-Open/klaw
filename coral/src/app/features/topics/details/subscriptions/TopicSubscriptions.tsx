@@ -11,10 +11,14 @@ import pick from "lodash/pick";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog } from "src/app/components/Dialog";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  FiltersProvider,
+  useFiltersContext,
+} from "src/app/features/components/filters/useFiltersValues";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
@@ -38,8 +42,8 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
 };
 
 const TopicSubscriptions = () => {
-  // @ TODO get environment from useTopicDetails too when it is implemented
   const navigate = useNavigate();
+  // @ TODO get environment from useTopicDetails too when it is implemented2
   const { topicName } = useTopicDetails();
 
   const [deleteModal, setDeleteModal] = useState<{
@@ -49,7 +53,7 @@ const TopicSubscriptions = () => {
 
   const toast = useToast();
 
-  const { search, teamId, aclType } = useFiltersValues();
+  const { teamId, aclType, search } = useFiltersContext();
   const {
     data,
     isLoading: dataIsLoading,
@@ -214,4 +218,18 @@ const TopicSubscriptions = () => {
   );
 };
 
-export default TopicSubscriptions;
+// Because we need to set the default value of team filter as the user's current team
+// We need to use the FiltersProvider directly instead of withFiltersContext
+const WithCurrentTeamDefaultFilter = () => {
+  const authUser = useAuthContext();
+
+  return (
+    <FiltersProvider
+      defaultValues={{ paginated: false, teamId: authUser?.teamId }}
+    >
+      <TopicSubscriptions />
+    </FiltersProvider>
+  );
+};
+
+export default WithCurrentTeamDefaultFilter;

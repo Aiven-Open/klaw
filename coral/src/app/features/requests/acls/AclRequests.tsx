@@ -12,7 +12,10 @@ import { MyRequestsFilter } from "src/app/features/components/filters/MyRequests
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersValues";
 import { AclRequestsTable } from "src/app/features/requests/acls/components/AclRequestsTable";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";
@@ -33,7 +36,7 @@ function AclRequests() {
     status,
     showOnlyMyRequests,
     requestType,
-  } = useFiltersValues();
+  } = useFiltersContext();
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";
@@ -174,7 +177,7 @@ function AclRequests() {
             environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
           />,
           <AclTypeFilter key="aclType" />,
-          <StatusFilter key="status" defaultStatus="ALL" />,
+          <StatusFilter key="status" />,
           <RequestTypeFilter key="operationType" />,
           <SearchTopicFilter key="search" />,
           <MyRequestsFilter key="myRequests" />,
@@ -198,4 +201,7 @@ function AclRequests() {
   );
 }
 
-export { AclRequests };
+export default withFiltersContext({
+  defaultValues: { status: "ALL" },
+  element: <AclRequests />,
+});

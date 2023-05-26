@@ -10,7 +10,10 @@ import RequestDetailsModal from "src/app/features/components/RequestDetailsModal
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersValues";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
   approveConnectorRequest,
@@ -30,9 +33,7 @@ function ConnectorApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, search, requestType } = useFiltersValues({
-    defaultStatus: "CREATED",
-  });
+  const { environment, status, search, requestType } = useFiltersContext();
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -271,7 +272,7 @@ function ConnectorApprovals() {
             key={"environment"}
             environmentEndpoint={"getAllEnvironmentsForConnector"}
           />,
-          <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
+          <StatusFilter key={"status"} />,
           <RequestTypeFilter key={"requestType"} />,
           <SearchConnectorFilter key={"search"} />,
         ]}
@@ -285,4 +286,7 @@ function ConnectorApprovals() {
   );
 }
 
-export default ConnectorApprovals;
+export default withFiltersContext({
+  defaultValues: { status: "CREATED" },
+  element: <ConnectorApprovals />,
+});

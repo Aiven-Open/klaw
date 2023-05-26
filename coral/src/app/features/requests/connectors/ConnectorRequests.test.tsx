@@ -5,23 +5,23 @@ import {
   waitForElementToBeRemoved,
   within,
 } from "@testing-library/react";
-import { transformConnectorRequestApiResponse } from "src/domain/connector/connector-transformer";
-import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { ConnectorRequests } from "src/app/features/requests/connectors/ConnectorRequests";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import {
-  getAllEnvironmentsForTopicAndAcl,
-  getAllEnvironmentsForConnector,
-} from "src/domain/environment";
+import userEvent from "@testing-library/user-event";
+import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
+import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
+import ConnectorRequests from "src/app/features/requests/connectors/ConnectorRequests";
 import { mockedEnvironmentResponse } from "src/app/features/requests/schemas/utils/mocked-api-responses";
 import {
   deleteConnectorRequest,
   getConnectorRequests,
 } from "src/domain/connector";
-import userEvent from "@testing-library/user-event";
+import { transformConnectorRequestApiResponse } from "src/domain/connector/connector-transformer";
+import {
+  getAllEnvironmentsForConnector,
+  getAllEnvironmentsForTopicAndAcl,
+} from "src/domain/environment";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
-import { requestStatusNameMap } from "src/app/features/approvals/utils/request-status-helper";
-import { requestOperationTypeNameMap } from "src/app/features/approvals/utils/request-operation-type-helper";
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/environment/environment-api.ts");
 jest.mock("src/domain/connector/connector-api.ts");

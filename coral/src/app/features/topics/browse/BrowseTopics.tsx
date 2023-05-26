@@ -4,7 +4,10 @@ import { Pagination } from "src/app/components/Pagination";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
 import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersValues";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import TopicTable from "src/app/features/topics/browse/components/TopicTable";
 import { getTopics } from "src/domain/topic";
@@ -16,7 +19,7 @@ function BrowseTopics() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { search, environment, teamId } = useFiltersValues();
+  const { search, environment, teamId } = useFiltersContext();
 
   const {
     data: topics,
@@ -74,4 +77,4 @@ function BrowseTopics() {
   );
 }
 
-export default BrowseTopics;
+export default withFiltersContext({ element: <BrowseTopics /> });

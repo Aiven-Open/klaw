@@ -11,7 +11,7 @@ import {
 } from "src/domain/topic/topic-api";
 import { transformGetTopicRequestsResponse } from "src/domain/topic/topic-transformer";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { TopicRequests } from "src/app/features/requests/topics/TopicRequests";
+import TopicRequests from "src/app/features/requests/topics/TopicRequests";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";

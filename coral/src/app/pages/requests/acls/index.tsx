@@ -1,4 +1,4 @@
-import { AclRequests } from "src/app/features/requests/acls/AclRequests";
+import AclRequests from "src/app/features/requests/acls/AclRequests";
 import PreviewBanner from "src/app/components/PreviewBanner";
 
 const AclRequestsPage = () => {

@@ -11,7 +11,7 @@ import {
   deleteSchemaRequest,
   getSchemaRequests,
 } from "src/domain/schema-request";
-import { SchemaRequests } from "src/app/features/requests/schemas/SchemaRequests";
+import SchemaRequests from "src/app/features/requests/schemas/SchemaRequests";
 import {
   mockedApiResponseSchemaRequests,
   mockedEnvironmentResponse,
