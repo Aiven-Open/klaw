@@ -12,8 +12,10 @@ import {
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import {
+  NoContent,
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
+  TopicMessages,
   TopicRequestApiResponse,
 } from "src/domain/topic/topic-types";
 import api, { API_PATHS } from "src/services/api";
@@ -164,6 +166,15 @@ const getTopicRequests = (
     .then(transformGetTopicRequestsResponse);
 };
 
+const getTopicMessages = (
+  params: KlawApiRequestQueryParameters<"getTopicEvents">
+): Promise<TopicMessages | NoContent> => {
+  return api.get<KlawApiResponse<"getTopicEvents">>(
+    "/getTopicEvents",
+    new URLSearchParams(params)
+  );
+};
+
 const approveTopicRequest = ({
   reqIds,
 }: {
@@ -235,4 +246,5 @@ export {
   declineTopicRequest,
   deleteTopicRequest,
   getTopicOverview,
+  getTopicMessages,
 };
