@@ -975,4 +975,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   public String updateJsonParams(Map<String, String> jsonParams, Integer req_no, int tenantId) {
     return jdbcUpdateHelper.updateJsonParams(jsonParams, req_no, tenantId);
   }
+
+  public String updateDbWithUpdatedVersions(List<MessageSchema> schemaListUpdated) {
+    return jdbcUpdateHelper.updateDbWithUpdatedVersions(schemaListUpdated);
+  }
 }

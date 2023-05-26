@@ -5,6 +5,7 @@ import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.SchemaCacheUpdateType;
 import io.aiven.klaw.clusterapi.services.SchemaService;
 import jakarta.validation.Valid;
 import java.util.Map;
@@ -62,7 +63,12 @@ public class SchemaRegistryController {
       @PathVariable String clusterIdentification) {
     return new ResponseEntity<>(
         schemaService.loadAllSchemasInfoFromCluster(
-            bootstrapServers, protocol, clusterIdentification, false, "NONE", null),
+            bootstrapServers,
+            protocol,
+            clusterIdentification,
+            false,
+            SchemaCacheUpdateType.NONE,
+            null),
         HttpStatus.OK);
   }
 

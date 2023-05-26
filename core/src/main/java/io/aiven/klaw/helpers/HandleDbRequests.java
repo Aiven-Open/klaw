@@ -301,6 +301,8 @@ public interface HandleDbRequests {
 
   String updateSchemaRequest(SchemaRequest schemaRequest, String approver);
 
+  String updateDbWithUpdatedVersions(List<MessageSchema> schemaListUpdated);
+
   String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver);
 
   String declineTopicRequest(TopicRequest topicRequest, String approver);

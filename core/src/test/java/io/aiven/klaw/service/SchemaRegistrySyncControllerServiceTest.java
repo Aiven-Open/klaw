@@ -321,7 +321,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     Map<String, Object> schemaCreationResponseMap = new HashMap<>();
     schemaCreationResponseMap.put("schemaRegistered", Boolean.TRUE);
     schemaCreationResponseMap.put("id", "1234");
-    schemaCreationResponseMap.put("version", "1");
+    schemaCreationResponseMap.put("version", 1);
     ApiResponse apiResponseCreate =
         ApiResponse.builder().success(true).data(schemaCreationResponseMap).build();
     ResponseEntity<ApiResponse> responseEntityCreate =

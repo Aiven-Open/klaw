@@ -42,6 +42,8 @@ public class SchemaRegistrySyncControllerService {
 
   public static final String NOT_IN_SYNC = "NOT_IN_SYNC";
   public static final String IN_SYNC = "IN_SYNC";
+  public static final String SOURCE_METADATA = "metadata";
+  public static final String SOURCE_CLUSTER = "cluster";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired ClusterApiService clusterApiService;
@@ -72,10 +74,10 @@ public class SchemaRegistrySyncControllerService {
       int teamId)
       throws Exception {
 
-    if (source.equals("metadata")) {
+    if (source.equals(SOURCE_METADATA)) {
       return getSchemasOfEnvironmentFromMetadataDb(
           kafkaEnvId, pageNo, currentPage, topicNameSearch, teamId);
-    } else if (source.equals("cluster")) {
+    } else if (source.equals(SOURCE_CLUSTER)) {
       return getSchemaOfEnvironmentFromCluster(
           kafkaEnvId, pageNo, currentPage, topicNameSearch, showAllTopics);
     } else {
@@ -91,7 +93,7 @@ public class SchemaRegistrySyncControllerService {
       String topicNameSearch,
       Integer teamId) {
     SyncSchemasList syncSchemasList = new SyncSchemasList();
-    List<SchemaSubjectInfoResponse> schemaInfoList = new ArrayList<>();
+    List<SchemaSubjectInfoResponse> schemaInfoList;
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
 
@@ -136,6 +138,7 @@ public class SchemaRegistrySyncControllerService {
         manageDatabase
             .getHandleDbRequests()
             .getTopicAndVersionsForEnvAndTenantId(schemaEnvId, tenantId);
+
     String legacyTopicVersion = "1.0";
     for (Topic topic : topicList) {
       if (topicSchemaVersionsInDb.containsKey(topic.getTopicname())) {
@@ -353,6 +356,7 @@ public class SchemaRegistrySyncControllerService {
                 .sorted(Comparator.comparing(a -> Integer.parseInt(a.getSchemaversion())))
                 .toList();
 
+        List<MessageSchema> schemaListUpdated = new ArrayList<>();
         for (MessageSchema messageSchema : schemaList) {
           SchemaRequest schemaRequest = new SchemaRequest();
           schemaRequest.setForceRegister(true);
@@ -372,13 +376,17 @@ public class SchemaRegistrySyncControllerService {
           }
           if (registerSchemaCustomResponse != null
               && (registerSchemaCustomResponse.containsKey("id") && schemaRegistered)) {
+
+            Integer schemaVersion = (Integer) registerSchemaCustomResponse.get("version");
+            messageSchema.setSchemaversion(schemaVersion + "");
+            schemaListUpdated.add(messageSchema);
+
             logArray.add(
-                "Schemas registered on cluster for "
-                    + topicName
-                    + " Version "
-                    + registerSchemaCustomResponse.get("version"));
+                "Schemas registered on cluster for " + topicName + " Version " + schemaVersion);
           }
         }
+
+        manageDatabase.getHandleDbRequests().updateDbWithUpdatedVersions(schemaListUpdated);
       }
     }
 
@@ -477,7 +485,7 @@ public class SchemaRegistrySyncControllerService {
             .getEnvDetails(kafkaEnv.getAssociatedEnv().getId(), tenantId);
     Object dynamicObj = null;
 
-    if (source.equals("cluster")) {
+    if (source.equals(SOURCE_CLUSTER)) {
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
@@ -495,7 +503,7 @@ public class SchemaRegistrySyncControllerService {
             OBJECT_MAPPER.readValue(
                 (String) schemaObject.get(schemaVersion).get("schema"), Object.class);
       }
-    } else if (source.equals("metadata")) {
+    } else if (source.equals(SOURCE_METADATA)) {
       List<MessageSchema> messageSchemaList =
           manageDatabase
               .getHandleDbRequests()

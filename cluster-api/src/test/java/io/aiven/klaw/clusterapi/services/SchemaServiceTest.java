@@ -21,6 +21,7 @@ import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.SchemaCacheUpdateType;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -370,7 +371,7 @@ class SchemaServiceTest {
 
     SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
         schemaService.loadAllSchemasInfoFromCluster(
-            dev, KafkaSupportedProtocol.PLAINTEXT, "19", false, "NONE", null);
+            dev, KafkaSupportedProtocol.PLAINTEXT, "19", false, SchemaCacheUpdateType.NONE, null);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
         .extracting(SchemaInfoOfTopic::getTopic)
@@ -407,7 +408,12 @@ class SchemaServiceTest {
 
     SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
         schemaService.loadAllSchemasInfoFromCluster(
-            dev, KafkaSupportedProtocol.PLAINTEXT, "19", true, "CREATE", "test3");
+            dev,
+            KafkaSupportedProtocol.PLAINTEXT,
+            "19",
+            true,
+            SchemaCacheUpdateType.CREATE,
+            "test3");
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(3);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
         .extracting(SchemaInfoOfTopic::getTopic)
@@ -433,7 +439,12 @@ class SchemaServiceTest {
 
     SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
         schemaService.loadAllSchemasInfoFromCluster(
-            dev, KafkaSupportedProtocol.PLAINTEXT, "19", true, "DELETE", topic2);
+            dev,
+            KafkaSupportedProtocol.PLAINTEXT,
+            "19",
+            true,
+            SchemaCacheUpdateType.DELETE,
+            topic2);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(2);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList())
         .extracting(SchemaInfoOfTopic::getTopic)
@@ -459,7 +470,7 @@ class SchemaServiceTest {
 
     SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
         schemaService.loadAllSchemasInfoFromCluster(
-            dev, KafkaSupportedProtocol.PLAINTEXT, "20", false, "NONE", null);
+            dev, KafkaSupportedProtocol.PLAINTEXT, "20", false, SchemaCacheUpdateType.NONE, null);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(0);
   }
 
