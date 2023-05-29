@@ -887,5 +887,34 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 );
             }
 
+            $scope.claimAcl = function(aclId) {
+
+              $http({
+                                method: "POST",
+                                url: "/acl/" + aclId,
+                                headers : { 'Content-Type' : 'application/json' },
+                                data : 'CLAIM'
+                            }).success(function(output) {
+                                $scope.ShowSpinnerStatus = false;
+                                if(output.status != null && output.status === "false"){
+                                    swal({
+                                         title: "Failed to create ACL",
+                                         text: "Unable to create a claim request for this ACL!",
+                                         timer: 2000,
+                                         showConfirmButton: true
+                                         });
+                                }
+                            }).error(
+                                function(error)
+                                {
+                                    $scope.ShowSpinnerStatus = false;
+                                    $scope.alert = error;
+                                    $scope.alertnote = error;
+                                    $scope.showAlertToast();
+                                }
+                            );
+
+            }
+
 }
 );

@@ -745,6 +745,27 @@
 																</a>
 															</div>
 
+															<div class="p-2 border-left" style="width:5%">
+
+																<a ng-show="aclRequest.teamname != teamname "  class="mytooltip" href="javascript:void(0)">
+																	<button  type="button" class="btn waves-effect waves-light btn-rounded btn-sm btn-info"
+																			 ng-click="claimAcl(aclRequest.req_no)">
+																		Claim
+																	</button>
+																	<span class="tooltip-content5">
+																		<span class="tooltip-text3">
+																			<span class="tooltip-inner2">Click to create a claim request for this subscription.
+																			</span>
+																		</span>
+																	</span>
+																</a>
+															</div>
+
+<!--															<td align="right" width="15%">-->
+<!--																<button ng-show="topicOverview[0].teamname != teamname && dashboardDetails.requestItems=='Authorized'" type="button" ng-click="onClaimTopic(topicSelectedParam, topicOverview[0].envId);"-->
+<!--																		class="btn waves-effect waves-light btn-rounded btn-sm btn-info">Claim Topic</button>-->
+<!--															</td>-->
+
 															<div class="p-2" style="width:5%">
 																<button ng-show="aclRequest.showDeleteAcl == true && dashboardDetails.requestItems=='Authorized'" ng-click="deleteAcls(aclRequest.req_no, aclRequest.teamname)" type="button" class="btn btn-sm btn-danger btn-circle"><i class="fa fa-times"></i>
 																</button>

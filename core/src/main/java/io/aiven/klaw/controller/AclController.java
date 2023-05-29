@@ -18,10 +18,12 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -228,5 +230,20 @@ public class AclController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Set<String>> getAivenServiceAccounts(@RequestParam("env") String envId) {
     return new ResponseEntity<>(aclControllerService.getAivenServiceAccounts(envId), HttpStatus.OK);
+  }
+
+  @PostMapping(
+      value = "/acl/{aclId}",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> claimAcl(
+      @PathVariable String aclId, @Valid @RequestBody RequestOperationType operationType)
+      throws NotImplementedException, KlawException {
+
+    switch (operationType) {
+      case CLAIM:
+        return new ResponseEntity<>(aclControllerService.createClaimRequest(aclId), HttpStatus.OK);
+      default:
+        throw new NotImplementedException();
+    }
   }
 }
