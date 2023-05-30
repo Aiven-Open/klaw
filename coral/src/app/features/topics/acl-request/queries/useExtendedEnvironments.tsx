@@ -32,7 +32,7 @@ const getExtensionData = ({ envId, envType }: GetExtensionDataParams) => {
 const useExtendedEnvironments = () => {
   const {
     data: extendedEnvironments = [],
-    isLoading: isLoadingExtendedEnvironments,
+    isFetched: hasFetchedExtendedEnvironments,
   } = useQuery<ExtendedEnvironment[], Error>(["topic-environments"], {
     queryFn: async () => {
       const environments = await getAllEnvironmentsForTopicAndAcl();
@@ -58,7 +58,7 @@ const useExtendedEnvironments = () => {
 
   return {
     extendedEnvironments,
-    isLoadingExtendedEnvironments,
+    hasFetchedExtendedEnvironments,
   };
 };
 
