@@ -10,9 +10,12 @@ import RequestDetailsModal from "src/app/features/components/RequestDetailsModal
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
-import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import StatusFilter from "src/app/features/components/filters/StatusFilter";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
   approveAclRequest,
@@ -33,9 +36,7 @@ function AclApprovals() {
     : 1;
 
   const { aclType, environment, status, search, requestType } =
-    useFiltersValues({
-      defaultStatus: "CREATED",
-    });
+    useFiltersContext();
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -243,7 +244,7 @@ function AclApprovals() {
             key={"environment"}
             environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
           />,
-          <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
+          <StatusFilter key={"status"} />,
           <RequestTypeFilter key={"requestType"} />,
           <AclTypeFilter key={"aclType"} />,
           <SearchTopicFilter key={"topic"} />,
@@ -271,4 +272,7 @@ function AclApprovals() {
   );
 }
 
-export default AclApprovals;
+export default withFiltersContext({
+  defaultValues: { status: "CREATED" },
+  element: <AclApprovals />,
+});

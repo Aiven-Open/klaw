@@ -2,6 +2,11 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
+
+const WrappedMyRequestsFilter = withFiltersContext({
+  element: <MyRequestsFilter />,
+});
 
 describe("MyRequestsFilter", () => {
   afterEach(() => {
@@ -11,7 +16,7 @@ describe("MyRequestsFilter", () => {
 
   it("is checked if showOnlyMyRequests is true in the url search parameters", async () => {
     window.history.replaceState(null, "", "/?showOnlyMyRequests=true");
-    customRender(<MyRequestsFilter />, {
+    customRender(<WrappedMyRequestsFilter />, {
       browserRouter: true,
     });
     await waitFor(() =>
@@ -28,7 +33,7 @@ describe("MyRequestsFilter", () => {
 
   it("is unchecked if showOnlyMyRequests in the url search parameters has other value than true", async () => {
     window.history.replaceState(null, "", "/?showOnlyMyRequests=abc");
-    customRender(<MyRequestsFilter />, {
+    customRender(<WrappedMyRequestsFilter />, {
       browserRouter: true,
     });
     await waitFor(() =>
@@ -45,7 +50,7 @@ describe("MyRequestsFilter", () => {
 
   it("sets the showOnlyMyRequests and page search parameter when user toggles the switch", async () => {
     window.history.replaceState(null, "", "/");
-    customRender(<MyRequestsFilter />, {
+    customRender(<WrappedMyRequestsFilter />, {
       browserRouter: true,
     });
     await waitFor(() => expect(window.location.search).toEqual(""));
@@ -61,7 +66,7 @@ describe("MyRequestsFilter", () => {
 
   it("unsets the showOnlyMyRequests and page search parameter when user untoggles the switch", async () => {
     window.history.replaceState(null, "", "/?showOnlyMyRequests=true");
-    customRender(<MyRequestsFilter />, {
+    customRender(<WrappedMyRequestsFilter />, {
       browserRouter: true,
     });
     await waitFor(() =>

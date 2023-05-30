@@ -1,6 +1,7 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("SearchFilter.tsx", () => {
@@ -9,12 +10,15 @@ describe("SearchFilter.tsx", () => {
 
   describe("renders default view when no query is set", () => {
     beforeAll(async () => {
-      customRender(
-        <SearchFilter placeholder={placeholder} description={description} />,
-        {
-          memoryRouter: true,
-        }
-      );
+      const WrappedSearchFilter = withFiltersContext({
+        element: (
+          <SearchFilter placeholder={placeholder} description={description} />
+        ),
+      });
+
+      customRender(<WrappedSearchFilter />, {
+        memoryRouter: true,
+      });
     });
 
     afterAll(cleanup);
@@ -49,14 +53,16 @@ describe("SearchFilter.tsx", () => {
 
     beforeEach(async () => {
       const routePath = `/topics?search=${topicTest}`;
+      const WrappedSearchFilter = withFiltersContext({
+        element: (
+          <SearchFilter placeholder={placeholder} description={description} />
+        ),
+      });
 
-      customRender(
-        <SearchFilter placeholder={placeholder} description={description} />,
-        {
-          memoryRouter: true,
-          customRoutePath: routePath,
-        }
-      );
+      customRender(<WrappedSearchFilter />, {
+        memoryRouter: true,
+        customRoutePath: routePath,
+      });
     });
 
     afterEach(() => {
@@ -72,12 +78,15 @@ describe("SearchFilter.tsx", () => {
 
   describe("handles user typing a search", () => {
     beforeEach(async () => {
-      customRender(
-        <SearchFilter placeholder={placeholder} description={description} />,
-        {
-          memoryRouter: true,
-        }
-      );
+      const WrappedSearchFilter = withFiltersContext({
+        element: (
+          <SearchFilter placeholder={placeholder} description={description} />
+        ),
+      });
+
+      customRender(<WrappedSearchFilter />, {
+        memoryRouter: true,
+      });
     });
 
     afterEach(() => {
@@ -96,12 +105,15 @@ describe("SearchFilter.tsx", () => {
 
   describe("updates the search param to preserve topic in url", () => {
     beforeEach(async () => {
-      customRender(
-        <SearchFilter placeholder={placeholder} description={description} />,
-        {
-          browserRouter: true,
-        }
-      );
+      const WrappedSearchFilter = withFiltersContext({
+        element: (
+          <SearchFilter placeholder={placeholder} description={description} />
+        ),
+      });
+
+      customRender(<WrappedSearchFilter />, {
+        browserRouter: true,
+      });
     });
 
     afterEach(() => {

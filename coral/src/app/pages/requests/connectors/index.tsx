@@ -1,4 +1,4 @@
-import { ConnectorRequests } from "src/app/features/requests/connectors/ConnectorRequests";
+import ConnectorRequests from "src/app/features/requests/connectors/ConnectorRequests";
 import PreviewBanner from "src/app/components/PreviewBanner";
 
 const ConnectorRequestsPage = () => {

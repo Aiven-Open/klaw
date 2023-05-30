@@ -14,14 +14,14 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import TopicDetailsModalContent from "src/app/features/components/TopicDetailsModalContent";
 import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersContext";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
-
-const defaultStatus = "ALL";
-const defaultType = "ALL";
 
 function TopicRequests() {
   const queryClient = useQueryClient();
@@ -31,7 +31,7 @@ function TopicRequests() {
     : 1;
 
   const { search, environment, status, showOnlyMyRequests, requestType } =
-    useFiltersValues();
+    useFiltersContext();
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";
@@ -56,7 +56,7 @@ function TopicRequests() {
         env: environment,
         requestStatus: status,
         isMyRequest: showOnlyMyRequests,
-        operationType: requestType !== defaultType ? requestType : undefined,
+        operationType: requestType !== "ALL" ? requestType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -158,7 +158,7 @@ function TopicRequests() {
             key="environments"
             environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
           />,
-          <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
+          <StatusFilter key="request-status" />,
           <RequestTypeFilter key={"request-type"} />,
           <SearchTopicFilter key={"topic"} />,
           <MyRequestsFilter key={"isMyRequest"} />,
@@ -182,4 +182,6 @@ function TopicRequests() {
   );
 }
 
-export { TopicRequests };
+export default withFiltersContext({
+  element: <TopicRequests />,
+});

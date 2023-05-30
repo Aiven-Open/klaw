@@ -1,6 +1,6 @@
 import { NativeSelect, Option } from "@aivenio/aquarium";
 import { useQuery } from "@tanstack/react-query";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
@@ -27,7 +27,7 @@ const environmentEndpointMap: {
 };
 
 function EnvironmentFilter({ environmentEndpoint }: EnvironmentFilterProps) {
-  const { environment, setFilterValue } = useFiltersValues();
+  const { environment, setFilterValue } = useFiltersContext();
 
   const { data: environments } = useQuery<Environment[], HTTPError>(
     [environmentEndpoint],

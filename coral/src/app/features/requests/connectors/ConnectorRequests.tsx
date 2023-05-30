@@ -7,7 +7,10 @@ import {
   deleteConnectorRequest,
   getConnectorRequests,
 } from "src/domain/connector";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersContext";
 import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
@@ -20,9 +23,6 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import RequestDetailsModal from "src/app/features/components/RequestDetailsModal";
 import { ConnectorRequestDetails } from "src/app/features/components/ConnectorDetailsModalContent";
 
-const defaultStatus = "ALL";
-const defaultType = "ALL";
-
 function ConnectorRequests() {
   const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,7 +31,7 @@ function ConnectorRequests() {
     : 1;
 
   const { search, environment, status, showOnlyMyRequests, requestType } =
-    useFiltersValues();
+    useFiltersContext();
 
   const [modals, setModals] = useState<{
     open: "DETAILS" | "DELETE" | "NONE";
@@ -81,7 +81,7 @@ function ConnectorRequests() {
         env: environment,
         search,
         requestStatus: status,
-        operationType: requestType !== defaultType ? requestType : undefined,
+        operationType: requestType !== "ALL" ? requestType : undefined,
       }),
     keepPreviousData: true,
   });
@@ -158,7 +158,7 @@ function ConnectorRequests() {
             key="environment"
             environmentEndpoint="getAllEnvironmentsForConnector"
           />,
-          <StatusFilter key="request-status" defaultStatus={defaultStatus} />,
+          <StatusFilter key="request-status" />,
           <RequestTypeFilter key={"request-type"} />,
           <SearchConnectorFilter key="connector" />,
           <MyRequestsFilter key={"isMyRequest"} />,
@@ -180,4 +180,6 @@ function ConnectorRequests() {
   );
 }
 
-export { ConnectorRequests };
+export default withFiltersContext({
+  element: <ConnectorRequests />,
+});

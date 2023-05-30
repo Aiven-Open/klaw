@@ -5,7 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import { getConnectors } from "src/domain/connector/connector-api";
 import { useSearchParams } from "react-router-dom";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersContext";
 import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
 
@@ -14,7 +17,7 @@ function BrowseConnectors() {
   const currentPage = searchParams.get("page")
     ? Number(searchParams.get("page"))
     : 1;
-  const { environment, teamId, search } = useFiltersValues();
+  const { environment, teamId, search } = useFiltersContext();
 
   const {
     data: connectors,
@@ -73,4 +76,6 @@ function BrowseConnectors() {
   );
 }
 
-export default BrowseConnectors;
+export default withFiltersContext({
+  element: <BrowseConnectors />,
+});

@@ -11,7 +11,10 @@ import { SchemaRequestDetails } from "src/app/features/components/SchemaRequestD
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersContext";
 import {
   approveSchemaRequest,
   declineSchemaRequest,
@@ -30,9 +33,7 @@ function SchemaApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, search, requestType } = useFiltersValues({
-    defaultStatus: "CREATED",
-  });
+  const { environment, status, search, requestType } = useFiltersContext();
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -270,7 +271,7 @@ function SchemaApprovals() {
             key={"environment"}
             environmentEndpoint={"getAllEnvironmentsForSchema"}
           />,
-          <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
+          <StatusFilter key={"status"} />,
           <RequestTypeFilter key={"requestType"} />,
           <SearchTopicFilter key={"topic"} />,
         ]}
@@ -284,4 +285,7 @@ function SchemaApprovals() {
   );
 }
 
-export default SchemaApprovals;
+export default withFiltersContext({
+  defaultValues: { status: "CREATED" },
+  element: <SchemaApprovals />,
+});

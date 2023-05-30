@@ -2,6 +2,7 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { getTeams } from "src/domain/team/team-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -36,13 +37,17 @@ const mockedTeamsResponse = [
   },
 ];
 
+const WrappedTeamFilter = withFiltersContext({
+  element: <TeamFilter />,
+});
+
 const filterLabel = "Filter by team";
 describe("TeamFilter.tsx", () => {
   describe("renders default view when no query is set", () => {
     beforeAll(async () => {
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
 
-      customRender(<TeamFilter />, {
+      customRender(<WrappedTeamFilter />, {
         memoryRouter: true,
         queryClient: true,
       });
@@ -91,7 +96,7 @@ describe("TeamFilter.tsx", () => {
 
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
 
-      customRender(<TeamFilter />, {
+      customRender(<WrappedTeamFilter />, {
         memoryRouter: true,
         queryClient: true,
         customRoutePath: routePath,
@@ -122,7 +127,7 @@ describe("TeamFilter.tsx", () => {
     beforeEach(async () => {
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
 
-      customRender(<TeamFilter />, {
+      customRender(<WrappedTeamFilter />, {
         queryClient: true,
         memoryRouter: true,
       });
@@ -155,7 +160,7 @@ describe("TeamFilter.tsx", () => {
 
     beforeEach(async () => {
       mockGetTeams.mockResolvedValue(mockedTeamsResponse);
-      customRender(<TeamFilter />, {
+      customRender(<WrappedTeamFilter />, {
         queryClient: true,
         browserRouter: true,
       });

@@ -2,15 +2,18 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const aclTypesForFilter = ["ALL", "CONSUMER", "PRODUCER"];
+
+const WrappedAclTypeFilter = withFiltersContext({ element: <AclTypeFilter /> });
 
 const filterLabel = "Filter by ACL type";
 describe("AclTypeFilter.tsx", () => {
   describe("renders all necessary elements", () => {
     beforeAll(async () => {
-      customRender(<AclTypeFilter />, {
+      customRender(<WrappedAclTypeFilter />, {
         memoryRouter: true,
       });
     });
@@ -56,7 +59,7 @@ describe("AclTypeFilter.tsx", () => {
     beforeEach(async () => {
       const routePath = `/?aclType=${consumerAcl}`;
 
-      customRender(<AclTypeFilter />, {
+      customRender(<WrappedAclTypeFilter />, {
         memoryRouter: true,
         queryClient: true,
         customRoutePath: routePath,
@@ -81,7 +84,7 @@ describe("AclTypeFilter.tsx", () => {
     const producerAcl = "PRODUCER";
 
     beforeEach(async () => {
-      customRender(<AclTypeFilter />, {
+      customRender(<WrappedAclTypeFilter />, {
         queryClient: true,
         memoryRouter: true,
       });
@@ -109,7 +112,7 @@ describe("AclTypeFilter.tsx", () => {
     const consumerAcl = "CONSUMER";
 
     beforeEach(async () => {
-      customRender(<AclTypeFilter />, {
+      customRender(<WrappedAclTypeFilter />, {
         queryClient: true,
         browserRouter: true,
       });

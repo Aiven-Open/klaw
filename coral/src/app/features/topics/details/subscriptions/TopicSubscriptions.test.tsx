@@ -28,6 +28,18 @@ const mockCreateDeleteAclRequest =
     typeof createAclDeletionRequest
   >;
 
+const mockAuthUserReturnValue = {
+  canSwitchTeams: "",
+  teamId: "1003",
+  teamname: "Ospo",
+  username: "Kvothe",
+};
+
+const mockAuthUser = jest.fn();
+jest.mock("src/app/context-provider/AuthProvider", () => ({
+  useAuthContext: () => mockAuthUser(),
+}));
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useOutletContext: () => ({ topicName: "aiventopic1" }),
@@ -188,6 +200,8 @@ describe("TopicSubscriptions.tsx", () => {
     mockIntersectionObserver();
     mockGetTopicOverview.mockResolvedValue(mockGetTopicOverviewResponse);
     mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+    mockAuthUser.mockReturnValue(mockAuthUserReturnValue);
+
     customRender(
       // Aquarium context is needed for useToast
       <AquariumContext>
@@ -234,12 +248,13 @@ describe("TopicSubscriptions.tsx", () => {
       expect(button).toBeVisible();
       expect(button).toBeEnabled();
     });
-    it("should render enabled Team filter", () => {
+    it("should render enabled Team filter with default value", () => {
       const filter = screen.getByRole("combobox", {
         name: "Filter by team",
       });
       expect(filter).toBeVisible();
       expect(filter).toBeEnabled();
+      expect(filter).toHaveValue("1003");
     });
     it("should render enabled ACL type filter", () => {
       const filter = screen.getByRole("combobox", {
@@ -311,14 +326,14 @@ describe("TopicSubscriptions.tsx", () => {
     it("should allow searching", async () => {
       const search = screen.getByRole("search");
 
-      await userEvent.type(search, "amathieu");
+      await userEvent.type(search, "declineme");
 
-      expect(search).toHaveValue("amathieu");
+      expect(search).toHaveValue("declineme");
 
       await waitFor(() => {
         const rows = screen.getAllByRole("row");
-        const rowOne = screen.getByText("amathieu");
-        const rowTwo = screen.queryByText("declineme");
+        const rowOne = screen.getByText("declineme");
+        const rowTwo = screen.queryByText("amathieu");
         const rowThree = screen.queryByText("aivtopic3user");
         const prefixedRow = screen.queryByText("aivendemot");
         const transactionalRow = screen.queryByText("tsttxnid");
@@ -333,18 +348,18 @@ describe("TopicSubscriptions.tsx", () => {
   });
 
   describe("should render the correct data in Table when sub button are clicked", () => {
-    it("should render User subscriptions in Table, ", () => {
+    it("should render User subscriptions in Table by default, filtered by current user Team", () => {
       const rows = screen.getAllByRole("row");
-      const rowOne = screen.getByText("aivtopic3user");
-      const rowTwo = screen.getByText("declineme");
-      const rowThree = screen.getByText("amathieu");
+      const rowOne = screen.getByText("declineme");
+      const rowTwo = screen.getByText("aivtopic3user");
+      const rowThree = screen.queryByText("amathieu");
       const prefixedRow = screen.queryByText("aivendemot");
       const transactionalRow = screen.queryByText("tsttxnid");
 
-      expect(rows).toHaveLength(4);
+      expect(rows).toHaveLength(3);
       expect(rowOne).toBeVisible();
       expect(rowTwo).toBeVisible();
-      expect(rowThree).toBeVisible();
+      expect(rowThree).toBeNull();
       expect(prefixedRow).toBeNull();
       expect(transactionalRow).toBeNull();
     });

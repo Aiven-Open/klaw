@@ -12,7 +12,10 @@ import { RequestTypeFilter } from "src/app/features/components/filters/RequestTy
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
 import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  useFiltersContext,
+  withFiltersContext,
+} from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
   approveTopicRequest,
@@ -33,11 +36,8 @@ function TopicApprovals() {
     ? Number(searchParams.get("page"))
     : 1;
 
-  const { environment, status, search, teamId, requestType } = useFiltersValues(
-    {
-      defaultStatus: "CREATED",
-    }
-  );
+  const { environment, status, search, teamId, requestType } =
+    useFiltersContext();
 
   const [detailsModal, setDetailsModal] = useState<{
     isOpen: boolean;
@@ -282,7 +282,7 @@ function TopicApprovals() {
             key={"environment"}
             environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
           />,
-          <StatusFilter key={"status"} defaultStatus={"CREATED"} />,
+          <StatusFilter key={"status"} />,
           <RequestTypeFilter key={"requestType"} />,
           <TeamFilter key={"team"} />,
           <SearchTopicFilter key={"topic"} />,
@@ -297,4 +297,7 @@ function TopicApprovals() {
   );
 }
 
-export default TopicApprovals;
+export default withFiltersContext({
+  defaultValues: { status: "CREATED" },
+  element: <TopicApprovals />,
+});

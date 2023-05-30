@@ -1,6 +1,9 @@
 import { cleanup, renderHook } from "@testing-library/react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
-import { useFiltersValues } from "src/app/features/components/filters/useFiltersValues";
+import {
+  FiltersProvider,
+  useFiltersContext,
+} from "src/app/features/components/filters/useFiltersContext";
 
 describe("useFiltersValues.tsx", () => {
   describe("should get correct filter values from search paramns", () => {
@@ -11,10 +14,10 @@ describe("useFiltersValues.tsx", () => {
     it("gets the correct environment filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
+      } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?environment=1"]}>
-            {children}
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -24,10 +27,10 @@ describe("useFiltersValues.tsx", () => {
     it("gets the correct aclType filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
+      } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?aclType=PRODUCER"]}>
-            {children}
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -37,10 +40,10 @@ describe("useFiltersValues.tsx", () => {
     it("gets the correct status filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
+      } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?status=CREATED"]}>
-            {children}
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -50,10 +53,10 @@ describe("useFiltersValues.tsx", () => {
     it("gets the correct team filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
+      } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?teamId=1"]}>
-            {children}
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -63,10 +66,10 @@ describe("useFiltersValues.tsx", () => {
     it("gets the correct showOnlyMyRequests filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
+      } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?showOnlyMyRequests=true"]}>
-            {children}
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -76,10 +79,10 @@ describe("useFiltersValues.tsx", () => {
     it("gets the correct operationType filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
+      } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?requestType=CLAIM"]}>
-            {children}
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -90,10 +93,10 @@ describe("useFiltersValues.tsx", () => {
     it("gets the correct search filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
+      } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?search=abc"]}>
-            {children}
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -109,8 +112,14 @@ describe("useFiltersValues.tsx", () => {
       it("gets the correct environment filter value", () => {
         const {
           result: { current },
-        } = renderHook(() => useFiltersValues({ defaultEnvironment: "2" }), {
-          wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+        } = renderHook(() => useFiltersContext(), {
+          wrapper: ({ children }) => (
+            <MemoryRouter>
+              <FiltersProvider defaultValues={{ environment: "2" }}>
+                {children}
+              </FiltersProvider>
+            </MemoryRouter>
+          ),
         });
 
         expect(current.environment).toBe("2");
@@ -119,8 +128,14 @@ describe("useFiltersValues.tsx", () => {
       it("gets the correct aclType filter value", () => {
         const {
           result: { current },
-        } = renderHook(() => useFiltersValues({ defaultAclType: "CONSUMER" }), {
-          wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+        } = renderHook(() => useFiltersContext(), {
+          wrapper: ({ children }) => (
+            <MemoryRouter>
+              <FiltersProvider defaultValues={{ aclType: "CONSUMER" }}>
+                {children}
+              </FiltersProvider>
+            </MemoryRouter>
+          ),
         });
 
         expect(current.aclType).toBe("CONSUMER");
@@ -129,8 +144,14 @@ describe("useFiltersValues.tsx", () => {
       it("gets the correct status filter value", () => {
         const {
           result: { current },
-        } = renderHook(() => useFiltersValues({ defaultStatus: "DELETED" }), {
-          wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+        } = renderHook(() => useFiltersContext(), {
+          wrapper: ({ children }) => (
+            <MemoryRouter>
+              <FiltersProvider defaultValues={{ status: "DELETED" }}>
+                {children}
+              </FiltersProvider>
+            </MemoryRouter>
+          ),
         });
 
         expect(current.status).toBe("DELETED");
@@ -139,8 +160,14 @@ describe("useFiltersValues.tsx", () => {
       it("gets the correct team filter value", () => {
         const {
           result: { current },
-        } = renderHook(() => useFiltersValues({ defaultTeam: "2" }), {
-          wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+        } = renderHook(() => useFiltersContext(), {
+          wrapper: ({ children }) => (
+            <MemoryRouter>
+              <FiltersProvider defaultValues={{ teamId: "2" }}>
+                {children}
+              </FiltersProvider>
+            </MemoryRouter>
+          ),
         });
 
         expect(current.teamId).toBe("2");
@@ -149,12 +176,15 @@ describe("useFiltersValues.tsx", () => {
       it("gets the correct showOnlyMyRequests filter value", () => {
         const {
           result: { current },
-        } = renderHook(
-          () => useFiltersValues({ defaultShowOnlyMyRequests: false }),
-          {
-            wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
-          }
-        );
+        } = renderHook(() => useFiltersContext(), {
+          wrapper: ({ children }) => (
+            <MemoryRouter>
+              <FiltersProvider defaultValues={{ showOnlyMyRequests: false }}>
+                {children}
+              </FiltersProvider>
+            </MemoryRouter>
+          ),
+        });
 
         expect(current.showOnlyMyRequests).toBe(false);
       });
@@ -162,12 +192,15 @@ describe("useFiltersValues.tsx", () => {
       it("gets the correct operationType filter value", () => {
         const {
           result: { current },
-        } = renderHook(
-          () => useFiltersValues({ defaultRequestType: "CREATE" }),
-          {
-            wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
-          }
-        );
+        } = renderHook(() => useFiltersContext(), {
+          wrapper: ({ children }) => (
+            <MemoryRouter>
+              <FiltersProvider defaultValues={{ requestType: "CREATE" }}>
+                {children}
+              </FiltersProvider>
+            </MemoryRouter>
+          ),
+        });
 
         expect(current.requestType).toBe("CREATE");
       });
@@ -175,8 +208,14 @@ describe("useFiltersValues.tsx", () => {
       it("gets the correct search filter value", () => {
         const {
           result: { current },
-        } = renderHook(() => useFiltersValues({ defaultSearch: "abc" }), {
-          wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
+        } = renderHook(() => useFiltersContext(), {
+          wrapper: ({ children }) => (
+            <MemoryRouter>
+              <FiltersProvider defaultValues={{ search: "abc" }}>
+                {children}
+              </FiltersProvider>
+            </MemoryRouter>
+          ),
         });
 
         expect(current.search).toBe("abc");
@@ -192,8 +231,12 @@ describe("useFiltersValues.tsx", () => {
     it("sets the correct environment filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      } = renderHook(() => useFiltersContext(), {
+        wrapper: ({ children }) => (
+          <BrowserRouter>
+            <FiltersProvider>{children}</FiltersProvider>
+          </BrowserRouter>
+        ),
       });
 
       current.setFilterValue({
@@ -206,8 +249,12 @@ describe("useFiltersValues.tsx", () => {
     it("sets the correct aclType filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      } = renderHook(() => useFiltersContext(), {
+        wrapper: ({ children }) => (
+          <BrowserRouter>
+            <FiltersProvider>{children}</FiltersProvider>
+          </BrowserRouter>
+        ),
       });
 
       current.setFilterValue({
@@ -220,8 +267,12 @@ describe("useFiltersValues.tsx", () => {
     it("sets the correct status filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      } = renderHook(() => useFiltersContext(), {
+        wrapper: ({ children }) => (
+          <BrowserRouter>
+            <FiltersProvider>{children}</FiltersProvider>
+          </BrowserRouter>
+        ),
       });
 
       current.setFilterValue({
@@ -234,8 +285,12 @@ describe("useFiltersValues.tsx", () => {
     it("sets the correct team filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      } = renderHook(() => useFiltersContext(), {
+        wrapper: ({ children }) => (
+          <BrowserRouter>
+            <FiltersProvider>{children}</FiltersProvider>
+          </BrowserRouter>
+        ),
       });
 
       current.setFilterValue({
@@ -248,8 +303,12 @@ describe("useFiltersValues.tsx", () => {
     it("sets the correct showOnlyMyRequests filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      } = renderHook(() => useFiltersContext(), {
+        wrapper: ({ children }) => (
+          <BrowserRouter>
+            <FiltersProvider>{children}</FiltersProvider>
+          </BrowserRouter>
+        ),
       });
 
       current.setFilterValue({
@@ -262,8 +321,12 @@ describe("useFiltersValues.tsx", () => {
     it("sets the correct operationType filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      } = renderHook(() => useFiltersContext(), {
+        wrapper: ({ children }) => (
+          <BrowserRouter>
+            <FiltersProvider>{children}</FiltersProvider>
+          </BrowserRouter>
+        ),
       });
 
       current.setFilterValue({
@@ -276,8 +339,12 @@ describe("useFiltersValues.tsx", () => {
     it("sets the correct search filter value", () => {
       const {
         result: { current },
-      } = renderHook(() => useFiltersValues(), {
-        wrapper: ({ children }) => <BrowserRouter>{children}</BrowserRouter>,
+      } = renderHook(() => useFiltersContext(), {
+        wrapper: ({ children }) => (
+          <BrowserRouter>
+            <FiltersProvider>{children}</FiltersProvider>
+          </BrowserRouter>
+        ),
       });
 
       current.setFilterValue({

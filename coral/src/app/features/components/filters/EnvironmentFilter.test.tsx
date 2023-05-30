@@ -2,6 +2,7 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import {
   getAllEnvironmentsForTopicAndAcl,
   getAllEnvironmentsForSchema,
@@ -40,6 +41,14 @@ const mockEnvironments = [
 
 const filterLabel = "Filter by Environment";
 
+const WrappedEnvironmentFilter = withFiltersContext({
+  element: (
+    <EnvironmentFilter
+      environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
+    />
+  ),
+});
+
 describe("EnvironmentFilter.tsx", () => {
   describe("uses a given endpoint to fetch environments", () => {
     beforeEach(() => {
@@ -53,15 +62,10 @@ describe("EnvironmentFilter.tsx", () => {
     });
 
     it("fetches from the getAllEnvironmentsForTopicAndAcl endpoint", () => {
-      customRender(
-        <EnvironmentFilter
-          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
-        />,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<WrappedEnvironmentFilter />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
 
       expect(mockGetEnvironments).toHaveBeenCalled();
       expect(mockGetSchemaRegistryEnvironments).not.toHaveBeenCalled();
@@ -69,15 +73,17 @@ describe("EnvironmentFilter.tsx", () => {
     });
 
     it("fetches from the getAllEnvironmentsForSchema endpoint", () => {
-      customRender(
-        <EnvironmentFilter
-          environmentEndpoint={"getAllEnvironmentsForSchema"}
-        />,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      const WrappedEnvironmentFilter = withFiltersContext({
+        element: (
+          <EnvironmentFilter
+            environmentEndpoint={"getAllEnvironmentsForSchema"}
+          />
+        ),
+      });
+      customRender(<WrappedEnvironmentFilter />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
 
       expect(mockGetSchemaRegistryEnvironments).toHaveBeenCalled();
       expect(mockGetEnvironments).not.toHaveBeenCalled();
@@ -85,15 +91,17 @@ describe("EnvironmentFilter.tsx", () => {
     });
 
     it("fetches from the getAllEnvironmentsForConnector endpoint", () => {
-      customRender(
-        <EnvironmentFilter
-          environmentEndpoint={"getAllEnvironmentsForConnector"}
-        />,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      const WrappedEnvironmentFilter = withFiltersContext({
+        element: (
+          <EnvironmentFilter
+            environmentEndpoint={"getAllEnvironmentsForConnector"}
+          />
+        ),
+      });
+      customRender(<WrappedEnvironmentFilter />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
 
       expect(mockGetSyncConnectorsEnvironments).toHaveBeenCalled();
       expect(mockGetEnvironments).not.toHaveBeenCalled();
@@ -107,15 +115,10 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
-      customRender(
-        <EnvironmentFilter
-          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
-        />,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      customRender(<WrappedEnvironmentFilter />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
@@ -165,16 +168,11 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
-      customRender(
-        <EnvironmentFilter
-          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
-        />,
-        {
-          memoryRouter: true,
-          queryClient: true,
-          customRoutePath: routePath,
-        }
-      );
+      customRender(<WrappedEnvironmentFilter />, {
+        memoryRouter: true,
+        queryClient: true,
+        customRoutePath: routePath,
+      });
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
@@ -201,15 +199,10 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
-      customRender(
-        <EnvironmentFilter
-          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
-        />,
-        {
-          queryClient: true,
-          memoryRouter: true,
-        }
-      );
+      customRender(<WrappedEnvironmentFilter />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );
@@ -240,15 +233,10 @@ describe("EnvironmentFilter.tsx", () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([]);
       mockGetSyncConnectorsEnvironments.mockResolvedValue([]);
 
-      customRender(
-        <EnvironmentFilter
-          environmentEndpoint={"getAllEnvironmentsForTopicAndAcl"}
-        />,
-        {
-          queryClient: true,
-          browserRouter: true,
-        }
-      );
+      customRender(<WrappedEnvironmentFilter />, {
+        queryClient: true,
+        browserRouter: true,
+      });
       await waitForElementToBeRemoved(
         screen.getByTestId("select-environment-loading")
       );

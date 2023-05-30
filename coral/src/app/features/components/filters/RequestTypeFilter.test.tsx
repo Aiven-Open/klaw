@@ -5,14 +5,19 @@ import {
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const filterLabel = "Filter by request type";
 
+const WrappedRequestTypeFilter = withFiltersContext({
+  element: <RequestTypeFilter />,
+});
+
 describe("RequestTypeFilter.tsx", () => {
   describe("renders all necessary elements", () => {
-    beforeAll(async () => {
-      customRender(<RequestTypeFilter />, {
+    beforeAll(() => {
+      customRender(<WrappedRequestTypeFilter />, {
         memoryRouter: true,
       });
     });
@@ -50,7 +55,7 @@ describe("RequestTypeFilter.tsx", () => {
     beforeEach(async () => {
       const routePath = `/?requestType=${requestTypeDelete}`;
 
-      customRender(<RequestTypeFilter />, {
+      customRender(<WrappedRequestTypeFilter />, {
         memoryRouter: true,
         queryClient: true,
         customRoutePath: routePath,
@@ -79,7 +84,7 @@ describe("RequestTypeFilter.tsx", () => {
     const approvedName = requestOperationTypeNameMap[requestTypeCreate];
 
     beforeEach(async () => {
-      customRender(<RequestTypeFilter />, {
+      customRender(<WrappedRequestTypeFilter />, {
         queryClient: true,
         memoryRouter: true,
       });
@@ -111,7 +116,7 @@ describe("RequestTypeFilter.tsx", () => {
     const deleteName = requestOperationTypeNameMap[defaultRequestType];
 
     beforeEach(async () => {
-      customRender(<RequestTypeFilter />, {
+      customRender(<WrappedRequestTypeFilter />, {
         queryClient: true,
         browserRouter: true,
       });
