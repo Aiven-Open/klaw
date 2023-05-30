@@ -17,7 +17,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?environment=1"]}>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -30,7 +30,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?aclType=PRODUCER"]}>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -43,7 +43,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?status=CREATED"]}>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -56,7 +56,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?teamId=1"]}>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -69,7 +69,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?showOnlyMyRequests=true"]}>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -82,7 +82,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?requestType=CLAIM"]}>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -96,7 +96,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <MemoryRouter initialEntries={["/?search=abc"]}>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </MemoryRouter>
         ),
       });
@@ -234,7 +234,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <BrowserRouter>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </BrowserRouter>
         ),
       });
@@ -252,7 +252,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <BrowserRouter>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </BrowserRouter>
         ),
       });
@@ -270,7 +270,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <BrowserRouter>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </BrowserRouter>
         ),
       });
@@ -288,7 +288,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <BrowserRouter>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </BrowserRouter>
         ),
       });
@@ -306,7 +306,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <BrowserRouter>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </BrowserRouter>
         ),
       });
@@ -324,7 +324,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <BrowserRouter>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </BrowserRouter>
         ),
       });
@@ -342,7 +342,7 @@ describe("useFiltersValues.tsx", () => {
       } = renderHook(() => useFiltersContext(), {
         wrapper: ({ children }) => (
           <BrowserRouter>
-            <FiltersProvider defaultValues={{}}>{children}</FiltersProvider>
+            <FiltersProvider>{children}</FiltersProvider>
           </BrowserRouter>
         ),
       });

@@ -77,8 +77,6 @@ describe("MyRequestsFilter", () => {
     });
     await userEvent.click(showMyRequests);
     await waitFor(() => expect(showMyRequests).not.toBeChecked());
-    await waitFor(() =>
-      expect(window.location.search).toEqual("?showOnlyMyRequests=false&page=1")
-    );
+    await waitFor(() => expect(window.location.search).toEqual("?page=1"));
   });
 });

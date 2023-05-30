@@ -15,20 +15,7 @@ type SetFiltersParams =
   | { name: "requestType"; value: RequestOperationType | "ALL" }
   | { name: "search"; value: string };
 
-type UseFiltersValuesParams =
-  | {
-      environment?: string;
-      aclType?: AclType | "ALL";
-      status?: RequestStatus;
-      teamId?: string;
-      showOnlyMyRequests?: boolean;
-      requestType?: RequestOperationType | "ALL";
-      search?: string;
-      paginated?: boolean;
-    }
-  | undefined;
-
-type UseFilterValuesReturn = {
+interface UseFiltersDefaultValues {
   environment: string;
   aclType: AclType | "ALL";
   status: RequestStatus;
@@ -36,10 +23,15 @@ type UseFilterValuesReturn = {
   showOnlyMyRequests: boolean;
   requestType: RequestOperationType | "ALL";
   search: string;
-  setFilterValue: ({ name, value }: SetFiltersParams) => void;
-};
+  paginated: boolean;
+}
 
-const emptyValues: Omit<UseFilterValuesReturn, "setFilterValue"> = {
+interface UseFiltersReturnedValues
+  extends Omit<UseFiltersDefaultValues, "paginated"> {
+  setFilterValue: ({ name, value }: SetFiltersParams) => void;
+}
+
+const emptyValues: UseFiltersDefaultValues = {
   environment: "ALL",
   aclType: "ALL",
   status: "ALL",
@@ -47,9 +39,10 @@ const emptyValues: Omit<UseFilterValuesReturn, "setFilterValue"> = {
   showOnlyMyRequests: false,
   requestType: "ALL",
   search: "",
+  paginated: true,
 };
 
-const FiltersContext = createContext<UseFilterValuesReturn>({
+const FiltersContext = createContext<UseFiltersReturnedValues>({
   ...emptyValues,
   setFilterValue: () => null,
 });
@@ -58,15 +51,15 @@ const useFiltersContext = () => useContext(FiltersContext);
 
 const FiltersProvider = ({
   children,
-  defaultValues = {},
+  defaultValues = emptyValues,
 }: {
   children: ReactNode;
-  defaultValues: UseFiltersValuesParams;
+  defaultValues?: Partial<UseFiltersDefaultValues>;
 }) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   //
-  const initialvalues = { ...emptyValues, paginated: true, ...defaultValues };
+  const initialvalues = { ...emptyValues, ...defaultValues };
 
   const environment =
     searchParams.get("environment") ?? initialvalues.environment;
@@ -86,7 +79,7 @@ const FiltersProvider = ({
     const parsedValue = typeof value === "boolean" ? String(value) : value;
     searchParams.set(name, parsedValue);
 
-    if (parsedValue === initialvalues[name]) {
+    if (value === initialvalues[name]) {
       searchParams.delete(name);
     }
 
@@ -120,7 +113,7 @@ const withFiltersContext = ({
   defaultValues,
 }: {
   element: React.ReactNode;
-  defaultValues?: UseFiltersValuesParams;
+  defaultValues?: Partial<UseFiltersDefaultValues>;
 }) => {
   const WrappedElement = () => (
     <FiltersProvider defaultValues={defaultValues}>{element}</FiltersProvider>
