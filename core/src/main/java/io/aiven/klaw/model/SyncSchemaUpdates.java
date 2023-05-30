@@ -10,4 +10,5 @@ public class SyncSchemaUpdates {
   private String targetKafkaEnvSelected;
   private String topicsSelectionType; // ALL_TOPICS / SELECTED_TOPICS
   private String typeOfSync; // SYNC_SCHEMAS / SYNC_BACK_SCHEMAS
+  private boolean forceRegisterSchema;
 }

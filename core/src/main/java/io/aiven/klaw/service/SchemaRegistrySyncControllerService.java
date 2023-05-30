@@ -44,6 +44,7 @@ public class SchemaRegistrySyncControllerService {
   public static final String IN_SYNC = "IN_SYNC";
   public static final String SOURCE_METADATA = "metadata";
   public static final String SOURCE_CLUSTER = "cluster";
+  private static final String LEGACY_TOPIC_VERSION = "1.0";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired ClusterApiService clusterApiService;
@@ -139,12 +140,11 @@ public class SchemaRegistrySyncControllerService {
             .getHandleDbRequests()
             .getTopicAndVersionsForEnvAndTenantId(schemaEnvId, tenantId);
 
-    String legacyTopicVersion = "1.0";
     for (Topic topic : topicList) {
       if (topicSchemaVersionsInDb.containsKey(topic.getTopicname())) {
         Set<String> schemaVersions = topicSchemaVersionsInDb.get(topic.getTopicname());
 
-        if (schemaVersions.contains(legacyTopicVersion)) {
+        if (schemaVersions.contains(LEGACY_TOPIC_VERSION)) {
           continue;
         }
 
@@ -338,13 +338,12 @@ public class SchemaRegistrySyncControllerService {
           clusterApiService.deleteSchema(
               topicName, syncSchemaUpdates.getTargetKafkaEnvSelected(), tenantId);
 
-      logArray.add("Schemas deleted for " + topicName);
-
       // check for success or schema may not exist
       if (apiResponseEntity.getBody() != null
           && (apiResponseEntity.getBody().isSuccess()
               || (!apiResponseEntity.getBody().isSuccess()
                   && apiResponseEntity.getBody().getMessage().contains(SCH_SYNC_ERR_102)))) {
+        logArray.add("Schemas deleted for " + topicName);
         // create new schemas
         List<MessageSchema> schemaList =
             manageDatabase
@@ -359,7 +358,7 @@ public class SchemaRegistrySyncControllerService {
         List<MessageSchema> schemaListUpdated = new ArrayList<>();
         for (MessageSchema messageSchema : schemaList) {
           SchemaRequest schemaRequest = new SchemaRequest();
-          schemaRequest.setForceRegister(true);
+          schemaRequest.setForceRegister(syncSchemaUpdates.isForceRegisterSchema());
           schemaRequest.setSchemafull(messageSchema.getSchemafull());
 
           ResponseEntity<ApiResponse> apiResponseCreateEntity =
@@ -383,10 +382,14 @@ public class SchemaRegistrySyncControllerService {
 
             logArray.add(
                 "Schemas registered on cluster for " + topicName + " Version " + schemaVersion);
+          } else {
+            logArray.add("Schema NOT updated :" + topicName);
           }
         }
 
         manageDatabase.getHandleDbRequests().updateDbWithUpdatedVersions(schemaListUpdated);
+      } else {
+        logArray.add("Schema NOT updated :" + topicName);
       }
     }
 

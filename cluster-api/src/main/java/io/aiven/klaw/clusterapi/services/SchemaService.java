@@ -120,21 +120,7 @@ public class SchemaService {
       RegisterSchemaCustomResponse registerSchemaCustomResponse =
           registerSchemaPostCall(clusterSchemaRequest);
 
-      try {
-        CompletableFuture.runAsync(
-                () -> {
-                  loadAllSchemasInfoFromCluster(
-                      clusterSchemaRequest.getEnv(),
-                      clusterSchemaRequest.getProtocol(),
-                      clusterSchemaRequest.getClusterIdentification(),
-                      true,
-                      SchemaCacheUpdateType.CREATE,
-                      clusterSchemaRequest.getTopicName());
-                })
-            .get();
-      } catch (InterruptedException | ExecutionException e) {
-        log.error("Async loadAllSchemasInfoFromCluster Exception:", e);
-      }
+      updateSchemaCache(clusterSchemaRequest);
 
       return ApiResponse.builder()
           .success(true)
@@ -158,6 +144,24 @@ public class SchemaService {
       // Ensure the Schema compatibility is returned to previous setting before the force update.
       resetCompatibilityOnSubject(
           clusterSchemaRequest, schemaCompatibility, schemaCompatibilitySetOnSubject);
+    }
+  }
+
+  private void updateSchemaCache(ClusterSchemaRequest clusterSchemaRequest) {
+    try {
+      CompletableFuture.runAsync(
+              () -> {
+                loadAllSchemasInfoFromCluster(
+                    clusterSchemaRequest.getEnv(),
+                    clusterSchemaRequest.getProtocol(),
+                    clusterSchemaRequest.getClusterIdentification(),
+                    true,
+                    SchemaCacheUpdateType.CREATE,
+                    clusterSchemaRequest.getTopicName());
+              })
+          .get();
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Async loadAllSchemasInfoFromCluster Exception:", e);
     }
   }
 
@@ -747,7 +751,9 @@ public class SchemaService {
   }
 
   @Async("resetSchemaCacheTaskExecutor")
-  @Scheduled(cron = "${klaw.schemainfo.cron.expression:0 0 0 * * ?}")
+  @Scheduled(
+      cron = "${klaw.schemainfo.cron.expression:0 0 0 * * ?}",
+      zone = "${klaw.schemainfo.cron.expression.timezone:UTC}")
   public void resetSchemaCacheScheduler() {
     for (String schemasVersionsStorageKey : schemasInfoCacheKeySetMap.keySet()) {
       SchemaInfoCacheKeySet schemaInfoCacheKeySet =

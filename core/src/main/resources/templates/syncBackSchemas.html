@@ -540,6 +540,17 @@
 								<td align="left"><h3 class="card-title">Synchronize Schemas to Environment</h3>
 								</td>
 								</tr>
+								<tr>
+									<td>
+										<text style="color:red">
+											Important : This process deletes all the existing schemas for that subject in target environment and creates new ones based on Klaw metadata.
+											<br> Ex : If version 1 already exists on target cluster, it will be deleted, and new schemas will be created starting with '2' as new version.
+											<br>
+											Schemas will be registered in the same ascending order of versions. If there is a compatibility failure, schemas will be force registered based on force register selection.
+
+										</text>
+									</td>
+								</tr>
 							</table>
 							<hr size="1" color="black">
 							<div>
@@ -602,16 +613,31 @@
 					<div class="card">
 						<div class="card-body">
 							You are about to create schemas on selected target environment with schemas and their versions based of source environment in metastore.
-							<br>
-							<text style="color:red">
-								Important : This process deletes all the existing schemas for that subject in target environment and creates new ones based on Klaw metadata.
-								<br> Ex : If version 1 already exists on target cluster, it will be deleted, and new schemas will be created starting with '2' as new version.
-								<br>
-								Schemas will be registered in the same ascending order of versions. If there is a compatibility failure, schemas will be force registered.
 
-							</text>
 							<hr size="1" color="black"><br>
+
+
 							<div class="form-body">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="card-body">
+											<div class="mb-6">
+												<table border="0">
+													<tr>
+														<td>
+															<label class="custom-control custom-checkbox">
+															<input type="checkbox" value="true" ng-click="updateForceRegister(forceRegisterSchema);"
+																   ng-init="true" ng-model="forceRegisterSchema" class="custom-control-input">
+															<span class="custom-control-label">Force register (If there is a compatibility failure, schemas will be force registered.)</span>
+															</label>
+														</td>
+													</tr>
+												</table>
+											</div>
+										</div>
+									</div>
+								</div>
+
 								<div class="row">
 									<div class="col-md-4">
 										<div class="mb-2">

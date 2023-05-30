@@ -422,7 +422,6 @@ public class ClusterApiService {
       }
 
       HttpHeaders headers = createHeaders(clusterApiUser);
-      headers.setContentType(MediaType.APPLICATION_JSON);
 
       HttpEntity<ClusterConnectorRequest> request =
           new HttpEntity<>(clusterConnectorRequest, headers);
@@ -544,7 +543,6 @@ public class ClusterApiService {
       }
 
       HttpHeaders headers = createHeaders(clusterApiUser);
-      headers.setContentType(MediaType.APPLICATION_JSON);
       HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
@@ -761,7 +759,6 @@ public class ClusterApiService {
       }
 
       HttpHeaders headers = createHeaders(clusterApiUser);
-      headers.setContentType(MediaType.APPLICATION_JSON);
       HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
@@ -813,8 +810,6 @@ public class ClusterApiService {
               .build();
 
       HttpHeaders headers = createHeaders(clusterApiUser);
-      headers.setContentType(MediaType.APPLICATION_JSON);
-
       HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
@@ -1079,6 +1074,7 @@ public class ClusterApiService {
     HttpHeaders httpHeaders = new HttpHeaders();
     String authHeader = "Bearer " + generateToken(username);
     httpHeaders.set("Authorization", authHeader);
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
     return httpHeaders;
   }
@@ -1107,7 +1103,6 @@ public class ClusterApiService {
 
   private HttpEntity<String> getHttpEntity() throws KlawException {
     HttpHeaders headers = createHeaders(clusterApiUser);
-    headers.setContentType(MediaType.APPLICATION_JSON);
 
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
     return new HttpEntity<>(headers);

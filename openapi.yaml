@@ -5577,6 +5577,9 @@
           },
           "typeOfSync" : {
             "type" : "string"
+          },
+          "forceRegisterSchema" : {
+            "type" : "boolean"
           }
         }
       },

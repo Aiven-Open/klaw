@@ -330,6 +330,7 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
 	}
 
     $scope.enableCreateTopicsButton = false;
+    $scope.forceRegisterSchema = true;
 
 	$scope.syncBackSchemas = function(){
 	    $scope.alert = "";
@@ -379,6 +380,7 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
         serviceInput['targetKafkaEnvSelected'] = $scope.targetEnvId;
         serviceInput['typeOfSync'] = 'SYNC_BACK_SCHEMAS';
         serviceInput['topicsSelectionType'] = topicsSelectionType;
+        serviceInput['forceRegisterSchema'] = $scope.forceRegisterSchema;
 
         swal({
         		title: "Are you sure?",
