@@ -272,6 +272,12 @@ public interface HandleDbRequests {
 
   List<Map<String, String>> getAllMetrics(String metricsType, String metricsName, String env);
 
+  List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+      int tenantId, String schemaEnvId, String topicName, String schemaVersion);
+
+  List<MessageSchema> getSchemaForTenantAndEnvAndTopic(
+      int tenantId, String schemaEnvId, String topicName);
+
   /*--------------------Update */
   String updateTopicDocumentation(Topic topic);
 
@@ -294,6 +300,8 @@ public interface HandleDbRequests {
   void updateNewUserRequest(String username, String approver, boolean isApprove);
 
   String updateSchemaRequest(SchemaRequest schemaRequest, String approver);
+
+  String updateDbWithUpdatedVersions(List<MessageSchema> schemaListUpdated);
 
   String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver);
 

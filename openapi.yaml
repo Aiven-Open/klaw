@@ -580,6 +580,23 @@
           "schema" : {
             "type" : "string"
           }
+        }, {
+          "name" : "source",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "cluster"
+          }
+        }, {
+          "name" : "teamId",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
         } ],
         "responses" : {
           "200" : {
@@ -2166,11 +2183,18 @@
         }
       }
     },
-    "/schemas/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}" : {
+    "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}" : {
       "get" : {
         "tags" : [ "schema-registry-sync-controller" ],
-        "operationId" : "getSchemaOfTopicFromCluster",
+        "operationId" : "getSchemaOfTopicFromSource",
         "parameters" : [ {
+          "name" : "source",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
           "name" : "topicName",
           "in" : "path",
           "required" : true,
@@ -5542,8 +5566,20 @@
               "type" : "string"
             }
           },
-          "kafkaEnvSelected" : {
+          "sourceKafkaEnvSelected" : {
             "type" : "string"
+          },
+          "targetKafkaEnvSelected" : {
+            "type" : "string"
+          },
+          "topicsSelectionType" : {
+            "type" : "string"
+          },
+          "typeOfSync" : {
+            "type" : "string"
+          },
+          "forceRegisterSchema" : {
+            "type" : "boolean"
           }
         }
       },
@@ -6284,6 +6320,9 @@
           "remarks" : {
             "type" : "string"
           },
+          "envId" : {
+            "type" : "string"
+          },
           "currentPage" : {
             "type" : "string"
           },
@@ -6306,6 +6345,10 @@
             "items" : {
               "$ref" : "#/components/schemas/SchemaSubjectInfoResponse"
             }
+          },
+          "allTopicsCount" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         }
       },
@@ -7866,6 +7909,9 @@
           "syncBackTopics" : {
             "type" : "string"
           },
+          "syncBackSchemas" : {
+            "type" : "string"
+          },
           "syncBackAcls" : {
             "type" : "string"
           },
@@ -7930,7 +7976,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
+        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
       "KwPropertiesResponse" : {
         "properties" : {

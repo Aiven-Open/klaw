@@ -34,6 +34,7 @@ public class AuthenticationInfo {
   @NotNull private String requestItems;
   @NotNull private String viewKafkaConnect;
   @NotNull private String syncBackTopics;
+  @NotNull private String syncBackSchemas;
   @NotNull private String syncBackAcls;
   @NotNull private String updateServerConfig;
   @NotNull private String showServerConfigEnvProperties;

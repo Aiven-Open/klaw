@@ -66,7 +66,7 @@ public class SchemaRegistrySyncControllerTest {
   public void getSchemasInfoOfAnEnvironment() throws Exception {
     SyncSchemasList schemasInfoOfClusterResponse = utilMethods.getSchemasSyncInfoOfEnv();
     when(schemaRegistrySyncControllerService.getSchemasOfEnvironment(
-            anyString(), anyString(), anyString(), any(), anyBoolean()))
+            anyString(), anyString(), anyString(), any(), anyBoolean(), anyString(), anyInt()))
         .thenReturn(schemasInfoOfClusterResponse);
 
     mvc.perform(
@@ -74,6 +74,7 @@ public class SchemaRegistrySyncControllerTest {
                 .param("envId", "1")
                 .param("pageNo", "1")
                 .param("showAllTopics", "false")
+                .param("source", "cluster")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -86,11 +87,12 @@ public class SchemaRegistrySyncControllerTest {
     ApiResponse apiResponse =
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     SyncSchemaUpdates syncSchemaUpdates = new SyncSchemaUpdates();
-    syncSchemaUpdates.setKafkaEnvSelected("1");
+    syncSchemaUpdates.setSourceKafkaEnvSelected("1");
     syncSchemaUpdates.setTopicList(List.of("Topic01"));
+    syncSchemaUpdates.setTypeOfSync("SYNC_SCHEMAS");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncSchemaUpdates);
 
-    when(schemaRegistrySyncControllerService.updateDbFromCluster(eq(syncSchemaUpdates)))
+    when(schemaRegistrySyncControllerService.updateSyncSchemas(eq(syncSchemaUpdates)))
         .thenReturn(apiResponse);
 
     mvc.perform(
@@ -116,12 +118,13 @@ public class SchemaRegistrySyncControllerTest {
     schemaDetailsResponse.setEnvName(topicEnv);
     schemaDetailsResponse.setTopicName(topicName);
 
-    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromCluster(
-            anyString(), anyInt(), anyString()))
+    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
+            anyString(), anyString(), anyInt(), anyString()))
         .thenReturn(schemaDetailsResponse);
 
     mvc.perform(
-            MockMvcRequestBuilders.get("/schemas/kafkaEnv/1/topic/testtopic/schemaVersion/1")
+            MockMvcRequestBuilders.get(
+                    "/schemas/source/cluster/kafkaEnv/1/topic/testtopic/schemaVersion/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -134,12 +137,13 @@ public class SchemaRegistrySyncControllerTest {
   public void getSchemaOfTopicNoContent() throws Exception {
     SchemaDetailsResponse schemaDetailsResponse = new SchemaDetailsResponse();
 
-    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromCluster(
-            anyString(), anyInt(), anyString()))
+    when(schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
+            anyString(), anyString(), anyInt(), anyString()))
         .thenReturn(schemaDetailsResponse);
 
     mvc.perform(
-            MockMvcRequestBuilders.get("/schemas/kafkaEnv/1/topic/testtopic/schemaVersion/2")
+            MockMvcRequestBuilders.get(
+                    "/schemas/source/cluster/kafkaEnv/1/topic/testtopic/schemaVersion/2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())

@@ -649,6 +649,19 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcSelectHelper.selectAllMetrics(metricsType, metricsName, env);
   }
 
+  @Override
+  public List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+      int tenantId, String schemaEnvId, String topicName, String schemaVersion) {
+    return jdbcSelectHelper.getSchemaForTenantAndEnvAndTopicAndVersion(
+        tenantId, schemaEnvId, topicName, schemaVersion);
+  }
+
+  @Override
+  public List<MessageSchema> getSchemaForTenantAndEnvAndTopic(
+      int tenantId, String schemaEnvId, String topicName) {
+    return jdbcSelectHelper.getSchemaForTenantAndEnvAndTopic(tenantId, schemaEnvId, topicName);
+  }
+
   /*--------------------Update */
 
   @Override
@@ -961,5 +974,9 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public String updateJsonParams(Map<String, String> jsonParams, Integer req_no, int tenantId) {
     return jdbcUpdateHelper.updateJsonParams(jsonParams, req_no, tenantId);
+  }
+
+  public String updateDbWithUpdatedVersions(List<MessageSchema> schemaListUpdated) {
+    return jdbcUpdateHelper.updateDbWithUpdatedVersions(schemaListUpdated);
   }
 }

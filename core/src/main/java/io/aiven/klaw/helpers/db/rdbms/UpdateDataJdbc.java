@@ -608,4 +608,9 @@ public class UpdateDataJdbc {
     // We expext that the instant.now() will be before the tokens end of life time.
     return Timestamp.from(Instant.now()).before(new Timestamp(startTime.getTime() + tokenTTL));
   }
+
+  public String updateDbWithUpdatedVersions(List<MessageSchema> schemaListUpdated) {
+    messageSchemaRepo.saveAll(schemaListUpdated);
+    return ApiResultStatus.SUCCESS.value;
+  }
 }

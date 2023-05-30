@@ -7,4 +7,5 @@ import lombok.Data;
 @Data
 public class SyncSchemasList implements Serializable {
   private List<SchemaSubjectInfoResponse> schemaSubjectInfoResponseList;
+  private int allTopicsCount;
 }

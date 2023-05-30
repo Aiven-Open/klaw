@@ -100,6 +100,8 @@ public class KwConstants {
   public static final String URI_CREATE_TOPICS = "/topics/createTopics";
   public static final String URI_UPDATE_TOPICS = "/topics/updateTopics";
   public static final String URI_DELETE_TOPICS = "/topics/deleteTopics";
+
+  public static final String URI_DELETE_SCHEMAS = "/topics/schema/delete";
   public static final String URI_POST_CONNECTOR = "/topics/postConnector";
   public static final String URI_UPDATE_CONNECTOR = "/topics/updateConnector";
   public static final String URI_DELETE_CONNECTOR = "/topics/deleteConnector";

@@ -422,7 +422,6 @@ public class ClusterApiService {
       }
 
       HttpHeaders headers = createHeaders(clusterApiUser);
-      headers.setContentType(MediaType.APPLICATION_JSON);
 
       HttpEntity<ClusterConnectorRequest> request =
           new HttpEntity<>(clusterConnectorRequest, headers);
@@ -544,22 +543,11 @@ public class ClusterApiService {
       }
 
       HttpHeaders headers = createHeaders(clusterApiUser);
-      headers.setContentType(MediaType.APPLICATION_JSON);
       HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
       log.error("approveTopicRequests {}", topicName, e);
-      if (e.getMessage().contains(CLUSTER_API_ERR_120)
-          || e.getMessage().contains(CLUSTER_API_ERR_121)) {
-        return new ResponseEntity<>(
-            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
-            HttpStatus.INTERNAL_SERVER_ERROR);
-      } else if (e.getMessage().contains("Cannot connect to cluster.")) {
-        return new ResponseEntity<>(
-            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_119).build(),
-            HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-      throw new KlawException(CLUSTER_API_ERR_106);
+      return throwCommonErrors(e, CLUSTER_API_ERR_106);
     }
     return response;
   }
@@ -727,6 +715,74 @@ public class ClusterApiService {
     }
   }
 
+  ResponseEntity<ApiResponse> deleteSchema(String topicName, String kafkaEnvId, int tenantId)
+      throws KlawException {
+    log.info("delete schema subject on cluster {} {}", topicName, kafkaEnvId);
+    getClusterApiProperties(tenantId);
+    ResponseEntity<ApiResponse> response;
+    ClusterTopicRequest clusterTopicRequest;
+    try {
+      Env envSelected = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
+              .get(envSelected.getClusterId());
+      clusterTopicRequest =
+          ClusterTopicRequest.builder()
+              .env(kwClusters.getBootstrapServers())
+              .protocol(kwClusters.getProtocol())
+              .clusterName(kwClusters.getClusterName() + kwClusters.getClusterId())
+              .topicName(topicName)
+              .build();
+
+      String uri;
+
+      uri = clusterConnUrl + URI_DELETE_SCHEMAS;
+      if (envSelected.getAssociatedEnv() != null) {
+        // get associated schema env
+        Env schemaEnvSelected =
+            manageDatabase
+                .getHandleDbRequests()
+                .getEnvDetails(envSelected.getAssociatedEnv().getId(), tenantId);
+        KwClusters kwClustersSchemaEnv =
+            manageDatabase
+                .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+                .get(schemaEnvSelected.getClusterId());
+        clusterTopicRequest =
+            clusterTopicRequest.toBuilder()
+                .deleteAssociatedSchema(true)
+                .schemaClusterIdentification(
+                    kwClustersSchemaEnv.getClusterName() + kwClustersSchemaEnv.getClusterId())
+                .schemaEnv(kwClustersSchemaEnv.getBootstrapServers())
+                .schemaEnvProtocol(kwClustersSchemaEnv.getProtocol())
+                .build();
+      }
+
+      HttpHeaders headers = createHeaders(clusterApiUser);
+      HttpEntity<ClusterTopicRequest> request = new HttpEntity<>(clusterTopicRequest, headers);
+      response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+    } catch (Exception e) {
+      log.error("deleteSchema {}", topicName, e);
+      return throwCommonErrors(e, CLUSTER_API_ERR_123);
+    }
+    return response;
+  }
+
+  private ResponseEntity<ApiResponse> throwCommonErrors(Exception e, String clusterApiErr123)
+      throws KlawException {
+    if (e.getMessage().contains(CLUSTER_API_ERR_120)
+        || e.getMessage().contains(CLUSTER_API_ERR_121)) {
+      return new ResponseEntity<>(
+          ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    } else if (e.getMessage().contains("Cannot connect to cluster.")) {
+      return new ResponseEntity<>(
+          ApiResponse.builder().success(false).message(CLUSTER_API_ERR_119).build(),
+          HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    throw new KlawException(clusterApiErr123);
+  }
+
   ResponseEntity<ApiResponse> postSchema(
       SchemaRequest schemaRequest, String env, String topicName, int tenantId)
       throws KlawException {
@@ -754,8 +810,6 @@ public class ClusterApiService {
               .build();
 
       HttpHeaders headers = createHeaders(clusterApiUser);
-      headers.setContentType(MediaType.APPLICATION_JSON);
-
       HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
       response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
     } catch (Exception e) {
@@ -1020,6 +1074,7 @@ public class ClusterApiService {
     HttpHeaders httpHeaders = new HttpHeaders();
     String authHeader = "Bearer " + generateToken(username);
     httpHeaders.set("Authorization", authHeader);
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 
     return httpHeaders;
   }
@@ -1048,7 +1103,6 @@ public class ClusterApiService {
 
   private HttpEntity<String> getHttpEntity() throws KlawException {
     HttpHeaders headers = createHeaders(clusterApiUser);
-    headers.setContentType(MediaType.APPLICATION_JSON);
 
     headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
     return new HttpEntity<>(headers);

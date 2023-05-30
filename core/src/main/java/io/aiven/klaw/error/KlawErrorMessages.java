@@ -131,6 +131,9 @@ public class KlawErrorMessages {
 
   public static final String CLUSTER_API_ERR_122 = "doesn't match connector name in the URL";
 
+  public static final String CLUSTER_API_ERR_123 =
+      "Could not approve schema delete request. Please contact Administrator.";
+
   // Env clusters tenants service
   public static final String ENV_CLUSTER_TNT_ERR_101 =
       "Failure. Please choose a different name. This environment name already exists.";
@@ -453,4 +456,6 @@ public class KlawErrorMessages {
 
   public static final String SCH_SYNC_ERR_101 =
       "There is no associated Schema environment configured.";
+
+  public static final String SCH_SYNC_ERR_102 = "404 Not Found";
 }

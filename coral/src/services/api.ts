@@ -35,8 +35,8 @@ const API_BASE_URL = getHTTPBaseAPIUrl();
 
 const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
   updateSyncSchemas: "/schemas",
-  getSchemaOfTopicFromCluster:
-    "/schemas/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
+  getSchemaOfTopicFromSource:
+    "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
   getSchemasOfEnvironment: "/schemas",
   validateSchema: "/validate/schema",
   updateUserTeamFromSwitchTeams: "/user/updateTeam",
@@ -488,9 +488,6 @@ const post = <
 ): Promise<TResponse> => {
   if (data === undefined) {
     return withoutPayloadAndWithVerb(HTTPMethod.POST, pathname);
-  }
-  if (data instanceof URLSearchParams) {
-    return withoutPayloadAndWithVerb(HTTPMethod.POST, pathname, data);
   }
   return withPayloadAndVerb(HTTPMethod.POST, pathname, data);
 };

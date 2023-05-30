@@ -20,6 +20,8 @@ public class SchemaSubjectInfoResponse implements Serializable {
 
   private String remarks;
 
+  private String envId;
+
   @NotNull private String currentPage;
 
   @NotNull private String totalNoPages;

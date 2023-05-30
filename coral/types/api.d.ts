@@ -225,8 +225,8 @@ export type paths = {
   "/showUserList": {
     get: operations["showUsers"];
   };
-  "/schemas/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}": {
-    get: operations["getSchemaOfTopicFromCluster"];
+  "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}": {
+    get: operations["getSchemaOfTopicFromSource"];
   };
   "/resetMemoryCache/{tenantName}/{entityType}/{operationType}": {
     get: operations["resetMemoryCache"];
@@ -620,7 +620,11 @@ export type components = {
     };
     SyncSchemaUpdates: {
       topicList?: (string)[];
-      kafkaEnvSelected?: string;
+      sourceKafkaEnvSelected?: string;
+      targetKafkaEnvSelected?: string;
+      topicsSelectionType?: string;
+      typeOfSync?: string;
+      forceRegisterSchema?: boolean;
     };
     TopicInfo: {
       /** Format: int32 */
@@ -863,12 +867,15 @@ export type components = {
       teamId?: number;
       possibleTeams?: (string)[];
       remarks?: string;
+      envId?: string;
       currentPage: string;
       totalNoPages: string;
       allPageNos: (string)[];
     };
     SyncSchemasList: {
       schemaSubjectInfoResponseList?: (components["schemas"]["SchemaSubjectInfoResponse"])[];
+      /** Format: int32 */
+      allTopicsCount?: number;
     };
     SchemaDetailsResponse: {
       schemaContent?: string;
@@ -1415,6 +1422,7 @@ export type components = {
       requestItems: string;
       viewKafkaConnect: string;
       syncBackTopics: string;
+      syncBackSchemas: string;
       syncBackAcls: string;
       updateServerConfig: string;
       showServerConfigEnvProperties: string;
@@ -1817,6 +1825,8 @@ export type operations = {
         showAllTopics?: boolean;
         currentPage?: string;
         topicnamesearch?: string;
+        source?: string;
+        teamId?: number;
       };
     };
     responses: {
@@ -2656,9 +2666,10 @@ export type operations = {
       };
     };
   };
-  getSchemaOfTopicFromCluster: {
+  getSchemaOfTopicFromSource: {
     parameters: {
       path: {
+        source: string;
         topicName: string;
         schemaVersion: number;
         kafkaEnvId: string;
