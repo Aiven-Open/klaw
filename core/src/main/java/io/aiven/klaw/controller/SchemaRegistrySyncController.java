@@ -27,7 +27,7 @@ public class SchemaRegistrySyncController {
 
   /**
    * Retrieve schema subjects and its versions in a given kafka env (associated schema env) from
-   * cluster
+   * cluster or metadata
    *
    * @param kafkaEnvId kafka env
    * @return
@@ -37,7 +37,7 @@ public class SchemaRegistrySyncController {
       value = "/schemas",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<SyncSchemasList> getSchemasOfEnvironmentFromCluster(
+  public ResponseEntity<SyncSchemasList> getSchemasOfEnvironment(
       @RequestParam(value = "envId") String kafkaEnvId,
       @RequestParam(value = "pageNo") String pageNo,
       @RequestParam(value = "showAllTopics", defaultValue = "false") boolean showAllTopics,
@@ -53,7 +53,7 @@ public class SchemaRegistrySyncController {
   }
 
   /**
-   * Store schemas of all versions in metadata db
+   * Store schemas of all versions in metadata db or cluster
    *
    * @param syncSchemaUpdates topic list and environment
    * @return
@@ -69,7 +69,7 @@ public class SchemaRegistrySyncController {
   }
 
   /**
-   * Retrieve schema of a topic and specific version from cluster
+   * Retrieve schema of a topic and specific version from cluster or metadata
    *
    * @param source cluster or metadata
    * @param topicName

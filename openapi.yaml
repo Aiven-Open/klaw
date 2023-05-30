@@ -542,7 +542,7 @@
     "/schemas" : {
       "get" : {
         "tags" : [ "schema-registry-sync-controller" ],
-        "operationId" : "getSchemasOfEnvironmentFromCluster",
+        "operationId" : "getSchemasOfEnvironment",
         "parameters" : [ {
           "name" : "envId",
           "in" : "query",
