@@ -46,17 +46,20 @@ const TopicAclRequest = () => {
     },
   });
 
-  const { isLoadingExtendedEnvironments, extendedEnvironments } =
+  const { extendedEnvironments, hasFetchedExtendedEnvironments } =
     useExtendedEnvironments();
 
   const currentEnv = searchParams.get("env");
   const isValidEnv =
-    !isLoadingExtendedEnvironments &&
     extendedEnvironments.find((env) => currentEnv === env.id) !== undefined;
 
   // /topic/aivendemotopic/subscribe route requires an env search param to function correctly
   // So we redirect when it is missing
-  if (topicName !== undefined && !isValidEnv) {
+  if (
+    hasFetchedExtendedEnvironments &&
+    topicName !== undefined &&
+    !isValidEnv
+  ) {
     navigate(`/topic/${topicName}/subscriptions`);
   }
 
@@ -137,7 +140,7 @@ const TopicAclRequest = () => {
     }
   }, [selectedEnvironment, aclType]);
 
-  if (isLoadingExtendedEnvironments) {
+  if (!hasFetchedExtendedEnvironments) {
     return <SkeletonForm />;
   }
 
