@@ -181,6 +181,5 @@ function ConnectorRequests() {
 }
 
 export default withFiltersContext({
-  defaultValues: { status: "ALL", requestType: "ALL" },
   element: <ConnectorRequests />,
 });

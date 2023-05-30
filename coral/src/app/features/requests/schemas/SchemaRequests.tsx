@@ -193,6 +193,5 @@ function SchemaRequests() {
 }
 
 export default withFiltersContext({
-  defaultValues: { status: "ALL", requestType: "ALL" },
   element: <SchemaRequests />,
 });

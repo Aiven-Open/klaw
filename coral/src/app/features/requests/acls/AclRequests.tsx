@@ -202,6 +202,5 @@ function AclRequests() {
 }
 
 export default withFiltersContext({
-  defaultValues: { status: "ALL" },
   element: <AclRequests />,
 });

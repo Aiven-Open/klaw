@@ -183,6 +183,5 @@ function TopicRequests() {
 }
 
 export default withFiltersContext({
-  defaultValues: { status: "ALL", requestType: "ALL" },
   element: <TopicRequests />,
 });
