@@ -120,7 +120,12 @@ public class SchemaService {
       RegisterSchemaCustomResponse registerSchemaCustomResponse =
           registerSchemaPostCall(clusterSchemaRequest);
 
-      updateSchemaCache(clusterSchemaRequest);
+      updateSchemaCache(
+          clusterSchemaRequest.getEnv(),
+          clusterSchemaRequest.getProtocol(),
+          clusterSchemaRequest.getClusterIdentification(),
+          SchemaCacheUpdateType.CREATE,
+          clusterSchemaRequest.getTopicName());
 
       return ApiResponse.builder()
           .success(true)
@@ -144,24 +149,6 @@ public class SchemaService {
       // Ensure the Schema compatibility is returned to previous setting before the force update.
       resetCompatibilityOnSubject(
           clusterSchemaRequest, schemaCompatibility, schemaCompatibilitySetOnSubject);
-    }
-  }
-
-  private void updateSchemaCache(ClusterSchemaRequest clusterSchemaRequest) {
-    try {
-      CompletableFuture.runAsync(
-              () -> {
-                loadAllSchemasInfoFromCluster(
-                    clusterSchemaRequest.getEnv(),
-                    clusterSchemaRequest.getProtocol(),
-                    clusterSchemaRequest.getClusterIdentification(),
-                    true,
-                    SchemaCacheUpdateType.CREATE,
-                    clusterSchemaRequest.getTopicName());
-              })
-          .get();
-    } catch (InterruptedException | ExecutionException e) {
-      log.error("Async loadAllSchemasInfoFromCluster Exception:", e);
     }
   }
 
@@ -519,6 +506,13 @@ public class SchemaService {
         log.error("Async loadAllSchemasInfoFromCluster Exception:", e);
       }
 
+      updateSchemaCache(
+          clusterTopicRequest.getSchemaEnv(),
+          clusterTopicRequest.getSchemaEnvProtocol(),
+          clusterTopicRequest.getSchemaClusterIdentification(),
+          SchemaCacheUpdateType.DELETE,
+          clusterTopicRequest.getTopicName());
+
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } catch (RestClientException e) {
       log.error("Exception:", e);
@@ -748,6 +742,24 @@ public class SchemaService {
     }
 
     return schemasInfoOfClusterResponse;
+  }
+
+  private void updateSchemaCache(
+      String env,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      SchemaCacheUpdateType schemaCacheUpdateType,
+      String topicName) {
+    try {
+      CompletableFuture.runAsync(
+              () -> {
+                loadAllSchemasInfoFromCluster(
+                    env, protocol, clusterIdentification, true, schemaCacheUpdateType, topicName);
+              })
+          .get();
+    } catch (InterruptedException | ExecutionException e) {
+      log.error("Async loadAllSchemasInfoFromCluster Exception:", e);
+    }
   }
 
   @Async("resetSchemaCacheTaskExecutor")
