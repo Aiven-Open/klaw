@@ -18,7 +18,7 @@ import TeamFilter from "src/app/features/components/filters/TeamFilter";
 import {
   FiltersProvider,
   useFiltersContext,
-} from "src/app/features/components/filters/useFiltersValues";
+} from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";

@@ -1,7 +1,7 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
-import { withFiltersContext } from "src/app/features/components/filters/useFiltersValues";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("SearchFilter.tsx", () => {

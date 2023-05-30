@@ -2,7 +2,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { withFiltersContext } from "src/app/features/components/filters/useFiltersValues";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 
 const WrappedMyRequestsFilter = withFiltersContext({
   element: <MyRequestsFilter />,

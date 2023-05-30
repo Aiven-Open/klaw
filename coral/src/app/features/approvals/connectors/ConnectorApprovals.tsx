@@ -13,7 +13,7 @@ import StatusFilter from "src/app/features/components/filters/StatusFilter";
 import {
   useFiltersContext,
   withFiltersContext,
-} from "src/app/features/components/filters/useFiltersValues";
+} from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
   approveConnectorRequest,

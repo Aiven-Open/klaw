@@ -1,5 +1,5 @@
 import { Switch } from "@aivenio/aquarium";
-import { useFiltersContext } from "src/app/features/components/filters/useFiltersValues";
+import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 
 function MyRequestsFilter() {
   const { showOnlyMyRequests, setFilterValue } = useFiltersContext();

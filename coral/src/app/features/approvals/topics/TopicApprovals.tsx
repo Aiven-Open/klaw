@@ -15,7 +15,7 @@ import { SearchTopicFilter } from "src/app/features/components/filters/SearchTop
 import {
   useFiltersContext,
   withFiltersContext,
-} from "src/app/features/components/filters/useFiltersValues";
+} from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import {
   approveTopicRequest,

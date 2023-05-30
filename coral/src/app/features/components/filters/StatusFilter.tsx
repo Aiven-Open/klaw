@@ -3,7 +3,7 @@ import {
   requestStatusNameMap,
   statusList,
 } from "src/app/features/approvals/utils/request-status-helper";
-import { useFiltersContext } from "src/app/features/components/filters/useFiltersValues";
+import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { RequestStatus } from "src/domain/requests/requests-types";
 
 function StatusFilter() {

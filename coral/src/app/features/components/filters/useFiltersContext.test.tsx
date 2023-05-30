@@ -3,7 +3,7 @@ import { BrowserRouter, MemoryRouter } from "react-router-dom";
 import {
   FiltersProvider,
   useFiltersContext,
-} from "src/app/features/components/filters/useFiltersValues";
+} from "src/app/features/components/filters/useFiltersContext";
 
 describe("useFiltersValues.tsx", () => {
   describe("should get correct filter values from search paramns", () => {

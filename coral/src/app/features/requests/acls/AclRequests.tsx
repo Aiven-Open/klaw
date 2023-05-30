@@ -15,7 +15,7 @@ import { SearchTopicFilter } from "src/app/features/components/filters/SearchTop
 import {
   useFiltersContext,
   withFiltersContext,
-} from "src/app/features/components/filters/useFiltersValues";
+} from "src/app/features/components/filters/useFiltersContext";
 import { AclRequestsTable } from "src/app/features/requests/acls/components/AclRequestsTable";
 import { DeleteRequestDialog } from "src/app/features/requests/components/DeleteRequestDialog";
 import { deleteAclRequest, getAclRequests } from "src/domain/acl/acl-api";

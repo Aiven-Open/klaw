@@ -5,7 +5,7 @@ import {
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { RequestTypeFilter } from "src/app/features/components/filters/RequestTypeFilter";
-import { withFiltersContext } from "src/app/features/components/filters/useFiltersValues";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const filterLabel = "Filter by request type";

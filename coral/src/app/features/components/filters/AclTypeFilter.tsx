@@ -1,5 +1,5 @@
 import { NativeSelect } from "@aivenio/aquarium";
-import { useFiltersContext } from "src/app/features/components/filters/useFiltersValues";
+import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { AclType } from "src/domain/acl";
 
 type AclTypeForFilter = AclType | "ALL";

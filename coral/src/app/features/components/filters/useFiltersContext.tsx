@@ -39,31 +39,6 @@ type UseFilterValuesReturn = {
   setFilterValue: ({ name, value }: SetFiltersParams) => void;
 };
 
-const useFiltersValues = () => {
-  const [searchParams] = useSearchParams();
-
-  const environment = searchParams.get("environment");
-  const aclType = searchParams.get("aclType") as AclType | "ALL";
-  const status = searchParams.get("status") as RequestStatus;
-  const teamId = searchParams.get("teamId");
-  const showOnlyMyRequests = searchParams.get("showOnlyMyRequests") === "true";
-
-  const requestType = searchParams.get("requestType") as
-    | RequestOperationType
-    | "ALL";
-  const search = searchParams.get("search");
-
-  return {
-    environment,
-    aclType,
-    status,
-    teamId,
-    showOnlyMyRequests,
-    requestType,
-    search,
-  };
-};
-
 const emptyValues: Omit<UseFilterValuesReturn, "setFilterValue"> = {
   environment: "ALL",
   aclType: "ALL",
@@ -153,9 +128,4 @@ const withFiltersContext = ({
   return WrappedElement;
 };
 
-export {
-  useFiltersValues,
-  useFiltersContext,
-  FiltersProvider,
-  withFiltersContext,
-};
+export { useFiltersContext, FiltersProvider, withFiltersContext };

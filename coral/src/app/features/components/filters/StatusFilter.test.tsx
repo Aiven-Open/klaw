@@ -5,7 +5,7 @@ import {
   statusList,
 } from "src/app/features/approvals/utils/request-status-helper";
 import StatusFilter from "src/app/features/components/filters/StatusFilter";
-import { withFiltersContext } from "src/app/features/components/filters/useFiltersValues";
+import { withFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const filterLabel = "Filter by status";

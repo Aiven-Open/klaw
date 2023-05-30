@@ -10,7 +10,7 @@ import {
 import {
   useFiltersContext,
   withFiltersContext,
-} from "src/app/features/components/filters/useFiltersValues";
+} from "src/app/features/components/filters/useFiltersContext";
 import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
 import { MyRequestsFilter } from "src/app/features/components/filters/MyRequestsFilter";

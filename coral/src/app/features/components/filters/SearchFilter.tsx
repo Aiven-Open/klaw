@@ -1,7 +1,7 @@
 import { SearchInput } from "@aivenio/aquarium";
 import debounce from "lodash/debounce";
 import type { ChangeEvent } from "react";
-import { useFiltersContext } from "src/app/features/components/filters/useFiltersValues";
+import { useFiltersContext } from "src/app/features/components/filters/useFiltersContext";
 
 type SearchFilterProps = {
   placeholder: string;

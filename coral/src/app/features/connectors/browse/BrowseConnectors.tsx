@@ -8,7 +8,7 @@ import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFi
 import {
   useFiltersContext,
   withFiltersContext,
-} from "src/app/features/components/filters/useFiltersValues";
+} from "src/app/features/components/filters/useFiltersContext";
 import { SearchConnectorFilter } from "src/app/features/components/filters/SearchConnectorFilter";
 import TeamFilter from "src/app/features/components/filters/TeamFilter";
 
