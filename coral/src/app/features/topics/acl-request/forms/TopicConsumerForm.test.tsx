@@ -468,13 +468,13 @@ describe("<TopicConsumerForm isSubscription />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders required EnvironmentField", () => {
+    it("renders disabled required EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
         name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
-      expect(environmentField).toBeEnabled();
+      expect(environmentField).toBeDisabled();
       expect(environmentField).toBeRequired();
     });
 
@@ -584,13 +584,13 @@ describe("<TopicConsumerForm isSubscription />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders EnvironmentField with DEV selected", () => {
+    it("renders disabled EnvironmentField with DEV selected", () => {
       const environmentField = screen.getByRole("combobox", {
         name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
-      expect(environmentField).toBeEnabled();
+      expect(environmentField).toBeDisabled();
       expect(environmentField).toHaveDisplayValue("DEV");
     });
 
@@ -704,13 +704,13 @@ describe("<TopicConsumerForm isSubscription />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders EnvironmentField with TST selected", () => {
+    it("renders disabled EnvironmentField with TST selected", () => {
       const environmentField = screen.getByRole("combobox", {
         name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
-      expect(environmentField).toBeEnabled();
+      expect(environmentField).toBeDisabled();
       expect(environmentField).toHaveDisplayValue("TST");
     });
 

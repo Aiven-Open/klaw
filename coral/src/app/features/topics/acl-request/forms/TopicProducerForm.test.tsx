@@ -14,7 +14,6 @@ import TopicProducerForm, {
 } from "src/app/features/topics/acl-request/forms/TopicProducerForm";
 import { ExtendedEnvironment } from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 import { getAivenServiceAccounts } from "src/domain/acl/acl-api";
-import { ENVIRONMENT_NOT_INITIALIZED } from "src/domain/environment/environment-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/acl/acl-api");
@@ -470,7 +469,7 @@ const isSubscriptionBasePropsNotAivenCluster = {
   isAivenCluster: false,
 } as TopicProducerFormProps;
 
-describe("<TopicProducerForm />", () => {
+describe("<TopicProducerForm isSubscription />", () => {
   describe("renders correct fields in pristine form", () => {
     beforeAll(() => {
       const { result } = renderHook(() =>
@@ -478,8 +477,9 @@ describe("<TopicProducerForm />", () => {
           schema: topicProducerFormSchema,
           defaultValues: {
             topicname: "hello",
-            environment: ENVIRONMENT_NOT_INITIALIZED,
+            environment: "1",
             aclType: "PRODUCER",
+            aclPatternType: "LITERAL",
           },
         })
       );
@@ -508,29 +508,31 @@ describe("<TopicProducerForm />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders required EnvironmentField", () => {
+    it("renders required and disabled EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
         name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
-      expect(environmentField).toBeEnabled();
+      expect(environmentField).toBeDisabled();
       expect(environmentField).toBeRequired();
+      expect(environmentField).toHaveValue("1");
     });
 
-    it("renders aclPatternType field", () => {
+    it("renders aclPatternType disabled field with Literal checked", () => {
       const literalField = screen.getByRole("radio", { name: "Literal" });
       const prefixedField = screen.getByRole("radio", {
         name: "Prefixed",
       });
 
       expect(literalField).toBeVisible();
-      expect(literalField).toBeEnabled();
+      expect(literalField).toBeDisabled();
+      expect(literalField).toBeChecked();
       expect(prefixedField).toBeVisible();
-      expect(prefixedField).toBeEnabled();
+      expect(prefixedField).toBeDisabled();
     });
 
-    it("does not render TopicNameOrPrefixField", () => {
+    it("renders readonly Topic name field", () => {
       const topicNameField = screen.queryByRole("combobox", {
         name: "Topic name *",
       });
@@ -538,7 +540,8 @@ describe("<TopicProducerForm />", () => {
         name: "Prefix",
       });
 
-      expect(topicNameField).toBeNull();
+      expect(topicNameField).toBeVisible();
+      expect(topicNameField).toHaveAttribute("aria-readOnly", "true");
       expect(prefixField).toBeNull();
     });
 
@@ -640,13 +643,13 @@ describe("<TopicProducerForm />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders EnvironmentField with DEV selected", () => {
+    it("renders disabled EnvironmentField with DEV selected", () => {
       const environmentField = screen.getByRole("combobox", {
         name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
-      expect(environmentField).toBeEnabled();
+      expect(environmentField).toBeDisabled();
       expect(environmentField).toHaveDisplayValue("DEV");
     });
 
@@ -742,6 +745,7 @@ describe("<TopicProducerForm />", () => {
             topicname: "hello",
             environment: "2",
             aclType: "PRODUCER",
+            aclPatternType: "LITERAL",
           },
         })
       );
@@ -770,26 +774,27 @@ describe("<TopicProducerForm />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders EnvironmentField with TST selected", () => {
+    it("renders disabled EnvironmentField with TST selected", () => {
       const environmentField = screen.getByRole("combobox", {
         name: "Environment *",
       });
 
       expect(environmentField).toBeVisible();
-      expect(environmentField).toBeEnabled();
+      expect(environmentField).toBeDisabled();
       expect(environmentField).toHaveDisplayValue("TST");
     });
 
-    it("renders aclPatternType field", () => {
+    it("renders enabled aclPatternType disabled field with Literal checked", () => {
       const literalField = screen.getByRole("radio", { name: "Literal" });
       const prefixedField = screen.getByRole("radio", {
         name: "Prefixed",
       });
 
       expect(literalField).toBeVisible();
-      expect(literalField).toBeEnabled();
+      expect(literalField).toBeDisabled();
+      expect(literalField).toBeChecked();
       expect(prefixedField).toBeVisible();
-      expect(prefixedField).toBeEnabled();
+      expect(prefixedField).toBeDisabled();
     });
 
     it("does not render TopicNameOrPrefixField", () => {
@@ -800,7 +805,8 @@ describe("<TopicProducerForm />", () => {
         name: "Prefix",
       });
 
-      expect(topicNameField).toBeNull();
+      expect(topicNameField).toBeVisible();
+      expect(topicNameField).toHaveAttribute("aria-readOnly", "true");
       expect(prefixField).toBeNull();
     });
 

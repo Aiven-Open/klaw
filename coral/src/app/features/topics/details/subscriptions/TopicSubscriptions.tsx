@@ -1,12 +1,15 @@
 import {
   Alert,
+  PageHeader,
   SegmentedControl,
   SegmentedControlGroup,
   useToast,
 } from "@aivenio/aquarium";
+import add from "@aivenio/aquarium/dist/src/icons/add";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import pick from "lodash/pick";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog } from "src/app/components/Dialog";
 import AclTypeFilter from "src/app/features/components/filters/AclTypeFilter";
 import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
@@ -19,6 +22,8 @@ import { createAclDeletionRequest } from "src/domain/acl/acl-api";
 import { getTopicOverview } from "src/domain/topic/topic-api";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+
+const TEMP_ENV_VALUE = "2";
 
 type SubscriptionOptions =
   | "aclInfoList"
@@ -34,6 +39,7 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
 
 const TopicSubscriptions = () => {
   // @ TODO get environment from useTopicDetails too when it is implemented
+  const navigate = useNavigate();
   const { topicName } = useTopicDetails();
 
   const [deleteModal, setDeleteModal] = useState<{
@@ -51,7 +57,8 @@ const TopicSubscriptions = () => {
     isError,
     error,
   } = useQuery(["topic-overview"], {
-    queryFn: () => getTopicOverview({ topicName, environmentId: "1" }),
+    queryFn: () =>
+      getTopicOverview({ topicName, environmentId: TEMP_ENV_VALUE }),
   });
 
   const { isLoading: deleteIsLoading, mutate: deleteRequest } = useMutation({
@@ -101,6 +108,11 @@ const TopicSubscriptions = () => {
       return [];
     }
 
+    // Early return to avoid running superfluous and potentially expensive Array.filter operations
+    if (teamId === "ALL" && search === "" && aclType === "ALL") {
+      return subs;
+    }
+
     return subs.filter((sub) => {
       const currentTeamId = String(sub.teamid);
       const teamFilter = teamId === "ALL" || currentTeamId === teamId;
@@ -117,6 +129,15 @@ const TopicSubscriptions = () => {
 
   return (
     <>
+      <PageHeader
+        title="Subscriptions"
+        primaryAction={{
+          icon: add,
+          text: "Request a subscription",
+          onClick: () =>
+            navigate(`/topic/${topicName}/subscribe?env=${TEMP_ENV_VALUE}`),
+        }}
+      />
       {deleteModal.isOpen && deleteModal.req_no !== null && (
         <Dialog
           title={"Deletion request"}

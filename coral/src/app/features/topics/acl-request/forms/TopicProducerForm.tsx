@@ -142,6 +142,7 @@ const TopicProducerForm = ({
               environments={environments}
               selectedTopic={topicname}
               prefixed={aclPatternType === "PREFIXED"}
+              readOnly={isSubscription}
             />
           </GridItem>
 
@@ -153,7 +154,9 @@ const TopicProducerForm = ({
             <RadioButtonGroup
               name="aclPatternType"
               labelText="Topic pattern type"
-              disabled={topicNames.length === 0 || isAivenCluster}
+              disabled={
+                topicNames.length === 0 || isAivenCluster || isSubscription
+              }
               required
             >
               <BaseRadioButton value="LITERAL">Literal</BaseRadioButton>

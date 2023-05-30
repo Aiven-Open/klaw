@@ -143,6 +143,7 @@ const TopicConsumerForm = ({
             <EnvironmentField
               environments={environments}
               selectedTopic={topicname}
+              readOnly={isSubscription}
             />
           </GridItem>
 
