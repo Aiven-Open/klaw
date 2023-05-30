@@ -9,6 +9,7 @@ import { mockgetEnvironmentsForTopicRequest } from "src/domain/environment/envir
 import {
   ALL_ENVIRONMENTS_VALUE,
   Environment,
+  EnvironmentInfo,
 } from "src/domain/environment/environment-types";
 
 export {
@@ -20,4 +21,4 @@ export {
   getEnvironmentsForSchemaRequest,
   getAllEnvironmentsForConnector,
 };
-export type { Environment };
+export type { Environment, EnvironmentInfo };
