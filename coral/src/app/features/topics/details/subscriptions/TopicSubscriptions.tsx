@@ -1,8 +1,13 @@
 import {
   Alert,
+  BorderBox,
+  Box,
+  Grid,
   PageHeader,
   SegmentedControl,
   SegmentedControlGroup,
+  Skeleton,
+  Typography,
   useToast,
 } from "@aivenio/aquarium";
 import add from "@aivenio/aquarium/dist/src/icons/add";
@@ -24,7 +29,10 @@ import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
 import { createAclDeletionRequest } from "src/domain/acl/acl-api";
 import { getTopicOverview } from "src/domain/topic/topic-api";
-import { AclOverviewInfo } from "src/domain/topic/topic-types";
+import {
+  AclOverviewInfo,
+  TopicOverviewApiResponse,
+} from "src/domain/topic/topic-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 const TEMP_ENV_VALUE = "2";
@@ -33,12 +41,45 @@ type SubscriptionOptions =
   | "aclInfoList"
   | "prefixedAclInfoList"
   | "transactionalAclInfoList";
+
 const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
   return [
     "aclInfoList",
     "prefixedAclInfoList",
     "transactionalAclInfoList",
   ].includes(value);
+};
+
+const getSubsStats = (data?: TopicOverviewApiResponse) => {
+  const aclInfoList = data?.aclInfoList ?? [];
+  const prefixedAclInfoList = data?.prefixedAclInfoList ?? [];
+  const transactionalAclInfoList = data?.transactionalAclInfoList ?? [];
+
+  return [
+    ...aclInfoList,
+    ...prefixedAclInfoList,
+    ...transactionalAclInfoList,
+  ].reduce(
+    (previous, current) => {
+      const nextProducers =
+        current.topictype === "Producer"
+          ? previous.producers + 1
+          : previous.producers;
+      const nextConsumers =
+        current.topictype === "Consumer"
+          ? previous.consumers + 1
+          : previous.consumers;
+
+      return {
+        producers: nextProducers,
+        consumers: nextConsumers,
+      };
+    },
+    {
+      producers: 0,
+      consumers: 0,
+    }
+  );
 };
 
 const TopicSubscriptions = () => {
@@ -101,6 +142,10 @@ const TopicSubscriptions = () => {
     deleteRequest({ req_no });
   };
 
+  const subsStats = useMemo(() => {
+    return getSubsStats(data);
+  }, [data]);
+
   const filteredData: AclOverviewInfo[] = useMemo(() => {
     if (data === undefined) {
       return [];
@@ -133,15 +178,6 @@ const TopicSubscriptions = () => {
 
   return (
     <>
-      <PageHeader
-        title="Subscriptions"
-        primaryAction={{
-          icon: add,
-          text: "Request a subscription",
-          onClick: () =>
-            navigate(`/topic/${topicName}/subscribe?env=${TEMP_ENV_VALUE}`),
-        }}
-      />
       {deleteModal.isOpen && deleteModal.req_no !== null && (
         <Dialog
           title={"Deletion request"}
@@ -161,10 +197,46 @@ const TopicSubscriptions = () => {
           create a deletion request for approval.
         </Dialog>
       )}
+      <PageHeader
+        title="Subscriptions"
+        primaryAction={{
+          icon: add,
+          text: "Request a subscription",
+          onClick: () =>
+            navigate(`/topic/${topicName}/subscribe?env=${TEMP_ENV_VALUE}`),
+        }}
+      />
       {errorMessage !== "" && (
-        <div role="alert">
+        <Box role="alert" marginBottom={"l2"}>
           <Alert type="error">{errorMessage}</Alert>
-        </div>
+        </Box>
+      )}
+      {dataIsLoading ? (
+        <Grid cols={"2"} gap={"l2"} marginBottom={"l2"}>
+          <Skeleton height={102} />
+          <Skeleton height={102} />
+        </Grid>
+      ) : (
+        <Grid cols={"2"} gap={"l2"} marginBottom={"l2"}>
+          <BorderBox
+            borderColor="grey-20"
+            padding={"l2"}
+            title="Amount of producer subscriptions"
+          >
+            <Typography.Heading>{subsStats.producers}</Typography.Heading>
+            <Typography.Small>Producers</Typography.Small>
+          </BorderBox>
+          <BorderBox
+            borderColor="grey-20"
+            padding={"l2"}
+            title="Amount of consumer subscriptions"
+          >
+            <Box.Flex flexDirection="column">
+              <Typography.Heading>{subsStats.consumers}</Typography.Heading>
+              <Typography.Small>Consumers</Typography.Small>
+            </Box.Flex>
+          </BorderBox>
+        </Grid>
       )}
 
       <TableLayout
