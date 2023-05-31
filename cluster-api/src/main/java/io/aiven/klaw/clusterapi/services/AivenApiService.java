@@ -300,7 +300,8 @@ public class AivenApiService {
           newRGroupMap.put("resourceName", "-na-");
           aclsListUpdated.add(newRGroupMap);
         }
-        if (!"ADMIN".equals(aclsMapUpdated.get("operation"))) {
+        if (!"ADMIN".equals(aclsMapUpdated.get("operation"))
+            && !"READWRITE".equals(aclsMapUpdated.get("operation"))) {
           aclsListUpdated.add(aclsMapUpdated);
         }
       }

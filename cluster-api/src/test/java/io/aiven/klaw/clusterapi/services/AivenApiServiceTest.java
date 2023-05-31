@@ -12,6 +12,7 @@ import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -241,6 +242,44 @@ public class AivenApiServiceTest {
 
     Set<String> response = aivenApiService.getServiceAccountUsers("testproject", "testservice");
     assertThat(response).hasSize(0);
+  }
+
+  @Test
+  public void listAcls() throws Exception {
+    String getAclsUrl =
+        "https://api.aiven.io/v1/project/" + "testproject" + "/service/" + "testservice" + "/acl";
+    Map<String, List<Map<String, String>>> aclsResp = new HashMap<>();
+    List<Map<String, String>> aclList = new ArrayList<>();
+
+    Map<String, String> aclMap1 = new HashMap<>();
+    aclMap1.put("permission", "read");
+    aclList.add(aclMap1);
+
+    Map<String, String> aclMap2 = new HashMap<>();
+    aclMap2.put("permission", "write");
+    aclList.add(aclMap2);
+
+    Map<String, String> aclMap3 = new HashMap<>();
+    aclMap3.put("permission", "ADMIN");
+    aclList.add(aclMap3);
+
+    Map<String, String> aclMap4 = new HashMap<>();
+    aclMap4.put("permission", "READWRITE");
+    aclList.add(aclMap4);
+
+    aclsResp.put("acl", aclList);
+    ResponseEntity<Map<String, List<Map<String, String>>>> responseEntityServiceAccount =
+        new ResponseEntity<>(aclsResp, HttpStatus.OK);
+
+    when(restTemplate.exchange(
+            eq(getAclsUrl),
+            eq(HttpMethod.GET),
+            any(),
+            (ParameterizedTypeReference<Map<String, List<Map<String, String>>>>) any()))
+        .thenReturn(responseEntityServiceAccount);
+
+    Set<Map<String, String>> acls = aivenApiService.listAcls("testproject", "testservice");
+    assertThat(acls).hasSize(3);
   }
 
   @Disabled
