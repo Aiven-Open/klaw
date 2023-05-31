@@ -10,6 +10,7 @@ import {
   TopicTeam,
   TopicRequestStatus,
   TopicRequest,
+  TopicOverview,
 } from "src/domain/topic/topic-types";
 
 export type {
@@ -19,5 +20,6 @@ export type {
   TopicRequest,
   TopicRequestOperationTypes,
   TopicRequestStatus,
+  TopicOverview,
 };
 export { getTopics, getTopicNames, getTopicTeam };

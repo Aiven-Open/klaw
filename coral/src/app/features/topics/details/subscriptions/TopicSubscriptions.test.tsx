@@ -10,18 +10,13 @@ import userEvent from "@testing-library/user-event";
 import TopicSubscriptions from "src/app/features/topics/details/subscriptions/TopicSubscriptions";
 import { createAclDeletionRequest } from "src/domain/acl/acl-api";
 import { getTeams } from "src/domain/team";
-import { getTopicOverview } from "src/domain/topic/topic-api";
-import { TopicOverviewApiResponse } from "src/domain/topic/topic-types";
+import { TopicOverview } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
-jest.mock("src/domain/topic/topic-api.ts");
 jest.mock("src/domain/team/team-api");
 jest.mock("src/domain/acl/acl-api.ts");
 
-const mockGetTopicOverview = getTopicOverview as jest.MockedFunction<
-  typeof getTopicOverview
->;
 const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 const mockCreateDeleteAclRequest =
   createAclDeletionRequest as jest.MockedFunction<
@@ -45,7 +40,8 @@ jest.mock("react-router-dom", () => ({
   useOutletContext: () => ({ topicName: "aiventopic1" }),
 }));
 
-const mockGetTopicOverviewResponse: TopicOverviewApiResponse = {
+const testTopicName = "aiventopic1";
+const testTopicOverview: TopicOverview = {
   topicExists: true,
   schemaExists: false,
   prefixAclsExists: false,
@@ -61,7 +57,7 @@ const mockGetTopicOverviewResponse: TopicOverviewApiResponse = {
       showDeleteTopic: false,
       topicDeletable: false,
       envName: "DEV",
-      topicName: "aiventopic1",
+      topicName: testTopicName,
     },
   ],
   aclInfoList: [
@@ -167,6 +163,13 @@ const mockGetTopicOverviewResponse: TopicOverviewApiResponse = {
   ],
   topicIdForDocumentation: 1015,
 };
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useOutletContext: () => ({
+    topicOverview: testTopicOverview,
+    environmentId: "333",
+  }),
+}));
 
 const mockedTeamsResponse = [
   {
@@ -198,7 +201,6 @@ const mockedTeamsResponse = [
 describe("TopicSubscriptions.tsx", () => {
   beforeEach(async () => {
     mockIntersectionObserver();
-    mockGetTopicOverview.mockResolvedValue(mockGetTopicOverviewResponse);
     mockGetTeams.mockResolvedValue(mockedTeamsResponse);
     mockAuthUser.mockReturnValue(mockAuthUserReturnValue);
 
@@ -212,7 +214,7 @@ describe("TopicSubscriptions.tsx", () => {
         queryClient: true,
       }
     );
-    await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    await waitForElementToBeRemoved(screen.getByTestId("select-team-loading"));
   });
 
   afterEach(() => {

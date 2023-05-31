@@ -1,6 +1,7 @@
 import { cleanup, screen } from "@testing-library/react";
 import { TopicDetailsPage } from "src/app/pages/topics/details";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { getTopicOverview } from "src/domain/topic/topic-api";
 
 const testTopic = "my-nice-topic";
 const mockedUsedNavigate = jest.fn();
@@ -14,9 +15,16 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedUsedNavigate,
 }));
 
+jest.mock("src/domain/topic/topic-api");
+const mockGetTopicOverview = getTopicOverview as jest.MockedFunction<
+  typeof getTopicOverview
+>;
 describe("TopicOverviewPage", () => {
   describe("renders the component handling header and tabs for topic-overview", () => {
     beforeAll(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      mockGetTopicOverview.mockReturnValue({});
       mockUseParams.mockReturnValue({
         topicName: testTopic,
       });
@@ -29,6 +37,7 @@ describe("TopicOverviewPage", () => {
 
       customRender(<TopicDetailsPage />, {
         memoryRouter: true,
+        queryClient: true,
       });
     });
 
@@ -50,11 +59,15 @@ describe("TopicOverviewPage", () => {
 
   describe("redirects user if there is no topicName param", () => {
     beforeAll(() => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      mockGetTopicOverview.mockReturnValue({});
       mockUseParams.mockImplementationOnce(() => {
         return {};
       });
       customRender(<TopicDetailsPage />, {
         memoryRouter: true,
+        queryClient: true,
       });
     });
 
