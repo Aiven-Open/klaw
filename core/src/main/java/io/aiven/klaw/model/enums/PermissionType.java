@@ -6,6 +6,7 @@ public enum PermissionType {
   REQUEST_DELETE_TOPICS("To request for deletion of topics"),
   REQUEST_CREATE_SUBSCRIPTIONS("To request for Producer or Consumer subscriptions"),
   REQUEST_DELETE_SUBSCRIPTIONS("To request for deletion of subscriptions"),
+  REQUEST_CLAIM_SUBSCRIPTIONS("To request a claim on an existing subscriptions"),
   REQUEST_CREATE_SCHEMAS("To request for Schemas"),
   REQUEST_DELETE_SCHEMAS("To request for deletion of schemas"),
   REQUEST_CREATE_CONNECTORS("To request for Kafka Connectors"),

@@ -2054,6 +2054,43 @@
         }
       }
     },
+    "/acl/{aclId}" : {
+      "post" : {
+        "tags" : [ "acl-controller" ],
+        "operationId" : "claimAcl",
+        "parameters" : [ {
+          "name" : "aclId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "type" : "string",
+                "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/user/{userId}/switchTeamsList" : {
       "get" : {
         "tags" : [ "users-teams-controller" ],
