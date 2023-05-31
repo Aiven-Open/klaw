@@ -63,7 +63,7 @@ function TopicOverview() {
           entity={"Schemas"}
         />
         <Box.Flex flexDirection={"row"} gap={"l3"} paddingTop={"l2"}>
-          <Link to={`request/schema`}>
+          <Link to={`/request/schema`}>
             <Button.Ghost icon={add}>
               <Typography.SmallStrong color={"primary-80"}>
                 Request new schema
