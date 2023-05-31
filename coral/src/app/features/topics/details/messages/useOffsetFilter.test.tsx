@@ -1,6 +1,6 @@
 import { cleanup, renderHook } from "@testing-library/react";
 import { BrowserRouter, MemoryRouter } from "react-router-dom";
-import { useOffsetFilter } from "src/app/features/topics/overview/messages/useOffsetFilter";
+import { useOffsetFilter } from "src/app/features/topics/details/messages/useOffsetFilter";
 
 describe("useOffsetFilter.tsx", () => {
   afterEach(() => {

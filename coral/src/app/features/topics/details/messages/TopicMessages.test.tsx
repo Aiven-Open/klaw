@@ -1,7 +1,7 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import { getTopicMessages } from "src/domain/topic/topic-api";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { TopicMessages } from "src/app/features/topics/overview/messages/TopicMessages";
+import { TopicMessages } from "src/app/features/topics/details/messages/TopicMessages";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { Outlet, Route, Routes } from "react-router-dom";
 import userEvent from "@testing-library/user-event";

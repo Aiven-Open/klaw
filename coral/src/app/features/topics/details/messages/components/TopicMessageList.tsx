@@ -1,5 +1,5 @@
 import { TopicMessages } from "src/domain/topic/topic-types";
-import { TopicMessageItem } from "src/app/features/topics/overview/messages/components/TopicMessageItem";
+import { TopicMessageItem } from "src/app/features/topics/details/messages/components/TopicMessageItem";
 
 type Props = {
   messages: TopicMessages;

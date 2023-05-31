@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
-import { TopicMessageList } from "src/app/features/topics/overview/messages/components/TopicMessageList";
+import { TopicMessageList } from "src/app/features/topics/details/messages/components/TopicMessageList";
 import { getTopicMessages } from "src/domain/topic/topic-api";
 import {
   type NoContent,
@@ -15,11 +15,11 @@ import {
 } from "@aivenio/aquarium";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import refreshIcon from "@aivenio/aquarium/dist/src/icons/refresh";
-import { TopicMessageOffsetFilter } from "src/app/features/topics/overview/messages/components/TopicMessageOffsetFilter";
+import { TopicMessageOffsetFilter } from "src/app/features/topics/details/messages/components/TopicMessageOffsetFilter";
 import {
   Offset,
   useOffsetFilter,
-} from "src/app/features/topics/overview/messages/useOffsetFilter";
+} from "src/app/features/topics/details/messages/useOffsetFilter";
 
 function isNoContentResult(
   result: TopicMessagesType | NoContent | undefined

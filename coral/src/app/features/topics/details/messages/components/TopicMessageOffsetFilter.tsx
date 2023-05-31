@@ -6,7 +6,7 @@ import {
 import {
   type Offset,
   offsets,
-} from "src/app/features/topics/overview/messages/useOffsetFilter";
+} from "src/app/features/topics/details/messages/useOffsetFilter";
 
 type Props = {
   value: Offset;
