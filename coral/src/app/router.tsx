@@ -1,5 +1,4 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
-import { TopicOverview } from "src/app/features/topics/details/overview";
 import Layout from "src/app/layout/Layout";
 import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
 import ApprovalsPage from "src/app/pages/approvals";
@@ -33,7 +32,8 @@ import { getRouterBasename } from "src/config";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
 import { TopicMessagesPage } from "src/app/pages/topics/details/messages";
-import { TopicSubscriptionsPage } from "./pages/topics/details/subscriptions";
+import { TopicSubscriptionsPage } from "src/app/pages/topics/details/subscriptions";
+import { TopicOverviewPage } from "src/app/pages/topics/details/overview";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -59,7 +59,7 @@ const routes: Array<RouteObject> = [
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
               TopicOverviewTabEnum.OVERVIEW
             ],
-            element: <TopicOverview />,
+            element: <TopicOverviewPage />,
             id: TopicOverviewTabEnum.OVERVIEW,
           },
           {
