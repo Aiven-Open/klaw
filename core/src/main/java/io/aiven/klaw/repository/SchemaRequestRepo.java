@@ -26,7 +26,7 @@ public interface SchemaRequestRepo
 
   @Query(
       value =
-          "select count(*) from kwschemarequests where teamid = :teamId and tenantid = :tenantId",
+          "select count(*) from kwschemarequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created'",
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);

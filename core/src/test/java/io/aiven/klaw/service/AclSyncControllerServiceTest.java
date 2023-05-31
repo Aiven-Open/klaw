@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_102;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -216,11 +217,61 @@ public class AclSyncControllerServiceTest {
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
 
-    assertThat(aclList.size()).isEqualTo(1);
+    assertThat(aclList.size()).isEqualTo(2);
+    assertThat(aclList)
+        .extracting(AclInfo::getRemarks)
+        .containsExactlyInAnyOrder("DELETED", "ADDED");
   }
 
   @Test
   @Order(8)
+  public void getAclsSyncTrueGetDeletedOnClusterNonApacheKafka() throws KlawException {
+    String envSelected = "1", pageNo = "1", topicNameSearch = "testtopic1";
+
+    stubUserInfo();
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+
+    when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
+        .thenReturn(getAvailableTeams());
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic1");
+    t1.setEnvironment(envSelected);
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
+
+    List<Acl> metadataAcls = getAclsSOT0NonApacheKafka();
+
+    Acl aclReq = new Acl();
+    aclReq.setReq_no(1002);
+    aclReq.setTopicname("testtopic1");
+    aclReq.setTeamId(1);
+    aclReq.setAclip("*");
+    aclReq.setAclssl("testuser");
+    aclReq.setConsumergroup("-na-");
+    aclReq.setAclType(AclType.PRODUCER.value);
+    metadataAcls.add(aclReq);
+    when(clusterApiService.getAcls(anyString(), any(), any(), anyInt()))
+        .thenReturn(utilMethods.getClusterAclsNonApacheKafka());
+    when(handleDbRequests.getSyncAcls(anyString(), anyInt())).thenReturn(metadataAcls);
+
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+        .thenReturn(clustersHashMap);
+    when(clustersHashMap.get(any())).thenReturn(kwClusters);
+    when(kwClusters.getBootstrapServers()).thenReturn("clusters");
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
+
+    List<AclInfo> aclList =
+        aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
+
+    assertThat(aclList.size()).isEqualTo(3);
+    assertThat(aclList)
+        .extracting(AclInfo::getRemarks)
+        .containsExactlyInAnyOrder("DELETED", "DELETED", "ADDED");
+  }
+
+  @Test
+  @Order(9)
   public void getAclsSyncTrue2() throws KlawException {
     String envSelected = "1", pageNo = "1", topicNameSearch = "test";
 
@@ -242,11 +293,12 @@ public class AclSyncControllerServiceTest {
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "", topicNameSearch, "");
 
-    assertThat(aclList).isEmpty();
+    assertThat(aclList.size()).isEqualTo(1);
+    assertThat(aclList.get(0).getPossibleTeams()).contains(SYNC_102);
   }
 
   @Test
-  @Order(9)
+  @Order(10)
   public void updateSyncBackAcls() throws KlawException {
     String envSelected = "1";
     Map<String, String> aivenAclId = new HashMap<>();

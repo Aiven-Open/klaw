@@ -32,4 +32,5 @@ public class AclInfo {
   private String currentPage;
   private boolean showDeleteAcl;
   private KafkaFlavors kafkaFlavorType;
+  private String remarks;
 }

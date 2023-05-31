@@ -26,7 +26,7 @@ public interface TopicRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwtopicrequests where teamid = :teamId and tenantid = :tenantId",
+          "select count(*) from kwtopicrequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created'",
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);

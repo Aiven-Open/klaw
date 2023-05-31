@@ -33,7 +33,7 @@ public interface KwKafkaConnectorRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwkafkaconnectorrequests where teamid = :teamId and tenantid = :tenantId",
+          "select count(*) from kwkafkaconnectorrequests where teamid = :teamId and tenantid = :tenantId and connectorstatus='created'",
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);

@@ -855,7 +855,10 @@ public class TopicAclControllerIT {
             .getContentAsString();
 
     List<AclInfo> response = OBJECT_MAPPER.readValue(res, new TypeReference<>() {});
-    assertThat(response).hasSize(1);
+    assertThat(response).hasSize(2);
+    assertThat(response)
+        .extracting(AclInfo::getRemarks)
+        .containsExactlyInAnyOrder("DELETED", "ADDED");
   }
 
   // delete acl requests
