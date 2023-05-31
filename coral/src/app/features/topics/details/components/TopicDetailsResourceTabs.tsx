@@ -9,6 +9,7 @@ import PreviewBanner from "src/app/components/PreviewBanner";
 import { TopicOverview } from "src/domain/topic";
 import loading from "@aivenio/aquarium/icons/loading";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { TopicSchemaOverview } from "src/domain/topic/topic-types";
 
 type Props = {
   currentTab: TopicOverviewTabEnum;
@@ -17,6 +18,7 @@ type Props = {
   isError: boolean;
   isLoading: boolean;
   topicOverview?: TopicOverview;
+  topicSchemas?: TopicSchemaOverview;
 };
 
 function TopicOverviewResourcesTabs({
@@ -26,6 +28,7 @@ function TopicOverviewResourcesTabs({
   isError,
   isLoading,
   topicOverview,
+  topicSchemas,
 }: Props) {
   const navigate = useNavigate();
   const topicName = topicOverview?.topicInfoList[0].topicName;
@@ -116,6 +119,7 @@ function TopicOverviewResourcesTabs({
               environmentId || topicOverview.availableEnvironments[0].id,
             topicOverview,
             topicName: topicOverview.topicInfoList[0].topicName,
+            topicSchemas,
           }}
         />
       </div>

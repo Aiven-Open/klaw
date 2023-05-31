@@ -1,15 +1,16 @@
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { Navigate, useMatches, useOutletContext } from "react-router-dom";
+import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
+import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import {
-  isTopicsOverviewTabEnum,
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
   TopicOverviewTabEnum,
+  isTopicsOverviewTabEnum,
 } from "src/app/router_utils";
-import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
-import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
-import { useQuery } from "@tanstack/react-query";
-import { getTopicOverview } from "src/domain/topic/topic-api";
-import { useState } from "react";
 import { TopicOverview } from "src/domain/topic";
+import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
+import { TopicSchemaOverview } from "src/domain/topic/topic-types";
 
 type TopicOverviewProps = {
   topicName: string;
@@ -39,10 +40,40 @@ function TopicDetails(props: TopicOverviewProps) {
     undefined
   );
 
-  const { data, isError, error, isLoading } = useQuery(
-    ["topic-overview", environmentId],
+  const {
+    data: topicData,
+    isError: topicIsError,
+    error: topicError,
+    isLoading: topicIsLoading,
+  } = useQuery(["topic-overview", environmentId], {
+    queryFn: () => getTopicOverview({ topicName, environmentId }),
+  });
+
+  const {
+    data: schemaData,
+    isError: schemaIsError,
+    error: schemaError,
+    isLoading: schemaIsLoading,
+  } = useQuery(
+    ["schema-overview", topicData?.availableEnvironments, environmentId],
     {
-      queryFn: () => getTopicOverview({ topicName, environmentId }),
+      queryFn: () => {
+        const getKafkaEnvIds = () => {
+          if (environmentId !== undefined) {
+            return [environmentId];
+          }
+          if (topicData?.availableEnvironments[0].id !== undefined) {
+            return [topicData?.availableEnvironments[0].id];
+          }
+          return [];
+        };
+
+        return getSchemaOfTopic({
+          topicName,
+          kafkaEnvIds: getKafkaEnvIds(),
+        });
+      },
+      enabled: topicData?.availableEnvironments !== undefined,
     }
   );
 
@@ -59,25 +90,28 @@ function TopicDetails(props: TopicOverviewProps) {
   // This isRefetchingTopicOverview variable ensures that we only show loading state when there is a desync between the topic name in pops
   // and the topic name in the available data
   const isRefetchingTopicOverview =
-    data?.topicInfoList[0].topicName !== topicName;
+    topicData?.topicInfoList[0].topicName !== topicName;
 
   return (
     <div>
       <TopicDetailsHeader
         topicName={topicName}
-        topicExists={Boolean(data?.topicExists)}
-        environments={data?.availableEnvironments}
+        topicExists={Boolean(topicData?.topicExists)}
+        environments={topicData?.availableEnvironments}
         environmentId={environmentId}
         setEnvironmentId={setEnvironmentId}
       />
 
       <TopicOverviewResourcesTabs
-        isLoading={isLoading || isRefetchingTopicOverview}
-        isError={isError}
-        error={error}
+        isLoading={
+          topicIsLoading || schemaIsLoading || isRefetchingTopicOverview
+        }
+        isError={topicIsError || schemaIsError}
+        error={topicError || schemaError}
         currentTab={currentTab}
-        topicOverview={data}
+        topicOverview={topicData}
         environmentId={environmentId}
+        topicSchemas={schemaData}
       />
     </div>
   );
@@ -88,6 +122,7 @@ function useTopicDetails() {
     environmentId: string;
     topicOverview: TopicOverview;
     topicName: string;
+    topicSchemas: TopicSchemaOverview;
   }>();
 }
 
