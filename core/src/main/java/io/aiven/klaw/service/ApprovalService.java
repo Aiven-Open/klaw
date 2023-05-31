@@ -52,7 +52,7 @@ public class ApprovalService {
     this.connectApprovals = connectApprovals;
   }
 
-  public List<Approval> getApprovers(
+  private List<Approval> getApprovers(
       RequestEntityType entityType, RequestOperationType operationType, String envName)
       throws KlawException {
 
@@ -75,6 +75,27 @@ public class ApprovalService {
       // Always return a deep copy
       return approvals.stream().map(Approval::new).toList();
     }
+  }
+
+  public List<Approval> getApprovalsForRequest(
+      RequestEntityType entityType,
+      RequestOperationType operationType,
+      String envName,
+      Integer resourceNameId,
+      Integer aclOwnerId,
+      int tenantId)
+      throws KlawException {
+    List<Approval> approvals = getApprovers(entityType, operationType, envName);
+    for (Approval app : approvals) {
+      if (app.getApprovalType().equals(ApprovalType.RESOURCE_TEAM_OWNER)) {
+        app.setRequiredApprovingTeamName(
+            manageDatabase.getTeamNameFromTeamId(tenantId, resourceNameId));
+      } else if (app.getApprovalType().equals(ApprovalType.ACL_TEAM_OWNER)) {
+        app.setRequiredApprovingTeamName(
+            manageDatabase.getTeamNameFromTeamId(tenantId, aclOwnerId));
+      }
+    }
+    return approvals;
   }
 
   private Map<String, List<Approval>> getEntityTypeApproverMap(RequestEntityType entityType)

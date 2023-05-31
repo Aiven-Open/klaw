@@ -38,16 +38,20 @@ class ApprovalConfigurationTest {
     ApprovalService defaultList = config.createTopicService();
 
     List<Approval> aclApprovals =
-        defaultList.getApprovers(RequestEntityType.ACL, RequestOperationType.CLAIM, PRD_ENV);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.ACL, RequestOperationType.CLAIM, PRD_ENV, 10, 10, 101);
 
     List<Approval> topicApprovals =
-        defaultList.getApprovers(RequestEntityType.TOPIC, RequestOperationType.CREATE, PRD_ENV);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.TOPIC, RequestOperationType.CREATE, PRD_ENV, 10, null, 101);
 
     List<Approval> schemaApprovals =
-        defaultList.getApprovers(RequestEntityType.SCHEMA, RequestOperationType.DELETE, PRD_ENV);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.SCHEMA, RequestOperationType.DELETE, PRD_ENV, 10, null, 101);
 
     List<Approval> connectorApprovals =
-        defaultList.getApprovers(RequestEntityType.SCHEMA, RequestOperationType.UPDATE, PRD_ENV);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.SCHEMA, RequestOperationType.UPDATE, PRD_ENV, 10, null, 101);
 
     assertThat(aclApprovals.size()).isEqualTo(2);
     assertThat(topicApprovals.size()).isEqualTo(1);
@@ -70,16 +74,20 @@ class ApprovalConfigurationTest {
     ApprovalService defaultList = config.createTopicService();
 
     List<Approval> aclApprovals =
-        defaultList.getApprovers(RequestEntityType.ACL, RequestOperationType.CLAIM, null);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.ACL, RequestOperationType.CLAIM, null, 10, 10, 101);
 
     List<Approval> topicApprovals =
-        defaultList.getApprovers(RequestEntityType.TOPIC, RequestOperationType.CREATE, null);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.TOPIC, RequestOperationType.CREATE, null, 10, null, 101);
 
     List<Approval> schemaApprovals =
-        defaultList.getApprovers(RequestEntityType.SCHEMA, RequestOperationType.DELETE, null);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.SCHEMA, RequestOperationType.DELETE, null, 10, null, 101);
 
     List<Approval> connectorApprovals =
-        defaultList.getApprovers(RequestEntityType.SCHEMA, RequestOperationType.UPDATE, null);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.SCHEMA, RequestOperationType.UPDATE, null, 10, null, 101);
 
     assertThat(aclApprovals.size()).isEqualTo(2);
     assertThat(topicApprovals.size()).isEqualTo(1);
@@ -102,13 +110,15 @@ class ApprovalConfigurationTest {
     ApprovalService defaultList = config.createTopicService();
 
     List<Approval> aclApprovals =
-        defaultList.getApprovers(RequestEntityType.ACL, RequestOperationType.CLAIM, null);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.ACL, RequestOperationType.CLAIM, null, 10, 10, 101);
     aclApprovals.get(0).setApproverTeamId(1);
     aclApprovals.get(0).setApproverTeamName("Octopus");
     aclApprovals.get(0).setApproverTeamId(1);
     aclApprovals.get(0).setApproverName("George");
     assertThat(aclApprovals)
         .isNotEqualTo(
-            defaultList.getApprovers(RequestEntityType.ACL, RequestOperationType.CLAIM, null));
+            defaultList.getApprovalsForRequest(
+                RequestEntityType.ACL, RequestOperationType.CLAIM, null, 10, 10, 101));
   }
 }
