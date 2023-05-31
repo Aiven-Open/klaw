@@ -1,7 +1,8 @@
-import { cleanup, screen, render, within } from "@testing-library/react";
-import { createMockTopic } from "src/domain/topic/topic-test-helper";
+import { cleanup, screen, within } from "@testing-library/react";
 import TopicTable from "src/app/features/topics/browse/components/TopicTable";
+import { createMockTopic } from "src/domain/topic/topic-test-helper";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 
 const mockedTopicNames = ["Name-one", "Name-two", "Name-three", "Name-four"];
@@ -16,8 +17,9 @@ describe("TopicTable.tsx", () => {
     afterAll(cleanup);
 
     it("show empty state when there is no data", () => {
-      render(
-        <TopicTable topics={[]} ariaLabel={"Topics overview, page 0 of 0"} />
+      customRender(
+        <TopicTable topics={[]} ariaLabel={"Topics overview, page 0 of 0"} />,
+        { memoryRouter: true }
       );
       expect(screen.getByRole("heading", { name: "No Topics" })).toBeVisible();
     });
@@ -26,11 +28,12 @@ describe("TopicTable.tsx", () => {
   describe("shows all topics as a table", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(
+      customRender(
         <TopicTable
           topics={mockedTopics}
           ariaLabel={"Topics overview, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
@@ -73,7 +76,7 @@ describe("TopicTable.tsx", () => {
         expect(link).toBeVisible();
         expect(link).toHaveAttribute(
           "href",
-          `http://localhost/topicOverview?topicname=${topic.topicName}`
+          `/topic/${topic.topicName}/overview`
         );
       });
 
@@ -124,11 +127,12 @@ describe("TopicTable.tsx", () => {
   describe("enables user to keyboard navigate from topic name to topic name", () => {
     beforeEach(() => {
       mockIntersectionObserver();
-      render(
+      customRender(
         <TopicTable
           topics={mockedTopics}
           ariaLabel={"Topics overview, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
       const table = screen.getByRole("table", {
         name: "Topics overview, page 1 of 10",

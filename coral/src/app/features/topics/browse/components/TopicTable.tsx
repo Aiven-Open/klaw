@@ -3,12 +3,12 @@ import {
   DataTableColumn,
   EmptyState,
   Flexbox,
-  StatusChip,
   InlineIcon,
+  StatusChip,
 } from "@aivenio/aquarium";
-import { createTopicOverviewLink } from "src/app/features/topics/browse/utils/create-topic-overview-link";
-import { Topic } from "src/domain/topic";
 import link from "@aivenio/aquarium/dist/src/icons/link";
+import { Link } from "react-router-dom";
+import { Topic } from "src/domain/topic";
 
 type TopicListProps = {
   topics: Topic[];
@@ -31,9 +31,9 @@ function TopicTable(props: TopicListProps) {
       field: "topicName",
       headerName: "Topic",
       UNSAFE_render: ({ topicName }: TopicsTableRow) => (
-        <a href={createTopicOverviewLink(topicName)}>
+        <Link to={`/topic/${topicName}/overview`}>
           {topicName} <InlineIcon icon={link} />
-        </a>
+        </Link>
       ),
     },
     {
