@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { TopicMessageItem } from "src/app/features/topics/overview/messages/components/TopicMessageItem";
+import { TopicMessageItem } from "src/app/features/topics/details/messages/components/TopicMessageItem";
 import userEvent from "@testing-library/user-event";
 
 describe("TopicMessageItem", () => {

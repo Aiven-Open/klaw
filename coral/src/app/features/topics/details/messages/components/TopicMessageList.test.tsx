@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { TopicMessageList } from "src/app/features/topics/overview/messages/components/TopicMessageList";
+import { TopicMessageList } from "src/app/features/topics/details/messages/components/TopicMessageList";
 
 const messages = {
   0: "HELLO",

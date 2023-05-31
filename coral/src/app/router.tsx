@@ -33,7 +33,7 @@ import {
 import { getRouterBasename } from "src/config";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
-import { TopicMessagesPage } from "src/app/pages/topics/overview/messages";
+import { TopicMessagesPage } from "src/app/pages/topics/details/messages";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
