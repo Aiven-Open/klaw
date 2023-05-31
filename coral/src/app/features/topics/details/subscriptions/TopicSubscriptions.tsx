@@ -6,7 +6,6 @@ import {
   PageHeader,
   SegmentedControl,
   SegmentedControlGroup,
-  Skeleton,
   Typography,
   useToast,
 } from "@aivenio/aquarium";
@@ -28,10 +27,7 @@ import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
 import { createAclDeletionRequest } from "src/domain/acl/acl-api";
-import {
-  AclOverviewInfo,
-  TopicOverviewApiResponse,
-} from "src/domain/topic/topic-types";
+import { AclOverviewInfo, TopicOverview } from "src/domain/topic/topic-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 type SubscriptionOptions =
@@ -47,7 +43,7 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
   ].includes(value);
 };
 
-const getSubsStats = (data?: TopicOverviewApiResponse) => {
+const getSubsStats = (data?: TopicOverview) => {
   const aclInfoList = data?.aclInfoList ?? [];
   const prefixedAclInfoList = data?.prefixedAclInfoList ?? [];
   const transactionalAclInfoList = data?.transactionalAclInfoList ?? [];
@@ -131,8 +127,8 @@ const TopicSubscriptions = () => {
   };
 
   const subsStats = useMemo(() => {
-    return getSubsStats(data);
-  }, [data]);
+    return getSubsStats(topicOverview);
+  }, [topicOverview]);
 
   const filteredData: AclOverviewInfo[] = useMemo(() => {
     const subs = topicOverview[selectedSubs];
@@ -187,7 +183,7 @@ const TopicSubscriptions = () => {
           icon: add,
           text: "Request a subscription",
           onClick: () =>
-            navigate(`/topic/${topicName}/subscribe?env=${TEMP_ENV_VALUE}`),
+            navigate(`/topic/${topicName}/subscribe?env=${environmentId}`),
         }}
       />
       {errorMessage !== "" && (
@@ -195,33 +191,27 @@ const TopicSubscriptions = () => {
           <Alert type="error">{errorMessage}</Alert>
         </Box>
       )}
-      {dataIsLoading ? (
-        <Grid cols={"2"} gap={"l2"} marginBottom={"l2"}>
-          <Skeleton height={102} />
-          <Skeleton height={102} />
-        </Grid>
-      ) : (
-        <Grid cols={"2"} gap={"l2"} marginBottom={"l2"}>
-          <BorderBox
-            borderColor="grey-20"
-            padding={"l2"}
-            title="Amount of producer subscriptions"
-          >
-            <Typography.Heading>{subsStats.producers}</Typography.Heading>
-            <Typography.Small>Producers</Typography.Small>
-          </BorderBox>
-          <BorderBox
-            borderColor="grey-20"
-            padding={"l2"}
-            title="Amount of consumer subscriptions"
-          >
-            <Box.Flex flexDirection="column">
-              <Typography.Heading>{subsStats.consumers}</Typography.Heading>
-              <Typography.Small>Consumers</Typography.Small>
-            </Box.Flex>
-          </BorderBox>
-        </Grid>
-      )}
+
+      <Grid cols={"2"} gap={"l2"} marginBottom={"l2"}>
+        <BorderBox
+          borderColor="grey-20"
+          padding={"l2"}
+          title="Amount of producer subscriptions"
+        >
+          <Typography.Heading>{subsStats.producers}</Typography.Heading>
+          <Typography.Small>Producers</Typography.Small>
+        </BorderBox>
+        <BorderBox
+          borderColor="grey-20"
+          padding={"l2"}
+          title="Amount of consumer subscriptions"
+        >
+          <Box.Flex flexDirection="column">
+            <Typography.Heading>{subsStats.consumers}</Typography.Heading>
+            <Typography.Small>Consumers</Typography.Small>
+          </Box.Flex>
+        </BorderBox>
+      </Grid>
 
       <TableLayout
         filters={[
