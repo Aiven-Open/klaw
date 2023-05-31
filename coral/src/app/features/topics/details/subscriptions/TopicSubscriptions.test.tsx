@@ -220,6 +220,35 @@ describe("TopicSubscriptions.tsx", () => {
     jest.clearAllMocks();
   });
 
+  describe("should render boxes with Consumers and Producers stats", () => {
+    it("should render a Producers box with correct data", async () => {
+      const producersBox = screen.getByTitle(
+        "Amount of producer subscriptions"
+      );
+      expect(producersBox).toBeVisible();
+
+      const number = within(producersBox).getByText("3");
+      const name = within(producersBox).getByText("Producers");
+
+      expect(number).toBeVisible();
+      expect(name).toBeVisible();
+    });
+
+    it("should render a Consumers box with correct data", async () => {
+      const consumersBox = screen.getByTitle(
+        "Amount of consumer subscriptions"
+      );
+
+      expect(consumersBox).toBeVisible();
+
+      const number = within(consumersBox).getByText("2");
+      const name = within(consumersBox).getByText("Consumers");
+
+      expect(number).toBeVisible();
+      expect(name).toBeVisible();
+    });
+  });
+
   describe("should render a table and buttons to switch between different kind of subscriptions", () => {
     it("should render a Table", () => {
       const table = screen.getByRole("table", {
