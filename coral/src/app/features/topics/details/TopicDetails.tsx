@@ -66,7 +66,7 @@ function TopicDetails(props: TopicOverviewProps) {
         error={error}
         currentTab={currentTab}
         topicOverview={data}
-        environmentId={environmentId || ""}
+        environmentId={environmentId}
       />
     </div>
   );
