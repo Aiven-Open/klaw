@@ -31,6 +31,7 @@ import {
 import { getRouterBasename } from "src/config";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
+import { TopicHistoryPage } from "src/app/pages/topics/details/history";
 import { TopicMessagesPage } from "src/app/pages/topics/details/messages";
 import { TopicSubscriptionsPage } from "src/app/pages/topics/details/subscriptions";
 import { TopicOverviewPage } from "src/app/pages/topics/details/overview";
@@ -88,7 +89,7 @@ const routes: Array<RouteObject> = [
           },
           {
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[TopicOverviewTabEnum.HISTORY],
-            element: <div>HISTORY</div>,
+            element: <TopicHistoryPage />,
             id: TopicOverviewTabEnum.HISTORY,
           },
           {
