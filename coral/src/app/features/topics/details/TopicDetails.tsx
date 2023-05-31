@@ -6,6 +6,10 @@ import {
 } from "src/app/router_utils";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
+import { useQuery } from "@tanstack/react-query";
+import { getTopicOverview } from "src/domain/topic/topic-api";
+import { useState } from "react";
+import { TopicOverview } from "src/domain/topic";
 
 type TopicOverviewProps = {
   topicName: string;
@@ -30,23 +34,50 @@ function TopicDetails(props: TopicOverviewProps) {
 
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
+
+  const [environmentId, setEnvironmentId] = useState<string | undefined>(
+    undefined
+  );
+
+  const { data, isError, error, isLoading } = useQuery(
+    ["topic-overview", environmentId],
+    {
+      queryFn: () => getTopicOverview({ topicName, environmentId }),
+    }
+  );
+
   if (currentTab === undefined) {
     return <Navigate to={`/topic/${topicName}/overview`} replace={true} />;
   }
+
   return (
     <div>
-      <TopicDetailsHeader topicName={topicName} />
+      <TopicDetailsHeader
+        topicName={topicName}
+        topicExists={Boolean(data?.topicExists)}
+        environments={data?.availableEnvironments}
+        environmentId={environmentId}
+        setEnvironmentId={setEnvironmentId}
+      />
 
       <TopicOverviewResourcesTabs
+        isLoading={isLoading}
+        isError={isError}
+        error={error}
         currentTab={currentTab}
-        topicName={topicName}
+        topicOverview={data}
+        environmentId={environmentId || ""}
       />
     </div>
   );
 }
 
 function useTopicDetails() {
-  return useOutletContext<{ topicName: string }>();
+  return useOutletContext<{
+    topicName: string;
+    environmentId: string;
+    topicOverview: TopicOverview;
+  }>();
 }
 
 export { TopicDetails, useTopicDetails };
