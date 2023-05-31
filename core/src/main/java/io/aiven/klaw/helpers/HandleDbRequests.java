@@ -411,4 +411,6 @@ public interface HandleDbRequests {
   List<KwClusters> getClusters();
 
   String updateJsonParams(Map<String, String> jsonParams, Integer req_no, int tenantId);
+
+  String deleteAcls(List<Acl> listDeleteAcls, int tenantId);
 }

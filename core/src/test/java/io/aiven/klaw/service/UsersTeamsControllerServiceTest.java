@@ -18,10 +18,12 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.ResetPasswordInfo;
+import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -234,16 +236,34 @@ public class UsersTeamsControllerServiceTest {
   void getAllTeamsSU() {}
 
   @Test
-  void getAllTeamsSUOnly() {}
+  void getAllTeamsSUOnly() {
+    int tenantId = 101;
+    int teamId = 101;
+    when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
+    when(mailService.getUserName(any())).thenReturn("testuser");
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
+    when(manageDatabase.getTeamObjForTenant(tenantId)).thenReturn(utilMethods.getTeams());
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(handleDbRequests.getAllComponentsCountForTeam(teamId, tenantId)).thenReturn(0);
+    when(handleDbRequests.getAllUsersInfoForTeam(teamId, tenantId))
+        .thenReturn(Collections.emptyList());
+    List<TeamModelResponse> teams = usersTeamsControllerService.getAllTeamsSU();
+    assertThat(teams.get(0).isShowDeleteTeam()).isTrue();
+
+    when(handleDbRequests.getAllComponentsCountForTeam(teamId, tenantId)).thenReturn(1);
+    when(handleDbRequests.getAllUsersInfoForTeam(teamId, tenantId))
+        .thenReturn(Collections.emptyList());
+    teams = usersTeamsControllerService.getAllTeamsSU();
+    assertThat(teams.get(0).isShowDeleteTeam()).isFalse();
+  }
 
   @Test
   void deleteTeamFailure() throws KlawException {
     int teamId = 101;
     int tenantId = 101;
-    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMap());

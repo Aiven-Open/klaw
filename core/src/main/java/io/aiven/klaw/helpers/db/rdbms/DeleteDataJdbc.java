@@ -329,4 +329,14 @@ public class DeleteDataJdbc {
         messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(
             topicObj.getTenantId(), topicObj.getTopicname(), topicObj.getEnvironment()));
   }
+
+  public String deleteAcls(List<Acl> listDeleteAcls, int tenantId) {
+    listDeleteAcls.forEach(
+        a -> {
+          AclID aclID = new AclID(a.getReq_no(), tenantId);
+          Optional<Acl> optionalAcl = aclRepo.findById(aclID);
+          optionalAcl.ifPresent(acl -> aclRepo.delete(acl));
+        });
+    return ApiResultStatus.SUCCESS.value;
+  }
 }

@@ -237,7 +237,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
             		closeOnConfirm: true,
             		closeOnCancel: true
             	}).then(function(isConfirm){
-            		if (isConfirm.dismiss != "cancel") {
+            		if (isConfirm.dismiss !== "cancel") {
             		    $scope.ShowSpinnerStatus = true;
             			$http({
                             method: "POST",
@@ -250,7 +250,6 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                             $scope.alert = "Acl Sync Request : "+output.message;
                             $scope.updatedSyncArray = [];
 
-//                            $scope.getAcls(1);
                              if(output.success){
                               swal({
                             		   title: "",
@@ -258,6 +257,7 @@ app.controller("synchronizeAclsCtrl", function($scope, $http, $location, $window
                             		   timer: 2000,
                             		   showConfirmButton: false
                             	   });
+                                 $scope.getAcls(1);
                             }else $scope.showSubmitFailed('','');
                         }).error(
                             function(error)

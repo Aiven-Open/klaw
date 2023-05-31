@@ -543,6 +543,7 @@
 										<th>Principal / User</th>
 										<th>AclType</th>
 										<th>Team</th>
+										<th>Info</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -575,6 +576,24 @@
 												ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
 												ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 										</select>
+									</td>
+									<td ng-show="resultBrowset.remarks == 'DELETED'">
+										<a class="mytooltip" href="javascript:void(0)" style="color:red;">
+											<i class="fas fa-stopwatch"></i>
+											<span class="tooltip-content3">Acl deleted on cluster. Select REMOVE-FROM-KLAW team to delete from Klaw.</span>
+										</a>
+									</td>
+									<td ng-show="resultBrowset.remarks == 'IN_SYNC'">
+										<a class="mytooltip" href="javascript:void(0)" style="color:green;">
+											<i class="fas fa-chess-rook"></i>
+											<span class="tooltip-content3">Acl in sync.</span>
+										</a>
+									</td>
+									<td ng-show="resultBrowset.remarks != 'IN_SYNC' && resultBrowset.remarks != 'DELETED'">
+										<a class="mytooltip" href="javascript:void(0)" style="color:blue;">
+											<i class="fa fa-exclamation-triangle" style="color: #FFBF00"></i>
+											<span class="tooltip-content3">Acl added on cluster.</span>
+										</a>
 									</td>
 								</tr>
 

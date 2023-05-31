@@ -632,8 +632,8 @@ public class SchemaRegistryControllerServiceTest {
             NullPointerException.class,
             () -> schemaRegistryControllerService.uploadSchema(schemaRequest));
     assertThat(ex.getMessage())
-        .isEqualTo(
-            "Cannot invoke \"java.lang.Boolean.booleanValue()\" because \"this.validateCompatiblityOnSave\" is null");
+        .contains("Cannot invoke \"java.lang.Boolean.booleanValue()\"")
+        .contains("validateCompatiblityOnSave\" is null");
   }
 
   @Test

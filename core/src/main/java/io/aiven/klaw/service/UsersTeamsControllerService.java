@@ -379,20 +379,25 @@ public class UsersTeamsControllerService {
   }
 
   public List<TeamModelResponse> getAllTeamsSU() {
-    int tenantId = commonUtilsService.getTenantId(getUserName());
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
 
     List<TeamModelResponse> teamModels =
         getTeamModels(manageDatabase.getTeamObjForTenant(tenantId));
 
-    if (!commonUtilsService.isNotAuthorizedUser(
-        getUserName(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
+    if (!commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_TEAMS)) {
       teamModels.forEach(
           teamModel -> {
             teamModel.setShowDeleteTeam(
-                manageDatabase
-                        .getHandleDbRequests()
-                        .getAllComponentsCountForTeam(teamModel.getTeamId(), tenantId)
-                    <= 0);
+                (manageDatabase
+                            .getHandleDbRequests()
+                            .getAllComponentsCountForTeam(teamModel.getTeamId(), tenantId)
+                        == 0)
+                    && (manageDatabase
+                            .getHandleDbRequests()
+                            .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId)
+                            .size()
+                        == 0));
           });
     }
 

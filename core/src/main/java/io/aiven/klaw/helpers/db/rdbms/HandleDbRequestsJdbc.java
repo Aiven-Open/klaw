@@ -976,6 +976,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcUpdateHelper.updateJsonParams(jsonParams, req_no, tenantId);
   }
 
+  @Override
+  public String deleteAcls(List<Acl> listDeleteAcls, int tenantId) {
+    return jdbcDeleteHelper.deleteAcls(listDeleteAcls, tenantId);
+  }
+
   public String updateDbWithUpdatedVersions(List<MessageSchema> schemaListUpdated) {
     return jdbcUpdateHelper.updateDbWithUpdatedVersions(schemaListUpdated);
   }

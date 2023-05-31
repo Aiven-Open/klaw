@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_SYNC_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_SYNC_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_SYNC_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_102;
 import static io.aiven.klaw.error.KlawErrorMessages.SYNC_ERR_101;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
@@ -29,6 +30,7 @@ import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,6 +77,7 @@ public class AclSyncControllerService {
     }
 
     List<Acl> listTopics = new ArrayList<>();
+    List<Acl> listDeleteAcls = new ArrayList<>();
     Acl t;
 
     if (syncAclUpdates != null && syncAclUpdates.size() > 0) {
@@ -99,46 +102,55 @@ public class AclSyncControllerService {
               .message(ApiResultStatus.NOT_AUTHORIZED.value)
               .build();
         }
-
         t = new Acl();
 
         if (syncAclUpdateItem.getReq_no() != null) {
           t.setReq_no(Integer.parseInt(syncAclUpdateItem.getReq_no()));
         }
-        if (syncAclUpdateItem.getAclId() != null) {
-          Map<String, String> jsonParams = new HashMap<>();
-          jsonParams.put(AIVEN_ACL_ID_KEY, syncAclUpdateItem.getAclId());
-          t.setJsonParams(jsonParams);
-        }
-        t.setTopicname(syncAclUpdateItem.getTopicName());
-        t.setConsumergroup(syncAclUpdateItem.getConsumerGroup());
-        t.setAclip(syncAclUpdateItem.getAclIp());
-        t.setAclssl(syncAclUpdateItem.getAclSsl());
-        t.setTeamId(
-            manageDatabase.getTeamIdFromTeamName(tenantId, syncAclUpdateItem.getTeamSelected()));
-        t.setEnvironment(syncAclUpdateItem.getEnvSelected());
-        t.setAclType(syncAclUpdateItem.getAclType());
-        t.setAclPatternType(AclPatternType.LITERAL.value);
-        t.setTenantId(tenantId);
-        if (syncAclUpdateItem.getAclSsl() != null && syncAclUpdateItem.getAclSsl().length() > 0) {
-          t.setAclIpPrincipleType(AclIPPrincipleType.PRINCIPAL);
-        } else {
-          t.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
-        }
 
-        listTopics.add(t);
+        if (SYNC_102.equals(syncAclUpdateItem.getTeamSelected())) {
+          listDeleteAcls.add(t);
+        } else {
+          if (syncAclUpdateItem.getAclId() != null) {
+            Map<String, String> jsonParams = new HashMap<>();
+            jsonParams.put(AIVEN_ACL_ID_KEY, syncAclUpdateItem.getAclId());
+            t.setJsonParams(jsonParams);
+          }
+          t.setTopicname(syncAclUpdateItem.getTopicName());
+          t.setConsumergroup(syncAclUpdateItem.getConsumerGroup());
+          t.setAclip(syncAclUpdateItem.getAclIp());
+          t.setAclssl(syncAclUpdateItem.getAclSsl());
+          t.setTeamId(
+              manageDatabase.getTeamIdFromTeamName(tenantId, syncAclUpdateItem.getTeamSelected()));
+          t.setEnvironment(syncAclUpdateItem.getEnvSelected());
+          t.setAclType(syncAclUpdateItem.getAclType());
+          t.setAclPatternType(AclPatternType.LITERAL.value);
+          t.setTenantId(tenantId);
+          if (syncAclUpdateItem.getAclSsl() != null && syncAclUpdateItem.getAclSsl().length() > 0) {
+            t.setAclIpPrincipleType(AclIPPrincipleType.PRINCIPAL);
+          } else {
+            t.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+          }
+
+          listTopics.add(t);
+        }
       }
     } else {
       return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
     }
 
+    String syncStatus = "";
     try {
       if (!listTopics.isEmpty()) {
-        return ApiResponse.builder()
-            .success(true)
-            .message(manageDatabase.getHandleDbRequests().addToSyncacls(listTopics))
-            .build();
+        syncStatus = manageDatabase.getHandleDbRequests().addToSyncacls(listTopics);
       }
+      if (!listDeleteAcls.isEmpty()) {
+        syncStatus = manageDatabase.getHandleDbRequests().deleteAcls(listDeleteAcls, tenantId);
+      }
+      if ((!listTopics.isEmpty() || !listDeleteAcls.isEmpty())) {
+        return ApiResponse.builder().success(true).message(syncStatus).build();
+      }
+
       return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
     } catch (Exception e) {
       log.error("Exception:", e);
@@ -366,7 +378,7 @@ public class AclSyncControllerService {
         env,
         topicNameSearch,
         showAllAcls);
-    boolean isReconciliation = !Boolean.parseBoolean(showAllAcls);
+    boolean showAllAclsOfClusterAndMetadata = !Boolean.parseBoolean(showAllAcls);
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (topicNameSearch != null) {
@@ -400,7 +412,12 @@ public class AclSyncControllerService {
         pageNo,
         currentPage,
         applyFiltersAcls(
-            env, aclList, aclsFromSOT, isReconciliation, tenantId, kwClusters.getKafkaFlavor()));
+            env,
+            aclList,
+            aclsFromSOT,
+            showAllAclsOfClusterAndMetadata,
+            tenantId,
+            kwClusters.getKafkaFlavor()));
   }
 
   public List<AclInfo> getSyncBackAcls(
@@ -463,8 +480,8 @@ public class AclSyncControllerService {
 
   private List<AclInfo> applyFiltersAcls(
       String env,
-      List<Map<String, String>> aclList,
-      List<Acl> aclsFromSOT,
+      List<Map<String, String>> aclListFromCluster,
+      List<Acl> aclsFromMetadata,
       boolean isReconciliation,
       int tenantId,
       String kafkaFlavor) {
@@ -479,11 +496,12 @@ public class AclSyncControllerService {
             .map(Topic::getTopicname)
             .toList();
 
-    for (Map<String, String> aclListItem : aclList) {
+    for (Map<String, String> aclListItem : aclListFromCluster) {
       AclInfo mp = new AclInfo();
       mp.setEnvironment(env);
       mp.setPossibleTeams(teamList);
       mp.setTeamname("");
+      mp.setRemarks("");
       if (aclListItem.containsKey(AIVEN_ACL_ID_KEY)) {
         mp.setAclId(aclListItem.get(AIVEN_ACL_ID_KEY));
       }
@@ -508,7 +526,7 @@ public class AclSyncControllerService {
       mp.setAcl_ip(aclListItem.get("host"));
       mp.setAcl_ssl(aclListItem.get("principle"));
 
-      for (Acl aclSotItem : aclsFromSOT) {
+      for (Acl aclSotItem : aclsFromMetadata) {
         String acl_ssl = aclSotItem.getAclssl();
         String acl_host = aclSotItem.getAclip();
 
@@ -534,6 +552,7 @@ public class AclSyncControllerService {
           mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
           mp.setTeamid(aclSotItem.getTeamId());
           mp.setReq_no(aclSotItem.getReq_no() + "");
+          mp.setRemarks("IN_SYNC");
           break;
         }
       }
@@ -548,16 +567,111 @@ public class AclSyncControllerService {
 
       if (isReconciliation) {
         if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname())) {
+          mp.setRemarks("ADDED");
           aclListMap.add(mp);
         }
       } else {
-        if (teamList.contains(mp.getTeamname())) aclListMap.add(mp);
-        else if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname())) {
+        if (teamList.contains(mp.getTeamname())) {
+          aclListMap.add(mp);
+        } else if ("Unknown".equals(mp.getTeamname()) || "".equals(mp.getTeamname())) {
+          mp.setRemarks("ADDED");
           aclListMap.add(mp);
         }
       }
     }
+
+    lookForDeletedAclsOnCluster(
+        aclListFromCluster, aclsFromMetadata, aclListMap, kafkaFlavor, tenantId, env);
+
+    aclListMap =
+        aclListMap.stream()
+            .sorted(Comparator.comparing(AclInfo::getTopicname))
+            .collect(Collectors.toList());
     return aclListMap;
+  }
+
+  private void lookForDeletedAclsOnCluster(
+      List<Map<String, String>> aclListFromCluster,
+      List<Acl> aclsFromMetadata,
+      List<AclInfo> aclListMap,
+      String kafkaFlavor,
+      int tenantId,
+      String env) {
+
+    for (Acl aclSotItem : aclsFromMetadata) {
+      String acl_ssl = aclSotItem.getAclssl();
+      String acl_host = aclSotItem.getAclip();
+
+      if (acl_ssl == null || acl_ssl.equals("")) {
+        acl_ssl = "User:*";
+      } else {
+        if (!KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value.equals(kafkaFlavor)
+            && !"User:*".equals(acl_ssl)
+            && !acl_ssl.startsWith("User:")) {
+          acl_ssl = "User:" + acl_ssl;
+        }
+      }
+
+      if (acl_host == null || acl_host.equals("")) {
+        acl_host = "*";
+      }
+
+      String finalAcl_host = acl_host;
+      String finalAcl_ssl = acl_ssl;
+      AclInfo mp = new AclInfo();
+
+      List<Map<String, String>> aclListFromClusterSubList =
+          aclListFromCluster.stream()
+              .filter(
+                  aclListItem -> {
+                    return Objects.equals(
+                            aclListItem.get("resourceName"), aclSotItem.getTopicname())
+                        && Objects.equals(aclListItem.get("host"), finalAcl_host)
+                        && Objects.equals(aclListItem.get("principle"), finalAcl_ssl);
+                  })
+              .toList();
+
+      boolean aclFoundMatch = false;
+
+      for (Map<String, String> aclListItem : aclListFromClusterSubList) {
+        String tmpPermType = aclListItem.get("operation");
+
+        if (AclPermissionType.WRITE.value.equals(tmpPermType)) {
+          mp.setTopictype(AclType.PRODUCER.value);
+        } else if (AclPermissionType.READ.value.equals(tmpPermType)) {
+          mp.setTopictype(AclType.CONSUMER.value);
+          if (aclListItem.get("consumerGroup") != null) {
+            mp.setConsumergroup(aclListItem.get("consumerGroup"));
+          } else {
+            continue;
+          }
+        }
+
+        if (Objects.equals(aclSotItem.getAclType(), mp.getTopictype())) {
+          aclFoundMatch = true;
+          break;
+        }
+      }
+
+      if (!aclFoundMatch) {
+        mp.setEnvironment(env);
+        mp.setTopicname(aclSotItem.getTopicname());
+        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
+        mp.setTeamid(aclSotItem.getTeamId());
+
+        List<String> possibleTeams = new ArrayList<>();
+        possibleTeams.add(manageDatabase.getTeamNameFromTeamId(tenantId, aclSotItem.getTeamId()));
+        possibleTeams.add(SYNC_102);
+        mp.setPossibleTeams(possibleTeams);
+
+        mp.setReq_no(aclSotItem.getReq_no() + "");
+        mp.setAcl_ip(aclSotItem.getAclip());
+        mp.setAcl_ssl(aclSotItem.getAclssl());
+        mp.setTopictype(aclSotItem.getAclType());
+        mp.setRemarks("DELETED");
+        aclListMap.add(mp);
+      }
+    }
   }
 
   private boolean verifyIfTopicExists(
