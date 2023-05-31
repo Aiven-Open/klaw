@@ -74,7 +74,6 @@ function TopicDetails(props: TopicOverviewProps) {
 
 function useTopicDetails() {
   return useOutletContext<{
-    topicName: string;
     environmentId: string;
     topicOverview: TopicOverview;
   }>();

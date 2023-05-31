@@ -5,6 +5,7 @@ import { TopicMessages } from "src/app/features/topics/overview/messages/TopicMe
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { Outlet, Route, Routes } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import { TopicOverview } from "src/domain/topic";
 
 jest.mock("src/domain/topic/topic-api.ts");
 
@@ -21,8 +22,11 @@ const mockGetTopicMessagesNoContentResponse = {
   status: "failed",
 };
 
+const testTopicOverview = {
+  topicInfoList: [{ topicName: "test" }],
+} as TopicOverview;
 function DummyParent() {
-  return <Outlet context={{ topicName: "test" }} />;
+  return <Outlet context={{ topicOverview: testTopicOverview }} />;
 }
 
 describe("TopicMessages", () => {
