@@ -1225,6 +1225,7 @@ export type components = {
       showDeleteAcl?: boolean;
       /** @enum {string} */
       kafkaFlavorType?: "APACHE_KAFKA" | "AIVEN_FOR_APACHE_KAFKA" | "CONFLUENT" | "CONFLUENT_CLOUD" | "OTHERS";
+      remarks?: string;
     };
     SchemaRequestsResponseModel: {
       environment: string;
