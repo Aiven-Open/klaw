@@ -12,7 +12,7 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 
 type Props = {
   currentTab: TopicOverviewTabEnum;
-  environmentId: string;
+  environmentId?: string;
   error?: unknown;
   isError: boolean;
   isLoading: boolean;
@@ -112,7 +112,8 @@ function TopicOverviewResourcesTabs({
       <div data-testid={"tabpanel-content"}>
         <Outlet
           context={{
-            environmentId,
+            environmentId:
+              environmentId || topicOverview.availableEnvironments[0].id,
             topicOverview,
             topicName: topicOverview.topicInfoList[0].topicName,
           }}
