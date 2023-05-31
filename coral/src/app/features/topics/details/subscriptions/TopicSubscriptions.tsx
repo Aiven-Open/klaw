@@ -11,7 +11,7 @@ import {
   useToast,
 } from "@aivenio/aquarium";
 import add from "@aivenio/aquarium/dist/src/icons/add";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import pick from "lodash/pick";
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -28,14 +28,11 @@ import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
 import { createAclDeletionRequest } from "src/domain/acl/acl-api";
-import { getTopicOverview } from "src/domain/topic/topic-api";
 import {
   AclOverviewInfo,
   TopicOverviewApiResponse,
 } from "src/domain/topic/topic-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
-
-const TEMP_ENV_VALUE = "2";
 
 type SubscriptionOptions =
   | "aclInfoList"
@@ -84,8 +81,9 @@ const getSubsStats = (data?: TopicOverviewApiResponse) => {
 
 const TopicSubscriptions = () => {
   const navigate = useNavigate();
-  // @ TODO get environment from useTopicDetails too when it is implemented2
-  const { topicName } = useTopicDetails();
+  const { topicOverview, environmentId } = useTopicDetails();
+
+  const topicName = topicOverview.topicInfoList[0].topicName;
 
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
@@ -95,16 +93,6 @@ const TopicSubscriptions = () => {
   const toast = useToast();
 
   const { teamId, aclType, search } = useFiltersContext();
-  const {
-    data,
-    isLoading: dataIsLoading,
-    isRefetching: dataIsRefetching,
-    isError,
-    error,
-  } = useQuery(["topic-overview"], {
-    queryFn: () =>
-      getTopicOverview({ topicName, environmentId: TEMP_ENV_VALUE }),
-  });
 
   const { isLoading: deleteIsLoading, mutate: deleteRequest } = useMutation({
     mutationFn: createAclDeletionRequest,
@@ -147,11 +135,7 @@ const TopicSubscriptions = () => {
   }, [data]);
 
   const filteredData: AclOverviewInfo[] = useMemo(() => {
-    if (data === undefined) {
-      return [];
-    }
-
-    const subs = data[selectedSubs];
+    const subs = topicOverview[selectedSubs];
 
     if (subs === undefined) {
       return [];
@@ -174,7 +158,7 @@ const TopicSubscriptions = () => {
         aclType === "ALL" || sub.topictype?.toUpperCase() === aclType;
       return teamFilter && aclTypeFilter && searchFilter;
     });
-  }, [search, teamId, aclType, selectedSubs, data]);
+  }, [search, teamId, aclType, selectedSubs, topicOverview]);
 
   return (
     <>
@@ -184,12 +168,12 @@ const TopicSubscriptions = () => {
           primaryAction={{
             text: "Create deletion request",
             onClick: () => handleDelete(deleteModal.req_no),
-            loading: deleteIsLoading || dataIsRefetching,
+            loading: deleteIsLoading,
           }}
           secondaryAction={{
             text: "Cancel",
             onClick: closeDeleteModal,
-            disabled: deleteIsLoading || dataIsRefetching,
+            disabled: deleteIsLoading,
           }}
           type={"danger"}
         >
@@ -282,9 +266,6 @@ const TopicSubscriptions = () => {
             onDelete={openDeleteModal}
           />
         }
-        isLoading={dataIsLoading}
-        isErrorLoading={isError}
-        errorMessage={error}
       />
     </>
   );
