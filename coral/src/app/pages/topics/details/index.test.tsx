@@ -2,7 +2,6 @@ import { cleanup, screen } from "@testing-library/react";
 import { TopicDetailsPage } from "src/app/pages/topics/details";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { getTopicOverview } from "src/domain/topic/topic-api";
-import { TopicOverview } from "src/domain/topic";
 
 const testTopic = "my-nice-topic";
 const mockedUsedNavigate = jest.fn();

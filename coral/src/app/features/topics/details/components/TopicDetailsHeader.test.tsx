@@ -2,7 +2,6 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
 import { EnvironmentInfo } from "src/domain/environment";
 import { within } from "@testing-library/react/pure";
-import { before } from "lodash";
 import userEvent from "@testing-library/user-event";
 
 const mockedUsedNavigate = jest.fn();
