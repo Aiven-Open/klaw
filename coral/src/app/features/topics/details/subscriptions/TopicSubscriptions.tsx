@@ -6,7 +6,6 @@ import {
   PageHeader,
   SegmentedControl,
   SegmentedControlGroup,
-  Typography,
   useToast,
 } from "@aivenio/aquarium";
 import add from "@aivenio/aquarium/dist/src/icons/add";
@@ -25,9 +24,11 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
+import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
+import { getTopicStats } from "src/app/features/topics/details/utils";
 import { createAclDeletionRequest } from "src/domain/acl/acl-api";
-import { AclOverviewInfo, TopicOverview } from "src/domain/topic/topic-types";
+import { AclOverviewInfo } from "src/domain/topic/topic-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
 type SubscriptionOptions =
@@ -41,38 +42,6 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
     "prefixedAclInfoList",
     "transactionalAclInfoList",
   ].includes(value);
-};
-
-const getSubsStats = (data?: TopicOverview) => {
-  const aclInfoList = data?.aclInfoList ?? [];
-  const prefixedAclInfoList = data?.prefixedAclInfoList ?? [];
-  const transactionalAclInfoList = data?.transactionalAclInfoList ?? [];
-
-  return [
-    ...aclInfoList,
-    ...prefixedAclInfoList,
-    ...transactionalAclInfoList,
-  ].reduce(
-    (previous, current) => {
-      const nextProducers =
-        current.topictype === "Producer"
-          ? previous.producers + 1
-          : previous.producers;
-      const nextConsumers =
-        current.topictype === "Consumer"
-          ? previous.consumers + 1
-          : previous.consumers;
-
-      return {
-        producers: nextProducers,
-        consumers: nextConsumers,
-      };
-    },
-    {
-      producers: 0,
-      consumers: 0,
-    }
-  );
 };
 
 const TopicSubscriptions = () => {
@@ -125,7 +94,7 @@ const TopicSubscriptions = () => {
   };
 
   const subsStats = useMemo(() => {
-    return getSubsStats(topicOverview);
+    return getTopicStats(topicOverview);
   }, [topicOverview]);
 
   const filteredData: AclOverviewInfo[] = useMemo(() => {
@@ -192,22 +161,18 @@ const TopicSubscriptions = () => {
 
       <Grid cols={"2"} gap={"l2"} marginBottom={"l2"}>
         <BorderBox
-          borderColor="grey-20"
+          borderColor="grey-5"
           padding={"l2"}
           title="Amount of producer subscriptions"
         >
-          <Typography.Heading>{subsStats.producers}</Typography.Heading>
-          <Typography.Small>Producers</Typography.Small>
+          <StatsDisplay amount={subsStats.producers} entity={"Producers"} />
         </BorderBox>
         <BorderBox
-          borderColor="grey-20"
+          borderColor="grey-5"
           padding={"l2"}
           title="Amount of consumer subscriptions"
         >
-          <Box.Flex flexDirection="column">
-            <Typography.Heading>{subsStats.consumers}</Typography.Heading>
-            <Typography.Small>Consumers</Typography.Small>
-          </Box.Flex>
+          <StatsDisplay amount={subsStats.consumers} entity={"Consumers"} />
         </BorderBox>
       </Grid>
 
