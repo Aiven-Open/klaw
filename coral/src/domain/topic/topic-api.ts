@@ -234,6 +234,15 @@ const getTopicOverview = ({
   );
 };
 
+const getSchemaOfTopic = (
+  params: KlawApiRequestQueryParameters<"getSchemaOfTopic">
+) => {
+  return api.get<KlawApiResponse<"getSchemaOfTopic">>(
+    API_PATHS.getSchemaOfTopic,
+    new URLSearchParams(convertQueryValuesToString(params))
+  );
+};
+
 export {
   getTopics,
   getTopicNames,
@@ -247,4 +256,5 @@ export {
   deleteTopicRequest,
   getTopicOverview,
   getTopicMessages,
+  getSchemaOfTopic,
 };
