@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -999,6 +1000,42 @@ public class AclControllerServiceTest {
             eq(null),
             eq(null),
             eq(101));
+  }
+
+  @Test
+  @Order(36)
+  public void createDeleteAclSubscriptionRequestFailure() throws KlawException {
+    String reqNo = "101";
+    stubUserInfo();
+    Acl acl = utilMethods.getAllAcls().get(1);
+
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
+    Map<String, String> hashMap = new HashMap<>();
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
+
+    when(handleDbRequests.getAllAclRequests(
+            anyBoolean(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            any(),
+            anyString(),
+            anyString(),
+            any(),
+            any(),
+            anyBoolean(),
+            anyInt()))
+        .thenReturn(Collections.singletonList(getAclRequestDao()));
+
+    ApiResponse resultResp = aclControllerService.createDeleteAclSubscriptionRequest(reqNo);
+    assertThat(resultResp.getMessage()).isEqualTo(ACL_ERR_107);
+    assertThat(resultResp.isSuccess()).isFalse();
   }
 
   private AclRequestsModel getAclRequestProducer() {
