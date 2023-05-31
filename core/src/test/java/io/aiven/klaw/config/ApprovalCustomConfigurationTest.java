@@ -38,24 +38,31 @@ class ApprovalCustomConfigurationTest {
     ApprovalService defaultList = config.createTopicService();
 
     List<Approval> aclClaimApprovals =
-        defaultList.getApprovers(RequestEntityType.TOPIC, RequestOperationType.CLAIM, "PRD");
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.TOPIC, RequestOperationType.CLAIM, "PRD", 10, null, 101);
 
     List<Approval> aclDeleteApprovals =
-        defaultList.getApprovers(RequestEntityType.TOPIC, RequestOperationType.CLAIM, "UAT");
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.TOPIC, RequestOperationType.CLAIM, "UAT", 10, null, 101);
 
     List<Approval> topicClaimApprovals =
-        defaultList.getApprovers(RequestEntityType.TOPIC, RequestOperationType.CLAIM, "PRD");
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.TOPIC, RequestOperationType.CLAIM, "PRD", 10, null, 101);
 
     List<Approval> topicApprovals =
-        defaultList.getApprovers(RequestEntityType.TOPIC, RequestOperationType.CREATE, "PRD");
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.TOPIC, RequestOperationType.CREATE, "PRD", 10, null, 101);
 
     List<Approval> topicDeleteApprovals =
-        defaultList.getApprovers(RequestEntityType.TOPIC, RequestOperationType.DELETE, null);
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.TOPIC, RequestOperationType.DELETE, null, 10, null, 101);
 
     List<Approval> schemaApprovals =
-        defaultList.getApprovers(RequestEntityType.SCHEMA, RequestOperationType.DELETE, "PRD");
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.SCHEMA, RequestOperationType.DELETE, "PRD", 10, null, 101);
     List<Approval> schemaApprovalsDev =
-        defaultList.getApprovers(RequestEntityType.SCHEMA, RequestOperationType.DELETE, "DEV");
+        defaultList.getApprovalsForRequest(
+            RequestEntityType.SCHEMA, RequestOperationType.DELETE, "DEV", 10, null, 101);
 
     assertThat(topicClaimApprovals.size()).isEqualTo(2);
     for (Approval a : topicClaimApprovals) {
