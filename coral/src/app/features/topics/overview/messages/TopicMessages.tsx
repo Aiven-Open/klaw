@@ -28,8 +28,7 @@ function isNoContentResult(
 }
 
 function TopicMessages() {
-  const { topicOverview } = useTopicDetails();
-  const topicName = topicOverview.topicInfoList[0].topicName;
+  const { topicName } = useTopicDetails();
 
   const [offset, setOffset] = useOffsetFilter();
   const {

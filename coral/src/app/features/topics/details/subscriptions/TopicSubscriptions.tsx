@@ -77,9 +77,7 @@ const getSubsStats = (data?: TopicOverview) => {
 
 const TopicSubscriptions = () => {
   const navigate = useNavigate();
-  const { topicOverview, environmentId } = useTopicDetails();
-
-  const topicName = topicOverview.topicInfoList[0].topicName;
+  const { topicOverview, environmentId, topicName } = useTopicDetails();
 
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;

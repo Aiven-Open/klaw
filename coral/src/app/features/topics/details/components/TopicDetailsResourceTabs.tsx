@@ -110,7 +110,13 @@ function TopicOverviewResourcesTabs({
     }
     return (
       <div data-testid={"tabpanel-content"}>
-        <Outlet context={{ environmentId, topicOverview }} />
+        <Outlet
+          context={{
+            environmentId,
+            topicOverview,
+            topicName: topicOverview.topicInfoList[0].topicName,
+          }}
+        />
       </div>
     );
   }

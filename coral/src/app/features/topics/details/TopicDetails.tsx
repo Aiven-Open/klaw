@@ -76,6 +76,7 @@ function useTopicDetails() {
   return useOutletContext<{
     environmentId: string;
     topicOverview: TopicOverview;
+    topicName: string;
   }>();
 }
 
