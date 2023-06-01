@@ -39,10 +39,7 @@ type TopicSchemaRequestProps = {
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { topicName } = props;
   const [searchParams] = useSearchParams();
-
-  const [presetEnvironment, setPresetEnvironment] = useState<
-    string | undefined
-  >();
+  const presetEnvironment = searchParams.get("env");
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
@@ -53,7 +50,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     defaultValues: {
       topicname: topicName,
       schemafull: props.schemafullValueForTest || undefined,
-      environment: presetEnvironment,
+      environment: presetEnvironment || undefined,
     },
   });
 
@@ -85,16 +82,15 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     queryKey: ["schemaRegistryEnvironments"],
     queryFn: () => getEnvironmentsForSchemaRequest(),
     onSuccess: (environments) => {
-      const currentEnv = searchParams.get("env");
-      if (currentEnv) {
-        const isValidEnv =
-          environments.find((env) => currentEnv === env.id) !== undefined;
+      if (presetEnvironment) {
+        const isValidEnv = environments.find(
+          (env) => presetEnvironment === env.id
+        );
+
         if (!isValidEnv) {
           navigate(-1);
         } else {
-          console.log("currentEnv", currentEnv);
-          setPresetEnvironment(currentEnv);
-          form.setValue("environment", currentEnv);
+          form.setValue("environment", presetEnvironment);
         }
       }
     },
@@ -189,10 +185,8 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             <NativeSelect<TopicRequestFormSchema>
               name={"environment"}
               labelText={"Environment"}
-              placeholder={
-                presetEnvironment ? undefined : "-- Please select --"
-              }
-              readOnly={presetEnvironment !== undefined}
+              placeholder={"-- Please select --"}
+              readOnly={Boolean(presetEnvironment)}
               required={true}
             >
               {environments.map((env) => {
