@@ -73,4 +73,8 @@ public class SchemaRequest implements Serializable {
 
   @Column(name = "forceregister")
   private Boolean forceRegister;
+
+  @Transient private Integer schemaId;
+
+  @Transient private String compatibility;
 }

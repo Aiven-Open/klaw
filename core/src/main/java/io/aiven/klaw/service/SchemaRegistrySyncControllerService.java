@@ -374,10 +374,15 @@ public class SchemaRegistrySyncControllerService {
             schemaRegistered = (Boolean) registerSchemaCustomResponse.get("schemaRegistered");
           }
           if (registerSchemaCustomResponse != null
-              && (registerSchemaCustomResponse.containsKey("id") && schemaRegistered)) {
+              && (registerSchemaCustomResponse.containsKey("id")
+                  && schemaRegistered
+                  && registerSchemaCustomResponse.containsKey("compatibility"))) {
 
             Integer schemaVersion = (Integer) registerSchemaCustomResponse.get("version");
             messageSchema.setSchemaversion(schemaVersion + "");
+            schemaRequest.setSchemaId((Integer) registerSchemaCustomResponse.get("id"));
+            schemaRequest.setCompatibility(
+                (String) registerSchemaCustomResponse.get("compatibility"));
             schemaListUpdated.add(messageSchema);
 
             logArray.add(

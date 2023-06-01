@@ -288,10 +288,15 @@ public class SchemaRegistryControllerService {
       registerSchemaCustomResponse = (Map) apiResponse.getData();
       schemaRegistered = (Boolean) registerSchemaCustomResponse.get("schemaRegistered");
     }
-    if (registerSchemaCustomResponse != null && (registerSchemaCustomResponse.containsKey("id"))) {
+    if (registerSchemaCustomResponse != null
+        && (registerSchemaCustomResponse.containsKey("id"))
+        && (registerSchemaCustomResponse.containsKey("compatibility"))) {
       try {
         if (schemaRegistered) {
           schemaRequest.setSchemaversion(registerSchemaCustomResponse.get("version") + "");
+          schemaRequest.setSchemaId((Integer) registerSchemaCustomResponse.get("id"));
+          schemaRequest.setCompatibility(
+              (String) registerSchemaCustomResponse.get("compatibility"));
         }
         String responseDb = dbHandle.updateSchemaRequest(schemaRequest, userDetails);
         mailService.sendMail(

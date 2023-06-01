@@ -41,6 +41,12 @@ public class MessageSchema implements Serializable {
   @Column(name = "schemafull")
   private String schemafull;
 
+  @Column(name = "schemaid")
+  private Integer schemaId;
+
+  @Column(name = "compatibility")
+  private String compatibility;
+
   @Column(name = "jsonparams")
   private String jsonParams;
 }

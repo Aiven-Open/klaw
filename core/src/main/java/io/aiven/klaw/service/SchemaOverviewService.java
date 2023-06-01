@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.response.PromotionStatus;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -93,20 +95,45 @@ public class SchemaOverviewService extends BaseOverviewService {
                   .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
                   .get(schemaEnv.getClusterId());
 
-          SortedMap<Integer, Map<String, Object>> schemaObjects =
-              clusterApiService.getAvroSchema(
-                  kwClusters.getBootstrapServers(),
-                  kwClusters.getProtocol(),
-                  kwClusters.getClusterName() + kwClusters.getClusterId(),
-                  topicNameSearch,
-                  tenantId);
+          List<MessageSchema> topicSchemaVersionsInDb =
+              manageDatabase
+                  .getHandleDbRequests()
+                  .getSchemaForTenantAndEnvAndTopic(tenantId, schemaEnv.getId(), topicNameSearch);
+          boolean schemaUpdated = false;
+          if (!topicSchemaVersionsInDb.isEmpty()) {
+            schemaUpdated =
+                topicSchemaVersionsInDb.stream()
+                    .map(MessageSchema::getSchemaversion)
+                    .noneMatch(schemaVersion -> schemaVersion.contains("."));
+          }
+
+          SortedMap<Integer, Map<String, Object>> schemaObjects = new TreeMap<>();
+          if (schemaUpdated) {
+            for (MessageSchema messageSchema : topicSchemaVersionsInDb) {
+              Map<String, Object> schemaObj = new HashMap<>();
+              schemaObj.put("schema", messageSchema.getSchemafull());
+              schemaObj.put("id", messageSchema.getSchemaId());
+              schemaObj.put("compatibility", messageSchema.getCompatibility());
+              schemaObjects.put(Integer.parseInt(messageSchema.getSchemaversion()), schemaObj);
+            }
+          } else {
+            schemaObjects =
+                clusterApiService.getAvroSchema(
+                    kwClusters.getBootstrapServers(),
+                    kwClusters.getProtocol(),
+                    kwClusters.getClusterName() + kwClusters.getClusterId(),
+                    topicNameSearch,
+                    tenantId);
+          }
+
           // If the schemaObject is null ie does not exist do not try to manipulate it.
           if (schemaObjects != null && !schemaObjects.isEmpty()) {
-
-            Integer latestSchemaVersion = schemaObjects.firstKey();
-            schemaOverview.getLatestVersion().put(schemaEnv.getName(), latestSchemaVersion);
             Set<Integer> allVersions = schemaObjects.keySet();
             List<Integer> allVersionsList = new ArrayList<>(allVersions);
+            allVersionsList.sort(Collections.reverseOrder());
+            Integer latestSchemaVersion = allVersionsList.get(0);
+            schemaOverview.getLatestVersion().put(schemaEnv.getName(), latestSchemaVersion);
+
             schemaOverview.getAllSchemaVersions().put(schemaEnv.getName(), allVersionsList);
             try {
               if (latestSchemaVersion == schemaVersionSearch) {
@@ -134,8 +161,12 @@ public class SchemaOverviewService extends BaseOverviewService {
               hashMapSchemaObj = schemaObjects.get(schemaVersionSearch);
               schemaOfObj = (String) hashMapSchemaObj.get("schema");
               schemaDetailsPerEnv.setLatest(false);
-              schemaDetailsPerEnv.setId((Integer) hashMapSchemaObj.get("id"));
-              schemaDetailsPerEnv.setCompatibility(hashMapSchemaObj.get("compatibility") + "");
+              if (hashMapSchemaObj.containsKey("id")) {
+                schemaDetailsPerEnv.setId((Integer) hashMapSchemaObj.get("id"));
+              }
+              if (hashMapSchemaObj.containsKey("compatibility")) {
+                schemaDetailsPerEnv.setCompatibility(hashMapSchemaObj.get("compatibility") + "");
+              }
               schemaDetailsPerEnv.setVersion(schemaVersionSearch);
 
               if (schemaObjects.size() > 1) {

@@ -195,8 +195,8 @@ class SchemaServiceRegisterSchemaTest {
     schemaService.registerSchema(schemaReq);
     // change schema compatibility called twice once to change to null second to change it back.
     verify(restTemplate, times(0)).put(any(), any(), eq(String.class));
-    // 0 calls to get the current SchemaCompatibility as isForce==false
-    verify(restTemplate, times(0))
+    // 1 call to get the current SchemaCompatibility as isForce==false
+    verify(restTemplate, times(1))
         .exchange(
             eq(REGISTRY_URL),
             any(HttpMethod.class),
@@ -228,8 +228,8 @@ class SchemaServiceRegisterSchemaTest {
     schemaService.registerSchema(schemaReq);
     // change schema compatibility called twice once to change to null second to change it back.
     verify(restTemplate, times(0)).put(any(), any(), eq(String.class));
-    // 0 calls to get the current SchemaCompatibility as isForce==false
-    verify(restTemplate, times(0))
+    // 1 call to get the current SchemaCompatibility as isForce==false
+    verify(restTemplate, times(1))
         .exchange(
             eq(REGISTRY_URL),
             any(HttpMethod.class),
@@ -261,8 +261,8 @@ class SchemaServiceRegisterSchemaTest {
     schemaService.registerSchema(schemaReq);
     // change schema compatibility called twice once to change to null second to change it back.
     verify(restTemplate, times(0)).put(any(), any(), eq(String.class));
-    // 0 calls to get the current SchemaCompatibility as isForce==false
-    verify(restTemplate, times(0))
+    // 1 call to get the current SchemaCompatibility as isForce==false
+    verify(restTemplate, times(1))
         .exchange(
             eq(REGISTRY_URL),
             any(HttpMethod.class),
