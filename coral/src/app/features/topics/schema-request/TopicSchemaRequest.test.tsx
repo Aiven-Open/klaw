@@ -7,7 +7,10 @@ import {
 } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
-import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
+import {
+  Environment,
+  getEnvironmentsForSchemaRequest,
+} from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { createSchemaRequest } from "src/domain/schema-request";
@@ -88,6 +91,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
+        memoryRouter: true,
       });
 
       const form = getForm();
@@ -98,7 +102,7 @@ describe("TopicSchemaRequest", () => {
       // it has not been called because it has not happened yet. Checking for the
       // form makes implicitly sure that navigate was not called (otherwise no form)
       // and this assertion is mostly for readability
-      expect(mockedUsedNavigate).not.toHaveBeenCalledWith("/topics");
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
     });
 
     it("redirects user if topicName prop does not exist in list of topicNames", async () => {
@@ -106,10 +110,63 @@ describe("TopicSchemaRequest", () => {
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
+        memoryRouter: true,
       });
 
       await waitFor(() => {
-        expect(mockedUsedNavigate).toHaveBeenCalledWith("/topics");
+        expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
+      });
+    });
+  });
+
+  describe("checks if env passed from url is part of environments for a schema", () => {
+    beforeEach(() => {
+      mockGetTopicNames.mockResolvedValue([testTopicName]);
+      mockCreateSchemaRequest.mockImplementation(jest.fn());
+    });
+
+    afterEach(() => {
+      cleanup();
+      useQuerySpy.mockRestore();
+    });
+
+    it("does not redirect user if env query is part of list of environments", async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([
+        ...mockedGetSchemaRegistryEnvironments,
+      ]);
+
+      customRender(<TopicSchemaRequest topicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/topic/testtopic/request-schema?env=999",
+      });
+
+      const form = getForm();
+      expect(form).toBeVisible();
+
+      // only testing this would always return green - even waitFor will return always
+      // true, since the mock is not called directly, so waitFor will check, confirm
+      // it has not been called because it has not happened yet. Checking for the
+      // form makes implicitly sure that navigate was not called (otherwise no form)
+      // and this assertion is mostly for readability
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+    });
+
+    it("redirects user if env query does not exist in list of environments", async () => {
+      const fakeEnv = { name: "BUH", id: "999" } as Environment;
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([
+        ...mockedGetSchemaRegistryEnvironments,
+        fakeEnv,
+      ]);
+
+      customRender(<TopicSchemaRequest topicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/topic/testtopic/request-schema?env=999",
+      });
+
+      await waitFor(() => {
+        expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
       });
     });
   });
@@ -125,6 +182,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
+        memoryRouter: true,
       });
     });
 
@@ -159,6 +217,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
+        memoryRouter: true,
       });
       await waitForElementToBeRemoved(
         screen.getByTestId("environments-select-loading")
@@ -282,6 +341,7 @@ describe("TopicSchemaRequest", () => {
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
+        memoryRouter: true,
       });
       await waitForElementToBeRemoved(
         screen.getByTestId("environments-select-loading")
@@ -359,6 +419,7 @@ describe("TopicSchemaRequest", () => {
         />,
         {
           queryClient: true,
+          memoryRouter: true,
         }
       );
       await waitForElementToBeRemoved(
@@ -477,6 +538,7 @@ describe("TopicSchemaRequest", () => {
         />,
         {
           queryClient: true,
+          memoryRouter: true,
         }
       );
       await waitForElementToBeRemoved(
@@ -581,6 +643,7 @@ describe("TopicSchemaRequest", () => {
         />,
         {
           queryClient: true,
+          memoryRouter: true,
         }
       );
       await waitForElementToBeRemoved(

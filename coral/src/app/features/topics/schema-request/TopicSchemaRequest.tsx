@@ -1,7 +1,7 @@
 import { Alert, Box, Button } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Dialog } from "src/app/components/Dialog";
 import {
   Form,
@@ -38,6 +38,8 @@ type TopicSchemaRequestProps = {
 // be able to add this tests. I created na issue in github related to MonacoEditor testing already.
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { topicName } = props;
+  const [searchParams] = useSearchParams();
+  const presetEnvironment = searchParams.get("env");
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const [successModalOpen, setSuccessModalOpen] = useState(false);
@@ -48,6 +50,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     defaultValues: {
       topicname: topicName,
       schemafull: props.schemafullValueForTest || undefined,
+      environment: presetEnvironment || undefined,
     },
   });
 
@@ -67,7 +70,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
       const topicExists = data?.includes(topicName);
       if (!topicExists) {
-        navigate("/topics");
+        navigate(-1);
       }
     },
   });
@@ -78,6 +81,17 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   >({
     queryKey: ["schemaRegistryEnvironments"],
     queryFn: () => getEnvironmentsForSchemaRequest(),
+    onSuccess: (environments) => {
+      if (presetEnvironment) {
+        const isValidEnv = environments.find(
+          (env) => presetEnvironment === env.id
+        );
+
+        if (!isValidEnv) {
+          navigate(-1);
+        }
+      }
+    },
   });
 
   const schemaRequestMutation = useMutation(createSchemaRequest, {
@@ -170,6 +184,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               name={"environment"}
               labelText={"Environment"}
               placeholder={"-- Please select --"}
+              readOnly={Boolean(presetEnvironment)}
               required={true}
             >
               {environments.map((env) => {
