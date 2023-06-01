@@ -29,7 +29,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                   style="display: flex; gap: 160px;"
                 >
                   <div
-                    data-testid="Replicas"
                     style="display: flex; flex-direction: column;"
                   >
                     <h1
@@ -44,7 +43,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                     </div>
                   </div>
                   <div
-                    data-testid="Partitions"
                     style="display: flex; flex-direction: column;"
                   >
                     <h1
@@ -81,7 +79,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 style="display: flex; gap: 160px;"
               >
                 <div
-                  data-testid="Producers"
                   style="display: flex; flex-direction: column;"
                 >
                   <h1
@@ -96,7 +93,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                   </div>
                 </div>
                 <div
-                  data-testid="Consumers"
                   style="display: flex; flex-direction: column;"
                 >
                   <h1
@@ -190,7 +186,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
               class="typography-caption text-grey-70"
             >
               <div
-                data-testid="Schemas"
                 style="display: flex; flex-direction: column;"
               >
                 <h1
@@ -296,7 +291,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 style="display: flex; gap: 160px;"
               >
                 <div
-                  data-testid="Replicas"
                   style="display: flex; flex-direction: column;"
                 >
                   <h1
@@ -311,7 +305,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                   </div>
                 </div>
                 <div
-                  data-testid="Partitions"
                   style="display: flex; flex-direction: column;"
                 >
                   <h1
@@ -348,7 +341,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
               style="display: flex; gap: 160px;"
             >
               <div
-                data-testid="Producers"
                 style="display: flex; flex-direction: column;"
               >
                 <h1
@@ -363,7 +355,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 </div>
               </div>
               <div
-                data-testid="Consumers"
                 style="display: flex; flex-direction: column;"
               >
                 <h1
@@ -457,7 +448,6 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
             class="typography-caption text-grey-70"
           >
             <div
-              data-testid="Schemas"
               style="display: flex; flex-direction: column;"
             >
               <h1
