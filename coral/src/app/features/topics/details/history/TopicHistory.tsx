@@ -4,8 +4,8 @@ import { TopicOverview } from "src/domain/topic";
 
 interface TopicHistoryRow {
   id: number;
-  logs: string; //Remarks
-  team: string; //
+  logs: string;
+  team: string;
   requestedBy: string;
   requestedTime: string;
   approvedBy: string;
@@ -30,7 +30,7 @@ function TopicHistory() {
     {
       type: "text",
       field: "requestedTime",
-      headerName: "Requested time",
+      headerName: "Requested on",
       formatter: (value) => {
         return `${value}${"\u00A0"}UTC`;
       },
@@ -39,7 +39,7 @@ function TopicHistory() {
     {
       type: "text",
       field: "approvedTime",
-      headerName: "Approved time",
+      headerName: "Approved on",
       formatter: (value) => {
         return `${value}${"\u00A0"}UTC`;
       },

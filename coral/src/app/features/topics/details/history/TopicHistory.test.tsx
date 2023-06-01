@@ -71,9 +71,9 @@ const columnsFieldMap = [
   { columnHeader: "Logs", relatedField: "remarks" },
   { columnHeader: "Team", relatedField: "teamName" },
   { columnHeader: "Requested by", relatedField: "requestedBy" },
-  { columnHeader: "Requested time", relatedField: "requestedTime" },
+  { columnHeader: "Requested on", relatedField: "requestedTime" },
   { columnHeader: "Approved by", relatedField: "approvedBy" },
-  { columnHeader: "Approved time", relatedField: "approvedTime" },
+  { columnHeader: "Approved on", relatedField: "approvedTime" },
 ];
 
 describe("TopicHistory", () => {
@@ -197,8 +197,8 @@ describe("TopicHistory", () => {
 
           let text = field;
           if (
-            column.columnHeader === "Requested time" ||
-            column.columnHeader === "Approved time"
+            column.columnHeader === "Requested on" ||
+            column.columnHeader === "Approved on"
           ) {
             text = `${field}${"\u00A0"}UTC`;
           }
