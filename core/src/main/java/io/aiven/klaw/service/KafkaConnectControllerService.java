@@ -677,7 +677,7 @@ public class KafkaConnectControllerService {
       topicHistory.setRequestedTime(simpleDateFormat.format(connectorRequest.getRequesttime()));
       topicHistory.setApprovedBy(userName);
       topicHistory.setApprovedTime(simpleDateFormat.format(new Date()));
-      topicHistory.setRemarks(connectorRequest.getRequestOperationType());
+      topicHistory.setRemarks("Connector " + connectorRequest.getRequestOperationType());
       topicHistoryList.add(topicHistory);
 
       connectorRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
