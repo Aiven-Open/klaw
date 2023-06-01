@@ -646,7 +646,7 @@ public class AclControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq = dbHandle.getAcl(Integer.parseInt(req_no), tenantId);
 
-    ApiResponse aclValidationResponse = validateAclRequest(aclReq, userDetails);
+    ApiResponse aclValidationResponse = validateAclRequest(aclReq, userDetails, tenantId);
     if (!aclValidationResponse.isSuccess()) {
       return aclValidationResponse;
     }
@@ -683,7 +683,7 @@ public class AclControllerService {
         .build();
   }
 
-  private ApiResponse validateAclRequest(AclRequests aclReq, String userDetails) {
+  private ApiResponse validateAclRequest(AclRequests aclReq, String userDetails, int tenantId) {
     if (aclReq == null || aclReq.getReq_no() == null) {
       return ApiResponse.builder().success(false).message(ACL_ERR_105).build();
     }
@@ -694,6 +694,14 @@ public class AclControllerService {
 
     if (!RequestStatus.CREATED.value.equals(aclReq.getRequestStatus())) {
       return ApiResponse.builder().success(false).message(REQ_ERR_101).build();
+    }
+
+    if (manageDatabase.getTopicsForTenant(tenantId).stream()
+        .noneMatch(
+            topic ->
+                topic.getEnvironment().equals(aclReq.getEnvironment())
+                    && aclReq.getTopicname().equals(topic.getTopicname()))) {
+      return ApiResponse.builder().success(false).message(ACL_ERR_101).build();
     }
 
     // tenant filtering
