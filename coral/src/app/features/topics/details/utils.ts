@@ -22,17 +22,17 @@ const getTopicStats = (data: TopicOverview) => {
           : previous.consumers;
 
       return {
+        ...previous,
         producers: nextProducers,
         consumers: nextConsumers,
-        partitions: topicStats.noOfPartitions,
-        replicas: Number(topicStats.noOfReplicas),
       };
     },
     {
       producers: 0,
       consumers: 0,
-      partitions: 0,
-      replicas: 0,
+      partitions: topicStats.noOfPartitions,
+      // @TODO: noOfReplicas is a string, probably should be a number
+      replicas: Number(topicStats.noOfReplicas),
     }
   );
 };
