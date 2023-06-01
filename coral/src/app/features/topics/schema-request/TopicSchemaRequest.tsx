@@ -89,8 +89,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
         if (!isValidEnv) {
           navigate(-1);
-        } else {
-          form.setValue("environment", presetEnvironment);
         }
       }
     },
