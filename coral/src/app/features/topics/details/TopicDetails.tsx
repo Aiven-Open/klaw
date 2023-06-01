@@ -50,6 +50,17 @@ function TopicDetails(props: TopicOverviewProps) {
     return <Navigate to={`/topic/${topicName}/overview`} replace={true} />;
   }
 
+  // If we rely on isLoading only,
+  // when a user navigates to another topic overview after having previously seen a different topic
+  // the TopicOverviewResourcesTabs rendered data will be stale for a second (showing previous topic data)
+  // while the query is refetching the data
+  // However, using isRefetching is also an issue, because then we will show the loading state every time the user switches environment
+  // Instead of only the first time they switch
+  // This isRefetchingTopicOverview variable ensures that we only show loading state when there is a desync between the topic name in pops
+  // and the topic name in the available data
+  const isRefetchingTopicOverview =
+    data?.topicInfoList[0].topicName !== topicName;
+
   return (
     <div>
       <TopicDetailsHeader
@@ -61,7 +72,7 @@ function TopicDetails(props: TopicOverviewProps) {
       />
 
       <TopicOverviewResourcesTabs
-        isLoading={isLoading}
+        isLoading={isLoading || isRefetchingTopicOverview}
         isError={isError}
         error={error}
         currentTab={currentTab}
