@@ -8,6 +8,7 @@ import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.requests.DeleteAclRequestModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
@@ -164,9 +165,11 @@ public class AclController {
       value = "/createDeleteAclSubscriptionRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteAclSubscriptionRequest(
-      @RequestParam("req_no") String req_no) throws KlawException {
+      @RequestBody @Valid DeleteAclRequestModel deleteAclRequestModel) throws KlawException {
     return new ResponseEntity<>(
-        aclControllerService.createDeleteAclSubscriptionRequest(req_no), HttpStatus.OK);
+        aclControllerService.createDeleteAclSubscriptionRequest(
+            deleteAclRequestModel.getRequestId()),
+        HttpStatus.OK);
   }
 
   @PostMapping(

@@ -1702,14 +1702,16 @@
       "post" : {
         "tags" : [ "acl-controller" ],
         "operationId" : "deleteAclSubscriptionRequest",
-        "parameters" : [ {
-          "name" : "req_no",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/DeleteAclRequestModel"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -5871,6 +5873,14 @@
           }
         },
         "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
+      },
+      "DeleteAclRequestModel" : {
+        "properties" : {
+          "requestId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "requestId" ]
       },
       "KafkaConnectorRequestModel" : {
         "properties" : {
