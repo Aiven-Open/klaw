@@ -21,6 +21,11 @@ public class KwConstants {
   public static final String EMAIL_NOTIFICATIONS_ENABLED_KEY = "klaw.mail.notifications.enable";
 
   public static final String USER_ROLE = "USER";
+
+  public static final String REQUESTOR_SUBSCRIPTIONS = "requestor_subscriptions";
+
+  public static final String APPROVER_SUBSCRIPTIONS = "approver_subscriptions";
+
   public static final String SUPERADMIN_ROLE = "SUPERADMIN";
 
   public static final String INFRATEAM = "INFRATEAM";

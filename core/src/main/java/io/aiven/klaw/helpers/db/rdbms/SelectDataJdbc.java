@@ -1,5 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
+import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
+
 import com.google.common.collect.Lists;
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.AclPatternType;
@@ -141,7 +143,7 @@ public class SelectDataJdbc {
       String rowRequestOperationType = row.getRequestOperationType();
       if (isApproval) {
         teamSelected = showRequestsOfAllTeams ? null : teamSelected;
-        if ("requestor_subscriptions".equals(role)) {
+        if (REQUESTOR_SUBSCRIPTIONS.equals(role)) {
           teamId = row.getRequestingteam();
         } else {
           teamId = row.getTeamId();

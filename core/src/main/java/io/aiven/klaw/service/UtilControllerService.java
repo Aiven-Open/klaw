@@ -1,6 +1,8 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
+import static io.aiven.klaw.helpers.KwConstants.APPROVER_SUBSCRIPTIONS;
+import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 
@@ -117,11 +119,11 @@ public class UtilControllerService {
     String roleToSet = "";
     if (!commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
-      roleToSet = "approver_subscriptions";
+      roleToSet = APPROVER_SUBSCRIPTIONS;
     }
     if (!commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
-      roleToSet = "requestor_subscriptions";
+      roleToSet = REQUESTOR_SUBSCRIPTIONS;
     }
     List<SchemaRequest> allSchemaReqs =
         reqsHandle.getAllSchemaRequests(

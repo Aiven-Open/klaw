@@ -8,6 +8,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_105;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
+import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.model.enums.MailType.ACL_DELETE_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.ACL_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_APPROVED;
@@ -604,7 +605,7 @@ public class AclControllerService {
         dbHandle.getAllAclRequests(
             false,
             userName,
-            "requestor_subscriptions",
+            REQUESTOR_SUBSCRIPTIONS,
             RequestStatus.CREATED.value,
             false,
             RequestOperationType.DELETE,
