@@ -1,7 +1,7 @@
-import { cleanup, screen } from "@testing-library/react";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
-import { getTopicOverview } from "src/domain/topic/topic-api";
+import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
 import { TopicOverview } from "src/domain/topic";
 import userEvent from "@testing-library/user-event";
 import { within } from "@testing-library/react/pure";
@@ -20,6 +20,9 @@ jest.mock("src/domain/topic/topic-api");
 
 const mockGetTopicOverview = getTopicOverview as jest.MockedFunction<
   typeof getTopicOverview
+>;
+const mockGetSchemaOfTopic = getSchemaOfTopic as jest.MockedFunction<
+  typeof getSchemaOfTopic
 >;
 
 const testTopicName = "my-nice-topic";
@@ -113,11 +116,49 @@ const testTopicOverview: TopicOverview = {
   ],
   topicIdForDocumentation: 1015,
 };
+const testTopicSchemas = {
+  topicExists: true,
+  schemaExists: true,
+  prefixAclsExists: false,
+  txnAclsExists: false,
+  allSchemaVersions: {
+    DEV: [1],
+  },
+  latestVersion: {
+    DEV: 1,
+  },
+  schemaPromotionDetails: {
+    DEV: {
+      status: "success",
+      sourceEnv: "3",
+      targetEnv: "TST_SCH",
+      targetEnvId: "9",
+    },
+  },
+  schemaDetails: [
+    {
+      id: 2,
+      version: 1,
+      nextVersion: 0,
+      prevVersion: 0,
+      compatibility: "BACKWARD",
+      content:
+        '{\n  "doc" : "example",\n  "fields" : [ {\n    "default" : "6666665",\n    "doc" : "my test number",\n    "name" : "test",\n    "namespace" : "test",\n    "type" : "string"\n  } ],\n  "name" : "example",\n  "namespace" : "example",\n  "type" : "record"\n}',
+      env: "DEV",
+      showNext: false,
+      showPrev: false,
+      latest: true,
+    },
+  ],
+};
+
 describe("TopicDetails", () => {
   const user = userEvent.setup();
 
   beforeEach(() => {
     mockGetTopicOverview.mockResolvedValue(testTopicOverview);
+    mockGetSchemaOfTopic.mockResolvedValue(testTopicSchemas);
+
     mockUseParams.mockReturnValue({
       topicName: testTopicName,
     });
@@ -146,11 +187,19 @@ describe("TopicDetails", () => {
       jest.resetAllMocks();
     });
 
-    it("fetches the data when user goes on page", () => {
+    it("fetches the data when user goes on page", async () => {
       expect(mockGetTopicOverview).toHaveBeenCalledWith({
         topicName: testTopicName,
         environmentId: undefined,
       });
+      // This is a dependent query relying on mockGetTopicOverview to have finished fetching
+      // So we need to await
+      await waitFor(() =>
+        expect(mockGetSchemaOfTopic).toHaveBeenCalledWith({
+          topicName: testTopicName,
+          kafkaEnvIds: ["1"],
+        })
+      );
     });
 
     it("fetches the data anew when user changes environment", async () => {
@@ -167,6 +216,14 @@ describe("TopicDetails", () => {
         topicName: testTopicName,
         environmentId: testTopicOverview.availableEnvironments[1].id,
       });
+      // This is a dependent query relying on mockGetTopicOverview to have finished fetching
+      // So we need to await
+      await waitFor(() =>
+        expect(mockGetSchemaOfTopic).toHaveBeenNthCalledWith(2, {
+          topicName: testTopicName,
+          kafkaEnvIds: [testTopicOverview.availableEnvironments[1].id],
+        })
+      );
     });
   });
 
