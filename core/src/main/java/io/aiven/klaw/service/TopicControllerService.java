@@ -837,7 +837,7 @@ public class TopicControllerService {
       topicHistory.setRequestedTime(simpleDateFormat.format(topicRequest.getRequesttime()));
       topicHistory.setApprovedBy(userName);
       topicHistory.setApprovedTime(simpleDateFormat.format(new Date()));
-      topicHistory.setRemarks(topicRequest.getRequestOperationType());
+      topicHistory.setRemarks("Topic " + topicRequest.getRequestOperationType());
       topicHistoryList.add(topicHistory);
 
       topicRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
