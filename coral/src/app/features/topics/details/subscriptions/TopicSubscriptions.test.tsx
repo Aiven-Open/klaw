@@ -473,7 +473,9 @@ describe("TopicSubscriptions.tsx", () => {
 
       await userEvent.click(createButton);
 
-      expect(mockCreateDeleteAclRequest).toHaveBeenCalledTimes(1);
+      expect(mockCreateDeleteAclRequest).toHaveBeenNthCalledWith(1, {
+        requestId: "1006",
+      });
 
       await waitFor(() => expect(modal).not.toBeVisible());
       await waitFor(() =>

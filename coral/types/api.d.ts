@@ -723,6 +723,9 @@ export type components = {
       deleteAssociatedSchema?: boolean;
       otherParams?: string;
     };
+    DeleteAclRequestModel: {
+      requestId: string;
+    };
     KafkaConnectorRequestModel: {
       /** @enum {string} */
       requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
@@ -2417,9 +2420,9 @@ export type operations = {
     };
   };
   deleteAclSubscriptionRequest: {
-    parameters: {
-      query: {
-        req_no: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["DeleteAclRequestModel"];
       };
     };
     responses: {
