@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
@@ -494,6 +496,10 @@ public class AclControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic");
+    t1.setEnvironment("1");
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.isSuccess()).isTrue();
@@ -523,6 +529,10 @@ public class AclControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic");
+    t1.setEnvironment("1");
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests("112");
     assertThat(apiResp.isSuccess()).isTrue();
@@ -558,6 +568,10 @@ public class AclControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic");
+    t1.setEnvironment("1");
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
 
     ApiResponse apiResponse = ApiResponse.builder().message("failure").build();
     when(clusterApiService.approveAclRequests(any(), anyInt()))
@@ -577,6 +591,11 @@ public class AclControllerServiceTest {
     when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
+
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic");
+    t1.setEnvironment("1");
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
 
     ApiResponse apiResponse =
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
@@ -999,6 +1018,63 @@ public class AclControllerServiceTest {
             eq(null),
             eq(null),
             eq(101));
+  }
+
+  @Test
+  @Order(36)
+  public void createDeleteAclSubscriptionRequestFailure() throws KlawException {
+    String reqNo = "101";
+    stubUserInfo();
+    Acl acl = utilMethods.getAllAcls().get(1);
+
+    when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(handleDbRequests.getSyncAclsFromReqNo(anyInt(), anyInt())).thenReturn(acl);
+    Map<String, String> hashMap = new HashMap<>();
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
+
+    when(handleDbRequests.getAllAclRequests(
+            anyBoolean(),
+            anyString(),
+            anyString(),
+            anyString(),
+            anyBoolean(),
+            any(),
+            anyString(),
+            anyString(),
+            any(),
+            any(),
+            anyBoolean(),
+            anyInt()))
+        .thenReturn(Collections.singletonList(getAclRequestDao()));
+
+    ApiResponse resultResp = aclControllerService.createDeleteAclSubscriptionRequest(reqNo);
+    assertThat(resultResp.getMessage()).isEqualTo(ACL_ERR_107);
+    assertThat(resultResp.isSuccess()).isFalse();
+  }
+
+  @Test
+  @Order(37)
+  public void approveAclRequestsFailure4() throws KlawException {
+    String req_no = "1001";
+    AclRequests aclReq = getAclRequestDao();
+
+    stubUserInfo();
+    when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+
+    Topic t1 = new Topic();
+    t1.setTopicname("testtopic1"); // non-existing topic
+    t1.setEnvironment("1");
+    when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
+
+    ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
+    assertThat(apiResp.getMessage()).isEqualTo(ACL_ERR_101);
+    assertThat(apiResp.isSuccess()).isFalse();
   }
 
   private AclRequestsModel getAclRequestProducer() {

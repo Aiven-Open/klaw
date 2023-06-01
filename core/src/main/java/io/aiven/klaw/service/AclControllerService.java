@@ -6,7 +6,9 @@ import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_104;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_105;
 import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.ACL_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
+import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 import static io.aiven.klaw.model.enums.MailType.ACL_DELETE_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.ACL_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.ACL_REQUEST_APPROVED;
@@ -571,7 +573,7 @@ public class AclControllerService {
   // this will create a delete subscription request
   public ApiResponse createDeleteAclSubscriptionRequest(String req_no) throws KlawException {
     log.info("createDeleteAclSubscriptionRequest {}", req_no);
-    final String userDetails = getCurrentUserName();
+    final String userName = getCurrentUserName();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_SUBSCRIPTIONS)) {
       return ApiResponse.builder()
@@ -583,18 +585,39 @@ public class AclControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     Acl acl =
         dbHandle.getSyncAclsFromReqNo(
-            Integer.parseInt(req_no), commonUtilsService.getTenantId(userDetails));
+            Integer.parseInt(req_no), commonUtilsService.getTenantId(userName));
 
     // Verify if user raising request belongs to the same team as the Subscription owner team
-    if (!Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(userDetails))) {
+    if (!Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(userName))) {
       return ApiResponse.builder()
           .success(false)
           .message(ApiResultStatus.NOT_AUTHORIZED.value)
           .build();
     }
 
-    if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(acl.getEnvironment())) {
+    if (!commonUtilsService.getEnvsFromUserId(userName).contains(acl.getEnvironment())) {
       return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
+    }
+
+    // verify if a request already exists
+    int tenantId = commonUtilsService.getTenantId(userName);
+    List<AclRequests> aclRequests =
+        dbHandle.getAllAclRequests(
+            false,
+            userName,
+            REQUESTOR_SUBSCRIPTIONS,
+            RequestStatus.CREATED.value,
+            false,
+            RequestOperationType.DELETE,
+            acl.getTopicname(),
+            acl.getEnvironment(),
+            null,
+            AclType.of(acl.getAclType()),
+            true,
+            tenantId);
+
+    if (!aclRequests.isEmpty()) {
+      return ApiResponse.builder().success(false).message(ACL_ERR_107).build();
     }
 
     AclRequests aclRequestsDao = new AclRequests();
@@ -602,11 +625,11 @@ public class AclControllerService {
     copyProperties(acl, aclRequestsDao);
     aclRequestsDao.setAcl_ip(acl.getAclip());
     aclRequestsDao.setAcl_ssl(acl.getAclssl());
-    aclRequestsDao.setRequestor(userDetails);
+    aclRequestsDao.setRequestor(userName);
     aclRequestsDao.setRequestOperationType(RequestOperationType.DELETE.value);
     aclRequestsDao.setOtherParams(req_no);
     aclRequestsDao.setJsonParams(acl.getJsonParams());
-    return executeAclRequestModel(userDetails, aclRequestsDao, ACL_DELETE_REQUESTED);
+    return executeAclRequestModel(userName, aclRequestsDao, ACL_DELETE_REQUESTED);
   }
 
   public ApiResponse approveAclRequests(String req_no) throws KlawException {
@@ -624,7 +647,7 @@ public class AclControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq = dbHandle.getAcl(Integer.parseInt(req_no), tenantId);
 
-    ApiResponse aclValidationResponse = validateAclRequest(aclReq, userDetails);
+    ApiResponse aclValidationResponse = validateAclRequest(aclReq, userDetails, tenantId);
     if (!aclValidationResponse.isSuccess()) {
       return aclValidationResponse;
     }
@@ -661,7 +684,7 @@ public class AclControllerService {
         .build();
   }
 
-  private ApiResponse validateAclRequest(AclRequests aclReq, String userDetails) {
+  private ApiResponse validateAclRequest(AclRequests aclReq, String userDetails, int tenantId) {
     if (aclReq == null || aclReq.getReq_no() == null) {
       return ApiResponse.builder().success(false).message(ACL_ERR_105).build();
     }
@@ -672,6 +695,14 @@ public class AclControllerService {
 
     if (!RequestStatus.CREATED.value.equals(aclReq.getRequestStatus())) {
       return ApiResponse.builder().success(false).message(REQ_ERR_101).build();
+    }
+
+    if (manageDatabase.getTopicsForTenant(tenantId).stream()
+        .noneMatch(
+            topic ->
+                topic.getEnvironment().equals(aclReq.getEnvironment())
+                    && aclReq.getTopicname().equals(topic.getTopicname()))) {
+      return ApiResponse.builder().success(false).message(ACL_ERR_101).build();
     }
 
     // tenant filtering

@@ -382,6 +382,9 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 return;
             }
 
+            var deleteAclReq = {};
+            deleteAclReq['requestId'] = reqNo;
+
             swal({
                         title: "Are you sure?",
                         text: "You would like to delete this subscription ?",
@@ -398,8 +401,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                     method: "POST",
                                     url: "createDeleteAclSubscriptionRequest",
                                     headers : { 'Content-Type' : 'application/json' },
-                                    params: {'req_no' : reqNo },
-                                    data: {'req_no' : reqNo }
+                                    data: {'requestId' : reqNo }
                                 }).success(function(output) {
                                     if(!output.success){
                                         $scope.alert = "Delete Request : "+output.message+ ". Please check if there is any pending request.";

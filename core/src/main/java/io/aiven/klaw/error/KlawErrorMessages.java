@@ -48,6 +48,8 @@ public class KlawErrorMessages {
   public static final String ACL_ERR_106 =
       "You are not allowed to approve your own subscription requests.";
 
+  public static final String ACL_ERR_107 = "A delete request already exists.";
+
   // Acl sync service
 
   public static final String ACL_SYNC_ERR_102 = "Error in Acl creation. Acl: %s";

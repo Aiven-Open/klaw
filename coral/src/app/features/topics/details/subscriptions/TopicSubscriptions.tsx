@@ -121,7 +121,7 @@ const TopicSubscriptions = () => {
     if (req_no === null) {
       throw Error("Cannot delete request with req_no null");
     }
-    deleteRequest({ req_no });
+    deleteRequest({ requestId: req_no });
   };
 
   const subsStats = useMemo(() => {
