@@ -1,6 +1,8 @@
 package io.aiven.klaw.dao;
 
 import io.aiven.klaw.helpers.AivenAclIdConverter;
+import io.aiven.klaw.helpers.ApprovalsConverter;
+import io.aiven.klaw.model.Approval;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -108,6 +110,10 @@ public class AclRequests implements Serializable {
 
   @Column(name = "aclipprincipletype")
   private AclIPPrincipleType aclIpPrincipleType;
+
+  @Column(name = "approvals")
+  @Convert(converter = ApprovalsConverter.class)
+  private List<Approval> approvals;
 
   @Transient private String totalNoPages;
 

@@ -700,6 +700,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcUpdateHelper.updateAclRequest(aclReq, approver, jsonParams, saveReqOnly);
   }
 
+  public String updateAclRequest(AclRequests aclReq, RequestStatus status) {
+    return jdbcUpdateHelper.updateAclRequest(aclReq, status);
+  }
+
   @Override
   public void updateNewUserRequest(String username, String approver, boolean isApprove) {
     jdbcUpdateHelper.updateNewUserRequest(username, approver, isApprove);

@@ -291,6 +291,8 @@ public interface HandleDbRequests {
       Map<String, String> jsonParams,
       boolean saveReqOnly);
 
+  String updateAclRequest(AclRequests aclRequests, RequestStatus status);
+
   void updateNewUserRequest(String username, String approver, boolean isApprove);
 
   String updateSchemaRequest(SchemaRequest schemaRequest, String approver);

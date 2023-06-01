@@ -290,6 +290,14 @@ public class UpdateDataJdbc {
     return processMultipleAcls(aclReq, jsonParams);
   }
 
+  public String updateAclRequest(AclRequests aclReq, RequestStatus status) {
+    log.debug("updateAclRequest {} {}", aclReq.getTopicname(), status);
+
+    aclReq.setRequestStatus(RequestStatus.APPROVED.value);
+    aclRequestsRepo.save(aclReq);
+    return ApiResultStatus.SUCCESS.value;
+  }
+
   private String processMultipleAcls(AclRequests aclReq, Map<String, String> jsonParams) {
     List<Acl> acls;
     if (aclReq.getAcl_ip() != null) {

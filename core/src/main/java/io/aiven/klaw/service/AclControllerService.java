@@ -39,6 +39,7 @@ import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
@@ -82,6 +83,8 @@ public class AclControllerService {
   @Autowired private RolesPermissionsControllerService rolesPermissionsControllerService;
 
   @Autowired private CommonUtilsService commonUtilsService;
+
+  @Autowired ApprovalService approvalService;
 
   AclControllerService(ClusterApiService clusterApiService, MailUtils mailService) {
     this.clusterApiService = clusterApiService;
@@ -590,12 +593,25 @@ public class AclControllerService {
     if (!aclValidationResponse.isSuccess()) {
       return aclValidationResponse;
     }
+
     if (RequestOperationType.CLAIM.value.equals(aclReq.getRequestOperationType())) {
       Acl acl = getAclById(String.valueOf(aclReq.getReq_no()), userDetails);
-      acl.setTeamId(
-          aclReq.getRequestingteam()); // for claim reqs, team stored in the requesting team field
-      String updateClaimStatus = dbHandle.addToSyncacls(List.of(acl));
-      sendApprovedEmail(dbHandle, aclReq, updateClaimStatus);
+      approvalService.addApproval(
+          aclReq.getApprovals(), userDetails, acl.getTeamId(), aclReq.getRequestingteam());
+
+      String updateClaimStatus = null;
+      if (approvalService.isRequestFullyApproved(aclReq.getApprovals())) {
+        acl.setTeamId(
+            aclReq.getRequestingteam()); // for claim reqs, team stored in the requesting team field
+        updateClaimStatus = dbHandle.addToSyncacls(List.of(acl));
+        sendApprovedEmail(dbHandle, aclReq, updateClaimStatus);
+      } else {
+        dbHandle.updateAclRequest(aclReq, RequestStatus.CREATED);
+        updateClaimStatus =
+            String.format(
+                "Approval from %s applied to request %s , further approvals required to provision this request.",
+                userDetails, aclReq.getReq_no());
+      }
       return ApiResponse.builder()
           .success((updateClaimStatus.equals(ApiResultStatus.SUCCESS.value)))
           .message(updateClaimStatus)
@@ -920,8 +936,9 @@ public class AclControllerService {
     return executeAclRequestModel(userDetails, aclRequestsDao, aclClaimRequested);
   }
 
-  private static AclRequests createAclRequestDaoFromAclRequest(
-      String aclId, String userDetails, Acl acl, RequestOperationType requestOperationType) {
+  private AclRequests createAclRequestDaoFromAclRequest(
+      String aclId, String userDetails, Acl acl, RequestOperationType requestOperationType)
+      throws KlawException {
     AclRequests aclRequestsDao = new AclRequests();
 
     copyProperties(acl, aclRequestsDao);
@@ -931,6 +948,23 @@ public class AclControllerService {
     aclRequestsDao.setRequestOperationType(requestOperationType.value);
     aclRequestsDao.setOtherParams(aclId);
     aclRequestsDao.setJsonParams(acl.getJsonParams());
+    if (requestOperationType.equals(RequestOperationType.CLAIM)) {
+
+      Optional<UserInfo> userInfo =
+          manageDatabase.selectAllCachedUserInfo().stream()
+              .filter(filter -> filter.getUsername().equals(userDetails))
+              .findFirst();
+      // Put in a check in case user is not returned
+      aclRequestsDao.setApprovals(
+          approvalService.getApprovalsForRequest(
+              RequestEntityType.ACL,
+              requestOperationType,
+              acl.getEnvironment(),
+              acl.getTeamId(),
+              userInfo.get().getTeamId(),
+              acl.getTenantId()));
+      aclRequestsDao.setRequestingteam(userInfo.get().getTeamId());
+    }
     return aclRequestsDao;
   }
 

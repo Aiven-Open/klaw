@@ -1056,3 +1056,13 @@ databaseChangeLog:
                     name: resettokengeneratedat
                     type: TIMESTAMP
               tableName: kwusers
+    - changeSet:
+        id: 31-05-23 New Column to store advanced approval information
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              tableName: kwaclrequests
+              columns:
+                - column:
+                    name: approvals
+                    type: CLOB
