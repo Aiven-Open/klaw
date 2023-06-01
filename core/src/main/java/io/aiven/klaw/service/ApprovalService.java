@@ -150,6 +150,40 @@ public class ApprovalService {
         .toList();
   }
 
+  /**
+   * Check if a user has the ability to add an approvval to this list of approvals
+   *
+   * @param approvals The full list of approvals
+   * @param username The username of the user to check
+   * @return true if there is an approval that the user fits the requirements for to approve
+   */
+  public boolean isUserAQualifiedOutstandingApprover(List<Approval> approvals, String username) {
+    Optional<UserInfo> user =
+        manageDatabase.selectAllCachedUserInfo().stream()
+            .filter(u -> u.getUsername().equals(username))
+            .findFirst();
+    if (user.isEmpty()) {
+      return false;
+    }
+    // check that user has not foundapproved any request before potentially as a member of another
+    // team
+    // Then check to see if their current team has the ability to approve any of the requests.
+    return !approvals.stream()
+            .anyMatch(
+                app ->
+                    !StringUtils.isBlank(app.getApproverName())
+                        && app.getApproverName().equals(username))
+        && !approvals.stream()
+            .filter(
+                app ->
+                    app.getRequiredApprovingTeamName()
+                        .equals(
+                            manageDatabase.getTeamNameFromTeamId(
+                                user.get().getTenantId(), user.get().getTeamId())))
+            .toList()
+            .isEmpty();
+  }
+
   public List<Approval> addApproval(
       List<Approval> approvals, String userName, Integer resourceOwnerId, Integer aclOwnerId) {
 

@@ -12,6 +12,7 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.Approval;
 import io.aiven.klaw.model.enums.ApprovalType;
 import io.aiven.klaw.model.enums.MailType;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
@@ -312,6 +313,49 @@ public class ApprovalServiceTest {
 
     approvalService.sendEmailToApprovers(
         JOHN, "SimpleTopic", null, null, MailType.TOPIC_CREATE_REQUESTED, approvals, 101);
+  }
+
+  @Test
+  public void isUserAbleToApprove_NoApprovalsLeft_returnFalse() {
+    assertThat(approvalService.isUserAQualifiedOutstandingApprover(new ArrayList<>(), JACKIE))
+        .isFalse();
+  }
+
+  @Test
+  public void isUserAbleToApprove_NotElligible_returnFalse() {
+    List<Approval> approvals =
+        List.of(
+            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, null, null, null),
+            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+    assertThat(approvalService.isUserAQualifiedOutstandingApprover(approvals, JACKIE)).isFalse();
+  }
+
+  @Test
+  public void isUserAbleToApprove_AlreadyAddedApproval_returnFalse() {
+    List<Approval> approvals =
+        List.of(
+            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, JACKIE, SUPPORT_TEAM, 13),
+            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+    assertThat(approvalService.isUserAQualifiedOutstandingApprover(approvals, JACKIE)).isFalse();
+  }
+
+  @Test
+  public void isUserAbleToApprove_AlreadyAddedApprovalAsMemberOfAnotherTeam_returnFalse() {
+    List<Approval> approvals =
+        List.of(
+            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, JACKIE, OCTOPUS, 11),
+            createApproval(
+                SUPPORT_TEAM, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+    assertThat(approvalService.isUserAQualifiedOutstandingApprover(approvals, JACKIE)).isFalse();
+  }
+
+  @Test
+  public void isUserAbleToApprove_AlreadyAddedApproval_returnTrue() {
+    List<Approval> approvals =
+        List.of(
+            createApproval(ALICE, "Create-11-1", ApprovalType.TEAM, JACKIE, SUPPORT_TEAM, 13),
+            createApproval(OCTOPUS, "Create-11-2", ApprovalType.ACL_TEAM_OWNER, null, null, null));
+    assertThat(approvalService.isUserAQualifiedOutstandingApprover(approvals, JACKIE)).isFalse();
   }
 
   private UserInfo createUser(String userName, int teamId) {
