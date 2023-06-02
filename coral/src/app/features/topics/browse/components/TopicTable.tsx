@@ -9,6 +9,9 @@ import {
 import link from "@aivenio/aquarium/dist/src/icons/link";
 import { Link } from "react-router-dom";
 import { Topic } from "src/domain/topic";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
+import { createTopicOverviewLink } from "src/app/features/topics/browse/utils/create-topic-overview-link";
 
 type TopicListProps = {
   topics: Topic[];
@@ -24,17 +27,29 @@ interface TopicsTableRow {
 
 function TopicTable(props: TopicListProps) {
   const { topics, ariaLabel } = props;
+  const topicDetailsEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_TOPIC_OVERVIEW
+  );
 
   const columns: Array<DataTableColumn<TopicsTableRow>> = [
     {
       type: "custom",
       field: "topicName",
       headerName: "Topic",
-      UNSAFE_render: ({ topicName }: TopicsTableRow) => (
-        <Link to={`/topic/${topicName}/overview`}>
-          {topicName} <InlineIcon icon={link} />
-        </Link>
-      ),
+      UNSAFE_render: ({ topicName }: TopicsTableRow) => {
+        if (!topicDetailsEnabled) {
+          return (
+            <a href={createTopicOverviewLink(topicName)}>
+              {topicName} <InlineIcon icon={link} />
+            </a>
+          );
+        }
+        return (
+          <Link to={`/topic/${topicName}/overview`}>
+            {topicName} <InlineIcon icon={link} />
+          </Link>
+        );
+      },
     },
     {
       type: "custom",
