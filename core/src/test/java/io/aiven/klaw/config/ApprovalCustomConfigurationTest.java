@@ -35,7 +35,7 @@ class ApprovalCustomConfigurationTest {
   @Test
   public void returnCustomEnvironmentSpecificProperties() throws Exception {
 
-    ApprovalService defaultList = config.createTopicService();
+    ApprovalService defaultList = config.approvalService();
 
     List<Approval> aclClaimApprovals =
         defaultList.getApprovalsForRequest(

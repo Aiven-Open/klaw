@@ -8,6 +8,7 @@ import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.requests.BaseRequestModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
@@ -236,10 +237,10 @@ public class AclController {
       value = "/acl/{aclId}",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> claimAcl(
-      @PathVariable String aclId, @Valid @RequestBody RequestOperationType operationType)
+      @PathVariable String aclId, @Valid @RequestBody BaseRequestModel request)
       throws NotImplementedException, KlawException {
 
-    switch (operationType) {
+    switch (request.getRequestOperationType()) {
       case CLAIM:
         return new ResponseEntity<>(aclControllerService.createClaimRequest(aclId), HttpStatus.OK);
       default:

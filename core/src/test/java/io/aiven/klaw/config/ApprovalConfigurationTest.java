@@ -35,7 +35,7 @@ class ApprovalConfigurationTest {
   @Test
   public void returnDefaulApprovalLists() throws Exception {
 
-    ApprovalService defaultList = config.createTopicService();
+    ApprovalService defaultList = config.approvalService();
 
     List<Approval> aclApprovals =
         defaultList.getApprovalsForRequest(
@@ -71,7 +71,7 @@ class ApprovalConfigurationTest {
   public void returnDefaulApprovalLists_WhereEnvIsNull_return_ExpectedNumberOfApprovers()
       throws Exception {
 
-    ApprovalService defaultList = config.createTopicService();
+    ApprovalService defaultList = config.approvalService();
 
     List<Approval> aclApprovals =
         defaultList.getApprovalsForRequest(
@@ -107,7 +107,7 @@ class ApprovalConfigurationTest {
   public void returnDefaulApprovalLists_changeDataAndItShouldNotaffectTheOriginalService()
       throws Exception {
 
-    ApprovalService defaultList = config.createTopicService();
+    ApprovalService defaultList = config.approvalService();
 
     List<Approval> aclApprovals =
         defaultList.getApprovalsForRequest(

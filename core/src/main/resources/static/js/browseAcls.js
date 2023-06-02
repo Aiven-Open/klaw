@@ -888,12 +888,15 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             }
 
             $scope.claimAcl = function(aclId) {
+            var serviceInput = {};
+            serviceInput['requestOperationType'] = 'CLAIM';
+            serviceInput['environment'] = $scope.topicOverviewEnvId;
 
               $http({
                                 method: "POST",
                                 url: "/acl/" + aclId,
                                 headers : { 'Content-Type' : 'application/json' },
-                                data : 'CLAIM'
+                                data : serviceInput
                             }).success(function(output) {
                                 $scope.ShowSpinnerStatus = false;
                                 if(output.status != null && output.status === "false"){

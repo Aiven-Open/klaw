@@ -32,6 +32,7 @@ import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -93,12 +94,18 @@ public class SelectDataJdbcTest {
     String requestor = "uiuser1";
     UserInfo userInfo = new UserInfo();
     userInfo.setTeamId(1);
+    userInfo.setTenantId(101);
 
     List<AclRequests> aclRequests = utilMethods.getAclRequests();
 
     when(aclRequestsRepo.findAllByTenantId(anyInt())).thenReturn(aclRequests);
     when(userInfoRepo.findByUsernameIgnoreCase(requestor))
         .thenReturn(java.util.Optional.of(userInfo));
+    Team team = new Team();
+    team.setTeamId(1);
+    team.setTenantId(101);
+    team.setTeamname("Octopus");
+    when(teamRepo.findById(any())).thenReturn(Optional.of(team));
 
     List<AclRequests> aclRequestsActual =
         selectData.selectFilteredAclRequests(

@@ -76,6 +76,8 @@ public class AclControllerServiceTest {
   @Mock private MailUtils mailService;
   @Mock private UserInfo userInfo;
 
+  @Mock private ApprovalService approvalService;
+
   private AclControllerService aclControllerService;
 
   @BeforeEach
@@ -88,12 +90,14 @@ public class AclControllerServiceTest {
     env.setId("1");
     ReflectionTestUtils.setField(aclControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(aclControllerService, "commonUtilsService", commonUtilsService);
+    ReflectionTestUtils.setField(aclControllerService, "approvalService", approvalService);
     ReflectionTestUtils.setField(
         aclControllerService,
         "rolesPermissionsControllerService",
         rolesPermissionsControllerService);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
     loginMock();
+    when(approvalService.isUserAQualifiedOutstandingApprover(any(), any())).thenReturn(false);
   }
 
   private void mockKafkaFlavor() {

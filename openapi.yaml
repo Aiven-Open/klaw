@@ -2070,8 +2070,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "type" : "string",
-                "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+                "$ref" : "#/components/schemas/BaseRequestModel"
               }
             }
           },
@@ -6166,6 +6165,27 @@
         },
         "required" : [ "bootstrapServers", "clusterName", "clusterType", "kafkaFlavor", "protocol" ]
       },
+      "BaseRequestModel" : {
+        "properties" : {
+          "requestOperationType" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+          },
+          "environment" : {
+            "type" : "string"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "environment", "requestOperationType" ]
+      },
       "ServiceAccounts" : {
         "properties" : {
           "numberOfAllowedAccounts" : {
@@ -8181,11 +8201,20 @@
               "type" : "string"
             }
           },
+          "approvals" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Approval"
+            }
+          },
           "transactionalId" : {
             "type" : "string"
           },
           "aclResourceType" : {
             "type" : "string"
+          },
+          "requestorQualifiedApprover" : {
+            "type" : "boolean"
           },
           "deletable" : {
             "type" : "boolean"
@@ -8195,6 +8224,30 @@
           }
         },
         "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "acl_ip", "acl_ssl", "allPageNos", "approvingTeamDetails", "consumergroup", "currentPage", "environment", "environmentName", "req_no", "requestOperationType", "requestStatus", "requestingTeamName", "requestingteam", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicname", "totalNoPages" ]
+      },
+      "Approval" : {
+        "properties" : {
+          "approvalId" : {
+            "type" : "string"
+          },
+          "approvalType" : {
+            "type" : "string",
+            "enum" : [ "RESOURCE_TEAM_OWNER", "ACL_TEAM_OWNER", "TEAM" ]
+          },
+          "requiredApprovingTeamName" : {
+            "type" : "string"
+          },
+          "approverName" : {
+            "type" : "string"
+          },
+          "approverTeamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "approverTeamName" : {
+            "type" : "string"
+          }
+        }
       },
       "AclCommands" : {
         "properties" : {

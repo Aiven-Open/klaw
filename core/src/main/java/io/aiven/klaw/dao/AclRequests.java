@@ -115,6 +115,8 @@ public class AclRequests implements Serializable {
   @Convert(converter = ApprovalsConverter.class)
   private List<Approval> approvals;
 
+  @Transient private boolean isRequestorQualifiedApprover;
+
   @Transient private String totalNoPages;
 
   @Transient private String currentPage;

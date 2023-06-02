@@ -20,10 +20,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 @Slf4j
-@Service
 public class ApprovalService {
 
   private Map<String, List<Approval>> topicApprovals;
@@ -55,7 +53,6 @@ public class ApprovalService {
   private List<Approval> getApprovers(
       RequestEntityType entityType, RequestOperationType operationType, String envName)
       throws KlawException {
-
     Map<String, List<Approval>> requestToApprover = getEntityTypeApproverMap(entityType);
     List<Approval> approvals = null;
 
@@ -70,7 +67,6 @@ public class ApprovalService {
     } else {
       // Env specific approvers do not exist so return all approvers for that type of operationType.
       // Always return a copy
-      String key = operationType.name();
       approvals = requestToApprover.get(operationType.name());
       // Always return a deep copy
       return approvals.stream().map(Approval::new).toList();
@@ -100,6 +96,7 @@ public class ApprovalService {
 
   private Map<String, List<Approval>> getEntityTypeApproverMap(RequestEntityType entityType)
       throws KlawException {
+    log.info("ACL APprovals {}" + aclApprovals);
     switch (entityType) {
       case TOPIC:
         return topicApprovals;

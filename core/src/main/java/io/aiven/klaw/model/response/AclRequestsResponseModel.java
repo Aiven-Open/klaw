@@ -1,10 +1,12 @@
 package io.aiven.klaw.model.response;
 
+import io.aiven.klaw.model.Approval;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclType;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,6 +37,10 @@ public class AclRequestsResponseModel extends BaseRequestsResponseModel implemen
   @NotNull private ArrayList<String> acl_ip = new ArrayList<>();
 
   @NotNull private ArrayList<String> acl_ssl = new ArrayList<>();
+
+  private List<Approval> approvals;
+
+  private boolean isRequestorQualifiedApprover;
 
   private String transactionalId;
 

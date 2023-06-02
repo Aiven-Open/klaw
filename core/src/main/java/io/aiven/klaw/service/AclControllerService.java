@@ -293,6 +293,16 @@ public class AclControllerService {
             .filter(aclRequest -> allowedEnvIdSet.contains(aclRequest.getEnvironment()))
             .sorted(getPreferredOrder(order))
             .collect(Collectors.toList());
+    aclReqs =
+        aclReqs.stream()
+            .map(
+                app -> {
+                  app.setRequestorQualifiedApprover(
+                      approvalService.isUserAQualifiedOutstandingApprover(
+                          app.getApprovals(), userName));
+                  return app;
+                })
+            .toList();
     return aclReqs;
   }
 
@@ -919,12 +929,16 @@ public class AclControllerService {
   }
 
   private ApiResponse createAclRequest(
-      String aclId, String userDetails, RequestOperationType claim, MailType aclClaimRequested)
+      String aclId,
+      String userDetails,
+      RequestOperationType operationType,
+      MailType aclClaimRequested)
       throws KlawException {
     Acl acl = getAclById(aclId, userDetails);
 
     // Verify if user raising request belongs to the same team as the Subscription owner team
-    if (!Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(userDetails))) {
+    if (!operationType.equals(RequestOperationType.CLAIM)
+        && !Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(userDetails))) {
       return createFailureResponse(ApiResultStatus.NOT_AUTHORIZED.value);
     }
 
@@ -932,7 +946,8 @@ public class AclControllerService {
       return createFailureResponse(ApiResultStatus.FAILURE.value);
     }
 
-    AclRequests aclRequestsDao = createAclRequestDaoFromAclRequest(aclId, userDetails, acl, claim);
+    AclRequests aclRequestsDao =
+        createAclRequestDaoFromAclRequest(aclId, userDetails, acl, operationType);
     return executeAclRequestModel(userDetails, aclRequestsDao, aclClaimRequested);
   }
 
@@ -963,6 +978,9 @@ public class AclControllerService {
               acl.getTeamId(),
               userInfo.get().getTeamId(),
               acl.getTenantId()));
+      aclRequestsDao.setRequestorQualifiedApprover(
+          approvalService.isUserAQualifiedOutstandingApprover(
+              aclRequestsDao.getApprovals(), getCurrentUserName()));
       aclRequestsDao.setRequestingteam(userInfo.get().getTeamId());
     }
     return aclRequestsDao;

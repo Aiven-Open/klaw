@@ -91,6 +91,8 @@ public class SelectDataJdbc {
   @Autowired(required = false)
   private ProductDetailsRepo productDetailsRepo;
 
+  public SelectDataJdbc() {}
+
   public List<AclRequests> selectFilteredAclRequests(
       boolean isApproval,
       String requestor,
@@ -126,7 +128,9 @@ public class SelectDataJdbc {
               .filter(req -> !req.getRequestor().equals(requestor))
               .collect(Collectors.toList());
     }
-    Integer teamSelected = selectUserInfo(requestor).getTeamId();
+    UserInfo userInfo = selectUserInfo(requestor);
+    Integer teamSelected = userInfo.getTeamId();
+    String teamName = selectTeamDetails(teamSelected, userInfo.getTenantId()).getTeamname();
     if (wildcardSearch != null && !wildcardSearch.isEmpty()) {
       aclListSub =
           aclListSub.stream()
@@ -156,6 +160,10 @@ public class SelectDataJdbc {
       }
 
       if (showRequestsOfAllTeams) { // show all requests of all teams
+        aclList.add(row);
+      } else if (row.getApprovals() != null
+          && row.getApprovals().stream()
+              .anyMatch(app -> app.getRequiredApprovingTeamName().equals(teamName))) {
         aclList.add(row);
       } else if (teamSelected != null && teamSelected.equals(teamId)) {
         aclList.add(row);

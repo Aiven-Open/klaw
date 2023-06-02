@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.google.common.collect.Lists;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.RequestMode;
@@ -13,6 +14,7 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
+import io.aiven.klaw.repository.TeamRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.List;
@@ -37,6 +39,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class AclRequestsIntegrationTest {
 
   @Autowired private AclRequestsRepo repo;
+
+  @Autowired private TeamRepo teamRepo;
 
   @Autowired private SchemaRequestRepo schemaRequestRepo;
 
@@ -169,6 +173,18 @@ public class AclRequestsIntegrationTest {
         RequestStatus.CREATED.value,
         11,
         "Gorph");
+
+    addTeam("SUPPORT", 104, 104);
+    addTeam("OCTOPUS", 103, 103);
+    addTeam("ALICE", 101, 101);
+  }
+
+  private void addTeam(String teamName, int teamId, int tenantId) {
+    Team team = new Team();
+    team.setTeamname(teamName);
+    team.setTeamId(teamId);
+    team.setTenantId(tenantId);
+    entityManager.persistAndFlush(team);
   }
 
   @BeforeEach
@@ -181,6 +197,7 @@ public class AclRequestsIntegrationTest {
         selectDataJdbc, "kafkaConnectorRequestsRepo", kafkaConnectorRequestsRepo);
     ReflectionTestUtils.setField(selectDataJdbc, "topicRequestsRepo", topicRequestsRepo);
     ReflectionTestUtils.setField(selectDataJdbc, "userInfoRepo", userInfoRepo);
+    ReflectionTestUtils.setField(selectDataJdbc, "teamRepo", teamRepo);
     loadData();
   }
 

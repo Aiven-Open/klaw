@@ -524,7 +524,13 @@
 
 													<h3 ng-show="aclRequest.aclPatternType == 'PREFIXED'" class="card-title">Topic : <a href="topicOverview?topicname={{aclRequest.topicname}}">{{ aclRequest.topicname }}</a> (PREFIXED)</h3>
 												</td>
-												<td align="right" ng-show="aclRequest.requestStatus == 'CREATED' && userlogged != aclRequest.requestor">
+												<td align="right" ng-show="aclRequest.requestStatus == 'CREATED' && userlogged != aclRequest.requestor && aclRequest.requestOperationType !== 'CLAIM'">
+													<button type="button" ng-click="execAclRequest(aclRequest.req_no);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
+													</button>
+													<button type="button" ng-click="execAclRequestDecline(aclRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
+													</button>
+												</td>
+												<td align="right" ng-show="aclRequest.requestStatus == 'CREATED' && userlogged != aclRequest.requestor && aclRequest.requestorQualifiedApprover && aclRequest.requestOperationType == 'CLAIM'">
 													<button type="button" ng-click="execAclRequest(aclRequest.req_no);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
 													</button>
 													<button type="button" ng-click="execAclRequestDecline(aclRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
@@ -592,6 +598,10 @@
 											<h6 class="text-primary">Request Type</h6><b>
 											<span class="badge badge-danger">{{ aclRequest.requestOperationType }} Acl</span></b>
 										</div>
+										<div class="p-2 border-right" ng-show="aclRequest.requestOperationType == 'CLAIM'" style="width:20%">
+											<h6 class="text-primary">Request Type</h6><b>
+											<span class="badge badge-danger">{{ aclRequest.requestOperationType }} Acl</span></b>
+										</div>
 										<div class="p-2 border-right" style="width:15%">
 											<h6 class="text-primary">Date Requested</h6><b>{{ aclRequest.requesttimestring }}</b>
 										</div>
@@ -600,6 +610,9 @@
 										</div>
 										<div ng-show="aclRequest.transactionalId != null" class="p-2 border-left" style="width:15%">
 											<h6 class="text-primary">Transactional ID</h6><b>{{ aclRequest.transactionalId }}</b>
+										</div>
+										<div ng-show="aclRequest.requestOperationType == 'CLAIM'" class="p-2 border-left" style="width:15%">
+											<h6 class="text-primary"Approving Teams</h6><b ng-repeat="approval in aclRequest.approvals">{{ approval.requiredApprovingTeamName }}<br></b>
 										</div>
 									</div>
 									<br>

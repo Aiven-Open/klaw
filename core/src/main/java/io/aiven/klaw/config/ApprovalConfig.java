@@ -15,16 +15,18 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
+@Slf4j
 @Data
 @Configuration
 @EnableConfigurationProperties
-@PropertySource("classpath:approval.properties")
+@PropertySource("/approval.properties")
 public class ApprovalConfig {
 
   public static final String ALL_ENTITY_TYPES = "ALL";
@@ -55,7 +57,8 @@ public class ApprovalConfig {
   }
 
   @Bean
-  public ApprovalService createTopicService() throws KlawConfigurationException {
+  public ApprovalService approvalService() throws KlawConfigurationException {
+    log.info("Start Approval Config set up");
     return new ApprovalService(
         flattenAllRequestsToKeys(getTopicProperties(), RequestEntityType.TOPIC),
         flattenAllRequestsToKeys(getACLProperties(), RequestEntityType.ACL),
