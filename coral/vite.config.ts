@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, PluginOption, ProxyOptions } from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
+import svgr from "vite-plugin-svgr";
 import { resolve } from "path";
 import fs from "fs";
 
@@ -112,7 +113,7 @@ function getServerProxyConfig(
 }
 
 function getPlugins(environment: Record<string, string>): PluginOption[] {
-  const plugins: PluginOption[] = [react()];
+  const plugins: PluginOption[] = [react(), svgr()];
   if (environment.BUNDLE_ANALYZE) {
     plugins.push(visualizer());
   }
