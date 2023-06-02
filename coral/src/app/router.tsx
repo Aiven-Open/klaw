@@ -35,6 +35,7 @@ import { TopicHistoryPage } from "src/app/pages/topics/details/history";
 import { TopicMessagesPage } from "src/app/pages/topics/details/messages";
 import { TopicSubscriptionsPage } from "src/app/pages/topics/details/subscriptions";
 import { TopicOverviewPage } from "src/app/pages/topics/details/overview";
+import { TopicDetailsSchemaPage } from "./pages/topics/details/schema";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -77,7 +78,7 @@ const routes: Array<RouteObject> = [
           },
           {
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[TopicOverviewTabEnum.SCHEMA],
-            element: <div>SCHEMA</div>,
+            element: <TopicDetailsSchemaPage />,
             id: TopicOverviewTabEnum.SCHEMA,
           },
           {
