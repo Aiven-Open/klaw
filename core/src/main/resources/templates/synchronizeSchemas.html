@@ -510,10 +510,24 @@
 											</td>
 										</tr>
 									</table>
+
+									<div class="col-lg-12" ng-show="resultBrowse.length > 0">
+										<div class="form-actions">
+											<text class="info">Note : Schema Cache reset happens once in a day, but if you would like to reset cache now,
+												click this button. It might take a couple of minutes to reset.</text><br><br>
+											<button ng-click="resetCacheClusterApi();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
+												Reset Cache</button>
+										</div>
+									</div>
+
 								</div>
+
+
+
 							</div>
 						</div>
 					</div>
+
 
 					<div class="row" ng-show="allenvs.length == 0">
 						<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >

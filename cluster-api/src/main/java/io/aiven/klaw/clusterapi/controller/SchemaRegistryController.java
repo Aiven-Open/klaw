@@ -104,6 +104,19 @@ public class SchemaRegistryController {
     }
   }
 
+  /** Schema cache reset */
+  @PostMapping(
+      value = "/schema/resetCache",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> resetCache(
+      @RequestBody @Valid ClusterSchemaRequest clusterSchemaRequest) {
+    try {
+      return new ResponseEntity<>(schemaService.resetCache(clusterSchemaRequest), HttpStatus.OK);
+    } catch (Exception e) {
+      return handleException(e);
+    }
+  }
+
   @PostMapping(
       value = "/schema/validate/compatibility",
       produces = {MediaType.APPLICATION_JSON_VALUE})

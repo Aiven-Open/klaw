@@ -511,6 +511,31 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
             $scope.enableCreateTopicsButton = true;
         }
 
+        $scope.resetCacheClusterApi = function(){
+            $scope.ShowSpinnerStatus = true;
+            $http({
+                method: "POST",
+                url: "schemas/resetCache",
+                headers : { 'Content-Type' : 'application/json' },
+                data:  {'kafkaEnvId' : $scope.getSchemas.envName }
+            }).success(function(output) {
+                $scope.ShowSpinnerStatus = false;
+                $scope.alert = "Cache reset.";
+                $scope.getSchemas('1');
+                swal({
+                    title: "",
+                    text: "Please wait for a couple of minutes for cache to be reset.",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
+
         $scope.syncTopicsBulk = function() {
             $scope.alertbulk = "";
             $scope.alertnotebulk = "";

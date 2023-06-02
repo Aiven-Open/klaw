@@ -781,4 +781,14 @@ public class SchemaService {
           null);
     }
   }
+
+  public ApiResponse resetCache(ClusterSchemaRequest clusterSchemaRequest) {
+    updateSchemaCache(
+        clusterSchemaRequest.getEnv(),
+        clusterSchemaRequest.getProtocol(),
+        clusterSchemaRequest.getClusterIdentification(),
+        SchemaCacheUpdateType.NONE,
+        null);
+    return ApiResponse.builder().success(true).build();
+  }
 }

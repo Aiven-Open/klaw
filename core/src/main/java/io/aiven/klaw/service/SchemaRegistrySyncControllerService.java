@@ -13,6 +13,7 @@ import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SchemaResetCache;
 import io.aiven.klaw.model.SyncSchemaUpdates;
 import io.aiven.klaw.model.cluster.SchemaInfoOfTopic;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
@@ -577,5 +578,13 @@ public class SchemaRegistrySyncControllerService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  public ApiResponse resetCacheClusterApi(SchemaResetCache schemaResetCache) throws KlawException {
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+    ResponseEntity<ApiResponse> apiResponseResponseEntity =
+        clusterApiService.resetSchemaInfoCache(schemaResetCache.getKafkaEnvId(), tenantId);
+    return apiResponseResponseEntity.getBody();
   }
 }
