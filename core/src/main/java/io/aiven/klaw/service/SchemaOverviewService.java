@@ -108,23 +108,14 @@ public class SchemaOverviewService extends BaseOverviewService {
           }
 
           SortedMap<Integer, Map<String, Object>> schemaObjects = new TreeMap<>();
-          if (schemaUpdated) {
-            for (MessageSchema messageSchema : topicSchemaVersionsInDb) {
-              Map<String, Object> schemaObj = new HashMap<>();
-              schemaObj.put("schema", messageSchema.getSchemafull());
-              schemaObj.put("id", messageSchema.getSchemaId());
-              schemaObj.put("compatibility", messageSchema.getCompatibility());
-              schemaObjects.put(Integer.parseInt(messageSchema.getSchemaversion()), schemaObj);
-            }
-          } else {
-            schemaObjects =
-                clusterApiService.getAvroSchema(
-                    kwClusters.getBootstrapServers(),
-                    kwClusters.getProtocol(),
-                    kwClusters.getClusterName() + kwClusters.getClusterId(),
-                    topicNameSearch,
-                    tenantId);
-          }
+          schemaObjects =
+              getSchemasMap(
+                  topicNameSearch,
+                  tenantId,
+                  kwClusters,
+                  topicSchemaVersionsInDb,
+                  schemaUpdated,
+                  schemaObjects);
 
           // If the schemaObject is null ie does not exist do not try to manipulate it.
           if (schemaObjects != null && !schemaObjects.isEmpty()) {
@@ -214,6 +205,34 @@ public class SchemaOverviewService extends BaseOverviewService {
         schemaOverview.setSchemaDetails(schemaDetails);
       }
     }
+  }
+
+  private SortedMap<Integer, Map<String, Object>> getSchemasMap(
+      String topicNameSearch,
+      int tenantId,
+      KwClusters kwClusters,
+      List<MessageSchema> topicSchemaVersionsInDb,
+      boolean schemaUpdated,
+      SortedMap<Integer, Map<String, Object>> schemaObjects)
+      throws Exception {
+    if (schemaUpdated) {
+      for (MessageSchema messageSchema : topicSchemaVersionsInDb) {
+        Map<String, Object> schemaObj = new HashMap<>();
+        schemaObj.put("schema", messageSchema.getSchemafull());
+        schemaObj.put("id", messageSchema.getSchemaId());
+        schemaObj.put("compatibility", messageSchema.getCompatibility());
+        schemaObjects.put(Integer.parseInt(messageSchema.getSchemaversion()), schemaObj);
+      }
+    } else {
+      schemaObjects =
+          clusterApiService.getAvroSchema(
+              kwClusters.getBootstrapServers(),
+              kwClusters.getProtocol(),
+              kwClusters.getClusterName() + kwClusters.getClusterId(),
+              topicNameSearch,
+              tenantId);
+    }
+    return schemaObjects;
   }
 
   private void processSchemaPromotionDetails(
