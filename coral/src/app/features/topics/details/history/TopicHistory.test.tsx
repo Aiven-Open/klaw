@@ -1,9 +1,9 @@
-import { TopicOverview } from "src/domain/topic";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { TopicHistory } from "src/app/features/topics/details/history/TopicHistory";
-import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { cleanup, screen, within } from "@testing-library/react";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
+import { TopicHistory } from "src/app/features/topics/details/history/TopicHistory";
+import { TopicOverview } from "src/domain/topic";
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const testTopicHistoryList = [
   {
@@ -60,6 +60,41 @@ const testTopicOverview: TopicOverview = {
   ],
   topicIdForDocumentation: 1015,
 };
+const testTopisSchemas = {
+  topicExists: true,
+  schemaExists: true,
+  prefixAclsExists: false,
+  txnAclsExists: false,
+  allSchemaVersions: {
+    DEV: [1],
+  },
+  latestVersion: {
+    DEV: 1,
+  },
+  schemaPromotionDetails: {
+    DEV: {
+      status: "success",
+      sourceEnv: "3",
+      targetEnv: "TST_SCH",
+      targetEnvId: "9",
+    },
+  },
+  schemaDetails: [
+    {
+      id: 2,
+      version: 1,
+      nextVersion: 0,
+      prevVersion: 0,
+      compatibility: "BACKWARD",
+      content:
+        '{\n  "doc" : "example",\n  "fields" : [ {\n    "default" : "6666665",\n    "doc" : "my test number",\n    "name" : "test",\n    "namespace" : "test",\n    "type" : "string"\n  } ],\n  "name" : "example",\n  "namespace" : "example",\n  "type" : "record"\n}',
+      env: "DEV",
+      showNext: false,
+      showPrev: false,
+      latest: true,
+    },
+  ],
+};
 
 jest.mock("src/app/features/topics/details/TopicDetails");
 
@@ -85,6 +120,7 @@ describe("TopicHistory", () => {
         environmentId: "1",
         topicName: "hello",
         topicOverview: { ...testTopicOverview, topicHistoryList: [] },
+        topicSchemas: testTopisSchemas,
       });
 
       customRender(<TopicHistory />, {
@@ -124,6 +160,7 @@ describe("TopicHistory", () => {
         environmentId: "1",
         topicName: "hello",
         topicOverview: testTopicOverview,
+        topicSchemas: testTopisSchemas,
       });
 
       customRender(<TopicHistory />, {
