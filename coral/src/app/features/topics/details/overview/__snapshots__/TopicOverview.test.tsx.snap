@@ -31,11 +31,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                   <div
                     style="display: flex; justify-content: space-around; flex-direction: column;"
                   >
-                    <h1
+                    <div
                       class="typography-heading text-grey-80"
                     >
                       1
-                    </h1>
+                    </div>
                     <div
                       class="typography-small text-grey-50"
                     >
@@ -45,11 +45,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                   <div
                     style="display: flex; justify-content: space-around; flex-direction: column;"
                   >
-                    <h1
+                    <div
                       class="typography-heading text-grey-80"
                     >
                       1
-                    </h1>
+                    </div>
                     <div
                       class="typography-small text-grey-50"
                     >
@@ -81,11 +81,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 <div
                   style="display: flex; justify-content: space-around; flex-direction: column;"
                 >
-                  <h1
+                  <div
                     class="typography-heading text-grey-80"
                   >
                     1
-                  </h1>
+                  </div>
                   <div
                     class="typography-small text-grey-50"
                   >
@@ -184,11 +184,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
               <div
                 style="display: flex; justify-content: space-around; flex-direction: column;"
               >
-                <h1
+                <div
                   class="typography-heading text-grey-80"
                 >
                   1
-                </h1>
+                </div>
                 <div
                   class="typography-small text-grey-50"
                 >
@@ -289,11 +289,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 <div
                   style="display: flex; justify-content: space-around; flex-direction: column;"
                 >
-                  <h1
+                  <div
                     class="typography-heading text-grey-80"
                   >
                     1
-                  </h1>
+                  </div>
                   <div
                     class="typography-small text-grey-50"
                   >
@@ -303,11 +303,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 <div
                   style="display: flex; justify-content: space-around; flex-direction: column;"
                 >
-                  <h1
+                  <div
                     class="typography-heading text-grey-80"
                   >
                     1
-                  </h1>
+                  </div>
                   <div
                     class="typography-small text-grey-50"
                   >
@@ -339,11 +339,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
               <div
                 style="display: flex; justify-content: space-around; flex-direction: column;"
               >
-                <h1
+                <div
                   class="typography-heading text-grey-80"
                 >
                   1
-                </h1>
+                </div>
                 <div
                   class="typography-small text-grey-50"
                 >
@@ -442,11 +442,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
             <div
               style="display: flex; justify-content: space-around; flex-direction: column;"
             >
-              <h1
+              <div
                 class="typography-heading text-grey-80"
               >
                 1
-              </h1>
+              </div>
               <div
                 class="typography-small text-grey-50"
               >

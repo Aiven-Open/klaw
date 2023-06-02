@@ -12,7 +12,9 @@ interface StatsDisplayProps {
 const StatsDisplay = ({ amount, chip, entity }: StatsDisplayProps) => {
   return (
     <Box.Flex flexDirection="column" justifyContent={"space-around"}>
-      {amount && <Typography.Heading>{amount}</Typography.Heading>}
+      {amount && (
+        <Typography.Heading htmlTag={"div"}>{amount}</Typography.Heading>
+      )}
       {chip && (
         <div>
           <StatusChip text={chip.text} status={chip.status} />
