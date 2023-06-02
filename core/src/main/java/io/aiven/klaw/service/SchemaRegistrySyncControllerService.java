@@ -463,6 +463,9 @@ public class SchemaRegistrySyncControllerService {
         messageSchema.setSchemaversion(schemaVersion + "");
         messageSchema.setSchemafull((String) schemaObject.get(schemaVersion).get("schema"));
         messageSchema.setTeamId(teamId);
+        messageSchema.setSchemaId((Integer) schemaObject.get(schemaVersion).get("id"));
+        messageSchema.setCompatibility(
+            (String) schemaObject.get(schemaVersion).get("compatibility"));
         schemaList.add(messageSchema);
       }
 

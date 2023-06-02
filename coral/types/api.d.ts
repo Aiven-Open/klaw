@@ -63,6 +63,9 @@ export type paths = {
     get: operations["getSchemasOfEnvironment"];
     post: operations["updateSyncSchemas"];
   };
+  "/schemas/resetCache": {
+    post: operations["resetCacheClusterApi"];
+  };
   "/saveTopicDocumentation": {
     post: operations["saveTopicDocumentation"];
   };
@@ -625,6 +628,9 @@ export type components = {
       topicsSelectionType?: string;
       typeOfSync?: string;
       forceRegisterSchema?: boolean;
+    };
+    SchemaResetCache: {
+      kafkaEnvId?: string;
     };
     TopicInfo: {
       /** Format: int32 */
@@ -1846,6 +1852,21 @@ export type operations = {
     requestBody: {
       content: {
         "application/json": components["schemas"]["SyncSchemaUpdates"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  resetCacheClusterApi: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["SchemaResetCache"];
       };
     };
     responses: {
