@@ -35,7 +35,7 @@ import { TopicHistoryPage } from "src/app/pages/topics/details/history";
 import { TopicMessagesPage } from "src/app/pages/topics/details/messages";
 import { TopicSubscriptionsPage } from "src/app/pages/topics/details/subscriptions";
 import { TopicOverviewPage } from "src/app/pages/topics/details/overview";
-import { TopicDetailsSchemaPage } from "./pages/topics/details/schema";
+import { TopicDetailsSchemaPage } from "src/app/pages/topics/details/schema";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the

@@ -1,9 +1,4 @@
-import {
-  DataTable,
-  DataTableColumn,
-  EmptyState,
-  PageHeader,
-} from "@aivenio/aquarium";
+import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicOverview } from "src/domain/topic";
 
