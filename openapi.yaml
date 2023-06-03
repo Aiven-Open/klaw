@@ -638,6 +638,34 @@
         }
       }
     },
+    "/schemas/resetCache" : {
+      "post" : {
+        "tags" : [ "schema-registry-sync-controller" ],
+        "operationId" : "resetCacheClusterApi",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SchemaResetCache"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/saveTopicDocumentation" : {
       "post" : {
         "tags" : [ "topic-controller" ],
@@ -5582,6 +5610,13 @@
           },
           "forceRegisterSchema" : {
             "type" : "boolean"
+          }
+        }
+      },
+      "SchemaResetCache" : {
+        "properties" : {
+          "kafkaEnvId" : {
+            "type" : "string"
           }
         }
       },

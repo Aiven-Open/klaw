@@ -1056,3 +1056,16 @@ databaseChangeLog:
                     name: resettokengeneratedat
                     type: TIMESTAMP
               tableName: kwusers
+    - changeSet:
+        id: 01-06-2023 Columns to store schema id, compatibility
+        author: muralibasani
+        changes:
+          - addColumn:
+              columns:
+                - column:
+                    name: compatibility
+                    type: VARCHAR(40)
+                - column:
+                    name: schemaid
+                    type: INT
+              tableName: kwavroschemas

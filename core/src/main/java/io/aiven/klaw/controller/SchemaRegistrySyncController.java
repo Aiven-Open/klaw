@@ -1,6 +1,8 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SchemaResetCache;
 import io.aiven.klaw.model.SyncSchemaUpdates;
 import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
@@ -93,5 +95,15 @@ public class SchemaRegistrySyncController {
         schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
             source, topicName, schemaVersion, kafkaEnvId),
         HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/schemas/resetCache",
+      method = RequestMethod.POST,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> resetCacheClusterApi(
+      @RequestBody SchemaResetCache schemaResetCache) throws KlawException {
+    return new ResponseEntity<>(
+        schemaRegistrySyncControllerService.resetCacheClusterApi(schemaResetCache), HttpStatus.OK);
   }
 }

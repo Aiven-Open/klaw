@@ -92,13 +92,13 @@ public class SchemaService {
           "RegisterSchema on {} isForceRegisterEnabled {}",
           clusterSchemaRequest.getTopicName(),
           clusterSchemaRequest.isForceRegister());
+      schemaCompatibility =
+          getSubjectSchemaCompatibility(
+              clusterSchemaRequest.getEnv(),
+              clusterSchemaRequest.getTopicName(),
+              clusterSchemaRequest.getProtocol(),
+              clusterSchemaRequest.getClusterIdentification());
       if (clusterSchemaRequest.isForceRegister()) {
-        schemaCompatibility =
-            getSubjectSchemaCompatibility(
-                clusterSchemaRequest.getEnv(),
-                clusterSchemaRequest.getTopicName(),
-                clusterSchemaRequest.getProtocol(),
-                clusterSchemaRequest.getClusterIdentification());
         // Verify if schema compatibility is set on subject
         schemaCompatibilitySetOnSubject = checkIfSchemaCompatibilitySet(schemaCompatibility);
         log.debug(
@@ -119,6 +119,7 @@ public class SchemaService {
 
       RegisterSchemaCustomResponse registerSchemaCustomResponse =
           registerSchemaPostCall(clusterSchemaRequest);
+      registerSchemaCustomResponse.setCompatibility(schemaCompatibility);
 
       updateSchemaCache(
           clusterSchemaRequest.getEnv(),
@@ -779,5 +780,15 @@ public class SchemaService {
           SchemaCacheUpdateType.NONE,
           null);
     }
+  }
+
+  public ApiResponse resetCache(ClusterSchemaRequest clusterSchemaRequest) {
+    updateSchemaCache(
+        clusterSchemaRequest.getEnv(),
+        clusterSchemaRequest.getProtocol(),
+        clusterSchemaRequest.getClusterIdentification(),
+        SchemaCacheUpdateType.NONE,
+        null);
+    return ApiResponse.builder().success(true).build();
   }
 }

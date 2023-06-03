@@ -34,6 +34,7 @@ const CONTENT_TYPE_JSON = "application/json" as const;
 const API_BASE_URL = getHTTPBaseAPIUrl();
 
 const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
+  resetCacheClusterApi: "/schemas/resetCache",
   updateSyncSchemas: "/schemas",
   getSchemaOfTopicFromSource:
     "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",

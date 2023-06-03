@@ -13,6 +13,7 @@ import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.SchemaResetCache;
 import io.aiven.klaw.model.SyncSchemaUpdates;
 import io.aiven.klaw.model.cluster.SchemaInfoOfTopic;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
@@ -374,10 +375,15 @@ public class SchemaRegistrySyncControllerService {
             schemaRegistered = (Boolean) registerSchemaCustomResponse.get("schemaRegistered");
           }
           if (registerSchemaCustomResponse != null
-              && (registerSchemaCustomResponse.containsKey("id") && schemaRegistered)) {
+              && (registerSchemaCustomResponse.containsKey("id")
+                  && schemaRegistered
+                  && registerSchemaCustomResponse.containsKey("compatibility"))) {
 
             Integer schemaVersion = (Integer) registerSchemaCustomResponse.get("version");
             messageSchema.setSchemaversion(schemaVersion + "");
+            schemaRequest.setSchemaId((Integer) registerSchemaCustomResponse.get("id"));
+            schemaRequest.setCompatibility(
+                (String) registerSchemaCustomResponse.get("compatibility"));
             schemaListUpdated.add(messageSchema);
 
             logArray.add(
@@ -457,6 +463,9 @@ public class SchemaRegistrySyncControllerService {
         messageSchema.setSchemaversion(schemaVersion + "");
         messageSchema.setSchemafull((String) schemaObject.get(schemaVersion).get("schema"));
         messageSchema.setTeamId(teamId);
+        messageSchema.setSchemaId((Integer) schemaObject.get(schemaVersion).get("id"));
+        messageSchema.setCompatibility(
+            (String) schemaObject.get(schemaVersion).get("compatibility"));
         schemaList.add(messageSchema);
       }
 
@@ -572,5 +581,13 @@ public class SchemaRegistrySyncControllerService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  public ApiResponse resetCacheClusterApi(SchemaResetCache schemaResetCache) throws KlawException {
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+    ResponseEntity<ApiResponse> apiResponseResponseEntity =
+        clusterApiService.resetSchemaInfoCache(schemaResetCache.getKafkaEnvId(), tenantId);
+    return apiResponseResponseEntity.getBody();
   }
 }

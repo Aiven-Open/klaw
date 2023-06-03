@@ -198,6 +198,7 @@ public class SchemaRegistryControllerServiceTest {
     registerSchemaCustomResponse.put("schemaRegistered", true);
     registerSchemaCustomResponse.put("version", 1);
     registerSchemaCustomResponse.put("id", 1);
+    registerSchemaCustomResponse.put("compatibility", "BACKWARD");
 
     ApiResponse apiResponse =
         ApiResponse.builder()

@@ -825,14 +825,60 @@ public class ClusterApiService {
     return response;
   }
 
+  public ResponseEntity<ApiResponse> resetSchemaInfoCache(String kafkaEnvId, int tenantId)
+      throws KlawException {
+    log.info("resetSchemaInfoCache {}", kafkaEnvId);
+    getClusterApiProperties(tenantId);
+    ResponseEntity<ApiResponse> response =
+        new ResponseEntity<>(
+            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+
+    try {
+      String uri = clusterConnUrl + URI_SCHEMA_RESET_CACHE;
+      Env envSelected = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
+      if (envSelected.getAssociatedEnv() != null) {
+        // get associated schema env
+        Env schemaEnvSelected =
+            manageDatabase
+                .getHandleDbRequests()
+                .getEnvDetails(envSelected.getAssociatedEnv().getId(), tenantId);
+
+        KwClusters kwClusters =
+            manageDatabase
+                .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+                .get(schemaEnvSelected.getClusterId());
+        ClusterSchemaRequest clusterSchemaRequest =
+            ClusterSchemaRequest.builder()
+                .protocol(kwClusters.getProtocol())
+                .env(kwClusters.getBootstrapServers())
+                .clusterIdentification(kwClusters.getClusterName() + kwClusters.getClusterId())
+                .build();
+
+        HttpHeaders headers = createHeaders(clusterApiUser);
+        HttpEntity<ClusterSchemaRequest> request = new HttpEntity<>(clusterSchemaRequest, headers);
+        response = getRestTemplate().postForEntity(uri, request, ApiResponse.class);
+      }
+    } catch (Exception e) {
+      log.error("Error from resetCache ", e);
+      if (e.getMessage().contains(CLUSTER_API_ERR_120)
+          || e.getMessage().contains(CLUSTER_API_ERR_121)) {
+        return new ResponseEntity<>(
+            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      throw new KlawException(CLUSTER_API_ERR_111);
+    }
+
+    return response;
+  }
+
   ResponseEntity<ApiResponse> validateSchema(
       String fullSchema, String env, String topicName, int tenantId) throws KlawException {
     log.info("postSchema {} {}", topicName, env);
     getClusterApiProperties(tenantId);
     try {
-
       String uri = clusterConnUrl + URI_VALIDATE_SCHEMA;
-
       Env envSelected = manageDatabase.getHandleDbRequests().getEnvDetails(env, tenantId);
 
       KwClusters kwClusters =

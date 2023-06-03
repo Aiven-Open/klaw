@@ -7,7 +7,8 @@ import lombok.ToString;
 @Data
 @ToString
 public class RegisterSchemaCustomResponse implements Serializable {
-  Integer id;
-  Integer version;
-  boolean schemaRegistered;
+  private Integer id;
+  private Integer version;
+  private boolean schemaRegistered;
+  private String compatibility;
 }
