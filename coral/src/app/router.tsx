@@ -97,7 +97,7 @@ const routes: Array<RouteObject> = [
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
               TopicOverviewTabEnum.SETTINGS
             ],
-            element: <div>SETTINGS</div>,
+            element: <TopicSettings />,
             id: TopicOverviewTabEnum.SETTINGS,
           },
         ],
