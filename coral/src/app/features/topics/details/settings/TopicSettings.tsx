@@ -5,14 +5,35 @@ import {
   PageHeader,
   Typography,
 } from "@aivenio/aquarium";
+import { Dialog } from "src/app/components/Dialog";
+import { useState } from "react";
 
 function TopicSettings() {
-  function onDelete() {
+  const [showConfirmation, setShowConfirmation] = useState<boolean>(false);
+  function deleteTopic() {
     console.log("tbc");
   }
 
   return (
     <>
+      {showConfirmation && (
+        <Dialog
+          title={"Delete topic"}
+          primaryAction={{
+            text: "Delete topic",
+            onClick: deleteTopic,
+            loading: false,
+          }}
+          secondaryAction={{
+            text: "Cancel",
+            onClick: () => setShowConfirmation(false),
+            disabled: false,
+          }}
+          type={"danger"}
+        >
+          Are you sure you want to delete this topic?
+        </Dialog>
+      )}
       <PageHeader title={"Settings"} />
       <Typography.Subheading>Danger zone</Typography.Subheading>
       <BorderBox
@@ -32,7 +53,9 @@ function TopicSettings() {
           </Box>
         </div>
         <div>
-          <Button.Primary onClick={onDelete}>Delete topic</Button.Primary>
+          <Button.Primary onClick={() => setShowConfirmation(true)}>
+            Delete topic
+          </Button.Primary>
         </div>
       </BorderBox>
     </>
