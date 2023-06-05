@@ -180,7 +180,7 @@ public class SchemaRegistryController {
   /**
    * @param topicName Get schema of this topic
    * @param schemaVersionSearch Version of the schema if applicable
-   * @param kafkaEnvIds env ids of the topic where it exists
+   * @param kafkaEnvId env ids of the topic where it exists
    * @return SchemaOverview which contains schema and list of versions, compatibility, and promotion
    *     details
    */
@@ -191,9 +191,9 @@ public class SchemaRegistryController {
   public ResponseEntity<SchemaOverview> getSchemaOfTopic(
       @RequestParam(value = "topicName") String topicName,
       @RequestParam(value = "schemaVersionSearch", defaultValue = "0") int schemaVersionSearch,
-      @RequestParam(value = "kafkaEnvIds") List<String> kafkaEnvIds) {
+      @RequestParam(value = "kafkaEnvIds") String kafkaEnvId) {
     return new ResponseEntity<>(
-        schemaOverviewService.getSchemaOfTopic(topicName, schemaVersionSearch, kafkaEnvIds),
+        schemaOverviewService.getSchemaOfTopic(topicName, schemaVersionSearch, kafkaEnvId),
         HttpStatus.OK);
   }
 

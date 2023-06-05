@@ -289,10 +289,6 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
             method: "POST",
             url: "createTopicDeleteRequest",
             headers : { 'Content-Type' : 'application/json' },
-            params: {'topicName' : $scope.topicSelectedParam,
-                'env' : env,
-                'deleteAssociatedSchema' : deleteAssociatedSchema
-            },
             data: {'topicName' : $scope.topicSelectedParam,
                 'env' : env,
                 'deleteAssociatedSchema' : deleteAssociatedSchema
@@ -339,8 +335,6 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                                     method: "POST",
                                     url: "createClaimTopicRequest",
                                     headers : { 'Content-Type' : 'application/json' },
-                                    params: {'topicName' : $scope.topicSelectedParam,
-                                                               'env' : env},
                                     data: {'topicName' : $scope.topicSelectedParam,
                                                                'env' : env},
                                 }).success(function(output) {
@@ -430,22 +424,12 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 
     	}
 
-        $scope.onFirstSchemaPromote= function(schemaContent,allSchemaVersions){
+        $scope.onFirstSchemaPromote= function(schemaContent){
                   $scope.firstSchemaPromote = 'true';
                   $scope.firstSchemaEnvPromote = schemaContent.env;
                   $scope.schema = {};
                   $scope.schema.forceRegister = 'false';
-                  const schemaVersions = [];
-
-                // Add Latest to let the user know which schema version is the current latest schema version.
-                  allSchemaVersions[schemaContent.env].forEach(function(part, index) {
-                    schemaVersions[index] = this[index];
-                    if(this[index] === schemaContent.version) {
-                    schemaVersions[index] = schemaVersions[index] + " (latest)";
-                        }
-                  }, allSchemaVersions[schemaContent.env]);
-
-                  $scope.schemaVersions = schemaVersions;
+                  $scope.schemaVersions = $scope.allSchemaVersions;
 
                   //future will add check here if force promote is allowed based on setting in server config.
                   $scope.isForceRegisterAllowed = 'true';
@@ -714,12 +698,12 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 }
             }).success(function(output) {
                 $scope.ShowSpinnerStatusSchemas = false;
-                if(output.schemaDetails && output.schemaDetails.length > 0 ){
-                    $scope.schemaDetails = output.schemaDetails;
+                if(output.schemaDetailsPerEnv ){
+                    $scope.schemaDetails = output.schemaDetailsPerEnv;
                     $scope.schemaExists = output.schemaExists;
                     $scope.schemaPromotionDetails = output.schemaPromotionDetails;
                     $scope.allSchemaVersions = output.allSchemaVersions;
-                    $scope.displayedSchemaVersion = $scope.schemaDetails[0].version;
+                    $scope.displayedSchemaVersion = $scope.schemaDetails.version;
                 }
             }).error(
                 function(error)

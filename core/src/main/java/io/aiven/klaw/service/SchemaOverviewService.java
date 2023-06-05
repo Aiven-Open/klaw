@@ -29,7 +29,7 @@ public class SchemaOverviewService extends BaseOverviewService {
   }
 
   public SchemaOverview getSchemaOfTopic(
-      String topicNameSearch, int schemaVersionSearch, List<String> kafkaEnvIds) {
+      String topicNameSearch, int schemaVersionSearch, String kafkaEnvId) {
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
 
@@ -39,7 +39,7 @@ public class SchemaOverviewService extends BaseOverviewService {
     updateAvroSchema(
         topicNameSearch,
         schemaVersionSearch,
-        kafkaEnvIds,
+        kafkaEnvId,
         retrieveSchemas,
         schemaOverview,
         userName,
@@ -50,29 +50,27 @@ public class SchemaOverviewService extends BaseOverviewService {
   private void updateAvroSchema(
       String topicNameSearch,
       int schemaVersionSearch,
-      List<String> kafkaEnvIds,
+      String kafkaEnvId,
       boolean retrieveSchemas,
       SchemaOverview schemaOverview,
       String userName,
       int tenantId) {
     if (schemaOverview.isTopicExists() && retrieveSchemas) {
-      List<SchemaDetailsPerEnv> schemaDetails = new ArrayList<>();
-      schemaOverview.setSchemaDetails(schemaDetails);
-      Map<String, List<Integer>> schemaVersions = new HashMap<>();
+      SchemaDetailsPerEnv schemaDetailsPerEnv = new SchemaDetailsPerEnv();
+      List<Integer> schemaVersions = new ArrayList<>();
       schemaOverview.setAllSchemaVersions(schemaVersions);
-      schemaOverview.setLatestVersion(new HashMap<>());
 
-      List<Env> schemaEnvs = new ArrayList<>();
+      Env schemaEnv;
       // Get first base kafka env
-      Env kafkaEnv =
-          manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvIds.get(0), tenantId);
+      Env kafkaEnv = manageDatabase.getHandleDbRequests().getEnvDetails(kafkaEnvId, tenantId);
       EnvTag associatedSchemaEnv = kafkaEnv.getAssociatedEnv();
       if (associatedSchemaEnv != null) {
-        Env schemaEnv =
+        schemaEnv =
             manageDatabase
                 .getHandleDbRequests()
                 .getEnvDetails(associatedSchemaEnv.getId(), tenantId);
-        schemaEnvs.add(schemaEnv);
+      } else {
+        return;
       }
 
       List<Topic> topics =
@@ -85,125 +83,130 @@ public class SchemaOverviewService extends BaseOverviewService {
       Map<String, Object> hashMapSchemaObj;
       String schemaOfObj;
 
-      for (Env schemaEnv : schemaEnvs) {
-        try {
-          log.debug("UpdateAvroSchema - Process env {}", schemaEnv);
-          SchemaDetailsPerEnv schemaDetailsPerEnv = new SchemaDetailsPerEnv();
+      try {
+        log.debug("UpdateAvroSchema - Process env {}", schemaEnv);
 
-          KwClusters kwClusters =
-              manageDatabase
-                  .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
-                  .get(schemaEnv.getClusterId());
+        KwClusters kwClusters =
+            manageDatabase
+                .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+                .get(schemaEnv.getClusterId());
 
-          List<MessageSchema> topicSchemaVersionsInDb =
-              manageDatabase
-                  .getHandleDbRequests()
-                  .getSchemaForTenantAndEnvAndTopic(tenantId, schemaEnv.getId(), topicNameSearch);
-          boolean schemaUpdated = false;
-          if (!topicSchemaVersionsInDb.isEmpty()) {
-            schemaUpdated =
-                topicSchemaVersionsInDb.stream()
-                    .map(MessageSchema::getSchemaversion)
-                    .noneMatch(schemaVersion -> schemaVersion.contains("."));
+        List<MessageSchema> topicSchemaVersionsInDb =
+            manageDatabase
+                .getHandleDbRequests()
+                .getSchemaForTenantAndEnvAndTopic(tenantId, schemaEnv.getId(), topicNameSearch);
+        boolean schemaUpdated = false;
+        if (!topicSchemaVersionsInDb.isEmpty()) {
+          schemaUpdated =
+              topicSchemaVersionsInDb.stream()
+                  .map(MessageSchema::getSchemaversion)
+                  .noneMatch(schemaVersion -> schemaVersion.contains("."));
+        }
+
+        SortedMap<Integer, Map<String, Object>> schemaObjects = new TreeMap<>();
+        schemaObjects =
+            getSchemasMap(
+                topicNameSearch,
+                tenantId,
+                kwClusters,
+                topicSchemaVersionsInDb,
+                schemaUpdated,
+                schemaObjects);
+
+        // If the schemaObject is null ie does not exist do not try to manipulate it.
+        if (schemaObjects != null && !schemaObjects.isEmpty()) {
+          Set<Integer> allVersions = schemaObjects.keySet();
+          List<Integer> allVersionsList = new ArrayList<>(allVersions);
+          allVersionsList.sort(Collections.reverseOrder());
+          Integer latestSchemaVersion = allVersionsList.get(0);
+          schemaOverview.setLatestVersion(latestSchemaVersion);
+
+          schemaOverview.getAllSchemaVersions().addAll(allVersionsList);
+          try {
+            if (latestSchemaVersion == schemaVersionSearch) {
+              schemaVersionSearch = 0;
+            }
+          } catch (NumberFormatException ignored) {
           }
 
-          SortedMap<Integer, Map<String, Object>> schemaObjects = new TreeMap<>();
-          schemaObjects =
-              getSchemasMap(
-                  topicNameSearch,
-                  tenantId,
-                  kwClusters,
-                  topicSchemaVersionsInDb,
-                  schemaUpdated,
-                  schemaObjects);
+          // get latest version
+          if (schemaVersionSearch == 0) {
+            hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
+            schemaOfObj = (String) hashMapSchemaObj.get("schema");
+            schemaDetailsPerEnv.setLatest(true);
+            updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
+            schemaDetailsPerEnv.setVersion(latestSchemaVersion);
 
-          // If the schemaObject is null ie does not exist do not try to manipulate it.
-          if (schemaObjects != null && !schemaObjects.isEmpty()) {
-            Set<Integer> allVersions = schemaObjects.keySet();
-            List<Integer> allVersionsList = new ArrayList<>(allVersions);
-            allVersionsList.sort(Collections.reverseOrder());
-            Integer latestSchemaVersion = allVersionsList.get(0);
-            schemaOverview.getLatestVersion().put(schemaEnv.getName(), latestSchemaVersion);
-
-            schemaOverview.getAllSchemaVersions().put(schemaEnv.getName(), allVersionsList);
-            try {
-              if (latestSchemaVersion == schemaVersionSearch) {
-                schemaVersionSearch = 0;
-              }
-            } catch (NumberFormatException ignored) {
+            if (schemaObjects.size() > 1) {
+              schemaDetailsPerEnv.setShowNext(true);
+              schemaDetailsPerEnv.setShowPrev(false);
+              int indexOfVersion = allVersionsList.indexOf(latestSchemaVersion);
+              schemaDetailsPerEnv.setNextVersion(allVersionsList.get(indexOfVersion + 1));
             }
+          } else {
+            hashMapSchemaObj = schemaObjects.get(schemaVersionSearch);
+            schemaOfObj = (String) hashMapSchemaObj.get("schema");
+            schemaDetailsPerEnv.setLatest(false);
+            updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
+            schemaDetailsPerEnv.setVersion(schemaVersionSearch);
 
-            // get latest version
-            if (schemaVersionSearch == 0) {
-              hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
-              schemaOfObj = (String) hashMapSchemaObj.get("schema");
-              schemaDetailsPerEnv.setLatest(true);
-              schemaDetailsPerEnv.setId((Integer) hashMapSchemaObj.get("id"));
-              schemaDetailsPerEnv.setCompatibility(hashMapSchemaObj.get("compatibility") + "");
-              schemaDetailsPerEnv.setVersion(latestSchemaVersion);
-
-              if (schemaObjects.size() > 1) {
+            if (schemaObjects.size() > 1) {
+              int indexOfVersion = allVersionsList.indexOf(schemaVersionSearch);
+              if (indexOfVersion + 1 == allVersionsList.size()) {
+                schemaDetailsPerEnv.setShowNext(false);
+                schemaDetailsPerEnv.setShowPrev(true);
+                schemaDetailsPerEnv.setPrevVersion(allVersionsList.get(indexOfVersion - 1));
+              } else {
                 schemaDetailsPerEnv.setShowNext(true);
-                schemaDetailsPerEnv.setShowPrev(false);
-                int indexOfVersion = allVersionsList.indexOf(latestSchemaVersion);
+                schemaDetailsPerEnv.setShowPrev(true);
+                schemaDetailsPerEnv.setPrevVersion(allVersionsList.get(indexOfVersion - 1));
                 schemaDetailsPerEnv.setNextVersion(allVersionsList.get(indexOfVersion + 1));
               }
-            } else {
-              hashMapSchemaObj = schemaObjects.get(schemaVersionSearch);
-              schemaOfObj = (String) hashMapSchemaObj.get("schema");
-              schemaDetailsPerEnv.setLatest(false);
-              if (hashMapSchemaObj.containsKey("id")) {
-                schemaDetailsPerEnv.setId((Integer) hashMapSchemaObj.get("id"));
-              }
-              if (hashMapSchemaObj.containsKey("compatibility")) {
-                schemaDetailsPerEnv.setCompatibility(hashMapSchemaObj.get("compatibility") + "");
-              }
-              schemaDetailsPerEnv.setVersion(schemaVersionSearch);
-
-              if (schemaObjects.size() > 1) {
-                int indexOfVersion = allVersionsList.indexOf(schemaVersionSearch);
-                if (indexOfVersion + 1 == allVersionsList.size()) {
-                  schemaDetailsPerEnv.setShowNext(false);
-                  schemaDetailsPerEnv.setShowPrev(true);
-                  schemaDetailsPerEnv.setPrevVersion(allVersionsList.get(indexOfVersion - 1));
-                } else {
-                  schemaDetailsPerEnv.setShowNext(true);
-                  schemaDetailsPerEnv.setShowPrev(true);
-                  schemaDetailsPerEnv.setPrevVersion(allVersionsList.get(indexOfVersion - 1));
-                  schemaDetailsPerEnv.setNextVersion(allVersionsList.get(indexOfVersion + 1));
-                }
-              }
-            }
-
-            schemaDetailsPerEnv.setEnv(schemaEnv.getName());
-            dynamicObj = OBJECT_MAPPER.readValue(schemaOfObj, Object.class);
-            schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
-            schemaDetailsPerEnv.setContent(schemaOfObj);
-
-            schemaDetails.add(schemaDetailsPerEnv);
-            schemaOverview.setSchemaExists(true);
-            // A team owns a topic across all environments so we can assume if the search returned
-            // one or more topics it is owned by this users team.
-            if (topics.size() > 0) {
-
-              // Set Promotion Details
-              processSchemaPromotionDetails(
-                  schemaOverview,
-                  tenantId,
-                  schemaEnv,
-                  topics.stream().map(Topic::getEnvironment).toList());
-              log.info("Getting schema details for: " + topicNameSearch);
             }
           }
-        } catch (Exception e) {
-          log.error("Error ", e);
+
+          schemaDetailsPerEnv.setEnv(schemaEnv.getName());
+          dynamicObj = OBJECT_MAPPER.readValue(schemaOfObj, Object.class);
+          schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
+          schemaDetailsPerEnv.setContent(schemaOfObj);
+
+          //            schemaDetails.add(schemaDetailsPerEnv);
+          schemaOverview.setSchemaExists(true);
+          // A team owns a topic across all environments so we can assume if the search returned
+          // one or more topics it is owned by this users team.
+          if (topics.size() > 0) {
+
+            // Set Promotion Details
+            processSchemaPromotionDetails(
+                schemaOverview,
+                tenantId,
+                schemaEnv,
+                topics.stream().map(Topic::getEnvironment).toList());
+            log.info("Getting schema details for: " + topicNameSearch);
+          }
         }
+      } catch (Exception e) {
+        log.error("Error ", e);
       }
 
       if (schemaOverview.isSchemaExists()) {
-        log.debug("SchemaDetails {}", schemaDetails);
-        schemaOverview.setSchemaDetails(schemaDetails);
+        log.debug("SchemaDetails {}", schemaDetailsPerEnv);
+        schemaOverview.setSchemaDetailsPerEnv(schemaDetailsPerEnv);
       }
+    }
+  }
+
+  private static void updateIdAndCompatibility(
+      SchemaDetailsPerEnv schemaDetailsPerEnv, Map<String, Object> hashMapSchemaObj) {
+    if (hashMapSchemaObj.containsKey("id") && hashMapSchemaObj.get("id") != null) {
+      schemaDetailsPerEnv.setId((Integer) hashMapSchemaObj.get("id"));
+    }
+
+    if (hashMapSchemaObj.containsKey("compatibility")
+        && hashMapSchemaObj.get("compatibility") != null) {
+      schemaDetailsPerEnv.setCompatibility(hashMapSchemaObj.get("compatibility") + "");
+    } else {
+      schemaDetailsPerEnv.setCompatibility("Couldn't retrieve");
     }
   }
 

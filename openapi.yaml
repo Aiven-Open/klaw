@@ -1689,29 +1689,16 @@
       "post" : {
         "tags" : [ "topic-controller" ],
         "operationId" : "createTopicDeleteRequest",
-        "parameters" : [ {
-          "name" : "topicName",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "env",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "deleteAssociatedSchema",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "boolean",
-            "default" : false
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TopicRequestModelOtherTypes"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -1819,21 +1806,16 @@
       "post" : {
         "tags" : [ "topic-controller" ],
         "operationId" : "createClaimTopicRequest",
-        "parameters" : [ {
-          "name" : "topicName",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "env",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TopicRequestModelOtherTypes"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -3580,10 +3562,7 @@
           "in" : "query",
           "required" : true,
           "schema" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
+            "type" : "string"
           }
         } ],
         "responses" : {
@@ -5909,6 +5888,20 @@
         },
         "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
       },
+      "TopicRequestModelOtherTypes" : {
+        "properties" : {
+          "topicName" : {
+            "type" : "string"
+          },
+          "env" : {
+            "type" : "string"
+          },
+          "deleteAssociatedSchema" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "env", "topicName" ]
+      },
       "DeleteAclRequestModel" : {
         "properties" : {
           "requestId" : {
@@ -7566,21 +7559,15 @@
             "type" : "boolean"
           },
           "allSchemaVersions" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "array",
-              "items" : {
-                "type" : "integer",
-                "format" : "int32"
-              }
-            }
-          },
-          "latestVersion" : {
-            "type" : "object",
-            "additionalProperties" : {
+            "type" : "array",
+            "items" : {
               "type" : "integer",
               "format" : "int32"
             }
+          },
+          "latestVersion" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "schemaPromotionDetails" : {
             "type" : "object",
@@ -7588,11 +7575,8 @@
               "$ref" : "#/components/schemas/PromotionStatus"
             }
           },
-          "schemaDetails" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/SchemaDetailsPerEnv"
-            }
+          "schemaDetailsPerEnv" : {
+            "$ref" : "#/components/schemas/SchemaDetailsPerEnv"
           }
         },
         "required" : [ "prefixAclsExists", "schemaExists", "topicExists", "txnAclsExists" ]

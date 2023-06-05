@@ -21,7 +21,6 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.response.SchemaOverview;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -92,8 +91,7 @@ public class SchemaOverviewServiceTest {
 
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3");
 
-    SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, Collections.singletonList("1"));
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getStatus())
@@ -112,8 +110,7 @@ public class SchemaOverviewServiceTest {
     when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
             eq(TESTTOPIC), eq(10), eq(101)))
         .thenReturn(List.of(createTopic(TESTTOPIC, "1"), createTopic(TESTTOPIC, "2")));
-    SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, List.of("1"));
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getStatus())
@@ -131,8 +128,7 @@ public class SchemaOverviewServiceTest {
 
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("1");
 
-    SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 3, Collections.singletonList("1"));
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 3, "1");
     assertThat(returnedValue.getSchemaPromotionDetails()).isNullOrEmpty();
     assertThat(returnedValue.isSchemaExists()).isFalse();
   }
@@ -150,8 +146,7 @@ public class SchemaOverviewServiceTest {
     when(commonUtilsService.getTeamId(anyString())).thenReturn(8);
     when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
         .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
-    SchemaOverview returnedValue =
-        schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, Collections.singletonList("1"));
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
   }

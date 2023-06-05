@@ -27,6 +27,7 @@ import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.requests.TopicRequestModelOtherTypes;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
@@ -899,16 +900,19 @@ public class TopicAclControllerIT {
   @Order(27)
   public void createDeleteTopicRequest() throws Exception {
     String topicName = createAndApproveTopic(topicId3, false);
+    TopicRequestModelOtherTypes topicRequestModelOtherTypes = new TopicRequestModelOtherTypes();
+    topicRequestModelOtherTypes.setTopicName(topicName);
+    topicRequestModelOtherTypes.setEnv("1");
+    topicRequestModelOtherTypes.setDeleteAssociatedSchema(true);
+
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(topicRequestModelOtherTypes);
 
     // create topic delete request
     String response =
         mvc.perform(
                 MockMvcRequestBuilders.post("/createTopicDeleteRequest")
                     .with(user(user1).password(PASSWORD).roles("USER"))
-                    .param("topicName", topicName)
-                    .param("env", "1")
-                    .param("deleteAssociatedSchema", "true")
-                    .param("order", "DESC_REQUESTED_TIME")
+                    .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
