@@ -133,6 +133,14 @@ describe("TopicHistory", () => {
       cleanup();
     });
 
+    it("shows the page header headline", () => {
+      const headline = screen.getByRole("heading", {
+        name: "History",
+      });
+
+      expect(headline).toBeVisible();
+    });
+
     it("shows a headline informing user about missing history", () => {
       const headline = screen.getByRole("heading", {
         name: "No Topic history",
@@ -171,6 +179,14 @@ describe("TopicHistory", () => {
     afterAll(() => {
       jest.clearAllMocks();
       cleanup();
+    });
+
+    it("shows the page header headline", () => {
+      const headline = screen.getByRole("heading", {
+        name: "History",
+      });
+
+      expect(headline).toBeVisible();
     });
 
     it("shows a table for topics history", () => {

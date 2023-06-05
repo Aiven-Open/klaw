@@ -1,4 +1,9 @@
-import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
+import {
+  DataTable,
+  DataTableColumn,
+  EmptyState,
+  PageHeader,
+} from "@aivenio/aquarium";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicOverview } from "src/domain/topic";
 
@@ -62,21 +67,23 @@ function TopicHistory() {
       };
     }) || [];
 
-  if (!rows.length) {
-    return (
-      <EmptyState title="No Topic history">
-        This Topic contains no history.
-      </EmptyState>
-    );
-  }
-
   return (
-    <DataTable
-      ariaLabel={"Topic history"}
-      columns={columns}
-      rows={rows}
-      noWrap={false}
-    />
+    <>
+      <PageHeader title={"History"} />
+      {!rows.length && (
+        <EmptyState title="No Topic history">
+          This Topic contains no history.
+        </EmptyState>
+      )}
+      {rows.length && (
+        <DataTable
+          ariaLabel={"Topic history"}
+          columns={columns}
+          rows={rows}
+          noWrap={false}
+        />
+      )}
+    </>
   );
 }
 
