@@ -772,7 +772,14 @@ public class AclControllerService {
   private ResponseEntity<ApiResponse> invokeClusterApiAclRequest(int tenantId, AclRequests aclReq)
       throws KlawException {
     ResponseEntity<ApiResponse> response = null;
+
+    if (aclReq.getAcl_ssl() != null && aclReq.getAcl_ssl().length() > 0) {
+      aclReq.setAclIpPrincipleType(AclIPPrincipleType.PRINCIPAL);
+    } else {
+      aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+    }
     AclIPPrincipleType aclIPPrincipleType = aclReq.getAclIpPrincipleType();
+
     switch (aclIPPrincipleType) {
       case IP_ADDRESS -> {
         String[] aclListIp = aclReq.getAcl_ip().split(SEPARATOR_ACL);
