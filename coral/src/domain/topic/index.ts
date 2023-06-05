@@ -2,6 +2,7 @@ import {
   getTopicNames,
   getTopics,
   getTopicTeam,
+  deleteTopic,
 } from "src/domain/topic/topic-api";
 import {
   Topic,
@@ -22,4 +23,4 @@ export type {
   TopicRequestStatus,
   TopicOverview,
 };
-export { getTopics, getTopicNames, getTopicTeam };
+export { getTopics, getTopicNames, getTopicTeam, deleteTopic };
