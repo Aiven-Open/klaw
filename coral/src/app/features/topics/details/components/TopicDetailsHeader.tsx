@@ -1,7 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import { Box, Button, NativeSelect, Option } from "@aivenio/aquarium";
+import {
+  Box,
+  Button,
+  Icon,
+  NativeSelectBase,
+  Option,
+  Typography,
+} from "@aivenio/aquarium";
 import { EnvironmentInfo } from "src/domain/environment";
 import { Dispatch, SetStateAction } from "react";
+import database from "@aivenio/aquarium/dist/src/icons/database";
 
 type TopicOverviewHeaderProps = {
   topicName: string;
@@ -28,6 +36,7 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
       flexDirection={"row"}
       alignItems={"start"}
       justifyContent={"space-between"}
+      marginBottom={"l2"}
     >
       <Box
         display={"flex"}
@@ -35,22 +44,17 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
         alignItems={"center"}
         colGap={"l2"}
       >
-        {/* @ TODO NativeSelect has a <p></p> without content that takes */}
-        {/* space (placeholder for error messages). To align headline */}
-        {/* and select visually centered, we need to set fixed heights and */}
-        {/* margins to the other elements. WAIT until design is cleared */}
-        {/* to avoid unnecessary work! */}
-        <h1>{topicName}</h1>
+        <Typography.Heading>{topicName}</Typography.Heading>
 
-        <Box width={"l6"} height={"l5"}>
+        <Box width={"l6"}>
           {!environments && (
-            <NativeSelect
+            <NativeSelectBase
               placeholder={"Loading"}
               disabled={true}
-            ></NativeSelect>
+            ></NativeSelectBase>
           )}
           {environments && topicExists && (
-            <NativeSelect
+            <NativeSelectBase
               aria-label={"Select environment"}
               value={environmentId || environments[0]?.id}
               onChange={(event) => {
@@ -74,9 +78,21 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
                     </Option>
                   );
                 })}
-            </NativeSelect>
+            </NativeSelectBase>
           )}
         </Box>
+
+        {topicExists && environments && environments.length > 0 && (
+          <Box display={"flex"} alignItems={"center"} colGap={"2"}>
+            <Typography.SmallTextBold color={"grey-40"}>
+              <Icon icon={database} />
+            </Typography.SmallTextBold>
+            <Typography.SmallTextBold color={"grey-40"}>
+              {environments.length}{" "}
+              {environments.length === 1 ? "Environment" : "Environments"}
+            </Typography.SmallTextBold>
+          </Box>
+        )}
       </Box>
       <Button.Primary
         disabled={!topicExists}

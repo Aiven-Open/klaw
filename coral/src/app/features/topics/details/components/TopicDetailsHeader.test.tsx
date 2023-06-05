@@ -45,6 +45,14 @@ describe("TopicDetailsHeader", () => {
 
       expect(select).toHaveAttribute("placeholder", "Loading");
     });
+
+    it("shows no information about amount of environments", () => {
+      const environmentAmountInfo = screen.queryByText("Environment", {
+        exact: false,
+      });
+
+      expect(environmentAmountInfo).not.toBeInTheDocument();
+    });
   });
 
   describe("handles a non existent topic", () => {
@@ -64,6 +72,14 @@ describe("TopicDetailsHeader", () => {
       const button = screen.getByRole("button", { name: "Edit topic" });
 
       expect(button).toBeDisabled();
+    });
+
+    it("shows no information about amount of environments", () => {
+      const environmentAmountInfo = screen.queryByText("Environment", {
+        exact: false,
+      });
+
+      expect(environmentAmountInfo).not.toBeInTheDocument();
     });
   });
 
@@ -107,6 +123,12 @@ describe("TopicDetailsHeader", () => {
       expect(options[0]).toHaveTextContent(testEnvironments[0].name);
       expect(options[1]).toHaveValue(testEnvironments[1].id);
       expect(options[1]).toHaveTextContent(testEnvironments[1].name);
+    });
+
+    it("shows information about the amount of environments", () => {
+      const info = screen.getByText(`${testEnvironments.length} Environments`);
+
+      expect(info).toBeVisible();
     });
 
     it("shows a button to edit the topic", () => {
