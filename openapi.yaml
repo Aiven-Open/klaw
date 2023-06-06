@@ -1693,7 +1693,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/TopicRequestModelOtherTypes"
+                "$ref" : "#/components/schemas/TopicDeleteRequestModel"
               }
             }
           },
@@ -1810,7 +1810,7 @@
           "content" : {
             "application/json" : {
               "schema" : {
-                "$ref" : "#/components/schemas/TopicRequestModelOtherTypes"
+                "$ref" : "#/components/schemas/TopicClaimRequestModel"
               }
             }
           },
@@ -3558,7 +3558,7 @@
             "default" : 0
           }
         }, {
-          "name" : "kafkaEnvIds",
+          "name" : "kafkaEnvId",
           "in" : "query",
           "required" : true,
           "schema" : {
@@ -5888,7 +5888,7 @@
         },
         "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
       },
-      "TopicRequestModelOtherTypes" : {
+      "TopicDeleteRequestModel" : {
         "properties" : {
           "topicName" : {
             "type" : "string"
@@ -5900,7 +5900,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "env", "topicName" ]
+        "required" : [ "deleteAssociatedSchema", "env", "topicName" ]
       },
       "DeleteAclRequestModel" : {
         "properties" : {
@@ -5948,6 +5948,17 @@
           }
         },
         "required" : [ "connectorConfig", "connectorName", "description", "environment", "requestOperationType" ]
+      },
+      "TopicClaimRequestModel" : {
+        "properties" : {
+          "topicName" : {
+            "type" : "string"
+          },
+          "env" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "env", "topicName" ]
       },
       "AclRequestsModel" : {
         "properties" : {
