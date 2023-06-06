@@ -39,6 +39,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -81,6 +82,8 @@ public class UtilControllerService {
   private Map<String, String> registration;
 
   @Autowired private ConfigurableApplicationContext context;
+
+  private Boolean isCoralBuilt;
 
   public DashboardStats getDashboardStats() {
     log.debug("getDashboardInfo");
@@ -611,10 +614,25 @@ public class UtilControllerService {
       authenticationInfo.setAddDeleteEditEnvs(addDeleteEditEnvs);
 
       // coral attributes
-      authenticationInfo.setCoralEnabled(Boolean.toString(coralEnabled));
+      authenticationInfo.setCoralEnabled(Boolean.toString(coralEnabled && isCoralBuilt()));
 
       return authenticationInfo;
     } else return null;
+  }
+
+  private boolean isCoralBuilt() {
+
+    if (isCoralBuilt == null) {
+      ClassPathResource file =
+          new ClassPathResource(
+              "classpath:templates/coral/index.html", this.getClass().getClassLoader());
+      if (file != null) {
+        isCoralBuilt = Boolean.valueOf(file.exists());
+      } else {
+        isCoralBuilt = Boolean.valueOf(false);
+      }
+    }
+    return isCoralBuilt.booleanValue();
   }
 
   public void getLogoutPage(HttpServletRequest request, HttpServletResponse response) {
