@@ -21,9 +21,11 @@ import {
 import api, { API_PATHS } from "src/services/api";
 import { convertQueryValuesToString } from "src/services/api-helper";
 import {
+  KlawApiModel,
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
+  ResolveIntersectionTypes,
 } from "types/utils";
 
 const getTopics = async (
@@ -215,26 +217,27 @@ const deleteTopicRequest = ({
   });
 };
 
-const deleteTopic = (
-  queryParams: KlawApiRequestQueryParameters<"createTopicDeleteRequest">
-) => {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore (complains bc. of the boolean, although URLSearchParams works fine with that)
-  const url = `${API_PATHS.createTopicDeleteRequest}?${new URLSearchParams(
-    convertQueryValuesToString(queryParams)
-  )}`;
-  console.log(url);
+type DeleteTopicParams = ResolveIntersectionTypes<
+  KlawApiModel<"TopicDeleteRequestModel"> & {
+    remark?: string;
+  }
+>;
+
+const deleteTopic = (params: DeleteTopicParams) => {
+  console.log("params", params);
+  const paramToPass: KlawApiModel<"TopicDeleteRequestModel"> = {
+    deleteAssociatedSchema: params.deleteAssociatedSchema,
+    env: params.env,
+    topicName: params.topicName,
+  };
+  console.log("paramToPass", paramToPass);
+
+  return Promise.resolve({ success: true });
+
   return api.post<
     KlawApiResponse<"createTopicDeleteRequest">,
-    KlawApiRequestQueryParameters<"createTopicDeleteRequest">
-    // createTopicDeleteRequest is a post request, but takes
-    // query params instead of data via body
-    // Will be updated in a different PR from backend, so this
-    // is only added to work and test this view for now, will
-    // be updated after BE change is merged
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
-  >(url, {});
+    KlawApiModel<"TopicDeleteRequestModel">
+  >(API_PATHS.createTopicDeleteRequest, paramToPass);
 };
 
 const getTopicOverview = ({
