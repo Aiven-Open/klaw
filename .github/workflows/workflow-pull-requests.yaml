@@ -1,0 +1,63 @@
+# This workflow is called for every pull request regardless which branch its targets
+#
+# 'coral-workflow' runs the jobs for coral when
+# - a PR is opened, synchronize, or reopened
+# - & there are changes inside `coral` directory
+# -> it does _not_ differentiate between a PR that is ready for review or a draft
+#
+# 'coral-workflow' runs the jobs for coral when
+# - a PR is opened, synchronize, or reopened
+# - & there are changes detected in the directories cluster-api and core
+#     the file pom.xml
+# - & the PR is not in DRAFT status
+# - OR the PR is in draft status, but was marked as "Ready for review"
+name: Pull Request pipeline
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changes-maven: ${{ steps.check-changed-dirs.outputs.changes-maven }}
+      changes-coral: ${{ steps.check-changed-dirs.outputs.changes-coral }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - id: check-changed-dirs
+        name: Check directories of changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q '^coral/'; then
+            echo "Changes detected in coral directory 🪸"
+            echo "changes-coral=true" >> $GITHUB_OUTPUT
+          fi
+          if git diff --name-only HEAD^ HEAD | grep -qE '^cluster-api/|^core/|^pom.xml$'; then
+            echo "Changes detected for cluster-api/core or pom.xml"
+            echo "changes-maven=true" >> $GITHUB_OUTPUT
+          fi
+
+
+  run-maven-jobs:
+    needs: check-changes
+    # the condition makes sure that changes on a draft PR do not trigger the job, except it's a "ready_for_review" event
+    # in that case, the job will only run if there are actual changes relevant to maven
+    if: (github.event.pull_request.draft == false || github.event.action == 'ready_for_review') && needs.check-changes.outputs.changes-maven == 'true'
+    uses: ./.github/workflows/jobs-maven.yaml
+
+  run-coral-jobs:
+    needs: check-changes
+    # since we're triggering the workflow for the "ready_for_review" event to avoid
+    # the maven jobs to run on a draft, this condition makes sure that the coral jobs
+    # are not triggered for "ready_for_review" as they are already running on drafts
+    # so the "ready_for_review" event is not relevant here.
+    # it also makes sure to only run the jobs when there are changes on the branch
+    # that relate to coral
+    if: needs.check-changes.outputs.changes-coral == 'true' && github.event.action != 'ready_for_review'
+    uses: ./.github/workflows/jobs-coral.yaml
