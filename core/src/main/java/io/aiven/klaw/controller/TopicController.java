@@ -8,8 +8,9 @@ import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.TopicClaimRequestModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
-import io.aiven.klaw.model.requests.TopicRequestModelOtherTypes;
+import io.aiven.klaw.model.requests.TopicDeleteRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
@@ -61,7 +62,7 @@ public class TopicController {
       value = "/createTopicDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createTopicDeleteRequest(
-      @Valid @RequestBody TopicRequestModelOtherTypes deleteRequestModel)
+      @Valid @RequestBody TopicDeleteRequestModel deleteRequestModel)
       throws KlawException, KlawNotAuthorizedException {
     return new ResponseEntity<>(
         topicControllerService.createTopicDeleteRequest(
@@ -75,7 +76,7 @@ public class TopicController {
       value = "/createClaimTopicRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createClaimTopicRequest(
-      @Valid @RequestBody TopicRequestModelOtherTypes claimRequestModel) throws KlawException {
+      @Valid @RequestBody TopicClaimRequestModel claimRequestModel) throws KlawException {
     return new ResponseEntity<>(
         topicControllerService.createClaimTopicRequest(
             claimRequestModel.getTopicName(), claimRequestModel.getEnv()),

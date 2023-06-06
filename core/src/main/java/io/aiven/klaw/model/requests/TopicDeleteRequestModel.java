@@ -4,10 +4,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class TopicRequestModelOtherTypes {
+public class TopicDeleteRequestModel {
   @NotNull private String topicName;
 
   @NotNull private String env;
 
-  private boolean deleteAssociatedSchema;
+  @NotNull private boolean deleteAssociatedSchema;
 }

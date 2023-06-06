@@ -26,8 +26,8 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
+import io.aiven.klaw.model.requests.TopicDeleteRequestModel;
 import io.aiven.klaw.model.requests.TopicRequestModel;
-import io.aiven.klaw.model.requests.TopicRequestModelOtherTypes;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
@@ -900,12 +900,12 @@ public class TopicAclControllerIT {
   @Order(27)
   public void createDeleteTopicRequest() throws Exception {
     String topicName = createAndApproveTopic(topicId3, false);
-    TopicRequestModelOtherTypes topicRequestModelOtherTypes = new TopicRequestModelOtherTypes();
-    topicRequestModelOtherTypes.setTopicName(topicName);
-    topicRequestModelOtherTypes.setEnv("1");
-    topicRequestModelOtherTypes.setDeleteAssociatedSchema(true);
+    TopicDeleteRequestModel topicDeleteRequestModel = new TopicDeleteRequestModel();
+    topicDeleteRequestModel.setTopicName(topicName);
+    topicDeleteRequestModel.setEnv("1");
+    topicDeleteRequestModel.setDeleteAssociatedSchema(true);
 
-    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(topicRequestModelOtherTypes);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(topicDeleteRequestModel);
 
     // create topic delete request
     String response =

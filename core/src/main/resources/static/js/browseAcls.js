@@ -694,7 +694,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'topicName' : $scope.topicSelectedParam,
                     'schemaVersionSearch' : $scope.newSchemaVersion,
-                    'kafkaEnvIds' : $scope.topicOverviewEnvId
+                    'kafkaEnvId' : $scope.topicOverviewEnvId
                 }
             }).success(function(output) {
                 $scope.ShowSpinnerStatusSchemas = false;

@@ -191,7 +191,7 @@ public class SchemaRegistryController {
   public ResponseEntity<SchemaOverview> getSchemaOfTopic(
       @RequestParam(value = "topicName") String topicName,
       @RequestParam(value = "schemaVersionSearch", defaultValue = "0") int schemaVersionSearch,
-      @RequestParam(value = "kafkaEnvIds") String kafkaEnvId) {
+      @RequestParam(value = "kafkaEnvId") String kafkaEnvId) {
     return new ResponseEntity<>(
         schemaOverviewService.getSchemaOfTopic(topicName, schemaVersionSearch, kafkaEnvId),
         HttpStatus.OK);
