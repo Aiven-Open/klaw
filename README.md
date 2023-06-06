@@ -109,6 +109,14 @@ For the versions available, see the [tags on this repository](https://github.com
 - Technical documentation for contributors:
   - general documentation: [`./docs`](./docs)
   - specific documentation for the React app `coral`: [`./coral/docs`](./coral/docs)
+- [Contribute to improving the Klaw documentation here](https://github.com/aiven/klaw-docs)
+
+## Questions and Answers
+We encourage everyone to ask question, if you have a question someone else definitely does too.
+- [Klaw Community Support](https://aiven.io/community/forum/c/open-source/12)
+- [Klaw GitHub discussions](https://github.com/aiven/klaw/discussions)
+
+The Klaw team will cross post questions and answers across both forums. The Klaw Community Support forum, which is hosted and supported by Aiven directly, has more visibility for other interested parties, so  we would encourage questions to be asked there. We will respond and answer questions in both GitHub discussions and the Community Forum.
 
 ## Install
 
