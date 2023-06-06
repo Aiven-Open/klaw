@@ -232,6 +232,12 @@ public class AclSyncControllerService {
       aclReq.setRequestor(userName);
       aclReq.setTenantId(tenantId);
 
+      if (aclReq.getAcl_ssl() != null && aclReq.getAcl_ssl().length() > 0) {
+        aclReq.setAclIpPrincipleType(AclIPPrincipleType.PRINCIPAL);
+      } else {
+        aclReq.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
+      }
+
       ResponseEntity<ApiResponse> response = clusterApiService.approveAclRequests(aclReq, tenantId);
 
       ApiResponse responseBody = response.getBody();

@@ -729,6 +729,11 @@ export type components = {
       deleteAssociatedSchema?: boolean;
       otherParams?: string;
     };
+    TopicDeleteRequestModel: {
+      topicName: string;
+      env: string;
+      deleteAssociatedSchema: boolean;
+    };
     DeleteAclRequestModel: {
       requestId: string;
     };
@@ -745,6 +750,10 @@ export type components = {
       /** Format: int32 */
       teamId?: number;
       otherParams?: string;
+    };
+    TopicClaimRequestModel: {
+      topicName: string;
+      env: string;
     };
     AclRequestsModel: {
       /** @enum {string} */
@@ -1290,16 +1299,13 @@ export type components = {
       schemaExists: boolean;
       prefixAclsExists: boolean;
       txnAclsExists: boolean;
-      allSchemaVersions?: {
-        [key: string]: (number)[] | undefined;
-      };
-      latestVersion?: {
-        [key: string]: number | undefined;
-      };
+      allSchemaVersions?: (number)[];
+      /** Format: int32 */
+      latestVersion?: number;
       schemaPromotionDetails?: {
         [key: string]: components["schemas"]["PromotionStatus"] | undefined;
       };
-      schemaDetails?: (components["schemas"]["SchemaDetailsPerEnv"])[];
+      schemaDetailsPerEnv?: components["schemas"]["SchemaDetailsPerEnv"];
     };
     KwReport: {
       data?: string;
@@ -2424,11 +2430,9 @@ export type operations = {
     };
   };
   createTopicDeleteRequest: {
-    parameters: {
-      query: {
-        topicName: string;
-        env: string;
-        deleteAssociatedSchema?: boolean;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicDeleteRequestModel"];
       };
     };
     responses: {
@@ -2487,10 +2491,9 @@ export type operations = {
     };
   };
   createClaimTopicRequest: {
-    parameters: {
-      query: {
-        topicName: string;
-        env: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["TopicClaimRequestModel"];
       };
     };
     responses: {
@@ -3198,7 +3201,7 @@ export type operations = {
       query: {
         topicName: string;
         schemaVersionSearch?: number;
-        kafkaEnvIds: (string)[];
+        kafkaEnvId: string;
       };
     };
     responses: {

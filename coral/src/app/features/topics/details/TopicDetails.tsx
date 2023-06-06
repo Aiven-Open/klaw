@@ -60,17 +60,17 @@ function TopicDetails(props: TopicOverviewProps) {
       queryFn: () => {
         const getKafkaEnvIds = () => {
           if (environmentId !== undefined) {
-            return [environmentId];
+            return environmentId;
           }
           if (topicData?.availableEnvironments[0].id !== undefined) {
-            return [topicData?.availableEnvironments[0].id];
+            return topicData?.availableEnvironments[0].id;
           }
-          return [];
+          return "";
         };
 
         return getSchemaOfTopic({
           topicName,
-          kafkaEnvIds: getKafkaEnvIds(),
+          kafkaEnvId: getKafkaEnvIds(),
         });
       },
       enabled: topicData?.availableEnvironments !== undefined,

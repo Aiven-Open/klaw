@@ -8,7 +8,9 @@ import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.TopicClaimRequestModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
+import io.aiven.klaw.model.requests.TopicDeleteRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
@@ -60,13 +62,13 @@ public class TopicController {
       value = "/createTopicDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createTopicDeleteRequest(
-      @RequestParam("topicName") String topicName,
-      @RequestParam("env") String envId,
-      @RequestParam(value = "deleteAssociatedSchema", defaultValue = "false")
-          boolean deleteAssociatedSchema)
+      @Valid @RequestBody TopicDeleteRequestModel deleteRequestModel)
       throws KlawException, KlawNotAuthorizedException {
     return new ResponseEntity<>(
-        topicControllerService.createTopicDeleteRequest(topicName, envId, deleteAssociatedSchema),
+        topicControllerService.createTopicDeleteRequest(
+            deleteRequestModel.getTopicName(),
+            deleteRequestModel.getEnv(),
+            deleteRequestModel.isDeleteAssociatedSchema()),
         HttpStatus.OK);
   }
 
@@ -74,10 +76,11 @@ public class TopicController {
       value = "/createClaimTopicRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createClaimTopicRequest(
-      @RequestParam("topicName") String topicName, @RequestParam("env") String envId)
-      throws KlawException {
+      @Valid @RequestBody TopicClaimRequestModel claimRequestModel) throws KlawException {
     return new ResponseEntity<>(
-        topicControllerService.createClaimTopicRequest(topicName, envId), HttpStatus.OK);
+        topicControllerService.createClaimTopicRequest(
+            claimRequestModel.getTopicName(), claimRequestModel.getEnv()),
+        HttpStatus.OK);
   }
 
   /**

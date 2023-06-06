@@ -884,21 +884,17 @@
 										</tr>
 									</table>
 
-									<table width="100%" ng-show="schemaExists == true" ng-repeat="schemacontent in schemaDetails">
+									<table width="100%" ng-show="schemaExists == true">
 										<tr>
 											<td align="left"  width="100%">
 												<table  width="100%">
 													<tr>
-														<td align="left" width="25%"><b>Environment </b> </td>
-														<td align="left"><span class="badge badge-success">{{ schemacontent.env }}</span></td>
-													</tr>
-													<tr>
 														<td align="left" width="25%"><b>ID </b> </td>
-														<td align="left"><span class="badge badge-success">{{ schemacontent.id }}</span> </td>
+														<td align="left"><span class="badge badge-success">{{ schemaDetails.id }}</span> </td>
 													</tr>
 													<tr>
 														<td align="left" width="25%"><b>Compatibility </b> </td>
-														<td align="left"><span class="badge badge-success">{{ schemacontent.compatibility }}</span> </td>
+														<td align="left"><span class="badge badge-success">{{ schemaDetails.compatibility }}</span> </td>
 													</tr>
 													<tr>
 														<td align="left" width="25%"><b>Version </b> </td>
@@ -906,11 +902,11 @@
 															<table width="100%">
 																<tr>
 																	<td>
-																		<button ng-show="schemacontent.showPrev"  type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.prevVersion)"><i
+																		<button ng-show="schemaDetails.showPrev"  type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemaDetails.prevVersion)"><i
 																				class="fas fa-fast-backward"></i></button>
-																		<button ng-show="schemacontent.latest" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} (Latest) </button>
-																		<button ng-show="!schemacontent.latest" type="button" class="btn btn-xs btn-info"> {{ schemacontent.version }} </button>
-																		<button ng-show="schemacontent.showNext" type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemacontent.nextVersion)"><i
+																		<button ng-show="schemaDetails.latest" type="button" class="btn btn-xs btn-info"> {{ schemaDetails.version }} (Latest) </button>
+																		<button ng-show="!schemaDetails.latest" type="button" class="btn btn-xs btn-info"> {{ schemaDetails.version }} </button>
+																		<button ng-show="schemaDetails.showNext" type="button" class="btn btn-xs btn-info" ng-click="getVersionSchema(schemaDetails.nextVersion)"><i
 																				class="fas fa-fast-forward"></i></button>
 																	</td>
 																</tr>
@@ -924,12 +920,12 @@
 										</tr>
 										<tr>
 											<td>
-												<textarea class="form-control" style="background-color:#70C6DA;color:black;" disabled rows="10">{{ schemacontent.content }}</textarea>
+												<textarea class="form-control" style="background-color:#70C6DA;color:black;" disabled rows="10">{{ schemaDetails.content }}</textarea>
 											</td>
 										</tr>
 										<tr ng-repeat="(key, value) in schemaPromotionDetails">
 											<td width="100%%" >
-												<div ng-show="value.status ==='success' && key === schemacontent.env ">
+												<div ng-show="value.status ==='success' && key === schemaDetails.env ">
 													<table width="100%" class="table color-table success-table">
 														<tr>
 															<td width="25%">
@@ -962,7 +958,7 @@
 															<td width="20%" align="right">
 																<button ng-show="value.status =='success' && firstSchemaEnvPromote != key"
 																		type="button"
-																		ng-click="onFirstSchemaPromote(schemacontent,allSchemaVersions)"
+																		ng-click="onFirstSchemaPromote(schemaDetails)"
 																		class="btn btn-rounded btn-block btn-outline-info">
 																	Promote to {{value.targetEnv}}
 																</button>

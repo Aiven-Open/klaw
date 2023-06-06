@@ -60,17 +60,13 @@ const testTopicOverview: TopicOverview = {
   ],
   topicIdForDocumentation: 1015,
 };
-const testTopisSchemas = {
+const testTopicSchemas = {
   topicExists: true,
   schemaExists: true,
   prefixAclsExists: false,
   txnAclsExists: false,
-  allSchemaVersions: {
-    DEV: [1],
-  },
-  latestVersion: {
-    DEV: 1,
-  },
+  allSchemaVersions: [1],
+  latestVersion: 1,
   schemaPromotionDetails: {
     DEV: {
       status: "success",
@@ -120,7 +116,7 @@ describe("TopicHistory", () => {
         environmentId: "1",
         topicName: "hello",
         topicOverview: { ...testTopicOverview, topicHistoryList: [] },
-        topicSchemas: testTopisSchemas,
+        topicSchemas: testTopicSchemas,
       });
 
       customRender(<TopicHistory />, {
@@ -168,7 +164,7 @@ describe("TopicHistory", () => {
         environmentId: "1",
         topicName: "hello",
         topicOverview: testTopicOverview,
-        topicSchemas: testTopisSchemas,
+        topicSchemas: testTopicSchemas,
       });
 
       customRender(<TopicHistory />, {
