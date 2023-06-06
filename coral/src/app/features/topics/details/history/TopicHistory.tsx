@@ -1,4 +1,9 @@
-import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
+import {
+  DataTable,
+  DataTableColumn,
+  EmptyState,
+  PageHeader,
+} from "@aivenio/aquarium";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicOverview } from "src/domain/topic";
 
@@ -62,15 +67,16 @@ function TopicHistory() {
       };
     }) || [];
 
+  console.log(rows.length);
   return (
     <>
       <PageHeader title={"History"} />
-      {!rows.length && (
+      {!rows.length && rows.length === 0 && (
         <EmptyState title="No Topic history">
           This Topic contains no history.
         </EmptyState>
       )}
-      {rows.length && (
+      {rows.length > 0 && (
         <DataTable
           ariaLabel={"Topic history"}
           columns={columns}
