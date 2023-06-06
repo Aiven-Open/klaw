@@ -86,7 +86,7 @@ function TopicOverviewResourcesTabs({
       return (
         <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
           <Alert type="error">
-            There was an error trying to load the topic details{" "}
+            There was an error trying to load the topic details:{" "}
             {parseErrorMsg(error)}.
             <br />
             Please try again later.

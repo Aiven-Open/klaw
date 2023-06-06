@@ -121,12 +121,8 @@ const testTopicSchemas = {
   schemaExists: true,
   prefixAclsExists: false,
   txnAclsExists: false,
-  allSchemaVersions: {
-    DEV: [1],
-  },
-  latestVersion: {
-    DEV: 1,
-  },
+  allSchemaVersions: [1],
+  latestVersion: 1,
   schemaPromotionDetails: {
     DEV: {
       status: "success",
@@ -197,7 +193,7 @@ describe("TopicDetails", () => {
       await waitFor(() =>
         expect(mockGetSchemaOfTopic).toHaveBeenCalledWith({
           topicName: testTopicName,
-          kafkaEnvIds: ["1"],
+          kafkaEnvId: "1",
         })
       );
     });
@@ -221,7 +217,7 @@ describe("TopicDetails", () => {
       await waitFor(() =>
         expect(mockGetSchemaOfTopic).toHaveBeenNthCalledWith(2, {
           topicName: testTopicName,
-          kafkaEnvIds: [testTopicOverview.availableEnvironments[1].id],
+          kafkaEnvId: testTopicOverview.availableEnvironments[1].id,
         })
       );
     });
