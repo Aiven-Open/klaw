@@ -1,3 +1,4 @@
+name: ❓ Ask a question
 blank_issues_enabled: false
 contact_links:
 - name: Klaw Community Support
