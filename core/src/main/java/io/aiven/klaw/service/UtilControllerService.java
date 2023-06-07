@@ -35,10 +35,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
@@ -47,10 +49,11 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @ConfigurationProperties(prefix = "spring.security.oauth2.client", ignoreInvalidFields = false)
-public class UtilControllerService {
+public class UtilControllerService implements InitializingBean {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String IMAGE_URI = ".imageURI";
+  public static final String CORAL_INDEX_FILE_PATH = "classpath:templates/coral/index.html";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired MailUtils mailService;
@@ -81,6 +84,20 @@ public class UtilControllerService {
   private Map<String, String> registration;
 
   @Autowired private ConfigurableApplicationContext context;
+
+  private Boolean isCoralBuilt;
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    isCoralBuilt();
+  }
+
+  private void isCoralBuilt() {
+    ClassPathResource file =
+        new ClassPathResource(CORAL_INDEX_FILE_PATH, this.getClass().getClassLoader());
+    isCoralBuilt = file.exists();
+    log.info("Coral UI is Built == {}", isCoralBuilt);
+  }
 
   public DashboardStats getDashboardStats() {
     log.debug("getDashboardInfo");
@@ -611,7 +628,7 @@ public class UtilControllerService {
       authenticationInfo.setAddDeleteEditEnvs(addDeleteEditEnvs);
 
       // coral attributes
-      authenticationInfo.setCoralEnabled(Boolean.toString(coralEnabled));
+      authenticationInfo.setCoralEnabled(Boolean.toString(coralEnabled && isCoralBuilt));
 
       return authenticationInfo;
     } else return null;
