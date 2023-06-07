@@ -29,13 +29,13 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                   style="display: flex; gap: 160px;"
                 >
                   <div
-                    style="display: flex; flex-direction: column;"
+                    style="display: flex; justify-content: space-around; flex-direction: column;"
                   >
-                    <h1
+                    <div
                       class="typography-heading text-grey-80"
                     >
                       1
-                    </h1>
+                    </div>
                     <div
                       class="typography-small text-grey-50"
                     >
@@ -43,13 +43,13 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                     </div>
                   </div>
                   <div
-                    style="display: flex; flex-direction: column;"
+                    style="display: flex; justify-content: space-around; flex-direction: column;"
                   >
-                    <h1
+                    <div
                       class="typography-heading text-grey-80"
                     >
                       1
-                    </h1>
+                    </div>
                     <div
                       class="typography-small text-grey-50"
                     >
@@ -79,13 +79,13 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 style="display: flex; gap: 160px;"
               >
                 <div
-                  style="display: flex; flex-direction: column;"
+                  style="display: flex; justify-content: space-around; flex-direction: column;"
                 >
-                  <h1
+                  <div
                     class="typography-heading text-grey-80"
                   >
                     1
-                  </h1>
+                  </div>
                   <div
                     class="typography-small text-grey-50"
                   >
@@ -93,13 +93,9 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                   </div>
                 </div>
                 <div
-                  style="display: flex; flex-direction: column;"
+                  style="display: flex; justify-content: space-around; flex-direction: column;"
                 >
-                  <h1
-                    class="typography-heading text-grey-80"
-                  >
-                    0
-                  </h1>
+                  0
                   <div
                     class="typography-small text-grey-50"
                   >
@@ -186,13 +182,13 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
               class="typography-caption text-grey-70"
             >
               <div
-                style="display: flex; flex-direction: column;"
+                style="display: flex; justify-content: space-around; flex-direction: column;"
               >
-                <h1
+                <div
                   class="typography-heading text-grey-80"
                 >
                   1
-                </h1>
+                </div>
                 <div
                   class="typography-small text-grey-50"
                 >
@@ -291,13 +287,13 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 style="display: flex; gap: 160px;"
               >
                 <div
-                  style="display: flex; flex-direction: column;"
+                  style="display: flex; justify-content: space-around; flex-direction: column;"
                 >
-                  <h1
+                  <div
                     class="typography-heading text-grey-80"
                   >
                     1
-                  </h1>
+                  </div>
                   <div
                     class="typography-small text-grey-50"
                   >
@@ -305,13 +301,13 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                   </div>
                 </div>
                 <div
-                  style="display: flex; flex-direction: column;"
+                  style="display: flex; justify-content: space-around; flex-direction: column;"
                 >
-                  <h1
+                  <div
                     class="typography-heading text-grey-80"
                   >
                     1
-                  </h1>
+                  </div>
                   <div
                     class="typography-small text-grey-50"
                   >
@@ -341,13 +337,13 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
               style="display: flex; gap: 160px;"
             >
               <div
-                style="display: flex; flex-direction: column;"
+                style="display: flex; justify-content: space-around; flex-direction: column;"
               >
-                <h1
+                <div
                   class="typography-heading text-grey-80"
                 >
                   1
-                </h1>
+                </div>
                 <div
                   class="typography-small text-grey-50"
                 >
@@ -355,13 +351,9 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 </div>
               </div>
               <div
-                style="display: flex; flex-direction: column;"
+                style="display: flex; justify-content: space-around; flex-direction: column;"
               >
-                <h1
-                  class="typography-heading text-grey-80"
-                >
-                  0
-                </h1>
+                0
                 <div
                   class="typography-small text-grey-50"
                 >
@@ -448,13 +440,13 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
             class="typography-caption text-grey-70"
           >
             <div
-              style="display: flex; flex-direction: column;"
+              style="display: flex; justify-content: space-around; flex-direction: column;"
             >
-              <h1
+              <div
                 class="typography-heading text-grey-80"
               >
                 1
-              </h1>
+              </div>
               <div
                 class="typography-small text-grey-50"
               >

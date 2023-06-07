@@ -1,14 +1,26 @@
-import { Box, Typography } from "@aivenio/aquarium";
+import { Box, ChipStatus, StatusChip, Typography } from "@aivenio/aquarium";
 
 interface StatsDisplayProps {
-  amount: number;
+  amount?: number;
   entity: string;
+  chip?: {
+    status: ChipStatus;
+    text: string;
+  };
 }
 
-const StatsDisplay = ({ amount, entity }: StatsDisplayProps) => {
+const StatsDisplay = ({ amount, chip, entity }: StatsDisplayProps) => {
   return (
-    <Box.Flex flexDirection="column">
-      <Typography.Heading>{amount}</Typography.Heading>
+    <Box.Flex flexDirection="column" justifyContent={"space-around"}>
+      {amount && (
+        <Typography.Heading htmlTag={"div"}>{amount}</Typography.Heading>
+      )}
+      {chip && (
+        <div>
+          <StatusChip text={chip.text} status={chip.status} />
+        </div>
+      )}
+
       <Typography.Small color={"grey-50"}>{entity}</Typography.Small>
     </Box.Flex>
   );
