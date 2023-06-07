@@ -22,6 +22,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AuthenticationInfo;
 import io.aiven.klaw.model.response.DashboardStats;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
@@ -52,6 +53,7 @@ public class UtilControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String IMAGE_URI = ".imageURI";
+  public static final String CORAL_INDEX_FILE_PATH = "classpath:templates/coral/index.html";
   @Autowired ManageDatabase manageDatabase;
 
   @Autowired MailUtils mailService;
@@ -84,6 +86,15 @@ public class UtilControllerService {
   @Autowired private ConfigurableApplicationContext context;
 
   private Boolean isCoralBuilt;
+
+  @PostConstruct
+  private void isCoralBuilt() {
+
+    ClassPathResource file =
+        new ClassPathResource(CORAL_INDEX_FILE_PATH, this.getClass().getClassLoader());
+    isCoralBuilt = file.exists();
+    log.info("Coral UI is Built == {}", isCoralBuilt);
+  }
 
   public DashboardStats getDashboardStats() {
     log.debug("getDashboardInfo");
@@ -614,25 +625,10 @@ public class UtilControllerService {
       authenticationInfo.setAddDeleteEditEnvs(addDeleteEditEnvs);
 
       // coral attributes
-      authenticationInfo.setCoralEnabled(Boolean.toString(coralEnabled && isCoralBuilt()));
+      authenticationInfo.setCoralEnabled(Boolean.toString(coralEnabled && isCoralBuilt));
 
       return authenticationInfo;
     } else return null;
-  }
-
-  private boolean isCoralBuilt() {
-
-    if (isCoralBuilt == null) {
-      ClassPathResource file =
-          new ClassPathResource(
-              "classpath:templates/coral/index.html", this.getClass().getClassLoader());
-      if (file != null) {
-        isCoralBuilt = Boolean.valueOf(file.exists());
-      } else {
-        isCoralBuilt = Boolean.valueOf(false);
-      }
-    }
-    return isCoralBuilt.booleanValue();
   }
 
   public void getLogoutPage(HttpServletRequest request, HttpServletResponse response) {
