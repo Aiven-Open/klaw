@@ -22,7 +22,6 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AuthenticationInfo;
 import io.aiven.klaw.model.response.DashboardStats;
-import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.sql.Timestamp;
@@ -36,6 +35,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -49,7 +49,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 @ConfigurationProperties(prefix = "spring.security.oauth2.client", ignoreInvalidFields = false)
-public class UtilControllerService {
+public class UtilControllerService implements InitializingBean {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final String IMAGE_URI = ".imageURI";
@@ -87,9 +87,12 @@ public class UtilControllerService {
 
   private Boolean isCoralBuilt;
 
-  @PostConstruct
-  private void isCoralBuilt() {
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    isCoralBuilt();
+  }
 
+  private void isCoralBuilt() {
     ClassPathResource file =
         new ClassPathResource(CORAL_INDEX_FILE_PATH, this.getClass().getClassLoader());
     isCoralBuilt = file.exists();
