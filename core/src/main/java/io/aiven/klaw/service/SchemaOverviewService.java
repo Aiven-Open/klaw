@@ -242,7 +242,7 @@ public class SchemaOverviewService extends BaseOverviewService {
 
   private void processSchemaPromotionDetails(
       SchemaOverview schemaOverview, int tenantId, Env schemaEnv, List<String> kafkaEnvIds) {
-    log.info("SchemaEnv Id {} KafkaEnvIds {}", schemaEnv.getId(), kafkaEnvIds);
+    log.debug("SchemaEnv Id {} KafkaEnvIds {}", schemaEnv.getId(), kafkaEnvIds);
     PromotionStatus promotionDetails = new PromotionStatus();
     String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
     generatePromotionDetails(
@@ -269,12 +269,12 @@ public class SchemaOverviewService extends BaseOverviewService {
       return false;
     }
     // Get kafka env and ensure that it has an associated env with it.
-    Env promotoedEnv =
+    Env promotedEnv =
         manageDatabase
             .getHandleDbRequests()
             .getEnvDetails(promotionDetails.getTargetEnvId(), tenantId);
 
-    String kafkaEnvId = promotoedEnv.getId();
-    return kafkaEnvIds.contains(kafkaEnvId) && promotoedEnv.getAssociatedEnv() != null;
+    String kafkaEnvId = promotedEnv.getId();
+    return kafkaEnvIds.contains(kafkaEnvId) && promotedEnv.getAssociatedEnv() != null;
   }
 }
