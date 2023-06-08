@@ -26,8 +26,8 @@ const getEnvironmentsForTopicRequest = async (): Promise<Environment[]> => {
 
 const getEnvironmentsForTopicRequestByTeam = (): Promise<Environment[]> => {
   return api
-    .get<KlawApiResponse<"getEnvsBaseClusterFilteredForTeam">>(
-      API_PATHS.getEnvsBaseClusterFilteredForTeam
+    .get<KlawApiResponse<"getEnvsBaseCluster">>(
+      API_PATHS.getEnvsBaseCluster
     )
     .then(transformEnvironmentApiResponse);
 };
