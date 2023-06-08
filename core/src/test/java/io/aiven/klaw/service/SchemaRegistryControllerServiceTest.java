@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
@@ -54,6 +55,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -352,8 +354,12 @@ public class SchemaRegistryControllerServiceTest {
   }
 
   @Test
+  @WithMockUser(
+      username = "kwusera",
+      authorities = {"ADMIN", "USER"})
   @Order(10)
   public void promoteSchemaCanNotFindSourceEnvironmentSchema() throws Exception {
+    //    mockGetEnvironment();
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(createTopic()));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(createTopic()));
@@ -835,6 +841,9 @@ public class SchemaRegistryControllerServiceTest {
       e.setClusterId(i);
       e.setTenantId(101);
       e.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
+      EnvTag tag = new EnvTag();
+      tag.setId(String.valueOf(i));
+      e.setAssociatedEnv(tag);
       envs.add(e);
     }
     return envs;
@@ -848,7 +857,7 @@ public class SchemaRegistryControllerServiceTest {
     schema.setForceRegister(isForceRegister);
     schema.setSchemaFull("{'name':'tester'}");
     schema.setSourceEnvironment("1");
-    schema.setTargetEnvironment("9");
+    schema.setTargetEnvironment("8");
     schema.setTopicName(TESTTOPIC);
     return schema;
   }
