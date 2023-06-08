@@ -37,18 +37,6 @@ function mockgetEnvironmentsForTopicRequest({
   );
 }
 
-function mockgetEnvironmentsForTopicRequestByTeam({
-  mswInstance,
-  response,
-}: MockApi<"getEnvsBaseClusterFilteredForTeam">) {
-  const url = `${getHTTPBaseAPIUrl()}/getEnvsBaseClusterFilteredForTeam`;
-  mswInstance.use(
-    rest.get(url, async (req, res, ctx) => {
-      return res(ctx.status(response.status ?? 200), ctx.json(response.data));
-    })
-  );
-}
-
 const mockedEnvironmentResponse = [
   createMockEnvironmentDTO({ name: "DEV", id: "1" }),
   createMockEnvironmentDTO({ name: "TST", id: "2" }),
@@ -81,7 +69,6 @@ const getMockedResponseGetClusterInfoFromEnv = (
 export {
   mockgetAllEnvironmentsForTopicAndAcl,
   mockgetEnvironmentsForTopicRequest,
-  mockgetEnvironmentsForTopicRequestByTeam,
   mockedEnvironmentResponse,
   mockGetClusterInfoFromEnv,
   getMockedResponseGetClusterInfoFromEnv,
