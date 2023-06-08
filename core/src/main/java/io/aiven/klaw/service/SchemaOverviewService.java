@@ -248,7 +248,9 @@ public class SchemaOverviewService extends BaseOverviewService {
     generatePromotionDetails(
         tenantId,
         promotionDetails,
-        Collections.singletonList(schemaEnv.getAssociatedEnv().getId()),
+        schemaEnv.getAssociatedEnv() != null
+            ? Collections.singletonList(schemaEnv.getAssociatedEnv().getId())
+            : null,
         orderEnvs);
     if (schemaOverview.getSchemaPromotionDetails() == null) {
       Map<String, PromotionStatus> searchOverviewPromotionDetails = new HashMap<>();
