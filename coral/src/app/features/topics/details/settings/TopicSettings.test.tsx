@@ -26,12 +26,13 @@ const testEnvironmentId = 8;
 describe("TopicSettings", () => {
   const user = userEvent.setup();
 
-  describe("renders all necessary elements", () => {
+  describe("renders all necessary elements if user can delete topic", () => {
     beforeAll(() => {
       mockDeleteTopic.mockImplementation(jest.fn());
       mockedUseTopicDetails.mockReturnValue({
         topicName: testTopicName,
         environmentId: testEnvironmentId,
+        userCanDeleteTopic: true,
       });
 
       customRender(
@@ -86,6 +87,60 @@ describe("TopicSettings", () => {
     });
   });
 
+  describe("shows information if user is not able to delte topic", () => {
+    beforeAll(() => {
+      mockDeleteTopic.mockImplementation(jest.fn());
+      mockedUseTopicDetails.mockReturnValue({
+        topicName: testTopicName,
+        environmentId: testEnvironmentId,
+        userCanDeleteTopic: false,
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicSettings />
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows a page headline", () => {
+      const pageHeadline = screen.getByRole("heading", { name: "Settings" });
+
+      expect(pageHeadline).toBeVisible();
+    });
+
+    it("shows no headline for the danger zone", () => {
+      const dangerHeadline = screen.queryByRole("heading", {
+        name: "Danger zone",
+      });
+
+      expect(dangerHeadline).not.toBeInTheDocument();
+    });
+
+    it("shows no button to delete the topic", () => {
+      const button = screen.queryByRole("button", {
+        name: "Delete topic",
+      });
+
+      expect(button).not.toBeInTheDocument();
+    });
+
+    it("shows information that settings are only available for users of a team", () => {
+      const information = screen.getByText(
+        "Settings can only be edited by team members of the team the topic does belong" +
+          " to."
+      );
+
+      expect(information).toBeVisible();
+    });
+  });
+
   describe("enables user to delete a topic", () => {
     const originalConsoleError = console.error;
 
@@ -95,6 +150,7 @@ describe("TopicSettings", () => {
       mockedUseTopicDetails.mockReturnValue({
         topicName: testTopicName,
         environmentId: testEnvironmentId,
+        userCanDeleteTopic: true,
       });
 
       customRender(

@@ -16,7 +16,7 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { TopicDeleteConfirmationModal } from "src/app/features/topics/details/settings/components/TopicDeleteConfirmationModal";
 
 function TopicSettings() {
-  const { topicName, environmentId } = useTopicDetails();
+  const { topicName, environmentId, userCanDeleteTopic } = useTopicDetails();
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -64,6 +64,7 @@ function TopicSettings() {
           onClose={() => setShowConfirmation(false)}
         />
       )}
+
       <PageHeader title={"Settings"} />
       {errorMessage && (
         <Box role="alert" marginBottom={"l2"}>
@@ -71,29 +72,41 @@ function TopicSettings() {
         </Box>
       )}
 
-      <Typography.Subheading>Danger zone</Typography.Subheading>
-      <BorderBox
-        display={"flex"}
-        borderColor={"warning-100"}
-        padding={"l2"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        marginTop={"l2"}
-      >
+      {!userCanDeleteTopic && (
         <div>
-          <Typography.DefaultStrong htmlTag={"h3"}>
-            Delete this topic
-          </Typography.DefaultStrong>
-          <Box component={"p"}>
-            Once you delete a topic, there is no going back. Please be certain.
-          </Box>
+          Settings can only be edited by team members of the team the topic does
+          belong to.
         </div>
-        <div>
-          <Button.Primary onClick={() => setShowConfirmation(true)}>
-            Delete topic
-          </Button.Primary>
-        </div>
-      </BorderBox>
+      )}
+
+      {userCanDeleteTopic && (
+        <>
+          <Typography.Subheading>Danger zone</Typography.Subheading>
+          <BorderBox
+            display={"flex"}
+            borderColor={"warning-100"}
+            padding={"l2"}
+            alignItems={"center"}
+            justifyContent={"space-between"}
+            marginTop={"l2"}
+          >
+            <div>
+              <Typography.DefaultStrong htmlTag={"h3"}>
+                Delete this topic
+              </Typography.DefaultStrong>
+              <Box component={"p"}>
+                Once you delete a topic, there is no going back. Please be
+                certain.
+              </Box>
+            </div>
+            <div>
+              <Button.Primary onClick={() => setShowConfirmation(true)}>
+                Delete topic
+              </Button.Primary>
+            </div>
+          </BorderBox>
+        </>
+      )}
     </>
   );
 }

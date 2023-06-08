@@ -119,6 +119,7 @@ describe("TopicHistory", () => {
         topicName: "hello",
         topicOverview: { ...testTopicOverview, topicHistoryList: [] },
         topicSchemas: testTopicSchemas,
+        userCanDeleteTopic: false,
       });
 
       customRender(<TopicHistory />, {
@@ -167,6 +168,7 @@ describe("TopicHistory", () => {
         topicName: "hello",
         topicOverview: testTopicOverview,
         topicSchemas: testTopicSchemas,
+        userCanDeleteTopic: false,
       });
 
       customRender(<TopicHistory />, {

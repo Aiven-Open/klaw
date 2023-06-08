@@ -224,15 +224,11 @@ type DeleteTopicParams = ResolveIntersectionTypes<
 >;
 
 const deleteTopic = (params: DeleteTopicParams) => {
-  console.log("params", params);
   const paramToPass: KlawApiModel<"TopicDeleteRequestModel"> = {
     deleteAssociatedSchema: params.deleteAssociatedSchema,
     env: params.env,
     topicName: params.topicName,
   };
-  console.log("paramToPass", paramToPass);
-
-  return Promise.resolve({ success: true });
 
   return api.post<
     KlawApiResponse<"createTopicDeleteRequest">,
