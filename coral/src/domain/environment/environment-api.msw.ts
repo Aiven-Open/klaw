@@ -40,8 +40,8 @@ function mockgetEnvironmentsForTopicRequest({
 function mockgetEnvironmentsForTopicRequestByTeam({
   mswInstance,
   response,
-}: MockApi<"getEnvsBaseClusterFilteredForTeam">) {
-  const url = `${getHTTPBaseAPIUrl()}/getEnvsBaseClusterFilteredForTeam`;
+}: MockApi<"getEnvsBaseCluster">) {
+  const url = `${getHTTPBaseAPIUrl()}/getEnvsBaseCluster`;
   mswInstance.use(
     rest.get(url, async (req, res, ctx) => {
       return res(ctx.status(response.status ?? 200), ctx.json(response.data));
