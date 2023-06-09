@@ -11,14 +11,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.clusterapi.UtilMethods;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
+import io.aiven.klaw.clusterapi.models.connect.ConnectorsStatus;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.KafkaConnectService;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,8 +37,11 @@ public class KafkaConnectControllerTest {
 
   @MockBean KafkaConnectService kafkaConnectService;
 
+  UtilMethods utilMethods;
+
   @BeforeEach
   public void setUp() {
+    utilMethods = new UtilMethods();
     KafkaConnectController connectController = new KafkaConnectController();
     mvc = MockMvcBuilders.standaloneSetup(connectController).dispatchOptions(true).build();
     ReflectionTestUtils.setField(connectController, "kafkaConnectService", kafkaConnectService);
@@ -46,13 +50,13 @@ public class KafkaConnectControllerTest {
   @Test
   public void getAllConnectorsTest() throws Exception {
     String getUrl = "/topics/getAllConnectors/localhost/" + KafkaSupportedProtocol.SSL + "/CLID1";
-    List<String> connectors = new ArrayList<>(List.of("conn1", "conn2"));
+    ConnectorsStatus connectors = utilMethods.getConnectorsStatus();
     when(kafkaConnectService.getConnectors(anyString(), any(), anyString())).thenReturn(connectors);
 
     mvc.perform(get(getUrl))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$", hasSize(2)))
+        .andExpect(jsonPath("$.connectorStateList", hasSize(2)))
         .andExpect(content().string(containsString("conn1")))
         .andExpect(content().string(containsString("conn2")));
   }
@@ -60,7 +64,7 @@ public class KafkaConnectControllerTest {
   @Test
   public void getAllConnectorsInvalidProtocolTest() throws Exception {
     String getUrl = "/topics/getAllConnectors/localhost/" + "INVALIDPROTOCOL" + "/CLID1";
-    List<String> connectors = new ArrayList<>(List.of("conn1", "conn2"));
+    ConnectorsStatus connectors = utilMethods.getConnectorsStatus();
     when(kafkaConnectService.getConnectors(anyString(), any(), anyString())).thenReturn(connectors);
 
     mvc.perform(get(getUrl)).andExpect(status().is4xxClientError());
@@ -69,9 +73,12 @@ public class KafkaConnectControllerTest {
   @Test
   public void getAllConnectorsClusterCallFailureTest() throws Exception {
     String getUrl = "/topics/getAllConnectors/localhost/" + KafkaSupportedProtocol.SSL + "/CLID1";
-
-    mvc.perform(get(getUrl)).andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(0)));
-    ;
+    ConnectorsStatus connectors = new ConnectorsStatus();
+    connectors.setConnectorStateList(new ArrayList<>());
+    when(kafkaConnectService.getConnectors(anyString(), any(), anyString())).thenReturn(connectors);
+    mvc.perform(get(getUrl))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.connectorStateList", hasSize(0)));
   }
 
   @Test
