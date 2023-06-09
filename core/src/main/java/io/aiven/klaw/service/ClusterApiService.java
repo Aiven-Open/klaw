@@ -17,6 +17,7 @@ import io.aiven.klaw.model.cluster.ClusterAclRequest;
 import io.aiven.klaw.model.cluster.ClusterConnectorRequest;
 import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
 import io.aiven.klaw.model.cluster.ClusterTopicRequest;
+import io.aiven.klaw.model.cluster.ConnectorsStatus;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
@@ -1017,7 +1018,7 @@ public class ClusterApiService {
     }
   }
 
-  public ArrayList<String> getAllKafkaConnectors(
+  public ConnectorsStatus getAllKafkaConnectors(
       String kafkaConnectHost, String protocol, String clusterIdentification, int tenantId)
       throws KlawException {
     log.info("getAllKafkaConnectors {}", kafkaConnectHost);
@@ -1027,7 +1028,7 @@ public class ClusterApiService {
           URI_GET_ALL_CONNECTORS + kafkaConnectHost + "/" + protocol + "/" + clusterIdentification;
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
-      ResponseEntity<ArrayList<String>> s =
+      ResponseEntity<ConnectorsStatus> responseEntity =
           getRestTemplate()
               .exchange(
                   uriGetConnectorsFull,
@@ -1035,7 +1036,7 @@ public class ClusterApiService {
                   getHttpEntity(),
                   new ParameterizedTypeReference<>() {});
 
-      return s.getBody();
+      return responseEntity.getBody();
     } catch (Exception e) {
       log.error("Error from getAllKafkaConnectors ", e);
       throw new KlawException(CLUSTER_API_ERR_115);

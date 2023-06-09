@@ -18,6 +18,8 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncConnectorUpdates;
+import io.aiven.klaw.model.cluster.ConnectorState;
+import io.aiven.klaw.model.cluster.ConnectorsStatus;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
@@ -347,24 +349,28 @@ public class KafkaConnectSyncControllerService {
             .get(envSelected.getClusterId());
     String bootstrapHost = kwClusters.getBootstrapServers();
     try {
-      List<String> allConnectors =
+      ConnectorsStatus allConnectors =
           clusterApiService.getAllKafkaConnectors(
               bootstrapHost,
               kwClusters.getProtocol().getName(),
               kwClusters.getClusterName() + kwClusters.getClusterId(),
               tenantId);
-
+      List<ConnectorState> connectorsList = allConnectors.getConnectorStateList();
       if (connectorNameSearch != null && connectorNameSearch.length() > 0) {
         final String topicSearchFilter = connectorNameSearch;
-        allConnectors =
-            allConnectors.stream()
-                .filter(topic -> topic.contains(topicSearchFilter))
-                .collect(Collectors.toList());
+        connectorsList =
+            connectorsList.stream()
+                .filter(
+                    connectorState -> connectorState.getConnectorName().contains(topicSearchFilter))
+                .toList();
       }
 
-      for (String allConnector : allConnectors) {
+      for (ConnectorState connectorState : connectorsList) {
         KafkaConnectorModelResponse kafkaConnectorModel = new KafkaConnectorModelResponse();
-        kafkaConnectorModel.setConnectorName(allConnector);
+        kafkaConnectorModel.setConnectorName(connectorState.getConnectorName());
+        kafkaConnectorModel.setRunningTasks(connectorState.getRunningTasks());
+        kafkaConnectorModel.setConnectorStatus(connectorState.getConnectorStatus());
+        kafkaConnectorModel.setFailedTasks(connectorState.getFailedTasks());
         kafkaConnectorModel.setEnvironmentId(envId);
         kafkaConnectorModel.setEnvironmentName(getKafkaConnectorEnvDetails(envId).getName());
         kafkaConnectorModel.setPossibleTeams(teamList);
@@ -376,10 +382,35 @@ public class KafkaConnectSyncControllerService {
       kafkaConnectorModelClusterList.removeIf(
           p -> !allSyncConnectors.isEmpty() && allSyncConnectors.contains(p.getConnectorName()));
 
+      for (KafkaConnectorModelResponse kafkaConnectorModelResponse :
+          kafkaConnectorModelSourceList) {
+        Optional<ConnectorState> optionalConnectorState =
+            connectorsList.stream()
+                .filter(
+                    connectorState ->
+                        connectorState
+                            .getConnectorName()
+                            .equals(kafkaConnectorModelResponse.getConnectorName()))
+                .findFirst();
+        if (optionalConnectorState.isPresent()) {
+          ConnectorState connectorState = optionalConnectorState.get();
+          kafkaConnectorModelResponse.setConnectorStatus(connectorState.getConnectorStatus());
+          kafkaConnectorModelResponse.setFailedTasks(connectorState.getFailedTasks());
+          kafkaConnectorModelResponse.setRunningTasks(connectorState.getRunningTasks());
+        } else {
+          kafkaConnectorModelResponse.setConnectorStatus("NOT_KNOWN");
+        }
+      }
+
       kafkaConnectorModelClusterList.addAll(kafkaConnectorModelSourceList);
 
       for (KafkaConnectorModelResponse kafkaConnectorModel : kafkaConnectorModelSourceList) {
-        if (!allConnectors.contains(kafkaConnectorModel.getConnectorName())) {
+        if (connectorsList.stream()
+            .noneMatch(
+                connectorState ->
+                    connectorState
+                        .getConnectorName()
+                        .contains(kafkaConnectorModel.getConnectorName()))) {
           for (KafkaConnectorModelResponse kafkaConnectorModelCluster :
               kafkaConnectorModelClusterList) {
             if (Objects.equals(

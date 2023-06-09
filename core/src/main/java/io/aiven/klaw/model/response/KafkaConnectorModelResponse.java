@@ -13,6 +13,12 @@ public class KafkaConnectorModelResponse {
 
   @NotNull private String connectorName;
 
+  @NotNull private String connectorStatus;
+
+  @NotNull private long runningTasks;
+
+  @NotNull private long failedTasks;
+
   @NotNull private String environmentId;
 
   @NotNull private String teamName;

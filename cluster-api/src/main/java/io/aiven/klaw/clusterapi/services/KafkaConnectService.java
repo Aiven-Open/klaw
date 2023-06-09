@@ -6,16 +6,21 @@ import static io.aiven.klaw.clusterapi.models.error.ClusterApiErrorMessages.CLUS
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
+import io.aiven.klaw.clusterapi.models.connect.ConnectorState;
+import io.aiven.klaw.clusterapi.models.connect.ConnectorsStatus;
+import io.aiven.klaw.clusterapi.models.connect.Status;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.models.error.RestErrorResponse;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.core.ParameterizedTypeReference;
@@ -34,8 +39,8 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class KafkaConnectService {
 
-  private static final ParameterizedTypeReference<List<String>> GET_CONNECTORS_TYPEREF =
-      new ParameterizedTypeReference<>() {};
+  private static final ParameterizedTypeReference<Map<String, Map<String, Object>>>
+      GET_CONNECTORS_TYPEREF = new ParameterizedTypeReference<>() {};
   private static final ParameterizedTypeReference<Map<String, Object>>
       GET_CONNECTOR_DETAILS_TYPEREF = new ParameterizedTypeReference<>() {};
 
@@ -151,15 +156,19 @@ public class KafkaConnectService {
     }
   }
 
-  public List<String> getConnectors(
+  public ConnectorsStatus getConnectors(
       String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
+    ConnectorsStatus connectorsStatus = new ConnectorsStatus();
+    List<ConnectorState> connectorStateList = new ArrayList<>();
+    connectorsStatus.setConnectorStateList(connectorStateList);
+
     try {
       log.info("Into getConnectors {} {}", environmentVal, protocol);
       if (environmentVal == null) {
         return null;
       }
 
-      String suffixUrl = environmentVal + "/connectors";
+      String suffixUrl = environmentVal + "/connectors?expand=status";
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
@@ -168,16 +177,43 @@ public class KafkaConnectService {
       HttpEntity<Object> request = new HttpEntity<>(headers);
 
       Map<String, String> params = new HashMap<>();
-      ResponseEntity<List<String>> responseList =
+      ResponseEntity<Map<String, Map<String, Status>>> responseEntity =
           reqDetails
               .getRight()
               .exchange(
-                  reqDetails.getLeft(), HttpMethod.GET, request, GET_CONNECTORS_TYPEREF, params);
-      log.info("connectors list " + responseList);
-      return responseList.getBody();
+                  reqDetails.getLeft(),
+                  HttpMethod.GET,
+                  request,
+                  new ParameterizedTypeReference<>() {},
+                  params);
+      Map<String, Map<String, Status>> responseBody = responseEntity.getBody();
+
+      for (String connectorName : Objects.requireNonNull(responseBody).keySet()) {
+        Map<String, Status> statusMap = responseBody.get(connectorName);
+        Status statusConnector = statusMap.get("status");
+        long failedTasksCount =
+            statusConnector.getTasks().stream()
+                .filter(task -> task.getState().equals("FAILED"))
+                .count();
+        long runningTasksCount =
+            statusConnector.getTasks().stream()
+                .filter(task -> task.getState().equals("RUNNING"))
+                .count();
+
+        ConnectorState connectorState = new ConnectorState();
+        connectorState.setConnectorName(connectorName);
+        connectorState.setConnectorStatus(statusConnector.getConnector().getState());
+        connectorState.setRunningTasks(runningTasksCount);
+        connectorState.setFailedTasks(failedTasksCount);
+        connectorStateList.add(connectorState);
+      }
+      connectorsStatus.setConnectorStateList(connectorStateList);
+
+      log.info("connectors list " + responseEntity);
+      return connectorsStatus;
     } catch (Exception e) {
       log.error("Error in getting connectors " + e);
-      return Collections.emptyList();
+      return connectorsStatus;
     }
   }
 
