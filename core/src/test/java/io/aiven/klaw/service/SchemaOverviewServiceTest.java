@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -101,11 +102,15 @@ public class SchemaOverviewServiceTest {
   @Test
   @Order(2)
   public void getGivenASchemaWithManySchemaEnv_ReturnNextInPromotion() throws Exception {
+    // Schema Envs are 3,4
+    //      kafka envs are 1,2
+    //      Expecting kafka env ids to be returned now instead of schema env ids
     stubUserInfo();
 
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
 
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2");
     when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
     when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
             eq(TESTTOPIC), eq(10), eq(101)))
@@ -115,9 +120,10 @@ public class SchemaOverviewServiceTest {
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getStatus())
         .isEqualTo(ApiResultStatus.SUCCESS.value);
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getSourceEnv()).isEqualTo("3");
+
+    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getSourceEnv()).isEqualTo("1");
     assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getTargetEnv())
-        .isEqualTo("test-4");
+        .isEqualTo("test-2");
   }
 
   @Test

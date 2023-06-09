@@ -1,5 +1,7 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
+
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
@@ -242,11 +244,14 @@ public class SchemaOverviewService extends BaseOverviewService {
       SchemaOverview schemaOverview, int tenantId, Env schemaEnv, List<String> kafkaEnvIds) {
     log.debug("SchemaEnv Id {} KafkaEnvIds {}", schemaEnv.getId(), kafkaEnvIds);
     PromotionStatus promotionDetails = new PromotionStatus();
+    String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
     generatePromotionDetails(
         tenantId,
         promotionDetails,
-        Collections.singletonList(schemaEnv.getId()),
-        commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(tenantId));
+        schemaEnv.getAssociatedEnv() != null
+            ? Collections.singletonList(schemaEnv.getAssociatedEnv().getId())
+            : null,
+        orderEnvs);
     if (schemaOverview.getSchemaPromotionDetails() == null) {
       Map<String, PromotionStatus> searchOverviewPromotionDetails = new HashMap<>();
       schemaOverview.setSchemaPromotionDetails(searchOverviewPromotionDetails);
@@ -265,13 +270,13 @@ public class SchemaOverviewService extends BaseOverviewService {
     if (promotionDetails.getTargetEnvId() == null) {
       return false;
     }
-    // get kafka env of target schema env
-    String kafkaEnvId =
+    // Get kafka env and ensure that it has an associated env with it.
+    Env promotedEnv =
         manageDatabase
             .getHandleDbRequests()
-            .getEnvDetails(promotionDetails.getTargetEnvId(), tenantId)
-            .getAssociatedEnv()
-            .getId();
-    return kafkaEnvIds.contains(kafkaEnvId);
+            .getEnvDetails(promotionDetails.getTargetEnvId(), tenantId);
+
+    String kafkaEnvId = promotedEnv.getId();
+    return kafkaEnvIds.contains(kafkaEnvId) && promotedEnv.getAssociatedEnv() != null;
   }
 }

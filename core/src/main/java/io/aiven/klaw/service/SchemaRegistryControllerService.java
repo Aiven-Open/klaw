@@ -393,7 +393,7 @@ public class SchemaRegistryControllerService {
     }
 
     SchemaRequestModel schemaRequest = buildSchemaRequestFromPromotionRequest(schemaPromotion);
-    Optional<Env> optionalEnv = getSchemaEnvFromId(schemaPromotion.getSourceEnvironment());
+    Optional<Env> optionalEnv = getSchemaEnvFromKafkaEnvId(schemaPromotion.getSourceEnvironment());
 
     if (optionalEnv.isEmpty()) {
       return ApiResponse.builder().success(false).message(SCHEMA_ERR_104).build();
@@ -437,11 +437,12 @@ public class SchemaRegistryControllerService {
         tenantId);
   }
 
-  private Optional<Env> getSchemaEnvFromId(String envId) {
+  private Optional<Env> getSchemaEnvFromKafkaEnvId(String envId) {
     return manageDatabase
         .getSchemaRegEnvList(commonUtilsService.getTenantId(getUserName()))
         .stream()
-        .filter(env -> env.getId().equals(envId))
+        .filter(
+            env -> env.getAssociatedEnv() != null && env.getAssociatedEnv().getId().equals(envId))
         .findFirst();
   }
 
@@ -450,10 +451,12 @@ public class SchemaRegistryControllerService {
     SchemaRequestModel schemaRequest = new SchemaRequestModel();
     // setup schema Request
     schemaRequest.setRemarks(schemaPromotion.getRemarks());
-    schemaRequest.setEnvironment(schemaPromotion.getTargetEnvironment());
+
     schemaRequest.setSchemaversion(schemaPromotion.getSchemaVersion());
     schemaRequest.setTopicname(schemaPromotion.getTopicName());
     schemaRequest.setForceRegister(schemaPromotion.isForceRegister());
+    Optional<Env> env = getSchemaEnvFromKafkaEnvId(schemaPromotion.getTargetEnvironment());
+    schemaRequest.setEnvironment(env.isPresent() ? env.get().getId() : null);
     return schemaRequest;
   }
 
