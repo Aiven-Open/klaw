@@ -43,6 +43,8 @@ public class KafkaConnectService {
       GET_CONNECTORS_TYPEREF = new ParameterizedTypeReference<>() {};
   private static final ParameterizedTypeReference<Map<String, Object>>
       GET_CONNECTOR_DETAILS_TYPEREF = new ParameterizedTypeReference<>() {};
+  public static final String FAILED_STATUS = "FAILED";
+  public static final String RUNNING_STATUS = "RUNNING";
 
   final ClusterApiUtils clusterApiUtils;
 
@@ -193,11 +195,11 @@ public class KafkaConnectService {
         Status statusConnector = statusMap.get("status");
         long failedTasksCount =
             statusConnector.getTasks().stream()
-                .filter(task -> task.getState().equals("FAILED"))
+                .filter(task -> task.getState().equals(FAILED_STATUS))
                 .count();
         long runningTasksCount =
             statusConnector.getTasks().stream()
-                .filter(task -> task.getState().equals("RUNNING"))
+                .filter(task -> task.getState().equals(RUNNING_STATUS))
                 .count();
 
         ConnectorState connectorState = new ConnectorState();
