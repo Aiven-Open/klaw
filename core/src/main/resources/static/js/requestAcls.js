@@ -603,7 +603,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
                         $scope.getAllTopics("ALL");
                         $scope.getTopicTeam($scope.addAcl.topicname);
-                    } else if (sParameterName[0] == "?envId" || sParameterName[0] == "envId")
+                    } else if (sParameterName[0] == "envId")
                   {
                       $scope.addAcl.envId  = sParameterName[1];
                     console.log('EnvId from Url: ' + $scope.addAcl.envId  );
