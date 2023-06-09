@@ -595,6 +595,7 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
                 for (var i = 0; i < sURLVariables.length; i++)
                 {
                     var sParameterName = sURLVariables[i].split('=');
+                    
                     if (sParameterName[0] == "topicname")
                     {
                         $scope.topicSelectedFromUrl = sParameterName[1]
@@ -602,6 +603,9 @@ app.controller("requestAclsCtrl", function($scope, $http, $location, $window) {
 
                         $scope.getAllTopics("ALL");
                         $scope.getTopicTeam($scope.addAcl.topicname);
+                    } else if (sParameterName[0] == "envId")
+                    {
+                        $scope.addAcl.envId  = sParameterName[1];
                     }
                 }
             }
