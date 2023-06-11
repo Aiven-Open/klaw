@@ -95,7 +95,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
                 <div
                   style="display: flex; justify-content: space-around; flex-direction: column;"
                 >
-                  0
+                  <div
+                    class="typography-heading text-grey-80"
+                  >
+                    0
+                  </div>
                   <div
                     class="typography-small text-grey-50"
                   >
@@ -353,7 +357,11 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
               <div
                 style="display: flex; justify-content: space-around; flex-direction: column;"
               >
-                0
+                <div
+                  class="typography-heading text-grey-80"
+                >
+                  0
+                </div>
                 <div
                   class="typography-small text-grey-50"
                 >
