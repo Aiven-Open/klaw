@@ -41,6 +41,9 @@ const mockConnectors: Connector[] = [
     showEditConnector: false,
     showDeleteConnector: false,
     connectorDeletable: false,
+    connectorStatus: "",
+    runningTasks: 1,
+    failedTasks: 0,
   },
   {
     sequence: 2,
@@ -57,6 +60,9 @@ const mockConnectors: Connector[] = [
     showEditConnector: false,
     showDeleteConnector: false,
     connectorDeletable: false,
+    connectorStatus: "",
+    runningTasks: 1,
+    failedTasks: 0,
   },
   {
     sequence: 2,
@@ -73,6 +79,9 @@ const mockConnectors: Connector[] = [
     showEditConnector: false,
     showDeleteConnector: false,
     connectorDeletable: false,
+    connectorStatus: "",
+    runningTasks: 1,
+    failedTasks: 0,
   },
 ];
 
