@@ -1063,7 +1063,10 @@ export type components = {
       showEditTopic: boolean;
       showDeleteTopic: boolean;
       topicDeletable: boolean;
+      hasOpenACLRequest: boolean;
       envName: string;
+      topicOwner?: boolean;
+      highestEnv?: boolean;
     };
     TopicDetailsPerEnv: {
       topicExists: boolean;
@@ -1178,6 +1181,11 @@ export type components = {
       /** Format: int32 */
       connectorId: number;
       connectorName: string;
+      connectorStatus: string;
+      /** Format: int64 */
+      runningTasks: number;
+      /** Format: int64 */
+      failedTasks: number;
       environmentId: string;
       teamName: string;
       /** Format: int32 */
