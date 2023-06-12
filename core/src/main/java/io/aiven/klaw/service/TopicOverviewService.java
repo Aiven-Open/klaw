@@ -204,7 +204,7 @@ public class TopicOverviewService extends BaseOverviewService {
         tmpAclPrefixed = applyFiltersAclsForSOT(loggedInUserTeam, prefixedAcls, tenantId);
         prefixedAclsInfo.addAll(tmpAclPrefixed);
       }
-      topicInfo.setHasOpenACL(
+      topicInfo.setHasOpenACLRequest(
           aclInfo.stream()
               .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
       // show edit button only forenv owned by your team
@@ -280,7 +280,8 @@ public class TopicOverviewService extends BaseOverviewService {
                   .noneMatch(
                       aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getEnvId())));
 
-          // Available environments is ordered from lowest to highest environment. See line filterByEnvIdParameter
+          // Available environments is ordered from lowest to highest environment. See line
+          // filterByEnvIdParameter
           lastItem.setHighestEnv(
               Objects.equals(
                   topicOverview
