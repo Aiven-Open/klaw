@@ -420,6 +420,7 @@
                             <li ng-show="dashboardDetails.syncSchemas == 'Authorized'"><a href="synchronizeSchemas">Schemas from cluster</a></li>
                             <li ng-show="dashboardDetails.syncBackSchemas == 'Authorized'"><a href="syncBackSchemas">Schemas to cluster</a></li>
 							<li ng-show="dashboardDetails.syncConnectors == 'Authorized'"><a href="syncConnectors">Connectors from cluster</a></li>
+							<li ng-show="dashboardDetails.manageConnectors == 'Authorized'"><a href="manageConnectors">Manage Connectors</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
@@ -468,10 +469,7 @@
 										 role="tab"><span class="hidden-sm-up"><i class="ti-file"></i></span> <span
 						class="hidden-xs-down">Individual Options</span></a>
 				</li>
-<!--				<li class="nav-item"> <a class="nav-link" data-toggle="tab" href="#bulksync"-->
-<!--										 role="tab"><span class="hidden-sm-up"><i class="ti-files"></i></span> <span-->
-<!--						class="hidden-xs-down">Bulk Options</span></a>-->
-<!--				</li>-->
+
 			</ul>
 
 			<div class="tab-content"  ng-show="dashboardDetails.syncConnectors == 'Authorized'">
@@ -486,18 +484,7 @@
 											<td align="left">
 												<h3 class="card-title">Synchronize Connectors - From Cluster</h3>
 											</td>
-<!--											<td>-->
-<!--												<table border="0">-->
-<!--													<tr>-->
-<!--														<td><h6 class="card-title">Show All</h6></td>-->
-<!--														<td><label class="custom-control custom-checkbox">-->
-<!--															<input type="checkbox" value="false" ng-click="getTopics(1,'true');"-->
-<!--																   ng-init="false" ng-model="showAllTopics" class="custom-control-input">-->
-<!--															<span class="custom-control-label"></span>-->
-<!--														</label></td>-->
-<!--													</tr>-->
-<!--												</table>-->
-<!--											</td>-->
+
 											<td>
 												<select class="form-control custom-select" ng-change="getConnectors(1,'true');"
 														ng-model="getConnectors.envName" ng-options="env.id as env.name for env in allenvs">
@@ -551,10 +538,9 @@
 											<tr>
 												<th width="30%">Connector</th>
 												<th width="10%">Environment</th>
-												<th width="20%">Team</th>
-												<th align="center" width="10%">Config</th>
-												<th align="center" width="5%">Info</th>
-												<th align="center" width="25%">Status</th>
+												<th width="30%">Team</th>
+												<th align="center" width="20%">Config</th>
+												<th align="center" width="10%">Info</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -581,7 +567,6 @@
 
 											<td>
 												<button ng-click="getConnectorConfig(resultBrowset.connectorName, $index);" class="btn btn-outline-warning">View</button>
-
 												<div id="myModal-{{$index}}" class="modal" ng-show="resultBrowset.connectorName === popupConnector">
 
 													<!-- Modal content -->
@@ -613,27 +598,7 @@
 													<span class="tooltip-content3">Connector synchronized.</span>
 												</a>
 											</td>
-											<td>
-												<table>
-													<tr>
-														<td ng-show="resultBrowset.connectorStatus === 'RUNNING'">
-															Connector Status : <span class="badge badge-success">{{ resultBrowset.connectorStatus}}</span>
-														</td>
-														<td ng-show="resultBrowset.connectorStatus != 'RUNNING'">
-															Connector Status : <span class="badge badge-warning">{{ resultBrowset.connectorStatus}}</span>
-														</td>
-													</tr>
-													<tr>
-														<td>Running tasks : {{resultBrowset.runningTasks}}</td>
-													</tr>
-													<tr>
-														<td>Failed tasks : {{resultBrowset.failedTasks}}</td>
-													</tr>
-												</table>
-											</td>
 										</tr>
-
-
 										</tbody>
 									</table>
 								</div>

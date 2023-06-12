@@ -2,6 +2,7 @@ package io.aiven.klaw.clusterapi.controller;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -49,9 +50,13 @@ public class KafkaConnectControllerTest {
 
   @Test
   public void getAllConnectorsTest() throws Exception {
-    String getUrl = "/topics/getAllConnectors/localhost/" + KafkaSupportedProtocol.SSL + "/CLID1";
+    String getUrl =
+        "/topics/getAllConnectors/localhost/"
+            + KafkaSupportedProtocol.SSL
+            + "/CLID1?connectorStatus=false";
     ConnectorsStatus connectors = utilMethods.getConnectorsStatus();
-    when(kafkaConnectService.getConnectors(anyString(), any(), anyString())).thenReturn(connectors);
+    when(kafkaConnectService.getConnectors(anyString(), any(), anyString(), anyBoolean()))
+        .thenReturn(connectors);
 
     mvc.perform(get(getUrl))
         .andExpect(status().isOk())
@@ -65,17 +70,22 @@ public class KafkaConnectControllerTest {
   public void getAllConnectorsInvalidProtocolTest() throws Exception {
     String getUrl = "/topics/getAllConnectors/localhost/" + "INVALIDPROTOCOL" + "/CLID1";
     ConnectorsStatus connectors = utilMethods.getConnectorsStatus();
-    when(kafkaConnectService.getConnectors(anyString(), any(), anyString())).thenReturn(connectors);
+    when(kafkaConnectService.getConnectors(anyString(), any(), anyString(), anyBoolean()))
+        .thenReturn(connectors);
 
     mvc.perform(get(getUrl)).andExpect(status().is4xxClientError());
   }
 
   @Test
   public void getAllConnectorsClusterCallFailureTest() throws Exception {
-    String getUrl = "/topics/getAllConnectors/localhost/" + KafkaSupportedProtocol.SSL + "/CLID1";
+    String getUrl =
+        "/topics/getAllConnectors/localhost/"
+            + KafkaSupportedProtocol.SSL
+            + "/CLID1?connectorStatus=false";
     ConnectorsStatus connectors = new ConnectorsStatus();
     connectors.setConnectorStateList(new ArrayList<>());
-    when(kafkaConnectService.getConnectors(anyString(), any(), anyString())).thenReturn(connectors);
+    when(kafkaConnectService.getConnectors(anyString(), any(), anyString(), anyBoolean()))
+        .thenReturn(connectors);
     mvc.perform(get(getUrl))
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.connectorStateList", hasSize(0)));

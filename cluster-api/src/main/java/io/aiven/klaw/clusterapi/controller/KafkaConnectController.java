@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -33,9 +34,11 @@ public class KafkaConnectController {
   public ResponseEntity<ConnectorsStatus> getAllConnectors(
       @PathVariable String kafkaConnectHost,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
-      @PathVariable String clusterIdentification) {
+      @PathVariable String clusterIdentification,
+      @RequestParam("connectorStatus") boolean connectorStatus) {
     return new ResponseEntity<>(
-        kafkaConnectService.getConnectors(kafkaConnectHost, protocol, clusterIdentification),
+        kafkaConnectService.getConnectors(
+            kafkaConnectHost, protocol, clusterIdentification, connectorStatus),
         HttpStatus.OK);
   }
 
@@ -80,5 +83,29 @@ public class KafkaConnectController {
       @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest) {
     return new ResponseEntity<>(
         kafkaConnectService.deleteConnector(clusterConnectorRequest), HttpStatus.OK);
+  }
+
+  @PostMapping(value = "/connector/restart?includeTasks={includeTasks}&onlyFailed={onlyFailed}")
+  public ResponseEntity<ApiResponse> restartConnector(
+      @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest,
+      @RequestParam("includeTasks") boolean includeTasks,
+      @RequestParam("onlyFailed") boolean onlyFailed) {
+    return new ResponseEntity<>(
+        kafkaConnectService.restartConnector(clusterConnectorRequest, includeTasks, onlyFailed),
+        HttpStatus.OK);
+  }
+
+  @PostMapping(value = "/connector/pause")
+  public ResponseEntity<ApiResponse> pauseConnector(
+      @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest) {
+    return new ResponseEntity<>(
+        kafkaConnectService.pauseConnector(clusterConnectorRequest), HttpStatus.OK);
+  }
+
+  @PostMapping(value = "/connector/resume")
+  public ResponseEntity<ApiResponse> resumeConnector(
+      @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest) {
+    return new ResponseEntity<>(
+        kafkaConnectService.resumeConnector(clusterConnectorRequest), HttpStatus.OK);
   }
 }

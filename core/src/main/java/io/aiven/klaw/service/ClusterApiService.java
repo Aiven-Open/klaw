@@ -1019,13 +1019,24 @@ public class ClusterApiService {
   }
 
   public ConnectorsStatus getAllKafkaConnectors(
-      String kafkaConnectHost, String protocol, String clusterIdentification, int tenantId)
+      String kafkaConnectHost,
+      String protocol,
+      String clusterIdentification,
+      int tenantId,
+      boolean getConnectorsStatuses)
       throws KlawException {
     log.info("getAllKafkaConnectors {}", kafkaConnectHost);
     getClusterApiProperties(tenantId);
     try {
       String uriGetTopics =
-          URI_GET_ALL_CONNECTORS + kafkaConnectHost + "/" + protocol + "/" + clusterIdentification;
+          URI_GET_ALL_CONNECTORS
+              + kafkaConnectHost
+              + "/"
+              + protocol
+              + "/"
+              + clusterIdentification
+              + "?connectorStatus="
+              + getConnectorsStatuses;
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 
       ResponseEntity<ConnectorsStatus> responseEntity =

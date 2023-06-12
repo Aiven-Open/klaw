@@ -41,6 +41,9 @@ public class KafkaConnectService {
 
   private static final ParameterizedTypeReference<Map<String, Map<String, Object>>>
       GET_CONNECTORS_TYPEREF = new ParameterizedTypeReference<>() {};
+
+  private static final ParameterizedTypeReference<List<String>> GET_CONNECTORS_STR_TYPEREF =
+      new ParameterizedTypeReference<>() {};
   private static final ParameterizedTypeReference<Map<String, Object>>
       GET_CONNECTOR_DETAILS_TYPEREF = new ParameterizedTypeReference<>() {};
   public static final String FAILED_STATUS = "FAILED";
@@ -159,7 +162,10 @@ public class KafkaConnectService {
   }
 
   public ConnectorsStatus getConnectors(
-      String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
+      String environmentVal,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      boolean getConnectorStatuses) {
     ConnectorsStatus connectorsStatus = new ConnectorsStatus();
     List<ConnectorState> connectorStateList = new ArrayList<>();
     connectorsStatus.setConnectorStateList(connectorStateList);
@@ -170,15 +176,42 @@ public class KafkaConnectService {
         return null;
       }
 
-      String suffixUrl = environmentVal + "/connectors?expand=status";
+      String suffixUrl = environmentVal + "/connectors";
+
+      if (getConnectorStatuses) {
+        suffixUrl = suffixUrl + "?expand=status";
+      }
+
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
       HttpHeaders headers =
           clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.KAFKA_CONNECT);
       HttpEntity<Object> request = new HttpEntity<>(headers);
-
       Map<String, String> params = new HashMap<>();
+
+      if (!getConnectorStatuses) {
+        ResponseEntity<List<String>> responseList =
+            reqDetails
+                .getRight()
+                .exchange(
+                    reqDetails.getLeft(),
+                    HttpMethod.GET,
+                    request,
+                    GET_CONNECTORS_STR_TYPEREF,
+                    params);
+        log.info("connectors list " + responseList);
+        if (responseList.getBody() != null) {
+          for (String connectorName : responseList.getBody()) {
+            ConnectorState connectorState = new ConnectorState();
+            connectorState.setConnectorName(connectorName);
+            connectorStateList.add(connectorState);
+          }
+        }
+
+        return connectorsStatus;
+      }
+
       ResponseEntity<Map<String, Map<String, Status>>> responseEntity =
           reqDetails
               .getRight()
@@ -275,5 +308,18 @@ public class KafkaConnectService {
       log.error("Exception:", e);
       return ClusterStatus.OFFLINE;
     }
+  }
+
+  public ApiResponse restartConnector(
+      ClusterConnectorRequest clusterConnectorRequest, boolean includeTasks, boolean onlyFailed) {
+    return null;
+  }
+
+  public ApiResponse pauseConnector(ClusterConnectorRequest clusterConnectorRequest) {
+    return null;
+  }
+
+  public ApiResponse resumeConnector(ClusterConnectorRequest clusterConnectorRequest) {
+    return null;
   }
 }

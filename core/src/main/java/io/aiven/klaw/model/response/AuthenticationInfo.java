@@ -42,6 +42,7 @@ public class AuthenticationInfo {
   @NotNull private String addTeams;
   @NotNull private String syncTopicsAcls;
   @NotNull private String syncConnectors;
+  @NotNull private String manageConnectors;
   @NotNull private String syncSchemas;
   @NotNull private String approveAtleastOneRequest;
   @NotNull private String approveDeclineTopics;
