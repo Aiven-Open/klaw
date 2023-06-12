@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  EmptyState,
   Icon,
   Label,
   NativeSelect,
@@ -11,12 +12,13 @@ import {
 import add from "@aivenio/aquarium/icons/add";
 import gitNewBranch from "@aivenio/aquarium/icons/gitNewBranch";
 import MonacoEditor from "@monaco-editor/react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
 
 function TopicDetailsSchema() {
+  const navigate = useNavigate();
   const {
     topicName,
     topicSchemas: {
@@ -27,13 +29,31 @@ function TopicDetailsSchema() {
     setSchemaVersion,
   } = useTopicDetails();
 
+  const noSchema = allSchemaVersions.length === 0;
+
   function promoteSchema() {
     console.log("dummy function");
+  }
+
+  if (noSchema) {
+    return (
+      <>
+        <PageHeader title="Schema" />
+        <EmptyState
+          title="No schema available for this topic"
+          primaryAction={{
+            onClick: () => navigate(`/topic/${topicName}/request-schema`),
+            text: "Request a new schema",
+          }}
+        />
+      </>
+    );
   }
 
   return (
     <>
       <PageHeader title="Schema" />
+
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} colGap={"l1"}>
           <NativeSelect
