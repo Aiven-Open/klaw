@@ -174,15 +174,18 @@ function Modal(props: ModalProps) {
               colGap={"l1"}
             >
               {secondaryAction && (
-                <Button
-                  kind={isDialog ? "ghost" : "secondary"}
-                  onClick={secondaryAction.onClick}
-                  data-focusable
-                  disabled={secondaryAction.disabled}
-                  loading={secondaryAction.loading}
-                >
-                  {secondaryAction.text}
-                </Button>
+                <div className={isDialog ? classes.dialogGhostButton : ""}>
+                  <Button
+                    kind={isDialog ? "ghost" : "secondary"}
+                    onClick={secondaryAction.onClick}
+                    data-focusable
+                    disabled={secondaryAction.disabled}
+                    loading={secondaryAction.loading}
+                    className={"test"}
+                  >
+                    {secondaryAction.text} HU
+                  </Button>
+                </div>
               )}
               <Button
                 kind={isDialog ? "secondary" : "primary"}
