@@ -291,10 +291,12 @@ public class TopicOverviewService extends BaseOverviewService {
                       .get(topicOverview.getAvailableEnvironments().size() - 1)
                       .getId(),
                   lastItem.getEnvId()));
+          lastItem.setHasOpenRequest(
+              isRequestAlreadyOpen(topicNameSearch, environmentId, tenantId));
           lastItem.setShowDeleteTopic(
               lastItem.isTopicDeletable()
                   && lastItem.isHighestEnv()
-                  && !isDeleteRequestAlreadyOpen(topicNameSearch, environmentId, tenantId));
+                  && !lastItem.isHasOpenRequest());
         }
       } else {
         PromotionStatus promotionStatus = new PromotionStatus();
@@ -308,8 +310,7 @@ public class TopicOverviewService extends BaseOverviewService {
     }
   }
 
-  private boolean isDeleteRequestAlreadyOpen(
-      String topicNameSearch, String environmentId, int tenantId) {
+  private boolean isRequestAlreadyOpen(String topicNameSearch, String environmentId, int tenantId) {
 
     List<TopicRequest> topicReqs =
         manageDatabase

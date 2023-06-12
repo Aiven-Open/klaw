@@ -59,7 +59,7 @@ public class EmailService {
           + "<table style=\"height:40px; width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
           + "\t<tr>\n"
           + "\t\t<td>\n"
-          + "\t\t\t© 2021 <a href=\"https://klaw-project.io\" style=\"color:white;\">www.klaw-project.io</a>\n"
+          + "\t\t\t© 2023 <a href=\"https://klaw-project.io\" style=\"color:white;\">www.klaw-project.io</a>\n"
           + "\t\t</td>\n"
           + "\t</tr>\n"
           + "</table>\n"
