@@ -38,7 +38,7 @@ type TopicSchemaRequestProps = {
 // be able to add this tests. I created na issue in github related to MonacoEditor testing already.
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { topicName } = props;
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const presetEnvironment = searchParams.get("env");
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
@@ -90,8 +90,8 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
         // Allows to pass envirnment name as well as environment id as search param
         if (validEnv && isNaN(Number(presetEnvironment))) {
-          searchParams.set("env", validEnv.id);
-          setSearchParams(searchParams);
+          form.setValue("environment", validEnv.id);
+          return;
         }
 
         if (validEnv === undefined) {
