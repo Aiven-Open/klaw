@@ -24,5 +24,11 @@ public class TopicOverviewInfo {
 
   @NotNull private boolean topicDeletable;
 
+  @NotNull private boolean isTopicOwner;
+
+  @NotNull private boolean isHighestEnv;
+
+  @NotNull private boolean hasOpenACLRequest;
+
   @NotNull private String envName;
 }

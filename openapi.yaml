@@ -6888,11 +6888,20 @@
           "topicDeletable" : {
             "type" : "boolean"
           },
+          "hasOpenACLRequest" : {
+            "type" : "boolean"
+          },
           "envName" : {
             "type" : "string"
+          },
+          "topicOwner" : {
+            "type" : "boolean"
+          },
+          "highestEnv" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "envId", "envName", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "envId", "envName", "hasOpenACLRequest", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
       "TopicDetailsPerEnv" : {
         "properties" : {
@@ -7215,6 +7224,17 @@
           "connectorName" : {
             "type" : "string"
           },
+          "connectorStatus" : {
+            "type" : "string"
+          },
+          "runningTasks" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "failedTasks" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
           "environmentId" : {
             "type" : "string"
           },
@@ -7274,7 +7294,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "environmentId", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorStatus", "environmentId", "failedTasks", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {

@@ -18,6 +18,7 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
       showDeleteTopic: false,
       topicDeletable: false,
       envName: "DEV",
+      hasOpenACLRequest: true,
     },
   ],
   aclInfoList: [
@@ -81,6 +82,7 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
       showDeleteTopic: false,
       topicDeletable: false,
       envName: "DEV",
+      hasOpenACLRequest: true,
     },
   ],
   aclInfoList: [],
