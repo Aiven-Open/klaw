@@ -85,14 +85,11 @@ public class KafkaConnectController {
         kafkaConnectService.deleteConnector(clusterConnectorRequest), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/connector/restart?includeTasks={includeTasks}&onlyFailed={onlyFailed}")
+  @PostMapping(value = "/connector/restart")
   public ResponseEntity<ApiResponse> restartConnector(
-      @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest,
-      @RequestParam("includeTasks") boolean includeTasks,
-      @RequestParam("onlyFailed") boolean onlyFailed) {
+      @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest) {
     return new ResponseEntity<>(
-        kafkaConnectService.restartConnector(clusterConnectorRequest, includeTasks, onlyFailed),
-        HttpStatus.OK);
+        kafkaConnectService.restartConnector(clusterConnectorRequest), HttpStatus.OK);
   }
 
   @PostMapping(value = "/connector/pause")
@@ -102,7 +99,9 @@ public class KafkaConnectController {
         kafkaConnectService.pauseConnector(clusterConnectorRequest), HttpStatus.OK);
   }
 
-  @PostMapping(value = "/connector/resume")
+  @PostMapping(
+      value = "/connector/resume",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> resumeConnector(
       @RequestBody @Valid ClusterConnectorRequest clusterConnectorRequest) {
     return new ResponseEntity<>(

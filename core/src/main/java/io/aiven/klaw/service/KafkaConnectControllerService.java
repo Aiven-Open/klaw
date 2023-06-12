@@ -36,6 +36,7 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
 import io.aiven.klaw.model.response.ConnectorOverview;
 import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
@@ -461,6 +462,18 @@ public class KafkaConnectControllerService {
       return ApiResponse.builder().success(true).message(deleteTopicReqStatus).build();
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
+    }
+  }
+
+  public ApiResponse restartConnector(KafkaConnectorRestartModel kafkaConnectorRestartModel) {
+    int tenantId = commonUtilsService.getTenantId(getUserName());
+    try {
+      return clusterApiService.restartConnector(kafkaConnectorRestartModel, tenantId);
+    } catch (KlawException e) {
+      return ApiResponse.builder()
+          .success(false)
+          .message("Connector could not be restarted")
+          .build();
     }
   }
 

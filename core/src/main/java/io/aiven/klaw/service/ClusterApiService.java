@@ -28,6 +28,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
 import io.aiven.klaw.model.response.TopicConfig;
@@ -1048,6 +1049,52 @@ public class ClusterApiService {
                   new ParameterizedTypeReference<>() {});
 
       return responseEntity.getBody();
+    } catch (Exception e) {
+      log.error("Error from getAllKafkaConnectors ", e);
+      throw new KlawException(CLUSTER_API_ERR_115);
+    }
+  }
+
+  public ApiResponse restartConnector(
+      KafkaConnectorRestartModel kafkaConnectorRestartModel, int tenantId) throws KlawException {
+    log.info("restartConnector {}", kafkaConnectorRestartModel.getConnectorName());
+    getClusterApiProperties(tenantId);
+    try {
+      Env envSelected =
+          manageDatabase
+              .getHandleDbRequests()
+              .getEnvDetails(kafkaConnectorRestartModel.getEnvId(), tenantId);
+      ResponseEntity<ApiResponse> response;
+
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.KAFKA_CONNECT, tenantId)
+              .get(envSelected.getClusterId());
+
+      String uriPostConnectorsFull = clusterConnUrl + URI_POST_RESTART_CONNECTOR;
+      ClusterConnectorRequest clusterConnectorRequest =
+          ClusterConnectorRequest.builder()
+              .env(kwClusters.getBootstrapServers())
+              .connectorName(kafkaConnectorRestartModel.getConnectorName())
+              .connectorConfig("")
+              .protocol(kwClusters.getProtocol())
+              .clusterIdentification(kwClusters.getClusterName() + kwClusters.getClusterId())
+              .includeFailedTasksOnly(kafkaConnectorRestartModel.isIncludeOnlyFailedTasks())
+              .build();
+
+      HttpHeaders headers = createHeaders(clusterApiUser);
+      HttpEntity<ClusterConnectorRequest> request =
+          new HttpEntity<>(clusterConnectorRequest, headers);
+      response =
+          getRestTemplate()
+              .exchange(
+                  uriPostConnectorsFull,
+                  HttpMethod.POST,
+                  request,
+                  new ParameterizedTypeReference<>() {});
+
+      return response.getBody();
+
     } catch (Exception e) {
       log.error("Error from getAllKafkaConnectors ", e);
       throw new KlawException(CLUSTER_API_ERR_115);

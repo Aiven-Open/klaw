@@ -278,6 +278,30 @@ app.controller("manageConnectorsCtrl", function($scope, $http, $location, $windo
 
         }
 
+        $scope.restartConnector = function(connectorName, envId, failedTasks){
+            $http({
+                method: "POST",
+                url: "connector/restart",
+                headers : { 'Content-Type' : 'application/json' },
+                data:  {'connectorName' : connectorName,
+                    'envId' : $scope.getConnectors.envName,
+                    'includeOnlyFailedTasks' : failedTasks}
+            }).success(function(output) {
+                $scope.alert = "Connector restarting in progress.";
+                swal({
+                    title: "",
+                    text: "Restart in progress",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                }
+            );
+        }
+
 
 	// We add the "time" query parameter to prevent IE
 	// from caching ajax results

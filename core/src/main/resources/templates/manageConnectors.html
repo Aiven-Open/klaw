@@ -531,18 +531,17 @@
 									<table class="table color-table table-hover success-table"  ng-show="resultPages != null"   style="table-layout:fixed;">
 										<thead>
 											<tr>
-												<th width="30%">Connector</th>
-												<th width="10%">Environment</th>
-												<th width="20%">Team</th>
+												<th width="25%">Connector</th>
+												<th width="15%">Team</th>
 												<th align="center" width="10%">Config</th>
-												<th align="center" width="25%">Status</th>
+												<th align="center" width="20%">Status</th>
+												<th align="center" width="20%">Restart</th>
 											</tr>
 										</thead>
 										<tbody>
 										<tr ng-repeat="resultBrowset in resultBrowse" id="{{resultBrowset.connectorName}}" class="gradeX">
 
 											<td>{{ resultBrowset.connectorName}}</td>
-											<td><span class="badge badge-success">{{ resultBrowset.environmentName}}</span></td>
 											<td ng-show="resultBrowset.remarks != 'DELETED'">
 												{{resultBrowset.teamName}}
 											</td>
@@ -576,7 +575,28 @@
 													</tr>
 												</table>
 											</td>
+											<td>
+												<table>
+													<tr>
+														<td>
+															<button ng-click="restartConnector(resultBrowset.connectorName, resultBrowset.environmentName, false);" class="btn btn-sm btn-outline-primary"> <i class="fa fa-check"></i>
+																Restart Connector (includes all tasks)
+															</button>
+														</td>
+													</tr>
+													<tr>
+														<td>
+															<button ng-click="restartConnector(resultBrowset.connectorName, resultBrowset.environmentName, true);" class="btn btn-sm btn-outline-primary"> <i class="fa fa-check"></i>
+																Restart Connector (Only Failed tasks)
+															</button>
+														</td>
+													</tr>
+												</table>
+
+
+											</td>
 										</tr>
+
 
 										</tbody>
 									</table>
