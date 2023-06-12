@@ -12,6 +12,8 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedNavigate,
 }));
 
+const mockSetSchemaVersion = jest.fn();
+
 const testMapTabs = [
   {
     linkTo: "overview",
@@ -145,6 +147,7 @@ const defaultProps = {
   isLoading: false,
   topicName: testTopicName,
   topicOverview: testTopicOverview,
+  setSchemaVersion: mockSetSchemaVersion,
 };
 describe("TopicDetailsResourceTabs", () => {
   const user = userEvent.setup();
