@@ -4,7 +4,7 @@ const NotFound = () => {
   return (
     <>
       <Box role="main" display={"flex"} flexDirection={"column"} gap={"5"}>
-        <Typography.Heading color={"secondary-100"}>
+        <Typography.Heading color={"primary-100"}>
           Page not found
         </Typography.Heading>
 
