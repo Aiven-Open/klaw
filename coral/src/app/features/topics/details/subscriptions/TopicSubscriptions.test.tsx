@@ -58,6 +58,7 @@ const testTopicOverview: TopicOverview = {
       topicDeletable: false,
       envName: "DEV",
       topicName: testTopicName,
+      hasOpenACLRequest: true,
     },
   ],
   aclInfoList: [
