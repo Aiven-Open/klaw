@@ -32,16 +32,16 @@ button:focus-visible {
   outline-offset: 2px !important;
 }
 
-a {
+a:global(:not(.Aquarium-Button)) {
   color: var(--text-link-color);
 }
 
-a:hover,
-a:focus {
+a:global(:not(.Aquarium-Button)):hover,
+a:global(:not(.Aquarium-Button)):focus {
   color: var(--text-link-color-hover);
 }
 
-a:focus-visible {
+a:not(.Aquarium-Button):focus-visible {
   outline-offset: 2px;
   /*represents info-70*/
   outline-color: var(--interactive-elements-focus);
