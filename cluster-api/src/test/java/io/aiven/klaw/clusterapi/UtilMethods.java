@@ -10,6 +10,11 @@ import io.aiven.klaw.clusterapi.models.confluentcloud.AclObject;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListTopicsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.TopicObject;
+import io.aiven.klaw.clusterapi.models.connect.Connector;
+import io.aiven.klaw.clusterapi.models.connect.ConnectorState;
+import io.aiven.klaw.clusterapi.models.connect.ConnectorsStatus;
+import io.aiven.klaw.clusterapi.models.connect.Status;
+import io.aiven.klaw.clusterapi.models.connect.Task;
 import io.aiven.klaw.clusterapi.models.enums.AclIPPrincipleType;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
@@ -289,5 +294,46 @@ public class UtilMethods {
     listAclsResponse.setData(aclObjectArrayList);
 
     return listAclsResponse;
+  }
+
+  public ConnectorsStatus getConnectorsStatus() {
+    ConnectorsStatus connectors = new ConnectorsStatus();
+    List<ConnectorState> connectorStateList = new ArrayList<>();
+    connectors.setConnectorStateList(connectorStateList);
+    ConnectorState connectorState1 = new ConnectorState();
+    connectorState1.setConnectorName("conn1");
+
+    ConnectorState connectorState2 = new ConnectorState();
+    connectorState2.setConnectorName("conn2");
+    connectorStateList.add(connectorState1);
+    connectorStateList.add(connectorState2);
+    return connectors;
+  }
+
+  public Map<String, Map<String, Status>> getConnectorsListMap() {
+    Map<String, Map<String, Status>> responseMap = new HashMap<>();
+    Map<String, Status> statusMap = new HashMap<>();
+
+    Connector connector = new Connector();
+    connector.setState("RUNNING");
+
+    Status status = new Status();
+    status.setConnector(connector);
+    List<Task> taskList = new ArrayList<>();
+    Task t1 = new Task();
+    t1.setState("RUNNING");
+    Task t2 = new Task();
+    t2.setState("RUNNING");
+    Task t3 = new Task();
+    t3.setState("RUNNING");
+    taskList.add(t1);
+    taskList.add(t2);
+    taskList.add(t3);
+    status.setTasks(taskList);
+
+    statusMap.put("status", status);
+    responseMap.put("conn1", statusMap);
+    responseMap.put("conn2", statusMap);
+    return responseMap;
   }
 }

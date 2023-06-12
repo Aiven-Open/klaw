@@ -52,12 +52,12 @@
         <assertj-core.version>3.24.2</assertj-core.version>
         <exec-maven-plugin.version>3.1.0</exec-maven-plugin.version>
         <google-java-format.version>1.15.0</google-java-format.version>
-        <guava.version>32.0.0-jre</guava.version>
+        <guava.version>32.0.1-jre</guava.version>
         <httpclient5.version>5.2.1</httpclient5.version>
         <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
         <jjwt.version>0.11.5</jjwt.version>
-        <maven-failsafe-plugin.version>3.0.0</maven-failsafe-plugin.version>
-        <maven-surefire-plugin.version>3.1.0</maven-surefire-plugin.version>
+        <maven-failsafe-plugin.version>3.1.2</maven-failsafe-plugin.version>
+        <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
         <spotless-maven-plugin.version>2.37.0</spotless-maven-plugin.version>

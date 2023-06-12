@@ -11,6 +11,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.clusterapi.UtilMethods;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
@@ -20,7 +21,6 @@ import io.aiven.klaw.clusterapi.models.error.RestErrorResponse;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
 import org.apache.commons.lang3.tuple.Pair;
-import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +43,11 @@ class KafkaConnectServiceTest {
   private MockRestServiceServer mockRestServiceServer;
   @MockBean private ClusterApiUtils getAdminClient;
 
+  private UtilMethods utilMethods;
+
   @BeforeEach
   public void setUp() {
+    utilMethods = new UtilMethods();
     restTemplate = new RestTemplate();
     kafkaConnectService = new KafkaConnectService(getAdminClient);
     mockRestServiceServer = MockRestServiceServer.bindTo(restTemplate).build();
@@ -59,10 +62,13 @@ class KafkaConnectServiceTest {
         .expect(requestTo("/env/connectors"))
         .andRespond(
             withSuccess(
-                objectMapper.writeValueAsString(Lists.list("conn1", "conn2")),
+                objectMapper.writeValueAsString(utilMethods.getConnectorsListMap()),
                 MediaType.APPLICATION_JSON));
 
-    assertThat(kafkaConnectService.getConnectors("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1"))
+    assertThat(
+            kafkaConnectService
+                .getConnectors("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1")
+                .getConnectorStateList())
         .isNotEmpty();
   }
 

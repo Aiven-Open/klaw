@@ -7,11 +7,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.PromotionStatus;
@@ -289,7 +291,10 @@ public class TopicOverviewService extends BaseOverviewService {
                       .get(topicOverview.getAvailableEnvironments().size() - 1)
                       .getId(),
                   lastItem.getEnvId()));
-          lastItem.setShowDeleteTopic(lastItem.isTopicDeletable() && lastItem.isHighestEnv());
+          lastItem.setShowDeleteTopic(
+              lastItem.isTopicDeletable()
+                  && lastItem.isHighestEnv()
+                  && !isDeleteRequestAlreadyOpen(topicNameSearch, environmentId, tenantId));
         }
       } else {
         PromotionStatus promotionStatus = new PromotionStatus();
@@ -301,6 +306,25 @@ public class TopicOverviewService extends BaseOverviewService {
       promotionStatus.setStatus(ApiResultStatus.NOT_AUTHORIZED.value);
       topicOverview.setTopicPromotionDetails(promotionStatus);
     }
+  }
+
+  private boolean isDeleteRequestAlreadyOpen(
+      String topicNameSearch, String environmentId, int tenantId) {
+
+    List<TopicRequest> topicReqs =
+        manageDatabase
+            .getHandleDbRequests()
+            .getAllTopicRequests(
+                getUserName(),
+                RequestStatus.CREATED.value,
+                null,
+                environmentId,
+                topicNameSearch,
+                false,
+                tenantId);
+    log.debug("Open Reqs for Topics {} , size {}", topicReqs, topicReqs.size());
+    // there should only ever be 1 delete request and in any other scenario this should be 0.
+    return topicReqs.size() >= 1;
   }
 
   private PromotionStatus getTopicPromotionEnv(

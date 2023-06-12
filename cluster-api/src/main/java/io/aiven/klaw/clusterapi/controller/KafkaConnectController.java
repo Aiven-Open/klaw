@@ -2,10 +2,10 @@ package io.aiven.klaw.clusterapi.controller;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
+import io.aiven.klaw.clusterapi.models.connect.ConnectorsStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.services.KafkaConnectService;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,7 @@ public class KafkaConnectController {
       value = "/getAllConnectors/{kafkaConnectHost}/{protocol}/{clusterIdentification}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<String>> getAllConnectors(
+  public ResponseEntity<ConnectorsStatus> getAllConnectors(
       @PathVariable String kafkaConnectHost,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterIdentification) {

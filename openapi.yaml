@@ -7224,6 +7224,17 @@
           "connectorName" : {
             "type" : "string"
           },
+          "connectorStatus" : {
+            "type" : "string"
+          },
+          "runningTasks" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "failedTasks" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
           "environmentId" : {
             "type" : "string"
           },
@@ -7283,7 +7294,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "environmentId", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorStatus", "environmentId", "failedTasks", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {

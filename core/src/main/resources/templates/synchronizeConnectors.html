@@ -550,10 +550,11 @@
 										<thead>
 											<tr>
 												<th width="30%">Connector</th>
-												<th width="15%">Environment</th>
-												<th width="25%">Team</th>
-												<th align="center" width="15%">Config</th>
-												<th align="center" width="15%">Info</th>
+												<th width="10%">Environment</th>
+												<th width="20%">Team</th>
+												<th align="center" width="10%">Config</th>
+												<th align="center" width="5%">Info</th>
+												<th align="center" width="25%">Status</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -611,6 +612,24 @@
 													<i class="fas fa-chess-rook"></i>
 													<span class="tooltip-content3">Connector synchronized.</span>
 												</a>
+											</td>
+											<td>
+												<table>
+													<tr>
+														<td ng-show="resultBrowset.connectorStatus === 'RUNNING'">
+															Connector Status : <span class="badge badge-success">{{ resultBrowset.connectorStatus}}</span>
+														</td>
+														<td ng-show="resultBrowset.connectorStatus != 'RUNNING'">
+															Connector Status : <span class="badge badge-warning">{{ resultBrowset.connectorStatus}}</span>
+														</td>
+													</tr>
+													<tr>
+														<td>Running tasks : {{resultBrowset.runningTasks}}</td>
+													</tr>
+													<tr>
+														<td>Failed tasks : {{resultBrowset.failedTasks}}</td>
+													</tr>
+												</table>
 											</td>
 										</tr>
 
