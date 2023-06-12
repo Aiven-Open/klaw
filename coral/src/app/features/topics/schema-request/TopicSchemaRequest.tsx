@@ -38,7 +38,7 @@ type TopicSchemaRequestProps = {
 // be able to add this tests. I created na issue in github related to MonacoEditor testing already.
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { topicName } = props;
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const presetEnvironment = searchParams.get("env");
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
@@ -83,11 +83,18 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     queryFn: () => getEnvironmentsForSchemaRequest(),
     onSuccess: (environments) => {
       if (presetEnvironment) {
-        const isValidEnv = environments.find(
-          (env) => presetEnvironment === env.id
+        const validEnv = environments.find(
+          (env) =>
+            presetEnvironment === env.id || presetEnvironment === env.name
         );
 
-        if (!isValidEnv) {
+        // Allows to pass envirnment name as well as environment id as search param
+        if (validEnv && isNaN(Number(presetEnvironment))) {
+          searchParams.set("env", validEnv.id);
+          setSearchParams(searchParams);
+        }
+
+        if (validEnv === undefined) {
           navigate(-1);
         }
       }
