@@ -121,6 +121,8 @@ function TopicOverviewResourcesTabs({
             topicName: topicOverview.topicInfoList[0].topicName,
             topicSchemas,
             userCanDeleteTopic: topicOverview.topicInfoList[0].topicDeletable,
+            topicHasOpenDeleteRequest:
+              !topicOverview.topicInfoList[0].showDeleteTopic,
           }}
         />
       </div>

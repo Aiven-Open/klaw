@@ -123,7 +123,6 @@ function useTopicDetails() {
     topicOverview: TopicOverview;
     topicName: string;
     topicSchemas: TopicSchemaOverview;
-    userCanDeleteTopic: boolean;
   }>();
 }
 

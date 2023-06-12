@@ -16,7 +16,11 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { TopicDeleteConfirmationModal } from "src/app/features/topics/details/settings/components/TopicDeleteConfirmationModal";
 
 function TopicSettings() {
-  const { topicName, environmentId, userCanDeleteTopic } = useTopicDetails();
+  const { topicName, environmentId, topicOverview } = useTopicDetails();
+
+  const isTopicOwner = topicOverview.topicInfoList[0].topicOwner;
+  const showDeleteTopic = topicOverview.topicInfoList[0].showDeleteTopic;
+
   const navigate = useNavigate();
   const toast = useToast();
 
@@ -49,6 +53,33 @@ function TopicSettings() {
     }
   );
 
+  function getDeleteDisabledInformation() {
+    const topicHasOpenACLRequest =
+      topicOverview.topicInfoList[0].hasOpenACLRequest;
+    const topicIsOnHigherEnvironment =
+      !topicOverview.topicInfoList[0].highestEnv;
+    const topicHasPendingRequests =
+      topicOverview.topicInfoList[0].hasOpenRequest;
+
+    return (
+      <ul style={{ listStyle: "initial" }}>
+        {topicHasOpenACLRequest && (
+          <li>
+            The topic has active subscriptions. Please delete them before
+            deleting the topic.
+          </li>
+        )}
+        {topicIsOnHigherEnvironment && (
+          <li>
+            The topic is on a higher environment. Please delete the topic from
+            that environment first.
+          </li>
+        )}
+        {topicHasPendingRequests && <li>The topic has a pending request.</li>}
+      </ul>
+    );
+  }
+
   return (
     <>
       {showConfirmation && (
@@ -72,38 +103,56 @@ function TopicSettings() {
         </Box>
       )}
 
-      {!userCanDeleteTopic && (
+      {!isTopicOwner && (
         <div>
           Settings can only be edited by team members of the team the topic does
           belong to.
         </div>
       )}
 
-      {userCanDeleteTopic && (
+      {isTopicOwner && (
         <>
           <Typography.Subheading>Danger zone</Typography.Subheading>
           <BorderBox
             display={"flex"}
-            borderColor={"warning-100"}
+            flexDirection={"column"}
+            borderColor={"error-60"}
             padding={"l2"}
-            alignItems={"center"}
-            justifyContent={"space-between"}
             marginTop={"l2"}
+            rowGap={"l2"}
           >
-            <div>
-              <Typography.DefaultStrong htmlTag={"h3"}>
-                Delete this topic
-              </Typography.DefaultStrong>
-              <Box component={"p"}>
-                Once you delete a topic, there is no going back. Please be
-                certain.
-              </Box>
-            </div>
-            <div>
-              <Button.Primary onClick={() => setShowConfirmation(true)}>
-                Delete topic
-              </Button.Primary>
-            </div>
+            {!showDeleteTopic && (
+              <Alert type={"warning"}>
+                <>
+                  You can not create a delete request for this topic: <br />
+                  {getDeleteDisabledInformation()}
+                </>
+              </Alert>
+            )}
+            <Box
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"space-between"}
+            >
+              <div>
+                <Typography.DefaultStrong htmlTag={"h3"}>
+                  Delete this topic
+                </Typography.DefaultStrong>
+                <Box component={"p"}>
+                  Once you delete a topic, there is no going back. Please be
+                  certain.
+                </Box>
+              </div>
+
+              <div>
+                <Button.Primary
+                  onClick={() => setShowConfirmation(true)}
+                  disabled={!showDeleteTopic}
+                >
+                  Delete topic
+                </Button.Primary>
+              </div>
+            </Box>
           </BorderBox>
         </>
       )}

@@ -3,8 +3,9 @@ import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { Context as AquariumContext } from "@aivenio/aquarium";
-import { deleteTopic } from "src/domain/topic";
+import { deleteTopic, TopicOverview } from "src/domain/topic";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
+import { KlawApiModel } from "types/utils";
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -22,18 +23,348 @@ const mockDeleteTopic = deleteTopic as jest.MockedFunction<typeof deleteTopic>;
 
 const testTopicName = "my-nice-topic";
 const testEnvironmentId = 8;
+const testTopicInfoListEntry: KlawApiModel<"TopicOverviewInfo"> = {
+  topicName: testTopicName,
+  noOfPartitions: 1,
+  noOfReplicas: "1",
+  teamname: "Ospo",
+  teamId: 1003,
+  envId: "1",
+  showEditTopic: true,
+  showDeleteTopic: true,
+  topicDeletable: true,
+  envName: "DEV",
+  topicOwner: true,
+  hasOpenACLRequest: false,
+  highestEnv: true,
+  hasOpenRequest: false,
+};
+const testTopicOverview: TopicOverview = {
+  topicExists: true,
+  schemaExists: false,
+  prefixAclsExists: false,
+  txnAclsExists: false,
+  topicInfoList: [testTopicInfoListEntry],
+  aclInfoList: [],
+  topicHistoryList: [],
+  topicPromotionDetails: {
+    status: "NO_PROMOTION",
+    topicName: testTopicName,
+  },
+  availableEnvironments: [],
+  topicIdForDocumentation: 9999,
+};
 
+const mockTopicDetails = {
+  topicName: "my-nice-topic",
+  environmentId: 8,
+  topicOverview: testTopicOverview,
+};
 describe("TopicSettings", () => {
   const user = userEvent.setup();
 
-  describe("renders all necessary elements if user can delete topic", () => {
+  describe("shows information if user is not allowed to delete topic", () => {
     beforeAll(() => {
       mockDeleteTopic.mockImplementation(jest.fn());
       mockedUseTopicDetails.mockReturnValue({
-        topicName: testTopicName,
-        environmentId: testEnvironmentId,
-        userCanDeleteTopic: true,
+        ...mockTopicDetails,
+        topicOverview: {
+          ...testTopicOverview,
+          topicInfoList: [{ ...testTopicInfoListEntry, topicOwner: false }],
+        },
       });
+
+      customRender(
+        <AquariumContext>
+          <TopicSettings />
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows a page headline", () => {
+      const pageHeadline = screen.getByRole("heading", { name: "Settings" });
+
+      expect(pageHeadline).toBeVisible();
+    });
+
+    it("shows no headline for the danger zone", () => {
+      const dangerHeadline = screen.queryByRole("heading", {
+        name: "Danger zone",
+      });
+
+      expect(dangerHeadline).not.toBeInTheDocument();
+    });
+
+    it("shows no button to delete the topic", () => {
+      const button = screen.queryByRole("button", {
+        name: "Delete topic",
+      });
+
+      expect(button).not.toBeInTheDocument();
+    });
+
+    it("shows information that settings are only available for users of a team", () => {
+      const information = screen.getByText(
+        "Settings can only be edited by team members of the team the topic does belong" +
+          " to."
+      );
+
+      expect(information).toBeVisible();
+    });
+  });
+
+  describe("shows information if user is allowed to delete but topic is not deletable at the moment", () => {
+    describe("informs user that topic is not deletable because there are active subscriptions", () => {
+      beforeAll(() => {
+        mockDeleteTopic.mockImplementation(jest.fn());
+        mockedUseTopicDetails.mockReturnValue({
+          ...mockTopicDetails,
+          topicOverview: {
+            ...testTopicOverview,
+            topicInfoList: [
+              {
+                ...testTopicInfoListEntry,
+                showDeleteTopic: false,
+                hasOpenACLRequest: true,
+              },
+            ],
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicSettings />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows the headline for the danger zone", () => {
+        const dangerHeadline = screen.getByRole("heading", {
+          name: "Danger zone",
+        });
+
+        expect(dangerHeadline).toBeVisible();
+      });
+
+      it("shows information topic can not be deleted at the moment", () => {
+        const information = screen.getByText(
+          "You can not create a delete request for this topic:"
+        );
+
+        expect(information).toBeVisible();
+      });
+
+      it("shows information that topic has open ACL requests", () => {
+        const information = screen.getByText(
+          "The topic has active subscriptions. Please delete them before deleting the topic."
+        );
+
+        expect(information).toBeVisible();
+      });
+
+      it("shows a disabled button to delete the topic", () => {
+        const button = screen.getByRole("button", {
+          name: "Delete topic",
+        });
+
+        expect(button).toBeDisabled();
+      });
+    });
+
+    describe("informs user that topic  is not deletable because it is on a higher environment", () => {
+      beforeAll(() => {
+        mockDeleteTopic.mockImplementation(jest.fn());
+        mockedUseTopicDetails.mockReturnValue({
+          ...mockTopicDetails,
+          topicOverview: {
+            ...testTopicOverview,
+            topicInfoList: [
+              {
+                ...testTopicInfoListEntry,
+                showDeleteTopic: false,
+                highestEnv: false,
+              },
+            ],
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicSettings />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows the headline for the danger zone", () => {
+        const dangerHeadline = screen.getByRole("heading", {
+          name: "Danger zone",
+        });
+
+        expect(dangerHeadline).toBeVisible();
+      });
+
+      it("shows information topic can not be deleted at the moment", () => {
+        const information = screen.getByText(
+          "You can not create a delete request for this topic:"
+        );
+
+        expect(information).toBeVisible();
+      });
+
+      it("shows information that topic exists on a higher environment", () => {
+        const reasonsList = screen.getByRole("list");
+        const listItem = within(reasonsList).getAllByRole("listitem");
+
+        expect(listItem[0]).toHaveTextContent(
+          "The topic is on a higher environment. Please delete the topic from that environment first."
+        );
+        expect(listItem).toHaveLength(1);
+      });
+
+      it("shows a disabled button to delete the topic", () => {
+        const button = screen.getByRole("button", {
+          name: "Delete topic",
+        });
+
+        expect(button).toBeDisabled();
+      });
+    });
+
+    describe("informs user that topic is not deletable because of a pending request", () => {
+      beforeAll(() => {
+        mockDeleteTopic.mockImplementation(jest.fn());
+        mockedUseTopicDetails.mockReturnValue({
+          ...mockTopicDetails,
+          topicOverview: {
+            ...testTopicOverview,
+            topicInfoList: [
+              {
+                ...testTopicInfoListEntry,
+                showDeleteTopic: false,
+                hasOpenRequest: true,
+              },
+            ],
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicSettings />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows the headline for the danger zone", () => {
+        const dangerHeadline = screen.getByRole("heading", {
+          name: "Danger zone",
+        });
+
+        expect(dangerHeadline).toBeVisible();
+      });
+
+      it("shows information topic can not be deleted at the moment", () => {
+        const information = screen.getByText(
+          "You can not create a delete request for this topic:"
+        );
+
+        expect(information).toBeVisible();
+      });
+
+      it("shows information that topic has a pending request", () => {
+        const reasonsList = screen.getByRole("list");
+        const listItem = within(reasonsList).getAllByRole("listitem");
+
+        expect(listItem[0]).toHaveTextContent(
+          "The topic has a pending request."
+        );
+        expect(listItem).toHaveLength(1);
+      });
+
+      it("shows a disabled button to delete the topic", () => {
+        const button = screen.getByRole("button", {
+          name: "Delete topic",
+        });
+
+        expect(button).toBeDisabled();
+      });
+    });
+
+    describe("informs user that topic is not deletable because multiple reasons", () => {
+      beforeAll(() => {
+        mockDeleteTopic.mockImplementation(jest.fn());
+        mockedUseTopicDetails.mockReturnValue({
+          ...mockTopicDetails,
+          topicOverview: {
+            ...testTopicOverview,
+            topicInfoList: [
+              {
+                ...testTopicInfoListEntry,
+                showDeleteTopic: false,
+                hasOpenRequest: true,
+                hasOpenACLRequest: true,
+              },
+            ],
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicSettings />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows information that topic has a pending request and open ACL requests", () => {
+        const reasonsList = screen.getByRole("list");
+        const listItem = within(reasonsList).getAllByRole("listitem");
+
+        expect(listItem[0]).toHaveTextContent(
+          "The topic has active subscriptions. Please delete them before deleting the topic."
+        );
+
+        expect(listItem[1]).toHaveTextContent(
+          "The topic has a pending request."
+        );
+
+        expect(listItem).toHaveLength(2);
+      });
+    });
+  });
+
+  describe("renders all necessary elements if user can delete topic and it is deletable", () => {
+    beforeAll(() => {
+      mockDeleteTopic.mockImplementation(jest.fn());
+      mockedUseTopicDetails.mockReturnValue(mockTopicDetails);
 
       customRender(
         <AquariumContext>
@@ -87,71 +418,13 @@ describe("TopicSettings", () => {
     });
   });
 
-  describe("shows information if user is not able to delte topic", () => {
-    beforeAll(() => {
-      mockDeleteTopic.mockImplementation(jest.fn());
-      mockedUseTopicDetails.mockReturnValue({
-        topicName: testTopicName,
-        environmentId: testEnvironmentId,
-        userCanDeleteTopic: false,
-      });
-
-      customRender(
-        <AquariumContext>
-          <TopicSettings />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
-    });
-
-    afterAll(cleanup);
-
-    it("shows a page headline", () => {
-      const pageHeadline = screen.getByRole("heading", { name: "Settings" });
-
-      expect(pageHeadline).toBeVisible();
-    });
-
-    it("shows no headline for the danger zone", () => {
-      const dangerHeadline = screen.queryByRole("heading", {
-        name: "Danger zone",
-      });
-
-      expect(dangerHeadline).not.toBeInTheDocument();
-    });
-
-    it("shows no button to delete the topic", () => {
-      const button = screen.queryByRole("button", {
-        name: "Delete topic",
-      });
-
-      expect(button).not.toBeInTheDocument();
-    });
-
-    it("shows information that settings are only available for users of a team", () => {
-      const information = screen.getByText(
-        "Settings can only be edited by team members of the team the topic does belong" +
-          " to."
-      );
-
-      expect(information).toBeVisible();
-    });
-  });
-
   describe("enables user to delete a topic", () => {
     const originalConsoleError = console.error;
 
     beforeEach(() => {
       console.error = jest.fn();
       mockDeleteTopic.mockImplementation(jest.fn());
-      mockedUseTopicDetails.mockReturnValue({
-        topicName: testTopicName,
-        environmentId: testEnvironmentId,
-        userCanDeleteTopic: true,
-      });
+      mockedUseTopicDetails.mockReturnValue(mockTopicDetails);
 
       customRender(
         <AquariumContext>
