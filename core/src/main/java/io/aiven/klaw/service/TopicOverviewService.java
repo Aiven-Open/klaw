@@ -204,10 +204,13 @@ public class TopicOverviewService extends BaseOverviewService {
         tmpAclPrefixed = applyFiltersAclsForSOT(loggedInUserTeam, prefixedAcls, tenantId);
         prefixedAclsInfo.addAll(tmpAclPrefixed);
       }
-
+      topicInfo.setHasOpenACL(
+          aclInfo.stream()
+              .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
       // show edit button only forenv owned by your team
       if (Objects.equals(topicOwnerTeamId, loggedInUserTeam)) {
         topicInfo.setShowEditTopic(true);
+        topicInfo.setTopicOwner(true);
       }
     }
   }
@@ -276,7 +279,16 @@ public class TopicOverviewService extends BaseOverviewService {
               aclInfo.stream()
                   .noneMatch(
                       aclItem -> Objects.equals(aclItem.getEnvironment(), lastItem.getEnvId())));
-          lastItem.setShowDeleteTopic(lastItem.isTopicDeletable());
+
+          // Available environments is ordered from lowest to highest environment. See line filterByEnvIdParameter
+          lastItem.setHighestEnv(
+              Objects.equals(
+                  topicOverview
+                      .getAvailableEnvironments()
+                      .get(topicOverview.getAvailableEnvironments().size() - 1)
+                      .getId(),
+                  lastItem.getEnvId()));
+          lastItem.setShowDeleteTopic(lastItem.isTopicDeletable() && lastItem.isHighestEnv());
         }
       } else {
         PromotionStatus promotionStatus = new PromotionStatus();

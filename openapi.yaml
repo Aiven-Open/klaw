@@ -6888,11 +6888,20 @@
           "topicDeletable" : {
             "type" : "boolean"
           },
+          "hasOpenACL" : {
+            "type" : "boolean"
+          },
           "envName" : {
             "type" : "string"
+          },
+          "topicOwner" : {
+            "type" : "boolean"
+          },
+          "highestEnv" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "envId", "envName", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "envId", "envName", "hasOpenACL", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
       "TopicDetailsPerEnv" : {
         "properties" : {
