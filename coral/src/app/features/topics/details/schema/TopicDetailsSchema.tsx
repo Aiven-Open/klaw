@@ -11,12 +11,21 @@ import {
 import add from "@aivenio/aquarium/icons/add";
 import gitNewBranch from "@aivenio/aquarium/icons/gitNewBranch";
 import MonacoEditor from "@monaco-editor/react";
+import { Link } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
 
 function TopicDetailsSchema() {
-  const { topicName, environmentId } = useTopicDetails();
+  const {
+    topicName,
+    topicSchemas: {
+      allSchemaVersions = [],
+      latestVersion,
+      schemaDetailsPerEnv,
+    },
+    setSchemaVersion,
+  } = useTopicDetails();
 
   function promoteSchema() {
     console.log("dummy function");
@@ -30,27 +39,29 @@ function TopicDetailsSchema() {
           <NativeSelect
             style={{ width: "300px" }}
             aria-label={"Select version"}
+            onChange={(e) => setSchemaVersion(Number(e.target.value))}
+            defaultValue={schemaDetailsPerEnv?.version}
           >
-            <Option key={"1"} value={"1"}>
-              version 1
-            </Option>
+            {allSchemaVersions.map((version) => (
+              <Option key={version} value={version}>
+                Version {version} {version === latestVersion && "(latest)"}
+              </Option>
+            ))}
           </NativeSelect>
-          <Typography.SmallTextBold color={"grey-40"}>
+          <Typography.SmallStrong color={"grey-40"}>
             <Box display={"flex"} marginTop={"3"} colGap={"2"}>
               <Icon icon={gitNewBranch} style={{ marginTop: "2px" }} />{" "}
-              <span>5 versions</span>
+              <span>{allSchemaVersions.length} versions</span>
             </Box>
-          </Typography.SmallTextBold>
+          </Typography.SmallStrong>
         </Box>
 
         <Box alignSelf={"top"}>
-          <Button.ExternalLink
-            //@TODO verify if environmentId is the right one
-            href={`/topic/${topicName}/request-schema?env=${environmentId}`}
-            icon={add}
+          <Link
+            to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv?.env}`}
           >
-            Request a new version
-          </Button.ExternalLink>
+            <Button.Primary icon={add}>Request a new version</Button.Primary>
+          </Link>
         </Box>
       </Box>
 
@@ -60,7 +71,13 @@ function TopicDetailsSchema() {
         promoteSchema={promoteSchema}
       />
 
-      <SchemaStats version={99} id={999} compatibility={"BACKWARDS"} />
+      <SchemaStats
+        version={schemaDetailsPerEnv?.version || 0}
+        id={schemaDetailsPerEnv?.id || 0}
+        compatibility={
+          schemaDetailsPerEnv?.compatibility || "Couldn't retrieve"
+        }
+      />
 
       <Box marginTop={"l3"} marginBottom={"l2"}>
         <Label>Schema</Label>
@@ -71,7 +88,7 @@ function TopicDetailsSchema() {
             height="250px"
             language="json"
             theme={"light"}
-            value={"{ huhu: 'huhu' }"}
+            value={schemaDetailsPerEnv?.content}
             loading={"Loading preview"}
             options={{
               ariaLabel: "Schema preview",
