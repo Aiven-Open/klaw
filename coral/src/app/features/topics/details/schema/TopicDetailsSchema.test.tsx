@@ -119,7 +119,7 @@ describe("TopicDetailsSchema", () => {
 
     expect(compatibilityInfo).toBeVisible();
     expect(compatibilityInfo.parentElement).toHaveTextContent(
-      "Couldn't retrieveCompatibility"
+      "COULDN'T RETRIEVE"
     );
   });
 

@@ -95,7 +95,8 @@ function TopicDetailsSchema() {
         version={schemaDetailsPerEnv?.version || 0}
         id={schemaDetailsPerEnv?.id || 0}
         compatibility={
-          schemaDetailsPerEnv?.compatibility || "Couldn't retrieve"
+          schemaDetailsPerEnv?.compatibility?.toUpperCase() ||
+          "Couldn't retrieve".toUpperCase()
         }
       />
 
