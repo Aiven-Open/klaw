@@ -12,6 +12,7 @@ import {
   TopicRequestStatus,
   TopicRequest,
   TopicOverview,
+  DeleteTopicPayload,
 } from "src/domain/topic/topic-types";
 
 export type {
@@ -22,5 +23,6 @@ export type {
   TopicRequestOperationTypes,
   TopicRequestStatus,
   TopicOverview,
+  DeleteTopicPayload,
 };
 export { getTopics, getTopicNames, getTopicTeam, deleteTopic };

@@ -12,6 +12,7 @@ import {
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import {
+  DeleteTopicPayload,
   NoContent,
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
@@ -25,7 +26,6 @@ import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
-  ResolveIntersectionTypes,
 } from "types/utils";
 
 const getTopics = async (
@@ -217,14 +217,8 @@ const deleteTopicRequest = ({
   });
 };
 
-type DeleteTopicParams = ResolveIntersectionTypes<
-  KlawApiModel<"TopicDeleteRequestModel"> & {
-    remark?: string;
-  }
->;
-
-const deleteTopic = (params: DeleteTopicParams) => {
-  const paramToPass: KlawApiModel<"TopicDeleteRequestModel"> = {
+const deleteTopic = (params: DeleteTopicPayload) => {
+  const payload: KlawApiModel<"TopicDeleteRequestModel"> = {
     deleteAssociatedSchema: params.deleteAssociatedSchema,
     env: params.env,
     topicName: params.topicName,
@@ -233,7 +227,7 @@ const deleteTopic = (params: DeleteTopicParams) => {
   return api.post<
     KlawApiResponse<"createTopicDeleteRequest">,
     KlawApiModel<"TopicDeleteRequestModel">
-  >(API_PATHS.createTopicDeleteRequest, paramToPass);
+  >(API_PATHS.createTopicDeleteRequest, payload);
 };
 
 const getTopicOverview = ({

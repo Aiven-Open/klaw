@@ -44,6 +44,11 @@ type TopicOverviewApiResponse = KlawApiResponse<"getTopicOverview">;
 type TopicOverview = KlawApiModel<"TopicOverview">;
 type TopicSchemaOverview = KlawApiModel<"SchemaOverview">;
 
+type DeleteTopicPayload = ResolveIntersectionTypes<
+  KlawApiModel<"TopicDeleteRequestModel"> & {
+    remark?: string;
+  }
+>;
 export type {
   Topic,
   TopicNames,
@@ -60,4 +65,5 @@ export type {
   NoContent,
   TopicOverview,
   TopicSchemaOverview,
+  DeleteTopicPayload,
 };
