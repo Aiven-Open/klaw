@@ -8,6 +8,7 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
 import io.aiven.klaw.model.response.ConnectorOverview;
 import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
@@ -219,5 +220,15 @@ public class KafkaConnectController {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorDetailsPerEnv(envId, connectorName),
         HttpStatus.OK);
+  }
+
+  @PostMapping(
+      value = "/connector/restart",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> restartConnector(
+      @RequestBody @Valid KafkaConnectorRestartModel kafkaConnectorRestartModel)
+      throws KlawException, KlawRestException {
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.restartConnector(kafkaConnectorRestartModel), HttpStatus.OK);
   }
 }

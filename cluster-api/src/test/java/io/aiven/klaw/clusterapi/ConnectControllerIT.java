@@ -15,6 +15,7 @@ import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.crypto.spec.SecretKeySpec;
@@ -90,7 +91,8 @@ public class ConnectControllerIT {
                 .withContentType(org.mockserver.model.MediaType.APPLICATION_JSON)
                 .withBody(objectMapper.writeValueAsString(responseMap)));
 
-    String url = "/topics/getAllConnectors/" + CONNECT_REST_API + "/SSL/DEVCON1";
+    String url =
+        "/topics/getAllConnectors/" + CONNECT_REST_API + "/SSL/DEVCON1?connectorStatus=true";
     MockHttpServletResponse response =
         mvc.perform(
                 MockMvcRequestBuilders.get(url)
@@ -109,6 +111,37 @@ public class ConnectControllerIT {
         .extracting(ConnectorState::getConnectorStatus)
         .contains("RUNNING")
         .contains("RUNNING");
+  }
+
+  @Test
+  @Order(2)
+  public void getConnectorsWithoutStatus() throws Exception {
+    List<String> responseMap = List.of("conn1", "conn2");
+
+    mockServerClient
+        .when(request().withPath("/connectors"))
+        .respond(
+            response()
+                .withStatusCode(HttpStatusCode.OK_200.code())
+                .withContentType(org.mockserver.model.MediaType.APPLICATION_JSON)
+                .withBody(objectMapper.writeValueAsString(responseMap)));
+
+    String url =
+        "/topics/getAllConnectors/" + CONNECT_REST_API + "/SSL/DEVCON1?connectorStatus=false";
+    MockHttpServletResponse response =
+        mvc.perform(
+                MockMvcRequestBuilders.get(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header(
+                        AUTHORIZATION,
+                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse();
+    ConnectorsStatus connectorsStatusResponse =
+        OBJECT_MAPPER.readValue(response.getContentAsString(), ConnectorsStatus.class);
+    assertThat(connectorsStatusResponse.getConnectorStateList().size()).isEqualTo(2);
   }
 
   private String generateToken(
