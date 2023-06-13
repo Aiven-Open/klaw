@@ -43,6 +43,7 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
@@ -135,6 +136,7 @@ public class TopicControllerService {
     topicRequestDao.setTenantId(commonUtilsService.getTenantId(userName));
 
     String result = dbHandle.requestForTopic(topicRequestDao).get("result");
+    // default to Topic_CREATE which is the old hard coded
 
     mailService.sendMail(
         topicRequestReq.getTopicname(),
@@ -144,13 +146,24 @@ public class TopicControllerService {
         null,
         NumberUtils.toInt(topicRequestReq.getApprovingTeamId(), -1),
         dbHandle,
-        TOPIC_CREATE_REQUESTED,
+        getMailType(topicRequestReq),
         commonUtilsService.getLoginUrl());
 
     return ApiResponse.builder()
         .success((result.equals(ApiResultStatus.SUCCESS.value)))
         .message(result)
         .build();
+  }
+
+  private static MailType getMailType(TopicRequestModel topicRequestReq) {
+    // default to Topic_CREATE which is the old hard coded
+    return topicRequestReq.getRequestOperationType().equals(RequestOperationType.CREATE)
+        ? TOPIC_CREATE_REQUESTED
+        : topicRequestReq.getRequestOperationType().equals(RequestOperationType.PROMOTE)
+            ? TOPIC_PROMOTION_REQUESTED
+            : topicRequestReq.getRequestOperationType().equals(RequestOperationType.UPDATE)
+                ? TOPIC_UPDATE_REQUESTED
+                : TOPIC_CREATE_REQUESTED;
   }
 
   private void mapAdvancedTopicConfiguration(

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.stereotype.Service;
 
@@ -270,6 +271,22 @@ public class DefaultDataService {
             KwConstants.MAIL_PASSWORDCHANGED_CONTENT,
             "Email notification body for password update.");
     kwPropertiesList.add(kwProperties35);
+
+    KwProperties kwProperties36 =
+        new KwProperties(
+            "klaw.mail.topicpromotionrequest.content",
+            tenantId,
+            KwConstants.MAIL_TOPICPROMOTIONREQUEST_CONTENT,
+            "Email notification body for a new Topic Promotion Request");
+    kwPropertiesList.add(kwProperties36);
+
+    KwProperties kwProperties37 =
+        new KwProperties(
+            "klaw.mail.topicupdaterequest.content",
+            tenantId,
+            KwConstants.MAIL_TOPICUPDATEREQUEST_CONTENT,
+            "Email notification body for a new Topic Update Request");
+    kwPropertiesList.add(kwProperties37);
     return kwPropertiesList;
   }
 

@@ -416,7 +416,9 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   public String getKwPropertyValue(String kwKey, int tenantId) {
     if (kwPropertiesMapPerTenant.get(tenantId) != null) {
-      return kwPropertiesMapPerTenant.get(tenantId).get(kwKey).get("kwvalue");
+      return kwPropertiesMapPerTenant.get(tenantId).get(kwKey) != null
+          ? kwPropertiesMapPerTenant.get(tenantId).get(kwKey).get("kwvalue")
+          : "";
     } else {
       return "";
     }

@@ -43,6 +43,8 @@ public class MailUtils {
   private String preferredUsername;
 
   private static final String TOPIC_REQ_KEY = "klaw.mail.topicrequest.content";
+  private static final String TOPIC_PROMOTION_REQ_KEY = "klaw.mail.topicpromotionrequest.content";
+  private static final String TOPIC_UPDATE_REQ_KEY = "klaw.mail.topicupdaterequest.content";
   private static final String TOPIC_REQ_DEL_KEY = "klaw.mail.topicdeleterequest.content";
   private static final String TOPIC_REQ_CLAIM_KEY = "klaw.mail.topicclaimrequest.content";
   private static final String TOPIC_REQ_APPRVL_KEY = "klaw.mail.topicrequestapproval.content";
@@ -64,6 +66,9 @@ public class MailUtils {
       "klaw.mail.registerusertouser.saasadmin.content";
   private static final String RECONCILIATION_TOPICS_KEY = "klaw.mail.recontopics.content";
   private String topicRequestMail;
+
+  private String topicPromotionRequestMail;
+  private String topicUpdateRequestMail;
   private String topicDeleteRequestMail;
   private String topicClaimRequestMail;
   private String topicRequestApproved;
@@ -75,6 +80,10 @@ public class MailUtils {
 
   private void loadKwProps(int tenantId) {
     this.topicRequestMail = manageDatabase.getKwPropertyValue(TOPIC_REQ_KEY, tenantId);
+
+    this.topicUpdateRequestMail = manageDatabase.getKwPropertyValue(TOPIC_UPDATE_REQ_KEY, tenantId);
+    this.topicPromotionRequestMail =
+        manageDatabase.getKwPropertyValue(TOPIC_PROMOTION_REQ_KEY, tenantId);
     this.topicDeleteRequestMail = manageDatabase.getKwPropertyValue(TOPIC_REQ_DEL_KEY, tenantId);
     this.topicClaimRequestMail = manageDatabase.getKwPropertyValue(TOPIC_REQ_CLAIM_KEY, tenantId);
     this.topicRequestApproved = manageDatabase.getKwPropertyValue(TOPIC_REQ_APPRVL_KEY, tenantId);
@@ -120,6 +129,16 @@ public class MailUtils {
       case TOPIC_CREATE_REQUESTED -> {
         formattedStr = String.format(topicRequestMail, "'" + topicName + "'");
         subject = "Create Topic Request";
+        requiresApproval = true;
+      }
+      case TOPIC_PROMOTION_REQUESTED -> {
+        formattedStr = String.format(topicPromotionRequestMail, "'" + topicName + "'");
+        subject = "Topic Promotion Request";
+        requiresApproval = true;
+      }
+      case TOPIC_UPDATE_REQUESTED -> {
+        formattedStr = String.format(topicUpdateRequestMail, "'" + topicName + "'");
+        subject = "Topic Update Request";
         requiresApproval = true;
       }
       case TOPIC_DELETE_REQUESTED -> {
@@ -172,6 +191,11 @@ public class MailUtils {
         requiresApproval = true;
         subject = "New Schema Request";
         formattedStr = "New Schema Request on " + topicName;
+      }
+      case SCHEMA_PROMOTION_REQUESTED -> {
+        requiresApproval = true;
+        subject = "New Schema Promotion Request";
+        formattedStr = "New Schema Promotion Request on " + topicName;
       }
       case CONNECTOR_DELETE_REQUESTED, CONNECTOR_CREATE_REQUESTED -> {
         // all remaining requests that require approvals are grouped here.
