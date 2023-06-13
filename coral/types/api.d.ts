@@ -195,6 +195,9 @@ export type paths = {
   "/createAcl": {
     post: operations["createAcl"];
   };
+  "/connector/restart": {
+    post: operations["restartConnector"];
+  };
   "/chPwd": {
     post: operations["changePwd"];
   };
@@ -299,7 +302,7 @@ export type paths = {
     get: operations["getSyncEnv"];
   };
   "/getSyncConnectors": {
-    get: operations["getSyncTopics_1"];
+    get: operations["getSyncConnectors"];
   };
   "/getSyncConnectorsEnv": {
     get: operations["getSyncConnectorsEnv"];
@@ -396,6 +399,9 @@ export type paths = {
   };
   "/getConnectors": {
     get: operations["getConnectors"];
+  };
+  "/getConnectorsToManage": {
+    get: operations["getConnectorsToManage"];
   };
   "/getConnectorRequests": {
     get: operations["getConnectorRequests"];
@@ -778,6 +784,11 @@ export type components = {
       requestingteam?: number;
       aclResourceType?: string;
       otherParams?: string;
+    };
+    KafkaConnectorRestartModel: {
+      connectorName: string;
+      envId: string;
+      includeOnlyFailedTasks: boolean;
     };
     KwTenantModel: {
       tenantName: string;
@@ -1454,6 +1465,7 @@ export type components = {
       addTeams: string;
       syncTopicsAcls: string;
       syncConnectors: string;
+      manageConnectors: string;
       syncSchemas: string;
       approveAtleastOneRequest: string;
       approveDeclineTopics: string;
@@ -2544,6 +2556,21 @@ export type operations = {
       };
     };
   };
+  restartConnector: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KafkaConnectorRestartModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
   changePwd: {
     parameters: {
       query: {
@@ -3072,7 +3099,7 @@ export type operations = {
       };
     };
   };
-  getSyncTopics_1: {
+  getSyncConnectors: {
     parameters: {
       query: {
         env: string;
@@ -3497,6 +3524,24 @@ export type operations = {
       200: {
         content: {
           "application/json": ((components["schemas"]["KafkaConnectorModelResponse"])[])[];
+        };
+      };
+    };
+  };
+  getConnectorsToManage: {
+    parameters: {
+      query: {
+        env: string;
+        pageNo: string;
+        currentPage?: string;
+        connectornamesearch?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["KafkaConnectorModelResponse"])[];
         };
       };
     };
