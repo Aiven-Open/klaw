@@ -1074,6 +1074,7 @@ export type components = {
       showEditTopic: boolean;
       showDeleteTopic: boolean;
       topicDeletable: boolean;
+      hasOpenRequest: boolean;
       hasOpenACLRequest: boolean;
       envName: string;
       topicOwner?: boolean;

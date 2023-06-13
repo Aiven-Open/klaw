@@ -24,6 +24,8 @@ public class TopicOverviewInfo {
 
   @NotNull private boolean topicDeletable;
 
+  @NotNull private boolean hasOpenRequest;
+
   @NotNull private boolean isTopicOwner;
 
   @NotNull private boolean isHighestEnv;
