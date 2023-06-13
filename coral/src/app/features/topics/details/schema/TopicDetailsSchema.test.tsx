@@ -10,50 +10,54 @@ jest.mock("src/app/features/topics/details/TopicDetails", () => ({
 }));
 const mockSetSchemaVersion = jest.fn();
 
-describe("TopicDetailsSchema", () => {
-  const testTopicName = "topic-name";
-  const testEnvironmentId = 1;
-  const testTopicSchemas = {
-    topicExists: true,
-    schemaExists: true,
-    prefixAclsExists: false,
-    txnAclsExists: false,
-    allSchemaVersions: [3, 2, 1],
-    latestVersion: 3,
-    schemaPromotionDetails: {
-      DEV: {
-        status: "NO_PROMOTION",
-        sourceEnv: "1",
-        targetEnv: "TST",
-        targetEnvId: "2",
-      },
+const testTopicName = "topic-name";
+const testEnvironmentId = 1;
+const testTopicSchemas = {
+  topicExists: true,
+  schemaExists: true,
+  prefixAclsExists: false,
+  txnAclsExists: false,
+  allSchemaVersions: [3, 2, 1],
+  latestVersion: 3,
+  schemaPromotionDetails: {
+    DEV: {
+      status: "NO_PROMOTION",
+      sourceEnv: "1",
+      targetEnv: "TST",
+      targetEnvId: "2",
     },
-    schemaDetailsPerEnv: {
-      id: 0,
-      version: 3,
-      nextVersion: 2,
-      prevVersion: 0,
-      compatibility: "Couldn't retrieve",
-      content:
-        '{\n  "type" : "record",\n  "name" : "klawTestAvro",\n  "namespace" : "klaw.avro",\n  "fields" : [ {\n    "name" : "producer",\n    "type" : "string",\n    "doc" : "Name of the producer"\n  }, {\n    "name" : "body",\n    "type" : "string",\n    "doc" : "The body of the message being sent."\n  }, {\n    "name" : "timestamp",\n    "type" : "long",\n    "doc" : "time in seconds from epoc when the message was created."\n  } ],\n  "doc:" : "A basic schema for testing klaw - this is V3"\n}',
-      env: "DEV",
-      showNext: true,
-      showPrev: false,
-      latest: true,
-    },
-  };
+  },
+  schemaDetailsPerEnv: {
+    id: 0,
+    version: 3,
+    nextVersion: 2,
+    prevVersion: 0,
+    compatibility: "Couldn't retrieve",
+    content:
+      '{\n  "type" : "record",\n  "name" : "klawTestAvro",\n  "namespace" : "klaw.avro",\n  "fields" : [ {\n    "name" : "producer",\n    "type" : "string",\n    "doc" : "Name of the producer"\n  }, {\n    "name" : "body",\n    "type" : "string",\n    "doc" : "The body of the message being sent."\n  }, {\n    "name" : "timestamp",\n    "type" : "long",\n    "doc" : "time in seconds from epoc when the message was created."\n  } ],\n  "doc:" : "A basic schema for testing klaw - this is V3"\n}',
+    env: "DEV",
+    showNext: true,
+    showPrev: false,
+    latest: true,
+  },
+};
 
+describe("TopicDetailsSchema (topic owner)", () => {
   beforeAll(() => {
     mockedUseTopicDetails.mockReturnValue({
       topicName: testTopicName,
       environmentId: testEnvironmentId,
       topicSchemas: testTopicSchemas,
       setSchemaVersion: mockSetSchemaVersion,
+      topicOverview: { topicInfoList: [{ topicOwner: true }] },
     });
     customRender(<TopicDetailsSchema />, { memoryRouter: true });
   });
 
-  afterAll(cleanup);
+  afterAll(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
 
   it("shows a headline", () => {
     const headline = screen.getByRole("heading", { name: "Schema" });
@@ -119,7 +123,7 @@ describe("TopicDetailsSchema", () => {
 
     expect(compatibilityInfo).toBeVisible();
     expect(compatibilityInfo.parentElement).toHaveTextContent(
-      "COULDN'T RETRIEVE"
+      "COULDN'T RETRIEVECompatibility"
     );
   });
 
@@ -129,6 +133,14 @@ describe("TopicDetailsSchema", () => {
     expect(previewEditor).toBeVisible();
   });
 
+  it("shows a Delete button", () => {
+    const button = screen.getByRole("button", {
+      name: "Delete Schema",
+    });
+
+    expect(button).toBeEnabled();
+  });
+
   it("allows changing the version of the schema", async () => {
     const select = screen.getByRole("combobox", { name: "Select version" });
     await userEvent.selectOptions(select, "2");
@@ -136,5 +148,44 @@ describe("TopicDetailsSchema", () => {
     expect(select).toHaveValue("2");
 
     expect(mockSetSchemaVersion).toHaveBeenCalledWith(2);
+  });
+});
+
+describe("TopicDetailsSchema (NOT topic owner)", () => {
+  beforeAll(() => {
+    mockedUseTopicDetails.mockReturnValue({
+      topicName: testTopicName,
+      environmentId: testEnvironmentId,
+      topicSchemas: testTopicSchemas,
+      setSchemaVersion: mockSetSchemaVersion,
+      topicOverview: { topicInfoList: [{ topicOwner: false }] },
+    });
+    customRender(<TopicDetailsSchema />, { memoryRouter: true });
+  });
+
+  afterAll(cleanup);
+
+  it("does not show a link to request a new schema version", () => {
+    const link = screen.queryByRole("link", {
+      name: "Request a new version",
+    });
+
+    expect(link).not.toBeInTheDocument();
+  });
+
+  it("does not show information about schema promotion", () => {
+    const banner = screen.queryByText("This schema has not yet been promoted", {
+      exact: false,
+    });
+
+    expect(banner).not.toBeInTheDocument();
+  });
+
+  it("does not show a Delete button", () => {
+    const button = screen.queryByRole("Delete Schema", {
+      exact: false,
+    });
+
+    expect(button).not.toBeInTheDocument();
   });
 });

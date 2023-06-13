@@ -27,8 +27,10 @@ function TopicDetailsSchema() {
       schemaDetailsPerEnv,
     },
     setSchemaVersion,
+    topicOverview: { topicInfoList },
   } = useTopicDetails();
 
+  const isTopicOwner = topicInfoList[0].topicOwner;
   const noSchema = allSchemaVersions.length === 0;
 
   function promoteSchema() {
@@ -76,20 +78,24 @@ function TopicDetailsSchema() {
           </Typography.SmallStrong>
         </Box>
 
-        <Box alignSelf={"top"}>
-          <Link
-            to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv?.env}`}
-          >
-            <Button.Primary icon={add}>Request a new version</Button.Primary>
-          </Link>
-        </Box>
+        {isTopicOwner && (
+          <Box alignSelf={"top"}>
+            <Link
+              to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv?.env}`}
+            >
+              <Button.Primary icon={add}>Request a new version</Button.Primary>
+            </Link>
+          </Box>
+        )}
       </Box>
 
       {/*@TODO pass data when API verified */}
-      <SchemaPromotionBanner
-        environment={"TST"}
-        promoteSchema={promoteSchema}
-      />
+      {isTopicOwner && (
+        <SchemaPromotionBanner
+          environment={"TST"}
+          promoteSchema={promoteSchema}
+        />
+      )}
 
       <SchemaStats
         version={schemaDetailsPerEnv?.version || 0}
@@ -125,7 +131,7 @@ function TopicDetailsSchema() {
         </Box>
       </Box>
 
-      <Button.Secondary>Delete Schema</Button.Secondary>
+      {isTopicOwner && <Button.Secondary>Delete Schema</Button.Secondary>}
     </>
   );
 }
