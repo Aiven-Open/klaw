@@ -44,6 +44,7 @@ public class MigrateData2x4x0 {
       migrateKwProperties(tenantId);
       addKwProperties(tenantId);
       manageDatabase.loadEnvMapForOneTenant(tenantId);
+      manageDatabase.loadKwPropsPerOneTenant(null, tenantId);
     }
 
     return true;
