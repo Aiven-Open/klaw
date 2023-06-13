@@ -1,5 +1,6 @@
 import { cleanup, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
 import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -41,6 +42,7 @@ describe("TopicDetailsSchema", () => {
       latest: true,
     },
   };
+
   beforeAll(() => {
     mockedUseTopicDetails.mockReturnValue({
       topicName: testTopicName,
@@ -125,5 +127,14 @@ describe("TopicDetailsSchema", () => {
     const previewEditor = screen.getByTestId("topic-schema");
 
     expect(previewEditor).toBeVisible();
+  });
+
+  it("allows changing the version of the schema", async () => {
+    const select = screen.getByRole("combobox", { name: "Select version" });
+    await userEvent.selectOptions(select, "2");
+
+    expect(select).toHaveValue("2");
+
+    expect(mockSetSchemaVersion).toHaveBeenCalledWith(2);
   });
 });

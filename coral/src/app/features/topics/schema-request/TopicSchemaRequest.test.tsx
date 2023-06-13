@@ -7,10 +7,7 @@ import {
 } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { TopicSchemaRequest } from "src/app/features/topics/schema-request/TopicSchemaRequest";
-import {
-  Environment,
-  getEnvironmentsForSchemaRequest,
-} from "src/domain/environment";
+import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { createSchemaRequest } from "src/domain/schema-request";
@@ -130,7 +127,73 @@ describe("TopicSchemaRequest", () => {
       useQuerySpy.mockRestore();
     });
 
-    it("does not redirect user if env query is part of list of environments", async () => {
+    it("does not redirect user if env ID query is part of list of environments", async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([
+        ...mockedGetSchemaRegistryEnvironments,
+      ]);
+
+      customRender(<TopicSchemaRequest topicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/topic/testtopic/request-schema?env=1",
+      });
+
+      const form = getForm();
+      expect(form).toBeVisible();
+
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+
+      expect(select).toBeDisabled();
+      expect(select).toHaveValue("1");
+
+      // only testing this would always return green - even waitFor will return always
+      // true, since the mock is not called directly, so waitFor will check, confirm
+      // it has not been called because it has not happened yet. Checking for the
+      // form makes implicitly sure that navigate was not called (otherwise no form)
+      // and this assertion is mostly for readability
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+    });
+
+    it("does not redirect user if env name query is part of list of environments", async () => {
+      mockGetSchemaRegistryEnvironments.mockResolvedValue([
+        ...mockedGetSchemaRegistryEnvironments,
+      ]);
+
+      customRender(<TopicSchemaRequest topicName={testTopicName} />, {
+        queryClient: true,
+        memoryRouter: true,
+        customRoutePath: "/topic/testtopic/request-schema?env=INFRA",
+      });
+
+      const form = getForm();
+      expect(form).toBeVisible();
+
+      await waitForElementToBeRemoved(
+        screen.getByTestId("environments-select-loading")
+      );
+
+      const select = within(form).getByRole("combobox", {
+        name: /Environment/i,
+      });
+
+      expect(select).toBeDisabled();
+      await waitFor(() => expect(select).toHaveValue("3"));
+
+      // only testing this would always return green - even waitFor will return always
+      // true, since the mock is not called directly, so waitFor will check, confirm
+      // it has not been called because it has not happened yet. Checking for the
+      // form makes implicitly sure that navigate was not called (otherwise no form)
+      // and this assertion is mostly for readability
+      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+    });
+
+    it("redirects user if env id query does not exist in list of environments", async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([
         ...mockedGetSchemaRegistryEnvironments,
       ]);
@@ -141,28 +204,20 @@ describe("TopicSchemaRequest", () => {
         customRoutePath: "/topic/testtopic/request-schema?env=999",
       });
 
-      const form = getForm();
-      expect(form).toBeVisible();
-
-      // only testing this would always return green - even waitFor will return always
-      // true, since the mock is not called directly, so waitFor will check, confirm
-      // it has not been called because it has not happened yet. Checking for the
-      // form makes implicitly sure that navigate was not called (otherwise no form)
-      // and this assertion is mostly for readability
-      expect(mockedUsedNavigate).not.toHaveBeenCalled();
+      await waitFor(() => {
+        expect(mockedUsedNavigate).toHaveBeenCalledWith(-1);
+      });
     });
 
-    it("redirects user if env query does not exist in list of environments", async () => {
-      const fakeEnv = { name: "BUH", id: "999" } as Environment;
+    it("redirects user if env name query does not exist in list of environments", async () => {
       mockGetSchemaRegistryEnvironments.mockResolvedValue([
         ...mockedGetSchemaRegistryEnvironments,
-        fakeEnv,
       ]);
 
       customRender(<TopicSchemaRequest topicName={testTopicName} />, {
         queryClient: true,
         memoryRouter: true,
-        customRoutePath: "/topic/testtopic/request-schema?env=999",
+        customRoutePath: "/topic/testtopic/request-schema?env=HELLO",
       });
 
       await waitFor(() => {

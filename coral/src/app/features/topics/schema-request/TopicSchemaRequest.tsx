@@ -88,7 +88,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
             presetEnvironment === env.id || presetEnvironment === env.name
         );
 
-        // Allows to pass envirnment name as well as environment id as search param
+        // Allows to pass environment name as well as environment id as search param
         if (validEnv && isNaN(Number(presetEnvironment))) {
           form.setValue("environment", validEnv.id);
           return;
