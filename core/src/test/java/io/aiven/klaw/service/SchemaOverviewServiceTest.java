@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
@@ -13,6 +15,7 @@ import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -20,12 +23,14 @@ import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.response.SchemaOverview;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -155,6 +160,106 @@ public class SchemaOverviewServiceTest {
     SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
+  }
+
+  @Test
+  @Order(5)
+  public void givenARequestForSchemaWithoutAnInCorrectDBEntry_CallAPIAndUpdateSchema()
+      throws Exception {
+    stubUserInfo();
+
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
+
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(8);
+    when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getSchemaForTenantAndEnvAndTopic(eq(101), eq("3"), eq(TESTTOPIC)))
+        .thenReturn(createIncompleteMessages(2));
+
+    when(clusterApiService.getAvroSchema(
+            any(), eq(KafkaSupportedProtocol.PLAINTEXT), any(), eq(TESTTOPIC), eq(101)))
+        .thenReturn(getAvroSchemas(2));
+
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
+
+    verify(manageDatabase.getHandleDbRequests(), times(1)).insertIntoMessageSchemaSOT(any());
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
+  }
+
+  @Test
+  @Order(6)
+  public void givenARequestForSchemaWithoutACorrectDBEntry_CallAPIAndUpdateSchema()
+      throws Exception {
+    stubUserInfo();
+
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
+
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(8);
+    when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getSchemaForTenantAndEnvAndTopic(eq(101), eq("3"), eq(TESTTOPIC)))
+        .thenReturn(createMessages(2));
+
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
+
+    verify(manageDatabase.getHandleDbRequests(), times(0)).insertIntoMessageSchemaSOT(any());
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
+  }
+
+  private TreeMap<Integer, Map<String, Object>> getAvroSchemas(int numOfEntries) {
+    TreeMap<Integer, Map<String, Object>> messages = new TreeMap<>();
+    for (int i = 1; i <= numOfEntries; i++) {
+      Map<String, Object> schema = new HashMap<>();
+      schema.put("compatibility", "BACKWARD");
+      schema.put("id", String.valueOf(i));
+      schema.put("schema", "my schema");
+      messages.put(i, schema);
+    }
+
+    return messages;
+  }
+
+  private List<MessageSchema> createIncompleteMessages(int numOfEntries) {
+
+    List<MessageSchema> messages = new ArrayList<>();
+    for (int i = 1; i <= numOfEntries; i++) {
+      MessageSchema msg = new MessageSchema();
+      msg.setSchemaversion(String.valueOf(i));
+      msg.setSchemaversion(String.valueOf(i));
+      msg.setSchemafull(null);
+      msg.setCompatibility(null);
+      msg.setTeamId(103);
+      msg.setTenantId(101);
+      msg.setTopicname(TESTTOPIC);
+      messages.add(msg);
+    }
+
+    return messages;
+  }
+
+  private List<MessageSchema> createMessages(int numOfEntries) {
+
+    List<MessageSchema> messages = new ArrayList<>();
+    for (int i = 1; i <= numOfEntries; i++) {
+      MessageSchema msg = new MessageSchema();
+      msg.setSchemaversion(String.valueOf(i));
+      msg.setSchemaversion(String.valueOf(i));
+      msg.setSchemafull("1");
+      msg.setSchemaId(Integer.valueOf(i));
+      msg.setCompatibility("NOT_SET");
+      msg.setTeamId(103);
+      msg.setTenantId(101);
+      msg.setTopicname(TESTTOPIC);
+      messages.add(msg);
+    }
+
+    return messages;
   }
 
   private Topic createTopic(String topicName, String envName) {
