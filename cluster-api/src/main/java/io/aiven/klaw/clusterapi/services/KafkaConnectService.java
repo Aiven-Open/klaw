@@ -344,7 +344,7 @@ public class KafkaConnectService {
     } catch (Exception ex) {
       return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_1).build();
     }
-    if (responseNew.getStatusCodeValue() >= 200 || responseNew.getStatusCodeValue() <= 299) {
+    if (responseNew.getStatusCode().is2xxSuccessful()) {
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } else {
       return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
