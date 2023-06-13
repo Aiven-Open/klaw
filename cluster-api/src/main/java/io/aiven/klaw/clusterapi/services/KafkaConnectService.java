@@ -48,6 +48,7 @@ public class KafkaConnectService {
       GET_CONNECTOR_DETAILS_TYPEREF = new ParameterizedTypeReference<>() {};
   public static final String FAILED_STATUS = "FAILED";
   public static final String RUNNING_STATUS = "RUNNING";
+  public static final String CONNECTOR_URI_EXPAND_STATUS = "?expand=status";
 
   final ClusterApiUtils clusterApiUtils;
 
@@ -179,7 +180,7 @@ public class KafkaConnectService {
       String suffixUrl = environmentVal + "/connectors";
 
       if (getConnectorStatuses) {
-        suffixUrl = suffixUrl + "?expand=status";
+        suffixUrl = suffixUrl + CONNECTOR_URI_EXPAND_STATUS;
       }
 
       Pair<String, RestTemplate> reqDetails =
@@ -320,11 +321,11 @@ public class KafkaConnectService {
             + clusterConnectorRequest.getConnectorName()
             + "/"
             + "restart";
-    if (clusterConnectorRequest.isIncludeFailedTasksOnly()) {
-      suffixUrl = suffixUrl + "?includeTasks=true&onlyFailed=true";
-    } else {
-      suffixUrl = suffixUrl + "?includeTasks=true&onlyFailed=false";
-    }
+
+    suffixUrl =
+        suffixUrl
+            + "?includeTasks=true&onlyFailed="
+            + clusterConnectorRequest.isIncludeFailedTasksOnly();
 
     Pair<String, RestTemplate> reqDetails =
         clusterApiUtils.getRequestDetails(suffixUrl, clusterConnectorRequest.getProtocol());
@@ -343,7 +344,7 @@ public class KafkaConnectService {
     } catch (Exception ex) {
       return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_1).build();
     }
-    if (responseNew.getStatusCodeValue() == 201 || responseNew.getStatusCodeValue() == 204) {
+    if (responseNew.getStatusCodeValue() >= 200 || responseNew.getStatusCodeValue() <= 299) {
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     } else {
       return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
@@ -351,10 +352,10 @@ public class KafkaConnectService {
   }
 
   public ApiResponse pauseConnector(ClusterConnectorRequest clusterConnectorRequest) {
-    return null;
+    return ApiResponse.builder().success(false).message("To be implemented").build();
   }
 
   public ApiResponse resumeConnector(ClusterConnectorRequest clusterConnectorRequest) {
-    return null;
+    return ApiResponse.builder().success(false).message("To be implemented").build();
   }
 }

@@ -468,6 +468,13 @@ public class KafkaConnectControllerService {
   public ApiResponse restartConnector(KafkaConnectorRestartModel kafkaConnectorRestartModel) {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     try {
+      if (commonUtilsService.isNotAuthorizedUser(
+          getPrincipal(), PermissionType.MANAGE_CONNECTORS)) {
+        return ApiResponse.builder()
+            .success(false)
+            .message(ApiResultStatus.NOT_AUTHORIZED.value)
+            .build();
+      }
       return clusterApiService.restartConnector(kafkaConnectorRestartModel, tenantId);
     } catch (KlawException e) {
       return ApiResponse.builder()

@@ -99,6 +99,7 @@ public class ClusterApiService {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   private static final String URL_DELIMITER = "/";
+  public static final String URI_CONNECTOR_STATUS = "?connectorStatus=";
 
   @Autowired private ManageDatabase manageDatabase;
 
@@ -1036,7 +1037,7 @@ public class ClusterApiService {
               + protocol
               + "/"
               + clusterIdentification
-              + "?connectorStatus="
+              + URI_CONNECTOR_STATUS
               + getConnectorsStatuses;
       String uriGetConnectorsFull = clusterConnUrl + uriGetTopics;
 

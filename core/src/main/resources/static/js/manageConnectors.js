@@ -287,13 +287,23 @@ app.controller("manageConnectorsCtrl", function($scope, $http, $location, $windo
                     'envId' : $scope.getConnectors.envName,
                     'includeOnlyFailedTasks' : failedTasks}
             }).success(function(output) {
-                $scope.alert = "Connector restarting in progress.";
-                swal({
-                    title: "",
-                    text: "Restart in progress",
-                    timer: 2000,
-                    showConfirmButton: false
-                });
+                if(output.success){
+                    $scope.alert = "Connector restarting in progress.";
+                    swal({
+                        title: "",
+                        text: "Connector restart in progress",
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }else{
+                    $scope.alert = output.message;
+                    swal({
+                        title: "",
+                        text: output.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
             }).error(
                 function(error)
                 {
@@ -326,9 +336,8 @@ app.controller("manageConnectorsCtrl", function($scope, $http, $location, $windo
              'currentPage' : $scope.currentPageSelected}
 		}).success(function(output) {
 		    $scope.ShowSpinnerStatusTopics = false;
-//			$scope.resultBrowse = output["resultSet"];
 			$scope.resultBrowse = output;
-			if($scope.resultBrowse != null && $scope.resultBrowse.length != 0){
+			if($scope.resultBrowse != null && $scope.resultBrowse.length !== 0){
                 $scope.resultPages = $scope.resultBrowse[0].allPageNos;
                 $scope.resultPageSelected = pageNoSelected;
                 $scope.currentPageSelected = $scope.resultBrowse[0].currentPage;
