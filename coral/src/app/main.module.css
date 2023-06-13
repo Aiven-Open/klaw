@@ -24,3 +24,23 @@ body {
   color: var(--body-text-color);
   -webkit-text-size-adjust: 100%;
 }
+
+/*Override custom CSS variables DS*/
+:root {
+  --aquarium-colors-primary-100: #0788d1;
+  --aquarium-colors-primary-90: #0788d1;
+  --aquarium-colors-primary-80: #0788d1;
+  --aquarium-colors-primary-70: #0399e3;
+  --aquarium-colors-primary-60: #02a8f3;
+  --aquarium-colors-primary-50: #28b4f4;
+  --aquarium-colors-primary-40: #4cc2f7;
+  --aquarium-colors-primary-30: #7fd1f7;
+  --aquarium-colors-primary-20: #b4e5fb;
+  --aquarium-colors-primary-10: #e0f5fe;
+  --aquarium-colors-primary-5: #eff0fa;
+  --aquarium-colors-primary-0: #5c6bc0;
+
+  --body-text-color: #4a4b57;
+  --text-link-color: #0788d1;
+  --text-link-color-hover: #02a8f3;
+}

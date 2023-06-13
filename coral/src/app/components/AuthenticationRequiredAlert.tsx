@@ -12,7 +12,7 @@ function AuthenticationRequiredAlert() {
       justifyContent={"center"}
       alignItems={"center"}
     >
-      <Typography.Heading color={"secondary-100"}>
+      <Typography.Heading color={"primary-100"}>
         <span id={"authentication-required-heading"}>
           Authentication session expired
         </span>

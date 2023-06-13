@@ -180,6 +180,7 @@ function Modal(props: ModalProps) {
                   data-focusable
                   disabled={secondaryAction.disabled}
                   loading={secondaryAction.loading}
+                  className={"test"}
                 >
                   {secondaryAction.text}
                 </Button>

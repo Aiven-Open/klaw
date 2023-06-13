@@ -3,17 +3,17 @@
    accessibility standards */
 
 .mainNavigationLink a {
-  color: var(--body-text-color);
+  color: var(--body-text-color) !important;
 }
 
 .mainNavigationLink a:hover,
 .mainNavigationLink:focus-within {
-  color: var(--main-navigation-hover);
+  color: var(--main-navigation-hover) !important;
 }
 
 .mainNavigationLinkActive a {
-  color: var(--main-navigation-active);
+  color: var(--main-navigation-active) !important;
 }
 .mainNavigationLinkActive {
-  background-color: white;
+  background-color: white !important;
 }

@@ -11,12 +11,9 @@
  *       or custom theme are covered
 */
 :root {
-  --body-text-color: #4a4b57; /* DS value grey-70*/
-  --text-link-color: #e41a4a; /* DS value primary-80*/
-  --text-link-color-hover: #ff3554; /* DS value primary-70*/
-  --main-navigation-hover: #e41a4a; /* DS value primary-80*/
-  --main-navigation-active: #a70045; /* DS value primary-100*/
-  --interactive-elements-focus: #0399e3; /* DS value info-70*/
+  --main-navigation-active: var(--aquarium-colors-primary-80);
+  --main-navigation-hover: var(--aquarium-colors-primary-60);
+  --interactive-elements-focus: var(--aquarium-colors-primary-60);
 }
 
 /************************************************
@@ -35,16 +32,16 @@ button:focus-visible {
   outline-offset: 2px !important;
 }
 
-a {
+a:global(:not(.Aquarium-Button)) {
   color: var(--text-link-color);
 }
 
-a:hover,
-a:focus {
+a:global(:not(.Aquarium-Button)):hover,
+a:global(:not(.Aquarium-Button)):focus {
   color: var(--text-link-color-hover);
 }
 
-a:focus-visible {
+a:not(.Aquarium-Button):focus-visible {
   outline-offset: 2px;
   /*represents info-70*/
   outline-color: var(--interactive-elements-focus);
@@ -109,7 +106,7 @@ a:focus-visible {
 
 /* Accessibility improvement to <Tabs /> component */
 :root [role="tablist"] [role="tab"]:hover {
-  border-color: #e41a4a !important; /* primary-80*/
+  border-color: var(--aquarium-colors-primary-80) !important;
 }
 
 :root [role="tablist"] [role="tab"]:focus,
