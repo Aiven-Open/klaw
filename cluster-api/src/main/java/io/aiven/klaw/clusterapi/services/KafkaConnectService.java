@@ -320,6 +320,12 @@ public class KafkaConnectService {
             + clusterConnectorRequest.getConnectorName()
             + "/"
             + "restart";
+    if (clusterConnectorRequest.isIncludeFailedTasksOnly()) {
+      suffixUrl = suffixUrl + "?includeTasks=true&onlyFailed=true";
+    } else {
+      suffixUrl = suffixUrl + "?includeTasks=true&onlyFailed=false";
+    }
+
     Pair<String, RestTemplate> reqDetails =
         clusterApiUtils.getRequestDetails(suffixUrl, clusterConnectorRequest.getProtocol());
 
