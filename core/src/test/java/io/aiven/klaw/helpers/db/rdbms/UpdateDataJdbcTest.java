@@ -7,6 +7,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
@@ -56,6 +58,10 @@ public class UpdateDataJdbcTest {
 
   @Mock private DeleteDataJdbc deleteDataJdbcHelper;
 
+  @Mock private SelectDataJdbc selectDataJdbcHelper;
+
+  @Mock private Env kafkaEnv;
+
   private UpdateDataJdbc updateData;
 
   private UtilMethods utilMethods;
@@ -72,9 +78,11 @@ public class UpdateDataJdbcTest {
             aclRequestsRepo,
             userInfoRepo,
             schemaRequestRepo,
-            insertDataJdbcHelper);
+            insertDataJdbcHelper,
+            selectDataJdbcHelper);
     utilMethods = new UtilMethods();
     ReflectionTestUtils.setField(updateData, "deleteDataJdbcHelper", deleteDataJdbcHelper);
+    ReflectionTestUtils.setField(updateData, "selectDataJdbcHelper", selectDataJdbcHelper);
     ReflectionTestUtils.setField(updateData, "topicRepo", topicRepo);
     ReflectionTestUtils.setField(updateData, "kafkaConnectorRepo", kafkaConnectorRepo);
     ReflectionTestUtils.setField(updateData, "messageSchemaRepo", messageSchemaRepo);
@@ -110,6 +118,10 @@ public class UpdateDataJdbcTest {
     when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
+    when(selectDataJdbcHelper.selectEnvDetails(anyString(), anyInt())).thenReturn(kafkaEnv);
+    EnvTag envTag = new EnvTag();
+    envTag.setId("3");
+    when(kafkaEnv.getAssociatedEnv()).thenReturn(envTag);
     TopicRequest req = utilMethods.getTopicRequest(1001);
 
     req.setRequestOperationType(requestOperationType);
@@ -117,7 +129,8 @@ public class UpdateDataJdbcTest {
     String result = updateData.updateTopicRequest(req, "uiuser2");
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(deleteDataJdbcHelper, times(1)).deleteTopics(any());
-    verify(deleteDataJdbcHelper, times(1)).deleteSchemas(any());
+    verify(deleteDataJdbcHelper, times(1))
+        .deleteSchemasWithOptions(anyInt(), anyString(), anyString());
   }
 
   @ParameterizedTest

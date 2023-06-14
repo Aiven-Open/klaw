@@ -5,6 +5,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclID;
 import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.KwKafkaConnectorID;
@@ -94,6 +95,9 @@ public class UpdateDataJdbc {
   private DeleteDataJdbc deleteDataJdbcHelper;
 
   @Autowired(required = false)
+  private SelectDataJdbc selectDataJdbcHelper;
+
+  @Autowired(required = false)
   private KwPropertiesRepo kwPropertiesRepo;
 
   @Autowired(required = false)
@@ -110,12 +114,14 @@ public class UpdateDataJdbc {
       AclRequestsRepo aclRequestsRepo,
       UserInfoRepo userInfoRepo,
       SchemaRequestRepo schemaRequestRepo,
-      InsertDataJdbc insertDataJdbcHelper) {
+      InsertDataJdbc insertDataJdbcHelper,
+      SelectDataJdbc selectDataJdbcHelper) {
     this.topicRequestsRepo = topicRequestsRepo;
     this.aclRequestsRepo = aclRequestsRepo;
     this.userInfoRepo = userInfoRepo;
     this.schemaRequestRepo = schemaRequestRepo;
     this.insertDataJdbcHelper = insertDataJdbcHelper;
+    this.selectDataJdbcHelper = selectDataJdbcHelper;
   }
 
   public UpdateDataJdbc() {}
@@ -202,7 +208,15 @@ public class UpdateDataJdbc {
       case DELETE -> {
         deleteDataJdbcHelper.deleteTopics(topicObj);
         if (topicRequest.getDeleteAssociatedSchema()) {
-          deleteDataJdbcHelper.deleteSchemas(topicObj);
+          Env kafkaEnv =
+              selectDataJdbcHelper.selectEnvDetails(
+                  topicRequest.getEnvironment(), topicObj.getTenantId());
+          if (kafkaEnv.getAssociatedEnv() != null) {
+            deleteDataJdbcHelper.deleteSchemasWithOptions(
+                topicObj.getTenantId(),
+                topicObj.getTopicname(),
+                kafkaEnv.getAssociatedEnv().getId());
+          }
         }
       }
     }

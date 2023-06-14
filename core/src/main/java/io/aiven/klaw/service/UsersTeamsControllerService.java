@@ -386,6 +386,7 @@ public class UsersTeamsControllerService {
         getTeamModels(manageDatabase.getTeamObjForTenant(tenantId));
 
     if (!commonUtilsService.isNotAuthorizedUser(userName, PermissionType.ADD_EDIT_DELETE_TEAMS)) {
+      List<UserInfo> allUsersInfo = manageDatabase.getHandleDbRequests().getAllUsersInfo(tenantId);
       teamModels.forEach(
           teamModel -> {
             teamModel.setShowDeleteTeam(
@@ -394,22 +395,15 @@ public class UsersTeamsControllerService {
                             .getAllComponentsCountForTeam(teamModel.getTeamId(), tenantId)
                         == 0)
                     && (manageDatabase
-                            .getHandleDbRequests()
-                            .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId)
-                            .size()
-                        == 0));
-            log.info(
-                "{} getAllComponentsCountForTeam {}",
-                teamModel.getTeamname(),
-                manageDatabase
-                    .getHandleDbRequests()
-                    .getAllComponentsCountForTeam(teamModel.getTeamId(), tenantId));
-            log.info(
-                "{} getAllUsersInfoForTeam {}",
-                teamModel.getTeamname(),
-                manageDatabase
-                    .getHandleDbRequests()
-                    .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId));
+                        .getHandleDbRequests()
+                        .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId)
+                        .isEmpty())
+                    && allUsersInfo.stream()
+                        .noneMatch(
+                            userInfo ->
+                                userInfo
+                                    .getSwitchAllowedTeamIds()
+                                    .contains(teamModel.getTeamId())));
           });
     }
 
@@ -815,7 +809,7 @@ public class UsersTeamsControllerService {
           userInfoModel.setTeam(
               manageDatabase.getTeamNameFromTeamId(tenantId, userInfoModel.getTeamId()));
         });
-    userInfoModels.sort(Comparator.comparing(UserInfoModelResponse::getTeam));
+    userInfoModels.sort(Comparator.comparing(UserInfoModelResponse::getUsername));
 
     return getPagedUsers(pageNo, userInfoModels);
   }
