@@ -246,9 +246,15 @@ public class SchemaOverviewService extends BaseOverviewService {
           Map<String, Object> schemaObj =
               schemaObjects.get(Integer.valueOf(messageSchema.getSchemaversion()));
           if (schemaObj != null) {
-            messageSchema.setSchemaId((Integer) schemaObj.get(SCHEMA_ID));
-            messageSchema.setCompatibility((String) schemaObj.get(SCHEMA_COMPATIBILITY));
-            messageSchema.setSchemafull((String) schemaObj.get(SCHEMA));
+            if (messageSchema.getSchemaId() == null) {
+              messageSchema.setSchemaId((Integer) schemaObj.get(SCHEMA_ID));
+            }
+            if (messageSchema.getCompatibility() == null) {
+              messageSchema.setCompatibility((String) schemaObj.get(SCHEMA_COMPATIBILITY));
+            }
+            if (messageSchema.getSchemafull() == null) {
+              messageSchema.setSchemafull((String) schemaObj.get(SCHEMA));
+            }
           }
         }
         log.info("Updated topic {} schemaId, compatibility and schema.", topicNameSearch);
