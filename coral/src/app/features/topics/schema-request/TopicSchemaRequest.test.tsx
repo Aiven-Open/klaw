@@ -906,7 +906,7 @@ describe("TopicSchemaRequest", () => {
       expect(mockCreateSchemaRequest).toHaveBeenCalled();
       await waitFor(() =>
         expect(mockedUseToast).toHaveBeenCalledWith({
-          message: "Schema request successful!",
+          message: "Schema request successfully created",
           position: "bottom-left",
           variant: "default",
         })

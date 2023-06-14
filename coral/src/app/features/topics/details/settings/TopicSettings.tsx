@@ -39,7 +39,7 @@ function TopicSettings() {
       onSuccess: () => {
         navigate("/topics");
         toast({
-          message: "Topic deletion request successfully sent",
+          message: "Topic deletion request successfully created",
           position: "bottom-left",
           variant: "default",
         });

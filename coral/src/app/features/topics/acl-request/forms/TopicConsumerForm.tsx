@@ -74,7 +74,7 @@ const TopicConsumerForm = ({
     onSuccess: () => {
       navigate("/requests/acls?status=CREATED");
       toast({
-        message: "Acl request successful!",
+        message: "ACL request successfully created",
         position: "bottom-left",
         variant: "default",
       });

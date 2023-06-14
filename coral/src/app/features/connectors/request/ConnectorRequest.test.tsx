@@ -479,7 +479,7 @@ describe("<ConnectorRequest />", () => {
         expect(createConnectorRequest).toHaveBeenCalledTimes(1);
         await waitFor(() =>
           expect(mockedUseToast).toHaveBeenCalledWith({
-            message: "Connector request successful!",
+            message: "Connector request successfully created",
             position: "bottom-left",
             variant: "default",
           })

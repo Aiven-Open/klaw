@@ -55,7 +55,7 @@ function ConnectorRequest() {
     onSuccess: () => {
       navigate("/requests/connectors?status=CREATED");
       toast({
-        message: "Connector request successful!",
+        message: "Connector request successfully created",
         position: "bottom-left",
         variant: "default",
       });
