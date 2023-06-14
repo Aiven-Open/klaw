@@ -12,7 +12,6 @@ interface SchemaPromotionModalProps {
     forceRegister: boolean;
   }) => void;
   isLoading: boolean;
-  sourceEnvironment?: string;
   targetEnvironment?: string;
   version: number;
 }
