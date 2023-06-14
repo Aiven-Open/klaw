@@ -397,6 +397,8 @@ public class DefaultDataService {
         "SYNC_BACK_SUBSCRIPTIONS", PermissionType.SYNC_BACK_SUBSCRIPTIONS.getDescription());
     defaultAdminPermissionsList.put(
         "SYNC_CONNECTORS", PermissionType.SYNC_CONNECTORS.getDescription());
+    defaultAdminPermissionsList.put(
+        "MANAGE_CONNECTORS", PermissionType.MANAGE_CONNECTORS.getDescription());
 
     defaultAdminPermissionsList.put(
         "UPDATE_PERMISSIONS", PermissionType.UPDATE_PERMISSIONS.getDescription());

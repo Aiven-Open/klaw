@@ -83,11 +83,18 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     queryFn: () => getEnvironmentsForSchemaRequest(),
     onSuccess: (environments) => {
       if (presetEnvironment) {
-        const isValidEnv = environments.find(
-          (env) => presetEnvironment === env.id
+        const validEnv = environments.find(
+          (env) =>
+            presetEnvironment === env.id || presetEnvironment === env.name
         );
 
-        if (!isValidEnv) {
+        // Allows to pass environment name as well as environment id as search param
+        if (validEnv && isNaN(Number(presetEnvironment))) {
+          form.setValue("environment", validEnv.id);
+          return;
+        }
+
+        if (validEnv === undefined) {
           navigate(-1);
         }
       }

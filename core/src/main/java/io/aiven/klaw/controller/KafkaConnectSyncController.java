@@ -47,7 +47,7 @@ public class KafkaConnectSyncController {
       value = "/getSyncConnectors",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<KafkaConnectorModelResponse>> getSyncTopics(
+  public ResponseEntity<List<KafkaConnectorModelResponse>> getSyncConnectors(
       @RequestParam("env") String envId,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
@@ -57,7 +57,23 @@ public class KafkaConnectSyncController {
       throws Exception {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getSyncConnectors(
-            envId, pageNo, currentPage, connectorNameSearch, Boolean.parseBoolean(isBulkOption)),
+            envId, pageNo, currentPage, connectorNameSearch, false),
+        HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/getConnectorsToManage",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<KafkaConnectorModelResponse>> getConnectorsToManage(
+      @RequestParam("env") String envId,
+      @RequestParam("pageNo") String pageNo,
+      @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
+      @RequestParam(value = "connectornamesearch", required = false) String connectorNameSearch)
+      throws Exception {
+    return new ResponseEntity<>(
+        kafkaConnectControllerService.getSyncConnectors(
+            envId, pageNo, currentPage, connectorNameSearch, true),
         HttpStatus.OK);
   }
 }

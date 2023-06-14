@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  EmptyState,
   Icon,
   Label,
   NativeSelect,
@@ -11,56 +12,97 @@ import {
 import add from "@aivenio/aquarium/icons/add";
 import gitNewBranch from "@aivenio/aquarium/icons/gitNewBranch";
 import MonacoEditor from "@monaco-editor/react";
+import { Link, useNavigate } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
 
 function TopicDetailsSchema() {
-  const { topicName, environmentId } = useTopicDetails();
+  const navigate = useNavigate();
+  const {
+    topicName,
+    topicSchemas: {
+      allSchemaVersions = [],
+      latestVersion,
+      schemaDetailsPerEnv,
+    },
+    setSchemaVersion,
+    topicOverview: { topicInfoList },
+  } = useTopicDetails();
+
+  const isTopicOwner = topicInfoList[0].topicOwner;
+  const noSchema =
+    allSchemaVersions.length === 0 || schemaDetailsPerEnv === undefined;
 
   function promoteSchema() {
     console.log("dummy function");
   }
 
+  if (noSchema) {
+    return (
+      <>
+        <PageHeader title="Schema" />
+        <EmptyState
+          title="No schema available for this topic"
+          primaryAction={{
+            onClick: () => navigate(`/topic/${topicName}/request-schema`),
+            text: "Request a new schema",
+          }}
+        />
+      </>
+    );
+  }
+
   return (
     <>
       <PageHeader title="Schema" />
+
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} colGap={"l1"}>
           <NativeSelect
             style={{ width: "300px" }}
             aria-label={"Select version"}
+            onChange={(e) => setSchemaVersion(Number(e.target.value))}
+            defaultValue={schemaDetailsPerEnv.version}
           >
-            <Option key={"1"} value={"1"}>
-              version 1
-            </Option>
+            {allSchemaVersions.map((version) => (
+              <Option key={version} value={version}>
+                Version {version} {version === latestVersion && "(latest)"}
+              </Option>
+            ))}
           </NativeSelect>
-          <Typography.SmallTextBold color={"grey-40"}>
+          <Typography.SmallStrong color={"grey-40"}>
             <Box display={"flex"} marginTop={"3"} colGap={"2"}>
               <Icon icon={gitNewBranch} style={{ marginTop: "2px" }} />{" "}
-              <span>5 versions</span>
+              <span>{allSchemaVersions.length} versions</span>
             </Box>
-          </Typography.SmallTextBold>
+          </Typography.SmallStrong>
         </Box>
 
-        <Box alignSelf={"top"}>
-          <Button.ExternalLink
-            //@TODO verify if environmentId is the right one
-            href={`/topic/${topicName}/request-schema?env=${environmentId}`}
-            icon={add}
-          >
-            Request a new version
-          </Button.ExternalLink>
-        </Box>
+        {isTopicOwner && (
+          <Box alignSelf={"top"}>
+            <Link
+              to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
+            >
+              <Button.Primary icon={add}>Request a new version</Button.Primary>
+            </Link>
+          </Box>
+        )}
       </Box>
 
       {/*@TODO pass data when API verified */}
-      <SchemaPromotionBanner
-        environment={"TST"}
-        promoteSchema={promoteSchema}
-      />
+      {isTopicOwner && (
+        <SchemaPromotionBanner
+          environment={"TST"}
+          promoteSchema={promoteSchema}
+        />
+      )}
 
-      <SchemaStats version={99} id={999} compatibility={"BACKWARDS"} />
+      <SchemaStats
+        version={schemaDetailsPerEnv.version}
+        id={schemaDetailsPerEnv.id}
+        compatibility={schemaDetailsPerEnv.compatibility.toUpperCase()}
+      />
 
       <Box marginTop={"l3"} marginBottom={"l2"}>
         <Label>Schema</Label>
@@ -71,7 +113,7 @@ function TopicDetailsSchema() {
             height="250px"
             language="json"
             theme={"light"}
-            value={"{ huhu: 'huhu' }"}
+            value={schemaDetailsPerEnv.content}
             loading={"Loading preview"}
             options={{
               ariaLabel: "Schema preview",
@@ -86,8 +128,6 @@ function TopicDetailsSchema() {
           />
         </Box>
       </Box>
-
-      <Button.Secondary>Delete Schema</Button.Secondary>
     </>
   );
 }

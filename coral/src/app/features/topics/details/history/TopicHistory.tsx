@@ -67,7 +67,6 @@ function TopicHistory() {
       };
     }) || [];
 
-  console.log(rows.length);
   return (
     <>
       <PageHeader title={"History"} />

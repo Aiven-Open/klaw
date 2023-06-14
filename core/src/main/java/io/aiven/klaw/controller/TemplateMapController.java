@@ -396,6 +396,15 @@ public class TemplateMapController {
     return checkAuth("synchronizeConnectors.html", request, response, abstractAuthenticationToken);
   }
 
+  @RequestMapping(value = "/manageConnectors", method = RequestMethod.GET)
+  public String manageConnectors(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("manageConnectors.html", request, response, abstractAuthenticationToken);
+  }
+
   @RequestMapping(value = "/synchronizeAcls", method = RequestMethod.GET)
   public String synchronizeAcls(
       ModelMap model,

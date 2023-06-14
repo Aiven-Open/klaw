@@ -118,6 +118,8 @@ public class KwConstants {
   public static final String URI_DELETE_CONNECTOR = "/topics/deleteConnector";
   public static final String URI_CONNECTOR_DETAILS = "/topics/getConnectorDetails";
   public static final String URI_GET_ALL_CONNECTORS = "/topics/getAllConnectors/";
+
+  public static final String URI_POST_RESTART_CONNECTOR = "/topics/connector/restart";
   public static final String URI_POST_SCHEMA = "/topics/postSchema";
 
   public static final String URI_SCHEMA_RESET_CACHE = "/topics/schema/resetCache";
