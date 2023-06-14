@@ -151,6 +151,7 @@ describe("TopicSchemaRequest", () => {
 
       expect(select).toBeDisabled();
       expect(select).toHaveValue("1");
+      await waitFor(() => expect(select).toHaveDisplayValue("DEV"));
 
       // only testing this would always return green - even waitFor will return always
       // true, since the mock is not called directly, so waitFor will check, confirm
@@ -184,6 +185,7 @@ describe("TopicSchemaRequest", () => {
 
       expect(select).toBeDisabled();
       await waitFor(() => expect(select).toHaveValue("3"));
+      await waitFor(() => expect(select).toHaveDisplayValue("INFRA"));
 
       // only testing this would always return green - even waitFor will return always
       // true, since the mock is not called directly, so waitFor will check, confirm
