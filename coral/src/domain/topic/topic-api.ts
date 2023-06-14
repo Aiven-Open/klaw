@@ -12,6 +12,7 @@ import {
   transformTopicApiResponse,
 } from "src/domain/topic/topic-transformer";
 import {
+  DeleteTopicPayload,
   NoContent,
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
@@ -21,6 +22,7 @@ import {
 import api, { API_PATHS } from "src/services/api";
 import { convertQueryValuesToString } from "src/services/api-helper";
 import {
+  KlawApiModel,
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
@@ -215,6 +217,23 @@ const deleteTopicRequest = ({
   });
 };
 
+const deleteTopic = (params: DeleteTopicPayload) => {
+  // DeleteTopicPayload represents the TopicDeleteRequestModel
+  // without "remark" - it's currently not implemented in the API
+  // and will be added later. We 're already preparing
+  // our UI and code for that.
+  const payload: KlawApiModel<"TopicDeleteRequestModel"> = {
+    deleteAssociatedSchema: params.deleteAssociatedSchema,
+    env: params.env,
+    topicName: params.topicName,
+  };
+
+  return api.post<
+    KlawApiResponse<"createTopicDeleteRequest">,
+    KlawApiModel<"TopicDeleteRequestModel">
+  >(API_PATHS.createTopicDeleteRequest, payload);
+};
+
 const getTopicOverview = ({
   topicName,
   environmentId,
@@ -257,4 +276,5 @@ export {
   getTopicOverview,
   getTopicMessages,
   getSchemaOfTopic,
+  deleteTopic,
 };

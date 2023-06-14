@@ -44,6 +44,14 @@ type TopicOverviewApiResponse = KlawApiResponse<"getTopicOverview">;
 type TopicOverview = KlawApiModel<"TopicOverview">;
 type TopicSchemaOverview = KlawApiModel<"SchemaOverview">;
 
+// "remark" is currently not implemented in the API
+// and will be added later. We're already preparing
+// our UI and code for that.
+type DeleteTopicPayload = ResolveIntersectionTypes<
+  KlawApiModel<"TopicDeleteRequestModel"> & {
+    remark?: string;
+  }
+>;
 export type {
   Topic,
   TopicNames,
@@ -60,4 +68,5 @@ export type {
   NoContent,
   TopicOverview,
   TopicSchemaOverview,
+  DeleteTopicPayload,
 };
