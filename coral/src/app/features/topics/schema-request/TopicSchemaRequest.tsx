@@ -106,7 +106,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     onSuccess: () => {
       navigate("/requests/schemas?status=CREATED");
       toast({
-        message: "Schema request successful!",
+        message: "Schema request successfully created",
         position: "bottom-left",
         variant: "default",
       });

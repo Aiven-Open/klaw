@@ -1084,7 +1084,7 @@ describe("<TopicAclRequest />", () => {
           );
         });
         expect(mockedUseToast).toHaveBeenCalledWith({
-          message: "Acl request successful!",
+          message: "ACL request successfully created",
           position: "bottom-left",
           variant: "default",
         });
@@ -1480,7 +1480,7 @@ describe("<TopicAclRequest />", () => {
           );
         });
         expect(mockedUseToast).toHaveBeenCalledWith({
-          message: "Acl request successful!",
+          message: "ACL request successfully created",
           position: "bottom-left",
           variant: "default",
         });
@@ -2525,7 +2525,7 @@ describe("<TopicAclRequest />", () => {
           );
         });
         expect(mockedUseToast).toHaveBeenCalledWith({
-          message: "Acl request successful!",
+          message: "ACL request successfully created",
           position: "bottom-left",
           variant: "default",
         });
@@ -2944,7 +2944,7 @@ describe("<TopicAclRequest />", () => {
           );
         });
         expect(mockedUseToast).toHaveBeenCalledWith({
-          message: "Acl request successful!",
+          message: "ACL request successfully created",
           position: "bottom-left",
           variant: "default",
         });

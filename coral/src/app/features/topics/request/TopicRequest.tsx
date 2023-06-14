@@ -65,7 +65,7 @@ function TopicRequest() {
     onSuccess: () => {
       navigate("/requests/topics?status=CREATED");
       toast({
-        message: "Topic request successful!",
+        message: "Topic request successfully created",
         position: "bottom-left",
         variant: "default",
       });

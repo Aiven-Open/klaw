@@ -1223,7 +1223,7 @@ describe("<TopicRequest />", () => {
         });
 
         expect(mockedUseToast).toHaveBeenCalledWith({
-          message: "Topic request successful!",
+          message: "Topic request successfully created",
           position: "bottom-left",
           variant: "default",
         });
