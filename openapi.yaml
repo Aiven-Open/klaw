@@ -1891,6 +1891,34 @@
         }
       }
     },
+    "/connector/restart" : {
+      "post" : {
+        "tags" : [ "kafka-connect-controller" ],
+        "operationId" : "restartConnector",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/KafkaConnectorRestartModel"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/chPwd" : {
       "post" : {
         "tags" : [ "users-teams-controller" ],
@@ -3125,7 +3153,7 @@
     "/getSyncConnectors" : {
       "get" : {
         "tags" : [ "kafka-connect-sync-controller" ],
-        "operationId" : "getSyncTopics_1",
+        "operationId" : "getSyncConnectors",
         "parameters" : [ {
           "name" : "env",
           "in" : "query",
@@ -4167,6 +4195,57 @@
                     "items" : {
                       "$ref" : "#/components/schemas/KafkaConnectorModelResponse"
                     }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getConnectorsToManage" : {
+      "get" : {
+        "tags" : [ "kafka-connect-sync-controller" ],
+        "operationId" : "getConnectorsToManage",
+        "parameters" : [ {
+          "name" : "env",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        }, {
+          "name" : "connectornamesearch",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/KafkaConnectorModelResponse"
                   }
                 }
               }
@@ -6032,6 +6111,20 @@
         },
         "required" : [ "aclIpPrincipleType", "aclPatternType", "aclType", "environment", "requestOperationType", "teamId", "topicname" ]
       },
+      "KafkaConnectorRestartModel" : {
+        "properties" : {
+          "connectorName" : {
+            "type" : "string"
+          },
+          "envId" : {
+            "type" : "string"
+          },
+          "includeOnlyFailedTasks" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "connectorName", "envId", "includeOnlyFailedTasks" ]
+      },
       "KwTenantModel" : {
         "properties" : {
           "tenantName" : {
@@ -7576,7 +7669,8 @@
           "latest" : {
             "type" : "boolean"
           }
-        }
+        },
+        "required" : [ "compatibility", "content", "env", "id", "latest", "nextVersion", "prevVersion", "showNext", "showPrev", "version" ]
       },
       "SchemaOverview" : {
         "properties" : {
@@ -7999,6 +8093,9 @@
           "syncConnectors" : {
             "type" : "string"
           },
+          "manageConnectors" : {
+            "type" : "string"
+          },
           "syncSchemas" : {
             "type" : "string"
           },
@@ -8042,7 +8139,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
+        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
       "KwPropertiesResponse" : {
         "properties" : {

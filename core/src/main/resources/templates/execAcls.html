@@ -400,6 +400,7 @@
                             <li ng-show="dashboardDetails.syncSchemas == 'Authorized'"><a href="synchronizeSchemas">Schemas from cluster</a></li>
                             <li ng-show="dashboardDetails.syncBackSchemas == 'Authorized'"><a href="syncBackSchemas">Schemas to cluster</a></li>
 							<li ng-show="dashboardDetails.syncConnectors == 'Authorized'"><a href="syncConnectors">Connectors from cluster</a></li>
+							<li ng-show="dashboardDetails.manageConnectors == 'Authorized'"><a href="manageConnectors">Manage Connectors</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
@@ -552,7 +553,7 @@
 											<span class="badge badge-warning">{{ aclRequest.environmentName }}</span>
 										</b>
 										</div>
-										<div  style="width:20%" class="p-2 border-right" ng-show="aclRequest.topictype == 'Consumer'">
+										<div  style="width:20%" class="p-2 border-right" ng-show="aclRequest.aclType == 'CONSUMER'">
 											<h6 class="text-primary">Consumer Group</h6><b>{{ aclRequest.consumergroup }}</b>
 										</div>
 										<div ng-show="aclRequest.acl_ip.length != 0" class="p-2 border-right" style="width:15%">

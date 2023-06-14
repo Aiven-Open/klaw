@@ -13,6 +13,7 @@ import { TopicSchemaOverview } from "src/domain/topic/topic-types";
 
 type Props = {
   currentTab: TopicOverviewTabEnum;
+  setSchemaVersion: (id: number) => void;
   environmentId?: string;
   error?: unknown;
   isError: boolean;
@@ -24,6 +25,7 @@ type Props = {
 function TopicOverviewResourcesTabs({
   currentTab,
   environmentId,
+  setSchemaVersion,
   error,
   isError,
   isLoading,
@@ -117,6 +119,7 @@ function TopicOverviewResourcesTabs({
           context={{
             environmentId:
               environmentId || topicOverview.availableEnvironments[0].id,
+            setSchemaVersion,
             topicOverview,
             topicName: topicOverview.topicInfoList[0].topicName,
             topicSchemas,

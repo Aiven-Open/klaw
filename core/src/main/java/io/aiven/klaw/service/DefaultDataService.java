@@ -270,6 +270,22 @@ public class DefaultDataService {
             KwConstants.MAIL_PASSWORDCHANGED_CONTENT,
             "Email notification body for password update.");
     kwPropertiesList.add(kwProperties35);
+
+    KwProperties kwProperties36 =
+        new KwProperties(
+            "klaw.mail.topicpromotionrequest.content",
+            tenantId,
+            KwConstants.MAIL_TOPICPROMOTIONREQUEST_CONTENT,
+            "Email notification body for a new Topic Promotion Request");
+    kwPropertiesList.add(kwProperties36);
+
+    KwProperties kwProperties37 =
+        new KwProperties(
+            "klaw.mail.topicupdaterequest.content",
+            tenantId,
+            KwConstants.MAIL_TOPICUPDATEREQUEST_CONTENT,
+            "Email notification body for a new Topic Update Request");
+    kwPropertiesList.add(kwProperties37);
     return kwPropertiesList;
   }
 
@@ -381,6 +397,8 @@ public class DefaultDataService {
         "SYNC_BACK_SUBSCRIPTIONS", PermissionType.SYNC_BACK_SUBSCRIPTIONS.getDescription());
     defaultAdminPermissionsList.put(
         "SYNC_CONNECTORS", PermissionType.SYNC_CONNECTORS.getDescription());
+    defaultAdminPermissionsList.put(
+        "MANAGE_CONNECTORS", PermissionType.MANAGE_CONNECTORS.getDescription());
 
     defaultAdminPermissionsList.put(
         "UPDATE_PERMISSIONS", PermissionType.UPDATE_PERMISSIONS.getDescription());

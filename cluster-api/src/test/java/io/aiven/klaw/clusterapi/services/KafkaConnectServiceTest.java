@@ -67,7 +67,7 @@ class KafkaConnectServiceTest {
 
     assertThat(
             kafkaConnectService
-                .getConnectors("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1")
+                .getConnectors("env", KafkaSupportedProtocol.PLAINTEXT, "CLID1", true)
                 .getConnectorStateList())
         .isNotEmpty();
   }

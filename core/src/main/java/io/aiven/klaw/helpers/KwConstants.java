@@ -32,6 +32,12 @@ public class KwConstants {
   public static final String STAGINGTEAM = "STAGINGTEAM";
   public static final String MAIL_TOPICREQUEST_CONTENT =
       "Dear User, \\nA request for a create topic %s has been requested in Klaw.";
+
+  public static final String MAIL_TOPICPROMOTIONREQUEST_CONTENT =
+      "Dear User, \\nA request to promote topic %s to the next environment has been requested in Klaw.";
+
+  public static final String MAIL_TOPICUPDATEREQUEST_CONTENT =
+      "Dear User, \\nA request to update the topic %s has been requested in Klaw.";
   public static final String MAIL_TOPICDELETEREQUEST_CONTENT =
       "Dear User, \\nA request for a delete topic %s has been requested in Klaw.";
   public static final String MAIL_TOPICCLAIMREQUEST_CONTENT =
@@ -112,6 +118,8 @@ public class KwConstants {
   public static final String URI_DELETE_CONNECTOR = "/topics/deleteConnector";
   public static final String URI_CONNECTOR_DETAILS = "/topics/getConnectorDetails";
   public static final String URI_GET_ALL_CONNECTORS = "/topics/getAllConnectors/";
+
+  public static final String URI_POST_RESTART_CONNECTOR = "/topics/connector/restart";
   public static final String URI_POST_SCHEMA = "/topics/postSchema";
 
   public static final String URI_SCHEMA_RESET_CACHE = "/topics/schema/resetCache";
