@@ -330,6 +330,12 @@ public class DeleteDataJdbc {
             topicObj.getTenantId(), topicObj.getTopicname(), topicObj.getEnvironment()));
   }
 
+  public void deleteSchemasWithOptions(int tenantId, String topicName, String schemaEnv) {
+    messageSchemaRepo.deleteAll(
+        messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(
+            tenantId, topicName, schemaEnv));
+  }
+
   public String deleteAcls(List<Acl> listDeleteAcls, int tenantId) {
     listDeleteAcls.forEach(
         a -> {
