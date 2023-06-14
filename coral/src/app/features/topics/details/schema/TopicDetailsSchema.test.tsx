@@ -1,3 +1,4 @@
+import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
@@ -51,7 +52,15 @@ describe("TopicDetailsSchema (topic owner)", () => {
       setSchemaVersion: mockSetSchemaVersion,
       topicOverview: { topicInfoList: [{ topicOwner: true }] },
     });
-    customRender(<TopicDetailsSchema />, { memoryRouter: true });
+    customRender(
+      <AquariumContext>
+        <TopicDetailsSchema />{" "}
+      </AquariumContext>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+      }
+    );
   });
 
   afterAll(() => {
@@ -96,12 +105,28 @@ describe("TopicDetailsSchema (topic owner)", () => {
     );
   });
 
+  it("shows information about possible promotion", () => {
+    const infoText = screen.getByText(
+      `This schema has not yet been promoted to the ${testTopicSchemas.schemaPromotionDetails["DEV"].targetEnv} environment.`
+    );
+
+    expect(infoText).toBeVisible();
+  });
+
+  it("shows a button to promote schema", () => {
+    const button = screen.getByRole("button", { name: "Promote" });
+
+    expect(button).toBeEnabled();
+  });
+
   it("shows information about schema promotion", () => {
     const banner = screen.getByText("This schema has not yet been promoted", {
       exact: false,
     });
+    const button = screen.getByRole("button", { name: "Promote" });
 
     expect(banner).toBeVisible();
+    expect(button).toBeEnabled();
   });
 
   it("shows schema statistic about versions", () => {
@@ -152,7 +177,15 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
       setSchemaVersion: mockSetSchemaVersion,
       topicOverview: { topicInfoList: [{ topicOwner: false }] },
     });
-    customRender(<TopicDetailsSchema />, { memoryRouter: true });
+    customRender(
+      <AquariumContext>
+        <TopicDetailsSchema />{" "}
+      </AquariumContext>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+      }
+    );
   });
 
   afterAll(cleanup);
@@ -169,7 +202,9 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
     const banner = screen.queryByText("This schema has not yet been promoted", {
       exact: false,
     });
+    const button = screen.queryByRole("button", { name: "Promote" });
 
     expect(banner).not.toBeInTheDocument();
+    expect(button).not.toBeInTheDocument();
   });
 });
