@@ -29,6 +29,7 @@ jest.mock("@aivenio/aquarium", () => ({
   ...jest.requireActual("@aivenio/aquarium"),
   useToast: () => mockedUseToast,
 }));
+
 describe("<ConnectorRequest />", () => {
   const originalConsoleError = console.error;
   let user: ReturnType<typeof userEvent.setup>;
