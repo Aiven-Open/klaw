@@ -211,8 +211,12 @@ public class UpdateDataJdbc {
           Env kafkaEnv =
               selectDataJdbcHelper.selectEnvDetails(
                   topicRequest.getEnvironment(), topicObj.getTenantId());
-          deleteDataJdbcHelper.deleteSchemasWithOptions(
-              topicObj.getTenantId(), topicObj.getTopicname(), kafkaEnv.getAssociatedEnv().getId());
+          if (kafkaEnv.getAssociatedEnv() != null) {
+            deleteDataJdbcHelper.deleteSchemasWithOptions(
+                topicObj.getTenantId(),
+                topicObj.getTopicname(),
+                kafkaEnv.getAssociatedEnv().getId());
+          }
         }
       }
     }
