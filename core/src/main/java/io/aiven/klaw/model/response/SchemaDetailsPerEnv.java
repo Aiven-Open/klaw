@@ -1,26 +1,27 @@
 package io.aiven.klaw.model.response;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class SchemaDetailsPerEnv {
-  private int id;
+  @NotNull private int id;
 
-  private int version;
+  @NotNull private int version;
 
-  private int nextVersion;
+  @NotNull private int nextVersion;
 
-  private int prevVersion;
+  @NotNull private int prevVersion;
 
-  private String compatibility;
+  @NotNull private String compatibility;
 
-  private String content;
+  @NotNull private String content;
 
-  private String env;
+  @NotNull private String env;
 
-  private boolean showNext;
+  @NotNull private boolean showNext;
 
-  private boolean showPrev;
+  @NotNull private boolean showPrev;
 
-  private boolean latest;
+  @NotNull private boolean latest;
 }
