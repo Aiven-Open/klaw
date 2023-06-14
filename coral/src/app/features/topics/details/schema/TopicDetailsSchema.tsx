@@ -31,7 +31,8 @@ function TopicDetailsSchema() {
   } = useTopicDetails();
 
   const isTopicOwner = topicInfoList[0].topicOwner;
-  const noSchema = allSchemaVersions.length === 0;
+  const noSchema =
+    allSchemaVersions.length === 0 || schemaDetailsPerEnv === undefined;
 
   function promoteSchema() {
     console.log("dummy function");
@@ -62,7 +63,7 @@ function TopicDetailsSchema() {
             style={{ width: "300px" }}
             aria-label={"Select version"}
             onChange={(e) => setSchemaVersion(Number(e.target.value))}
-            defaultValue={schemaDetailsPerEnv?.version}
+            defaultValue={schemaDetailsPerEnv.version}
           >
             {allSchemaVersions.map((version) => (
               <Option key={version} value={version}>
@@ -81,7 +82,7 @@ function TopicDetailsSchema() {
         {isTopicOwner && (
           <Box alignSelf={"top"}>
             <Link
-              to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv?.env}`}
+              to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
             >
               <Button.Primary icon={add}>Request a new version</Button.Primary>
             </Link>
@@ -98,12 +99,9 @@ function TopicDetailsSchema() {
       )}
 
       <SchemaStats
-        version={schemaDetailsPerEnv?.version || 0}
-        id={schemaDetailsPerEnv?.id || 0}
-        compatibility={
-          schemaDetailsPerEnv?.compatibility?.toUpperCase() ||
-          "Couldn't retrieve".toUpperCase()
-        }
+        version={schemaDetailsPerEnv.version}
+        id={schemaDetailsPerEnv.id}
+        compatibility={schemaDetailsPerEnv.compatibility.toUpperCase()}
       />
 
       <Box marginTop={"l3"} marginBottom={"l2"}>
@@ -115,7 +113,7 @@ function TopicDetailsSchema() {
             height="250px"
             language="json"
             theme={"light"}
-            value={schemaDetailsPerEnv?.content}
+            value={schemaDetailsPerEnv.content}
             loading={"Loading preview"}
             options={{
               ariaLabel: "Schema preview",
