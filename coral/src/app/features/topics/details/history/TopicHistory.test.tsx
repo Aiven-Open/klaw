@@ -94,6 +94,8 @@ const testTopicSchemas = {
   ],
 };
 
+const mockSetSchemaVersion = jest.fn();
+
 jest.mock("src/app/features/topics/details/TopicDetails");
 
 const mockUseTopicDetails = useTopicDetails as jest.MockedFunction<
@@ -119,6 +121,7 @@ describe("TopicHistory", () => {
         topicName: "hello",
         topicOverview: { ...testTopicOverview, topicHistoryList: [] },
         topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
       });
 
       customRender(<TopicHistory />, {
@@ -167,6 +170,7 @@ describe("TopicHistory", () => {
         topicName: "hello",
         topicOverview: testTopicOverview,
         topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
       });
 
       customRender(<TopicHistory />, {

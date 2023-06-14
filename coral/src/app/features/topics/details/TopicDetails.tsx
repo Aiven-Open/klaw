@@ -39,6 +39,9 @@ function TopicDetails(props: TopicOverviewProps) {
   const [environmentId, setEnvironmentId] = useState<string | undefined>(
     undefined
   );
+  const [schemaVersion, setSchemaVersion] = useState<number | undefined>(
+    undefined
+  );
 
   const {
     data: topicData,
@@ -55,7 +58,12 @@ function TopicDetails(props: TopicOverviewProps) {
     error: schemaError,
     isLoading: schemaIsLoading,
   } = useQuery(
-    ["schema-overview", topicData?.availableEnvironments, environmentId],
+    [
+      "schema-overview",
+      topicData?.availableEnvironments,
+      environmentId,
+      schemaVersion,
+    ],
     {
       queryFn: () => {
         const getKafkaEnvIds = () => {
@@ -71,6 +79,7 @@ function TopicDetails(props: TopicOverviewProps) {
         return getSchemaOfTopic({
           topicName,
           kafkaEnvId: getKafkaEnvIds(),
+          schemaVersionSearch: schemaVersion,
         });
       },
       enabled: topicData?.availableEnvironments !== undefined,
@@ -111,6 +120,7 @@ function TopicDetails(props: TopicOverviewProps) {
         currentTab={currentTab}
         topicOverview={topicData}
         environmentId={environmentId}
+        setSchemaVersion={setSchemaVersion}
         topicSchemas={schemaData}
       />
     </div>
@@ -120,6 +130,7 @@ function TopicDetails(props: TopicOverviewProps) {
 function useTopicDetails() {
   return useOutletContext<{
     environmentId: string;
+    setSchemaVersion: (id: number) => void;
     topicOverview: TopicOverview;
     topicName: string;
     topicSchemas: TopicSchemaOverview;

@@ -1300,19 +1300,19 @@ export type components = {
     };
     SchemaDetailsPerEnv: {
       /** Format: int32 */
-      id?: number;
+      id: number;
       /** Format: int32 */
-      version?: number;
+      version: number;
       /** Format: int32 */
-      nextVersion?: number;
+      nextVersion: number;
       /** Format: int32 */
-      prevVersion?: number;
-      compatibility?: string;
-      content?: string;
-      env?: string;
-      showNext?: boolean;
-      showPrev?: boolean;
-      latest?: boolean;
+      prevVersion: number;
+      compatibility: string;
+      content: string;
+      env: string;
+      showNext: boolean;
+      showPrev: boolean;
+      latest: boolean;
     };
     SchemaOverview: {
       topicExists: boolean;

@@ -1,24 +1,63 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
+import { cleanup, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
+import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedUseTopicDetails = jest.fn();
 jest.mock("src/app/features/topics/details/TopicDetails", () => ({
   useTopicDetails: () => mockedUseTopicDetails(),
 }));
+const mockSetSchemaVersion = jest.fn();
 
-describe("TopicDetailsSchema", () => {
-  const testTopicName = "topic-name";
-  const testEnvironmentId = 1;
+const testTopicName = "topic-name";
+const testEnvironmentId = 1;
+const testTopicSchemas = {
+  topicExists: true,
+  schemaExists: true,
+  prefixAclsExists: false,
+  txnAclsExists: false,
+  allSchemaVersions: [3, 2, 1],
+  latestVersion: 3,
+  schemaPromotionDetails: {
+    DEV: {
+      status: "NO_PROMOTION",
+      sourceEnv: "1",
+      targetEnv: "TST",
+      targetEnvId: "2",
+    },
+  },
+  schemaDetailsPerEnv: {
+    id: 0,
+    version: 3,
+    nextVersion: 2,
+    prevVersion: 0,
+    compatibility: "Couldn't retrieve",
+    content:
+      '{\n  "type" : "record",\n  "name" : "klawTestAvro",\n  "namespace" : "klaw.avro",\n  "fields" : [ {\n    "name" : "producer",\n    "type" : "string",\n    "doc" : "Name of the producer"\n  }, {\n    "name" : "body",\n    "type" : "string",\n    "doc" : "The body of the message being sent."\n  }, {\n    "name" : "timestamp",\n    "type" : "long",\n    "doc" : "time in seconds from epoc when the message was created."\n  } ],\n  "doc:" : "A basic schema for testing klaw - this is V3"\n}',
+    env: "DEV",
+    showNext: true,
+    showPrev: false,
+    latest: true,
+  },
+};
+
+describe("TopicDetailsSchema (topic owner)", () => {
   beforeAll(() => {
     mockedUseTopicDetails.mockReturnValue({
       topicName: testTopicName,
       environmentId: testEnvironmentId,
+      topicSchemas: testTopicSchemas,
+      setSchemaVersion: mockSetSchemaVersion,
+      topicOverview: { topicInfoList: [{ topicOwner: true }] },
     });
-    render(<TopicDetailsSchema />);
+    customRender(<TopicDetailsSchema />, { memoryRouter: true });
   });
 
-  afterAll(cleanup);
+  afterAll(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
 
   it("shows a headline", () => {
     const headline = screen.getByRole("heading", { name: "Schema" });
@@ -36,13 +75,13 @@ describe("TopicDetailsSchema", () => {
     const select = screen.getByRole("combobox", { name: "Select version" });
     const options = within(select).getAllByRole("option");
 
-    expect(options).toHaveLength(1);
-    expect(options[0]).toHaveValue("1");
-    expect(options[0]).toHaveTextContent("version 1");
+    expect(options).toHaveLength(3);
+    expect(options[0]).toHaveValue("3");
+    expect(options[0]).toHaveTextContent("Version 3 (latest)");
   });
 
   it("shows information about available amount of versions", () => {
-    const versions = screen.getByText("5 versions");
+    const versions = screen.getByText("3 versions");
 
     expect(versions).toBeVisible();
   });
@@ -53,7 +92,7 @@ describe("TopicDetailsSchema", () => {
     expect(link).toBeVisible();
     expect(link).toHaveAttribute(
       "href",
-      `/topic/${testTopicName}/request-schema?env=${testEnvironmentId}`
+      `/topic/${testTopicName}/request-schema?env=${testTopicSchemas.schemaDetailsPerEnv.env}`
     );
   });
 
@@ -69,14 +108,14 @@ describe("TopicDetailsSchema", () => {
     const versionsStats = screen.getByText("Version no.");
 
     expect(versionsStats).toBeVisible();
-    expect(versionsStats.parentElement).toHaveTextContent("99Version no.");
+    expect(versionsStats.parentElement).toHaveTextContent("3Version no.");
   });
 
   it("shows schema info about ID", () => {
     const idInfo = screen.getByText("ID");
 
     expect(idInfo).toBeVisible();
-    expect(idInfo.parentElement).toHaveTextContent("999ID");
+    expect(idInfo.parentElement).toHaveTextContent("0ID");
   });
 
   it("shows schema info about compatibility", () => {
@@ -84,7 +123,7 @@ describe("TopicDetailsSchema", () => {
 
     expect(compatibilityInfo).toBeVisible();
     expect(compatibilityInfo.parentElement).toHaveTextContent(
-      "BACKWARDSCompatibility"
+      "COULDN'T RETRIEVECompatibility"
     );
   });
 
@@ -92,5 +131,45 @@ describe("TopicDetailsSchema", () => {
     const previewEditor = screen.getByTestId("topic-schema");
 
     expect(previewEditor).toBeVisible();
+  });
+
+  it("allows changing the version of the schema", async () => {
+    const select = screen.getByRole("combobox", { name: "Select version" });
+    await userEvent.selectOptions(select, "2");
+
+    expect(select).toHaveValue("2");
+
+    expect(mockSetSchemaVersion).toHaveBeenCalledWith(2);
+  });
+});
+
+describe("TopicDetailsSchema (NOT topic owner)", () => {
+  beforeAll(() => {
+    mockedUseTopicDetails.mockReturnValue({
+      topicName: testTopicName,
+      environmentId: testEnvironmentId,
+      topicSchemas: testTopicSchemas,
+      setSchemaVersion: mockSetSchemaVersion,
+      topicOverview: { topicInfoList: [{ topicOwner: false }] },
+    });
+    customRender(<TopicDetailsSchema />, { memoryRouter: true });
+  });
+
+  afterAll(cleanup);
+
+  it("does not show a link to request a new schema version", () => {
+    const link = screen.queryByRole("link", {
+      name: "Request a new version",
+    });
+
+    expect(link).not.toBeInTheDocument();
+  });
+
+  it("does not show information about schema promotion", () => {
+    const banner = screen.queryByText("This schema has not yet been promoted", {
+      exact: false,
+    });
+
+    expect(banner).not.toBeInTheDocument();
   });
 });
