@@ -398,6 +398,18 @@ public class UsersTeamsControllerService {
                             .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId)
                             .size()
                         == 0));
+            log.info(
+                "{} getAllComponentsCountForTeam {}",
+                teamModel.getTeamname(),
+                manageDatabase
+                    .getHandleDbRequests()
+                    .getAllComponentsCountForTeam(teamModel.getTeamId(), tenantId));
+            log.info(
+                "{} getAllUsersInfoForTeam {}",
+                teamModel.getTeamname(),
+                manageDatabase
+                    .getHandleDbRequests()
+                    .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId));
           });
     }
 

@@ -229,7 +229,7 @@ public class SchemaOverviewService extends BaseOverviewService {
       SortedMap<Integer, Map<String, Object>> schemaObjects)
       throws Exception {
     if (schemaUpdated) {
-
+      log.info("GetSchema {} from DB", topicNameSearch);
       for (MessageSchema messageSchema : topicSchemaVersionsInDb) {
         Map<String, Object> schemaObj = new HashMap<>();
         schemaObj.put(SCHEMA, messageSchema.getSchemafull());
@@ -262,7 +262,7 @@ public class SchemaOverviewService extends BaseOverviewService {
   private SortedMap<Integer, Map<String, Object>> getSchemaFromAPI(
       String topicNameSearch, int tenantId, KwClusters kwClusters) throws Exception {
     SortedMap<Integer, Map<String, Object>> schemaObjects;
-    log.info("GetSchema from API");
+    log.info("GetSchema {} from API", topicNameSearch);
     schemaObjects =
         clusterApiService.getAvroSchema(
             kwClusters.getBootstrapServers(),

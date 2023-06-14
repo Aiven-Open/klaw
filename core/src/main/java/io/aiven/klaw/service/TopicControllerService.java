@@ -518,7 +518,7 @@ public class TopicControllerService {
       Order order) {
     if (log.isDebugEnabled()) {
       log.debug(
-          "getCreatedTopicRequests {} {} {} {} {}",
+          "getCreatedTopicRequests pageNo {} requestsType {} teamId {} env {} requestOperationType {} wildcardSearch {}",
           pageNo,
           requestsType,
           teamId,
