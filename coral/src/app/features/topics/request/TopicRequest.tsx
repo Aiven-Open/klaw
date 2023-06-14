@@ -7,6 +7,7 @@ import {
   Divider,
   Flexbox,
   FlexboxItem,
+  useToast,
 } from "@aivenio/aquarium";
 import {
   Form,
@@ -33,10 +34,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function TopicRequest() {
-  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
   const navigate = useNavigate();
+  const toast = useToast();
 
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
+  const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
   const { data: environments } = useQuery<Environment[], Error>(
     ["environments-for-team"],
@@ -62,15 +63,14 @@ function TopicRequest() {
 
   const { mutate, isLoading, isError, error } = useMutation(requestTopic, {
     onSuccess: () => {
-      setSuccessModalOpen(true);
-      setTimeout(() => {
-        redirectToMyRequests();
-      }, 5 * 1000);
+      navigate("/requests/topics?status=CREATED");
+      toast({
+        message: "Topic request successful!",
+        position: "bottom-left",
+        variant: "default",
+      });
     },
   });
-
-  const redirectToMyRequests = () =>
-    navigate("/requests/topics?status=CREATED");
 
   const onSubmit: SubmitHandler<Schema> = (data) => mutate(data);
 
@@ -86,17 +86,20 @@ function TopicRequest() {
 
   return (
     <>
-      {successModalOpen && (
+      {cancelDialogVisible && (
         <Dialog
-          title={"Topic request successful!"}
+          title={"Cancel topic request?"}
           primaryAction={{
-            text: "Continue",
-            onClick: redirectToMyRequests,
+            text: "Cancel request",
+            onClick: () => cancelRequest(),
           }}
-          type={"confirmation"}
+          secondaryAction={{
+            text: "Continue with request",
+            onClick: () => setCancelDialogVisible(false),
+          }}
+          type={"warning"}
         >
-          Redirecting to My team&apos;s request page shortly. Select
-          &quot;Continue&quot; for an immediate redirect.
+          Do you want to cancel this request? The data added will be lost.
         </Dialog>
       )}
       <Box>
@@ -204,22 +207,6 @@ function TopicRequest() {
           </Box>
         </Form>
       </Box>
-      {cancelDialogVisible && (
-        <Dialog
-          title={"Cancel topic request?"}
-          primaryAction={{
-            text: "Cancel request",
-            onClick: () => cancelRequest(),
-          }}
-          secondaryAction={{
-            text: "Continue with request",
-            onClick: () => setCancelDialogVisible(false),
-          }}
-          type={"warning"}
-        >
-          Do you want to cancel this request? The data added will be lost.
-        </Dialog>
-      )}
     </>
   );
 
