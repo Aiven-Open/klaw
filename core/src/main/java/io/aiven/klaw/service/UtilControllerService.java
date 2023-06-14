@@ -473,7 +473,7 @@ public class UtilControllerService implements InitializingBean {
         }
       }
 
-      String syncTopicsAcls, syncConnectors, syncSchemas;
+      String syncTopicsAcls, syncConnectors, syncSchemas, manageConnectors;
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_TOPICS)
           || commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_SUBSCRIPTIONS)) {
@@ -486,6 +486,12 @@ public class UtilControllerService implements InitializingBean {
         syncConnectors = "NotAuthorized";
       } else {
         syncConnectors = ApiResultStatus.AUTHORIZED.value;
+      }
+
+      if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.MANAGE_CONNECTORS)) {
+        manageConnectors = "NotAuthorized";
+      } else {
+        manageConnectors = ApiResultStatus.AUTHORIZED.value;
       }
 
       if (commonUtilsService.isNotAuthorizedUser(userName, PermissionType.SYNC_SCHEMAS)) {
@@ -616,6 +622,7 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setAddTeams(addTeams);
       authenticationInfo.setSyncTopicsAcls(syncTopicsAcls);
       authenticationInfo.setSyncConnectors(syncConnectors);
+      authenticationInfo.setManageConnectors(manageConnectors);
       authenticationInfo.setSyncSchemas(syncSchemas);
       authenticationInfo.setApproveAtleastOneRequest(approveAtleastOneRequest);
       authenticationInfo.setApproveDeclineTopics(approveDeclineTopics);

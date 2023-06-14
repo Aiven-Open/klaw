@@ -41,10 +41,14 @@ public class KafkaConnectService {
 
   private static final ParameterizedTypeReference<Map<String, Map<String, Object>>>
       GET_CONNECTORS_TYPEREF = new ParameterizedTypeReference<>() {};
+
+  private static final ParameterizedTypeReference<List<String>> GET_CONNECTORS_STR_TYPEREF =
+      new ParameterizedTypeReference<>() {};
   private static final ParameterizedTypeReference<Map<String, Object>>
       GET_CONNECTOR_DETAILS_TYPEREF = new ParameterizedTypeReference<>() {};
   public static final String FAILED_STATUS = "FAILED";
   public static final String RUNNING_STATUS = "RUNNING";
+  public static final String CONNECTOR_URI_EXPAND_STATUS = "?expand=status";
 
   final ClusterApiUtils clusterApiUtils;
 
@@ -159,7 +163,10 @@ public class KafkaConnectService {
   }
 
   public ConnectorsStatus getConnectors(
-      String environmentVal, KafkaSupportedProtocol protocol, String clusterIdentification) {
+      String environmentVal,
+      KafkaSupportedProtocol protocol,
+      String clusterIdentification,
+      boolean getConnectorStatuses) {
     ConnectorsStatus connectorsStatus = new ConnectorsStatus();
     List<ConnectorState> connectorStateList = new ArrayList<>();
     connectorsStatus.setConnectorStateList(connectorStateList);
@@ -170,15 +177,42 @@ public class KafkaConnectService {
         return null;
       }
 
-      String suffixUrl = environmentVal + "/connectors?expand=status";
+      String suffixUrl = environmentVal + "/connectors";
+
+      if (getConnectorStatuses) {
+        suffixUrl = suffixUrl + CONNECTOR_URI_EXPAND_STATUS;
+      }
+
       Pair<String, RestTemplate> reqDetails =
           clusterApiUtils.getRequestDetails(suffixUrl, protocol);
 
       HttpHeaders headers =
           clusterApiUtils.createHeaders(clusterIdentification, KafkaClustersType.KAFKA_CONNECT);
       HttpEntity<Object> request = new HttpEntity<>(headers);
-
       Map<String, String> params = new HashMap<>();
+
+      if (!getConnectorStatuses) {
+        ResponseEntity<List<String>> responseList =
+            reqDetails
+                .getRight()
+                .exchange(
+                    reqDetails.getLeft(),
+                    HttpMethod.GET,
+                    request,
+                    GET_CONNECTORS_STR_TYPEREF,
+                    params);
+        log.info("connectors list " + responseList);
+        if (responseList.getBody() != null) {
+          for (String connectorName : responseList.getBody()) {
+            ConnectorState connectorState = new ConnectorState();
+            connectorState.setConnectorName(connectorName);
+            connectorStateList.add(connectorState);
+          }
+        }
+
+        return connectorsStatus;
+      }
+
       ResponseEntity<Map<String, Map<String, Status>>> responseEntity =
           reqDetails
               .getRight()
@@ -275,5 +309,53 @@ public class KafkaConnectService {
       log.error("Exception:", e);
       return ClusterStatus.OFFLINE;
     }
+  }
+
+  public ApiResponse restartConnector(ClusterConnectorRequest clusterConnectorRequest) {
+    log.info("Into restartConnector clusterConnectorRequest {} ", clusterConnectorRequest);
+
+    String suffixUrl =
+        clusterConnectorRequest.getEnv()
+            + "/connectors"
+            + "/"
+            + clusterConnectorRequest.getConnectorName()
+            + "/"
+            + "restart";
+
+    suffixUrl =
+        suffixUrl
+            + "?includeTasks=true&onlyFailed="
+            + clusterConnectorRequest.isIncludeFailedTasksOnly();
+
+    Pair<String, RestTemplate> reqDetails =
+        clusterApiUtils.getRequestDetails(suffixUrl, clusterConnectorRequest.getProtocol());
+
+    HttpHeaders headers =
+        clusterApiUtils.createHeaders(
+            clusterConnectorRequest.getClusterIdentification(), KafkaClustersType.KAFKA_CONNECT);
+    headers.set("Content-Type", "application/json");
+    HttpEntity<String> request = new HttpEntity<>(headers);
+    ResponseEntity<String> responseNew;
+    try {
+      responseNew =
+          reqDetails.getRight().postForEntity(reqDetails.getLeft(), request, String.class);
+    } catch (HttpServerErrorException | HttpClientErrorException e) {
+      return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_1);
+    } catch (Exception ex) {
+      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_1).build();
+    }
+    if (responseNew.getStatusCode().is2xxSuccessful()) {
+      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    } else {
+      return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
+    }
+  }
+
+  public ApiResponse pauseConnector(ClusterConnectorRequest clusterConnectorRequest) {
+    return ApiResponse.builder().success(false).message("To be implemented").build();
+  }
+
+  public ApiResponse resumeConnector(ClusterConnectorRequest clusterConnectorRequest) {
+    return ApiResponse.builder().success(false).message("To be implemented").build();
   }
 }

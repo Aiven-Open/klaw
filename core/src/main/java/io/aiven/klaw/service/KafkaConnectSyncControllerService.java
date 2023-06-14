@@ -320,7 +320,7 @@ public class KafkaConnectSyncControllerService {
       String pageNo,
       String currentPage,
       String connectorNameSearch,
-      boolean parseBoolean) {
+      boolean getConnectorsStatuses) {
     Env envSelected = getKafkaConnectorEnvDetails(envId);
     List<String> teamList = new ArrayList<>();
     teamList = tenantFilterTeams(teamList);
@@ -354,7 +354,8 @@ public class KafkaConnectSyncControllerService {
               bootstrapHost,
               kwClusters.getProtocol().getName(),
               kwClusters.getClusterName() + kwClusters.getClusterId(),
-              tenantId);
+              tenantId,
+              getConnectorsStatuses);
       List<ConnectorState> connectorsList = allConnectors.getConnectorStateList();
       if (connectorNameSearch != null && connectorNameSearch.length() > 0) {
         final String topicSearchFilter = connectorNameSearch;
@@ -384,6 +385,7 @@ public class KafkaConnectSyncControllerService {
 
       for (KafkaConnectorModelResponse kafkaConnectorModelResponse :
           kafkaConnectorModelSourceList) {
+        kafkaConnectorModelResponse.setRemarks("IN_SYNC"); // default
         Optional<ConnectorState> optionalConnectorState =
             connectorsList.stream()
                 .filter(
@@ -410,7 +412,7 @@ public class KafkaConnectSyncControllerService {
                 connectorState ->
                     connectorState
                         .getConnectorName()
-                        .contains(kafkaConnectorModel.getConnectorName()))) {
+                        .equals(kafkaConnectorModel.getConnectorName()))) {
           for (KafkaConnectorModelResponse kafkaConnectorModelCluster :
               kafkaConnectorModelClusterList) {
             if (Objects.equals(
@@ -433,6 +435,14 @@ public class KafkaConnectSyncControllerService {
           kafkaConnectorModel.setRemarks("ADDED");
           kafkaConnectorModel.setTeamName("");
         }
+      }
+
+      // don't show connectors which are deleted on cluster
+      if (getConnectorsStatuses) {
+        kafkaConnectorModelClusterList =
+            kafkaConnectorModelClusterList.stream()
+                .filter(connectorList -> connectorList.getRemarks().equals("IN_SYNC"))
+                .toList();
       }
 
       // pagination
@@ -534,5 +544,10 @@ public class KafkaConnectSyncControllerService {
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
     return envFound.orElse(null);
+  }
+
+  public List<KafkaConnectorModelResponse> getConnectorsToManage(
+      String envId, String pageNo, String currentPage, String connectorNameSearch) {
+    return null;
   }
 }

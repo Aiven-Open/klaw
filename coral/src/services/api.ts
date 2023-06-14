@@ -34,6 +34,8 @@ const CONTENT_TYPE_JSON = "application/json" as const;
 const API_BASE_URL = getHTTPBaseAPIUrl();
 
 const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
+  restartConnector: "/connector/restart",
+  getConnectorsToManage: "/getConnectorsToManage",
   resetCacheClusterApi: "/schemas/resetCache",
   updateSyncSchemas: "/schemas",
   getSchemaOfTopicFromSource:
@@ -129,7 +131,7 @@ const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
   getTeamDetails: "/getTeamDetails",
   getSyncTopics: "/getSyncTopics",
   getSyncEnv: "/getSyncEnv",
-  getSyncTopics_1: "/getSyncConnectors",
+  getSyncConnectors: "/getSyncConnectors",
   getSyncConnectorsEnv: "/getSyncConnectorsEnv",
   getSyncBackAcls: "/getSyncBackAcls",
   getSyncAcls: "/getSyncAcls",
