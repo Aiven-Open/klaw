@@ -191,7 +191,7 @@ public class SchemaOverviewServiceTest {
 
   @Test
   @Order(6)
-  public void givenARequestForSchemaWithoutACorrectDBEntry_CallAPIAndUpdateSchema()
+  public void givenARequestForSchemaWithoutACorrectDBEntry_CallAPIAndDontUpdateSchema()
       throws Exception {
     stubUserInfo();
 
@@ -205,6 +205,29 @@ public class SchemaOverviewServiceTest {
             .getHandleDbRequests()
             .getSchemaForTenantAndEnvAndTopic(eq(101), eq("3"), eq(TESTTOPIC)))
         .thenReturn(createMessages(2));
+
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
+
+    verify(manageDatabase.getHandleDbRequests(), times(0)).insertIntoMessageSchemaSOT(any());
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
+  }
+
+  @Test
+  @Order(7)
+  public void givenARequestForSchemaWithoutACorrectDBEntry_CallAPIButDontUpdateSchema()
+      throws Exception {
+    stubUserInfo();
+
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
+
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(8);
+    when(handleDbRequests.getTopics(eq(TESTTOPIC), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getSchemaForTenantAndEnvAndTopic(eq(101), eq("3"), eq(TESTTOPIC)))
+        .thenReturn(createDBMessages(2));
 
     SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
 
@@ -249,7 +272,24 @@ public class SchemaOverviewServiceTest {
     for (int i = 1; i <= numOfEntries; i++) {
       MessageSchema msg = new MessageSchema();
       msg.setSchemaversion(String.valueOf(i));
-      msg.setSchemaversion(String.valueOf(i));
+      msg.setSchemafull("1");
+      msg.setSchemaId(Integer.valueOf(i));
+      msg.setCompatibility("NOT_SET");
+      msg.setTeamId(103);
+      msg.setTenantId(101);
+      msg.setTopicname(TESTTOPIC);
+      messages.add(msg);
+    }
+
+    return messages;
+  }
+
+  private List<MessageSchema> createDBMessages(int numOfEntries) {
+
+    List<MessageSchema> messages = new ArrayList<>();
+    for (int i = 1; i <= numOfEntries; i++) {
+      MessageSchema msg = new MessageSchema();
+      msg.setSchemaversion(String.valueOf(i) + ".0");
       msg.setSchemafull("1");
       msg.setSchemaId(Integer.valueOf(i));
       msg.setCompatibility("NOT_SET");

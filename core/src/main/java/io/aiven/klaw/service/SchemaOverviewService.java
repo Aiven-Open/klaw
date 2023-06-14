@@ -239,7 +239,9 @@ public class SchemaOverviewService extends BaseOverviewService {
       }
     } else {
       schemaObjects = getSchemaFromAPI(topicNameSearch, tenantId, kwClusters);
+
       if (schemaObjects != null) {
+        Boolean saveChanges = null;
         for (MessageSchema messageSchema : topicSchemaVersionsInDb) {
 
           // The Key for the SchemaObjects map is the version number.
@@ -247,19 +249,24 @@ public class SchemaOverviewService extends BaseOverviewService {
               schemaObjects.get(Integer.valueOf(messageSchema.getSchemaversion()));
           if (schemaObj != null) {
             if (messageSchema.getSchemaId() == null) {
+              saveChanges = true;
               messageSchema.setSchemaId((Integer) schemaObj.get(SCHEMA_ID));
             }
             if (messageSchema.getCompatibility() == null) {
+              saveChanges = true;
               messageSchema.setCompatibility((String) schemaObj.get(SCHEMA_COMPATIBILITY));
             }
             if (messageSchema.getSchemafull() == null) {
+              saveChanges = true;
               messageSchema.setSchemafull((String) schemaObj.get(SCHEMA));
             }
           }
         }
-        log.info("Updated topic {} schemaId, compatibility and schema.", topicNameSearch);
+        log.debug("Updated topic {} schemaId, compatibility and schema.", topicNameSearch);
         // Save that back into the DB
-        manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(topicSchemaVersionsInDb);
+        if (saveChanges != null && saveChanges) {
+          manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(topicSchemaVersionsInDb);
+        }
       }
     }
     return schemaObjects;
