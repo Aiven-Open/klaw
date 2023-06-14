@@ -24,6 +24,12 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedUsedNavigate,
 }));
 
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
+
 describe("<ConnectorRequest />", () => {
   const originalConsoleError = console.error;
   let user: ReturnType<typeof userEvent.setup>;
@@ -45,7 +51,12 @@ describe("<ConnectorRequest />", () => {
           createEnvironment({ id: "2", name: "TST" }),
           createEnvironment({ id: "3", name: "PROD" }),
         ]);
-        customRender(<ConnectorRequest />, { queryClient: true });
+        customRender(
+          <AquariumContext>
+            <ConnectorRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
       });
 
       afterEach(cleanup);
@@ -96,7 +107,12 @@ describe("<ConnectorRequest />", () => {
           createEnvironment({ id: "2", name: "TST" }),
           createEnvironment({ id: "3", name: "PROD" }),
         ]);
-        customRender(<ConnectorRequest />, { queryClient: true });
+        customRender(
+          <AquariumContext>
+            <ConnectorRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
       });
 
       afterEach(cleanup);
@@ -405,7 +421,10 @@ describe("<ConnectorRequest />", () => {
         });
       });
 
-      afterEach(() => cleanup());
+      afterEach(() => {
+        mockedUseToast.mockReset();
+        cleanup();
+      });
 
       it("creates a new connector request when input was valid", async () => {
         await user.click(
@@ -424,6 +443,7 @@ describe("<ConnectorRequest />", () => {
           environment: "1",
           remarks: "",
         });
+        await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
       it("errors and does not create a new connector request when input was invalid", async () => {
@@ -440,12 +460,13 @@ describe("<ConnectorRequest />", () => {
         );
 
         expect(createConnectorRequest).not.toHaveBeenCalled();
+        expect(mockedUseToast).not.toHaveBeenCalled();
         expect(
           screen.getByRole("button", { name: "Submit request" })
         ).toBeEnabled();
       });
 
-      it("shows a dialog informing user that request was successful", async () => {
+      it("shows a notification informing user that request was successful and redirects them", async () => {
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
@@ -456,32 +477,13 @@ describe("<ConnectorRequest />", () => {
         });
 
         expect(createConnectorRequest).toHaveBeenCalledTimes(1);
-
-        const successModal = await screen.findByRole("dialog");
-
-        expect(successModal).toBeVisible();
-        expect(successModal).toHaveTextContent("Connector request successful!");
-      });
-
-      it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        await user.click(
-          screen.getByRole("button", { name: "Submit request" })
+        await waitFor(() =>
+          expect(mockedUseToast).toHaveBeenCalledWith({
+            message: "Connector request successful!",
+            position: "bottom-left",
+            variant: "default",
+          })
         );
-
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
-
-        expect(createConnectorRequest).toHaveBeenCalledTimes(1);
-
-        const successModal = await screen.findByRole("dialog");
-        const button = within(successModal).getByRole("button", {
-          name: "Continue",
-        });
-
-        await userEvent.click(button);
-
         expect(mockedUsedNavigate).toHaveBeenCalledWith(
           "/requests/connectors?status=CREATED"
         );
