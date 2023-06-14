@@ -26,6 +26,10 @@ import org.springframework.stereotype.Service;
 @Service
 public class SchemaOverviewService extends BaseOverviewService {
 
+  public static final String SCHEMA_ID = "id";
+  public static final String SCHEMA_COMPATIBILITY = "compatibility";
+  public static final String SCHEMA = "schema";
+
   public SchemaOverviewService(MailUtils mailService) {
     super(mailService);
   }
@@ -101,8 +105,12 @@ public class SchemaOverviewService extends BaseOverviewService {
         if (!topicSchemaVersionsInDb.isEmpty()) {
           schemaUpdated =
               topicSchemaVersionsInDb.stream()
-                  .map(MessageSchema::getSchemaversion)
-                  .noneMatch(schemaVersion -> schemaVersion.contains("."));
+                  .noneMatch(
+                      msgSchema ->
+                          (msgSchema.getSchemaversion() != null
+                                  && msgSchema.getSchemaversion().contains("."))
+                              || msgSchema.getCompatibility() == null
+                              || msgSchema.getSchemaId() == null);
         }
 
         SortedMap<Integer, Map<String, Object>> schemaObjects = new TreeMap<>();
@@ -134,7 +142,7 @@ public class SchemaOverviewService extends BaseOverviewService {
           // get latest version
           if (schemaVersionSearch == 0) {
             hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
-            schemaOfObj = (String) hashMapSchemaObj.get("schema");
+            schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(true);
             updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
             schemaDetailsPerEnv.setVersion(latestSchemaVersion);
@@ -147,7 +155,7 @@ public class SchemaOverviewService extends BaseOverviewService {
             }
           } else {
             hashMapSchemaObj = schemaObjects.get(schemaVersionSearch);
-            schemaOfObj = (String) hashMapSchemaObj.get("schema");
+            schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(false);
             updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
             schemaDetailsPerEnv.setVersion(schemaVersionSearch);
@@ -200,13 +208,13 @@ public class SchemaOverviewService extends BaseOverviewService {
 
   private static void updateIdAndCompatibility(
       SchemaDetailsPerEnv schemaDetailsPerEnv, Map<String, Object> hashMapSchemaObj) {
-    if (hashMapSchemaObj.containsKey("id") && hashMapSchemaObj.get("id") != null) {
-      schemaDetailsPerEnv.setId((Integer) hashMapSchemaObj.get("id"));
+    if (hashMapSchemaObj.containsKey(SCHEMA_ID) && hashMapSchemaObj.get(SCHEMA_ID) != null) {
+      schemaDetailsPerEnv.setId((Integer) hashMapSchemaObj.get(SCHEMA_ID));
     }
 
-    if (hashMapSchemaObj.containsKey("compatibility")
-        && hashMapSchemaObj.get("compatibility") != null) {
-      schemaDetailsPerEnv.setCompatibility(hashMapSchemaObj.get("compatibility") + "");
+    if (hashMapSchemaObj.containsKey(SCHEMA_COMPATIBILITY)
+        && hashMapSchemaObj.get(SCHEMA_COMPATIBILITY) != null) {
+      schemaDetailsPerEnv.setCompatibility(hashMapSchemaObj.get(SCHEMA_COMPATIBILITY) + "");
     } else {
       schemaDetailsPerEnv.setCompatibility("Couldn't retrieve");
     }
@@ -221,22 +229,60 @@ public class SchemaOverviewService extends BaseOverviewService {
       SortedMap<Integer, Map<String, Object>> schemaObjects)
       throws Exception {
     if (schemaUpdated) {
+      log.info("GetSchema {} from DB", topicNameSearch);
       for (MessageSchema messageSchema : topicSchemaVersionsInDb) {
         Map<String, Object> schemaObj = new HashMap<>();
-        schemaObj.put("schema", messageSchema.getSchemafull());
-        schemaObj.put("id", messageSchema.getSchemaId());
-        schemaObj.put("compatibility", messageSchema.getCompatibility());
+        schemaObj.put(SCHEMA, messageSchema.getSchemafull());
+        schemaObj.put(SCHEMA_ID, messageSchema.getSchemaId());
+        schemaObj.put(SCHEMA_COMPATIBILITY, messageSchema.getCompatibility());
         schemaObjects.put(Integer.parseInt(messageSchema.getSchemaversion()), schemaObj);
       }
     } else {
-      schemaObjects =
-          clusterApiService.getAvroSchema(
-              kwClusters.getBootstrapServers(),
-              kwClusters.getProtocol(),
-              kwClusters.getClusterName() + kwClusters.getClusterId(),
-              topicNameSearch,
-              tenantId);
+      schemaObjects = getSchemaFromAPI(topicNameSearch, tenantId, kwClusters);
+
+      if (schemaObjects != null) {
+        Boolean saveChanges = null;
+        for (MessageSchema messageSchema : topicSchemaVersionsInDb) {
+
+          // The Key for the SchemaObjects map is the version number.
+          Map<String, Object> schemaObj =
+              schemaObjects.get(Integer.valueOf(messageSchema.getSchemaversion()));
+          if (schemaObj != null) {
+            if (messageSchema.getSchemaId() == null) {
+              saveChanges = true;
+              messageSchema.setSchemaId((Integer) schemaObj.get(SCHEMA_ID));
+            }
+            if (messageSchema.getCompatibility() == null) {
+              saveChanges = true;
+              messageSchema.setCompatibility((String) schemaObj.get(SCHEMA_COMPATIBILITY));
+            }
+            if (messageSchema.getSchemafull() == null) {
+              saveChanges = true;
+              messageSchema.setSchemafull((String) schemaObj.get(SCHEMA));
+            }
+          }
+        }
+        log.debug("Updated topic {} schemaId, compatibility and schema.", topicNameSearch);
+        // Save that back into the DB
+        if (saveChanges != null && saveChanges) {
+          manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(topicSchemaVersionsInDb);
+        }
+      }
     }
+    return schemaObjects;
+  }
+
+  private SortedMap<Integer, Map<String, Object>> getSchemaFromAPI(
+      String topicNameSearch, int tenantId, KwClusters kwClusters) throws Exception {
+    SortedMap<Integer, Map<String, Object>> schemaObjects;
+    log.info("GetSchema {} from API", topicNameSearch);
+    schemaObjects =
+        clusterApiService.getAvroSchema(
+            kwClusters.getBootstrapServers(),
+            kwClusters.getProtocol(),
+            kwClusters.getClusterName() + kwClusters.getClusterId(),
+            topicNameSearch,
+            tenantId);
     return schemaObjects;
   }
 

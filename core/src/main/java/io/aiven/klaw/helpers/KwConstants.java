@@ -32,6 +32,12 @@ public class KwConstants {
   public static final String STAGINGTEAM = "STAGINGTEAM";
   public static final String MAIL_TOPICREQUEST_CONTENT =
       "Dear User, \\nA request for a create topic %s has been requested in Klaw.";
+
+  public static final String MAIL_TOPICPROMOTIONREQUEST_CONTENT =
+      "Dear User, \\nA request to promote topic %s to the next environment has been requested in Klaw.";
+
+  public static final String MAIL_TOPICUPDATEREQUEST_CONTENT =
+      "Dear User, \\nA request to update the topic %s has been requested in Klaw.";
   public static final String MAIL_TOPICDELETEREQUEST_CONTENT =
       "Dear User, \\nA request for a delete topic %s has been requested in Klaw.";
   public static final String MAIL_TOPICCLAIMREQUEST_CONTENT =
