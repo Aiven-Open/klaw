@@ -133,14 +133,6 @@ describe("TopicDetailsSchema (topic owner)", () => {
     expect(previewEditor).toBeVisible();
   });
 
-  it("shows a Delete button", () => {
-    const button = screen.getByRole("button", {
-      name: "Delete Schema",
-    });
-
-    expect(button).toBeEnabled();
-  });
-
   it("allows changing the version of the schema", async () => {
     const select = screen.getByRole("combobox", { name: "Select version" });
     await userEvent.selectOptions(select, "2");
@@ -179,13 +171,5 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
     });
 
     expect(banner).not.toBeInTheDocument();
-  });
-
-  it("does not show a Delete button", () => {
-    const button = screen.queryByRole("Delete Schema", {
-      exact: false,
-    });
-
-    expect(button).not.toBeInTheDocument();
   });
 });

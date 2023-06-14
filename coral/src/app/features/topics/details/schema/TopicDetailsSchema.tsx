@@ -130,8 +130,6 @@ function TopicDetailsSchema() {
           />
         </Box>
       </Box>
-
-      {isTopicOwner && <Button.Secondary>Delete Schema</Button.Secondary>}
     </>
   );
 }
