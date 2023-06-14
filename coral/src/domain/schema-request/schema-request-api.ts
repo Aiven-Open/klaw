@@ -4,7 +4,10 @@ import {
   RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
 import { transformGetSchemaRequests } from "src/domain/schema-request/schema-request-transformer";
-import { SchemaRequestApiResponse } from "src/domain/schema-request/schema-request-types";
+import {
+  PromoteSchemaPayload,
+  SchemaRequestApiResponse,
+} from "src/domain/schema-request/schema-request-types";
 import api, { API_PATHS } from "src/services/api";
 import {
   KlawApiRequest,
@@ -148,6 +151,13 @@ const deleteSchemaRequest = ({
   });
 };
 
+const promoteSchemaRequest = (payload: PromoteSchemaPayload) => {
+  return api.post<KlawApiResponse<"promoteSchema">, PromoteSchemaPayload>(
+    API_PATHS.promoteSchema,
+    payload
+  );
+};
+
 export {
   createSchemaRequest,
   getSchemaRequestsForApprover,
@@ -155,4 +165,5 @@ export {
   declineSchemaRequest,
   getSchemaRequests,
   deleteSchemaRequest,
+  promoteSchemaRequest,
 };
