@@ -6,6 +6,7 @@ import {
   GridItem,
   RadioButton as BaseRadioButton,
   SecondaryButton,
+  useToast,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -48,9 +49,10 @@ const TopicProducerForm = ({
   isSubscription,
 }: TopicProducerFormProps) => {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const navigate = useNavigate();
+  const toast = useToast();
+
   const { aclIpPrincipleType, aclPatternType, topicname, environment } =
     topicProducerForm.getValues();
   const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
@@ -85,16 +87,14 @@ const TopicProducerForm = ({
   const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: createAclRequest,
     onSuccess: () => {
-      setSuccessModalOpen(true);
-      setTimeout(() => {
-        redirectToMyRequests();
-      }, 5 * 1000);
+      navigate("/requests/acls?status=CREATED");
+      toast({
+        message: "Acl request successful!",
+        position: "bottom-left",
+        variant: "default",
+      });
     },
   });
-
-  function redirectToMyRequests() {
-    navigate("/requests/acls?status=CREATED");
-  }
 
   const onSubmitTopicProducer: SubmitHandler<TopicProducerFormSchema> = (
     formData
@@ -116,19 +116,6 @@ const TopicProducerForm = ({
         <Box marginBottom={"l1"} role="alert">
           <Alert type="error">{parseErrorMsg(error)}</Alert>
         </Box>
-      )}
-      {successModalOpen && (
-        <Dialog
-          title={"Acl request successful!"}
-          primaryAction={{
-            text: "Continue",
-            onClick: redirectToMyRequests,
-          }}
-          type={"confirmation"}
-        >
-          Redirecting to My team&apos;s request page shortly. Select
-          &quot;Continue&quot; for an immediate redirect.
-        </Dialog>
       )}
       <Form
         {...topicProducerForm}
