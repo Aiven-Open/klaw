@@ -99,7 +99,7 @@ function TopicDetails(props: TopicOverviewProps) {
   // This isRefetchingTopicOverview variable ensures that we only show loading state when there is a desync between the topic name in pops
   // and the topic name in the available data
   const isRefetchingTopicOverview =
-    topicData?.topicInfoList[0].topicName !== topicName;
+    topicData?.topicInfo.topicName !== topicName;
 
   return (
     <div>

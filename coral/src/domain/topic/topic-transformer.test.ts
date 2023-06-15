@@ -2,12 +2,14 @@ import {
   transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsResponse,
   transformTopicApiResponse,
+  transformTopicOverviewResponse,
 } from "src/domain/topic/topic-transformer";
 import {
   Topic,
   TopicApiResponse,
   TopicRequestApiResponse,
   TopicRequest,
+  TopicOverview,
 } from "src/domain/topic/topic-types";
 import {
   baseTestObjectMockedTopic,
@@ -182,6 +184,238 @@ describe("topic-transformer.ts", () => {
       };
 
       expect(transformedResponse.entries).toHaveLength(2);
+      expect(transformedResponse).toEqual(result);
+    });
+  });
+
+  describe("transformTopicOverviewResponse", () => {
+    it("transforms topic overview from backend with only required properties", () => {
+      const mockedResponse: KlawApiResponse<"getTopicOverview"> = {
+        topicExists: false,
+        schemaExists: false,
+        prefixAclsExists: false,
+        txnAclsExists: false,
+        topicInfoList: [
+          {
+            topicName: "test-topic",
+            noOfPartitions: 1,
+            noOfReplicas: "2",
+            teamname: "TEAM",
+            teamId: 3,
+            envId: "4",
+            showEditTopic: false,
+            showDeleteTopic: false,
+            topicDeletable: false,
+            hasOpenRequest: false,
+            hasOpenACLRequest: false,
+            envName: "DEV",
+          },
+        ],
+        topicPromotionDetails: {
+          status: "test",
+        },
+        availableEnvironments: [],
+        topicIdForDocumentation: 1,
+      };
+
+      const transformedResponse =
+        transformTopicOverviewResponse(mockedResponse);
+
+      const result: TopicOverview = {
+        availableEnvironments: [],
+        prefixAclsExists: false,
+        schemaExists: false,
+        topicExists: false,
+        topicIdForDocumentation: 1,
+        topicInfo: {
+          envId: "4",
+          envName: "DEV",
+          hasOpenACLRequest: false,
+          hasOpenRequest: false,
+          noOfPartitions: 1,
+          noOfReplicas: "2",
+          showDeleteTopic: false,
+          showEditTopic: false,
+          teamId: 3,
+          teamname: "TEAM",
+          topicDeletable: false,
+          topicName: "test-topic",
+        },
+        topicPromotionDetails: {
+          status: "test",
+        },
+        txnAclsExists: false,
+      };
+
+      expect(transformedResponse).toEqual(result);
+    });
+
+    it("transforms topic overview from backend with all properties", () => {
+      const mockedResponse: KlawApiResponse<"getTopicOverview"> = {
+        topicExists: false,
+        schemaExists: false,
+        prefixAclsExists: false,
+        txnAclsExists: false,
+        topicInfoList: [
+          {
+            topicName: "test-topic",
+            noOfPartitions: 1,
+            noOfReplicas: "2",
+            teamname: "TEAM",
+            teamId: 3,
+            envId: "4",
+            showEditTopic: false,
+            showDeleteTopic: false,
+            topicDeletable: false,
+            hasOpenRequest: false,
+            hasOpenACLRequest: false,
+            envName: "DEV",
+          },
+        ],
+        topicPromotionDetails: {
+          status: "test",
+        },
+        availableEnvironments: [],
+        topicIdForDocumentation: 1,
+        topicDocumentation: "This is the documentation",
+        aclInfoList: [
+          {
+            req_no: "111",
+            aclPatternType: "test1",
+            environment: "1",
+            environmentName: "TST",
+            kafkaFlavorType: "APACHE_KAFKA",
+            showDeleteAcl: false,
+            teamid: 1111,
+            teamname: "teami",
+            topicname: "my-topic",
+            topictype: "test",
+          },
+        ],
+        prefixedAclInfoList: [
+          {
+            req_no: "222",
+            aclPatternType: "test2",
+            environment: "2",
+            environmentName: "TST",
+            kafkaFlavorType: "APACHE_KAFKA",
+            showDeleteAcl: false,
+            teamid: 2222,
+            teamname: "teami",
+            topicname: "my-topic",
+            topictype: "test",
+          },
+        ],
+        transactionalAclInfoList: [
+          {
+            req_no: "333",
+            aclPatternType: "test3",
+            environment: "3",
+            environmentName: "TST",
+            kafkaFlavorType: "APACHE_KAFKA",
+            showDeleteAcl: false,
+            teamid: 3333,
+            teamname: "teami",
+            topicname: "my-topic",
+            topictype: "test",
+          },
+        ],
+        topicHistoryList: [
+          {
+            environmentName: "TST",
+            teamName: "teami",
+            requestedBy: "me",
+            requestedTime: "2023",
+            approvedBy: "them",
+            approvedTime: "2024",
+            remarks: "no remarks here",
+          },
+        ],
+      };
+
+      const transformedResponse =
+        transformTopicOverviewResponse(mockedResponse);
+
+      const result: TopicOverview = {
+        availableEnvironments: [],
+        prefixAclsExists: false,
+        schemaExists: false,
+        topicExists: false,
+        topicIdForDocumentation: 1,
+        topicInfo: {
+          envId: "4",
+          envName: "DEV",
+          hasOpenACLRequest: false,
+          hasOpenRequest: false,
+          noOfPartitions: 1,
+          noOfReplicas: "2",
+          showDeleteTopic: false,
+          showEditTopic: false,
+          teamId: 3,
+          teamname: "TEAM",
+          topicDeletable: false,
+          topicName: "test-topic",
+        },
+        topicPromotionDetails: {
+          status: "test",
+        },
+        txnAclsExists: false,
+        aclInfoList: [
+          {
+            aclPatternType: "test1",
+            environment: "1",
+            environmentName: "TST",
+            kafkaFlavorType: "APACHE_KAFKA",
+            req_no: "111",
+            showDeleteAcl: false,
+            teamid: 1111,
+            teamname: "teami",
+            topicname: "my-topic",
+            topictype: "test",
+          },
+        ],
+        prefixedAclInfoList: [
+          {
+            aclPatternType: "test2",
+            environment: "2",
+            environmentName: "TST",
+            kafkaFlavorType: "APACHE_KAFKA",
+            req_no: "222",
+            showDeleteAcl: false,
+            teamid: 2222,
+            teamname: "teami",
+            topicname: "my-topic",
+            topictype: "test",
+          },
+        ],
+        transactionalAclInfoList: [
+          {
+            aclPatternType: "test3",
+            environment: "3",
+            environmentName: "TST",
+            kafkaFlavorType: "APACHE_KAFKA",
+            req_no: "333",
+            showDeleteAcl: false,
+            teamid: 3333,
+            teamname: "teami",
+            topicname: "my-topic",
+            topictype: "test",
+          },
+        ],
+        topicDocumentation: "This is the documentation",
+        topicHistoryList: [
+          {
+            approvedBy: "them",
+            approvedTime: "2024",
+            environmentName: "TST",
+            remarks: "no remarks here",
+            requestedBy: "me",
+            requestedTime: "2023",
+            teamName: "teami",
+          },
+        ],
+      };
+
       expect(transformedResponse).toEqual(result);
     });
   });

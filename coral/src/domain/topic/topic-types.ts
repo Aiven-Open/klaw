@@ -39,9 +39,23 @@ type TopicRequestApiResponse = ResolveIntersectionTypes<
   Paginated<TopicRequest[]>
 >;
 
+// KlawApiModel<"TopicOverview">
+// Represents the TopicOverview as defined in the backend.
+// "TopicOverview" is the type (and object) we're using in FE
+// we're redefining property types here to fit our need in app better
+// transformTopicOverviewResponse() is taking care of transforming
+// the properties and makes sure the types are matching between BE and FE
+type TopicOverview = ResolveIntersectionTypes<
+  Omit<KlawApiModel<"TopicOverview">, "topicInfoList"> & {
+    // "topicInfoList" is a list of KlawApiModel<"TopicOverviewInfo">
+    // there is only ever one entry in this list, and we want to access
+    // it accordingly, that's why we transform it to topicInfo instead
+    topicInfo: KlawApiModel<"TopicOverviewInfo">;
+  }
+>;
+
 type AclOverviewInfo = KlawApiModel<"AclOverviewInfo">;
-type TopicOverviewApiResponse = KlawApiResponse<"getTopicOverview">;
-type TopicOverview = KlawApiModel<"TopicOverview">;
+
 type TopicSchemaOverview = KlawApiModel<"SchemaOverview">;
 
 // "remark" is currently not implemented in the API
@@ -62,7 +76,6 @@ export type {
   TopicRequestOperationTypes,
   TopicRequestStatus,
   TopicRequestApiResponse,
-  TopicOverviewApiResponse,
   AclOverviewInfo,
   TopicMessages,
   NoContent,

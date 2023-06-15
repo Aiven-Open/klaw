@@ -27,10 +27,10 @@ function TopicDetailsSchema() {
       schemaDetailsPerEnv,
     },
     setSchemaVersion,
-    topicOverview: { topicInfoList },
+    topicOverview,
   } = useTopicDetails();
 
-  const isTopicOwner = topicInfoList[0].topicOwner;
+  const isTopicOwner = topicOverview.topicInfo.topicOwner;
   const noSchema =
     allSchemaVersions.length === 0 || schemaDetailsPerEnv === undefined;
 

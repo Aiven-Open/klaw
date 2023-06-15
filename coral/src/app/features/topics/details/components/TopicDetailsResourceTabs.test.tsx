@@ -52,22 +52,20 @@ const testTopicOverview: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
-  topicInfoList: [
-    {
-      topicName: testTopicName,
-      noOfPartitions: 1,
-      noOfReplicas: "1",
-      teamname: "Ospo",
-      teamId: 0,
-      envId: "1",
-      showEditTopic: true,
-      showDeleteTopic: false,
-      topicDeletable: false,
-      envName: "DEV",
-      hasOpenACLRequest: true,
-      hasOpenRequest: true,
-    },
-  ],
+  topicInfo: {
+    topicName: testTopicName,
+    noOfPartitions: 1,
+    noOfReplicas: "1",
+    teamname: "Ospo",
+    teamId: 0,
+    envId: "1",
+    showEditTopic: true,
+    showDeleteTopic: false,
+    topicDeletable: false,
+    envName: "DEV",
+    hasOpenACLRequest: true,
+    hasOpenRequest: true,
+  },
   aclInfoList: [
     {
       req_no: "1006",
@@ -123,10 +121,6 @@ const testTopicOverview: TopicOverview = {
       remarks: "Create",
     },
   ],
-  topicPromotionDetails: {
-    topicName: "aivtopic3",
-    status: "NO_PROMOTION",
-  },
   availableEnvironments: [
     {
       id: "1",
@@ -137,7 +131,8 @@ const testTopicOverview: TopicOverview = {
       name: "TST",
     },
   ],
-  topicIdForDocumentation: 1015,
+  topicPromotionDetails: { status: "STATUS" },
+  topicIdForDocumentation: 1,
 };
 
 const defaultProps = {
