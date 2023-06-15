@@ -25,9 +25,7 @@ const SchemaPromotionModal = ({
   version,
   showForceRegister,
 }: SchemaPromotionModalProps) => {
-  const [remarks, setRemarks] = useState<string>(
-    `Promote schema to ${targetEnvironment}`
-  );
+  const [remarks, setRemarks] = useState<string>("");
   const [forceRegister, setForceRegister] = useState(false);
 
   return (
@@ -35,14 +33,13 @@ const SchemaPromotionModal = ({
       title={`Promote schema to ${targetEnvironment}`}
       close={onClose}
       primaryAction={{
-        text: "Promote schema",
+        text: "Request schema promotion",
         onClick: () =>
           onSubmit({
             remarks,
             forceRegister,
           }),
         loading: isLoading,
-        disabled: remarks.length === 0,
       }}
       secondaryAction={{
         text: "Cancel",
@@ -52,7 +49,7 @@ const SchemaPromotionModal = ({
     >
       <Box display={"flex"} flexDirection={"column"} rowGap={"l1"}>
         <p>
-          Promote the Version {version} of the schema to {targetEnvironment}?
+          {`Promote the Version ${version} of the schema to ${targetEnvironment}?`}
         </p>
         {showForceRegister && (
           <Switch
@@ -67,16 +64,14 @@ const SchemaPromotionModal = ({
           </Switch>
         )}
         <Textarea
-          labelText="Add the reason to promote the schema"
-          placeholder="Write a message ..."
+          labelText="You can add the reason to promote the schema (optional)"
+          placeholder="Write a message..."
           onChange={(event) =>
             setRemarks(event.target.value ? event.target.value : "")
           }
           value={remarks}
-          valid={remarks.length > 0}
           helperText={"Required"}
           disabled={isLoading}
-          required
         />
       </Box>
     </Modal>
