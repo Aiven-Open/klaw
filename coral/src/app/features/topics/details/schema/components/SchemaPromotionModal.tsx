@@ -59,7 +59,7 @@ const SchemaPromotionModal = ({
             disabled={isLoading}
             checked={forceRegister}
             caption={
-              "Overrides some validation that the schema registruy would normally do."
+              "Overrides some validation that the schema registry would normally do."
             }
             onChange={() => setForceRegister(!forceRegister)}
           >
