@@ -23,6 +23,7 @@ For the versions available, see the [tags on this repository](https://github.com
 ## Features:
 
 - Topics (approval): Create, Update, Delete, Promote
+  - React UI is now by default enabled in the configuration. If react based assets are already built, new UI should be visible. 
   - React UI - New look and feel for Browse topics, Create topic Request, Acl Request, Schema Request and Connector Request
   - React UI - New look and feel for Approving Topics, ACLs, Schemas and Connectors
   - React UI - New look and feel for viewing 'My team's Requests' for topics, ACLs, Schemas and Connectors
@@ -49,7 +50,7 @@ For the versions available, see the [tags on this repository](https://github.com
 - View created, completed, declined, all Connector requests
 - View created, completed, declined, all Avro schema requests
 
-- Synchronization from and to Apache Kafka clusters
+- Synchronization (migration) from and to Apache Kafka clusters (Topics, Acls, Schemas and Connectors)
 - Reconciliation and email notifications on differences between Klaw and Clusters
 - Restore configuration (topics, acls)
 
