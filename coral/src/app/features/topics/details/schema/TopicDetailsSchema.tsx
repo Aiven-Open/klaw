@@ -125,6 +125,12 @@ function TopicDetailsSchema() {
           onClose={() => setShowSchemaPromotionModal(false)}
           targetEnvironment={targetEnv}
           version={schemaDetailsPerEnv.version}
+          // We only allow users to use the forceRegister option when the promotion request failed
+          // And the failure is not because of an already existing promotion request
+          showForceRegister={
+            errorMessage.length > 0 &&
+            errorMessage !== "Failure. A request already exists for this topic."
+          }
         />
       )}
       <PageHeader title="Schema" />

@@ -14,6 +14,7 @@ interface SchemaPromotionModalProps {
   isLoading: boolean;
   targetEnvironment?: string;
   version: number;
+  showForceRegister: boolean;
 }
 
 const SchemaPromotionModal = ({
@@ -22,6 +23,7 @@ const SchemaPromotionModal = ({
   isLoading,
   targetEnvironment,
   version,
+  showForceRegister,
 }: SchemaPromotionModalProps) => {
   const [remarks, setRemarks] = useState<string>(
     `Promote schema to ${targetEnvironment}`
@@ -52,16 +54,18 @@ const SchemaPromotionModal = ({
         <p>
           Promote the Version {version} of the schema to {targetEnvironment}?
         </p>
-        <Switch
-          disabled={isLoading}
-          checked={forceRegister}
-          caption={
-            "Overrides some validation that the schema registruy would normally do."
-          }
-          onChange={() => setForceRegister(!forceRegister)}
-        >
-          Force register
-        </Switch>
+        {showForceRegister && (
+          <Switch
+            disabled={isLoading}
+            checked={forceRegister}
+            caption={
+              "Overrides some validation that the schema registruy would normally do."
+            }
+            onChange={() => setForceRegister(!forceRegister)}
+          >
+            Force register
+          </Switch>
+        )}
         <Textarea
           labelText="Add the reason to promote the schema"
           placeholder="Write a message ..."
