@@ -22,7 +22,7 @@ const testTopicSchemas = {
   latestVersion: 3,
   schemaPromotionDetails: {
     DEV: {
-      status: "NO_PROMOTION",
+      status: "success",
       sourceEnv: "1",
       targetEnv: "TST",
       targetEnvId: "2",
@@ -37,6 +37,32 @@ const testTopicSchemas = {
     content:
       '{\n  "type" : "record",\n  "name" : "klawTestAvro",\n  "namespace" : "klaw.avro",\n  "fields" : [ {\n    "name" : "producer",\n    "type" : "string",\n    "doc" : "Name of the producer"\n  }, {\n    "name" : "body",\n    "type" : "string",\n    "doc" : "The body of the message being sent."\n  }, {\n    "name" : "timestamp",\n    "type" : "long",\n    "doc" : "time in seconds from epoc when the message was created."\n  } ],\n  "doc:" : "A basic schema for testing klaw - this is V3"\n}',
     env: "DEV",
+    showNext: true,
+    showPrev: false,
+    latest: true,
+  },
+};
+const noPromotion_testTopicSchemas = {
+  topicExists: true,
+  schemaExists: true,
+  prefixAclsExists: false,
+  txnAclsExists: false,
+  allSchemaVersions: [3, 2, 1],
+  latestVersion: 3,
+  schemaPromotionDetails: {
+    TST: {
+      status: "NO_PROMOTION",
+    },
+  },
+  schemaDetailsPerEnv: {
+    id: 0,
+    version: 3,
+    nextVersion: 2,
+    prevVersion: 0,
+    compatibility: "Couldn't retrieve",
+    content:
+      '{\n  "type" : "record",\n  "name" : "klawTestAvro",\n  "namespace" : "klaw.avro",\n  "fields" : [ {\n    "name" : "producer",\n    "type" : "string",\n    "doc" : "Name of the producer"\n  }, {\n    "name" : "body",\n    "type" : "string",\n    "doc" : "The body of the message being sent."\n  }, {\n    "name" : "timestamp",\n    "type" : "long",\n    "doc" : "time in seconds from epoc when the message was created."\n  } ],\n  "doc:" : "A basic schema for testing klaw - this is V3"\n}',
+    env: "TST",
     showNext: true,
     showPrev: false,
     latest: true,
@@ -188,7 +214,10 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
     );
   });
 
-  afterAll(cleanup);
+  afterAll(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
 
   it("does not show a link to request a new schema version", () => {
     const link = screen.queryByRole("link", {
@@ -206,5 +235,49 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
 
     expect(banner).not.toBeInTheDocument();
     expect(button).not.toBeInTheDocument();
+  });
+
+  describe("TopicDetailsSchema (status: NO_PROMOTION)", () => {
+    beforeAll(() => {
+      mockedUseTopicDetails.mockReturnValue({
+        topicName: testTopicName,
+        environmentId: testEnvironmentId,
+        topicSchemas: noPromotion_testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+        topicOverview: { topicInfoList: [{ topicOwner: true }] },
+      });
+      customRender(
+        <AquariumContext>
+          <TopicDetailsSchema />{" "}
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("does not show a link to request a new schema version", () => {
+      const link = screen.queryByRole("link", {
+        name: "Request a new version",
+      });
+
+      expect(link).toBeInTheDocument();
+    });
+
+    it("does not show information about schema promotion", () => {
+      const banner = screen.queryByText(
+        "This schema has not yet been promoted",
+        {
+          exact: false,
+        }
+      );
+      const button = screen.queryByRole("button", { name: "Promote" });
+
+      expect(banner).not.toBeInTheDocument();
+      expect(button).not.toBeInTheDocument();
+    });
   });
 });

@@ -22,8 +22,8 @@ import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { SchemaPromotionModal } from "src/app/features/topics/details/schema/components/SchemaPromotionModal";
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
 import {
-  promoteSchemaRequest,
   PromoteSchemaPayload,
+  promoteSchemaRequest,
 } from "src/domain/schema-request";
 import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
 
@@ -62,20 +62,16 @@ function TopicDetailsSchema() {
           throw new Error("No schema available");
         }
 
-        const currentEnv = schemaDetailsPerEnv.env;
-        const promotionDetails = schemaPromotionDetails[currentEnv];
+        const { targetEnvId, sourceEnv } =
+          schemaPromotionDetails[schemaDetailsPerEnv.env] ?? {};
 
-        if (
-          promotionDetails === undefined ||
-          promotionDetails.targetEnvId === undefined ||
-          promotionDetails.sourceEnv === undefined
-        ) {
+        if (targetEnvId === undefined || sourceEnv === undefined) {
           throw new Error("No promotion details available available");
         }
 
         return promoteSchemaRequest({
-          targetEnvironment: promotionDetails.targetEnvId,
-          sourceEnvironment: promotionDetails.sourceEnv,
+          targetEnvironment: targetEnvId,
+          sourceEnvironment: sourceEnv,
           topicName,
           schemaVersion: String(schemaDetailsPerEnv.version),
           schemaFull: schemaDetailsPerEnv.content,
@@ -117,26 +113,21 @@ function TopicDetailsSchema() {
     );
   }
 
+  const { targetEnv, status: promotionStatus } =
+    schemaPromotionDetails[schemaDetailsPerEnv.env] ?? {};
+
   return (
     <>
-      {showSchemaPromotionModal &&
-        schemaDetailsPerEnv.env !== undefined &&
-        schemaPromotionDetails[schemaDetailsPerEnv.env] !== undefined &&
-        schemaPromotionDetails[schemaDetailsPerEnv.env]?.targetEnv !==
-          undefined && (
-          <SchemaPromotionModal
-            isLoading={promoteSchemaIsLoading}
-            onSubmit={promoteSchema}
-            onClose={() => setShowSchemaPromotionModal(false)}
-            targetEnvironment={
-              schemaPromotionDetails[schemaDetailsPerEnv.env]?.targetEnv
-            }
-            version={schemaDetailsPerEnv.version}
-          />
-        )}
-
+      {showSchemaPromotionModal && targetEnv !== undefined && (
+        <SchemaPromotionModal
+          isLoading={promoteSchemaIsLoading}
+          onSubmit={promoteSchema}
+          onClose={() => setShowSchemaPromotionModal(false)}
+          targetEnvironment={targetEnv}
+          version={schemaDetailsPerEnv.version}
+        />
+      )}
       <PageHeader title="Schema" />
-
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} colGap={"l1"}>
           <NativeSelect
@@ -169,12 +160,10 @@ function TopicDetailsSchema() {
           </Box>
         )}
       </Box>
-
-      {isTopicOwner && (
+      {isTopicOwner && promotionStatus !== "NO_PROMOTION" && (
         <Banner image={illustration} layout="vertical" title={""}>
           <Box element={"p"} marginBottom={"l1"}>
-            This schema has not yet been promoted to the{" "}
-            {schemaPromotionDetails[schemaDetailsPerEnv.env]?.targetEnv}{" "}
+            This schema has not yet been promoted to the {targetEnv}{" "}
             environment.
           </Box>
           {errorMessage.length > 0 && (
@@ -191,13 +180,11 @@ function TopicDetailsSchema() {
           </Button.Primary>
         </Banner>
       )}
-
       <SchemaStats
         version={schemaDetailsPerEnv.version}
         id={schemaDetailsPerEnv.id}
         compatibility={schemaDetailsPerEnv.compatibility.toUpperCase()}
       />
-
       <Box marginTop={"l3"} marginBottom={"l2"}>
         <Label>Schema</Label>
 
