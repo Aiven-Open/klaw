@@ -129,7 +129,7 @@ function TopicDetailsSchema() {
           // And the failure is not because of an already existing promotion request
           showForceRegister={
             errorMessage.length > 0 &&
-            errorMessage !== "Failure. A request already exists for this topic."
+            errorMessage.includes("Schema is not compatible.")
           }
         />
       )}

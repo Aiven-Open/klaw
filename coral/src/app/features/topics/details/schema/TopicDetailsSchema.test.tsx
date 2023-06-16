@@ -80,7 +80,7 @@ describe("TopicDetailsSchema (topic owner)", () => {
     });
     customRender(
       <AquariumContext>
-        <TopicDetailsSchema />{" "}
+        <TopicDetailsSchema />
       </AquariumContext>,
       {
         memoryRouter: true,
@@ -145,6 +145,14 @@ describe("TopicDetailsSchema (topic owner)", () => {
     expect(button).toBeEnabled();
   });
 
+  it("shows a modal to promote schema when clicking on the Promote schema button", async () => {
+    const button = screen.getByRole("button", { name: "Promote" });
+
+    await userEvent.click(button);
+
+    expect(screen.getByRole("dialog")).toBeVisible();
+  });
+
   it("shows information about schema promotion", () => {
     const banner = screen.getByText("This schema has not yet been promoted", {
       exact: false,
@@ -205,7 +213,7 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
     });
     customRender(
       <AquariumContext>
-        <TopicDetailsSchema />{" "}
+        <TopicDetailsSchema />
       </AquariumContext>,
       {
         memoryRouter: true,
@@ -248,7 +256,7 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
       });
       customRender(
         <AquariumContext>
-          <TopicDetailsSchema />{" "}
+          <TopicDetailsSchema />
         </AquariumContext>,
         {
           memoryRouter: true,
