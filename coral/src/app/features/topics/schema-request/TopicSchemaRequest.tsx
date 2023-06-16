@@ -1,4 +1,4 @@
-import { Alert, Box, Button } from "@aivenio/aquarium";
+import { Alert, Box, Button, useToast } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -42,9 +42,10 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const presetEnvironment = searchParams.get("env");
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const navigate = useNavigate();
+  const toast = useToast();
+
   const form = useForm<TopicRequestFormSchema>({
     schema: topicRequestFormSchema,
     defaultValues: {
@@ -103,16 +104,14 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
 
   const schemaRequestMutation = useMutation(createSchemaRequest, {
     onSuccess: () => {
-      setSuccessModalOpen(true);
-      setTimeout(() => {
-        redirectToMyRequests();
-      }, 5 * 1000);
+      navigate("/requests/schemas?status=CREATED");
+      toast({
+        message: "Schema request successfully created",
+        position: "bottom-left",
+        variant: "default",
+      });
     },
   });
-
-  function redirectToMyRequests() {
-    navigate("/requests/schemas?status=CREATED");
-  }
 
   function onSubmitForm(userInput: TopicRequestFormSchema) {
     schemaRequestMutation.mutate(userInput);
@@ -135,19 +134,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
         <Box marginBottom={"l1"}>
           <Alert type="error">Could not fetch environments.</Alert>
         </Box>
-      )}
-      {successModalOpen && (
-        <Dialog
-          title={"Schema request successful!"}
-          primaryAction={{
-            text: "Continue",
-            onClick: redirectToMyRequests,
-          }}
-          type={"confirmation"}
-        >
-          Redirecting to My team&apos;s request page shortly. Select
-          &quot;Continue&quot; for an immediate redirect.
-        </Dialog>
       )}
       <Box>
         {schemaRequestMutation.isError && (
