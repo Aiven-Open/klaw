@@ -1,5 +1,8 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.INFRATEAM;
+import static io.aiven.klaw.helpers.KwConstants.STAGINGTEAM;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -79,13 +82,11 @@ public class ExportImportDataService implements InitializingBean {
 
   private void importData() {
     try {
-      log.info("Klaw metadata import started !!");
       OBJECT_MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
       HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
       importKlawAdminConfig(handleDbRequests);
       importKwData(handleDbRequests);
       importKwRequestsData(handleDbRequests);
-      log.info("Klaw metadata import finished !!");
     } catch (IOException e) {
       log.error("Error during parsing/writing to files : ", e);
     }
@@ -126,7 +127,15 @@ public class ExportImportDataService implements InitializingBean {
       kwAdminConfig.getClusters().forEach(handleDbRequests::addNewCluster);
       kwAdminConfig.getEnvironments().forEach(handleDbRequests::addNewEnv);
 
-      kwAdminConfig.getTeams().forEach(handleDbRequests::addNewTeam);
+      kwAdminConfig
+          .getTeams()
+          .forEach(
+              team -> {
+                if (!team.getTeamname().equals(STAGINGTEAM)
+                    && !team.getTeamname().equals(INFRATEAM)) {
+                  handleDbRequests.addNewTeam(team);
+                }
+              });
       kwAdminConfig.getUsers().forEach(handleDbRequests::addNewUser);
 
       log.info("Klaw Admin config metadata imported !!");
