@@ -126,10 +126,10 @@ function TopicDetailsSchema() {
           targetEnvironment={targetEnv}
           version={schemaDetailsPerEnv.version}
           // We only allow users to use the forceRegister option when the promotion request failed
-          // And the failure is not because of an already existing promotion request
+          // And the failure is because of a schema compatibility issue
           showForceRegister={
             errorMessage.length > 0 &&
-            errorMessage.includes("Schema is not compatible.")
+            errorMessage.includes("Schema is not compatible")
           }
         />
       )}
