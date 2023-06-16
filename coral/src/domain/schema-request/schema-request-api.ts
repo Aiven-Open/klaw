@@ -151,10 +151,12 @@ const deleteSchemaRequest = ({
   });
 };
 
-const promoteSchemaRequest = (payload: PromoteSchemaPayload) => {
+const promoteSchemaRequest = (
+  payload: ResolveIntersectionTypes<Omit<PromoteSchemaPayload, "appName">>
+) => {
   return api.post<KlawApiResponse<"promoteSchema">, PromoteSchemaPayload>(
     API_PATHS.promoteSchema,
-    payload
+    { ...payload, appName: "App" }
   );
 };
 

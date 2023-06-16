@@ -76,8 +76,6 @@ function TopicDetailsSchema() {
           schemaVersion: String(schemaDetailsPerEnv.version),
           schemaFull: schemaDetailsPerEnv.content,
           forceRegister,
-          // @TODO: get the appname form topicOverview, probably needs to be added in the backend?
-          appName: "App",
           remarks,
         });
       },
