@@ -250,7 +250,7 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
         environmentId: testEnvironmentId,
         topicSchemas: noPromotion_testTopicSchemas,
         setSchemaVersion: mockSetSchemaVersion,
-        topicOverview: { topicInfoList: [{ topicOwner: true }] },
+        topicOverview: { topicInfo: { topicOwner: true } },
       });
       customRender(
         <AquariumContext>
