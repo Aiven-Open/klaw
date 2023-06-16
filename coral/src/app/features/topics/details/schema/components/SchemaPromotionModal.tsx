@@ -1,4 +1,4 @@
-import { Box, Switch, Textarea } from "@aivenio/aquarium";
+import { Box, Checkbox, Textarea } from "@aivenio/aquarium";
 import { useState } from "react";
 import { Modal } from "src/app/components/Modal";
 
@@ -52,16 +52,16 @@ const SchemaPromotionModal = ({
           {`Promote the Version ${version} of the schema to ${targetEnvironment}?`}
         </p>
         {showForceRegister && (
-          <Switch
+          <Checkbox
             disabled={isLoading}
             checked={forceRegister}
             caption={
               "Overrides some validation that the schema registry would normally do."
             }
-            onChange={() => setForceRegister(!forceRegister)}
+            onChange={(e) => setForceRegister(e.target.checked)}
           >
             Force register
-          </Switch>
+          </Checkbox>
         )}
         <Textarea
           labelText="You can add the reason to promote the schema (optional)"
