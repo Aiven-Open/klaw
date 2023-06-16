@@ -584,6 +584,7 @@ export type components = {
     };
     SyncConnectorUpdates: {
       sequence?: string;
+      connectorId?: string;
       req_no?: string;
       connectorName?: string;
       teamSelected?: string;
