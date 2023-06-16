@@ -1,3 +1,4 @@
+import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
@@ -19,7 +20,7 @@ const testTopicSchemas = {
   latestVersion: 3,
   schemaPromotionDetails: {
     DEV: {
-      status: "NO_PROMOTION",
+      status: "success",
       sourceEnv: "1",
       targetEnv: "TST",
       targetEnvId: "2",
@@ -39,6 +40,32 @@ const testTopicSchemas = {
     latest: true,
   },
 };
+const noPromotion_testTopicSchemas = {
+  topicExists: true,
+  schemaExists: true,
+  prefixAclsExists: false,
+  txnAclsExists: false,
+  allSchemaVersions: [3, 2, 1],
+  latestVersion: 3,
+  schemaPromotionDetails: {
+    TST: {
+      status: "NO_PROMOTION",
+    },
+  },
+  schemaDetailsPerEnv: {
+    id: 0,
+    version: 3,
+    nextVersion: 2,
+    prevVersion: 0,
+    compatibility: "Couldn't retrieve",
+    content:
+      '{\n  "type" : "record",\n  "name" : "klawTestAvro",\n  "namespace" : "klaw.avro",\n  "fields" : [ {\n    "name" : "producer",\n    "type" : "string",\n    "doc" : "Name of the producer"\n  }, {\n    "name" : "body",\n    "type" : "string",\n    "doc" : "The body of the message being sent."\n  }, {\n    "name" : "timestamp",\n    "type" : "long",\n    "doc" : "time in seconds from epoc when the message was created."\n  } ],\n  "doc:" : "A basic schema for testing klaw - this is V3"\n}',
+    env: "TST",
+    showNext: true,
+    showPrev: false,
+    latest: true,
+  },
+};
 
 describe("TopicDetailsSchema (topic owner)", () => {
   beforeAll(() => {
@@ -49,7 +76,15 @@ describe("TopicDetailsSchema (topic owner)", () => {
       setSchemaVersion: mockSetSchemaVersion,
       topicOverview: { topicInfo: { topicOwner: true } },
     });
-    customRender(<TopicDetailsSchema />, { memoryRouter: true });
+    customRender(
+      <AquariumContext>
+        <TopicDetailsSchema />
+      </AquariumContext>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+      }
+    );
   });
 
   afterAll(() => {
@@ -94,12 +129,36 @@ describe("TopicDetailsSchema (topic owner)", () => {
     );
   });
 
+  it("shows information about possible promotion", () => {
+    const infoText = screen.getByText(
+      `This schema has not yet been promoted to the ${testTopicSchemas.schemaPromotionDetails["DEV"].targetEnv} environment.`
+    );
+
+    expect(infoText).toBeVisible();
+  });
+
+  it("shows a button to promote schema", () => {
+    const button = screen.getByRole("button", { name: "Promote" });
+
+    expect(button).toBeEnabled();
+  });
+
+  it("shows a modal to promote schema when clicking on the Promote schema button", async () => {
+    const button = screen.getByRole("button", { name: "Promote" });
+
+    await userEvent.click(button);
+
+    expect(screen.getByRole("dialog")).toBeVisible();
+  });
+
   it("shows information about schema promotion", () => {
     const banner = screen.getByText("This schema has not yet been promoted", {
       exact: false,
     });
+    const button = screen.getByRole("button", { name: "Promote" });
 
     expect(banner).toBeVisible();
+    expect(button).toBeEnabled();
   });
 
   it("shows schema statistic about versions", () => {
@@ -150,10 +209,21 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
       setSchemaVersion: mockSetSchemaVersion,
       topicOverview: { topicInfo: { topicOwner: false } },
     });
-    customRender(<TopicDetailsSchema />, { memoryRouter: true });
+    customRender(
+      <AquariumContext>
+        <TopicDetailsSchema />
+      </AquariumContext>,
+      {
+        memoryRouter: true,
+        queryClient: true,
+      }
+    );
   });
 
-  afterAll(cleanup);
+  afterAll(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
 
   it("does not show a link to request a new schema version", () => {
     const link = screen.queryByRole("link", {
@@ -167,7 +237,53 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
     const banner = screen.queryByText("This schema has not yet been promoted", {
       exact: false,
     });
+    const button = screen.queryByRole("button", { name: "Promote" });
 
     expect(banner).not.toBeInTheDocument();
+    expect(button).not.toBeInTheDocument();
+  });
+
+  describe("TopicDetailsSchema (status: NO_PROMOTION)", () => {
+    beforeAll(() => {
+      mockedUseTopicDetails.mockReturnValue({
+        topicName: testTopicName,
+        environmentId: testEnvironmentId,
+        topicSchemas: noPromotion_testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+        topicOverview: { topicInfoList: [{ topicOwner: true }] },
+      });
+      customRender(
+        <AquariumContext>
+          <TopicDetailsSchema />
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("does not show a link to request a new schema version", () => {
+      const link = screen.queryByRole("link", {
+        name: "Request a new version",
+      });
+
+      expect(link).toBeInTheDocument();
+    });
+
+    it("does not show information about schema promotion", () => {
+      const banner = screen.queryByText(
+        "This schema has not yet been promoted",
+        {
+          exact: false,
+        }
+      );
+      const button = screen.queryByRole("button", { name: "Promote" });
+
+      expect(banner).not.toBeInTheDocument();
+      expect(button).not.toBeInTheDocument();
+    });
   });
 });
