@@ -6,22 +6,20 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
-  topicInfoList: [
-    {
-      topicName: "aivendemotopic",
-      noOfPartitions: 1,
-      noOfReplicas: "1",
-      teamname: "Ospo",
-      teamId: 1003,
-      envId: "1",
-      showEditTopic: true,
-      showDeleteTopic: false,
-      topicDeletable: false,
-      envName: "DEV",
-      hasOpenACLRequest: true,
-      hasOpenRequest: true,
-    },
-  ],
+  topicInfo: {
+    topicName: "aivendemotopic",
+    noOfPartitions: 1,
+    noOfReplicas: "1",
+    teamname: "Ospo",
+    teamId: 1003,
+    envId: "1",
+    showEditTopic: true,
+    showDeleteTopic: false,
+    topicDeletable: false,
+    envName: "DEV",
+    hasOpenACLRequest: true,
+    hasOpenRequest: true,
+  },
   aclInfoList: [
     {
       req_no: "1061",
@@ -49,10 +47,6 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
       remarks: "Create",
     },
   ],
-  topicPromotionDetails: {
-    status: "NO_PROMOTION",
-    topicName: "aivendemotopic",
-  },
   availableEnvironments: [
     {
       id: "1",
@@ -63,7 +57,8 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
       name: "TST",
     },
   ],
-  topicIdForDocumentation: 1056,
+  topicPromotionDetails: { status: "STATUS" },
+  topicIdForDocumentation: 1,
 };
 
 const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
@@ -71,22 +66,20 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
-  topicInfoList: [
-    {
-      topicName: "aivendemotopic",
-      noOfPartitions: 1,
-      noOfReplicas: "1",
-      teamname: "Ospo",
-      teamId: 1003,
-      envId: "1",
-      showEditTopic: true,
-      showDeleteTopic: false,
-      topicDeletable: false,
-      envName: "DEV",
-      hasOpenACLRequest: true,
-      hasOpenRequest: true,
-    },
-  ],
+  topicInfo: {
+    topicName: "aivendemotopic",
+    noOfPartitions: 1,
+    noOfReplicas: "1",
+    teamname: "Ospo",
+    teamId: 1003,
+    envId: "1",
+    showEditTopic: true,
+    showDeleteTopic: false,
+    topicDeletable: false,
+    envName: "DEV",
+    hasOpenACLRequest: true,
+    hasOpenRequest: true,
+  },
   aclInfoList: [],
   topicHistoryList: [
     {
@@ -99,10 +92,6 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
       remarks: "Create",
     },
   ],
-  topicPromotionDetails: {
-    status: "NO_PROMOTION",
-    topicName: "aivendemotopic",
-  },
   availableEnvironments: [
     {
       id: "1",
@@ -113,7 +102,8 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
       name: "TST",
     },
   ],
-  topicIdForDocumentation: 1056,
+  topicPromotionDetails: { status: "STATUS" },
+  topicIdForDocumentation: 1,
 };
 
 describe("getTopicStats", () => {

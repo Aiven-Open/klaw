@@ -16,8 +16,6 @@ const testEnvironmentId = 1;
 const testTopicSchemas = {
   topicExists: true,
   schemaExists: true,
-  prefixAclsExists: false,
-  txnAclsExists: false,
   allSchemaVersions: [3, 2, 1],
   latestVersion: 3,
   schemaPromotionDetails: {
@@ -76,7 +74,7 @@ describe("TopicDetailsSchema (topic owner)", () => {
       environmentId: testEnvironmentId,
       topicSchemas: testTopicSchemas,
       setSchemaVersion: mockSetSchemaVersion,
-      topicOverview: { topicInfoList: [{ topicOwner: true }] },
+      topicOverview: { topicInfo: { topicOwner: true } },
     });
     customRender(
       <AquariumContext>
@@ -209,7 +207,7 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
       environmentId: testEnvironmentId,
       topicSchemas: testTopicSchemas,
       setSchemaVersion: mockSetSchemaVersion,
-      topicOverview: { topicInfoList: [{ topicOwner: false }] },
+      topicOverview: { topicInfo: { topicOwner: false } },
     });
     customRender(
       <AquariumContext>
@@ -252,7 +250,7 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
         environmentId: testEnvironmentId,
         topicSchemas: noPromotion_testTopicSchemas,
         setSchemaVersion: mockSetSchemaVersion,
-        topicOverview: { topicInfoList: [{ topicOwner: true }] },
+        topicOverview: { topicInfo: { topicOwner: true } },
       });
       customRender(
         <AquariumContext>
