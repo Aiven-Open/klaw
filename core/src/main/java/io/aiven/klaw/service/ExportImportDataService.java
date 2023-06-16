@@ -10,7 +10,6 @@ import io.aiven.klaw.dao.metadata.KwAdminConfig;
 import io.aiven.klaw.dao.metadata.KwData;
 import io.aiven.klaw.dao.metadata.KwRequests;
 import io.aiven.klaw.helpers.HandleDbRequests;
-import jakarta.annotation.PostConstruct;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -77,6 +76,7 @@ public class ExportImportDataService implements InitializingBean {
   public void afterPropertiesSet() throws Exception {
     importData();
   }
+
   private void importData() {
     try {
       log.info("Klaw metadata import started !!");
