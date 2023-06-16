@@ -25,9 +25,13 @@ We have two types of workflows triggered by Pull Requests:
    
 2. When a Pull Request is approved, the [`workflow-merge-to-main`](./workflows/workflow-merge-to-main.yaml) is triggered.
    - This workflow runs all [coral jobs](./workflows/jobs-coral.yaml) and [maven jobs](./workflows/jobs-maven.yaml)
-   - After they are successful, it runs a job called `merge-to-main`. This job is defined in the [Branch protection rule](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/managing-a-branch-protection-rule)  for `main` and is and is necessary to enable merging on our default branch.
+   - After they are successful, it runs a job called `merge-to-main`. This job is defined in the [Branch protection rule](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/managing-a-branch-protection-rule)  for `main` and is and is necessary to enable merging on our default branch. 
+
+   **Note**: This workflow is also triggered when a Pull Request targeting main is synchronized. This way we make sure that the checks are always automatically run on the latest code.
+
 
 In addition, we have a workflow that is triggered when changes are made to the `openapi.yaml file`. We  check whether the changes affect the TypeScript file in `/coral`. If the changes do affect the TypeScript file, the `api.d.ts` file is automatically generated, and the TypeScript compiler is run. If the TypeScript compiler finds no errors, the file is committed. Otherwise the job fails.
+
 
 ## Drawbacks
 
