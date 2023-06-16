@@ -7,13 +7,17 @@ import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.TopicRequest;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Builder
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class KwRequests {
   String klawVersion;
   String createdTime;

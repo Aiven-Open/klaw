@@ -443,12 +443,21 @@ public class InsertDataJdbc {
 
   public String addNewTenant(KwTenants kwTenants) {
     Integer maxTenantId = tenantRepo.getMaxTenantId();
+
+    if (kwTenants.getTenantId() != null) {
+      Optional<KwTenants> tenantExists = tenantRepo.findById(kwTenants.getTenantId());
+      if (tenantExists.isPresent()) {
+        return "Failure. Tenant already exists";
+      }
+    }
+
     if (maxTenantId == null) {
       maxTenantId = 101;
     } else {
       maxTenantId = maxTenantId + 1;
     }
     kwTenants.setTenantId(maxTenantId);
+
     tenantRepo.save(kwTenants);
     return ApiResultStatus.SUCCESS.value;
   }
