@@ -5524,6 +5524,9 @@
           "sequence" : {
             "type" : "string"
           },
+          "connectorId" : {
+            "type" : "string"
+          },
           "req_no" : {
             "type" : "string"
           },
