@@ -15,7 +15,7 @@ on:
     types:
       - synchronize
     branches: [main]
-  workflow_call:
+  workflow_dispatch:
 
 jobs:
   checkout-code:
