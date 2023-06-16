@@ -66,7 +66,7 @@ function TopicDetailsSchema() {
           schemaPromotionDetails[schemaDetailsPerEnv.env] ?? {};
 
         if (targetEnvId === undefined || sourceEnv === undefined) {
-          throw new Error("No promotion details available available");
+          throw new Error("No promotion details available");
         }
 
         return promoteSchemaRequest({
