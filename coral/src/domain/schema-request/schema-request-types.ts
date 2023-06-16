@@ -1,4 +1,9 @@
-import { KlawApiModel, Paginated, ResolveIntersectionTypes } from "types/utils";
+import {
+  KlawApiModel,
+  KlawApiRequest,
+  Paginated,
+  ResolveIntersectionTypes,
+} from "types/utils";
 
 type CreatedSchemaRequests = ResolveIntersectionTypes<
   Required<
@@ -21,4 +26,11 @@ type SchemaRequestApiResponse = ResolveIntersectionTypes<
   Paginated<SchemaRequest[]>
 >;
 
-export type { CreatedSchemaRequests, SchemaRequest, SchemaRequestApiResponse };
+type PromoteSchemaPayload = KlawApiRequest<"promoteSchema">;
+
+export type {
+  CreatedSchemaRequests,
+  SchemaRequest,
+  SchemaRequestApiResponse,
+  PromoteSchemaPayload,
+};

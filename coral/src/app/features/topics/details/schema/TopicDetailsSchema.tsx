@@ -1,4 +1,6 @@
 import {
+  Alert,
+  Banner,
   Box,
   Button,
   EmptyState,
@@ -8,14 +10,22 @@ import {
   Option,
   PageHeader,
   Typography,
+  useToast,
 } from "@aivenio/aquarium";
 import add from "@aivenio/aquarium/icons/add";
 import gitNewBranch from "@aivenio/aquarium/icons/gitNewBranch";
 import MonacoEditor from "@monaco-editor/react";
+import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
-import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
+import { SchemaPromotionModal } from "src/app/features/topics/details/schema/components/SchemaPromotionModal";
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
+import {
+  PromoteSchemaPayload,
+  promoteSchemaRequest,
+} from "src/domain/schema-request";
+import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
 
 function TopicDetailsSchema() {
   const navigate = useNavigate();
@@ -25,18 +35,66 @@ function TopicDetailsSchema() {
       allSchemaVersions = [],
       latestVersion,
       schemaDetailsPerEnv,
+      schemaPromotionDetails,
     },
     setSchemaVersion,
     topicOverview: { topicInfoList },
   } = useTopicDetails();
+  const [showSchemaPromotionModal, setShowSchemaPromotionModal] =
+    useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const isTopicOwner = topicInfoList[0].topicOwner;
   const noSchema =
-    allSchemaVersions.length === 0 || schemaDetailsPerEnv === undefined;
+    allSchemaVersions.length === 0 ||
+    schemaDetailsPerEnv === undefined ||
+    schemaPromotionDetails === undefined;
 
-  function promoteSchema() {
-    console.log("dummy function");
-  }
+  const toast = useToast();
+
+  const { mutate: promoteSchema, isLoading: promoteSchemaIsLoading } =
+    useMutation(
+      ({
+        forceRegister = false,
+        remarks = "",
+      }: Pick<PromoteSchemaPayload, "forceRegister" | "remarks">) => {
+        if (noSchema) {
+          throw new Error("No schema available");
+        }
+
+        const { targetEnvId, sourceEnv } =
+          schemaPromotionDetails[schemaDetailsPerEnv.env] ?? {};
+
+        if (targetEnvId === undefined || sourceEnv === undefined) {
+          throw new Error("No promotion details available");
+        }
+
+        return promoteSchemaRequest({
+          targetEnvironment: targetEnvId,
+          sourceEnvironment: sourceEnv,
+          topicName,
+          schemaVersion: String(schemaDetailsPerEnv.version),
+          schemaFull: schemaDetailsPerEnv.content,
+          forceRegister,
+          remarks,
+        });
+      },
+      {
+        onError: (error: Error) => {
+          setErrorMessage(error.message);
+          setShowSchemaPromotionModal(false);
+        },
+        onSuccess: () => {
+          setErrorMessage("");
+          setShowSchemaPromotionModal(false);
+          toast({
+            message: "Schema promotion request successfully sent",
+            position: "bottom-left",
+            variant: "default",
+          });
+        },
+      }
+    );
 
   if (noSchema) {
     return (
@@ -53,10 +111,27 @@ function TopicDetailsSchema() {
     );
   }
 
+  const { targetEnv, status: promotionStatus } =
+    schemaPromotionDetails[schemaDetailsPerEnv.env] ?? {};
+
   return (
     <>
+      {showSchemaPromotionModal && targetEnv !== undefined && (
+        <SchemaPromotionModal
+          isLoading={promoteSchemaIsLoading}
+          onSubmit={promoteSchema}
+          onClose={() => setShowSchemaPromotionModal(false)}
+          targetEnvironment={targetEnv}
+          version={schemaDetailsPerEnv.version}
+          // We only allow users to use the forceRegister option when the promotion request failed
+          // And the failure is because of a schema compatibility issue
+          showForceRegister={
+            errorMessage.length > 0 &&
+            errorMessage.includes("Schema is not compatible")
+          }
+        />
+      )}
       <PageHeader title="Schema" />
-
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} colGap={"l1"}>
           <NativeSelect
@@ -89,21 +164,31 @@ function TopicDetailsSchema() {
           </Box>
         )}
       </Box>
-
-      {/*@TODO pass data when API verified */}
-      {isTopicOwner && (
-        <SchemaPromotionBanner
-          environment={"TST"}
-          promoteSchema={promoteSchema}
-        />
+      {isTopicOwner && promotionStatus !== "NO_PROMOTION" && (
+        <Banner image={illustration} layout="vertical" title={""}>
+          <Box element={"p"} marginBottom={"l1"}>
+            This schema has not yet been promoted to the {targetEnv}{" "}
+            environment.
+          </Box>
+          {errorMessage.length > 0 && (
+            <Box element={"p"} marginBottom={"l1"}>
+              <Alert type="error">{errorMessage}</Alert>
+            </Box>
+          )}
+          <Button.Primary
+            onClick={() =>
+              setShowSchemaPromotionModal(!showSchemaPromotionModal)
+            }
+          >
+            Promote
+          </Button.Primary>
+        </Banner>
       )}
-
       <SchemaStats
         version={schemaDetailsPerEnv.version}
         id={schemaDetailsPerEnv.id}
         compatibility={schemaDetailsPerEnv.compatibility.toUpperCase()}
       />
-
       <Box marginTop={"l3"} marginBottom={"l2"}>
         <Label>Schema</Label>
 
