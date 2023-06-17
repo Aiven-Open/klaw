@@ -4,7 +4,6 @@ const getTopicStats = (data: TopicOverview) => {
   const aclInfoList = data?.aclInfoList ?? [];
   const prefixedAclInfoList = data?.prefixedAclInfoList ?? [];
   const transactionalAclInfoList = data?.transactionalAclInfoList ?? [];
-  const topicStats = data.topicInfoList[0];
 
   return [
     ...aclInfoList,
@@ -30,9 +29,9 @@ const getTopicStats = (data: TopicOverview) => {
     {
       producers: 0,
       consumers: 0,
-      partitions: topicStats.noOfPartitions,
+      partitions: data.topicInfo.noOfPartitions,
       // @TODO: noOfReplicas is a string, probably should be a number
-      replicas: Number(topicStats.noOfReplicas),
+      replicas: Number(data.topicInfo.noOfReplicas),
     }
   );
 };

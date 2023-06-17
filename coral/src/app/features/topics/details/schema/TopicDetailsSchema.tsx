@@ -38,13 +38,13 @@ function TopicDetailsSchema() {
       schemaPromotionDetails,
     },
     setSchemaVersion,
-    topicOverview: { topicInfoList },
+    topicOverview,
   } = useTopicDetails();
   const [showSchemaPromotionModal, setShowSchemaPromotionModal] =
     useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const isTopicOwner = topicInfoList[0].topicOwner;
+  const isTopicOwner = topicOverview.topicInfo.topicOwner;
   const noSchema =
     allSchemaVersions.length === 0 ||
     schemaDetailsPerEnv === undefined ||

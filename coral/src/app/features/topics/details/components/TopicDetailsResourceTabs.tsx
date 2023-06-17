@@ -33,7 +33,7 @@ function TopicOverviewResourcesTabs({
   topicSchemas,
 }: Props) {
   const navigate = useNavigate();
-  const topicName = topicOverview?.topicInfoList[0].topicName;
+  const topicName = topicOverview?.topicInfo.topicName;
 
   function navigateToTab(
     navigate: NavigateFunction,
@@ -121,11 +121,10 @@ function TopicOverviewResourcesTabs({
               environmentId || topicOverview.availableEnvironments[0].id,
             setSchemaVersion,
             topicOverview,
-            topicName: topicOverview.topicInfoList[0].topicName,
+            topicName: topicOverview.topicInfo.topicName,
             topicSchemas,
-            userCanDeleteTopic: topicOverview.topicInfoList[0].topicDeletable,
-            topicHasOpenDeleteRequest:
-              !topicOverview.topicInfoList[0].showDeleteTopic,
+            userCanDeleteTopic: topicOverview.topicInfo.topicDeletable,
+            topicHasOpenDeleteRequest: !topicOverview.topicInfo.showDeleteTopic,
           }}
         />
       </div>

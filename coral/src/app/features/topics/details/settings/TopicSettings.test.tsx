@@ -23,7 +23,7 @@ const mockDeleteTopic = deleteTopic as jest.MockedFunction<typeof deleteTopic>;
 
 const testTopicName = "my-nice-topic";
 const testEnvironmentId = 8;
-const testTopicInfoListEntry: KlawApiModel<"TopicOverviewInfo"> = {
+const testTopicInfo: KlawApiModel<"TopicOverviewInfo"> = {
   topicName: testTopicName,
   noOfPartitions: 1,
   noOfReplicas: "1",
@@ -44,15 +44,12 @@ const testTopicOverview: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
-  topicInfoList: [testTopicInfoListEntry],
+  topicInfo: testTopicInfo,
   aclInfoList: [],
   topicHistoryList: [],
-  topicPromotionDetails: {
-    status: "NO_PROMOTION",
-    topicName: testTopicName,
-  },
   availableEnvironments: [],
-  topicIdForDocumentation: 9999,
+  topicPromotionDetails: { status: "STATUS" },
+  topicIdForDocumentation: 1,
 };
 
 const mockTopicDetails = {
@@ -70,7 +67,7 @@ describe("TopicSettings", () => {
         ...mockTopicDetails,
         topicOverview: {
           ...testTopicOverview,
-          topicInfoList: [{ ...testTopicInfoListEntry, topicOwner: false }],
+          topicInfo: { ...testTopicInfo, topicOwner: false },
         },
       });
 
@@ -127,13 +124,11 @@ describe("TopicSettings", () => {
           ...mockTopicDetails,
           topicOverview: {
             ...testTopicOverview,
-            topicInfoList: [
-              {
-                ...testTopicInfoListEntry,
-                showDeleteTopic: false,
-                hasOpenACLRequest: true,
-              },
-            ],
+            topicInfo: {
+              ...testTopicInfo,
+              showDeleteTopic: false,
+              hasOpenACLRequest: true,
+            },
           },
         });
 
@@ -190,13 +185,11 @@ describe("TopicSettings", () => {
           ...mockTopicDetails,
           topicOverview: {
             ...testTopicOverview,
-            topicInfoList: [
-              {
-                ...testTopicInfoListEntry,
-                showDeleteTopic: false,
-                highestEnv: false,
-              },
-            ],
+            topicInfo: {
+              ...testTopicInfo,
+              showDeleteTopic: false,
+              highestEnv: false,
+            },
           },
         });
 
@@ -255,13 +248,11 @@ describe("TopicSettings", () => {
           ...mockTopicDetails,
           topicOverview: {
             ...testTopicOverview,
-            topicInfoList: [
-              {
-                ...testTopicInfoListEntry,
-                showDeleteTopic: false,
-                hasOpenRequest: true,
-              },
-            ],
+            topicInfo: {
+              ...testTopicInfo,
+              showDeleteTopic: false,
+              hasOpenRequest: true,
+            },
           },
         });
 
@@ -320,14 +311,12 @@ describe("TopicSettings", () => {
           ...mockTopicDetails,
           topicOverview: {
             ...testTopicOverview,
-            topicInfoList: [
-              {
-                ...testTopicInfoListEntry,
-                showDeleteTopic: false,
-                hasOpenRequest: true,
-                hasOpenACLRequest: true,
-              },
-            ],
+            topicInfo: {
+              ...testTopicInfo,
+              showDeleteTopic: false,
+              hasOpenRequest: true,
+              hasOpenACLRequest: true,
+            },
           },
         });
 

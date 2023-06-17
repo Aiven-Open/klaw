@@ -10,6 +10,7 @@ import {
   transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsResponse,
   transformTopicApiResponse,
+  transformTopicOverviewResponse,
 } from "src/domain/topic/topic-transformer";
 import {
   DeleteTopicPayload,
@@ -17,6 +18,7 @@ import {
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
   TopicMessages,
+  TopicOverview,
   TopicRequestApiResponse,
 } from "src/domain/topic/topic-types";
 import api, { API_PATHS } from "src/services/api";
@@ -238,7 +240,7 @@ const getTopicOverview = ({
   topicName,
   environmentId,
   groupBy,
-}: KlawApiRequestQueryParameters<"getTopicOverview">) => {
+}: KlawApiRequestQueryParameters<"getTopicOverview">): Promise<TopicOverview> => {
   const queryParams = convertQueryValuesToString({
     topicName,
     ...(environmentId && { environmentId }),
@@ -247,10 +249,12 @@ const getTopicOverview = ({
     }),
   });
 
-  return api.get<KlawApiResponse<"getTopicOverview">>(
-    API_PATHS.getTopicOverview,
-    new URLSearchParams(queryParams)
-  );
+  return api
+    .get<KlawApiResponse<"getTopicOverview">>(
+      API_PATHS.getTopicOverview,
+      new URLSearchParams(queryParams)
+    )
+    .then(transformTopicOverviewResponse);
 };
 
 const getSchemaOfTopic = (
