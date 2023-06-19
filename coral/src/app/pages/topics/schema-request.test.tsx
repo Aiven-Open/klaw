@@ -1,3 +1,4 @@
+import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react/pure";
 import SchemaRequest from "src/app/pages/topics/schema-request";
 import { getQueryClientForTests } from "src/services/test-utils/query-client-tests";
@@ -40,7 +41,11 @@ describe("SchemaRequest", () => {
             <Routes>
               <Route
                 path={`/topic/:topicName/request-schema`}
-                element={<SchemaRequest />}
+                element={
+                  <AquariumContext>
+                    <SchemaRequest />
+                  </AquariumContext>
+                }
               />
             </Routes>
           </MemoryRouter>

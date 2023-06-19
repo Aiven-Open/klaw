@@ -13,22 +13,18 @@ const mockUseTopicDetailsData = {
   topicOverview: {
     topicExists: true,
     schemaExists: false,
-    prefixAclsExists: false,
-    txnAclsExists: false,
-    topicInfoList: [
-      {
-        topicName: "aivendemotopic",
-        noOfPartitions: 1,
-        noOfReplicas: "1",
-        teamname: "Ospo",
-        teamId: 1003,
-        envId: "1",
-        showEditTopic: true,
-        showDeleteTopic: false,
-        topicDeletable: false,
-        envName: "DEV",
-      },
-    ],
+    topicInfo: {
+      topicName: "aivendemotopic",
+      noOfPartitions: 1,
+      noOfReplicas: "1",
+      teamname: "Ospo",
+      teamId: 1003,
+      envId: "1",
+      showEditTopic: true,
+      showDeleteTopic: false,
+      topicDeletable: false,
+      envName: "DEV",
+    },
     aclInfoList: [
       {
         req_no: "1061",
@@ -56,10 +52,6 @@ const mockUseTopicDetailsData = {
         remarks: "Create",
       },
     ],
-    topicPromotionDetails: {
-      status: "NO_PROMOTION",
-      topicName: "aivendemotopic",
-    },
     availableEnvironments: [
       {
         id: "1",
@@ -70,13 +62,11 @@ const mockUseTopicDetailsData = {
         name: "TST",
       },
     ],
-    topicIdForDocumentation: 1056,
   },
   topicSchemas: {
     topicExists: true,
     schemaExists: true,
-    prefixAclsExists: false,
-    txnAclsExists: false,
+
     allSchemaVersions: {
       DEV: [1],
     },

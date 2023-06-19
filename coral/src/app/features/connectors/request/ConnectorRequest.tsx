@@ -6,6 +6,7 @@ import {
   Grid,
   Label,
   Typography,
+  useToast,
 } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -34,9 +35,10 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 
 function ConnectorRequest() {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const navigate = useNavigate();
+  const toast = useToast();
+
   const form = useForm<ConnectorRequestFormSchema>({
     schema: connectorRequestFormSchema,
   });
@@ -51,16 +53,14 @@ function ConnectorRequest() {
 
   const connectorRequestMutation = useMutation(createConnectorRequest, {
     onSuccess: () => {
-      setSuccessModalOpen(true);
-      setTimeout(() => {
-        redirectToMyRequests();
-      }, 5 * 1000);
+      navigate("/requests/connectors?status=CREATED");
+      toast({
+        message: "Connector request successfully created",
+        position: "bottom-left",
+        variant: "default",
+      });
     },
   });
-
-  function redirectToMyRequests() {
-    navigate("/requests/connectors?status=CREATED");
-  }
 
   function onSubmitForm(userInput: ConnectorRequestFormSchema) {
     connectorRequestMutation.mutate(userInput);
@@ -73,20 +73,6 @@ function ConnectorRequest() {
 
   return (
     <>
-      {successModalOpen && (
-        <Dialog
-          title={"Connector request successful!"}
-          primaryAction={{
-            text: "Continue",
-            onClick: redirectToMyRequests,
-          }}
-          type={"confirmation"}
-        >
-          Redirecting to My team&apos;s request page shortly. Select
-          &quot;Continue&quot; for an immediate redirect.
-        </Dialog>
-      )}
-
       <Box>
         {connectorRequestMutation.isError && (
           <Box marginBottom={"l1"} role="alert">

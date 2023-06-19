@@ -1,3 +1,4 @@
+import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
@@ -29,6 +30,12 @@ jest.mock("react-router-dom", () => ({
 jest.mock("src/domain/acl/acl-api", () => ({
   ...jest.requireActual("src/domain/acl/acl-api"),
   getAivenServiceAccounts: jest.fn().mockReturnValue(["account"]),
+}));
+
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
 }));
 
 const dataSetup = ({ isAivenCluster }: { isAivenCluster: boolean }) => {
@@ -97,7 +104,11 @@ describe("<TopicAclRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/subscribe"
-            element={<TopicAclRequest />}
+            element={
+              <AquariumContext>
+                <TopicAclRequest />
+              </AquariumContext>
+            }
           />
         </Routes>,
         {
@@ -173,7 +184,11 @@ describe("<TopicAclRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/subscribe"
-            element={<TopicAclRequest />}
+            element={
+              <AquariumContext>
+                <TopicAclRequest />
+              </AquariumContext>
+            }
           />
         </Routes>,
         {
@@ -450,7 +465,11 @@ describe("<TopicAclRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/subscribe"
-            element={<TopicAclRequest />}
+            element={
+              <AquariumContext>
+                <TopicAclRequest />
+              </AquariumContext>
+            }
           />
         </Routes>,
         {
@@ -729,7 +748,11 @@ describe("<TopicAclRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/subscribe"
-            element={<TopicAclRequest />}
+            element={
+              <AquariumContext>
+                <TopicAclRequest />
+              </AquariumContext>
+            }
           />
         </Routes>,
         {
@@ -928,7 +951,7 @@ describe("<TopicAclRequest />", () => {
     });
 
     describe("enables user to create a new acl request", () => {
-      beforeEach(async () => {
+      beforeEach(() => {
         mockCreateAclRequest({
           mswInstance: server,
           response: {
@@ -940,6 +963,7 @@ describe("<TopicAclRequest />", () => {
 
       afterEach(() => {
         jest.clearAllMocks();
+        mockedUseToast.mockReset();
       });
 
       it("creates a new acl request when input was valid", async () => {
@@ -985,6 +1009,7 @@ describe("<TopicAclRequest />", () => {
           requestOperationType: "CREATE",
           teamId: 1,
         });
+        await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
@@ -1017,9 +1042,10 @@ describe("<TopicAclRequest />", () => {
 
         expect(spyPost).not.toHaveBeenCalled();
         expect(submitButton).toBeEnabled();
+        expect(mockedUseToast).not.toHaveBeenCalled();
       });
 
-      it("shows a dialog informing user that request was successful", async () => {
+      it("shows a notification informing user that request was successful and redirects them", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
@@ -1052,55 +1078,16 @@ describe("<TopicAclRequest />", () => {
 
         expect(spyPost).toHaveBeenCalledTimes(1);
 
-        const successModal = await screen.findByRole("dialog");
-
-        expect(successModal).toBeVisible();
-        expect(successModal).toHaveTextContent("Acl request successful!");
-      });
-
-      it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
-        await assertSkeleton();
-        const submitButton = screen.getByRole("button", {
-          name: "Submit request",
-        });
-
-        // Fill form with valid data
-        await selectTestEnvironment();
-        await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
-        await userEvent.click(
-          screen.getByRole("radio", { name: "Service account" })
-        );
-
-        const principalsField = await screen.findByRole("combobox", {
-          name: "Service accounts *",
-        });
-
-        expect(principalsField).toBeVisible();
-        expect(principalsField).toBeEnabled();
-
-        await userEvent.type(principalsField, "Alice");
-        await userEvent.tab();
-
-        await waitFor(() => expect(submitButton).toBeEnabled());
-        await userEvent.click(submitButton);
-
         await waitFor(() => {
-          expect(submitButton).toBeDisabled();
+          expect(mockedNavigate).toHaveBeenLastCalledWith(
+            "/requests/acls?status=CREATED"
+          );
         });
-
-        expect(spyPost).toHaveBeenCalledTimes(1);
-
-        const successModal = await screen.findByRole("dialog");
-        const button = within(successModal).getByRole("button", {
-          name: "Continue",
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: "ACL request successfully created",
+          position: "bottom-left",
+          variant: "default",
         });
-
-        await userEvent.click(button);
-
-        expect(mockedNavigate).toHaveBeenLastCalledWith(
-          "/requests/acls?status=CREATED"
-        );
       });
     });
   });
@@ -1113,7 +1100,11 @@ describe("<TopicAclRequest />", () => {
         <Routes>
           <Route
             path="/topic/:topicName/subscribe"
-            element={<TopicAclRequest />}
+            element={
+              <AquariumContext>
+                <TopicAclRequest />
+              </AquariumContext>
+            }
           />
         </Routes>,
         {
@@ -1337,6 +1328,10 @@ describe("<TopicAclRequest />", () => {
         });
       });
 
+      afterEach(() => {
+        mockedUseToast.mockReset();
+      });
+
       it("creates a new acl request when input was valid", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
@@ -1398,6 +1393,7 @@ describe("<TopicAclRequest />", () => {
           requestOperationType: "CREATE",
           transactionalId: undefined,
         });
+        await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
@@ -1430,7 +1426,7 @@ describe("<TopicAclRequest />", () => {
         expect(submitButton).toBeEnabled();
       });
 
-      it("shows a dialog informing user that request was successful", async () => {
+      it("shows a notification informing user that request was successful and redirects them", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
 
@@ -1478,70 +1474,16 @@ describe("<TopicAclRequest />", () => {
         });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
-        const successModal = await screen.findByRole("dialog");
-
-        expect(successModal).toBeVisible();
-        expect(successModal).toHaveTextContent("Acl request successful!");
-      });
-
-      it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
-        await assertSkeleton();
-
-        const aclConsumerTypeInput = screen.getByRole("radio", {
-          name: "Consumer",
-        });
-        await userEvent.click(aclConsumerTypeInput);
-
-        const submitButton = screen.getByRole("button", {
-          name: "Submit request",
-        });
-
-        // Fill form with valid data
-        await selectTestEnvironment();
-
-        expect(
-          screen.getByRole("radio", { name: "Principal" })
-        ).toBeInTheDocument();
-
-        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
-        expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked();
-
-        const principalsField = await screen.findByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
-        });
-
-        expect(principalsField).toBeVisible();
-        expect(principalsField).toBeEnabled();
-
-        await userEvent.type(principalsField, "Alice");
-        await userEvent.tab();
-
-        const consumerGroupField = await screen.findByRole("textbox", {
-          name: "Consumer group *",
-        });
-
-        await userEvent.type(consumerGroupField, "group");
-        await userEvent.tab();
-
-        await waitFor(() => expect(submitButton).toBeEnabled());
-        await userEvent.click(submitButton);
-
         await waitFor(() => {
-          expect(submitButton).toBeDisabled();
+          expect(mockedNavigate).toHaveBeenLastCalledWith(
+            "/requests/acls?status=CREATED"
+          );
         });
-
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        const successModal = await screen.findByRole("dialog");
-        const button = within(successModal).getByRole("button", {
-          name: "Continue",
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: "ACL request successfully created",
+          position: "bottom-left",
+          variant: "default",
         });
-
-        await userEvent.click(button);
-
-        expect(mockedNavigate).toHaveBeenLastCalledWith(
-          "/requests/acls?status=CREATED"
-        );
       });
     });
   });
@@ -1550,10 +1492,15 @@ describe("<TopicAclRequest />", () => {
     beforeEach(() => {
       dataSetup({ isAivenCluster: true });
 
-      customRender(<TopicAclRequest />, {
-        queryClient: true,
-        memoryRouter: true,
-      });
+      customRender(
+        <AquariumContext>
+          <TopicAclRequest />
+        </AquariumContext>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
     });
 
     afterEach(cleanup);
@@ -1634,10 +1581,15 @@ describe("<TopicAclRequest />", () => {
     beforeEach(() => {
       dataSetup({ isAivenCluster: false });
 
-      customRender(<TopicAclRequest />, {
-        queryClient: true,
-        memoryRouter: true,
-      });
+      customRender(
+        <AquariumContext>
+          <TopicAclRequest />
+        </AquariumContext>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
     });
 
     afterEach(() => {
@@ -1951,10 +1903,15 @@ describe("<TopicAclRequest />", () => {
     beforeEach(() => {
       dataSetup({ isAivenCluster: false });
 
-      customRender(<TopicAclRequest />, {
-        queryClient: true,
-        memoryRouter: true,
-      });
+      customRender(
+        <AquariumContext>
+          <TopicAclRequest />
+        </AquariumContext>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
     });
 
     afterEach(cleanup);
@@ -2239,10 +2196,15 @@ describe("<TopicAclRequest />", () => {
     beforeEach(async () => {
       dataSetup({ isAivenCluster: true });
 
-      customRender(<TopicAclRequest />, {
-        queryClient: true,
-        memoryRouter: true,
-      });
+      customRender(
+        <AquariumContext>
+          <TopicAclRequest />
+        </AquariumContext>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
     });
 
     afterEach(() => {
@@ -2443,6 +2405,10 @@ describe("<TopicAclRequest />", () => {
         });
       });
 
+      afterEach(() => {
+        mockedUseToast.mockReset();
+      });
+
       it("creates a new acl request when input was valid", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
@@ -2486,6 +2452,7 @@ describe("<TopicAclRequest />", () => {
           requestOperationType: "CREATE",
           teamId: 1,
         });
+        await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
@@ -2520,7 +2487,7 @@ describe("<TopicAclRequest />", () => {
         expect(submitButton).toBeEnabled();
       });
 
-      it("shows a dialog informing user that request was successful", async () => {
+      it("shows a notification informing user that request was successful and redirects them", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
         const submitButton = screen.getByRole("button", {
@@ -2552,56 +2519,16 @@ describe("<TopicAclRequest />", () => {
         });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
-
-        const successModal = await screen.findByRole("dialog");
-
-        expect(successModal).toBeVisible();
-        expect(successModal).toHaveTextContent("Acl request successful!");
-      });
-
-      it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
-        await assertSkeleton();
-        const submitButton = screen.getByRole("button", {
-          name: "Submit request",
-        });
-
-        // Fill form with valid data
-        await selectTestEnvironment();
-        await userEvent.click(screen.getByRole("radio", { name: "Literal" }));
-        await userEvent.click(
-          screen.getByRole("radio", { name: "Service account" })
-        );
-
-        const principalsField = await screen.findByRole("combobox", {
-          name: "Service accounts *",
-        });
-
-        expect(principalsField).toBeVisible();
-        expect(principalsField).toBeEnabled();
-
-        await userEvent.type(principalsField, "Alice");
-        await userEvent.tab();
-
-        await waitFor(() => expect(submitButton).toBeEnabled());
-        await userEvent.click(submitButton);
-
         await waitFor(() => {
-          expect(submitButton).toBeDisabled();
+          expect(mockedNavigate).toHaveBeenLastCalledWith(
+            "/requests/acls?status=CREATED"
+          );
         });
-
-        expect(spyPost).toHaveBeenCalledTimes(1);
-
-        const successModal = await screen.findByRole("dialog");
-        const button = within(successModal).getByRole("button", {
-          name: "Continue",
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: "ACL request successfully created",
+          position: "bottom-left",
+          variant: "default",
         });
-
-        await userEvent.click(button);
-
-        expect(mockedNavigate).toHaveBeenLastCalledWith(
-          "/requests/acls?status=CREATED"
-        );
       });
     });
   });
@@ -2610,10 +2537,15 @@ describe("<TopicAclRequest />", () => {
     beforeEach(async () => {
       dataSetup({ isAivenCluster: false });
 
-      customRender(<TopicAclRequest />, {
-        queryClient: true,
-        memoryRouter: true,
-      });
+      customRender(
+        <AquariumContext>
+          <TopicAclRequest />
+        </AquariumContext>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+        }
+      );
     });
 
     afterEach(() => {
@@ -2838,6 +2770,10 @@ describe("<TopicAclRequest />", () => {
         });
       });
 
+      afterEach(() => {
+        mockedUseToast.mockReset();
+      });
+
       it("creates a new acl request when input was valid", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
@@ -2910,6 +2846,7 @@ describe("<TopicAclRequest />", () => {
           requestOperationType: "CREATE",
           transactionalId: undefined,
         });
+        await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
       it("renders errors and does not submit when input was invalid", async () => {
@@ -2942,7 +2879,7 @@ describe("<TopicAclRequest />", () => {
         expect(submitButton).toBeEnabled();
       });
 
-      it("shows a dialog informing user that request was successful", async () => {
+      it("shows a notification informing user that request was successful and redirects them", async () => {
         const spyPost = jest.spyOn(api, "post");
         await assertSkeleton();
 
@@ -3001,81 +2938,16 @@ describe("<TopicAclRequest />", () => {
         });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
-        const successModal = await screen.findByRole("dialog");
-
-        expect(successModal).toBeVisible();
-        expect(successModal).toHaveTextContent("Acl request successful!");
-      });
-
-      it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
-        await assertSkeleton();
-
-        const aclConsumerTypeInput = screen.getByRole("radio", {
-          name: "Consumer",
-        });
-        await userEvent.click(aclConsumerTypeInput);
-
-        const submitButton = screen.getByRole("button", {
-          name: "Submit request",
-        });
-
-        // Fill form with valid data
-        await selectTestEnvironment();
-
-        const visibleTopicNameField = await screen.findByRole("combobox", {
-          name: "Topic name *",
-        });
-
-        await userEvent.selectOptions(
-          visibleTopicNameField,
-          mockedResponseTopicNames[0]
-        );
-
-        expect(visibleTopicNameField).toHaveValue(mockedResponseTopicNames[0]);
-
-        expect(
-          screen.getByRole("radio", { name: "Principal" })
-        ).toBeInTheDocument();
-
-        await userEvent.click(screen.getByRole("radio", { name: "Principal" }));
-        expect(screen.getByRole("radio", { name: "Principal" })).toBeChecked();
-
-        const principalsField = await screen.findByRole("textbox", {
-          name: "SSL DN strings / Usernames *",
-        });
-
-        expect(principalsField).toBeVisible();
-        expect(principalsField).toBeEnabled();
-
-        await userEvent.type(principalsField, "Alice");
-        await userEvent.tab();
-
-        const consumerGroupField = await screen.findByRole("textbox", {
-          name: "Consumer group *",
-        });
-
-        await userEvent.type(consumerGroupField, "group");
-        await userEvent.tab();
-
-        await waitFor(() => expect(submitButton).toBeEnabled());
-        await userEvent.click(submitButton);
-
         await waitFor(() => {
-          expect(submitButton).toBeDisabled();
+          expect(mockedNavigate).toHaveBeenLastCalledWith(
+            "/requests/acls?status=CREATED"
+          );
         });
-
-        expect(spyPost).toHaveBeenCalledTimes(1);
-        const successModal = await screen.findByRole("dialog");
-        const button = within(successModal).getByRole("button", {
-          name: "Continue",
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: "ACL request successfully created",
+          position: "bottom-left",
+          variant: "default",
         });
-
-        await userEvent.click(button);
-
-        expect(mockedNavigate).toHaveBeenLastCalledWith(
-          "/requests/acls?status=CREATED"
-        );
       });
     });
   });

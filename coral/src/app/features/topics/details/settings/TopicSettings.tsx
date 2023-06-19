@@ -18,8 +18,8 @@ import { TopicDeleteConfirmationModal } from "src/app/features/topics/details/se
 function TopicSettings() {
   const { topicName, environmentId, topicOverview } = useTopicDetails();
 
-  const isTopicOwner = topicOverview.topicInfoList[0].topicOwner;
-  const showDeleteTopic = topicOverview.topicInfoList[0].showDeleteTopic;
+  const isTopicOwner = topicOverview.topicInfo.topicOwner;
+  const showDeleteTopic = topicOverview.topicInfo.showDeleteTopic;
 
   const navigate = useNavigate();
   const toast = useToast();
@@ -39,7 +39,7 @@ function TopicSettings() {
       onSuccess: () => {
         navigate("/topics");
         toast({
-          message: "Topic deletion request successfully sent",
+          message: "Topic deletion request successfully created",
           position: "bottom-left",
           variant: "default",
         });
@@ -54,12 +54,9 @@ function TopicSettings() {
   );
 
   function getDeleteDisabledInformation() {
-    const topicHasOpenACLRequest =
-      topicOverview.topicInfoList[0].hasOpenACLRequest;
-    const topicIsOnHigherEnvironment =
-      !topicOverview.topicInfoList[0].highestEnv;
-    const topicHasPendingRequests =
-      topicOverview.topicInfoList[0].hasOpenRequest;
+    const topicHasOpenACLRequest = topicOverview.topicInfo.hasOpenACLRequest;
+    const topicIsOnHigherEnvironment = !topicOverview.topicInfo.highestEnv;
+    const topicHasPendingRequests = topicOverview.topicInfo.hasOpenRequest;
 
     return (
       <ul style={{ listStyle: "initial" }}>

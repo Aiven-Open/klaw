@@ -1,3 +1,4 @@
+import { Context as AquariumContext } from "@aivenio/aquarium";
 import {
   cleanup,
   renderHook,
@@ -79,7 +80,12 @@ describe("<TopicProducerForm />", () => {
         })
       );
       customRender(
-        <TopicProducerForm {...baseProps} topicProducerForm={result.current} />,
+        <AquariumContext>
+          <TopicProducerForm
+            {...baseProps}
+            topicProducerForm={result.current}
+          />
+        </AquariumContext>,
         { queryClient: true, memoryRouter: true }
       );
     });
@@ -207,10 +213,12 @@ describe("<TopicProducerForm />", () => {
       );
 
       customRender(
-        <TopicProducerForm
-          {...basePropsIsAivenCluster}
-          topicProducerForm={result.current}
-        />,
+        <AquariumContext>
+          <TopicProducerForm
+            {...basePropsIsAivenCluster}
+            topicProducerForm={result.current}
+          />
+        </AquariumContext>,
         { queryClient: true, memoryRouter: true }
       );
     });
@@ -336,10 +344,12 @@ describe("<TopicProducerForm />", () => {
         })
       );
       customRender(
-        <TopicProducerForm
-          {...basePropsNotAivenCluster}
-          topicProducerForm={result.current}
-        />,
+        <AquariumContext>
+          <TopicProducerForm
+            {...basePropsNotAivenCluster}
+            topicProducerForm={result.current}
+          />
+        </AquariumContext>,
         { queryClient: true, memoryRouter: true }
       );
     });
@@ -484,10 +494,12 @@ describe("<TopicProducerForm isSubscription />", () => {
         })
       );
       customRender(
-        <TopicProducerForm
-          {...isSubscriptionBaseProps}
-          topicProducerForm={result.current}
-        />,
+        <AquariumContext>
+          <TopicProducerForm
+            {...isSubscriptionBaseProps}
+            topicProducerForm={result.current}
+          />
+        </AquariumContext>,
         { queryClient: true, memoryRouter: true }
       );
     });
@@ -619,10 +631,12 @@ describe("<TopicProducerForm isSubscription />", () => {
       );
 
       customRender(
-        <TopicProducerForm
-          {...isSubscriptionBasePropsIsAivenCluster}
-          topicProducerForm={result.current}
-        />,
+        <AquariumContext>
+          <TopicProducerForm
+            {...isSubscriptionBasePropsIsAivenCluster}
+            topicProducerForm={result.current}
+          />
+        </AquariumContext>,
         { queryClient: true, memoryRouter: true }
       );
     });
@@ -750,10 +764,12 @@ describe("<TopicProducerForm isSubscription />", () => {
         })
       );
       customRender(
-        <TopicProducerForm
-          {...isSubscriptionBasePropsNotAivenCluster}
-          topicProducerForm={result.current}
-        />,
+        <AquariumContext>
+          <TopicProducerForm
+            {...isSubscriptionBasePropsNotAivenCluster}
+            topicProducerForm={result.current}
+          />
+        </AquariumContext>,
         { queryClient: true, memoryRouter: true }
       );
     });

@@ -1,9 +1,11 @@
 import {
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
+  TopicOverview,
   TopicRequestApiResponse,
 } from "src/domain/topic/topic-types";
 import { KlawApiResponse } from "types/utils";
+import omit from "lodash/omit";
 
 // @TODO check zod for this!
 function transformTopicApiResponse(
@@ -167,8 +169,18 @@ function transformGetTopicRequestsResponse(
   };
 }
 
+function transformTopicOverviewResponse(
+  apiResponse: KlawApiResponse<"getTopicOverview">
+): TopicOverview {
+  return {
+    ...omit(apiResponse, ["topicInfoList"]),
+    topicInfo: apiResponse.topicInfoList[0],
+  };
+}
+
 export {
   transformTopicApiResponse,
   transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsResponse,
+  transformTopicOverviewResponse,
 };

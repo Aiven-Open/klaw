@@ -6,6 +6,7 @@ import {
   GridItem,
   Input,
   SecondaryButton,
+  useToast,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
@@ -47,9 +48,10 @@ const TopicConsumerForm = ({
   isSubscription,
 }: TopicConsumerFormProps) => {
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
-  const [successModalOpen, setSuccessModalOpen] = useState(false);
 
   const navigate = useNavigate();
+  const toast = useToast();
+
   const { aclIpPrincipleType, environment, topicname } =
     topicConsumerForm.getValues();
   const { current: initialAclIpPrincipleType } = useRef(aclIpPrincipleType);
@@ -70,16 +72,14 @@ const TopicConsumerForm = ({
   const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: createAclRequest,
     onSuccess: () => {
-      setSuccessModalOpen(true);
-      setTimeout(() => {
-        redirectToMyRequests();
-      }, 5 * 1000);
+      navigate("/requests/acls?status=CREATED");
+      toast({
+        message: "ACL request successfully created",
+        position: "bottom-left",
+        variant: "default",
+      });
     },
   });
-
-  function redirectToMyRequests() {
-    navigate("/requests/acls?status=CREATED");
-  }
 
   const onSubmitTopicConsumer: SubmitHandler<TopicConsumerFormSchema> = (
     formData
@@ -118,19 +118,6 @@ const TopicConsumerForm = ({
         <Box marginBottom={"l1"} role="alert">
           <Alert type="error">{parseErrorMsg(error)}</Alert>
         </Box>
-      )}
-      {successModalOpen && (
-        <Dialog
-          title={"Acl request successful!"}
-          primaryAction={{
-            text: "Continue",
-            onClick: redirectToMyRequests,
-          }}
-          type={"confirmation"}
-        >
-          Redirecting to My team&apos;s request page shortly. Select
-          &quot;Continue&quot; for an immediate redirect.
-        </Dialog>
       )}
       <Form
         {...topicConsumerForm}

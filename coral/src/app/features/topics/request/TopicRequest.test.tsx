@@ -20,6 +20,12 @@ jest.mock("react-router-dom", () => ({
   useNavigate: () => mockedUsedNavigate,
 }));
 
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
+
 describe("<TopicRequest />", () => {
   const originalConsoleError = console.error;
   let user: ReturnType<typeof userEvent.setup>;
@@ -57,7 +63,12 @@ describe("<TopicRequest />", () => {
             data: defaultgetTopicAdvancedConfigOptionsResponse,
           },
         });
-        customRender(<TopicRequest />, { queryClient: true });
+        customRender(
+          <AquariumContext>
+            <TopicRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
       });
       afterAll(() => {
         cleanup();
@@ -118,7 +129,12 @@ describe("<TopicRequest />", () => {
             data: defaultgetTopicAdvancedConfigOptionsResponse,
           },
         });
-        customRender(<TopicRequest />, { queryClient: true });
+        customRender(
+          <AquariumContext>
+            <TopicRequest />
+          </AquariumContext>,
+          { queryClient: true }
+        );
       });
 
       afterEach(() => {
@@ -1076,7 +1092,7 @@ describe("<TopicRequest />", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      jest.resetAllMocks();
     });
 
     describe("handles an error from the api", () => {
@@ -1121,6 +1137,13 @@ describe("<TopicRequest />", () => {
 
     describe("enables user to create a new topic request", () => {
       beforeEach(async () => {
+        // these two need to be reset in beforeEach
+        // because they are async and resetting them
+        // afterEach may lead to false results when
+        // tests run fast
+
+        mockedUsedNavigate.mockReset();
+
         mockRequestTopic({
           mswInstance: server,
           response: {
@@ -1128,6 +1151,10 @@ describe("<TopicRequest />", () => {
             data: { success: true, message: "success" },
           },
         });
+      });
+
+      afterEach(() => {
+        mockedUseToast.mockReset();
       });
 
       it("creates a new topic request when input was valid", async () => {
@@ -1153,6 +1180,7 @@ describe("<TopicRequest />", () => {
           remarks: "",
           requestOperationType: "CREATE",
         });
+        await waitFor(() => expect(mockedUseToast).toHaveBeenCalled());
       });
 
       it("errors and does not create a new topic request when input was invalid", async () => {
@@ -1169,12 +1197,13 @@ describe("<TopicRequest />", () => {
         );
 
         expect(spyPost).not.toHaveBeenCalled();
+        expect(mockedUseToast).not.toHaveBeenCalled();
         expect(
           screen.getByRole("button", { name: "Submit request" })
         ).toBeEnabled();
       });
 
-      it("shows a dialog informing user that request was successful", async () => {
+      it("shows a notification that request was successful and redirects user", async () => {
         const spyPost = jest.spyOn(api, "post");
 
         await user.click(
@@ -1187,37 +1216,17 @@ describe("<TopicRequest />", () => {
         });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
-
-        const successModal = await screen.findByRole("dialog");
-
-        expect(successModal).toBeVisible();
-        expect(successModal).toHaveTextContent("Topic request successful!");
-      });
-
-      it("user can continue to the next page without waiting for redirect in the dialog", async () => {
-        const spyPost = jest.spyOn(api, "post");
-
-        await user.click(
-          screen.getByRole("button", { name: "Submit request" })
-        );
-
         await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
+          expect(mockedUsedNavigate).toHaveBeenCalledWith(
+            "/requests/topics?status=CREATED"
+          );
         });
 
-        expect(spyPost).toHaveBeenCalledTimes(1);
-
-        const successModal = await screen.findByRole("dialog");
-        const button = within(successModal).getByRole("button", {
-          name: "Continue",
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: "Topic request successfully created",
+          position: "bottom-left",
+          variant: "default",
         });
-
-        await userEvent.click(button);
-
-        expect(mockedUsedNavigate).toHaveBeenCalledWith(
-          "/requests/topics?status=CREATED"
-        );
       });
     });
   });
