@@ -279,7 +279,7 @@ app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window)
         }
 
         $scope.updatedSyncArray = [];
-        $scope.updateConnectorDetails = function(sequence, teamselected, connectorName) {
+        $scope.updateConnectorDetails = function(sequence, teamselected, connectorName,connectorId) {
 
             var seqFound = -1;
             var i;
@@ -296,6 +296,7 @@ app.controller("syncConnectorsCtrl", function($scope, $http, $location, $window)
 
             serviceInput['sequence'] = sequence;
             serviceInput['connectorName'] = connectorName;
+            serviceInput['connectorId'] = connectorId;
             serviceInput['teamSelected'] = teamselected;
             serviceInput['envSelected'] = $scope.getConnectors.envName;
 

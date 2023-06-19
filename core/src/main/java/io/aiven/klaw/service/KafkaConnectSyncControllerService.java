@@ -286,21 +286,21 @@ public class KafkaConnectSyncControllerService {
   }
 
   private List<SyncConnectorUpdates> handleConnectorDeletes(
-      List<SyncConnectorUpdates> updatedSyncTopics, List<Integer> updatedSyncTopicsDelete) {
+      List<SyncConnectorUpdates> updatedSyncTopics, List<Integer> updatedSyncConnectorsDelete) {
     List<SyncConnectorUpdates> updatedSyncTopicsUpdated = new ArrayList<>();
-    for (SyncConnectorUpdates updatedSyncTopic : updatedSyncTopics) {
-      if (SYNC_102.equals(updatedSyncTopic.getTeamSelected())) {
-        updatedSyncTopicsDelete.add(Integer.parseInt(updatedSyncTopic.getSequence()));
+    for (SyncConnectorUpdates updatedSyncConn : updatedSyncTopics) {
+      if (SYNC_102.equals(updatedSyncConn.getTeamSelected())) {
+        updatedSyncConnectorsDelete.add(Integer.parseInt(updatedSyncConn.getConnectorId()));
       } else {
-        updatedSyncTopicsUpdated.add(updatedSyncTopic);
+        updatedSyncTopicsUpdated.add(updatedSyncConn);
       }
     }
 
     // delete topic
-    for (Integer topicId : updatedSyncTopicsDelete) {
+    for (Integer connectorId : updatedSyncConnectorsDelete) {
       manageDatabase
           .getHandleDbRequests()
-          .deleteConnector(topicId, commonUtilsService.getTenantId(getUserName()));
+          .deleteConnector(connectorId, commonUtilsService.getTenantId(getUserName()));
     }
 
     return updatedSyncTopicsUpdated;
@@ -419,6 +419,12 @@ public class KafkaConnectSyncControllerService {
                 kafkaConnectorModelCluster.getConnectorName(),
                 kafkaConnectorModel.getConnectorName())) {
               kafkaConnectorModelCluster.setRemarks("DELETED");
+              // Remove the other team options added and replace with existing team and option to
+              // remove it.
+              List<String> possibleTeams = new ArrayList<>();
+              possibleTeams.add(kafkaConnectorModelCluster.getTeamName());
+              possibleTeams.add(SYNC_102);
+              kafkaConnectorModelCluster.setPossibleTeams(possibleTeams);
             }
           }
         }
@@ -473,6 +479,7 @@ public class KafkaConnectSyncControllerService {
       kafkaConnectorModel.setConnectorName(kwKafkaConnector.getConnectorName());
       kafkaConnectorModel.setTeamName(
           manageDatabase.getTeamNameFromTeamId(tenantId, kwKafkaConnector.getTeamId()));
+      kafkaConnectorModel.setConnectorId(kwKafkaConnector.getConnectorId());
       kafkaConnectorModel.setPossibleTeams(teamList);
 
       kafkaConnectorModelSourceList.add(kafkaConnectorModel);
