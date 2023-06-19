@@ -1285,15 +1285,15 @@ public class KafkaConnectControllerService {
         if (kafkaConnectorRequestModel.getRequestOperationType() != null
             && RequestOperationType.CLAIM == kafkaConnectorRequestModel.getRequestOperationType()) {
 
-          List<KwKafkaConnector> topics =
+          List<KwKafkaConnector> connectors =
               getConnectorsFromName(kafkaConnectorRequestModel.getConnectorName(), tenantId);
-          if (!topics.isEmpty()) {
+          if (!connectors.isEmpty()) {
             kafkaConnectorRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
                     manageDatabase
                         .getHandleDbRequests()
-                        .getAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
-                    manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
+                        .getAllUsersInfoForTeam(connectors.get(0).getTeamId(), tenantId),
+                    manageDatabase.getTeamNameFromTeamId(tenantId, connectors.get(0).getTeamId()),
                     approverRoles,
                     kafkaConnectorRequestModel.getRequestor()));
           } else {
