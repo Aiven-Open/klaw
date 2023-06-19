@@ -43,6 +43,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -1314,16 +1315,127 @@ public class TopicControllerServiceTest {
     }
   }
 
+  @Test
+  @Order(52)
+  public void getClaimRequests_WhereTopicIsDeleted() {
+    stubUserInfo();
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    List<TopicRequest> topicRequests = generateRequests(9);
+    topicRequests.addAll(generateRequests(1, 7, RequestOperationType.CLAIM));
+    when(handleDbRequests.getAllTopicRequests(
+            anyString(), eq(null), eq(null), eq(null), eq(null), eq(false), anyInt()))
+        .thenReturn(topicRequests);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    List<TopicRequestsResponseModel> ordered_response =
+        topicControllerService.getTopicRequests(
+            "1",
+            "1",
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (TopicRequestsResponseModel req : ordered_response) {
+      if (req.getRequestOperationType().equals(RequestOperationType.CLAIM)) {
+        assertThat(req.getRemarks())
+            .isEqualTo("This topic is not found in Klaw. Please contact your Administrator.");
+      }
+      // assert That each new Request time is older than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) >= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
+  @Test
+  @Order(53)
+  public void getClaimRequests_WhereTopicIsNotDeleted() {
+    stubUserInfo();
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    List<TopicRequest> topicRequests = generateRequests(9);
+    topicRequests.addAll(generateRequests(1, 7, RequestOperationType.CLAIM));
+    when(handleDbRequests.getAllTopicRequests(
+            anyString(), eq(null), eq(null), eq(null), eq(null), eq(false), anyInt()))
+        .thenReturn(topicRequests);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    when(commonUtilsService.getTopicsForTopicName(eq("Topic0"), eq(101)))
+        .thenReturn(List.of(getTopic("Topic0")));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(List.of(getTopic("Topic0")));
+    List<TopicRequestsResponseModel> ordered_response =
+        topicControllerService.getTopicRequests(
+            "1",
+            "1",
+            null,
+            null,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (TopicRequestsResponseModel req : ordered_response) {
+      if (req.getRequestOperationType().equals(RequestOperationType.CLAIM)) {
+        assertThat(req.getRemarks())
+            .isNotEqualTo("This topic is not found in Klaw. Please contact your Administrator.");
+      }
+      // assert That each new Request time is older than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) >= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
   private List<TopicRequest> generateRequests(int number) {
+    return generateRequests(number, 101);
+  }
+
+  private List<TopicRequest> generateRequests(int number, int teamId) {
+
+    return generateRequests(number, teamId, RequestOperationType.CREATE);
+  }
+
+  private List<TopicRequest> generateRequests(int number, int teamId, RequestOperationType type) {
     ArrayList<TopicRequest> topicList = new ArrayList<>();
     for (int i = 0; i < number; i++) {
       TopicRequest topicRequest = new TopicRequest();
+      topicRequest.setTopicname("Topic" + i);
       topicRequest.setEnvironment(env.getId());
       topicRequest.setTopicpartitions(2);
       topicRequest.setRequesttime(new Timestamp(System.currentTimeMillis() - (3600000 * i)));
-      topicRequest.setTeamId(101);
+      topicRequest.setTeamId(teamId);
       topicRequest.setRequestor("Jackie");
-      topicRequest.setRequestStatus(RequestStatus.CREATED.value);
+      topicRequest.setRequestStatus(type.value);
+      topicRequest.setRequestOperationType(type.value);
       topicList.add(topicRequest);
     }
     return topicList;

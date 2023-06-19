@@ -1284,16 +1284,26 @@ public class KafkaConnectControllerService {
       if (RequestStatus.APPROVED != kafkaConnectorRequestModel.getRequestStatus()) {
         if (kafkaConnectorRequestModel.getRequestOperationType() != null
             && RequestOperationType.CLAIM == kafkaConnectorRequestModel.getRequestOperationType()) {
-          List<KwKafkaConnector> topics =
+
+          List<KwKafkaConnector> connectors =
               getConnectorsFromName(kafkaConnectorRequestModel.getConnectorName(), tenantId);
-          kafkaConnectorRequestModel.setApprovingTeamDetails(
-              updateApproverInfo(
-                  manageDatabase
-                      .getHandleDbRequests()
-                      .getAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
-                  manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
-                  approverRoles,
-                  kafkaConnectorRequestModel.getRequestor()));
+          if (!connectors.isEmpty()) {
+            kafkaConnectorRequestModel.setApprovingTeamDetails(
+                updateApproverInfo(
+                    manageDatabase
+                        .getHandleDbRequests()
+                        .getAllUsersInfoForTeam(connectors.get(0).getTeamId(), tenantId),
+                    manageDatabase.getTeamNameFromTeamId(tenantId, connectors.get(0).getTeamId()),
+                    approverRoles,
+                    kafkaConnectorRequestModel.getRequestor()));
+          } else {
+            log.warn(
+                "Request Exists for Connector {} in env {} and Connector does not exist.",
+                kafkaConnectorRequestModel.getConnectorName(),
+                kafkaConnectorRequestModel.getEnvironmentName());
+            kafkaConnectorRequestModel.setRemarks(
+                "This Connector is not found in Klaw. Please contact your Administrator.");
+          }
         } else
           kafkaConnectorRequestModel.setApprovingTeamDetails(
               updateApproverInfo(
