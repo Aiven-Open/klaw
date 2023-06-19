@@ -1372,7 +1372,6 @@ public class TopicControllerService {
 
   public List<Topic> getTopicFromName(String topicName, int tenantId) {
     List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
-    log.warn("Topics {} ", topics);
     // tenant filtering
     topics = commonUtilsService.getFilteredTopicsForTenant(topics);
     return topics;
