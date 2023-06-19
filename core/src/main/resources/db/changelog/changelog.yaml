@@ -1070,7 +1070,7 @@ databaseChangeLog:
                     type: INT
               tableName: kwavroschemas
     - changeSet:
-        id: 19-06-2023 SchedulerLock
+        id: 19-06-2023 Table for Scheduler Lock
         author: muralibasani
         changes:
           - createTable:
@@ -1079,7 +1079,7 @@ databaseChangeLog:
                     constraints:
                       nullable: false
                       primaryKey: true
-                      primaryKeyName: SLK_NAME
+                      primaryKeyName: SLCK_NAME
                     name: NAME
                     type: VARCHAR2(255)
                 - column:
@@ -1091,4 +1091,4 @@ databaseChangeLog:
                 - column:
                     name: locked_by
                     type: VARCHAR2(255)
-              tableName: shedlock
+              tableName: kwshedlock

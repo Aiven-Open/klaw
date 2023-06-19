@@ -15,7 +15,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "shedlock")
+// table name should be defined in SchedulerConfiguration too
+@Table(name = "kwshedlock")
 public class Shedlock {
 
   @Id private String name;

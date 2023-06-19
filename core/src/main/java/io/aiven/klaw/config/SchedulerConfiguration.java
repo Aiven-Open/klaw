@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Configuration;
 public class SchedulerConfiguration {
   @Bean
   public LockProvider lockProvider(DataSource dataSource) {
-    return new JdbcTemplateLockProvider(dataSource);
+    return new JdbcTemplateLockProvider(dataSource, "kwshedlock");
   }
 }
