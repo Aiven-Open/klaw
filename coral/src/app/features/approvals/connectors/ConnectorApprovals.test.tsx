@@ -511,7 +511,7 @@ describe("ConnectorApprovals", () => {
         reason: "This is my message",
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
         2,
         defaultApiParams
@@ -550,7 +550,7 @@ describe("ConnectorApprovals", () => {
         reason: "This is my message",
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetConnectorRequestsForApprover).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");
