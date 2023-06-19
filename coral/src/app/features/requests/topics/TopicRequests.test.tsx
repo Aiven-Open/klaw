@@ -625,7 +625,7 @@ describe("TopicRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetTopicRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         search: "",
@@ -663,7 +663,7 @@ describe("TopicRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetTopicRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");
@@ -698,7 +698,7 @@ describe("TopicRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetTopicRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");

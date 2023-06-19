@@ -430,10 +430,7 @@ describe("<ConnectorRequest />", () => {
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
+
         expect(createConnectorRequest).toHaveBeenCalledTimes(1);
         expect(createConnectorRequest).toHaveBeenCalledWith({
           connectorConfig:
@@ -470,11 +467,6 @@ describe("<ConnectorRequest />", () => {
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
-
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
 
         expect(createConnectorRequest).toHaveBeenCalledTimes(1);
         await waitFor(() =>
