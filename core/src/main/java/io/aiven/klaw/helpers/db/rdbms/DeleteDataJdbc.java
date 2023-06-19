@@ -126,10 +126,10 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String deleteConnector(int topicId, int tenantId) {
-    log.debug("deleteTopic {}", topicId);
+  public String deleteConnector(int connectorId, int tenantId) {
+    log.debug("deleteConnector {}", connectorId);
     KwKafkaConnectorID kwKafkaConnectorID = new KwKafkaConnectorID();
-    kwKafkaConnectorID.setConnectorId(topicId);
+    kwKafkaConnectorID.setConnectorId(connectorId);
     kwKafkaConnectorID.setTenantId(tenantId);
 
     Optional<KwKafkaConnector> topicReq = kafkaConnectorRepo.findById(kwKafkaConnectorID);
