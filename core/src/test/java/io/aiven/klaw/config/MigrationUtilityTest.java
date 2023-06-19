@@ -66,7 +66,7 @@ class MigrationUtilityTest {
   public void VersionIsAlreadyAtLatest_NoMigration() throws Exception {
     when(versionRepo.findTopByOrderByIdDesc()).thenReturn(getDataVersion("2.4.0"));
 
-    utility.afterPropertiesSet();
+    utility.startMigration();
     verify(versionRepo, times(0)).save(any());
   }
 
@@ -81,7 +81,7 @@ class MigrationUtilityTest {
     ReflectionTestUtils.setField(m1, "success", true);
     ReflectionTestUtils.setField(m2, "success", true);
 
-    utility.afterPropertiesSet();
+    utility.startMigration();
     verify(versionRepo, times(2)).save(dataVersionCaptor.capture());
   }
 
@@ -96,7 +96,7 @@ class MigrationUtilityTest {
     ReflectionTestUtils.setField(m1, "success", true);
     ReflectionTestUtils.setField(m2, "success", true);
 
-    utility.afterPropertiesSet();
+    utility.startMigration();
     verify(versionRepo, times(2)).save(dataVersionCaptor.capture());
   }
 

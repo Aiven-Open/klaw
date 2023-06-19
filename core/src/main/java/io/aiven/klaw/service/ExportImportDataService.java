@@ -19,8 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.jasypt.util.text.BasicTextEncryptor;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
@@ -28,11 +28,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /*
-Export Klaw metadata (Admin config, Core data, Requests data) to json files
+- Export Klaw metadata (Admin config, Core data, Requests data) to json files
+- Import json files into Klaw metadata
  */
 @Slf4j
 @Service
-public class ExportImportDataService implements InitializingBean {
+public class ExportImportDataService {
 
   @Value("${klaw.export.users.pwd:WelcomeToKlaw!!}")
   private String pwdAllUsers;
@@ -46,19 +47,22 @@ public class ExportImportDataService implements InitializingBean {
   @Value("${klaw.export.scheduler.enable:false}")
   private boolean exportMetadata;
 
-  @Value("${klaw.import.adminconfig.scheduler.enable:false}")
+  @Value("${klaw.import.enable:false}")
+  private boolean importMetadata;
+
+  @Value("${klaw.import.adminconfig.enable:false}")
   private boolean importAdminConfigMetadata;
 
   @Value("${klaw.import.adminconfig.file.path:path}")
   private String klawImportAdminConfigFilePath;
 
-  @Value("${klaw.import.kwdata.scheduler.enable:false}")
+  @Value("${klaw.import.kwdata.enable:false}")
   private boolean importKwDataMetadata;
 
   @Value("${klaw.import.kwdata.file.path:path}")
   private String klawImportKwDataFilePath;
 
-  @Value("${klaw.import.kwrequestsdata.scheduler.enable:false}")
+  @Value("${klaw.import.kwrequestsdata.enable:false}")
   private boolean importKwRequestsDataMetadata;
 
   @Value("${klaw.import.kwrequestsdata.file.path:path}")
@@ -75,18 +79,19 @@ public class ExportImportDataService implements InitializingBean {
   private static final String KW_REQUEST_DATA_PREFIX = "kwrequests_data";
   @Autowired ManageDatabase manageDatabase;
 
-  @Override
-  public void afterPropertiesSet() throws Exception {
-    importData();
-  }
-
-  private void importData() {
+  @SchedulerLock(
+      name = "TaskScheduler_ImportKlawData",
+      lockAtLeastFor = "PT10M",
+      lockAtMostFor = "PT60M")
+  void importData() {
     try {
-      OBJECT_MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
-      HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
-      importKlawAdminConfig(handleDbRequests);
-      importKwData(handleDbRequests);
-      importKwRequestsData(handleDbRequests);
+      if (importMetadata) {
+        OBJECT_MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+        HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
+        importKlawAdminConfig(handleDbRequests);
+        importKwData(handleDbRequests);
+        importKwRequestsData(handleDbRequests);
+      }
     } catch (IOException e) {
       log.error("Error during parsing/writing to files : ", e);
     }
@@ -115,7 +120,7 @@ public class ExportImportDataService implements InitializingBean {
     }
   }
 
-  private void importKlawAdminConfig(HandleDbRequests handleDbRequests) throws IOException {
+  void importKlawAdminConfig(HandleDbRequests handleDbRequests) throws IOException {
     if (importAdminConfigMetadata) {
       KwAdminConfig kwAdminConfig =
           OBJECT_MAPPER.readValue(new File(klawImportAdminConfigFilePath), KwAdminConfig.class);

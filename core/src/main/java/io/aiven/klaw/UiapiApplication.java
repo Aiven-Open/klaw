@@ -1,5 +1,6 @@
 package io.aiven.klaw;
 
+import net.javacrumbs.shedlock.spring.annotation.EnableSchedulerLock;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -8,6 +9,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
+@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
 @SpringBootApplication(
     exclude = {
       DataSourceAutoConfiguration.class,
