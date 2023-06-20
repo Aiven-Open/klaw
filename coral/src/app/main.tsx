@@ -51,29 +51,15 @@ const queryClient = new QueryClient({
   },
 });
 
-function prepare(): Promise<void | ServiceWorkerRegistration> {
-  if (DEV_MODE) {
-    return import("src/services/api-mocks/browser").then(({ worker }) => {
-      if ("start" in worker) {
-        window.msw = worker;
-        return worker.start({ onUnhandledRequest: "bypass" });
-      }
-    });
-  }
-  return Promise.resolve();
-}
-
-prepare().then(() => {
-  root.render(
-    <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <AquariumContext>
-            <RouterProvider router={router} />
-            {DEV_MODE && <ReactQueryDevtools />}
-          </AquariumContext>
-        </AuthProvider>
-      </QueryClientProvider>
-    </React.StrictMode>
-  );
-});
+root.render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <AquariumContext>
+          <RouterProvider router={router} />
+          {DEV_MODE && <ReactQueryDevtools />}
+        </AquariumContext>
+      </AuthProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
+);
