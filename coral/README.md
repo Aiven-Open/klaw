@@ -52,7 +52,36 @@ Please see our documentation: [Development with remote API](docs/development-wit
 
 ℹ️ **Developing without remote API**
 If you want to run Coral without an API, you can do that, too.
-Please see our documentation: [Mocking an API for development](docs/mock-api-for-development.md)
+In this case, you'll have to mock the responses for api calls you need. This can be done by returning a resolved (or rejected) `Promise` instead of executing the API call during development. Please remember removing the mock before opening a PR for review :)
+
+Example: mocking the response for `getClusterInfo`:
+- go the [`src/domain/environment/environment-api.ts`](./src/domain/environment/environment-api.ts)
+- check the return type of the function (`KlawApiResponse<"getClusterInfoFromEnv">`) in our api definition to create the right object
+- return a promise with your mock instead of calling the endpoint:
+
+```typescript
+const getClusterInfo = async ({
+  envSelected,
+  envType,
+  }: {
+  envSelected: string;
+  envType: Environment["type"];
+}): Promise<KlawApiResponse<"getClusterInfoFromEnv">> => {
+
+  const mock: KlawApiResponse<"getClusterInfoFromEnv"> = {
+    aivenCluster: true,
+  };
+
+  return Promise.resolve(mock);
+
+  // const params = new URLSearchParams({ envSelected, envType });
+  // return api.get<KlawApiResponse<"getClusterInfoFromEnv">>(
+  //   API_PATHS.getClusterInfoFromEnv,
+  //   params
+  // );
+};
+
+```
 
 ℹ️ You can see all our scripts in the [`package.json`](package.json).
 You can also run `pnpm` in your console to get a list of all available scripts.
