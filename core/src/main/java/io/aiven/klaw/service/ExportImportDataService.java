@@ -1,6 +1,11 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.INFRATEAM;
+import static io.aiven.klaw.helpers.KwConstants.STAGINGTEAM;
+
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ProductDetails;
 import io.aiven.klaw.dao.UserInfo;
@@ -14,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +28,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 /*
-Export Klaw metadata (Admin config, Core data, Requests data) to json files
+- Export Klaw metadata (Admin config, Core data, Requests data) to json files
+- Import json files into Klaw metadata
  */
 @Slf4j
 @Service
@@ -40,6 +47,27 @@ public class ExportImportDataService {
   @Value("${klaw.export.scheduler.enable:false}")
   private boolean exportMetadata;
 
+  @Value("${klaw.import.enable:false}")
+  private boolean importMetadata;
+
+  @Value("${klaw.import.adminconfig.enable:false}")
+  private boolean importAdminConfigMetadata;
+
+  @Value("${klaw.import.adminconfig.file.path:path}")
+  private String klawImportAdminConfigFilePath;
+
+  @Value("${klaw.import.kwdata.enable:false}")
+  private boolean importKwDataMetadata;
+
+  @Value("${klaw.import.kwdata.file.path:path}")
+  private String klawImportKwDataFilePath;
+
+  @Value("${klaw.import.kwrequestsdata.enable:false}")
+  private boolean importKwRequestsDataMetadata;
+
+  @Value("${klaw.import.kwrequestsdata.file.path:path}")
+  private String klawImportKwRequestsDataFilePath;
+
   @Value("${klaw.version}")
   private String klawVersion;
 
@@ -51,12 +79,82 @@ public class ExportImportDataService {
   private static final String KW_REQUEST_DATA_PREFIX = "kwrequests_data";
   @Autowired ManageDatabase manageDatabase;
 
+  @SchedulerLock(
+      name = "TaskScheduler_ImportKlawData",
+      lockAtLeastFor = "${klaw.shedlock.lockAtLeastFor:PT30M}",
+      lockAtMostFor = "${klaw.shedlock.lockAtMostFor:PT60M}")
+  void importData() {
+    try {
+      if (importMetadata) {
+        OBJECT_MAPPER.configure(DeserializationFeature.UNWRAP_ROOT_VALUE, true);
+        HandleDbRequests handleDbRequests = manageDatabase.getHandleDbRequests();
+        importKlawAdminConfig(handleDbRequests);
+        importKwData(handleDbRequests);
+        importKwRequestsData(handleDbRequests);
+      }
+    } catch (IOException e) {
+      log.error("Error during parsing/writing to files : ", e);
+    }
+  }
+
+  private void importKwRequestsData(HandleDbRequests handleDbRequests) throws IOException {
+    if (importKwRequestsDataMetadata) {
+      KwRequests kwRequests =
+          OBJECT_MAPPER.readValue(new File(klawImportKwRequestsDataFilePath), KwRequests.class);
+      kwRequests.getTopicRequests().forEach(handleDbRequests::requestForTopic);
+      kwRequests.getSubscriptionRequests().forEach(handleDbRequests::requestForAcl);
+      kwRequests.getSchemaRequests().forEach(handleDbRequests::requestForSchema);
+      kwRequests.getConnectorRequests().forEach(handleDbRequests::requestForConnector);
+      log.info("Klaw KwRequestsData metadata imported !!");
+    }
+  }
+
+  private void importKwData(HandleDbRequests handleDbRequests) throws IOException {
+    if (importKwDataMetadata) {
+      KwData kwData = OBJECT_MAPPER.readValue(new File(klawImportKwDataFilePath), KwData.class);
+      handleDbRequests.addToSynctopics(kwData.getTopics());
+      handleDbRequests.addToSyncacls(kwData.getSubscriptions());
+      handleDbRequests.insertIntoMessageSchemaSOT(kwData.getSchemas());
+      handleDbRequests.addToSyncConnectors(kwData.getKafkaConnectors());
+      log.info("Klaw KwData metadata imported !!");
+    }
+  }
+
+  void importKlawAdminConfig(HandleDbRequests handleDbRequests) throws IOException {
+    if (importAdminConfigMetadata) {
+      KwAdminConfig kwAdminConfig =
+          OBJECT_MAPPER.readValue(new File(klawImportAdminConfigFilePath), KwAdminConfig.class);
+      kwAdminConfig.getTenants().forEach(handleDbRequests::addNewTenant);
+      handleDbRequests.insertDefaultRolesPermissions(kwAdminConfig.getRolesPermissions());
+      handleDbRequests.insertDefaultKwProperties(kwAdminConfig.getProperties());
+      handleDbRequests.insertProductDetails(kwAdminConfig.getProductDetails());
+
+      kwAdminConfig.getClusters().forEach(handleDbRequests::addNewCluster);
+      kwAdminConfig.getEnvironments().forEach(handleDbRequests::addNewEnv);
+
+      kwAdminConfig
+          .getTeams()
+          .forEach(
+              team -> {
+                if (!team.getTeamname().equals(STAGINGTEAM)
+                    && !team.getTeamname().equals(INFRATEAM)) {
+                  handleDbRequests.addNewTeam(team);
+                }
+              });
+      kwAdminConfig.getUsers().forEach(handleDbRequests::addNewUser);
+
+      log.info("Klaw Admin config metadata imported !!");
+    }
+  }
+
   @Async("metadataExportTaskExecutor")
   @Scheduled(cron = "${klaw.export.cron.expression:0 0 0 * * ?}")
   void exportKwMetadataScheduler() {
     if (!exportMetadata) {
       return;
     }
+    OBJECT_MAPPER.configure(SerializationFeature.WRAP_ROOT_VALUE, true);
+
     exportKwMetadata();
   }
 

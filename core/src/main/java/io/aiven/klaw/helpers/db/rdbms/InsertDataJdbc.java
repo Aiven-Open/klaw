@@ -442,6 +442,13 @@ public class InsertDataJdbc {
   }
 
   public String addNewTenant(KwTenants kwTenants) {
+    if (kwTenants.getTenantId() != null) {
+      Optional<KwTenants> tenantExists = tenantRepo.findById(kwTenants.getTenantId());
+      if (tenantExists.isPresent()) {
+        return "Failure. Tenant already exists";
+      }
+    }
+
     Integer maxTenantId = tenantRepo.getMaxTenantId();
     if (maxTenantId == null) {
       maxTenantId = 101;
@@ -449,6 +456,7 @@ public class InsertDataJdbc {
       maxTenantId = maxTenantId + 1;
     }
     kwTenants.setTenantId(maxTenantId);
+
     tenantRepo.save(kwTenants);
     return ApiResultStatus.SUCCESS.value;
   }
