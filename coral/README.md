@@ -31,8 +31,7 @@
 
 1. navigate to this directory
 2. run `pnpm install`
-3. run `make enable-coral-in-springboot` (see our [Makefile](Makefile)). This will enable Coral in Klaw. It also moves the Coral build files to the right directory.
-4. go to the root directory and follow the [instructions on how to run Klaw](../README.md#Install)
+3. go to the root directory and follow the [instructions on how to run Klaw](../README.md#Install)
 
 ➡️ Based on Springboot [application properties](https://github.com/aiven/klaw/blob/main/core/src/main/resources/application.properties#L5) configuration: 
 - Klaw will run in `https://localhost:9097` if TLS is enabled
