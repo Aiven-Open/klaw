@@ -457,12 +457,18 @@ public class CommonUtilsService {
             }
           }
 
+          if (kwMetadataUpdates.getEntityValue() == null) {
+            kwMetadataUpdates.setEntityValue("na");
+          }
+
           String uri =
               basePath
                   + "/resetMemoryCache/"
                   + kwMetadataUpdates.getTenantId()
                   + "/"
                   + kwMetadataUpdates.getEntityType()
+                  + "/"
+                  + kwMetadataUpdates.getEntityValue()
                   + "/"
                   + kwMetadataUpdates.getOperationType();
           RestTemplate restTemplate = getRestTemplate();

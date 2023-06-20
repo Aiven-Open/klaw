@@ -702,11 +702,13 @@ public class UtilControllerService implements InitializingBean {
     return ssoProviders;
   }
 
-  public void resetCache(int tenantId, String entityType, String operationType) {
+  public void resetCache(
+      int tenantId, String entityType, String entityValue, String operationType) {
     KwMetadataUpdates kwMetadataUpdates =
         KwMetadataUpdates.builder()
             .tenantId(tenantId)
             .entityType(entityType)
+            .entityValue(entityValue)
             .operationType(operationType)
             .createdTime(new Timestamp(System.currentTimeMillis()))
             .build();
