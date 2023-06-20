@@ -68,14 +68,14 @@ public class UtilController {
   }
 
   @RequestMapping(
-      value = "/resetMemoryCache/{tenantName}/{entityType}/{operationType}",
-      method = RequestMethod.GET,
+      value = "/resetMemoryCache/{tenantId}/{entityType}/{operationType}",
+      method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, String>> resetMemoryCache(
-      @PathVariable String tenantName,
+      @PathVariable int tenantId,
       @PathVariable String entityType,
       @PathVariable String operationType) {
-    utilControllerService.resetCache(tenantName, entityType, operationType);
+    utilControllerService.resetCache(tenantId, entityType, operationType);
     return new ResponseEntity<>(new HashMap<>(), HttpStatus.OK);
   }
 
