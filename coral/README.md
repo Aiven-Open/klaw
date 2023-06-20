@@ -57,7 +57,7 @@ In this case, you'll have to mock the responses for api calls you need. This can
 Example: mocking the response for `getClusterInfo`:
 - go the [`src/domain/environment/environment-api.ts`](./src/domain/environment/environment-api.ts)
 - check the return type of the function (`KlawApiResponse<"getClusterInfoFromEnv">`) in our api definition to create the right object
-- return a promise with your mock instead of calling the endpoint:
+- return a promise with your mock instead of calling the endpoint and comment out the actual endpoint call:
 
 ```typescript
 const getClusterInfo = async ({
