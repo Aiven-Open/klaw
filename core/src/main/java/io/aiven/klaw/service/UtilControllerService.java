@@ -713,7 +713,7 @@ public class UtilControllerService implements InitializingBean {
     try {
       CompletableFuture.runAsync(
               () -> {
-                commonUtilsService.updateMetadataCache(kwMetadataUpdates);
+                commonUtilsService.updateMetadataCache(kwMetadataUpdates, false);
               })
           .get();
     } catch (InterruptedException | ExecutionException e) {

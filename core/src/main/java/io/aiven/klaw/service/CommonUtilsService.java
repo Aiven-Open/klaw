@@ -322,7 +322,7 @@ public class CommonUtilsService {
             .operationType(operationType.name())
             .createdTime(new Timestamp(System.currentTimeMillis()))
             .build();
-    updateMetadataCache(kwMetadataUpdates);
+    updateMetadataCache(kwMetadataUpdates, true);
 
     try {
       CompletableFuture.runAsync(
@@ -335,7 +335,8 @@ public class CommonUtilsService {
     }
   }
 
-  public synchronized void updateMetadataCache(KwMetadataUpdates kwMetadataUpdates) {
+  public synchronized void updateMetadataCache(
+      KwMetadataUpdates kwMetadataUpdates, boolean isLocal) {
     final EntityType entityType = EntityType.of(kwMetadataUpdates.getEntityType());
     if (entityType == null) {
       return;
@@ -344,7 +345,7 @@ public class CommonUtilsService {
         MetadataOperationType.of(kwMetadataUpdates.getOperationType());
     if (entityType == EntityType.USERS) {
       manageDatabase.loadUsersForAllTenants();
-      if (DATABASE.value.equals(authenticationType)) {
+      if (DATABASE.value.equals(authenticationType) && !isLocal) {
         updateInMemoryAuthenticationManager(kwMetadataUpdates, operationType);
       }
     } else if (entityType == EntityType.TEAM) {
