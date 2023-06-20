@@ -48,7 +48,6 @@ function TopicApprovalsTable({
     { type: "text", field: "topicname", headerName: "Topic" },
     {
       type: "status",
-      field: "environmentName",
       headerName: "Environment",
       status: ({ environmentName }) => ({
         status: "neutral",
@@ -57,7 +56,6 @@ function TopicApprovalsTable({
     },
     {
       type: "status",
-      field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
         return {
@@ -68,7 +66,6 @@ function TopicApprovalsTable({
     },
     {
       type: "status",
-      field: "requestOperationType",
       headerName: "Request type",
       status: ({ requestOperationType }) => {
         return {

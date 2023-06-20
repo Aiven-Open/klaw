@@ -52,7 +52,6 @@ function AclRequestsTable({
     { type: "text", field: "topicname", headerName: "Topic" },
     {
       type: "status",
-      field: "environmentName",
       headerName: "Environment",
       status: ({ environmentName }) => ({
         status: "neutral",
@@ -61,7 +60,6 @@ function AclRequestsTable({
     },
     {
       type: "custom",
-      field: "acl_ssl",
       headerName: "Principals/Usernames",
       UNSAFE_render: ({ acl_ssl }: AclRequestTableRow) => {
         return (
@@ -83,7 +81,6 @@ function AclRequestsTable({
     },
     {
       type: "custom",
-      field: "acl_ip",
       headerName: "IP addresses",
       UNSAFE_render: ({ acl_ip }: AclRequestTableRow) => {
         return (
@@ -105,7 +102,6 @@ function AclRequestsTable({
     },
     {
       type: "status",
-      field: "aclType",
       headerName: "ACL type",
       status: ({ aclType }) => ({
         status: aclType === "CONSUMER" ? "success" : "info",
@@ -114,7 +110,6 @@ function AclRequestsTable({
     },
     {
       type: "status",
-      field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
         return {
@@ -125,7 +120,6 @@ function AclRequestsTable({
     },
     {
       type: "status",
-      field: "requestOperationType",
       headerName: "Request type",
       status: ({ requestOperationType }) => {
         return {
