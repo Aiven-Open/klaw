@@ -765,7 +765,8 @@ public class TopicControllerService {
     }
 
     if (updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
-      commonUtilsService.updateMetadata(tenantId, EntityType.TOPICS, MetadataOperationType.CREATE);
+      commonUtilsService.updateMetadata(
+          tenantId, EntityType.TOPICS, MetadataOperationType.CREATE, null);
     }
 
     return ApiResponse.builder()

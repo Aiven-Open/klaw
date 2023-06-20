@@ -725,7 +725,7 @@ public class EnvsClustersTenantsControllerService {
       String result = manageDatabase.getHandleDbRequests().addNewEnv(env);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
         commonUtilsService.updateMetadata(
-            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE);
+            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE, null);
         return ApiResponse.builder().success(true).message(result).build();
       } else {
         return ApiResponse.builder().success(false).message(result).build();
@@ -814,7 +814,8 @@ public class EnvsClustersTenantsControllerService {
 
     String result = manageDatabase.getHandleDbRequests().addNewCluster(kwCluster);
     if (result.equals(ApiResultStatus.SUCCESS.value)) {
-      commonUtilsService.updateMetadata(tenantId, EntityType.CLUSTER, MetadataOperationType.CREATE);
+      commonUtilsService.updateMetadata(
+          tenantId, EntityType.CLUSTER, MetadataOperationType.CREATE, null);
       return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
     }
     return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
@@ -899,7 +900,7 @@ public class EnvsClustersTenantsControllerService {
           manageDatabase.getHandleDbRequests().deleteCluster(Integer.parseInt(clusterId), tenantId);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
         commonUtilsService.updateMetadata(
-            tenantId, EntityType.CLUSTER, MetadataOperationType.DELETE);
+            tenantId, EntityType.CLUSTER, MetadataOperationType.DELETE, null);
         return ApiResponse.builder().success(true).message(result).build();
       } else {
         return ApiResponse.builder().success(false).message(result).build();
@@ -950,7 +951,7 @@ public class EnvsClustersTenantsControllerService {
           manageDatabase.getHandleDbRequests().deleteEnvironmentRequest(envId, tenantId);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
         commonUtilsService.updateMetadata(
-            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.DELETE);
+            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.DELETE, null);
         return ApiResponse.builder().success(true).message(result).build();
       } else {
         return ApiResponse.builder().success(false).message(result).build();
@@ -1163,7 +1164,8 @@ public class EnvsClustersTenantsControllerService {
               .get()
               .getTenantId();
 
-      commonUtilsService.updateMetadata(tenantId, EntityType.TENANT, MetadataOperationType.CREATE);
+      commonUtilsService.updateMetadata(
+          tenantId, EntityType.TENANT, MetadataOperationType.CREATE, null);
       if (isExternal) {
         manageDatabase
             .getHandleDbRequests()
@@ -1175,9 +1177,9 @@ public class EnvsClustersTenantsControllerService {
                     tenantId, false, kwInstallationType));
 
         commonUtilsService.updateMetadata(
-            tenantId, EntityType.ROLES_PERMISSIONS, MetadataOperationType.CREATE);
+            tenantId, EntityType.ROLES_PERMISSIONS, MetadataOperationType.CREATE, null);
         commonUtilsService.updateMetadata(
-            tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE);
+            tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE, null);
       }
       return ApiResponse.builder()
           .success(true)
@@ -1261,7 +1263,7 @@ public class EnvsClustersTenantsControllerService {
 
       if (ApiResultStatus.SUCCESS.value.equals(result)) {
         commonUtilsService.updateMetadata(
-            tenantId, EntityType.TENANT, MetadataOperationType.DELETE);
+            tenantId, EntityType.TENANT, MetadataOperationType.DELETE, null);
         SecurityContextHolder.getContext().setAuthentication(null);
         return ApiResponse.builder().success(true).message(result).data(tenantName).build();
       } else {
@@ -1287,7 +1289,7 @@ public class EnvsClustersTenantsControllerService {
 
       if (ApiResultStatus.SUCCESS.value.equals(result)) {
         commonUtilsService.updateMetadata(
-            tenantId, EntityType.TENANT, MetadataOperationType.UPDATE);
+            tenantId, EntityType.TENANT, MetadataOperationType.UPDATE, null);
         return ApiResponse.builder().success(true).message(result).build();
       } else {
         return ApiResponse.builder().success(false).message(result).build();
