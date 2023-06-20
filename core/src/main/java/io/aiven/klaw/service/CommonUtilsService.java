@@ -29,11 +29,9 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -701,27 +699,5 @@ public class CommonUtilsService {
               });
         });
     return subTopicsList;
-  }
-
-  public void loadAllUsers(Properties globalUsers, List<UserInfo> users) {
-    Iterator<UserInfo> iter = users.iterator();
-    PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-
-    UserInfo userInfo;
-    while (iter.hasNext()) {
-      userInfo = iter.next();
-      try {
-        String secPwd = userInfo.getPwd();
-        if (secPwd != null && secPwd.equals("")) {
-          secPwd = "gfGF%64GFDd766hfgfHFD$%#453";
-        } else {
-          secPwd = decodePwd(secPwd);
-        }
-        globalUsers.put(
-            userInfo.getUsername(), encoder.encode(secPwd) + "," + userInfo.getRole() + ",enabled");
-      } catch (Exception e) {
-        log.error("Error : User not loaded {}. Check password.", userInfo.getUsername(), e);
-      }
-    }
   }
 }
