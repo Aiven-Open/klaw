@@ -72,7 +72,7 @@ export type paths = {
   "/saveConnectorDocumentation": {
     post: operations["saveConnectorDocumentation"];
   };
-  "/resetMemoryCache/{tenantId}/{entityType}/{operationType}": {
+  "/resetMemoryCache/{tenantId}/{entityType}/{entityValue}/{operationType}": {
     post: operations["resetMemoryCache"];
   };
   "/reset/token": {
@@ -1941,6 +1941,7 @@ export type operations = {
       path: {
         tenantId: number;
         entityType: string;
+        entityValue: string;
         operationType: string;
       };
     };

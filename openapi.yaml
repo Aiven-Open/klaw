@@ -722,7 +722,7 @@
         }
       }
     },
-    "/resetMemoryCache/{tenantId}/{entityType}/{operationType}" : {
+    "/resetMemoryCache/{tenantId}/{entityType}/{entityValue}/{operationType}" : {
       "post" : {
         "tags" : [ "util-controller" ],
         "operationId" : "resetMemoryCache",
@@ -736,6 +736,13 @@
           }
         }, {
           "name" : "entityType",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "entityValue",
           "in" : "path",
           "required" : true,
           "schema" : {
