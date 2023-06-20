@@ -722,6 +722,50 @@
         }
       }
     },
+    "/resetMemoryCache/{tenantId}/{entityType}/{operationType}" : {
+      "post" : {
+        "tags" : [ "util-controller" ],
+        "operationId" : "resetMemoryCache",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "entityType",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "operationType",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "additionalProperties" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/reset/token" : {
       "post" : {
         "tags" : [ "users-teams-controller" ],
@@ -2264,49 +2308,6 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/SchemaDetailsResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/resetMemoryCache/{tenantName}/{entityType}/{operationType}" : {
-      "get" : {
-        "tags" : [ "util-controller" ],
-        "operationId" : "resetMemoryCache",
-        "parameters" : [ {
-          "name" : "tenantName",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "entityType",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "operationType",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
                 }
               }
             }
@@ -5522,6 +5523,9 @@
       "SyncConnectorUpdates" : {
         "properties" : {
           "sequence" : {
+            "type" : "string"
+          },
+          "connectorId" : {
             "type" : "string"
           },
           "req_no" : {

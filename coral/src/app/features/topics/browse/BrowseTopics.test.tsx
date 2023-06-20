@@ -97,7 +97,6 @@ describe("BrowseTopics.tsx", () => {
       await waitForElementToBeRemoved(
         screen.getByTestId("select-team-loading")
       );
-      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
     afterAll(() => {
@@ -278,7 +277,6 @@ describe("BrowseTopics.tsx", () => {
       await waitForElementToBeRemoved(
         screen.getByTestId("select-team-loading")
       );
-      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
     });
 
     afterEach(() => {

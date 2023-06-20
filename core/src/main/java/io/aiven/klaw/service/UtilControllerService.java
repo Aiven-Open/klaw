@@ -702,20 +702,7 @@ public class UtilControllerService implements InitializingBean {
     return ssoProviders;
   }
 
-  public void resetCache(String tenantName, String entityType, String operationType) {
-    int tenantId = 0;
-    try {
-      tenantId =
-          manageDatabase.getHandleDbRequests().getTenants().stream()
-              .filter(kwTenant -> Objects.equals(kwTenant.getTenantName(), tenantName))
-              .findFirst()
-              .get()
-              .getTenantId();
-    } catch (Exception e) {
-      log.info("ignore", e);
-      return;
-    }
-
+  public void resetCache(int tenantId, String entityType, String operationType) {
     KwMetadataUpdates kwMetadataUpdates =
         KwMetadataUpdates.builder()
             .tenantId(tenantId)
@@ -726,7 +713,7 @@ public class UtilControllerService implements InitializingBean {
     try {
       CompletableFuture.runAsync(
               () -> {
-                commonUtilsService.updateMetadata(kwMetadataUpdates);
+                commonUtilsService.updateMetadataCache(kwMetadataUpdates);
               })
           .get();
     } catch (InterruptedException | ExecutionException e) {

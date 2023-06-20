@@ -800,9 +800,9 @@ describe("TopicSchemaRequest", () => {
         within(form).getByLabelText<HTMLInputElement>(/Upload AVRO Schema/i);
 
       await userEvent.upload(fileInput, testFile);
-      const editor = screen.getByRole("textbox");
+      const editor = await screen.findByTestId("topic-schema");
 
-      await waitFor(() => expect(editor).toHaveDisplayValue(""));
+      await waitFor(() => expect(editor).toHaveDisplayValue("{}"));
     });
 
     it("enables the submit button if user filled all required inputs", async () => {

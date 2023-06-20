@@ -1,4 +1,4 @@
-import { MswInstance } from "src/services/api-mocks/types";
+import { SetupServerApi } from "msw/node";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as React from "@types/react";
 
@@ -15,7 +15,7 @@ declare module "react" {
 
 declare global {
   interface Window {
-    msw: MswInstance;
+    msw: SetupServerApi;
   }
 }
 

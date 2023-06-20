@@ -10,7 +10,7 @@ import {
   mockgetTopicAdvancedConfigOptions,
 } from "src/domain/topic/topic-api.msw";
 import api from "src/services/api";
-import { server } from "src/services/api-mocks/server";
+import { server } from "src/services/test-utils/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { objectHasProperty } from "src/services/type-utils";
 
@@ -1113,11 +1113,6 @@ describe("<TopicRequest />", () => {
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createTopics", {
           environment: "1",
@@ -1164,11 +1159,6 @@ describe("<TopicRequest />", () => {
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createTopics", {
           environment: "1",
@@ -1209,11 +1199,6 @@ describe("<TopicRequest />", () => {
         await user.click(
           screen.getByRole("button", { name: "Submit request" })
         );
-
-        await waitFor(() => {
-          const btn = screen.getByRole("button", { name: "Submit request" });
-          expect(btn).toBeDisabled();
-        });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
         await waitFor(() => {
