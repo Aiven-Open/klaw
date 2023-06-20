@@ -1,10 +1,13 @@
 import { PageHeader } from "@aivenio/aquarium";
 import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
-import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
+import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 import { DocumentationView } from "src/app/features/topics/details/documentation/components/DocumentationView";
 
 function TopicDocumentation() {
-  const { topicOverview } = useTopicDetails();
+  // mocked data as topicOverview does not return doc right now
+  const topicOverview = {
+    topicDocumentation: "", //"<h1>hello</h1><div>This is doc</div>",
+  };
 
   return (
     <>
