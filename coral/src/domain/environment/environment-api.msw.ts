@@ -1,4 +1,4 @@
-import { MswInstance } from "src/services/api-mocks/types";
+import { SetupServerApi } from "msw/node";
 import { rest } from "msw";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { getHTTPBaseAPIUrl } from "src/config";
@@ -6,7 +6,7 @@ import { KlawApiResponse } from "types/utils";
 import { operations } from "types/api";
 
 type MockApi<T extends keyof operations> = {
-  mswInstance: MswInstance;
+  mswInstance: SetupServerApi;
   response: {
     status?: number;
     data: KlawApiResponse<T> | { message: string };
@@ -43,7 +43,7 @@ const mockedEnvironmentResponse = [
 ];
 
 interface GetClusterInfoFromEnvRequestArgs {
-  mswInstance: MswInstance;
+  mswInstance: SetupServerApi;
   response: KlawApiResponse<"getClusterInfoFromEnv">;
 }
 

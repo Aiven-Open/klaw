@@ -1,5 +1,5 @@
 import { rest } from "msw";
-import { MswInstance } from "src/services/api-mocks/types";
+import { SetupServerApi } from "msw/node";
 import { transformTopicApiResponse } from "src/domain/topic/topic-transformer";
 import { createMockTopicApiResponse } from "src/domain/topic/topic-test-helper";
 import { getHTTPBaseAPIUrl } from "src/config";
@@ -10,7 +10,7 @@ function mockgetTopicAdvancedConfigOptions({
   mswInstance,
   response,
 }: {
-  mswInstance: MswInstance;
+  mswInstance: SetupServerApi;
   response: {
     status?: number;
     data: KlawApiResponse<"getAdvancedTopicConfigs"> | { message: string };
@@ -28,7 +28,7 @@ function mockRequestTopic({
   mswInstance,
   response,
 }: {
-  mswInstance: MswInstance;
+  mswInstance: SetupServerApi;
   response: {
     status?: number;
     data: KlawApiResponse<"createTopicsCreateRequest"> | { message: string };
@@ -96,7 +96,7 @@ const mockedResponseTransformed = transformTopicApiResponse(
 );
 
 interface MockGetTopicNamesRequestArgs {
-  mswInstance: MswInstance;
+  mswInstance: SetupServerApi;
   response: TopicNames;
 }
 
@@ -120,7 +120,7 @@ const mockedResponseTopicNames: KlawApiResponse<"getTopicsOnly"> = [
 ];
 
 interface MockGetTopicTeamRequestArgs {
-  mswInstance: MswInstance;
+  mswInstance: SetupServerApi;
   response: TopicTeam;
   topicName: string;
   patternType?: "LITERAL" | "PREFIXED";
@@ -149,7 +149,7 @@ function mockGetTopicRequestsForApprover({
   mswInstance,
   response,
 }: {
-  mswInstance: MswInstance;
+  mswInstance: SetupServerApi;
   response: {
     status?: number;
     data: KlawApiResponse<"getTopicRequestsForApprover"> | { message: string };

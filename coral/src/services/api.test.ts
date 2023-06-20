@@ -6,7 +6,7 @@ import api, {
   KlawApiError,
   KlawApiResponse,
 } from "src/services/api";
-import { server } from "src/services/api-mocks/server";
+import { server } from "src/services/test-utils/api-mocks/server";
 import { rest } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
 import { paths as ApiPaths } from "types/api";

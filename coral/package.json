@@ -19,7 +19,7 @@
     "dev-without-api": "vite",
     "lint": "prettier --check src && eslint .",
     "lint-staged": "lint-staged",
-    "preview": "vite build --mode remote-api && cp mockServiceWorker.js dist/mockServiceWorker.js && vite preview --mode remote-api",
+    "preview": "vite build --mode remote-api && vite preview --mode remote-api",
     "reformat": "prettier --write src",
     "test": "jest",
     "test-ci": "jest --ci",
@@ -103,8 +103,5 @@
   "alex": {
     "noBinary": true,
     "profanitySureness": 1
-  },
-  "msw": {
-    "workerDirectory": "./"
   }
 }
