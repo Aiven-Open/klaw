@@ -383,22 +383,41 @@ public class CommonUtilsService {
       KwMetadataUpdates kwMetadataUpdates, MetadataOperationType operationType) {
     UserInfo userInfo =
         manageDatabase.getHandleDbRequests().getUsersInfo(kwMetadataUpdates.getEntityValue());
-    PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    if (operationType == MetadataOperationType.CREATE) {
-      inMemoryUserDetailsManager.createUser(
-          User.withUsername(userInfo.getUsername())
-              .password(encoder.encode(userInfo.getPwd()))
-              .roles(userInfo.getRole())
-              .build());
-    } else if (operationType == MetadataOperationType.UPDATE) {
-      inMemoryUserDetailsManager.updateUser(
-          User.withUsername(userInfo.getUsername())
-              .password(encoder.encode(userInfo.getPwd()))
-              .roles(userInfo.getRole())
-              .build());
-    } else if (operationType == MetadataOperationType.DELETE) {
-      inMemoryUserDetailsManager.deleteUser(kwMetadataUpdates.getEntityValue());
+    try {
+      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+      if (operationType == MetadataOperationType.CREATE) {
+        inMemoryUserDetailsManager.createUser(
+            User.withUsername(userInfo.getUsername())
+                .password(encoder.encode(decodePwd(userInfo.getPwd())))
+                .roles(userInfo.getRole())
+                .build());
+      } else if (operationType == MetadataOperationType.UPDATE) {
+        inMemoryUserDetailsManager.updateUser(
+            User.withUsername(encoder.encode(decodePwd(userInfo.getUsername())))
+                .password(userInfo.getPwd())
+                .roles(userInfo.getRole())
+                .build());
+      } else if (operationType == MetadataOperationType.DELETE) {
+        inMemoryUserDetailsManager.deleteUser(kwMetadataUpdates.getEntityValue());
+      }
+    } catch (Exception e) {
+      log.error("ERROR : Ignore the error while updating user in inMemory authentication manager");
     }
+  }
+
+  private String decodePwd(String pwd) {
+    if (pwd != null) {
+      return getJasyptEncryptor().decrypt(pwd);
+    } else {
+      return "";
+    }
+  }
+
+  private BasicTextEncryptor getJasyptEncryptor() {
+    BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+    textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
+
+    return textEncryptor;
   }
 
   public String getLoginUrl() {
@@ -704,15 +723,5 @@ public class CommonUtilsService {
         log.error("Error : User not loaded {}. Check password.", userInfo.getUsername(), e);
       }
     }
-  }
-
-  private String decodePwd(String pwd) {
-    if (pwd != null) {
-      BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
-      textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
-
-      return textEncryptor.decrypt(pwd);
-    }
-    return "";
   }
 }
