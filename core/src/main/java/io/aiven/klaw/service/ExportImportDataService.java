@@ -81,8 +81,8 @@ public class ExportImportDataService {
 
   @SchedulerLock(
       name = "TaskScheduler_ImportKlawData",
-      lockAtLeastFor = "PT10M",
-      lockAtMostFor = "PT60M")
+      lockAtLeastFor = "${klaw.shedlock.lockAtLeastFor:PT30M}",
+      lockAtMostFor = "${klaw.shedlock.lockAtMostFor:PT60M}")
   void importData() {
     try {
       if (importMetadata) {

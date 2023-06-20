@@ -42,8 +42,8 @@ public class MigrationUtility {
 
   @SchedulerLock(
       name = "TaskScheduler_MigrationUtility",
-      lockAtLeastFor = "PT10M",
-      lockAtMostFor = "PT60M")
+      lockAtLeastFor = "${klaw.shedlock.lockAtLeastFor:PT30M}",
+      lockAtMostFor = "${klaw.shedlock.lockAtMostFor:PT60M}")
   public void startMigration() throws Exception {
     // Find the latest version in DB
     String latestDataVersion = getLatestDataVersion();

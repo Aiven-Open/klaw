@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@EnableSchedulerLock(defaultLockAtMostFor = "PT30S")
+@EnableSchedulerLock(defaultLockAtMostFor = "${klaw.shedlock.defaultLockAtMostFor:PT30S}")
 @SpringBootApplication(
     exclude = {
       DataSourceAutoConfiguration.class,
