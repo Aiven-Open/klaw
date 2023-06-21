@@ -26,6 +26,7 @@ import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
+import TopicSubscriptionsDetailsModal from "src/app/features/topics/details/subscriptions/components/TopicSubscriptionsDetailsModal";
 import { getTopicStats } from "src/app/features/topics/details/utils";
 import { createAclDeletionRequest } from "src/domain/acl/acl-api";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
@@ -46,12 +47,26 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
 
 const TopicSubscriptions = () => {
   const navigate = useNavigate();
-  const { topicOverview, environmentId, topicName } = useTopicDetails();
+  const {
+    topicOverview,
+    environmentId,
+    topicName,
+    offsetsData,
+    serviceAccountData,
+    setConsumerGroupId,
+    setAclReqNo,
+  } = useTopicDetails();
 
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
     req_no: string | null;
   }>({ isOpen: false, req_no: null });
+
+  const [detailsModal, setDetailsModal] = useState<{
+    isOpen: boolean;
+    isAivenCluster: boolean;
+    aclReqNo?: string;
+  }>({ isOpen: false, isAivenCluster: false, aclReqNo: undefined });
 
   const toast = useToast();
 
@@ -93,6 +108,30 @@ const TopicSubscriptions = () => {
     deleteRequest({ requestId: req_no });
   };
 
+  const openDetailsModal = ({
+    isAivenCluster,
+    aclReqNo,
+    consumerGroupId,
+  }: {
+    isAivenCluster: boolean;
+    aclReqNo: string;
+    consumerGroupId?: string;
+  }) => {
+    setConsumerGroupId(consumerGroupId);
+    setAclReqNo(aclReqNo);
+    setDetailsModal({ isOpen: true, isAivenCluster, aclReqNo });
+  };
+
+  const closeDetailsModal = () => {
+    setConsumerGroupId(undefined);
+    setAclReqNo(undefined);
+    setDetailsModal({
+      isOpen: false,
+      isAivenCluster: false,
+      aclReqNo: undefined,
+    });
+  };
+
   const subsStats = useMemo(() => {
     return getTopicStats(topicOverview);
   }, [topicOverview]);
@@ -123,6 +162,10 @@ const TopicSubscriptions = () => {
     });
   }, [search, teamId, aclType, selectedSubs, topicOverview]);
 
+  const selectedSub = filteredData.find(
+    ({ req_no }) => req_no === detailsModal.aclReqNo
+  );
+
   return (
     <>
       {deleteModal.isOpen && deleteModal.req_no !== null && (
@@ -143,6 +186,15 @@ const TopicSubscriptions = () => {
           Are you sure you want to delete this subscription? This action will
           create a deletion request for approval.
         </Dialog>
+      )}
+      {detailsModal.isOpen && selectedSub !== undefined && (
+        <TopicSubscriptionsDetailsModal
+          closeDetailsModal={closeDetailsModal}
+          isAivenCluster={detailsModal.isAivenCluster}
+          selectedSub={selectedSub}
+          offsetsData={offsetsData}
+          serviceAccountData={serviceAccountData}
+        />
       )}
       <PageHeader
         title="Subscriptions"
@@ -217,6 +269,7 @@ const TopicSubscriptions = () => {
             selectedSubs={selectedSubs}
             filteredData={filteredData}
             onDelete={openDeleteModal}
+            onDetails={openDetailsModal}
           />
         }
       />

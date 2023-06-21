@@ -6,6 +6,7 @@ import {
   StatusChip,
 } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
+import infoIcon from "@aivenio/aquarium/dist/src/icons/infoSign";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 
 type SubscriptionOptions =
@@ -17,6 +18,15 @@ interface TopicSubscriptionsTableProps {
   selectedSubs: SubscriptionOptions;
   filteredData: AclOverviewInfo[];
   onDelete: (req_no: string) => void;
+  onDetails: ({
+    isAivenCluster,
+    aclReqNo,
+    consumerGroupId,
+  }: {
+    isAivenCluster: boolean;
+    aclReqNo: string;
+    consumerGroupId?: string;
+  }) => void;
 }
 
 interface AclInfoListRow {
@@ -28,6 +38,8 @@ interface AclInfoListRow {
   showDeleteAcl: AclOverviewInfo["showDeleteAcl"];
   topicname?: AclOverviewInfo["topicname"];
   transactionalId?: AclOverviewInfo["transactionalId"];
+  consumerGroupId?: AclOverviewInfo["consumergroup"];
+  kafkaFlavorType?: AclOverviewInfo["kafkaFlavorType"];
 }
 
 const getRows = (
@@ -44,6 +56,8 @@ const getRows = (
       showDeleteAcl,
       topicname,
       transactionalId,
+      consumergroup,
+      kafkaFlavorType,
     }) => {
       const row: AclInfoListRow = {
         id: req_no,
@@ -52,6 +66,8 @@ const getRows = (
         aclType: topictype,
         team: teamname,
         showDeleteAcl,
+        consumerGroupId: consumergroup,
+        kafkaFlavorType: kafkaFlavorType,
       };
 
       if (selectedSubs === "prefixedAclInfoList") {
@@ -69,7 +85,8 @@ const getRows = (
 
 const getColumns = (
   selectedSubs: SubscriptionOptions,
-  onDelete: TopicSubscriptionsTableProps["onDelete"]
+  onDelete: TopicSubscriptionsTableProps["onDelete"],
+  onDetails: TopicSubscriptionsTableProps["onDetails"]
 ): Array<DataTableColumn<AclInfoListRow>> => {
   const additionalColumns: {
     [key in
@@ -149,6 +166,26 @@ const getColumns = (
     },
     {
       type: "action",
+      headerName: "Details",
+      headerInvisible: true,
+      width: 30,
+      action: ({ consumerGroupId, kafkaFlavorType, id }) => ({
+        text: "Details",
+        icon: infoIcon,
+        onClick: () => {
+          onDetails({
+            consumerGroupId,
+            aclReqNo: id,
+            isAivenCluster:
+              kafkaFlavorType !== undefined &&
+              kafkaFlavorType === "AIVEN_FOR_APACHE_KAFKA",
+          });
+        },
+        "aria-label": `Show details of request ${id}`,
+      }),
+    },
+    {
+      type: "action",
       headerName: "Delete",
       headerInvisible: true,
       width: 30,
@@ -176,9 +213,10 @@ export const TopicSubscriptionsTable = ({
   selectedSubs,
   filteredData,
   onDelete,
+  onDetails,
 }: TopicSubscriptionsTableProps) => {
   const rows = getRows(selectedSubs, filteredData);
-  const columns = getColumns(selectedSubs, onDelete);
+  const columns = getColumns(selectedSubs, onDelete, onDetails);
 
   return rows.length === 0 ? (
     <EmptyState title="No subscriptions">
