@@ -17,6 +17,8 @@ public class KwMetadataUpdates implements Serializable {
 
   private String entityType;
 
+  private String entityValue;
+
   private String operationType;
 
   private Timestamp createdTime;

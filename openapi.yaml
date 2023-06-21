@@ -722,43 +722,27 @@
         }
       }
     },
-    "/resetMemoryCache/{tenantId}/{entityType}/{operationType}" : {
+    "/resetMemoryCache" : {
       "post" : {
         "tags" : [ "util-controller" ],
         "operationId" : "resetMemoryCache",
-        "parameters" : [ {
-          "name" : "tenantId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        }, {
-          "name" : "entityType",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "operationType",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ResetEntityCache"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
             "content" : {
               "application/json" : {
                 "schema" : {
-                  "type" : "object",
-                  "additionalProperties" : {
-                    "type" : "string"
-                  }
+                  "$ref" : "#/components/schemas/ApiResponse"
                 }
               }
             }
@@ -5770,6 +5754,23 @@
           }
         },
         "required" : [ "connectorId", "connectorName", "documentation" ]
+      },
+      "ResetEntityCache" : {
+        "properties" : {
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "entityType" : {
+            "type" : "string"
+          },
+          "entityValue" : {
+            "type" : "string"
+          },
+          "operationType" : {
+            "type" : "string"
+          }
+        }
       },
       "ResetPasswordInfo" : {
         "properties" : {

@@ -765,7 +765,8 @@ public class AclControllerService {
       }
       // Update team with service account
       manageDatabase.getHandleDbRequests().updateTeam(optionalTeam.get());
-      commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.UPDATE);
+      commonUtilsService.updateMetadata(
+          tenantId, EntityType.TEAM, MetadataOperationType.UPDATE, null);
     }
   }
 
