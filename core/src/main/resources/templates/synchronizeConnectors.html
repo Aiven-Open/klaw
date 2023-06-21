@@ -550,7 +550,7 @@
 											<td><span class="badge badge-success">{{ resultBrowset.environmentName}}</span></td>
 											<td ng-show="resultBrowset.remarks != 'DELETED'">
 												<select class="form-control custom-select" ng-change="updateConnectorDetails(resultBrowset.sequence, resultBrowset.teamName,
-												 resultBrowset.connectorName)"
+												 resultBrowset.connectorName,resultBrowset.connectorId)"
 														ng-model="resultBrowset.teamName" ng-value="resultBrowset.teamName"
 														ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 													<option value="" selected="selected">
@@ -559,7 +559,7 @@
 											</td>
 											<td ng-show="resultBrowset.remarks == 'DELETED'">
 												<select class="form-control custom-select" ng-change="updateConnectorDetails(resultBrowset.sequence, resultBrowset.teamName,
-												 resultBrowset.connectorName)"
+												 resultBrowset.connectorName, resultBrowset.connectorId)"
 														ng-model="resultBrowset.teamName" ng-value="resultBrowset.teamName"
 														ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
 												</select>

@@ -15,10 +15,10 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import lombok.extern.slf4j.Slf4j;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.tuple.Pair;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Slf4j
-public class MigrationUtility implements InitializingBean {
+public class MigrationUtility {
 
   public static final int SUPPORTED_KLAW_VERSION_NUMBER_SYSTEM = 3;
 
@@ -40,9 +40,11 @@ public class MigrationUtility implements InitializingBean {
 
   @Autowired private ApplicationContext context;
 
-  @Override
-  public void afterPropertiesSet() throws Exception {
-
+  @SchedulerLock(
+      name = "TaskScheduler_MigrationUtility",
+      lockAtLeastFor = "${klaw.shedlock.lockAtLeastFor:PT30M}",
+      lockAtMostFor = "${klaw.shedlock.lockAtMostFor:PT60M}")
+  public void startMigration() throws Exception {
     // Find the latest version in DB
     String latestDataVersion = getLatestDataVersion();
     if (!isVersionGreaterThenCurrentVersion(latestDataVersion, currentKlawVersion)) {

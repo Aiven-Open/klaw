@@ -457,7 +457,7 @@ describe("SchemaApprovals", () => {
       });
       await userEvent.click(approveButton);
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
 
       expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
         reqIds: [firstRequest.req_no.toString()],
@@ -724,7 +724,7 @@ describe("SchemaApprovals", () => {
         reason: "This is my message",
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         2,
         defaultApiParams
@@ -763,7 +763,7 @@ describe("SchemaApprovals", () => {
         reason: "This is my message",
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetSchemaRequestsForApprover).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");

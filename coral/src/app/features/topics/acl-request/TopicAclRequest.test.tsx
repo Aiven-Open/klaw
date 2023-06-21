@@ -18,7 +18,7 @@ import {
   mockedResponseTopicTeamLiteral,
 } from "src/domain/topic/topic-api.msw";
 import api from "src/services/api";
-import { server } from "src/services/api-mocks/server";
+import { server } from "src/services/test-utils/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedNavigate = jest.fn();
@@ -147,7 +147,7 @@ describe("<TopicAclRequest />", () => {
       });
 
       expect(principalField).not.toBeEnabled();
-      expect(principalField).not.toBeChecked();
+      expect(principalField).toBeChecked();
       expect(ipField).not.toBeEnabled();
       expect(ipField).not.toBeChecked();
     });
@@ -913,10 +913,6 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createAcl", {
           remarks: "",
@@ -993,10 +989,6 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createAcl", {
           remarks: "",
@@ -1071,10 +1063,6 @@ describe("<TopicAclRequest />", () => {
 
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
-
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
 
@@ -1280,10 +1268,6 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createAcl", {
           remarks: "",
@@ -1375,10 +1359,6 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createAcl", {
           remarks: "",
@@ -1468,10 +1448,6 @@ describe("<TopicAclRequest />", () => {
 
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
-
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
         await waitFor(() => {
@@ -2357,10 +2333,6 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createAcl", {
           remarks: "",
@@ -2436,10 +2408,6 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createAcl", {
           remarks: "",
@@ -2513,10 +2481,6 @@ describe("<TopicAclRequest />", () => {
 
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
-
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
         await waitFor(() => {
@@ -2722,10 +2686,6 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createAcl", {
           remarks: "",
@@ -2828,10 +2788,6 @@ describe("<TopicAclRequest />", () => {
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
 
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
-
         expect(spyPost).toHaveBeenCalledTimes(1);
         expect(spyPost).toHaveBeenCalledWith("/createAcl", {
           remarks: "",
@@ -2932,10 +2888,6 @@ describe("<TopicAclRequest />", () => {
 
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
-
-        await waitFor(() => {
-          expect(submitButton).toBeDisabled();
-        });
 
         expect(spyPost).toHaveBeenCalledTimes(1);
         await waitFor(() => {

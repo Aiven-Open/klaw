@@ -87,19 +87,16 @@ The structure is inspired in big parts by:
     ├── domain/
     │   ├── environment/
     │   │   ├── environment-api.ts
-    │   │   ├── environment-api.msw.ts
     │   │   ├── environment-types.ts
     │   │   └── index.ts
     │   ├── team/
     │   │   ├── team-api.ts
-    │   │   ├── team-api.msw.ts
     │   │   ├── team-types.ts
     │   │   └── index.ts
     └── services/
-        ├── api-mocks/
-        │   ├── browser.ts
-        │   ├── server.ts
-        │   └── types.ts
+        ├── feature-flags/
+        │   ├── utils.test.ts
+        │   └── utils.ts.ts
         ├── api.test.ts
         └── api.ts
         

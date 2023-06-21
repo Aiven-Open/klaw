@@ -91,7 +91,6 @@ const getColumns = (
   const columns: Array<DataTableColumn<AclInfoListRow>> = [
     {
       type: "custom",
-      field: "principals",
       headerName: "Principals/Usernames",
       UNSAFE_render: ({ principals }: AclInfoListRow) => {
         return (
@@ -113,7 +112,6 @@ const getColumns = (
     },
     {
       type: "custom",
-      field: "ips",
       headerName: "IP addresses",
       UNSAFE_render: ({ ips }: AclInfoListRow) => {
         if (ips.length === 0) {
@@ -138,7 +136,6 @@ const getColumns = (
     },
     {
       type: "status",
-      field: "aclType",
       headerName: "ACL type",
       status: ({ aclType }) => ({
         status: aclType === "Consumer" ? "success" : "info",

@@ -40,7 +40,6 @@ function SchemaRequestTable({
     { type: "text", field: "topic", headerName: "Topic" },
     {
       type: "status",
-      field: "environment",
       headerName: "Environment",
       status: ({ environment }) => ({
         status: "neutral",
@@ -49,7 +48,6 @@ function SchemaRequestTable({
     },
     {
       type: "status",
-      field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
         return {
@@ -60,7 +58,6 @@ function SchemaRequestTable({
     },
     {
       type: "status",
-      field: "requestType",
       headerName: "Request type",
       status: ({ requestType }) => {
         return {

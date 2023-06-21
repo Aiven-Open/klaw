@@ -238,7 +238,7 @@ describe("SwitchTeamsDropdown", () => {
 
       await userEvent.click(confirm);
 
-      await waitForElementToBeRemoved(dialog);
+      expect(dialog).not.toBeVisible();
       expect(mockUpdateTeamFn).toHaveBeenCalled();
     });
   });

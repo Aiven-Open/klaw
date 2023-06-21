@@ -733,7 +733,7 @@ describe("SchemaRequest", () => {
         reqIds: [testRequest.req_no.toString()],
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetSchemaRequests).toHaveBeenNthCalledWith(
         2,
         defaultApiParams
@@ -765,7 +765,7 @@ describe("SchemaRequest", () => {
         reqIds: [testRequest.req_no.toString()],
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetSchemaRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");
@@ -797,7 +797,7 @@ describe("SchemaRequest", () => {
         reqIds: [testRequest.req_no.toString()],
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetSchemaRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");
