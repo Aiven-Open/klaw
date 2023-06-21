@@ -350,6 +350,8 @@ public interface HandleDbRequests {
 
   void deleteSchemas(Topic topicObj);
 
+  void deleteSchema(int tenantId, String topicName, String schemaEnv);
+
   String deleteAllUsers(int tenantId);
 
   String deleteAllTeams(int tenantId);

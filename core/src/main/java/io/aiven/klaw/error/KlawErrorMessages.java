@@ -37,6 +37,8 @@ public class KlawErrorMessages {
 
   public static final String SYNC_102 = "REMOVE FROM KLAW";
 
+  public static final String SYNC_103 = "ORPHANED";
+
   // Acl service
   public static final String ACL_ERR_103 = "Failure : Consumer group %s used by another team.";
 

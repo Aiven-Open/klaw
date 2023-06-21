@@ -5642,6 +5642,12 @@
               "type" : "string"
             }
           },
+          "topicListForRemoval" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
           "sourceKafkaEnvSelected" : {
             "type" : "string"
           },
