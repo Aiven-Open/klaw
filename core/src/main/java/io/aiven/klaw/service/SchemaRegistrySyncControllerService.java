@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -502,8 +503,9 @@ public class SchemaRegistrySyncControllerService {
         .success(true)
         .message(
             "Topics/Schemas "
-                + List.of(
-                    syncSchemaUpdates.getTopicList(), syncSchemaUpdates.getSchemaRemovalList()))
+                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicList())
+                + "\nSchemas removed "
+                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getSchemaRemovalList()))
         .build();
   }
 
