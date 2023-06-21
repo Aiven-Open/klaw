@@ -298,7 +298,7 @@ public class SchemaRegistrySyncControllerServiceTest {
             "Topics/Schemas "
                 + syncSchemaUpdates.getTopicList()
                 + "\nSchemas removed "
-                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getSchemaRemovalList()));
+                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicListForRemoval()));
   }
 
   @Test
@@ -436,7 +436,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     syncSchemaUpdates.setSourceKafkaEnvSelected("1");
     syncSchemaUpdates.setTopicList(List.of("2ndTopic"));
     syncSchemaUpdates.setTypeOfSync("SYNC_SCHEMAS");
-    syncSchemaUpdates.setSchemaRemovalList(schemasToBeDeleted);
+    syncSchemaUpdates.setTopicListForRemoval(schemasToBeDeleted);
 
     Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
     kwClustersMap.put(1, utilMethods.getKwClusters());
@@ -460,7 +460,7 @@ public class SchemaRegistrySyncControllerServiceTest {
             "Topics/Schemas "
                 + syncSchemaUpdates.getTopicList()
                 + "\nSchemas removed "
-                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getSchemaRemovalList()));
+                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicListForRemoval()));
 
     verify(handleDbRequests, times(schemasToBeDeleted.size()))
         .deleteSchema(eq(101), anyString(), eq("1"));

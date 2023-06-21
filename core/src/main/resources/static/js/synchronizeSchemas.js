@@ -297,7 +297,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                 return;
             }
             serviceInput['topicList'] = $scope.updatedTopicIdsArray;
-            serviceInput['schemaRemovalList'] = $scope.updatedSchemaDeleteIdsArray;
+            serviceInput['topicListForRemoval'] = $scope.updatedSchemaDeleteIdsArray;
             serviceInput['sourceKafkaEnvSelected'] = $scope.getSchemas.envName;
             serviceInput['typeOfSync'] = 'SYNC_SCHEMAS';
 

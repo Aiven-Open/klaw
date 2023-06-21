@@ -5658,7 +5658,7 @@
               "type" : "string"
             }
           },
-          "schemaRemovalList" : {
+          "topicListForRemoval" : {
             "type" : "array",
             "items" : {
               "type" : "string"

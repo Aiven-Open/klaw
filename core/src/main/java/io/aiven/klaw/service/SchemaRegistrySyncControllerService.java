@@ -491,9 +491,9 @@ public class SchemaRegistrySyncControllerService {
     }
 
     if (syncSchemaUpdates.getTypeOfSync().equalsIgnoreCase("SYNC_SCHEMAS")
-        && syncSchemaUpdates.getSchemaRemovalList() != null) {
-      //This is a list of the Schemas refrenced by the topic that owned them originally.
-      for (String schemaByTopicName : syncSchemaUpdates.getSchemaRemovalList()) {
+        && syncSchemaUpdates.getTopicListForRemoval() != null) {
+      // This is a list of the Schemas refrenced by the topic that owned them originally.
+      for (String schemaByTopicName : syncSchemaUpdates.getTopicListForRemoval()) {
         manageDatabase
             .getHandleDbRequests()
             .deleteSchema(tenantId, schemaByTopicName, kafkaEnv.getAssociatedEnv().getId());
@@ -506,7 +506,7 @@ public class SchemaRegistrySyncControllerService {
             "Topics/Schemas "
                 + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicList())
                 + "\nSchemas removed "
-                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getSchemaRemovalList()))
+                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicListForRemoval()))
         .build();
   }
 
