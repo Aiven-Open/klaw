@@ -86,7 +86,6 @@ export default function AclApprovalsTable({
   const columns: Array<DataTableColumn<AclRequestTableRow>> = [
     {
       type: "custom",
-      field: "topicname",
       headerName: "Topic",
       UNSAFE_render({ topicname, prefixed }: AclRequestTableRow) {
         return (
@@ -99,7 +98,6 @@ export default function AclApprovalsTable({
     },
     {
       type: "status",
-      field: "environmentName",
       headerName: "Environment",
       status: ({ environmentName }) => ({
         status: "neutral",
@@ -108,7 +106,6 @@ export default function AclApprovalsTable({
     },
     {
       type: "status",
-      field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
         return {
@@ -119,7 +116,6 @@ export default function AclApprovalsTable({
     },
     {
       type: "custom",
-      field: "acl_ssl",
       headerName: "Principals/Usernames",
       UNSAFE_render: ({ acl_ssl }: AclRequestTableRow) => {
         return (
@@ -141,7 +137,6 @@ export default function AclApprovalsTable({
     },
     {
       type: "custom",
-      field: "acl_ip",
       headerName: "IP addresses",
       UNSAFE_render: ({ acl_ip }: AclRequestTableRow) => {
         return (
@@ -168,7 +163,6 @@ export default function AclApprovalsTable({
     },
     {
       type: "status",
-      field: "aclType",
       headerName: "ACL type",
       status: ({ aclType }) => ({
         status: aclType === "CONSUMER" ? "success" : "info",
@@ -177,7 +171,6 @@ export default function AclApprovalsTable({
     },
     {
       type: "status",
-      field: "requestOperationType",
       headerName: "Request type",
       status: ({ requestOperationType }) => {
         return {

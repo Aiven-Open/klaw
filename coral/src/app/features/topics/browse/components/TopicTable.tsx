@@ -34,7 +34,6 @@ function TopicTable(props: TopicListProps) {
   const columns: Array<DataTableColumn<TopicsTableRow>> = [
     {
       type: "custom",
-      field: "topicName",
       headerName: "Topic",
       UNSAFE_render: ({ topicName }: TopicsTableRow) => {
         if (!topicDetailsEnabled) {
@@ -53,7 +52,6 @@ function TopicTable(props: TopicListProps) {
     },
     {
       type: "custom",
-      field: "environmentsList",
       headerName: "Environments",
       UNSAFE_render: ({ environmentsList }: TopicsTableRow) => {
         return (
