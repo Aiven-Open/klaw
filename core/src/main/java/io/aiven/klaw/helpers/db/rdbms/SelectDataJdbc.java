@@ -880,6 +880,11 @@ public class SelectDataJdbc {
   }
 
   public List<UserInfo> selectAllUsersInfoForTeam(Integer teamId, int tenantId) {
+    if (log.isDebugEnabled()) {
+      List<UserInfo> team = userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
+      log.debug("For team {} Team Details {} with size {}", teamId, team, team.size());
+      return team;
+    }
     return userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
   }
 
@@ -1460,6 +1465,62 @@ public class SelectDataJdbc {
   }
 
   public int findAllComponentsCountForTeam(Integer teamId, int tenantId) {
+
+    if (log.isDebugEnabled()) {
+      int schemaRequestsRepoCount =
+          ((Long) schemaRequestRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+              .intValue();
+      int messageSchemaRepoCount =
+          ((Long) messageSchemaRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+              .intValue();
+      int kafkaConnectorRepoCount =
+          ((Long) kafkaConnectorRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+              .intValue();
+      int kafkaConnectorRequestsRepoCount =
+          ((Long)
+                  kafkaConnectorRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId)
+                      .get(0)[0])
+              .intValue();
+      int topicRepoCount =
+          ((Long) topicRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue();
+      int topicRequestsRepoCount =
+          ((Long) topicRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+              .intValue();
+      int aclRepoCount =
+          ((Long) aclRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue();
+      int aclRequestRepoCount =
+          ((Long) aclRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
+              .intValue();
+      log.debug(
+          "For team {} Active Schema Requests {}, number of Schemas in DB {}",
+          teamId,
+          schemaRequestsRepoCount,
+          messageSchemaRepoCount);
+      log.debug(
+          "For team {} Active Connector Requests {}, number of Connector in DB {}",
+          teamId,
+          kafkaConnectorRepoCount,
+          kafkaConnectorRequestsRepoCount);
+      log.debug(
+          "For team {} Active Topic Requests {}, number of Topic in DB {}",
+          teamId,
+          topicRepoCount,
+          topicRequestsRepoCount);
+      log.debug(
+          "For team {} Active ACL Requests {}, number of ACL in DB {}",
+          teamId,
+          aclRepoCount,
+          aclRequestRepoCount);
+      // return here instead of doing a second search
+      return schemaRequestsRepoCount
+          + messageSchemaRepoCount
+          + kafkaConnectorRepoCount
+          + kafkaConnectorRequestsRepoCount
+          + topicRepoCount
+          + topicRequestsRepoCount
+          + aclRepoCount
+          + aclRequestRepoCount;
+    }
     return ((Long) schemaRequestRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
             .intValue()
         + ((Long) messageSchemaRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
