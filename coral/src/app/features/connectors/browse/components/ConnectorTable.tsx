@@ -27,7 +27,6 @@ function ConnectorTable(props: ConnectorTableProps) {
   const columns: Array<DataTableColumn<ConnectorTableRow>> = [
     {
       type: "custom",
-      field: "connectorName",
       headerName: "Connector",
       UNSAFE_render: ({ connectorName }: ConnectorTableRow) => (
         <a href={`/connectorOverview?connectorName=${connectorName}`}>
@@ -37,7 +36,6 @@ function ConnectorTable(props: ConnectorTableProps) {
     },
     {
       type: "custom",
-      field: "environmentsList",
       headerName: "Environments",
       UNSAFE_render: ({ environmentsList }: ConnectorTableRow) => {
         return (

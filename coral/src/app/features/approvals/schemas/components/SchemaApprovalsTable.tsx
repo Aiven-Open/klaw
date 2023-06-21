@@ -48,7 +48,6 @@ function SchemaApprovalsTable({
     { type: "text", field: "topicname", headerName: "Topic" },
     {
       type: "status",
-      field: "environmentName",
       headerName: "Environment",
       status: ({ environmentName }) => {
         return {
@@ -59,7 +58,6 @@ function SchemaApprovalsTable({
     },
     {
       type: "status",
-      field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
         return {
@@ -70,7 +68,6 @@ function SchemaApprovalsTable({
     },
     {
       type: "status",
-      field: "requestOperationType",
       headerName: "Request type",
       status: ({ requestOperationType }) => {
         return {
