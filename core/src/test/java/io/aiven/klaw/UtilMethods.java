@@ -22,15 +22,18 @@ import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclPermissionType;
 import io.aiven.klaw.model.enums.AclType;
+import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.requests.ResetEntityCache;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
@@ -1048,5 +1051,14 @@ public class UtilMethods {
       topics.add(topic);
     }
     return topics;
+  }
+
+  public ResetEntityCache getResetEntityCache() {
+    return ResetEntityCache.builder()
+        .tenantId(101)
+        .entityType(EntityType.USERS.name())
+        .entityValue("testuser")
+        .operationType(MetadataOperationType.CREATE.name())
+        .build();
   }
 }
