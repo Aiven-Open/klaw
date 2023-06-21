@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Navigate, useMatches, useOutletContext } from "react-router-dom";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import {
@@ -8,6 +9,14 @@ import {
   TopicOverviewTabEnum,
   isTopicsOverviewTabEnum,
 } from "src/app/router_utils";
+import {
+  getAivenServiceAccountDetails,
+  getConsumerOffsets,
+} from "src/domain/acl/acl-api";
+import {
+  ConsumerOffsets,
+  ServiceAccountDetails,
+} from "src/domain/acl/acl-types";
 import { TopicOverview } from "src/domain/topic";
 import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
 import { TopicSchemaOverview } from "src/domain/topic/topic-types";
@@ -33,6 +42,7 @@ function findMatchingTab(
 function TopicDetails(props: TopicOverviewProps) {
   const { topicName } = props;
 
+  const user = useAuthContext();
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
 
@@ -42,64 +52,94 @@ function TopicDetails(props: TopicOverviewProps) {
   const [schemaVersion, setSchemaVersion] = useState<number | undefined>(
     undefined
   );
+  const [consumerGroupId, setConsumerGroupId] = useState<string | undefined>(
+    undefined
+  );
+
+  const [aclReqNo, setAclReqNo] = useState<string | undefined>(undefined);
 
   const {
     data: topicData,
     isError: topicIsError,
     error: topicError,
     isLoading: topicIsLoading,
+    isFetched: topicDataFetched,
   } = useQuery(["topic-overview", environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
   });
+
+  const {
+    data: offsetsData,
+    isError: offsetsIsError,
+    error: offsetsError,
+    isFetched: offsetDataFetched,
+  } = useQuery(["consumer-offsets", environmentId, consumerGroupId], {
+    queryFn: () => {
+      if (environmentId !== undefined && consumerGroupId !== undefined) {
+        return getConsumerOffsets({
+          topicName,
+          env: environmentId,
+          consumerGroupId,
+        });
+      }
+    },
+    enabled: environmentId !== undefined && consumerGroupId !== undefined,
+  });
+
+  const {
+    data: serviceAccountData,
+    isError: serviceAccountIsError,
+    error: serviceAccountError,
+    isFetched: serviceAccountDataFetched,
+  } = useQuery(
+    [
+      "getAivenServiceAccountDetails",
+      environmentId,
+      topicName,
+      user?.username,
+      aclReqNo,
+    ],
+    {
+      queryFn: () => {
+        if (
+          environmentId !== undefined &&
+          aclReqNo !== undefined &&
+          user?.username !== undefined
+        ) {
+          return getAivenServiceAccountDetails({
+            env: environmentId,
+            topicName,
+            userName: user.username,
+            aclReqNo,
+          });
+        }
+      },
+      enabled: environmentId !== undefined && aclReqNo !== undefined,
+    }
+  );
 
   const {
     data: schemaData,
     isError: schemaIsError,
     error: schemaError,
     isLoading: schemaIsLoading,
-  } = useQuery(
-    [
-      "schema-overview",
-      topicData?.availableEnvironments,
-      environmentId,
-      schemaVersion,
-    ],
-    {
-      queryFn: () => {
-        const getKafkaEnvIds = () => {
-          if (environmentId !== undefined) {
-            return environmentId;
-          }
-          if (topicData?.availableEnvironments[0].id !== undefined) {
-            return topicData?.availableEnvironments[0].id;
-          }
-          return "";
-        };
-
+    isFetched: schemaDataFetched,
+  } = useQuery(["schema-overview", environmentId, schemaVersion], {
+    queryFn: () => {
+      if (environmentId !== undefined) {
         return getSchemaOfTopic({
           topicName,
-          kafkaEnvId: getKafkaEnvIds(),
+          kafkaEnvId: environmentId,
           schemaVersionSearch: schemaVersion,
         });
-      },
-      enabled: topicData?.availableEnvironments !== undefined,
-    }
-  );
+      }
+    },
+    enabled: environmentId !== undefined,
+  });
 
   if (currentTab === undefined) {
     return <Navigate to={`/topic/${topicName}/overview`} replace={true} />;
   }
-
-  // If we rely on isLoading only,
-  // when a user navigates to another topic overview after having previously seen a different topic
-  // the TopicOverviewResourcesTabs rendered data will be stale for a second (showing previous topic data)
-  // while the query is refetching the data
-  // However, using isRefetching is also an issue, because then we will show the loading state every time the user switches environment
-  // Instead of only the first time they switch
-  // This isRefetchingTopicOverview variable ensures that we only show loading state when there is a desync between the topic name in pops
-  // and the topic name in the available data
-  const isRefetchingTopicOverview =
-    topicData?.topicInfo.topicName !== topicName;
 
   return (
     <div>
@@ -112,16 +152,28 @@ function TopicDetails(props: TopicOverviewProps) {
       />
 
       <TopicOverviewResourcesTabs
-        isLoading={
-          topicIsLoading || schemaIsLoading || isRefetchingTopicOverview
+        isLoading={topicIsLoading || schemaIsLoading}
+        isError={
+          topicIsError ||
+          schemaIsError ||
+          offsetsIsError ||
+          serviceAccountIsError
         }
-        isError={topicIsError || schemaIsError}
-        error={topicError || schemaError}
+        error={topicError || schemaError || offsetsError || serviceAccountError}
         currentTab={currentTab}
-        topicOverview={topicData}
         environmentId={environmentId}
+        // These state setters are used refresh the queries with the correct params...
+        // ...when a user selects schema version / clicks on Details action in Subscription tab
         setSchemaVersion={setSchemaVersion}
-        topicSchemas={schemaData}
+        setConsumerGroupId={setConsumerGroupId}
+        setAclReqNo={setAclReqNo}
+        // We pass undefined when data is not fetched to avoid flash of stale data in the UI
+        topicOverview={topicDataFetched ? topicData : undefined}
+        topicSchemas={schemaDataFetched ? schemaData : undefined}
+        offsetsData={offsetDataFetched ? (offsetsData || [])[0] : undefined}
+        serviceAccountData={
+          serviceAccountDataFetched ? serviceAccountData : undefined
+        }
       />
     </div>
   );
@@ -131,9 +183,13 @@ function useTopicDetails() {
   return useOutletContext<{
     environmentId: string;
     setSchemaVersion: (id: number) => void;
+    setConsumerGroupId: (id?: string) => void;
+    setAclReqNo: (aclReqNo?: string) => void;
     topicOverview: TopicOverview;
     topicName: string;
     topicSchemas: TopicSchemaOverview;
+    offsetsData?: ConsumerOffsets;
+    serviceAccountData?: ServiceAccountDetails;
   }>();
 }
 

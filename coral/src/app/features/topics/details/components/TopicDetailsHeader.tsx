@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import {
   Box,
   Button,
@@ -7,9 +6,10 @@ import {
   Option,
   Typography,
 } from "@aivenio/aquarium";
-import { EnvironmentInfo } from "src/domain/environment";
-import { Dispatch, SetStateAction } from "react";
 import database from "@aivenio/aquarium/dist/src/icons/database";
+import { Dispatch, SetStateAction, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { EnvironmentInfo } from "src/domain/environment";
 
 type TopicOverviewHeaderProps = {
   topicName: string;
@@ -27,6 +27,18 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
     setEnvironmentId,
     topicExists,
   } = props;
+
+  // The call to getConsumerOffsets in TopicDetails needs an environmentId
+  // But on first load, environmentId is undefined
+  // So we need to set it in this way, to be able to fetch correctly
+  // Ideally, environmentId should be available on first load
+  // Because this setEnvironmentId will trigger a superfluous refetch of getTopicOverview
+  // @TODO: find a better way to have the initial env of the Topic overview be the lowest env, instead of undefined
+  useEffect(() => {
+    if (environments !== undefined && environmentId === undefined) {
+      setEnvironmentId(environments[0].id);
+    }
+  }, [environments, environmentId, setEnvironmentId]);
 
   const navigate = useNavigate();
 
@@ -56,7 +68,7 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
           {environments && topicExists && (
             <NativeSelectBase
               aria-label={"Select environment"}
-              value={environmentId || environments[0]?.id}
+              value={environmentId}
               onChange={(event) => {
                 setEnvironmentId(event.target.value);
               }}
@@ -84,13 +96,13 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
 
         {topicExists && environments && environments.length > 0 && (
           <Box display={"flex"} alignItems={"center"} colGap={"2"}>
-            <Typography.SmallTextBold color={"grey-40"}>
+            <Typography.SmallStrong color={"grey-40"}>
               <Icon icon={database} />
-            </Typography.SmallTextBold>
-            <Typography.SmallTextBold color={"grey-40"}>
+            </Typography.SmallStrong>
+            <Typography.SmallStrong color={"grey-40"}>
               {environments.length}{" "}
               {environments.length === 1 ? "Environment" : "Environments"}
-            </Typography.SmallTextBold>
+            </Typography.SmallStrong>
           </Box>
         )}
       </Box>

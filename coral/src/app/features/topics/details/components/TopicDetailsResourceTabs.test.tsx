@@ -13,6 +13,8 @@ jest.mock("react-router-dom", () => ({
 }));
 
 const mockSetSchemaVersion = jest.fn();
+const mockSetConsumerGroupId = jest.fn();
+const mockSetAclReqNo = jest.fn();
 
 const testMapTabs = [
   {
@@ -135,6 +137,19 @@ const testTopicOverview: TopicOverview = {
   topicIdForDocumentation: 1,
 };
 
+const testOffsetsData = {
+  topicPartitionId: "0",
+  currentOffset: "0",
+  endOffset: "0",
+  lag: "0",
+};
+
+const testServiceAccountData = {
+  username: "nkira",
+  password: "service-account-pw",
+  accountFound: true,
+};
+
 const defaultProps = {
   currentTab: TopicOverviewTabEnum.OVERVIEW,
   environmentId: "1",
@@ -143,6 +158,10 @@ const defaultProps = {
   topicName: testTopicName,
   topicOverview: testTopicOverview,
   setSchemaVersion: mockSetSchemaVersion,
+  setConsumerGroupId: mockSetConsumerGroupId,
+  setAclReqNo: mockSetAclReqNo,
+  offsetsData: testOffsetsData,
+  serviceAccountData: testServiceAccountData,
 };
 describe("TopicDetailsResourceTabs", () => {
   const user = userEvent.setup();

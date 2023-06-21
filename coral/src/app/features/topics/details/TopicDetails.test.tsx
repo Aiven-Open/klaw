@@ -1,10 +1,14 @@
 import { cleanup, screen, waitFor } from "@testing-library/react";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
-import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
-import { TopicOverview } from "src/domain/topic";
-import userEvent from "@testing-library/user-event";
 import { within } from "@testing-library/react/pure";
+import userEvent from "@testing-library/user-event";
+import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
+import {
+  getAivenServiceAccountDetails,
+  getConsumerOffsets,
+} from "src/domain/acl/acl-api";
+import { TopicOverview } from "src/domain/topic";
+import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockUseParams = jest.fn();
 const mockMatches = jest.fn();
@@ -24,6 +28,16 @@ const mockGetTopicOverview = getTopicOverview as jest.MockedFunction<
 const mockGetSchemaOfTopic = getSchemaOfTopic as jest.MockedFunction<
   typeof getSchemaOfTopic
 >;
+
+jest.mock("src/domain/acl/acl-api");
+
+const mockGetConsumerOffsets = getConsumerOffsets as jest.MockedFunction<
+  typeof getConsumerOffsets
+>;
+const mockGetAivenServiceAccountDetails =
+  getAivenServiceAccountDetails as jest.MockedFunction<
+    typeof getAivenServiceAccountDetails
+  >;
 
 const testTopicName = "my-nice-topic";
 const testTopicOverview: TopicOverview = {
@@ -162,29 +176,29 @@ describe("TopicDetails", () => {
   });
 
   describe("fetches the topic overview based on topic name", () => {
-    beforeEach(() => {
+    beforeAll(() => {
       mockMatches.mockImplementation(() => [
         {
           id: "TOPIC_OVERVIEW_TAB_ENUM_overview",
         },
       ]);
-
-      customRender(<TopicDetails topicName={testTopicName} />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
     });
 
-    afterEach(() => {
+    afterAll(() => {
       cleanup();
       jest.resetAllMocks();
     });
 
-    it("fetches the data when user goes on page", async () => {
+    it("fetches topic overview and schema data on first load of page", async () => {
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
       expect(mockGetTopicOverview).toHaveBeenCalledWith({
         topicName: testTopicName,
         environmentId: undefined,
       });
+
       // This is a dependent query relying on mockGetTopicOverview to have finished fetching
       // So we need to await
       await waitFor(() =>
@@ -195,7 +209,21 @@ describe("TopicDetails", () => {
       );
     });
 
+    it("does not fetch consumer offsets and service account data when user goes on page", async () => {
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+      expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
+      expect(mockGetAivenServiceAccountDetails).not.toHaveBeenCalled();
+    });
+
     it("fetches the data anew when user changes environment", async () => {
+      customRender(<TopicDetails topicName={testTopicName} />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+
       const select = await screen.findByRole("combobox", {
         name: "Select environment",
       });
@@ -205,18 +233,20 @@ describe("TopicDetails", () => {
         testTopicOverview.availableEnvironments[1].name
       );
 
-      expect(mockGetTopicOverview).toHaveBeenNthCalledWith(2, {
-        topicName: testTopicName,
-        environmentId: testTopicOverview.availableEnvironments[1].id,
-      });
-      // This is a dependent query relying on mockGetTopicOverview to have finished fetching
-      // So we need to await
       await waitFor(() =>
-        expect(mockGetSchemaOfTopic).toHaveBeenNthCalledWith(2, {
+        expect(mockGetTopicOverview).toHaveBeenCalledWith({
           topicName: testTopicName,
-          kafkaEnvId: testTopicOverview.availableEnvironments[1].id,
+          environmentId: testTopicOverview.availableEnvironments[1].id,
         })
       );
+      // This is a dependent query relying on mockGetTopicOverview to have finished fetching
+      // So we need to await
+      await waitFor(() => {
+        expect(mockGetSchemaOfTopic).toHaveBeenCalledWith({
+          topicName: testTopicName,
+          kafkaEnvId: testTopicOverview.availableEnvironments[1].id,
+        });
+      });
     });
   });
 
