@@ -1,10 +1,9 @@
-import { TopicSettings } from "src/app/features/topics/details/settings/TopicSettings";
+import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { TopicSettings } from "src/app/features/topics/details/settings/TopicSettings";
+import { TopicOverview, deleteTopic } from "src/domain/topic";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { Context as AquariumContext } from "@aivenio/aquarium";
-import { deleteTopic, TopicOverview } from "src/domain/topic";
-import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { KlawApiModel } from "types/utils";
 
 const mockedNavigate = jest.fn();
@@ -495,7 +494,7 @@ describe("TopicSettings", () => {
         topicName: testTopicName,
       });
       expect(mockedNavigate).toHaveBeenCalledWith("/topics");
-      await waitForElementToBeRemoved(dialog);
+      expect(dialog).not.toBeVisible();
       expect(console.error).not.toHaveBeenCalled();
     });
 
@@ -531,7 +530,7 @@ describe("TopicSettings", () => {
         topicName: testTopicName,
       });
       expect(mockedNavigate).toHaveBeenCalledWith("/topics");
-      await waitForElementToBeRemoved(dialog);
+      expect(dialog).not.toBeVisible();
       expect(console.error).not.toHaveBeenCalled();
     });
 
@@ -563,7 +562,7 @@ describe("TopicSettings", () => {
       });
 
       expect(mockedNavigate).not.toHaveBeenCalled();
-      await waitForElementToBeRemoved(dialog);
+      expect(dialog).not.toBeVisible();
 
       const errorMessage = screen.getByRole("alert");
 

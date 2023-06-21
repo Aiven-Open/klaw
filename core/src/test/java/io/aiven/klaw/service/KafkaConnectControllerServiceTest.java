@@ -178,7 +178,7 @@ public class KafkaConnectControllerServiceTest {
   @Order(5)
   public void createClaimConnectorRequest() throws KlawException {
     Set<String> envListIds = new HashSet<>();
-    envListIds.add("DEV");
+    envListIds.add("1");
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
@@ -396,18 +396,130 @@ public class KafkaConnectControllerServiceTest {
             eq(true));
   }
 
+  @Test
+  @Order(11)
+  public void getClaimRequests_WhereConnectorIsDeleted() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    List<KafkaConnectorRequest> connectorRequests = generateKafkaConnectorRequests(9);
+    connectorRequests.addAll(generateKafkaConnectorRequests(1, 7, RequestOperationType.CLAIM));
+    when(handleDbRequests.getAllConnectorRequests(
+            anyString(),
+            eq(null),
+            eq(RequestStatus.CREATED),
+            eq(null),
+            eq(null),
+            eq(101),
+            eq(false)))
+        .thenReturn(connectorRequests);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    List<KafkaConnectorRequestsResponseModel> ordered_response =
+        kafkaConnectControllerService.getConnectorRequests(
+            "1",
+            "1",
+            RequestStatus.CREATED,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
+            null,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (KafkaConnectorRequestsResponseModel req : ordered_response) {
+      if (req.getRequestOperationType().equals(RequestOperationType.CLAIM)) {
+        assertThat(req.getRemarks())
+            .isEqualTo("This Connector is not found in Klaw. Please contact your Administrator.");
+      }
+      // assert That each new Request time is older than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) >= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
+  @Test
+  @Order(12)
+  public void getClaimRequests_WhereConnectorIsNotDeleted() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    List<KafkaConnectorRequest> connectorRequests = generateKafkaConnectorRequests(9);
+    connectorRequests.addAll(generateKafkaConnectorRequests(1, 7, RequestOperationType.CLAIM));
+    when(handleDbRequests.getAllConnectorRequests(
+            anyString(),
+            eq(null),
+            eq(RequestStatus.CREATED),
+            eq(null),
+            eq(null),
+            eq(101),
+            eq(false)))
+        .thenReturn(connectorRequests);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
+        .thenReturn("1", "2");
+    when(handleDbRequests.getConnectorsFromName(eq("Conn0"), eq(101)))
+        .thenReturn(List.of(getKwKafkaConnector()));
+    List<KafkaConnectorRequestsResponseModel> ordered_response =
+        kafkaConnectControllerService.getConnectorRequests(
+            "1",
+            "1",
+            RequestStatus.CREATED,
+            null,
+            null,
+            io.aiven.klaw.model.enums.Order.DESC_REQUESTED_TIME,
+            null,
+            false);
+
+    assertThat(ordered_response).hasSize(10);
+
+    Timestamp origReqTime = ordered_response.get(0).getRequesttime();
+
+    for (KafkaConnectorRequestsResponseModel req : ordered_response) {
+      if (req.getRequestOperationType().equals(RequestOperationType.CLAIM)) {
+        assertThat(req.getRemarks())
+            .isNotEqualTo(
+                "This Connector is not found in Klaw. Please contact your Administrator.");
+      }
+      // assert That each new Request time is older than or equal to the previous request
+      assertThat(origReqTime.compareTo(req.getRequesttime()) >= 0).isTrue();
+      origReqTime = req.getRequesttime();
+    }
+  }
+
   private static List<KafkaConnectorRequest> generateKafkaConnectorRequests(int number) {
+    return generateKafkaConnectorRequests(number, 8);
+  }
+
+  private static List<KafkaConnectorRequest> generateKafkaConnectorRequests(
+      int number, int teamId) {
+    return generateKafkaConnectorRequests(number, 8, RequestOperationType.DELETE);
+  }
+
+  private static List<KafkaConnectorRequest> generateKafkaConnectorRequests(
+      int number, int teamId, RequestOperationType type) {
     List<KafkaConnectorRequest> reqs = new ArrayList<>();
     for (int i = 0; i < number; i++) {
       KafkaConnectorRequest req = new KafkaConnectorRequest();
       req.setConnectorId(i);
       req.setConnectorName("Conn" + i);
       req.setRequesttime(new Timestamp(System.currentTimeMillis() - (3600000 * i)));
-      req.setRequestOperationType(RequestOperationType.DELETE.value);
+      req.setRequestOperationType(type.value);
+      req.setRequestStatus("CREATED");
       req.setEnvironment("1");
       req.setEnvironmentName("DEV");
       reqs.add(req);
-      req.setTeamId(8);
+      req.setTeamId(teamId);
       req.setTenantId(101);
     }
     return reqs;
@@ -427,7 +539,7 @@ public class KafkaConnectControllerServiceTest {
     KwKafkaConnector connector = new KwKafkaConnector();
     connector.setConnectorId(2);
     connector.setConnectorName("ConnectorOne");
-    connector.setEnvironment("DEV");
+    connector.setEnvironment("1");
     connector.setDescription("My Desc");
     connector.setTeamId(8);
     connector.setTenantId(101);

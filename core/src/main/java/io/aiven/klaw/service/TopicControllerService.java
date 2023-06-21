@@ -607,14 +607,23 @@ public class TopicControllerService {
         if (topicRequestModel.getRequestOperationType() != null
             && RequestOperationType.CLAIM == topicRequestModel.getRequestOperationType()) {
           List<Topic> topics = getTopicFromName(topicRequestModel.getTopicname(), tenantId);
-          topicRequestModel.setApprovingTeamDetails(
-              updateApproverInfo(
-                  manageDatabase
-                      .getHandleDbRequests()
-                      .getAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
-                  manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
-                  approverRoles,
-                  topicRequestModel.getRequestor()));
+          if (!topics.isEmpty()) {
+            topicRequestModel.setApprovingTeamDetails(
+                updateApproverInfo(
+                    manageDatabase
+                        .getHandleDbRequests()
+                        .getAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
+                    manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
+                    approverRoles,
+                    topicRequestModel.getRequestor()));
+          } else {
+            log.warn(
+                "Request Exists for Topic {} in env {} and Topic does not exist.",
+                topicReq.getTopicname(),
+                topicReq.getEnvironmentName());
+            topicRequestModel.setRemarks(
+                "This topic is not found in Klaw. Please contact your Administrator.");
+          }
         } else {
           topicRequestModel.setApprovingTeamDetails(
               updateApproverInfo(
@@ -1363,7 +1372,6 @@ public class TopicControllerService {
 
   public List<Topic> getTopicFromName(String topicName, int tenantId) {
     List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
-
     // tenant filtering
     topics = commonUtilsService.getFilteredTopicsForTenant(topics);
     return topics;

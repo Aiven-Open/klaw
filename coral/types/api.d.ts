@@ -72,6 +72,9 @@ export type paths = {
   "/saveConnectorDocumentation": {
     post: operations["saveConnectorDocumentation"];
   };
+  "/resetMemoryCache/{tenantId}/{entityType}/{operationType}": {
+    post: operations["resetMemoryCache"];
+  };
   "/reset/token": {
     post: operations["resetToken"];
   };
@@ -233,9 +236,6 @@ export type paths = {
   };
   "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}": {
     get: operations["getSchemaOfTopicFromSource"];
-  };
-  "/resetMemoryCache/{tenantName}/{entityType}/{operationType}": {
-    get: operations["resetMemoryCache"];
   };
   "/resetCache": {
     get: operations["resetCache"];
@@ -584,6 +584,7 @@ export type components = {
     };
     SyncConnectorUpdates: {
       sequence?: string;
+      connectorId?: string;
       req_no?: string;
       connectorName?: string;
       teamSelected?: string;
@@ -1936,6 +1937,25 @@ export type operations = {
       };
     };
   };
+  resetMemoryCache: {
+    parameters: {
+      path: {
+        tenantId: number;
+        entityType: string;
+        operationType: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": {
+            [key: string]: string | undefined;
+          };
+        };
+      };
+    };
+  };
   resetToken: {
     parameters: {
       query: {
@@ -2745,25 +2765,6 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["SchemaDetailsResponse"];
-        };
-      };
-    };
-  };
-  resetMemoryCache: {
-    parameters: {
-      path: {
-        tenantName: string;
-        entityType: string;
-        operationType: string;
-      };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
         };
       };
     };

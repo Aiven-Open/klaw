@@ -676,7 +676,7 @@ describe("ConnectorRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetConnectorRequests).toHaveBeenNthCalledWith(2, {
         pageNo: "1",
         search: "",
@@ -714,7 +714,7 @@ describe("ConnectorRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetConnectorRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");
@@ -749,7 +749,7 @@ describe("ConnectorRequests", () => {
         reqIds: ["1000"],
       });
 
-      await waitForElementToBeRemoved(modal);
+      expect(modal).not.toBeVisible();
       expect(mockGetConnectorRequests).not.toHaveBeenCalledTimes(2);
 
       const error = screen.getByRole("alert");

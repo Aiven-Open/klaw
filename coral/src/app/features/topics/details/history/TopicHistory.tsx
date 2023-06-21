@@ -23,7 +23,6 @@ function TopicHistory() {
   const columns: Array<DataTableColumn<TopicHistoryRow>> = [
     {
       type: "status",
-      field: "logs",
       headerName: "Logs",
       status: ({ logs }) => ({
         status: "neutral",

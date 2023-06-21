@@ -32,6 +32,7 @@
         <node.version>v18.12.1</node.version>
         <npm.version>8.19.2</npm.version>
         <pnpm.version>7.14.0</pnpm.version>
+        <shedlock.version>5.4.0</shedlock.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
         <springdoc-openapi-ui.version>2.1.0</springdoc-openapi-ui.version>
@@ -138,6 +139,16 @@
         <dependency>
             <groupId>org.liquibase</groupId>
             <artifactId>liquibase-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-spring</artifactId>
+            <version>${shedlock.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-provider-jdbc-template</artifactId>
+            <version>${shedlock.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>

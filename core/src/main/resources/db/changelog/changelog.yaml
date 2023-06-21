@@ -1069,3 +1069,26 @@ databaseChangeLog:
                     name: schemaid
                     type: INT
               tableName: kwavroschemas
+    - changeSet:
+        id: 19-06-2023 Table for Scheduler Lock
+        author: muralibasani
+        changes:
+          - createTable:
+              columns:
+                - column:
+                    constraints:
+                      nullable: false
+                      primaryKey: true
+                      primaryKeyName: SLCK_NAME
+                    name: NAME
+                    type: VARCHAR2(255)
+                - column:
+                    name: lock_until
+                    type: TIMESTAMP
+                - column:
+                    name: locked_at
+                    type: TIMESTAMP
+                - column:
+                    name: locked_by
+                    type: VARCHAR2(255)
+              tableName: kwshedlock

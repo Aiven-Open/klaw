@@ -17,6 +17,7 @@ import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
 import java.io.*;
+import java.net.InetAddress;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -25,6 +26,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +39,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
@@ -51,6 +54,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Service
 @Slf4j
 public class CommonUtilsService {
+
+  public static final String BASE_URL_ADDRESS = "BASE_URL_ADDRESS";
+  public static final String BASE_URL_NAME = "BASE_URL_NAME";
 
   @Value("${klaw.enable.authorization.ad:false}")
   private boolean enableUserAuthorizationFromAD;
@@ -70,7 +76,11 @@ public class CommonUtilsService {
   @Value("${klaw.saas.ssl.clusterapi.truststore.pwd:./tmp}")
   private String trustStorePwd;
 
+  @Autowired Environment environment;
+
   @Autowired ManageDatabase manageDatabase;
+
+  private static Map<String, String> baseUrlsMap;
 
   private static HttpComponentsClientHttpRequestFactory requestFactory =
       ClusterApiService.requestFactory;
@@ -292,7 +302,7 @@ public class CommonUtilsService {
             .operationType(operationType.name())
             .createdTime(new Timestamp(System.currentTimeMillis()))
             .build();
-    updateMetadata(kwMetadataUpdates);
+    updateMetadataCache(kwMetadataUpdates);
 
     try {
       CompletableFuture.runAsync(
@@ -305,7 +315,7 @@ public class CommonUtilsService {
     }
   }
 
-  public synchronized void updateMetadata(KwMetadataUpdates kwMetadataUpdates) {
+  public synchronized void updateMetadataCache(KwMetadataUpdates kwMetadataUpdates) {
     final EntityType entityType = EntityType.of(kwMetadataUpdates.getEntityType());
     if (entityType == null) {
       return;
@@ -358,34 +368,53 @@ public class CommonUtilsService {
           + kwContextPath;
   }
 
+  public Map<String, String> getBaseIpUrlFromEnvironment() {
+    if (baseUrlsMap != null && !baseUrlsMap.isEmpty()) {
+      return baseUrlsMap;
+    } else {
+      baseUrlsMap = new HashMap<>();
+      String hostAddress = InetAddress.getLoopbackAddress().getHostAddress();
+      String hostName = InetAddress.getLoopbackAddress().getHostName();
+      int port = Integer.parseInt(Objects.requireNonNull(environment.getProperty("server.port")));
+
+      baseUrlsMap.put(BASE_URL_ADDRESS, hostAddress + ":" + port);
+      baseUrlsMap.put(BASE_URL_NAME, hostName + ":" + port);
+      return baseUrlsMap;
+    }
+  }
+
   public void resetCacheOnOtherServers(KwMetadataUpdates kwMetadataUpdates) {
     log.info("invokeResetEndpoints");
     try {
-      String tenantName =
-          manageDatabase
-              .getHandleDbRequests()
-              .getMyTenants(kwMetadataUpdates.getTenantId())
-              .get()
-              .getTenantName();
-
-      // if property is null refresh memory directly
       if (uiApiServers != null && uiApiServers.length() > 0) {
-        updateMetadata(kwMetadataUpdates);
-      } else {
-        String[] servers = new String[0];
-        if (uiApiServers != null) {
-          servers = uiApiServers.split(",");
-        }
-
+        String[] servers = uiApiServers.split(",");
         String basePath;
         for (String server : servers) {
 
-          if ("".equals(kwContextPath)) basePath = server;
-          else basePath = server + "/" + kwContextPath;
+          if ("".equals(kwContextPath)) {
+            basePath = server;
+          } else {
+            basePath = server + "/" + kwContextPath;
+          }
+
+          Map<String, String> baseUrlsFromEnv = getBaseIpUrlFromEnvironment();
+
+          // ignore metadata cache reset on local.
+          if (baseUrlsFromEnv != null && !baseUrlsFromEnv.isEmpty()) {
+            if (baseUrlsFromEnv.containsKey(BASE_URL_ADDRESS)
+                && basePath.contains(baseUrlsFromEnv.get(BASE_URL_ADDRESS))) {
+              continue;
+            }
+            if (baseUrlsFromEnv.containsKey(BASE_URL_NAME)
+                && basePath.contains(baseUrlsFromEnv.get(BASE_URL_NAME))) {
+              continue;
+            }
+          }
+
           String uri =
               basePath
                   + "/resetMemoryCache/"
-                  + tenantName
+                  + kwMetadataUpdates.getTenantId()
                   + "/"
                   + kwMetadataUpdates.getEntityType()
                   + "/"
@@ -398,7 +427,7 @@ public class CommonUtilsService {
           headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
           HttpEntity<String> entity = new HttpEntity<>(headers);
 
-          restTemplate.exchange(uri, HttpMethod.GET, entity, String.class);
+          restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
         }
       }
 
