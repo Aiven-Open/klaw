@@ -5,7 +5,6 @@
 - [Frontend Testing](frontend-testing.md)
 - [Accessibility for FE app](accessibility.md)
 - [Development with a remote API](development-with-remote-api.md)
-- [Development without a remote API: mocking an API](mock-api-for-development.md)
 - [Feature flags](feature-flags.md)
 
 ## Tip

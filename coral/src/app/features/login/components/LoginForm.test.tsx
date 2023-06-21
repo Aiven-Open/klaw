@@ -2,7 +2,7 @@ import { LoginForm } from "src/app/features/login/components/LoginForm";
 import { screen, waitFor, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { server } from "src/services/api-mocks/server";
+import { server } from "src/services/test-utils/api-mocks/server";
 import {
   mockUserAuthRequest,
   correctUsername,

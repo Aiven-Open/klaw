@@ -2,7 +2,7 @@ import {
   getTopicRequestsForApprover,
   requestTopic,
 } from "src/domain/topic/topic-api";
-import { server } from "src/services/api-mocks/server";
+import { server } from "src/services/test-utils/api-mocks/server";
 import api from "src/services/api";
 import {
   mockGetTopicRequestsForApprover,
