@@ -576,6 +576,7 @@
 											<th width = "25%">Team</th>
 											<th width = "15%">Info</th>
 											<th width = "10%">Sync to Klaw</th>
+											<th width = "10%"></th>
 										</tr>
 										</thead>
 										<tbody>
@@ -588,7 +589,15 @@
 											</td>
 
 											<td>
-												{{ resultBrowset.teamname }}
+												<select ng-show="resultBrowset.remarks == 'ORPHANED'" class="form-control custom-select" ng-change="removeSchema(resultBrowset.teamname, resultBrowset.topic)"
+														ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
+														ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
+													<option value="resultBrowset.teamname" selected="selected">
+														Select Team</option>
+													<option value="REMOVE FROM KLAW" title="Delete the metadata from Klaw. The schema will still exist on the cluster"> </option>
+												</select>
+
+												<div ng-show="resultBrowset.remarks != 'ORPHANED'">{{ resultBrowset.teamname }}</div>
 											</td>
 
 											<td ng-show="resultBrowset.remarks == 'NOT_IN_SYNC'">
@@ -604,7 +613,18 @@
 													<span class="tooltip-content3">Schema synchronized.</span>
 												</a>
 											</td>
-
+											<td ng-show="resultBrowset.remarks == 'ORPHANED'">
+												<a class="mytooltip" href="javascript:void(0)" style="color:green;">
+													<i class="fa fa-exclamation-circle" aria-hidden="true" style="color: #ff0000;"></i>
+													<span class="tooltip-content3">Schema Orphaned from Topic.</span>
+												</a>
+											</td>
+											<td ng-show="resultBrowset.remarks != 'ORPHANED' && resultBrowset.remarks != 'IN_SYNC' && resultBrowset.remarks != 'NOT_IN_SYNC'">
+												<a class="mytooltip" href="javascript:void(0)" style="color:green;">
+													<i class="fa fa-plus-circle" aria-hidden="true" style="color: #169b62;"></i>
+													<span class="tooltip-content3">New Schema on Cluster</span>
+												</a>
+											</td>
 											<td><label class="custom-control custom-checkbox">
 												<input type="checkbox" value="false" ng-click="updateTopicIds(resultBrowset.topic, syncTopicCbId[$index].topicname);"
 													   ng-init="syncTopicCbId[$index].topicname=false" ng-model="syncTopicCbId[$index].topicname" class="custom-control-input">

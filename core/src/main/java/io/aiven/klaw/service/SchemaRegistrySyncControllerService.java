@@ -2,6 +2,8 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.SCH_SYNC_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.SCH_SYNC_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_103;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -261,6 +263,21 @@ public class SchemaRegistrySyncControllerService {
             schemaSubjectInfoResponse,
             topicSchemaVersionsInDb.get(schemaSubjectInfoResponse.getTopic()));
         updatedList.add(schemaSubjectInfoResponse);
+      } else {
+        List<MessageSchema> sch =
+            manageDatabase
+                .getHandleDbRequests()
+                .getSchemaForTenantAndEnvAndTopic(
+                    tenantId, schemaEnvId, schemaSubjectInfoResponse.getTopic());
+        if (!sch.isEmpty()) {
+          schemaSubjectInfoResponse.setTeamId(sch.get(0).getTeamId());
+          schemaSubjectInfoResponse.setTeamname(
+              manageDatabase.getTeamNameFromTeamId(tenantId, sch.get(0).getTeamId()));
+          schemaSubjectInfoResponse.setPossibleTeams(
+              List.of(schemaSubjectInfoResponse.getTeamname(), SYNC_102));
+          schemaSubjectInfoResponse.setRemarks(SYNC_103);
+        }
+        updatedList.add(schemaSubjectInfoResponse);
       }
     }
     return updatedList;
@@ -291,7 +308,7 @@ public class SchemaRegistrySyncControllerService {
   }
 
   public ApiResponse updateSyncSchemas(SyncSchemaUpdates syncSchemaUpdates) throws Exception {
-    log.info("syncSchemaUpdates {}", syncSchemaUpdates);
+    log.debug("syncSchemaUpdates {}", syncSchemaUpdates);
 
     if (syncSchemaUpdates.getTypeOfSync().equals(PermissionType.SYNC_SCHEMAS.name())) {
       return updateSyncSchemasToMetadata(syncSchemaUpdates);
@@ -472,9 +489,21 @@ public class SchemaRegistrySyncControllerService {
       manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(schemaList);
     }
 
+    if (syncSchemaUpdates.getTypeOfSync().equalsIgnoreCase("SYNC_SCHEMAS")
+        && syncSchemaUpdates.getSchemaRemovalList() != null) {
+      for (String schema : syncSchemaUpdates.getSchemaRemovalList()) {
+        manageDatabase
+            .getHandleDbRequests()
+            .deleteSchema(tenantId, schema, kafkaEnv.getAssociatedEnv().getId());
+      }
+    }
+
     return ApiResponse.builder()
         .success(true)
-        .message("Topics/Schemas " + syncSchemaUpdates.getTopicList())
+        .message(
+            "Topics/Schemas "
+                + List.of(
+                    syncSchemaUpdates.getTopicList(), syncSchemaUpdates.getSchemaRemovalList()))
         .build();
   }
 
@@ -568,7 +597,12 @@ public class SchemaRegistrySyncControllerService {
         mp.setTotalNoPages(totalPages + "");
         mp.setAllPageNos(numList);
         mp.setCurrentPage(pageNo);
-        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId()));
+        mp.setTeamname(
+            mp.getTeamname() == null
+                ? manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId())
+                : mp.getTeamname());
+        mp.setPossibleTeams(
+            mp.getPossibleTeams() == null ? List.of(mp.getTeamname()) : mp.getPossibleTeams());
         pagedTopicSyncList.add(mp);
       }
     }
