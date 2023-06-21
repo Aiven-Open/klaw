@@ -492,10 +492,11 @@ public class SchemaRegistrySyncControllerService {
 
     if (syncSchemaUpdates.getTypeOfSync().equalsIgnoreCase("SYNC_SCHEMAS")
         && syncSchemaUpdates.getSchemaRemovalList() != null) {
-      for (String schema : syncSchemaUpdates.getSchemaRemovalList()) {
+      //This is a list of the Schemas refrenced by the topic that owned them originally.
+      for (String schemaByTopicName : syncSchemaUpdates.getSchemaRemovalList()) {
         manageDatabase
             .getHandleDbRequests()
-            .deleteSchema(tenantId, schema, kafkaEnv.getAssociatedEnv().getId());
+            .deleteSchema(tenantId, schemaByTopicName, kafkaEnv.getAssociatedEnv().getId());
       }
     }
 
