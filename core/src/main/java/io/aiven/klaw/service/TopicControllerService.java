@@ -962,12 +962,10 @@ public class TopicControllerService {
           commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
       Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
       if (Objects.equals(topicOwnerTeamId, loggedInUserTeamId)) {
-
         String status = manageDatabase.getHandleDbRequests().updateTopicDocumentation(topic);
-
         if (status.equals(ApiResultStatus.SUCCESS.value)) {
           commonUtilsService.updateMetadata(
-              tenantId, EntityType.TOPICS, MetadataOperationType.UPDATE);
+              tenantId, EntityType.TOPICS, MetadataOperationType.UPDATE, null);
         }
         return ApiResponse.builder()
             .success(status.equals(ApiResultStatus.SUCCESS.value))
