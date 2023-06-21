@@ -393,8 +393,8 @@ public class CommonUtilsService {
                 .build());
       } else if (operationType == MetadataOperationType.UPDATE) {
         inMemoryUserDetailsManager.updateUser(
-            User.withUsername(encoder.encode(decodePwd(userInfo.getUsername())))
-                .password(userInfo.getPwd())
+            User.withUsername(userInfo.getUsername())
+                .password(encoder.encode(decodePwd(userInfo.getPwd())))
                 .roles(userInfo.getRole())
                 .build());
       } else if (operationType == MetadataOperationType.DELETE) {

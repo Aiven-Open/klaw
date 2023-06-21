@@ -70,13 +70,12 @@ public class UtilController {
   }
 
   @RequestMapping(
-      value = "/resetMemoryCache/",
+      value = "/resetMemoryCache",
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<Map<String, String>> resetMemoryCache(
+  public ResponseEntity<io.aiven.klaw.model.ApiResponse> resetMemoryCache(
       @Valid @RequestBody ResetEntityCache resetEntityCache) {
-    utilControllerService.resetCache(resetEntityCache);
-    return new ResponseEntity<>(new HashMap<>(), HttpStatus.OK);
+    return new ResponseEntity<>(utilControllerService.resetCache(resetEntityCache), HttpStatus.OK);
   }
 
   @GetMapping("/shutdownContext")

@@ -1,15 +1,20 @@
 package io.aiven.klaw.controller;
 
+import static io.aiven.klaw.controller.TopicControllerTest.OBJECT_MAPPER;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestMode;
+import io.aiven.klaw.model.requests.ResetEntityCache;
 import io.aiven.klaw.model.response.AuthenticationInfo;
 import io.aiven.klaw.model.response.RequestsCountOverview;
 import io.aiven.klaw.service.RequestStatisticsService;
@@ -84,5 +89,20 @@ public class UtilControllerTest {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.requestEntityStatistics", hasSize(5)));
+  }
+
+  @Test
+  public void resetMemoryCache() throws Exception {
+    ResetEntityCache resetEntityCache = utilMethods.getResetEntityCache();
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(resetEntityCache);
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    when(utilControllerService.resetCache(eq(resetEntityCache))).thenReturn(apiResponse);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/resetMemoryCache")
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
   }
 }
