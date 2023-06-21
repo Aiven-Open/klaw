@@ -630,6 +630,7 @@ export type components = {
     };
     SyncSchemaUpdates: {
       topicList?: (string)[];
+      schemaRemovalList?: (string)[];
       sourceKafkaEnvSelected?: string;
       targetKafkaEnvSelected?: string;
       topicsSelectionType?: string;
