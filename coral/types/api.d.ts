@@ -72,7 +72,7 @@ export type paths = {
   "/saveConnectorDocumentation": {
     post: operations["saveConnectorDocumentation"];
   };
-  "/resetMemoryCache/{tenantId}/{entityType}/{operationType}": {
+  "/resetMemoryCache": {
     post: operations["resetMemoryCache"];
   };
   "/reset/token": {
@@ -667,6 +667,13 @@ export type components = {
       connectorId: number;
       connectorName: string;
       documentation: string;
+    };
+    ResetEntityCache: {
+      /** Format: int32 */
+      tenantId?: number;
+      entityType?: string;
+      entityValue?: string;
+      operationType?: string;
     };
     ResetPasswordInfo: {
       tokenSent: boolean;
@@ -1937,20 +1944,16 @@ export type operations = {
     };
   };
   resetMemoryCache: {
-    parameters: {
-      path: {
-        tenantId: number;
-        entityType: string;
-        operationType: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ResetEntityCache"];
       };
     };
     responses: {
       /** @description OK */
       200: {
         content: {
-          "application/json": {
-            [key: string]: string | undefined;
-          };
+          "application/json": components["schemas"]["ApiResponse"];
         };
       };
     };

@@ -2,6 +2,7 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
@@ -16,6 +17,7 @@ import io.aiven.klaw.model.charts.Title;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.requests.ResetEntityCache;
 import java.io.*;
 import java.net.InetAddress;
 import java.security.KeyStore;
@@ -31,22 +33,27 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -76,6 +83,12 @@ public class CommonUtilsService {
   @Value("${klaw.saas.ssl.clusterapi.truststore.pwd:./tmp}")
   private String trustStorePwd;
 
+  @Value("${klaw.jasypt.encryptor.secretkey}")
+  private String encryptorSecretKey;
+
+  @Value("${klaw.login.authentication.type}")
+  private String authenticationType;
+
   @Autowired Environment environment;
 
   @Autowired ManageDatabase manageDatabase;
@@ -90,6 +103,9 @@ public class CommonUtilsService {
 
   @Value("${server.servlet.context-path:}")
   private String kwContextPath;
+
+  @Autowired(required = false)
+  private InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
   private RestTemplate getRestTemplate() {
     if (uiApiServers.toLowerCase().startsWith("https")) return new RestTemplate(requestFactory);
@@ -294,15 +310,19 @@ public class CommonUtilsService {
   }
 
   public void updateMetadata(
-      int tenantId, EntityType entityType, MetadataOperationType operationType) {
+      int tenantId,
+      EntityType entityType,
+      MetadataOperationType operationType,
+      String entityValue) {
     KwMetadataUpdates kwMetadataUpdates =
         KwMetadataUpdates.builder()
             .tenantId(tenantId)
             .entityType(entityType.name())
+            .entityValue(entityValue)
             .operationType(operationType.name())
             .createdTime(new Timestamp(System.currentTimeMillis()))
             .build();
-    updateMetadataCache(kwMetadataUpdates);
+    updateMetadataCache(kwMetadataUpdates, true);
 
     try {
       CompletableFuture.runAsync(
@@ -315,7 +335,8 @@ public class CommonUtilsService {
     }
   }
 
-  public synchronized void updateMetadataCache(KwMetadataUpdates kwMetadataUpdates) {
+  public synchronized void updateMetadataCache(
+      KwMetadataUpdates kwMetadataUpdates, boolean isLocal) {
     final EntityType entityType = EntityType.of(kwMetadataUpdates.getEntityType());
     if (entityType == null) {
       return;
@@ -324,6 +345,9 @@ public class CommonUtilsService {
         MetadataOperationType.of(kwMetadataUpdates.getOperationType());
     if (entityType == EntityType.USERS) {
       manageDatabase.loadUsersForAllTenants();
+      if (DATABASE.value.equals(authenticationType) && !isLocal) {
+        updateInMemoryAuthenticationManager(kwMetadataUpdates, operationType);
+      }
     } else if (entityType == EntityType.TEAM) {
       manageDatabase.loadEnvsForOneTenant(kwMetadataUpdates.getTenantId());
       manageDatabase.loadTenantTeamsForOneTenant(null, kwMetadataUpdates.getTenantId());
@@ -353,6 +377,47 @@ public class CommonUtilsService {
     } else if (entityType == EntityType.TOPICS) {
       manageDatabase.loadTopicsForOneTenant(kwMetadataUpdates.getTenantId());
     }
+  }
+
+  private void updateInMemoryAuthenticationManager(
+      KwMetadataUpdates kwMetadataUpdates, MetadataOperationType operationType) {
+    UserInfo userInfo =
+        manageDatabase.getHandleDbRequests().getUsersInfo(kwMetadataUpdates.getEntityValue());
+    try {
+      PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+      if (operationType == MetadataOperationType.CREATE) {
+        inMemoryUserDetailsManager.createUser(
+            User.withUsername(userInfo.getUsername())
+                .password(encoder.encode(decodePwd(userInfo.getPwd())))
+                .roles(userInfo.getRole())
+                .build());
+      } else if (operationType == MetadataOperationType.UPDATE) {
+        inMemoryUserDetailsManager.updateUser(
+            User.withUsername(userInfo.getUsername())
+                .password(encoder.encode(decodePwd(userInfo.getPwd())))
+                .roles(userInfo.getRole())
+                .build());
+      } else if (operationType == MetadataOperationType.DELETE) {
+        inMemoryUserDetailsManager.deleteUser(kwMetadataUpdates.getEntityValue());
+      }
+    } catch (Exception e) {
+      log.error("ERROR : Ignore the error while updating user in inMemory authentication manager");
+    }
+  }
+
+  private String decodePwd(String pwd) {
+    if (pwd != null) {
+      return getJasyptEncryptor().decrypt(pwd);
+    } else {
+      return "";
+    }
+  }
+
+  private BasicTextEncryptor getJasyptEncryptor() {
+    BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
+    textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
+
+    return textEncryptor;
   }
 
   public String getLoginUrl() {
@@ -411,26 +476,31 @@ public class CommonUtilsService {
             }
           }
 
-          String uri =
-              basePath
-                  + "/resetMemoryCache/"
-                  + kwMetadataUpdates.getTenantId()
-                  + "/"
-                  + kwMetadataUpdates.getEntityType()
-                  + "/"
-                  + kwMetadataUpdates.getOperationType();
-          RestTemplate restTemplate = getRestTemplate();
+          if (kwMetadataUpdates.getEntityValue() == null) {
+            kwMetadataUpdates.setEntityValue("na");
+          }
+
+          String uri = basePath + "/resetMemoryCache/";
+
+          ResetEntityCache resetEntityCache =
+              ResetEntityCache.builder()
+                  .tenantId(kwMetadataUpdates.getTenantId())
+                  .entityType(kwMetadataUpdates.getEntityType())
+                  .entityValue(kwMetadataUpdates.getEntityValue())
+                  .operationType(kwMetadataUpdates.getOperationType())
+                  .build();
 
           HttpHeaders headers = new HttpHeaders();
           headers.setContentType(MediaType.APPLICATION_JSON);
-
           headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-          HttpEntity<String> entity = new HttpEntity<>(headers);
 
-          restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
+          HttpEntity<ResetEntityCache> request = new HttpEntity<>(resetEntityCache, headers);
+          ResponseEntity<Object> response =
+              getRestTemplate()
+                  .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
+          log.info("Response from invokeResetEndpoints" + response);
         }
       }
-
     } catch (Exception e) {
       log.error("Error from invokeResetEndpoints ", e);
     }
@@ -630,13 +700,5 @@ public class CommonUtilsService {
               });
         });
     return subTopicsList;
-  }
-
-  public String getKafkaEnvName(String envId, int tenantId) {
-    Optional<Env> envFound =
-        manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(env -> Objects.equals(env.getId(), envId))
-            .findFirst();
-    return envFound.map(Env::getName).orElse(null);
   }
 }

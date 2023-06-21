@@ -235,7 +235,8 @@ public class UsersTeamsControllerService {
 
       String result = dbHandle.updateUser(existingUserInfo);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.UPDATE);
+        commonUtilsService.updateMetadata(
+            tenantId, EntityType.USERS, MetadataOperationType.UPDATE, newUser.getUsername());
       }
       return ApiResponse.builder()
           .success(result.equals(ApiResultStatus.SUCCESS.value))
@@ -473,7 +474,8 @@ public class UsersTeamsControllerService {
               .deleteTeamRequest(teamId, commonUtilsService.getTenantId(getUserName()));
 
       if (ApiResultStatus.SUCCESS.value.equals(result)) {
-        commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.DELETE);
+        commonUtilsService.updateMetadata(
+            tenantId, EntityType.TEAM, MetadataOperationType.DELETE, null);
       }
 
       return ApiResponse.builder()
@@ -521,6 +523,10 @@ public class UsersTeamsControllerService {
     try {
       inMemoryUserDetailsManager.deleteUser(userIdToDelete);
       String result = manageDatabase.getHandleDbRequests().deleteUserRequest(userIdToDelete);
+      if (result.equals(ApiResultStatus.SUCCESS.value)) {
+        commonUtilsService.updateMetadata(
+            tenantId, EntityType.USERS, MetadataOperationType.DELETE, userIdToDelete);
+      }
       return ApiResponse.builder()
           .success(result.equals(ApiResultStatus.SUCCESS.value))
           .message(result)
@@ -601,7 +607,8 @@ public class UsersTeamsControllerService {
 
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
         tenantId = commonUtilsService.getTenantId(getUserName());
-        commonUtilsService.updateMetadata(tenantId, EntityType.USERS, MetadataOperationType.CREATE);
+        commonUtilsService.updateMetadata(
+            tenantId, EntityType.USERS, MetadataOperationType.CREATE, newUser.getUsername());
       }
 
       if (isExternal) {
@@ -692,7 +699,8 @@ public class UsersTeamsControllerService {
     try {
       String res = manageDatabase.getHandleDbRequests().addNewTeam(team);
       if (ApiResultStatus.SUCCESS.value.equals(res)) {
-        commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.CREATE);
+        commonUtilsService.updateMetadata(
+            tenantId, EntityType.TEAM, MetadataOperationType.CREATE, null);
       }
       return ApiResponse.builder()
           .success(res.equals(ApiResultStatus.SUCCESS.value))
@@ -736,7 +744,8 @@ public class UsersTeamsControllerService {
 
     try {
       String res = manageDatabase.getHandleDbRequests().updateTeam(team);
-      commonUtilsService.updateMetadata(tenantId, EntityType.TEAM, MetadataOperationType.UPDATE);
+      commonUtilsService.updateMetadata(
+          tenantId, EntityType.TEAM, MetadataOperationType.UPDATE, null);
       return ApiResponse.builder()
           .success(res.equals(ApiResultStatus.SUCCESS.value))
           .message(res)
