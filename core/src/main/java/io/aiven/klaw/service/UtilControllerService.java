@@ -18,8 +18,10 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.ResetEntityCache;
 import io.aiven.klaw.model.response.AuthenticationInfo;
 import io.aiven.klaw.model.response.DashboardStats;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,6 +54,7 @@ import org.springframework.stereotype.Service;
 public class UtilControllerService implements InitializingBean {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+  public static final String ANONYMOUS_USER = "anonymousUser";
   public static final String IMAGE_URI = ".imageURI";
   public static final String CORAL_INDEX_FILE_PATH = "classpath:templates/coral/index.html";
   @Autowired ManageDatabase manageDatabase;
@@ -702,16 +705,25 @@ public class UtilControllerService implements InitializingBean {
     return ssoProviders;
   }
 
-  public void resetCache(
-      int tenantId, String entityType, String entityValue, String operationType) {
+  public void resetCache(ResetEntityCache resetEntityCache) {
+    String entityType = resetEntityCache.getEntityType();
     KwMetadataUpdates kwMetadataUpdates =
         KwMetadataUpdates.builder()
-            .tenantId(tenantId)
-            .entityType(entityType)
-            .entityValue(entityValue)
-            .operationType(operationType)
+            .tenantId(resetEntityCache.getTenantId())
+            .entityType(resetEntityCache.getEntityType())
+            .entityValue(resetEntityCache.getEntityValue())
+            .operationType(resetEntityCache.getOperationType())
             .createdTime(new Timestamp(System.currentTimeMillis()))
             .build();
+    if (getUserName().equals(ANONYMOUS_USER)) {
+      // continue with the request
+    } else if (entityType.equals(EntityType.USERS.name())
+        && commonUtilsService.isNotAuthorizedUser(
+            getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+      return;
+    }
+    log.debug("Reset cache triggered on the instance {}", resetEntityCache);
+
     try {
       CompletableFuture.runAsync(
               () -> {

@@ -17,6 +17,7 @@ import io.aiven.klaw.model.charts.Title;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.requests.ResetEntityCache;
 import java.io.*;
 import java.net.InetAddress;
 import java.security.KeyStore;
@@ -40,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -478,28 +480,27 @@ public class CommonUtilsService {
             kwMetadataUpdates.setEntityValue("na");
           }
 
-          String uri =
-              basePath
-                  + "/resetMemoryCache/"
-                  + kwMetadataUpdates.getTenantId()
-                  + "/"
-                  + kwMetadataUpdates.getEntityType()
-                  + "/"
-                  + kwMetadataUpdates.getEntityValue()
-                  + "/"
-                  + kwMetadataUpdates.getOperationType();
-          RestTemplate restTemplate = getRestTemplate();
+          String uri = basePath + "/resetMemoryCache/";
+
+          ResetEntityCache resetEntityCache =
+              ResetEntityCache.builder()
+                  .tenantId(kwMetadataUpdates.getTenantId())
+                  .entityType(kwMetadataUpdates.getEntityType())
+                  .entityValue(kwMetadataUpdates.getEntityValue())
+                  .operationType(kwMetadataUpdates.getOperationType())
+                  .build();
 
           HttpHeaders headers = new HttpHeaders();
           headers.setContentType(MediaType.APPLICATION_JSON);
-
           headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-          HttpEntity<String> entity = new HttpEntity<>(headers);
 
-          restTemplate.exchange(uri, HttpMethod.POST, entity, String.class);
+          HttpEntity<ResetEntityCache> request = new HttpEntity<>(resetEntityCache, headers);
+          ResponseEntity<Object> response =
+              getRestTemplate()
+                  .exchange(uri, HttpMethod.POST, request, new ParameterizedTypeReference<>() {});
+          log.info("Response from invokeResetEndpoints" + response);
         }
       }
-
     } catch (Exception e) {
       log.error("Error from invokeResetEndpoints ", e);
     }

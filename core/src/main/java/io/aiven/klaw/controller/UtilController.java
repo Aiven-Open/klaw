@@ -1,6 +1,7 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.model.enums.RequestMode;
+import io.aiven.klaw.model.requests.ResetEntityCache;
 import io.aiven.klaw.model.response.AuthenticationInfo;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.model.response.RequestsCountOverview;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -68,15 +70,12 @@ public class UtilController {
   }
 
   @RequestMapping(
-      value = "/resetMemoryCache/{tenantId}/{entityType}/{entityValue}/{operationType}",
+      value = "/resetMemoryCache/",
       method = RequestMethod.POST,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Map<String, String>> resetMemoryCache(
-      @PathVariable int tenantId,
-      @PathVariable String entityType,
-      @PathVariable String entityValue,
-      @PathVariable String operationType) {
-    utilControllerService.resetCache(tenantId, entityType, entityValue, operationType);
+      @Valid @RequestBody ResetEntityCache resetEntityCache) {
+    utilControllerService.resetCache(resetEntityCache);
     return new ResponseEntity<>(new HashMap<>(), HttpStatus.OK);
   }
 
