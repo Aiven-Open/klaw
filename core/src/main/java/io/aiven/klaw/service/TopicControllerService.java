@@ -961,9 +961,16 @@ public class TopicControllerService {
           commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
       Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
       if (Objects.equals(topicOwnerTeamId, loggedInUserTeamId)) {
+
+        String status = manageDatabase.getHandleDbRequests().updateTopicDocumentation(topic);
+
+        if (status.equals(ApiResultStatus.SUCCESS.value)) {
+          commonUtilsService.updateMetadata(
+              tenantId, EntityType.TOPICS, MetadataOperationType.UPDATE);
+        }
         return ApiResponse.builder()
-            .success(true)
-            .message(manageDatabase.getHandleDbRequests().updateTopicDocumentation(topic))
+            .success(status.equals(ApiResultStatus.SUCCESS.value))
+            .message(status)
             .build();
       } else {
         return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
