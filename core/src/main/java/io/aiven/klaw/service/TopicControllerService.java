@@ -734,7 +734,7 @@ public class TopicControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
-    //Starts as success as their may be no schema related to this topic.
+    // Starts as success as their may be no schema related to this topic.
     String schemaUpdateStatus = ApiResultStatus.SUCCESS.value;
     if (RequestOperationType.CLAIM.value.equals(topicRequest.getRequestOperationType())) {
       List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
@@ -760,11 +760,13 @@ public class TopicControllerService {
       }
 
       if (!updatedSchemas.isEmpty()) {
-        schemaUpdateStatus = manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(updatedSchemas);
+        schemaUpdateStatus =
+            manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(updatedSchemas);
       }
 
       updateTopicReqStatus = dbHandle.addToSynctopics(allTopics);
-      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus) && ApiResultStatus.SUCCESS.value.equalsIgnoreCase(schemaUpdateStatus)) {
+      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus)
+          && ApiResultStatus.SUCCESS.value.equalsIgnoreCase(schemaUpdateStatus)) {
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userName);
       }
     } else {
@@ -790,8 +792,11 @@ public class TopicControllerService {
     }
 
     return ApiResponse.builder()
-        .success((updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value) && ApiResultStatus.SUCCESS.value.equalsIgnoreCase(schemaUpdateStatus)))
-        .message("Topic Status: " + updateTopicReqStatus + ", TopicSchemaStatus: " +schemaUpdateStatus)
+        .success(
+            (updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)
+                && ApiResultStatus.SUCCESS.value.equalsIgnoreCase(schemaUpdateStatus)))
+        .message(
+            "Topic Status: " + updateTopicReqStatus + ", TopicSchemaStatus: " + schemaUpdateStatus)
         .build();
   }
 

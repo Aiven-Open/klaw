@@ -69,7 +69,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 public class TopicControllerServiceTest {
 
   public static final String TOPIC_1 = "topic1";
-  public static final String EXPECTED_SUCCESS_RESPONSE = "Topic Status: success, TopicSchemaStatus: success";
+  public static final String EXPECTED_SUCCESS_RESPONSE =
+      "Topic Status: success, TopicSchemaStatus: success";
   @Mock private ClusterApiService clusterApiService;
 
   @Mock private UserDetails userDetails;
@@ -782,7 +783,8 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests("" + topicId);
-    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: failure, TopicSchemaStatus: success");
+    assertThat(apiResponse1.getMessage())
+        .isEqualTo("Topic Status: failure, TopicSchemaStatus: success");
   }
 
   @Test
@@ -1430,9 +1432,9 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
-            .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-            .thenReturn(List.of(getTopic(topicName)));
+        .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
             anyString(),
             anyString(),
@@ -1442,19 +1444,20 @@ public class TopicControllerServiceTest {
             any(),
             anyInt(),
             anyBoolean()))
-            .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-            .thenReturn(new HashSet<>(Collections.singletonList("1")));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
-            .thenReturn(List.of(getTopic(topicName)));
+        .thenReturn(List.of(getTopic(topicName)));
     when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.updateTopicRequestStatus(any(), anyString()))
-            .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(manageDatabase.getSchemaRegEnvList(eq(0))).thenReturn(List.of(env));
-    when(manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
-    when(handleDbRequests
-            .getSchemaForTenantAndEnvAndTopic(
-                    eq(0), eq("1"), eq(topicRequest.getTopicname()))).thenReturn(getSchemas(2));
+    when(manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(any()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.getSchemaForTenantAndEnvAndTopic(
+            eq(0), eq("1"), eq(topicRequest.getTopicname())))
+        .thenReturn(getSchemas(2));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
     assertThat(apiResponse1.getMessage()).isEqualTo(EXPECTED_SUCCESS_RESPONSE);
@@ -1472,9 +1475,9 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
-            .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-            .thenReturn(List.of(getTopic(topicName)));
+        .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
             anyString(),
             anyString(),
@@ -1484,29 +1487,31 @@ public class TopicControllerServiceTest {
             any(),
             anyInt(),
             anyBoolean()))
-            .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-            .thenReturn(new HashSet<>(Collections.singletonList("1")));
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
-            .thenReturn(List.of(getTopic(topicName)));
+        .thenReturn(List.of(getTopic(topicName)));
     when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(handleDbRequests.updateTopicRequestStatus(any(), anyString()))
-            .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(ApiResultStatus.SUCCESS.value);
     when(manageDatabase.getSchemaRegEnvList(eq(0))).thenReturn(List.of(env));
-    when(manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(any())).thenReturn(ApiResultStatus.FAILURE.value);
-    when(handleDbRequests
-            .getSchemaForTenantAndEnvAndTopic(
-                    eq(0), eq("1"), eq(topicRequest.getTopicname()))).thenReturn(getSchemas(2));
+    when(manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(any()))
+        .thenReturn(ApiResultStatus.FAILURE.value);
+    when(handleDbRequests.getSchemaForTenantAndEnvAndTopic(
+            eq(0), eq("1"), eq(topicRequest.getTopicname())))
+        .thenReturn(getSchemas(2));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: success, TopicSchemaStatus: failure");
+    assertThat(apiResponse1.getMessage())
+        .isEqualTo("Topic Status: success, TopicSchemaStatus: failure");
   }
 
   private List<MessageSchema> getSchemas(int number) {
     List<MessageSchema> schemas = new ArrayList<>();
-    for(int i=0;i<number;i++) {
+    for (int i = 0; i < number; i++) {
       MessageSchema schema = new MessageSchema();
-      schema.setSchemaId(i+1);
+      schema.setSchemaId(i + 1);
       schema.setTenantId(101);
       schema.setTopicname(TOPIC_1);
       schemas.add(schema);
