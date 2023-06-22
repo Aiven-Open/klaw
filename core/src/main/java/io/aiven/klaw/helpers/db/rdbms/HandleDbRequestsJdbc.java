@@ -912,6 +912,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public MessageSchema getTeamIdFromSchemaNameAndEnvAndTenantId(
+      String schemaName, String envId, int tenantId) {
+    return jdbcSelectHelper.getTeamIdFromSchemaNameAndEnvAndTenantId(schemaName, envId, tenantId);
+  }
+
+  @Override
   public int getAllTopicsCountInAllTenants() {
     return jdbcSelectHelper.getAllTopicsCountInAllTenants();
   }

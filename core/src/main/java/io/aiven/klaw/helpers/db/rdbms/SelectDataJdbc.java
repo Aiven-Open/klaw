@@ -1744,6 +1744,18 @@ public class SelectDataJdbc {
     return allCountsMap;
   }
 
+  public MessageSchema getTeamIdFromSchemaNameAndEnvAndTenantId(
+      String schemaName, String envId, int tenantId) {
+    List<MessageSchema> schema =
+        messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(tenantId, schemaName, envId);
+    if (schema.isEmpty() || schema.size() > 1) {
+
+      return null;
+    } else {
+      return schema.get(0);
+    }
+  }
+
   private void updateCountsForNonExistingRequestTypes(
       Map<String, Long> operationTypeCountsMap, Map<String, Long> statusCountsMap) {
     for (RequestStatus requestStatus : RequestStatus.values()) {

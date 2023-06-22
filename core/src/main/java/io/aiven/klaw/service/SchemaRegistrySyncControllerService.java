@@ -26,7 +26,6 @@ import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -169,7 +168,22 @@ public class SchemaRegistrySyncControllerService {
         schemaInfo.setTeamId(topic.getTeamId());
 
         schemaInfoList.add(schemaInfo);
+        topicSchemaVersionsInDb.remove(topic.getTopicname());
       }
+    }
+    // Add Orphaned Schemas
+    Set<Map.Entry<String, Set<String>>> schemaNames = topicSchemaVersionsInDb.entrySet();
+    for (Map.Entry<String, Set<String>> schemadDetail : schemaNames) {
+      Set<Integer> schemaVersionsInt = new TreeSet<>();
+      schemadDetail.getValue().forEach(ver -> schemaVersionsInt.add(Integer.parseInt(ver)));
+      SchemaSubjectInfoResponse schemaInfo = new SchemaSubjectInfoResponse();
+
+      schemaInfo.setTopic(schemadDetail.getKey());
+      schemaInfo.setSchemaVersions(schemaVersionsInt);
+      schemaInfo.setEnvId(schemaEnvId);
+      schemaInfo.setRemarks(SYNC_103);
+
+      schemaInfoList.add(schemaInfo);
     }
 
     return schemaInfoList;
@@ -273,14 +287,13 @@ public class SchemaRegistrySyncControllerService {
 
       for (SchemaSubjectInfoResponse schemaInfo : schemaInfoList) {
         SchemaInfoOfTopic clusterSchema = schemas.get(schemaInfo.getTopic());
+        log.info(
+            " Schema NAme {} , cluster entry {}",
+            schemaInfo.getTopic(),
+            schemas.get(schemaInfo.getTopic()));
         // Missing From Cluster
         if (clusterSchema == null) {
           schemaInfo.setRemarks(NOT_ON_CLUSTER);
-          schemaInfo.setTeamname(
-              schemaInfo.getTeamname() == null
-                  ? manageDatabase.getTeamNameFromTeamId(tenantId, schemaInfo.getTeamId())
-                  : schemaInfo.getTeamname());
-          schemaInfo.setPossibleTeams(Arrays.asList(schemaInfo.getTeamname(), SYNC_102));
         } else if (clusterSchema != null) {
           // Schema version differences
           if (!(schemaInfo.getSchemaVersions().size() == clusterSchema.getSchemaVersions().size()
@@ -330,8 +343,6 @@ public class SchemaRegistrySyncControllerService {
           schemaSubjectInfoResponse.setTeamId(sch.get(0).getTeamId());
           schemaSubjectInfoResponse.setTeamname(
               manageDatabase.getTeamNameFromTeamId(tenantId, sch.get(0).getTeamId()));
-          schemaSubjectInfoResponse.setPossibleTeams(
-              List.of(schemaSubjectInfoResponse.getTeamname(), SYNC_102));
           schemaSubjectInfoResponse.setRemarks(SYNC_103);
         }
         updatedList.add(schemaSubjectInfoResponse);
@@ -656,18 +667,37 @@ public class SchemaRegistrySyncControllerService {
         mp.setTotalNoPages(totalPages + "");
         mp.setAllPageNos(numList);
         mp.setCurrentPage(pageNo);
+        mp.setTeamId(mp.getTeamId() == 0 ? getTeamIdFromDb(tenantId, mp) : mp.getTeamId());
         mp.setTeamname(
-            mp.getTeamname() == null
+            StringUtils.isEmpty(mp.getTeamname())
                 ? manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId())
                 : mp.getTeamname());
-        log.info("PossibleTeams: {} ", mp.getPossibleTeams());
-        mp.setPossibleTeams(
-            mp.getPossibleTeams() == null ? List.of(mp.getTeamname()) : mp.getPossibleTeams());
-        log.info("PossibleTeams After: {} ", mp.getPossibleTeams());
+        mp.setPossibleTeams(setPossibleTeams(mp));
         pagedTopicSyncList.add(mp);
       }
     }
     return pagedTopicSyncList;
+  }
+
+  private static List<String> setPossibleTeams(SchemaSubjectInfoResponse mp) {
+    if (!StringUtils.isEmpty(mp.getRemarks())
+        && (mp.getRemarks().equals(SYNC_103) || mp.getRemarks().equals(NOT_ON_CLUSTER))) {
+      return List.of(mp.getTeamname(), SYNC_102);
+    }
+    return List.of(mp.getTeamname());
+  }
+
+  private Integer getTeamIdFromDb(int tenantId, SchemaSubjectInfoResponse mp) {
+    MessageSchema schema =
+        manageDatabase
+            .getHandleDbRequests()
+            .getTeamIdFromSchemaNameAndEnvAndTenantId(
+                mp.getTopic(), String.valueOf(mp.getEnvId()), tenantId);
+    if (schema != null) {
+      return schema.getTeamId();
+    } else {
+      return mp.getTeamId();
+    }
   }
 
   private String getUserName() {
