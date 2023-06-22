@@ -26,6 +26,7 @@ import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SchemaSubjectInfoResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -33,8 +34,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,6 +49,8 @@ import org.springframework.stereotype.Service;
 public class SchemaRegistrySyncControllerService {
 
   public static final String NOT_IN_SYNC = "NOT_IN_SYNC";
+  public static final String NOT_ON_CLUSTER = "NOT_ON_CLUSTER";
+  public static final String VERSIONS_NOT_IN_SYNC = "VERSIONS_NOT_IN_SYNC";
   public static final String IN_SYNC = "IN_SYNC";
   public static final String SOURCE_METADATA = "metadata";
   public static final String SOURCE_CLUSTER = "cluster";
@@ -125,6 +131,8 @@ public class SchemaRegistrySyncControllerService {
       schemaInfoList =
           schemaInfoList.stream().filter(schema -> schema.getTeamId() == teamId).toList();
     }
+
+    schemaInfoList = annotateSchemasNotInCluster(schemaInfoList, schemaEnvId, tenantId);
 
     schemaInfoList = getPagedResponse(pageNo, currentPage, schemaInfoList, tenantId);
     syncSchemasList.setSchemaSubjectInfoResponseList(schemaInfoList);
@@ -241,6 +249,54 @@ public class SchemaRegistrySyncControllerService {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
     }
+  }
+
+  private List<SchemaSubjectInfoResponse> annotateSchemasNotInCluster(
+      List<SchemaSubjectInfoResponse> schemaInfoList, String schemaId, int tenantId) {
+
+    Env schemaEnvSelected = manageDatabase.getHandleDbRequests().getEnvDetails(schemaId, tenantId);
+    KwClusters kwClusters =
+        manageDatabase
+            .getClusters(KafkaClustersType.SCHEMA_REGISTRY, tenantId)
+            .get(schemaEnvSelected.getClusterId());
+    try {
+      SchemasInfoOfClusterResponse schemasInfoOfClusterResponse =
+          clusterApiService.getSchemasFromCluster(
+              kwClusters.getBootstrapServers(),
+              kwClusters.getProtocol(),
+              kwClusters.getClusterName() + kwClusters.getClusterId(),
+              tenantId);
+
+      Map<String, SchemaInfoOfTopic> schemas =
+          schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().stream()
+              .collect(Collectors.toMap(SchemaInfoOfTopic::getTopic, Function.identity()));
+
+      for (SchemaSubjectInfoResponse schemaInfo : schemaInfoList) {
+        SchemaInfoOfTopic clusterSchema = schemas.get(schemaInfo.getTopic());
+        // Missing From Cluster
+        if (clusterSchema == null) {
+          schemaInfo.setRemarks(NOT_ON_CLUSTER);
+          schemaInfo.setTeamname(
+              schemaInfo.getTeamname() == null
+                  ? manageDatabase.getTeamNameFromTeamId(tenantId, schemaInfo.getTeamId())
+                  : schemaInfo.getTeamname());
+          schemaInfo.setPossibleTeams(Arrays.asList(schemaInfo.getTeamname(), SYNC_102));
+        } else if (clusterSchema != null) {
+          // Schema version differences
+          if (!(schemaInfo.getSchemaVersions().size() == clusterSchema.getSchemaVersions().size()
+              && clusterSchema.getSchemaVersions().containsAll(schemaInfo.getSchemaVersions()))) {
+            schemaInfo.setRemarks(VERSIONS_NOT_IN_SYNC);
+          }
+        }
+        // if it has the schema on the cluster and all the version are the same
+        if (schemaInfo.getRemarks() == null || StringUtils.isBlank(schemaInfo.getRemarks())) {
+          schemaInfo.setRemarks(IN_SYNC);
+        }
+      }
+    } catch (Exception ex) {
+      log.error("Error Caught while finding differences between cluster and metadata.");
+    }
+    return schemaInfoList;
   }
 
   private List<SchemaSubjectInfoResponse> filterTopicsNotInDb(
@@ -604,8 +660,10 @@ public class SchemaRegistrySyncControllerService {
             mp.getTeamname() == null
                 ? manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId())
                 : mp.getTeamname());
+        log.info("PossibleTeams: {} ", mp.getPossibleTeams());
         mp.setPossibleTeams(
             mp.getPossibleTeams() == null ? List.of(mp.getTeamname()) : mp.getPossibleTeams());
+        log.info("PossibleTeams After: {} ", mp.getPossibleTeams());
         pagedTopicSyncList.add(mp);
       }
     }

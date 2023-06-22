@@ -558,9 +558,10 @@
 								<table width="100%" class="table table-hover color-table success-table">
 									<thead><tr>
 										<th width="5%">Select</th>
-										<th width="40%">Topic</th>
+										<th width="35%">Topic</th>
 										<th width="20%">Versions</th>
-										<th width="30%">Team</th>
+										<th width="25%">Team</th>
+										<th width="10%">Info</th>
 									</tr>
 									</thead>
 									<tbody>
@@ -578,7 +579,36 @@
 												{{schemaVersion}} &nbsp;
 											</a>
 										</td>
-										<td>{{ resultBrowset.teamname}}</td>
+										<td>
+										<select ng-show="resultBrowset.remarks == 'NOT_ON_CLUSTER'" class="form-control custom-select" ng-change="removeSchema(resultBrowset.teamname, resultBrowset.topic)"
+												ng-model="resultBrowset.teamname" ng-value="resultBrowset.teamname"
+												ng-options="possibleTeams as possibleTeams for possibleTeams in resultBrowset.possibleTeams">
+											<option value="resultBrowset.teamname" selected="selected">
+												Select Team</option>
+											<option value="REMOVE FROM KLAW" title="Delete the metadata from Klaw. "> </option>
+										</select>
+
+										<div ng-show="resultBrowset.remarks != 'NOT_ON_CLUSTER'">{{ resultBrowset.teamname }}</div>
+										</td>
+										<!--------- INFO STATUS ------>
+										<td ng-show="resultBrowset.remarks == 'IN_SYNC'">
+											<a class="mytooltip" href="javascript:void(0)" style="color:green;">
+												<i class="fas fa-chess-rook"></i>
+												<span class="tooltip-content3">Schema synchronized.</span>
+											</a>
+										</td>
+										<td ng-show="resultBrowset.remarks == 'NOT_ON_CLUSTER'">
+											<a class="mytooltip" href="javascript:void(0)" style="color:green;">
+												<i class="fa fa-exclamation-circle" aria-hidden="true" style="color: #ff0000;"></i>
+												<span class="tooltip-content3">Schema does not exist on Cluster</span>
+											</a>
+										</td>
+										<td ng-show="resultBrowset.remarks == 'VERSIONS_NOT_IN_SYNC'">
+										<a class="mytooltip" href="javascript:void(0)" style="color:green;">
+											<i class="fa fa-exclamation-triangle" aria-hidden="true" style="color: amber;"></i>
+											<span class="tooltip-content3">Schema Versions Differ between Klaw and Cluster</span>
+										</a>
+										</td>
 									</tr>
 									</tbody>
 								</table>
@@ -705,7 +735,11 @@
 									Create Schemas on Target Env</button>
 								<a href="index"><button type="button" class="btn btn-outline-inverse">Cancel</button></a>
 							</div>
-
+							<div class="form-actions" ng-show="updatedSchemaDeleteIdsArray.length > 0 ">
+								<button ng-click="synchRemoveSchemasFromKlaw();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
+									Remove Schemas From Klaw</button>
+								<a href="index"><button type="button" class="btn btn-outline-inverse">Cancel</button></a>
+							</div>
 
 						</div>
 						<div class="row">

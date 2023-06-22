@@ -310,6 +310,7 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
 
                 $scope.allTopicsCount = output.allTopicsCount;
 
+                $scope.updatedSchemaDeleteIdsArray = [];
                 $scope.updatedTopicIdsArray = [];
                 $scope.resetCheckBoxes();
                 $scope.alertnote = "";
@@ -437,7 +438,7 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
 	}
 
     $scope.updatedTopicIdsArray = [];
-
+    $scope.updatedSchemaDeleteIdsArray = [];
 	$scope.updateTopicIds = function(topicId, isTopicSelected){
 	    if($scope.updatedTopicIdsArray.includes(topicId) && !isTopicSelected)
             $scope.updatedTopicIdsArray.splice($scope.updatedTopicIdsArray.indexOf(topicId), 1);
@@ -448,6 +449,8 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
     $scope.syncBackTopicCbId = [];
 	$scope.resetCheckBoxes = function(){
 	    $scope.updatedTopicIdsArray = [];
+        $scope.updatedSchemaDeleteIdsArray = [];
+
 	    $scope.targetEnvId = null;
 
 	    if($scope.syncBackTopicCbId || $scope.syncBackTopicCbId != null){
@@ -523,6 +526,102 @@ app.controller("syncBackSchemasCtrl", function($scope, $http, $location, $window
                 );
         }
 
+
+              $scope.removeSchema = function(option, schemaId) {
+
+                            var seqFound = -1;
+                            var i;
+                            for (i = 0; i < $scope.updatedSchemaDeleteIdsArray.length; i++) {
+                              if($scope.updatedSchemaDeleteIdsArray[i]== schemaId) {
+                                seqFound = i;
+                                }
+                            }
+
+                            if(option != 'REMOVE FROM KLAW'){
+                            if(seqFound != -1){
+                            // Remove if it is already there
+                                $scope.updatedSchemaDeleteIdsArray.splice(seqFound,1);
+                                return;
+                            }
+                            return;
+                            } else {
+                                if(seqFound != -1){
+                                //already added
+                                    return;
+                                } else {
+                                $scope.updatedSchemaDeleteIdsArray.push(schemaId);
+                                }
+                            }
+
+
+
+                        }
+
+        $scope.synchRemoveSchemasFromKlaw = function() {
+            var serviceInput = {};
+            if(!$scope.getSchemas.envName)
+                   return;
+
+            if($scope.updatedSchemaDeleteIdsArray.length === 0)
+            {
+                swal({
+                       title: "",
+                       text: "Please select a record to remove from Klaw.",
+                       timer: 2000,
+                       showConfirmButton: false
+                   });
+                return;
+            }
+            serviceInput['topicList'] = [];
+            serviceInput['topicListForRemoval'] = $scope.updatedSchemaDeleteIdsArray;
+            serviceInput['sourceKafkaEnvSelected'] = $scope.getSchemas.envName;
+            serviceInput['typeOfSync'] = 'SYNC_SCHEMAS';
+
+            swal({
+                    title: "Are you sure?",
+                    text: "Removing the Schema from Klaw will mean it is no longer available to sync back into the cluster.",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "Yes, Remove selected Schemas from Klaw!",
+                    cancelButtonText: "No, cancel please!",
+                    closeOnConfirm: true,
+                    closeOnCancel: true
+                }).then(function(isConfirm){
+
+                    if (isConfirm.dismiss !== "cancel") {
+                        $scope.ShowSpinnerStatus = true;
+                        $http({
+                            method: "POST",
+                            url: "schemas",
+                            headers : { 'Content-Type' : 'application/json' },
+                            data:  serviceInput
+                        }).success(function(output) {
+                            $scope.ShowSpinnerStatus = false;
+                            $scope.alert = "Schema Sync Remove Schema from Klaw Request : "+output.message;
+                            $scope.updatedSchemaDeleteIdsArray = [];
+                             if(output.success){
+                              swal({
+                            		   title: "",
+                            		   text: "Sync Request : "+output.message,
+                            		   timer: 2000,
+                            		   showConfirmButton: false
+                            	   });
+                              $scope.getSchemas('1');
+                            }else $scope.showSubmitFailed('','');
+                        }).error(
+                            function(error)
+                            {
+                                $scope.ShowSpinnerStatus = false;
+                                $scope.handleErrorMessage(error);
+                            }
+                        );
+                    } else {
+                        return;
+                    }
+                });
+
+        };
 
 }
 );
