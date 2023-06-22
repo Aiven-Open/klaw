@@ -264,7 +264,7 @@ public class ServerConfigService {
       String res = manageDatabase.getHandleDbRequests().updateKwProperty(kwProperties, tenantId);
       if (ApiResultStatus.SUCCESS.value.equals(res)) {
         commonUtilsService.updateMetadata(
-            tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE);
+            tenantId, EntityType.PROPERTIES, MetadataOperationType.CREATE, null);
         return ApiResponse.builder()
             .success(true)
             .message(ApiResultStatus.SUCCESS.value)

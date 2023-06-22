@@ -26,6 +26,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
@@ -733,17 +734,39 @@ public class TopicControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     String updateTopicReqStatus;
-
+    // Starts as success as their may be no schema related to this topic.
+    String schemaUpdateStatus = ApiResultStatus.SUCCESS.value;
     if (RequestOperationType.CLAIM.value.equals(topicRequest.getRequestOperationType())) {
       List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
       for (Topic allTopic : allTopics) {
         allTopic.setTeamId(
             topicRequest.getTeamId()); // for claim reqs, team stored in approving team field
         allTopic.setExistingTopic(true);
+        // check if there is any associated schema.
+
+      }
+      List<MessageSchema> updatedSchemas = new ArrayList<>();
+      for (Env schemaEnv : manageDatabase.getSchemaRegEnvList(tenantId)) {
+        // check every schema Env for these schemas
+        List<MessageSchema> schemas =
+            manageDatabase
+                .getHandleDbRequests()
+                .getSchemaForTenantAndEnvAndTopic(
+                    tenantId, schemaEnv.getId(), topicRequest.getTopicname());
+        for (MessageSchema schema : schemas) {
+          schema.setTeamId(topicRequest.getTeamId());
+          updatedSchemas.add(schema);
+        }
+      }
+
+      if (!updatedSchemas.isEmpty()) {
+        schemaUpdateStatus =
+            manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(updatedSchemas);
       }
 
       updateTopicReqStatus = dbHandle.addToSynctopics(allTopics);
-      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus)) {
+      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus)
+          && ApiResultStatus.SUCCESS.value.equalsIgnoreCase(schemaUpdateStatus)) {
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userName);
       }
     } else {
@@ -765,12 +788,16 @@ public class TopicControllerService {
     }
 
     if (updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
-      commonUtilsService.updateMetadata(tenantId, EntityType.TOPICS, MetadataOperationType.CREATE);
+      commonUtilsService.updateMetadata(
+          tenantId, EntityType.TOPICS, MetadataOperationType.CREATE, null);
     }
 
     return ApiResponse.builder()
-        .success((updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)))
-        .message(updateTopicReqStatus)
+        .success(
+            (updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)
+                && ApiResultStatus.SUCCESS.value.equalsIgnoreCase(schemaUpdateStatus)))
+        .message(
+            "Topic Status: " + updateTopicReqStatus + ", TopicSchemaStatus: " + schemaUpdateStatus)
         .build();
   }
 
@@ -961,9 +988,14 @@ public class TopicControllerService {
           commonUtilsService.getFilteredTopicsForTenant(topicsSearchList).get(0).getTeamId();
       Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
       if (Objects.equals(topicOwnerTeamId, loggedInUserTeamId)) {
+        String status = manageDatabase.getHandleDbRequests().updateTopicDocumentation(topic);
+        if (status.equals(ApiResultStatus.SUCCESS.value)) {
+          commonUtilsService.updateMetadata(
+              tenantId, EntityType.TOPICS, MetadataOperationType.UPDATE, null);
+        }
         return ApiResponse.builder()
-            .success(true)
-            .message(manageDatabase.getHandleDbRequests().updateTopicDocumentation(topic))
+            .success(status.equals(ApiResultStatus.SUCCESS.value))
+            .message(status)
             .build();
       } else {
         return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();

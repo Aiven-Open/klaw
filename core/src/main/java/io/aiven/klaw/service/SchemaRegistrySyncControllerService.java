@@ -2,6 +2,8 @@ package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.SCH_SYNC_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.SCH_SYNC_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_102;
+import static io.aiven.klaw.error.KlawErrorMessages.SYNC_103;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -32,6 +34,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -261,6 +264,21 @@ public class SchemaRegistrySyncControllerService {
             schemaSubjectInfoResponse,
             topicSchemaVersionsInDb.get(schemaSubjectInfoResponse.getTopic()));
         updatedList.add(schemaSubjectInfoResponse);
+      } else {
+        List<MessageSchema> sch =
+            manageDatabase
+                .getHandleDbRequests()
+                .getSchemaForTenantAndEnvAndTopic(
+                    tenantId, schemaEnvId, schemaSubjectInfoResponse.getTopic());
+        if (!sch.isEmpty()) {
+          schemaSubjectInfoResponse.setTeamId(sch.get(0).getTeamId());
+          schemaSubjectInfoResponse.setTeamname(
+              manageDatabase.getTeamNameFromTeamId(tenantId, sch.get(0).getTeamId()));
+          schemaSubjectInfoResponse.setPossibleTeams(
+              List.of(schemaSubjectInfoResponse.getTeamname(), SYNC_102));
+          schemaSubjectInfoResponse.setRemarks(SYNC_103);
+        }
+        updatedList.add(schemaSubjectInfoResponse);
       }
     }
     return updatedList;
@@ -291,7 +309,7 @@ public class SchemaRegistrySyncControllerService {
   }
 
   public ApiResponse updateSyncSchemas(SyncSchemaUpdates syncSchemaUpdates) throws Exception {
-    log.info("syncSchemaUpdates {}", syncSchemaUpdates);
+    log.debug("syncSchemaUpdates {}", syncSchemaUpdates);
 
     if (syncSchemaUpdates.getTypeOfSync().equals(PermissionType.SYNC_SCHEMAS.name())) {
       return updateSyncSchemasToMetadata(syncSchemaUpdates);
@@ -472,9 +490,23 @@ public class SchemaRegistrySyncControllerService {
       manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(schemaList);
     }
 
+    if (syncSchemaUpdates.getTypeOfSync().equalsIgnoreCase("SYNC_SCHEMAS")
+        && syncSchemaUpdates.getTopicListForRemoval() != null) {
+      // This is a list of the Schemas refrenced by the topic that owned them originally.
+      for (String schemaByTopicName : syncSchemaUpdates.getTopicListForRemoval()) {
+        manageDatabase
+            .getHandleDbRequests()
+            .deleteSchema(tenantId, schemaByTopicName, kafkaEnv.getAssociatedEnv().getId());
+      }
+    }
+
     return ApiResponse.builder()
         .success(true)
-        .message("Topics/Schemas " + syncSchemaUpdates.getTopicList())
+        .message(
+            "Topics/Schemas "
+                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicList())
+                + "\nSchemas removed "
+                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicListForRemoval()))
         .build();
   }
 
@@ -568,7 +600,12 @@ public class SchemaRegistrySyncControllerService {
         mp.setTotalNoPages(totalPages + "");
         mp.setAllPageNos(numList);
         mp.setCurrentPage(pageNo);
-        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId()));
+        mp.setTeamname(
+            mp.getTeamname() == null
+                ? manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId())
+                : mp.getTeamname());
+        mp.setPossibleTeams(
+            mp.getPossibleTeams() == null ? List.of(mp.getTeamname()) : mp.getPossibleTeams());
         pagedTopicSyncList.add(mp);
       }
     }
