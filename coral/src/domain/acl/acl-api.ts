@@ -137,6 +137,31 @@ function getAivenServiceAccounts(
   );
 }
 
+type GetAivenServiceAccountDetailsParams =
+  KlawApiRequestQueryParameters<"getAivenServiceAccountDetails">;
+type getAivenServiceAccountDetailsResponse =
+  KlawApiResponse<"getAivenServiceAccountDetails">;
+function getAivenServiceAccountDetails(
+  params: GetAivenServiceAccountDetailsParams
+): Promise<getAivenServiceAccountDetailsResponse> {
+  return api.get<getAivenServiceAccountDetailsResponse>(
+    API_PATHS.getAivenServiceAccountDetails,
+    new URLSearchParams(params)
+  );
+}
+
+type GetConsumerOffsetsParams =
+  KlawApiRequestQueryParameters<"getConsumerOffsets">;
+type GetConsumerOffsetsResponse = KlawApiResponse<"getConsumerOffsets">;
+function getConsumerOffsets(
+  params: GetConsumerOffsetsParams
+): Promise<GetConsumerOffsetsResponse> {
+  return api.get<GetConsumerOffsetsResponse>(
+    API_PATHS.getConsumerOffsets,
+    new URLSearchParams(params)
+  );
+}
+
 export {
   createAclRequest,
   getAclRequestsForApprover,
@@ -145,5 +170,7 @@ export {
   declineAclRequest,
   deleteAclRequest,
   getAivenServiceAccounts,
+  getAivenServiceAccountDetails,
   createAclDeletionRequest,
+  getConsumerOffsets,
 };

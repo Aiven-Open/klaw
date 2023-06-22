@@ -1,9 +1,9 @@
 import {
+  KlawApiModel,
   KlawApiRequest,
   KlawApiRequestQueryParameters,
-  KlawApiModel,
-  ResolveIntersectionTypes,
   Paginated,
+  ResolveIntersectionTypes,
 } from "types/utils";
 
 // Several types are dependent on topictype when it is "Consumer":
@@ -61,12 +61,18 @@ type AclRequestsForApprover = ResolveIntersectionTypes<Paginated<AclRequest[]>>;
 
 type AclType = KlawApiModel<"AclRequestsResponseModel">["aclType"];
 
+type ConsumerOffsets = KlawApiModel<"OffsetDetails">;
+
+type ServiceAccountDetails = KlawApiModel<"ServiceAccountDetails">;
+
 export type {
-  CreateAclRequestTopicTypeProducer,
-  CreateAclRequestTopicTypeConsumer,
-  GetCreatedAclRequestParameters,
-  GetCreatedAclRequestForApproverParameters,
   AclRequest,
   AclRequestsForApprover,
   AclType,
+  ConsumerOffsets,
+  CreateAclRequestTopicTypeConsumer,
+  CreateAclRequestTopicTypeProducer,
+  GetCreatedAclRequestForApproverParameters,
+  GetCreatedAclRequestParameters,
+  ServiceAccountDetails,
 };
