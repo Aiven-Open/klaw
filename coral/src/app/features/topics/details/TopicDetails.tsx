@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Navigate, useMatches, useOutletContext } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useMatches,
+  useOutletContext,
+} from "react-router-dom";
 import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import {
@@ -32,12 +37,13 @@ function findMatchingTab(
 
 function TopicDetails(props: TopicOverviewProps) {
   const { topicName } = props;
+  const { state: initialEnvironment }: { state: string | null } = useLocation();
 
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
 
   const [environmentId, setEnvironmentId] = useState<string | undefined>(
-    undefined
+    initialEnvironment ?? undefined
   );
   const [schemaVersion, setSchemaVersion] = useState<number | undefined>(
     undefined

@@ -28,12 +28,11 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
     topicExists,
   } = props;
 
-  // The call to getConsumerOffsets in TopicDetails needs an environmentId
-  // But on first load, environmentId is undefined
-  // So we need to set it in this way, to be able to fetch correctly
-  // Ideally, environmentId should be available on first load
-  // Because this setEnvironmentId will trigger a superfluous refetch of getTopicOverview
-  // @TODO: find a better way to have the initial env of the Topic overview be the lowest env, instead of undefined
+  // To simplify data fetching in TopicDetails, we need environmentId to always be defined.
+  // This should always be the case through the state prop on the Browse topics page links setting an initial env...
+  // ... but if a user accesses the Topic overview directly, we do not have access to it.
+  // We therefore need to set it in this way.
+  // This will unfortunately trigger a superfluous refetch for getTopicOverview, but it should be infrequent
   useEffect(() => {
     if (environments !== undefined && environmentId === undefined) {
       setEnvironmentId(environments[0].id);

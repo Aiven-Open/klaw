@@ -35,7 +35,7 @@ function TopicTable(props: TopicListProps) {
     {
       type: "custom",
       headerName: "Topic",
-      UNSAFE_render: ({ topicName }: TopicsTableRow) => {
+      UNSAFE_render: ({ topicName, environmentsList }: TopicsTableRow) => {
         if (!topicDetailsEnabled) {
           return (
             <a href={createTopicOverviewLink(topicName)}>
@@ -44,7 +44,7 @@ function TopicTable(props: TopicListProps) {
           );
         }
         return (
-          <Link to={`/topic/${topicName}/overview`}>
+          <Link to={`/topic/${topicName}/overview`} state={environmentsList[0]}>
             {topicName} <InlineIcon icon={link} />
           </Link>
         );
