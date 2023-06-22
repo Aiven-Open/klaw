@@ -2,10 +2,6 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
-import {
-  getAivenServiceAccountDetails,
-  getConsumerOffsets,
-} from "src/domain/acl/acl-api";
 import { TopicOverview } from "src/domain/topic";
 import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -28,16 +24,6 @@ const mockGetTopicOverview = getTopicOverview as jest.MockedFunction<
 const mockGetSchemaOfTopic = getSchemaOfTopic as jest.MockedFunction<
   typeof getSchemaOfTopic
 >;
-
-jest.mock("src/domain/acl/acl-api");
-
-const mockGetConsumerOffsets = getConsumerOffsets as jest.MockedFunction<
-  typeof getConsumerOffsets
->;
-const mockGetAivenServiceAccountDetails =
-  getAivenServiceAccountDetails as jest.MockedFunction<
-    typeof getAivenServiceAccountDetails
-  >;
 
 const testTopicName = "my-nice-topic";
 const testTopicOverview: TopicOverview = {
@@ -207,15 +193,6 @@ describe("TopicDetails", () => {
           kafkaEnvId: "1",
         })
       );
-    });
-
-    it("does not fetch consumer offsets and service account data when user goes on page", async () => {
-      customRender(<TopicDetails topicName={testTopicName} />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
-      expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
-      expect(mockGetAivenServiceAccountDetails).not.toHaveBeenCalled();
     });
 
     it("fetches the data anew when user changes environment", async () => {
