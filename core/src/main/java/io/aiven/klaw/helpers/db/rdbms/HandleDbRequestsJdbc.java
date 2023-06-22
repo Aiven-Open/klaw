@@ -822,6 +822,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public void deleteSchema(int tenantId, String topicName, String schemaEnv) {
+    jdbcDeleteHelper.deleteSchemasWithOptions(tenantId, topicName, schemaEnv);
+  }
+
+  @Override
   public String deleteAllUsers(int tenantId) {
     return jdbcDeleteHelper.deleteAllUsers(tenantId);
   }

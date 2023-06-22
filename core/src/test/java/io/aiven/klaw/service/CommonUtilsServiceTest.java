@@ -1,11 +1,20 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
+import io.aiven.klaw.model.KwMetadataUpdates;
+import io.aiven.klaw.model.enums.EntityType;
+import io.aiven.klaw.model.enums.MetadataOperationType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -13,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -23,6 +33,10 @@ public class CommonUtilsServiceTest {
   private UtilMethods utilMethods;
 
   @Mock private ManageDatabase manageDatabase;
+  @Mock private HandleDbRequestsJdbc handleDbRequests;
+  @Mock private InMemoryUserDetailsManager inMemoryUserDetailsManager;
+
+  private static final String encryptorSecretKey = "encryptorSecretKey";
 
   private CommonUtilsService commonUtilsService;
 
@@ -31,6 +45,10 @@ public class CommonUtilsServiceTest {
     utilMethods = new UtilMethods();
     commonUtilsService = new CommonUtilsService();
     ReflectionTestUtils.setField(commonUtilsService, "manageDatabase", manageDatabase);
+    ReflectionTestUtils.setField(commonUtilsService, "authenticationType", DATABASE.value);
+    ReflectionTestUtils.setField(
+        commonUtilsService, "inMemoryUserDetailsManager", inMemoryUserDetailsManager);
+    ReflectionTestUtils.setField(commonUtilsService, "encryptorSecretKey", encryptorSecretKey);
   }
 
   @Test
@@ -111,5 +129,70 @@ public class CommonUtilsServiceTest {
     when(manageDatabase.getTopicsForTenant(1)).thenReturn(topicList1);
     List<Topic> topicList = commonUtilsService.getTopics("3", 102, 1);
     assertThat(topicList).hasSize(15);
+  }
+
+  @Test
+  public void updateMetadataCacheTeamEntity() {
+    KwMetadataUpdates kwMetadataUpdates =
+        KwMetadataUpdates.builder()
+            .tenantId(101)
+            .entityType(EntityType.TEAM.name())
+            .entityValue("na")
+            .operationType(MetadataOperationType.CREATE.name())
+            .build();
+    commonUtilsService.updateMetadataCache(kwMetadataUpdates, false);
+    verify(manageDatabase, times(1)).loadEnvsForOneTenant(eq(101));
+    verify(manageDatabase, times(1)).loadTenantTeamsForOneTenant(eq(null), eq(101));
+  }
+
+  @Test
+  public void updateMetadataCacheUserCreateEntity() {
+    KwMetadataUpdates kwMetadataUpdates =
+        KwMetadataUpdates.builder()
+            .tenantId(101)
+            .entityType(EntityType.USERS.name())
+            .entityValue("testuser")
+            .operationType(MetadataOperationType.CREATE.name())
+            .build();
+    when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+    when(handleDbRequests.getUsersInfo(kwMetadataUpdates.getEntityValue()))
+        .thenReturn(utilMethods.getUserInfoMockDao());
+    commonUtilsService.updateMetadataCache(kwMetadataUpdates, false);
+    verify(manageDatabase, times(1)).loadUsersForAllTenants();
+    verify(inMemoryUserDetailsManager, times(1)).createUser(any());
+  }
+
+  @Test
+  public void updateMetadataCacheUserUpdateEntity() {
+    KwMetadataUpdates kwMetadataUpdates =
+        KwMetadataUpdates.builder()
+            .tenantId(101)
+            .entityType(EntityType.USERS.name())
+            .entityValue("testuser")
+            .operationType(MetadataOperationType.UPDATE.name())
+            .build();
+    when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+    when(handleDbRequests.getUsersInfo(kwMetadataUpdates.getEntityValue()))
+        .thenReturn(utilMethods.getUserInfoMockDao());
+    commonUtilsService.updateMetadataCache(kwMetadataUpdates, false);
+    verify(manageDatabase, times(1)).loadUsersForAllTenants();
+    verify(inMemoryUserDetailsManager, times(1)).updateUser(any());
+  }
+
+  @Test
+  public void updateMetadataCacheUserDeleteEntity() {
+    KwMetadataUpdates kwMetadataUpdates =
+        KwMetadataUpdates.builder()
+            .tenantId(101)
+            .entityType(EntityType.USERS.name())
+            .entityValue("testuser")
+            .operationType(MetadataOperationType.DELETE.name())
+            .build();
+    when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+    when(handleDbRequests.getUsersInfo(kwMetadataUpdates.getEntityValue()))
+        .thenReturn(utilMethods.getUserInfoMockDao());
+    commonUtilsService.updateMetadataCache(kwMetadataUpdates, false);
+    verify(manageDatabase, times(1)).loadUsersForAllTenants();
+    verify(inMemoryUserDetailsManager, times(1)).deleteUser(any());
   }
 }
