@@ -287,10 +287,6 @@ public class SchemaRegistrySyncControllerService {
 
       for (SchemaSubjectInfoResponse schemaInfo : schemaInfoList) {
         SchemaInfoOfTopic clusterSchema = schemas.get(schemaInfo.getTopic());
-        log.info(
-            " Schema NAme {} , cluster entry {}",
-            schemaInfo.getTopic(),
-            schemas.get(schemaInfo.getTopic()));
         // Missing From Cluster
         if (clusterSchema == null) {
           schemaInfo.setRemarks(NOT_ON_CLUSTER);
