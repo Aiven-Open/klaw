@@ -1,4 +1,10 @@
+import { useQuery } from "@tanstack/react-query";
 import { Modal } from "src/app/components/Modal";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import {
+  getAivenServiceAccountDetails,
+  getConsumerOffsets,
+} from "src/domain/acl/acl-api";
 import {
   ConsumerOffsets,
   ServiceAccountDetails,
@@ -17,9 +23,64 @@ const TopicSubscriptionsDetailsModal = ({
   closeDetailsModal,
   isAivenCluster,
   selectedSub,
-  offsetsData,
-  serviceAccountData,
 }: TopicSubscriptionsDetailsModalProps) => {
+  const user = useAuthContext();
+  const { environment, consumergroup, topicname, req_no } = selectedSub;
+
+  const {
+    data: offsetsData,
+    // @TODO: handle loading / error state gracefully
+    // isError: offsetsIsError,
+    // error: offsetsError,
+    // isFetched: offsetDataFetched,
+  } = useQuery(["consumer-offsets", environment, consumergroup], {
+    queryFn: () => {
+      if (environment !== undefined && consumergroup !== undefined) {
+        return getConsumerOffsets({
+          topicName: topicname,
+          env: environment,
+          consumerGroupId: consumergroup,
+        });
+      }
+    },
+    enabled:
+      selectedSub.environment !== undefined &&
+      selectedSub.consumergroup !== undefined,
+  });
+
+  const {
+    data: serviceAccountData,
+    // @TODO: handle loading / error state gracefully
+    // isError: serviceAccountIsError,
+    // error: serviceAccountError,
+    // isFetched: serviceAccountDataFetched,
+  } = useQuery(
+    [
+      "getAivenServiceAccountDetails",
+      environment,
+      topicname,
+      user?.username,
+      req_no,
+    ],
+    {
+      queryFn: () => {
+        if (
+          environment !== undefined &&
+          req_no !== undefined &&
+          user?.username !== undefined
+        ) {
+          return getAivenServiceAccountDetails({
+            env: environment,
+            topicName: topicname,
+            userName: user.username,
+            aclReqNo: req_no,
+          });
+        }
+      },
+      enabled: environment !== undefined && req_no !== undefined,
+    }
+  );
+
   return (
     <Modal
       title={"Subscription details"}
@@ -53,15 +114,18 @@ const TopicSubscriptionsDetailsModal = ({
             : null}
         </p>
         <p>
-          {!isAivenCluster && selectedSub.topictype === "Consumer"
+          {!isAivenCluster &&
+          selectedSub.topictype === "Consumer" &&
+          offsetsData !== undefined &&
+          offsetsData[0] !== undefined
             ? `Consumer offset: Partition ${
-                offsetsData?.topicPartitionId || "Loading"
+                offsetsData[0]?.topicPartitionId || "Loading"
               } |
               Current offset ${
-                offsetsData?.currentOffset || "Loading"
+                offsetsData[0]?.currentOffset || "Loading"
               } | End offset
-              ${offsetsData?.endOffset || "Loading"} | Lag ${
-                offsetsData?.lag || "Loading"
+              ${offsetsData[0]?.endOffset || "Loading"} | Lag ${
+                offsetsData[0]?.lag || "Loading"
               }`
             : null}
         </p>
