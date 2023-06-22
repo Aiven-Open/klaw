@@ -89,22 +89,7 @@ const testTopicSchemas = {
   ],
 };
 
-const testOffsetsData = {
-  topicPartitionId: "0",
-  currentOffset: "0",
-  endOffset: "0",
-  lag: "0",
-};
-
-const testServiceAccountData = {
-  username: "nkira",
-  password: "service-account-pw",
-  accountFound: true,
-};
-
 const mockSetSchemaVersion = jest.fn();
-const mockSetConsumerGroupId = jest.fn();
-const mockSetAclReqNo = jest.fn();
 
 jest.mock("src/app/features/topics/details/TopicDetails");
 
@@ -132,10 +117,6 @@ describe("TopicHistory", () => {
         topicOverview: { ...testTopicOverview, topicHistoryList: [] },
         topicSchemas: testTopicSchemas,
         setSchemaVersion: mockSetSchemaVersion,
-        setConsumerGroupId: mockSetConsumerGroupId,
-        setAclReqNo: mockSetAclReqNo,
-        offsetsData: testOffsetsData,
-        serviceAccountData: testServiceAccountData,
       });
 
       customRender(<TopicHistory />, {
@@ -185,10 +166,6 @@ describe("TopicHistory", () => {
         topicOverview: testTopicOverview,
         topicSchemas: testTopicSchemas,
         setSchemaVersion: mockSetSchemaVersion,
-        setConsumerGroupId: mockSetConsumerGroupId,
-        setAclReqNo: mockSetAclReqNo,
-        offsetsData: testOffsetsData,
-        serviceAccountData: testServiceAccountData,
       });
 
       customRender(<TopicHistory />, {

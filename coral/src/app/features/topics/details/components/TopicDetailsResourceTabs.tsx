@@ -1,48 +1,36 @@
 import { Alert, Box, Icon, Tabs } from "@aivenio/aquarium";
+import loading from "@aivenio/aquarium/icons/loading";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
+import PreviewBanner from "src/app/components/PreviewBanner";
 import {
-  TopicOverviewTabEnum,
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
+  TopicOverviewTabEnum,
   isTopicsOverviewTabEnum,
 } from "src/app/router_utils";
-import PreviewBanner from "src/app/components/PreviewBanner";
 import { TopicOverview } from "src/domain/topic";
-import loading from "@aivenio/aquarium/icons/loading";
-import { parseErrorMsg } from "src/services/mutation-utils";
 import { TopicSchemaOverview } from "src/domain/topic/topic-types";
-import {
-  ConsumerOffsets,
-  ServiceAccountDetails,
-} from "src/domain/acl/acl-types";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 type Props = {
   currentTab: TopicOverviewTabEnum;
   setSchemaVersion: (id: number) => void;
-  setConsumerGroupId: (id?: string) => void;
-  setAclReqNo: (aclReqNo?: string) => void;
   environmentId?: string;
   error?: unknown;
   isError: boolean;
   isLoading: boolean;
   topicOverview?: TopicOverview;
   topicSchemas?: TopicSchemaOverview;
-  offsetsData?: ConsumerOffsets;
-  serviceAccountData?: ServiceAccountDetails;
 };
 
 function TopicOverviewResourcesTabs({
   currentTab,
   environmentId,
   setSchemaVersion,
-  setConsumerGroupId,
-  setAclReqNo,
   error,
   isError,
   isLoading,
   topicOverview,
   topicSchemas,
-  offsetsData,
-  serviceAccountData,
 }: Props) {
   const navigate = useNavigate();
   const topicName = topicOverview?.topicInfo.topicName;
@@ -132,15 +120,11 @@ function TopicOverviewResourcesTabs({
             environmentId:
               environmentId || topicOverview.availableEnvironments[0].id,
             setSchemaVersion,
-            setConsumerGroupId,
-            setAclReqNo,
             topicOverview,
             topicName: topicOverview.topicInfo.topicName,
             topicSchemas,
             userCanDeleteTopic: topicOverview.topicInfo.topicDeletable,
             topicHasOpenDeleteRequest: !topicOverview.topicInfo.showDeleteTopic,
-            offsetsData,
-            serviceAccountData,
           }}
         />
       </div>

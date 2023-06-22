@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Navigate, useMatches, useOutletContext } from "react-router-dom";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import {
@@ -9,14 +8,6 @@ import {
   TopicOverviewTabEnum,
   isTopicsOverviewTabEnum,
 } from "src/app/router_utils";
-import {
-  getAivenServiceAccountDetails,
-  getConsumerOffsets,
-} from "src/domain/acl/acl-api";
-import {
-  ConsumerOffsets,
-  ServiceAccountDetails,
-} from "src/domain/acl/acl-types";
 import { TopicOverview } from "src/domain/topic";
 import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
 import { TopicSchemaOverview } from "src/domain/topic/topic-types";
@@ -42,7 +33,6 @@ function findMatchingTab(
 function TopicDetails(props: TopicOverviewProps) {
   const { topicName } = props;
 
-  const user = useAuthContext();
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
 
@@ -52,11 +42,6 @@ function TopicDetails(props: TopicOverviewProps) {
   const [schemaVersion, setSchemaVersion] = useState<number | undefined>(
     undefined
   );
-  const [consumerGroupId, setConsumerGroupId] = useState<string | undefined>(
-    undefined
-  );
-
-  const [aclReqNo, setAclReqNo] = useState<string | undefined>(undefined);
 
   const {
     data: topicData,
@@ -67,56 +52,6 @@ function TopicDetails(props: TopicOverviewProps) {
   } = useQuery(["topic-overview", environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
   });
-
-  const {
-    data: offsetsData,
-    isError: offsetsIsError,
-    error: offsetsError,
-    isFetched: offsetDataFetched,
-  } = useQuery(["consumer-offsets", environmentId, consumerGroupId], {
-    queryFn: () => {
-      if (environmentId !== undefined && consumerGroupId !== undefined) {
-        return getConsumerOffsets({
-          topicName,
-          env: environmentId,
-          consumerGroupId,
-        });
-      }
-    },
-    enabled: environmentId !== undefined && consumerGroupId !== undefined,
-  });
-
-  const {
-    data: serviceAccountData,
-    isError: serviceAccountIsError,
-    error: serviceAccountError,
-    isFetched: serviceAccountDataFetched,
-  } = useQuery(
-    [
-      "getAivenServiceAccountDetails",
-      environmentId,
-      topicName,
-      user?.username,
-      aclReqNo,
-    ],
-    {
-      queryFn: () => {
-        if (
-          environmentId !== undefined &&
-          aclReqNo !== undefined &&
-          user?.username !== undefined
-        ) {
-          return getAivenServiceAccountDetails({
-            env: environmentId,
-            topicName,
-            userName: user.username,
-            aclReqNo,
-          });
-        }
-      },
-      enabled: environmentId !== undefined && aclReqNo !== undefined,
-    }
-  );
 
   const {
     data: schemaData,
@@ -153,27 +88,16 @@ function TopicDetails(props: TopicOverviewProps) {
 
       <TopicOverviewResourcesTabs
         isLoading={topicIsLoading || schemaIsLoading}
-        isError={
-          topicIsError ||
-          schemaIsError ||
-          offsetsIsError ||
-          serviceAccountIsError
-        }
-        error={topicError || schemaError || offsetsError || serviceAccountError}
+        isError={topicIsError || schemaIsError}
+        error={topicError || schemaError}
         currentTab={currentTab}
         environmentId={environmentId}
         // These state setters are used refresh the queries with the correct params...
-        // ...when a user selects schema version / clicks on Details action in Subscription tab
+        // ...when a user selects schema version
         setSchemaVersion={setSchemaVersion}
-        setConsumerGroupId={setConsumerGroupId}
-        setAclReqNo={setAclReqNo}
         // We pass undefined when data is not fetched to avoid flash of stale data in the UI
         topicOverview={topicDataFetched ? topicData : undefined}
         topicSchemas={schemaDataFetched ? schemaData : undefined}
-        offsetsData={offsetDataFetched ? (offsetsData || [])[0] : undefined}
-        serviceAccountData={
-          serviceAccountDataFetched ? serviceAccountData : undefined
-        }
       />
     </div>
   );
@@ -183,13 +107,9 @@ function useTopicDetails() {
   return useOutletContext<{
     environmentId: string;
     setSchemaVersion: (id: number) => void;
-    setConsumerGroupId: (id?: string) => void;
-    setAclReqNo: (aclReqNo?: string) => void;
     topicOverview: TopicOverview;
     topicName: string;
     topicSchemas: TopicSchemaOverview;
-    offsetsData?: ConsumerOffsets;
-    serviceAccountData?: ServiceAccountDetails;
   }>();
 }
 

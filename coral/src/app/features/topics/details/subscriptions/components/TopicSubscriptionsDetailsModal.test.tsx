@@ -1,6 +1,7 @@
-import { cleanup, render } from "@testing-library/react";
+import { cleanup } from "@testing-library/react";
 import TopicSubscriptionsDetailsModal from "src/app/features/topics/details/subscriptions/components/TopicSubscriptionsDetailsModal";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockCloseDetailsModal = jest.fn();
 
@@ -47,6 +48,8 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
 
   // @TODO finish testing in PR handling proper display of the data
   it("should render correct data in details modal", async () => {
-    render(<TopicSubscriptionsDetailsModal {...defaultProps} />);
+    customRender(<TopicSubscriptionsDetailsModal {...defaultProps} />, {
+      queryClient: true,
+    });
   });
 });

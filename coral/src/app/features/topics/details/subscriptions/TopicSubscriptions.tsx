@@ -47,15 +47,7 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
 
 const TopicSubscriptions = () => {
   const navigate = useNavigate();
-  const {
-    topicOverview,
-    environmentId,
-    topicName,
-    offsetsData,
-    serviceAccountData,
-    setConsumerGroupId,
-    setAclReqNo,
-  } = useTopicDetails();
+  const { topicOverview, environmentId, topicName } = useTopicDetails();
 
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
@@ -111,20 +103,14 @@ const TopicSubscriptions = () => {
   const openDetailsModal = ({
     isAivenCluster,
     aclReqNo,
-    consumerGroupId,
   }: {
     isAivenCluster: boolean;
     aclReqNo: string;
-    consumerGroupId?: string;
   }) => {
-    setConsumerGroupId(consumerGroupId);
-    setAclReqNo(aclReqNo);
     setDetailsModal({ isOpen: true, isAivenCluster, aclReqNo });
   };
 
   const closeDetailsModal = () => {
-    setConsumerGroupId(undefined);
-    setAclReqNo(undefined);
     setDetailsModal({
       isOpen: false,
       isAivenCluster: false,
@@ -192,8 +178,6 @@ const TopicSubscriptions = () => {
           closeDetailsModal={closeDetailsModal}
           isAivenCluster={detailsModal.isAivenCluster}
           selectedSub={selectedSub}
-          offsetsData={offsetsData}
-          serviceAccountData={serviceAccountData}
         />
       )}
       <PageHeader

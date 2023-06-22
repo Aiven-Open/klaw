@@ -161,31 +161,11 @@ const testTopicOverview: TopicOverview = {
   topicIdForDocumentation: 1,
 };
 
-const testOffsetsData = {
-  topicPartitionId: "0",
-  currentOffset: "0",
-  endOffset: "0",
-  lag: "0",
-};
-
-const testServiceAccountData = {
-  username: "nkira",
-  password: "service-account-pw",
-  accountFound: true,
-};
-
-const mockSetConsumerGroupId = jest.fn();
-const mockSetAclReqNo = jest.fn();
-
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useOutletContext: () => ({
     topicOverview: testTopicOverview,
     environmentId: "333",
-    setConsumerGroupId: mockSetConsumerGroupId,
-    setAclReqNo: mockSetAclReqNo,
-    offsetsData: testOffsetsData,
-    serviceAccountData: testServiceAccountData,
   }),
 }));
 
@@ -513,9 +493,6 @@ describe("TopicSubscriptions.tsx", () => {
 
       await userEvent.click(button);
 
-      expect(mockSetConsumerGroupId).toHaveBeenCalledWith("-na-");
-      expect(mockSetAclReqNo).toHaveBeenCalledWith("1006");
-
       const modal = screen.getByRole("dialog");
 
       expect(within(modal).getByText("Subscription details")).toBeVisible();
@@ -526,37 +503,7 @@ describe("TopicSubscriptions.tsx", () => {
 
       await userEvent.click(cancelButton);
 
-      expect(mockSetConsumerGroupId).toHaveBeenCalledWith(undefined);
-      expect(mockSetAclReqNo).toHaveBeenCalledWith(undefined);
-
       await waitFor(() => expect(modal).not.toBeVisible());
     });
   });
-  // @TODO in PR handling proper display of the data
-  // it("should render correct data in details modal", async () => {
-  //   const firstDataRow = screen.getAllByRole("row")[1];
-  //   const button = within(firstDataRow).getByRole("button", {
-  //     name: "Show details of request 1006",
-  //   });
-
-  //   await userEvent.click(button);
-
-  //   expect(mockSetConsumerGroupId).toHaveBeenCalledWith("-na-");
-  //   expect(mockSetAclReqNo).toHaveBeenCalledWith("1006");
-
-  //   const modal = screen.getByRole("dialog");
-
-  //   expect(within(modal).getByText("Subscription details")).toBeVisible();
-
-  //   const cancelButton = within(modal).getByRole("button", {
-  //     name: "Close",
-  //   });
-
-  //   await userEvent.click(cancelButton);
-
-  //   expect(mockSetConsumerGroupId).toHaveBeenCalledWith(undefined);
-  //   expect(mockSetAclReqNo).toHaveBeenCalledWith(undefined);
-
-  //   await waitFor(() => expect(modal).not.toBeVisible());
-  // });
 });
