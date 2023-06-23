@@ -632,8 +632,8 @@
 													<span class="tooltip-content3">Schema Versions Differ between Klaw and Cluster</span>
 												</a>
 											</td>
-											<td><label class="custom-control custom-checkbox">
-												<input type="checkbox" ng-show="resultBrowset.remarks != 'ORPHANED' || resultBrowset.remarks == 'NOT_ON_CLUSTER'"  value="false" ng-click="updateTopicIds(resultBrowset.topic, syncTopicCbId[$index].topicname);"
+											<td><label ng-show="resultBrowset.remarks != 'ORPHANED' && resultBrowset.remarks != 'NOT_ON_CLUSTER'" class="custom-control custom-checkbox">
+												<input type="checkbox"  value="false" ng-click="updateTopicIds(resultBrowset.topic, syncTopicCbId[$index].topicname);"
 													   ng-init="syncTopicCbId[$index].topicname=false" ng-model="syncTopicCbId[$index].topicname" class="custom-control-input">
 												<span class="custom-control-label"></span>
 											</label></td>
