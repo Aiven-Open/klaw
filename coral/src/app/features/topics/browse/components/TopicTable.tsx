@@ -44,7 +44,7 @@ function TopicTable(props: TopicListProps) {
           );
         }
         return (
-          <Link to={`/topic/${topicName}/overview`} state={environmentsList[0]}>
+          <Link to={`/topic/${topicName}/overview`} state={"1"}>
             {topicName} <InlineIcon icon={link} />
           </Link>
         );
