@@ -1749,8 +1749,7 @@ public class SelectDataJdbc {
     List<MessageSchema> schema =
         messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(
             tenantId, schemaTopicName, envId);
-    if (schema.isEmpty() || schema.size() > 1) {
-
+    if (schema.isEmpty()) {
       return null;
     } else {
       return schema.get(0);
