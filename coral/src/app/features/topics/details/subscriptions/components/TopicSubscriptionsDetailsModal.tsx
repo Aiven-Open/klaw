@@ -25,7 +25,7 @@ const TopicSubscriptionsDetailsModal = ({
   selectedSub,
 }: TopicSubscriptionsDetailsModalProps) => {
   const user = useAuthContext();
-  const { environment, consumergroup, topicname, req_no } = selectedSub;
+  const { environment, consumergroup = "", topicname, req_no } = selectedSub;
 
   const {
     data: offsetsData,
@@ -35,17 +35,13 @@ const TopicSubscriptionsDetailsModal = ({
     // isFetched: offsetDataFetched,
   } = useQuery(["consumer-offsets", environment, consumergroup], {
     queryFn: () => {
-      if (environment !== undefined && consumergroup !== undefined) {
-        return getConsumerOffsets({
-          topicName: topicname,
-          env: environment,
-          consumerGroupId: consumergroup,
-        });
-      }
+      return getConsumerOffsets({
+        topicName: topicname,
+        env: environment,
+        consumerGroupId: consumergroup,
+      });
     },
-    enabled:
-      selectedSub.environment !== undefined &&
-      selectedSub.consumergroup !== undefined,
+    enabled: environment !== undefined && consumergroup !== undefined,
   });
 
   const {
@@ -64,18 +60,12 @@ const TopicSubscriptionsDetailsModal = ({
     ],
     {
       queryFn: () => {
-        if (
-          environment !== undefined &&
-          req_no !== undefined &&
-          user?.username !== undefined
-        ) {
-          return getAivenServiceAccountDetails({
-            env: environment,
-            topicName: topicname,
-            userName: user.username,
-            aclReqNo: req_no,
-          });
-        }
+        return getAivenServiceAccountDetails({
+          env: environment,
+          topicName: topicname,
+          userName: user?.username || "",
+          aclReqNo: req_no,
+        });
       },
       enabled: environment !== undefined && req_no !== undefined,
     }

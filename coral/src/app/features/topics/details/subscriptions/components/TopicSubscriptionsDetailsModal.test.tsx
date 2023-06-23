@@ -3,6 +3,21 @@ import TopicSubscriptionsDetailsModal from "src/app/features/topics/details/subs
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
+import {
+  getAivenServiceAccountDetails,
+  getConsumerOffsets,
+} from "src/domain/acl/acl-api";
+
+jest.mock("src/domain/acl/acl-api");
+
+const mockGetConsumerOffsets = getConsumerOffsets as jest.MockedFunction<
+  typeof getConsumerOffsets
+>;
+const mockGetAivenServiceAccountDetails =
+  getAivenServiceAccountDetails as jest.MockedFunction<
+    typeof getAivenServiceAccountDetails
+  >;
+
 const mockCloseDetailsModal = jest.fn();
 
 const testServiceAccountData = {
@@ -42,6 +57,11 @@ const defaultProps = {
 };
 
 describe("TopicSubscriptionsDetailsModal.tsx", () => {
+  beforeAll(() => {
+    mockGetConsumerOffsets.mockResolvedValue([testOffsetsData]);
+    mockGetAivenServiceAccountDetails.mockResolvedValue(testServiceAccountData);
+  });
+
   afterAll(() => {
     cleanup();
   });
