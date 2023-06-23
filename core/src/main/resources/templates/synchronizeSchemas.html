@@ -623,7 +623,7 @@
 											<td ng-show="resultBrowset.remarks != 'ORPHANED' && resultBrowset.remarks != 'IN_SYNC' && resultBrowset.remarks != 'NOT_IN_SYNC' && resultBrowset.remarks == 'NOT_ON_CLUSTER'">
 												<a class="mytooltip" href="javascript:void(0)" style="color:green;">
 													<i class="fa fa-exclamation-circle" aria-hidden="true" style="color: #ff0000;"></i>
-													<span class="tooltip-content3">Schema does not exist on Cluster. Sync will remove from Klaw.</span>
+													<span class="tooltip-content3">Schema does not exist on Cluster.</span>
 												</a>
 											</td>
 											<td ng-show="resultBrowset.remarks == 'VERSIONS_NOT_IN_SYNC'">
@@ -633,7 +633,7 @@
 												</a>
 											</td>
 											<td><label class="custom-control custom-checkbox">
-												<input type="checkbox" value="false" ng-click="updateTopicIds(resultBrowset.topic, syncTopicCbId[$index].topicname);"
+												<input type="checkbox" ng-show="resultBrowset.remarks != 'ORPHANED' || resultBrowset.remarks == 'NOT_ON_CLUSTER'"  value="false" ng-click="updateTopicIds(resultBrowset.topic, syncTopicCbId[$index].topicname);"
 													   ng-init="syncTopicCbId[$index].topicname=false" ng-model="syncTopicCbId[$index].topicname" class="custom-control-input">
 												<span class="custom-control-label"></span>
 											</label></td>

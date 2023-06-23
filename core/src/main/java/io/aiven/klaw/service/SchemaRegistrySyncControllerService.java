@@ -199,14 +199,8 @@ public class SchemaRegistrySyncControllerService {
   }
 
   private static int parseIntFromSchemaVersion(String ver) {
-
-    try {
-      return Integer.parseInt(ver);
-    } catch (NumberFormatException ex) {
-      log.warn("Version is not an integer parsing as Double", ex);
-      Double dub = Double.parseDouble(ver);
-      return dub.intValue();
-    }
+    Double dub = Double.parseDouble(ver);
+    return dub.intValue();
   }
 
   // schema versions only
