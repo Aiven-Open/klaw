@@ -160,7 +160,7 @@ public class SchemaRegistrySyncControllerService {
         }
 
         Set<Integer> schemaVersionsInt = new TreeSet<>();
-        schemaVersions.forEach(ver -> schemaVersionsInt.add(Integer.parseInt(ver)));
+        schemaVersions.forEach(ver -> schemaVersionsInt.add(parseIntFromSchemaVersion(ver)));
 
         SchemaSubjectInfoResponse schemaInfo = new SchemaSubjectInfoResponse();
         schemaInfo.setTopic(topic.getTopicname());
@@ -185,7 +185,7 @@ public class SchemaRegistrySyncControllerService {
     for (Map.Entry<String, Set<String>> schemaDetail : schemaTopicNameToVersionsDB) {
 
       Set<Integer> schemaVersionsInt = new TreeSet<>();
-      schemaDetail.getValue().forEach(ver -> schemaVersionsInt.add(Integer.parseInt(ver)));
+      schemaDetail.getValue().forEach(ver -> schemaVersionsInt.add(parseIntFromSchemaVersion(ver)));
       SchemaSubjectInfoResponse schemaInfo = new SchemaSubjectInfoResponse();
 
       schemaInfo.setTopic(schemaDetail.getKey());
@@ -196,6 +196,17 @@ public class SchemaRegistrySyncControllerService {
       schemaInfoList.add(schemaInfo);
     }
     return schemaInfoList;
+  }
+
+  private static int parseIntFromSchemaVersion(String ver) {
+
+    try {
+      return Integer.parseInt(ver);
+    } catch (NumberFormatException ex) {
+      log.warn("Version is not an integer parsing as Double", ex);
+      Double dub = Double.parseDouble(ver);
+      return dub.intValue();
+    }
   }
 
   // schema versions only
@@ -292,7 +303,7 @@ public class SchemaRegistrySyncControllerService {
       // Missing From Cluster
       if (clusterSchema == null) {
         return NOT_ON_CLUSTER;
-      } else if (clusterSchema != null) {
+      } else {
         // Schema version differences
         if (!(schemaInfo.getSchemaVersions().size() == clusterSchema.getSchemaVersions().size()
             && clusterSchema.getSchemaVersions().containsAll(schemaInfo.getSchemaVersions()))) {
@@ -451,7 +462,7 @@ public class SchemaRegistrySyncControllerService {
                     tenantId, kafkaEnv.getAssociatedEnv().getId(), topicName);
         schemaList =
             schemaList.stream()
-                .sorted(Comparator.comparing(a -> Integer.parseInt(a.getSchemaversion())))
+                .sorted(Comparator.comparing(a -> parseIntFromSchemaVersion(a.getSchemaversion())))
                 .toList();
 
         List<MessageSchema> schemaListUpdated = new ArrayList<>();
