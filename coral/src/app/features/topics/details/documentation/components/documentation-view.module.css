@@ -1,3 +1,32 @@
-.markdown h1 {
-    color: red
+/* The html we show in ReactMarkdown does not contain */
+/* classes or style options. So elements are using the  */
+/* global styles that are based on the DS styles. Since these */
+/* are build in a way where styles should not rely on elements,  */
+/* e.g. h1 has the same font-size as body.  */
+/* We need to overwrite styles for elements in the markdown */
+/* context to show user a more refined documentation based */
+/* on their input.  */
+
+.markdownEditor h1 {
+  font-size: 2.5em;
+}
+
+.markdownEditor h2 {
+  font-size: 2em;
+}
+
+.markdownEditor h3 {
+  font-size: 1.75em;
+}
+
+.markdownEditor h4 {
+  font-size: 1.5em;
+}
+
+.markdownEditor h5 {
+  font-size: 1.25em;
+}
+
+.markdownEditor h6 {
+  font-size: 1em;
 }

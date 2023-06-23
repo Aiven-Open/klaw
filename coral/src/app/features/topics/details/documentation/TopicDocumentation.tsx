@@ -1,21 +1,30 @@
-import { PageHeader } from "@aivenio/aquarium";
+import { PageHeader, Button, Box } from "@aivenio/aquarium";
 import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
+import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
+import { DocumentationView } from "src/app/features/topics/details/documentation/components/DocumentationView";
 
 function TopicDocumentation() {
-  // mocked data as topicOverview does not return doc right now
-  const topicOverview = {
-    topicDocumentation: "", //"<h1>hello</h1><div>This is doc</div>",
-  };
-
-  const noDocumentation =
-    !topicOverview?.topicDocumentation ||
-    topicOverview.topicDocumentation.length === 0;
+  const { topicOverview } = useTopicDetails();
 
   return (
     <>
       <PageHeader title={"Documentation"} />
-      {noDocumentation && <NoDocumentationBanner />}
-      <div>{topicOverview.topicDocumentation}</div>
+      {!topicOverview?.topicDocumentation ||
+      topicOverview.topicDocumentation.length === 0 ? (
+        <NoDocumentationBanner />
+      ) : (
+        <Box.Flex flexDirection="column" rowGap={"l2"}>
+          <DocumentationView
+            stringifiedHtml={topicOverview.topicDocumentation}
+          />
+
+          <Box grow={"0"} alignSelf={"end"}>
+            <Button.Primary onClick={() => console.log("update")}>
+              Update documentation
+            </Button.Primary>
+          </Box>
+        </Box.Flex>
+      )}
     </>
   );
 }
