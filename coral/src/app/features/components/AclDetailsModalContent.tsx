@@ -92,7 +92,7 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
               // If consumergroup is "-na-", it means the request was made for an Aiven cluster
               // Which does not user consumergroup
               // So we return Not applicable
-              aclType === "CONSUMER" || consumergroup == "-na-" ? (
+              aclType === "CONSUMER" || consumergroup === "-na-" ? (
                 consumergroup
               ) : (
                 <i>Not applicable</i>
