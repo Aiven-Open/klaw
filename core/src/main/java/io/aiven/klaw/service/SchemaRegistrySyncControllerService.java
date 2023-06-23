@@ -180,7 +180,8 @@ public class SchemaRegistrySyncControllerService {
       Map<String, Set<String>> topicSchemaVersionsInDb,
       Map<String, SchemaInfoOfTopic> schemaTopicAndVersions) {
     // Annotate anomalous Schemas
-    Set<Map.Entry<String, Set<String>>> schemaTopicNameToVersionsDB = topicSchemaVersionsInDb.entrySet();
+    Set<Map.Entry<String, Set<String>>> schemaTopicNameToVersionsDB =
+        topicSchemaVersionsInDb.entrySet();
     for (Map.Entry<String, Set<String>> schemaDetail : schemaTopicNameToVersionsDB) {
 
       Set<Integer> schemaVersionsInt = new TreeSet<>();
