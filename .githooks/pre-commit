@@ -1,14 +1,14 @@
-# #!/bin/sh
+#!/bin/sh
 
-# FRONTEND_ROOT="coral"
+FRONTEND_ROOT="coral"
 
-# GIT_ROOT=$(git rev-parse --show-toplevel)
-# STAGED_FILES=$(git diff --staged --name-only)
+GIT_ROOT=$(git rev-parse --show-toplevel)
+STAGED_FILES=$(git diff --staged --name-only)
 
-# if echo "$STAGED_FILES" | grep -q -e "$FRONTEND_ROOT";
-# then
+if echo "$STAGED_FILES" | grep -q -e "$FRONTEND_ROOT";
+then
 
-#     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" lint-staged
-#     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" tsc
-#     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" test --bail
-# fi
+    pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" lint-staged
+    pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" tsc
+    pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" test --bail
+fi
