@@ -174,12 +174,12 @@ public class SchemaRegistrySyncControllerService {
     return schemaInfoList;
   }
 
-  private List<SchemaSubjectInfoResponse> addOrphanedSchemasFromRemainder(
+  private List<SchemaSubjectInfoResponse> annotateAnomalousSchemasNotInDB(
       String schemaEnvId,
       List<SchemaSubjectInfoResponse> schemaInfoList,
       Map<String, Set<String>> topicSchemaVersionsInDb,
       Map<String, SchemaInfoOfTopic> schemaTopicAndVersions) {
-    // Add Orphaned Schemas
+    // Annotate anomalous Schemas
     Set<Map.Entry<String, Set<String>>> schemaNames = topicSchemaVersionsInDb.entrySet();
     for (Map.Entry<String, Set<String>> schemadDetail : schemaNames) {
 
@@ -192,7 +192,6 @@ public class SchemaRegistrySyncControllerService {
       schemaInfo.setEnvId(schemaEnvId);
       annotateSchemasNotInCluster(schemaInfo, schemaTopicAndVersions);
       schemaInfo.setRemarks(annotateSchemasNotInCluster(schemaInfo, schemaTopicAndVersions));
-      //    schemaInfo.setRemarks(SYNC_103);
 
       schemaInfoList.add(schemaInfo);
     }
@@ -254,7 +253,7 @@ public class SchemaRegistrySyncControllerService {
       }
 
       schemaSubjectInfoResponseList =
-          filterTopicsNotInDb(
+          annotateAllSchemaWithStatus(
               schemaSubjectInfoResponseList,
               topicsFromSOT,
               schemaTopicAndVersions,
@@ -306,7 +305,12 @@ public class SchemaRegistrySyncControllerService {
     return null;
   }
 
-  private List<SchemaSubjectInfoResponse> filterTopicsNotInDb(
+  /**
+   * Annotate All Schemas With State cycles through all schemas from the Cluster Api and the DB and
+   * finds all differences between them. these differences are annotated in the remarks section of
+   * the SchemaSubjectInfoResponse Object
+   */
+  private List<SchemaSubjectInfoResponse> annotateAllSchemaWithStatus(
       List<SchemaSubjectInfoResponse> schemaSubjectInfoResponseList,
       List<Topic> topicsFromSOT,
       Map<String, SchemaInfoOfTopic> schemaTopicAndVersions,
@@ -330,6 +334,8 @@ public class SchemaRegistrySyncControllerService {
             topicSchemaVersionsInDb.get(schemaSubjectInfoResponse.getTopic()));
         updatedList.add(schemaSubjectInfoResponse);
       } else {
+        // Here The Topic does not exist in the Klaw DB we check if the Schema exists in the DB.
+        // If it does we mark it as an Orphan.
         List<MessageSchema> sch =
             manageDatabase
                 .getHandleDbRequests()
@@ -341,19 +347,20 @@ public class SchemaRegistrySyncControllerService {
               manageDatabase.getTeamNameFromTeamId(tenantId, sch.get(0).getTeamId()));
           schemaSubjectInfoResponse.setRemarks(SYNC_103);
           updatedList.add(schemaSubjectInfoResponse);
-        } else {
-          log.info("");
-          schemaSubjectInfoResponse.setRemarks(
-              annotateSchemasNotInCluster(schemaSubjectInfoResponse, schemaTopicAndVersions));
         }
+        // Do not add anything here as there is no topic or schema associated with the cluster
+        // schema in Klaw.
       }
+      // We remove each schema which has been processed from the cluster from our list of schemas we
+      // have from the db.
       topicSchemaVersionsInDb.remove(schemaSubjectInfoResponse.getTopic());
     }
-    //    if (log.isDebugEnabled()) {
-    log.info("Remaining schemas not removed {}", topicSchemaVersionsInDb);
-    //    }
-
-    return addOrphanedSchemasFromRemainder(
+    if (log.isDebugEnabled()) {
+      log.debug("Remaining schemas not removed {}", topicSchemaVersionsInDb);
+    }
+    // Any Schema not in the DB will be annotated below with not on cluster, versions not in sync or
+    // orphaned.
+    return annotateAnomalousSchemasNotInDB(
         schemaEnvId, updatedList, topicSchemaVersionsInDb, schemaTopicAndVersions);
   }
 

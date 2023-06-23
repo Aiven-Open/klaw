@@ -389,7 +389,7 @@ public interface HandleDbRequests {
   Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId);
 
   MessageSchema getTeamIdFromSchemaNameAndEnvAndTenantId(
-      String schemaName, String envId, int tenantId);
+      String schemaTopicName, String envId, int tenantId);
 
   List<Topic> getAllTopics();
 

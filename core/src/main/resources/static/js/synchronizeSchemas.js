@@ -296,6 +296,23 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                    });
                 return;
             }
+            var duplicateWarn="";
+            for(let i = 0; i < $scope.updatedTopicIdsArray.length; i++) {
+                if($scope.updatedSchemaDeleteIdsArray.includes($scope.updatedTopicIdsArray[i])) {
+                    duplicateWarn = duplicateWarn + " " + $scope.updatedTopicIdsArray[i];
+                }
+            }
+
+            if(duplicateWarn.length > 0) {
+                swal({
+                      title: "",
+                      text: "The following records are marked both to synchronize and to be deleted" + duplicateWarn + " .Please select one option for these schemas.",
+                      timer: 2000,
+                      showConfirmButton: false
+                  });
+               return;
+             }
+
             serviceInput['topicList'] = $scope.updatedTopicIdsArray;
             serviceInput['topicListForRemoval'] = $scope.updatedSchemaDeleteIdsArray;
             serviceInput['sourceKafkaEnvSelected'] = $scope.getSchemas.envName;
