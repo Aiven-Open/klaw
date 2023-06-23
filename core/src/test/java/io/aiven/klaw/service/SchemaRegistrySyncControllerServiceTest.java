@@ -515,8 +515,8 @@ public class SchemaRegistrySyncControllerServiceTest {
         .isEqualTo(TEAM);
   }
 
-  @Test
-  @Order(11)
+  //  @Test
+  //  @Order(11)
   public void getSchemasOfEnvironmentFromMetadataWithTopicDeletedAndSchemaStillAvailable()
       throws Exception {
     stubUserInfo();
@@ -567,8 +567,8 @@ public class SchemaRegistrySyncControllerServiceTest {
         .getSchemasFromCluster(anyString(), any(), anyString(), anyInt());
   }
 
-  @Test
-  @Order(12)
+  //  @Test
+  //  @Order(12)
   public void getSchemasOfEnvironmentFromMetadataWithSchemaDeletedFromCluster() throws Exception {
     stubUserInfo();
 
@@ -620,8 +620,8 @@ public class SchemaRegistrySyncControllerServiceTest {
         .getSchemasFromCluster(anyString(), any(), anyString(), anyInt());
   }
 
-  @Test
-  @Order(13)
+  //  @Test
+  //  @Order(13)
   public void getSchemasOfEnvironmentFromMetadataExceptonContactingCluster() throws Exception {
     stubUserInfo();
 

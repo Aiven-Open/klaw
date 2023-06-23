@@ -1745,9 +1745,10 @@ public class SelectDataJdbc {
   }
 
   public MessageSchema getTeamIdFromSchemaNameAndEnvAndTenantId(
-      String schemaName, String envId, int tenantId) {
+      String schemaTopicName, String envId, int tenantId) {
     List<MessageSchema> schema =
-        messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(tenantId, schemaName, envId);
+        messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(
+            tenantId, schemaTopicName, envId);
     if (schema.isEmpty() || schema.size() > 1) {
 
       return null;
