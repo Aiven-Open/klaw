@@ -150,7 +150,9 @@ public class SchemaRegistrySyncControllerService {
         manageDatabase
             .getHandleDbRequests()
             .getTopicAndVersionsForEnvAndTenantId(schemaEnvId, tenantId);
-
+    if (log.isDebugEnabled()) {
+      log.debug("Schema Names,Versions retrieved from DB: {}", topicSchemaVersionsInDb);
+    }
     for (Topic topic : topicList) {
       if (topicSchemaVersionsInDb.containsKey(topic.getTopicname())) {
         Set<String> schemaVersions = topicSchemaVersionsInDb.get(topic.getTopicname());
@@ -171,6 +173,13 @@ public class SchemaRegistrySyncControllerService {
         topicSchemaVersionsInDb.remove(topic.getTopicname());
       }
     }
+    return addOrphanedSchemasFromRemainder(schemaEnvId, schemaInfoList, topicSchemaVersionsInDb);
+  }
+
+  private static List<SchemaSubjectInfoResponse> addOrphanedSchemasFromRemainder(
+      String schemaEnvId,
+      List<SchemaSubjectInfoResponse> schemaInfoList,
+      Map<String, Set<String>> topicSchemaVersionsInDb) {
     // Add Orphaned Schemas
     Set<Map.Entry<String, Set<String>>> schemaNames = topicSchemaVersionsInDb.entrySet();
     for (Map.Entry<String, Set<String>> schemadDetail : schemaNames) {
@@ -185,7 +194,6 @@ public class SchemaRegistrySyncControllerService {
 
       schemaInfoList.add(schemaInfo);
     }
-
     return schemaInfoList;
   }
 
@@ -343,8 +351,12 @@ public class SchemaRegistrySyncControllerService {
         }
         updatedList.add(schemaSubjectInfoResponse);
       }
+      topicSchemaVersionsInDb.remove(schemaSubjectInfoResponse.getTopic());
     }
-    return updatedList;
+    if (log.isDebugEnabled()) {
+      log.debug("Remaining schemas not removed {}", topicSchemaVersionsInDb);
+    }
+    return addOrphanedSchemasFromRemainder(schemaEnvId, updatedList, topicSchemaVersionsInDb);
   }
 
   private void validateSchemas(
