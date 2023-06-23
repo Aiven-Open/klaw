@@ -500,6 +500,7 @@
 						</select>
 					</div>
 				</div>
+
 			</div>
 			<!-- Row -->
 
@@ -550,9 +551,18 @@
 											Schemas will be registered in the same ascending order of versions. If there is a compatibility failure, schemas will be force registered based on force register selection.
 
 										</text>
+
 									</td>
 								</tr>
 							</table>
+							<div class="col-lg-12" ng-show="resultBrowse.length > 0">
+								<div class="form-actions">
+									<text class="info">Note : Schema Cache reset happens once in a day, but if you would like to reset cache now,
+										click this button. It might take a couple of minutes to reset.</text><br><br>
+									<button ng-click="resetCacheClusterApi();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
+										Reset Cache</button>
+								</div>
+							</div>
 							<hr size="1" color="black">
 							<div>
 								<table width="100%" class="table table-hover color-table success-table">
