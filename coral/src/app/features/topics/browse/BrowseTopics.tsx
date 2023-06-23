@@ -2,8 +2,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import EnvironmentFilter from "src/app/features/components/filters/EnvironmentFilter";
-import TeamFilter from "src/app/features/components/filters/TeamFilter";
 import { SearchTopicFilter } from "src/app/features/components/filters/SearchTopicFilter";
+import TeamFilter from "src/app/features/components/filters/TeamFilter";
 import {
   useFiltersContext,
   withFiltersContext,

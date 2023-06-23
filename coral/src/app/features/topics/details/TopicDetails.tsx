@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Navigate, useMatches, useOutletContext } from "react-router-dom";
+import {
+  Navigate,
+  useLocation,
+  useMatches,
+  useOutletContext,
+} from "react-router-dom";
 import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import {
@@ -32,12 +37,13 @@ function findMatchingTab(
 
 function TopicDetails(props: TopicOverviewProps) {
   const { topicName } = props;
+  const { state: initialEnvironment }: { state: string | null } = useLocation();
 
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
 
   const [environmentId, setEnvironmentId] = useState<string | undefined>(
-    undefined
+    initialEnvironment ?? undefined
   );
   const [schemaVersion, setSchemaVersion] = useState<number | undefined>(
     undefined
@@ -48,6 +54,7 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: topicIsError,
     error: topicError,
     isLoading: topicIsLoading,
+    isFetched: topicDataFetched,
   } = useQuery(["topic-overview", environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
   });
@@ -57,49 +64,23 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: schemaIsError,
     error: schemaError,
     isLoading: schemaIsLoading,
-  } = useQuery(
-    [
-      "schema-overview",
-      topicData?.availableEnvironments,
-      environmentId,
-      schemaVersion,
-    ],
-    {
-      queryFn: () => {
-        const getKafkaEnvIds = () => {
-          if (environmentId !== undefined) {
-            return environmentId;
-          }
-          if (topicData?.availableEnvironments[0].id !== undefined) {
-            return topicData?.availableEnvironments[0].id;
-          }
-          return "";
-        };
-
+    isFetched: schemaDataFetched,
+  } = useQuery(["schema-overview", environmentId, schemaVersion], {
+    queryFn: () => {
+      if (environmentId !== undefined) {
         return getSchemaOfTopic({
           topicName,
-          kafkaEnvId: getKafkaEnvIds(),
+          kafkaEnvId: environmentId,
           schemaVersionSearch: schemaVersion,
         });
-      },
-      enabled: topicData?.availableEnvironments !== undefined,
-    }
-  );
+      }
+    },
+    enabled: environmentId !== undefined,
+  });
 
   if (currentTab === undefined) {
     return <Navigate to={`/topic/${topicName}/overview`} replace={true} />;
   }
-
-  // If we rely on isLoading only,
-  // when a user navigates to another topic overview after having previously seen a different topic
-  // the TopicOverviewResourcesTabs rendered data will be stale for a second (showing previous topic data)
-  // while the query is refetching the data
-  // However, using isRefetching is also an issue, because then we will show the loading state every time the user switches environment
-  // Instead of only the first time they switch
-  // This isRefetchingTopicOverview variable ensures that we only show loading state when there is a desync between the topic name in pops
-  // and the topic name in the available data
-  const isRefetchingTopicOverview =
-    topicData?.topicInfo.topicName !== topicName;
 
   return (
     <div>
@@ -112,16 +93,17 @@ function TopicDetails(props: TopicOverviewProps) {
       />
 
       <TopicOverviewResourcesTabs
-        isLoading={
-          topicIsLoading || schemaIsLoading || isRefetchingTopicOverview
-        }
+        isLoading={topicIsLoading || schemaIsLoading}
         isError={topicIsError || schemaIsError}
         error={topicError || schemaError}
         currentTab={currentTab}
-        topicOverview={topicData}
         environmentId={environmentId}
+        // These state setters are used refresh the queries with the correct params...
+        // ...when a user selects schema version
         setSchemaVersion={setSchemaVersion}
-        topicSchemas={schemaData}
+        // We pass undefined when data is not fetched to avoid flash of stale data in the UI
+        topicOverview={topicDataFetched ? topicData : undefined}
+        topicSchemas={schemaDataFetched ? schemaData : undefined}
       />
     </div>
   );

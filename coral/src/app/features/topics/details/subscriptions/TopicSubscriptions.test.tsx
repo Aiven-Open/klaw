@@ -8,7 +8,11 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import TopicSubscriptions from "src/app/features/topics/details/subscriptions/TopicSubscriptions";
-import { createAclDeletionRequest } from "src/domain/acl/acl-api";
+import {
+  createAclDeletionRequest,
+  getAivenServiceAccountDetails,
+  getConsumerOffsets,
+} from "src/domain/acl/acl-api";
 import { getTeams } from "src/domain/team";
 import { TopicOverview } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
@@ -16,6 +20,27 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 jest.mock("src/domain/team/team-api");
 jest.mock("src/domain/acl/acl-api.ts");
+
+const mockGetConsumerOffsets = getConsumerOffsets as jest.MockedFunction<
+  typeof getConsumerOffsets
+>;
+const mockGetAivenServiceAccountDetails =
+  getAivenServiceAccountDetails as jest.MockedFunction<
+    typeof getAivenServiceAccountDetails
+  >;
+
+const testServiceAccountData = {
+  username: "nkira",
+  password: "service-account-pw",
+  accountFound: true,
+};
+
+const testOffsetsData = {
+  topicPartitionId: "0",
+  currentOffset: "0",
+  endOffset: "0",
+  lag: "0",
+};
 
 const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
 const mockCreateDeleteAclRequest =
@@ -160,6 +185,7 @@ const testTopicOverview: TopicOverview = {
   topicPromotionDetails: { status: "STATUS" },
   topicIdForDocumentation: 1,
 };
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useOutletContext: () => ({
@@ -480,6 +506,35 @@ describe("TopicSubscriptions.tsx", () => {
           screen.getByText("Subscription deletion request successfully created")
         ).toBeVisible()
       );
+    });
+  });
+
+  describe("should allow seeing details of a subscription", () => {
+    beforeAll(() => {
+      mockGetConsumerOffsets.mockResolvedValue([testOffsetsData]);
+      mockGetAivenServiceAccountDetails.mockResolvedValue(
+        testServiceAccountData
+      );
+    });
+    it("should render a modal when clicking the Details button and close it when clicking Close button", async () => {
+      const firstDataRow = screen.getAllByRole("row")[1];
+      const button = within(firstDataRow).getByRole("button", {
+        name: "Show details of request 1006",
+      });
+
+      await userEvent.click(button);
+
+      const modal = screen.getByRole("dialog");
+
+      expect(within(modal).getByText("Subscription details")).toBeVisible();
+
+      const cancelButton = within(modal).getByRole("button", {
+        name: "Close",
+      });
+
+      await userEvent.click(cancelButton);
+
+      await waitFor(() => expect(modal).not.toBeVisible());
     });
   });
 });
