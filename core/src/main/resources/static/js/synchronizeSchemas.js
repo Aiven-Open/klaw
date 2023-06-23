@@ -350,6 +350,8 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                             $scope.alert = "Schema Sync Request : "+output.message;
                             $scope.updatedSyncArray = [];
                             $scope.updatedSchemaDeleteIdsArray = [];
+                            //reset after its success
+                            $scope.updatedTopicIdsArray = [];
                              if(output.success){
                               swal({
                             		   title: "",
