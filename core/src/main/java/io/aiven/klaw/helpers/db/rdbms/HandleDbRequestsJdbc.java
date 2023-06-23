@@ -912,9 +912,9 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public MessageSchema getTeamIdFromSchemaNameAndEnvAndTenantId(
+  public MessageSchema getTeamIdFromSchemaTopicNameAndEnvAndTenantId(
       String schemaTopicName, String envId, int tenantId) {
-    return jdbcSelectHelper.getTeamIdFromSchemaNameAndEnvAndTenantId(
+    return jdbcSelectHelper.getTeamIdFromSchemaTopicNameAndEnvAndTenantId(
         schemaTopicName, envId, tenantId);
   }
 

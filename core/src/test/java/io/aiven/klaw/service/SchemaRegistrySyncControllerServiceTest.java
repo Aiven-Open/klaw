@@ -596,7 +596,7 @@ public class SchemaRegistrySyncControllerServiceTest {
         .thenReturn(new TreeMap<>());
     when(manageDatabase
             .getHandleDbRequests()
-            .getTeamIdFromSchemaNameAndEnvAndTenantId(anyString(), eq("1"), eq(101)))
+            .getTeamIdFromSchemaTopicNameAndEnvAndTenantId(anyString(), eq("1"), eq(101)))
         .thenReturn(schemaMetaData().get(0));
     when(clusterApiService.getSchemasFromCluster(anyString(), any(), anyString(), anyInt()))
         .thenReturn(clusterResp);

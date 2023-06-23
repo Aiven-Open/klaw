@@ -1744,7 +1744,7 @@ public class SelectDataJdbc {
     return allCountsMap;
   }
 
-  public MessageSchema getTeamIdFromSchemaNameAndEnvAndTenantId(
+  public MessageSchema getTeamIdFromSchemaTopicNameAndEnvAndTenantId(
       String schemaTopicName, String envId, int tenantId) {
     List<MessageSchema> schema =
         messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(

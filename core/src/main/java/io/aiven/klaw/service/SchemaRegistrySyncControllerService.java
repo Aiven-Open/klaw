@@ -180,17 +180,16 @@ public class SchemaRegistrySyncControllerService {
       Map<String, Set<String>> topicSchemaVersionsInDb,
       Map<String, SchemaInfoOfTopic> schemaTopicAndVersions) {
     // Annotate anomalous Schemas
-    Set<Map.Entry<String, Set<String>>> schemaNames = topicSchemaVersionsInDb.entrySet();
-    for (Map.Entry<String, Set<String>> schemadDetail : schemaNames) {
+    Set<Map.Entry<String, Set<String>>> schemaTopicNameToVersionsDB = topicSchemaVersionsInDb.entrySet();
+    for (Map.Entry<String, Set<String>> schemaDetail : schemaTopicNameToVersionsDB) {
 
       Set<Integer> schemaVersionsInt = new TreeSet<>();
-      schemadDetail.getValue().forEach(ver -> schemaVersionsInt.add(Integer.parseInt(ver)));
+      schemaDetail.getValue().forEach(ver -> schemaVersionsInt.add(Integer.parseInt(ver)));
       SchemaSubjectInfoResponse schemaInfo = new SchemaSubjectInfoResponse();
 
-      schemaInfo.setTopic(schemadDetail.getKey());
+      schemaInfo.setTopic(schemaDetail.getKey());
       schemaInfo.setSchemaVersions(schemaVersionsInt);
       schemaInfo.setEnvId(schemaEnvId);
-      annotateSchemasNotInCluster(schemaInfo, schemaTopicAndVersions);
       schemaInfo.setRemarks(annotateSchemasNotInCluster(schemaInfo, schemaTopicAndVersions));
 
       schemaInfoList.add(schemaInfo);
@@ -685,14 +684,14 @@ public class SchemaRegistrySyncControllerService {
             StringUtils.isEmpty(mp.getTeamname())
                 ? manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId())
                 : mp.getTeamname());
-        mp.setPossibleTeams(setPossibleTeams(mp));
+        mp.setPossibleTeams(getPossibleTeams(mp));
         pagedTopicSyncList.add(mp);
       }
     }
     return pagedTopicSyncList;
   }
 
-  private static List<String> setPossibleTeams(SchemaSubjectInfoResponse mp) {
+  private static List<String> getPossibleTeams(SchemaSubjectInfoResponse mp) {
     if (!StringUtils.isEmpty(mp.getRemarks())
         && (mp.getRemarks().equals(SYNC_103) || mp.getRemarks().equals(NOT_ON_CLUSTER))) {
       return List.of(mp.getTeamname(), SYNC_102);
@@ -704,7 +703,7 @@ public class SchemaRegistrySyncControllerService {
     MessageSchema schema =
         manageDatabase
             .getHandleDbRequests()
-            .getTeamIdFromSchemaNameAndEnvAndTenantId(
+            .getTeamIdFromSchemaTopicNameAndEnvAndTenantId(
                 mp.getTopic(), String.valueOf(mp.getEnvId()), tenantId);
     if (schema != null) {
       return schema.getTeamId();
