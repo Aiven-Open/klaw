@@ -348,14 +348,15 @@ public class SchemaRegistrySyncControllerService {
           schemaSubjectInfoResponse.setTeamname(
               manageDatabase.getTeamNameFromTeamId(tenantId, sch.get(0).getTeamId()));
           schemaSubjectInfoResponse.setRemarks(SYNC_103);
+          updatedList.add(schemaSubjectInfoResponse);
         }
-        updatedList.add(schemaSubjectInfoResponse);
       }
       topicSchemaVersionsInDb.remove(schemaSubjectInfoResponse.getTopic());
     }
     if (log.isDebugEnabled()) {
       log.debug("Remaining schemas not removed {}", topicSchemaVersionsInDb);
     }
+
     return addOrphanedSchemasFromRemainder(schemaEnvId, updatedList, topicSchemaVersionsInDb);
   }
 
