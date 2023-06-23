@@ -27,7 +27,7 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 interface TopicSubscriptionsDetailsModalProps {
   closeDetailsModal: () => void;
   isAivenCluster: boolean;
-  selectedSub: AclOverviewInfo;
+  selectedSubscription: AclOverviewInfo;
   offsetsData?: ConsumerOffsets;
   serviceAccountData?: ServiceAccountDetails;
 }
@@ -35,7 +35,7 @@ interface TopicSubscriptionsDetailsModalProps {
 const TopicSubscriptionsDetailsModal = ({
   closeDetailsModal,
   isAivenCluster,
-  selectedSub,
+  selectedSubscription,
 }: TopicSubscriptionsDetailsModalProps) => {
   const user = useAuthContext();
   const {
@@ -48,7 +48,7 @@ const TopicSubscriptionsDetailsModal = ({
     acl_ssl,
     acl_ip,
     aclPatternType,
-  } = selectedSub;
+  } = selectedSubscription;
 
   const [errors, setErrors] = useState<string[]>([]);
 
@@ -221,7 +221,7 @@ const TopicSubscriptionsDetailsModal = ({
             </Box.Flex>
           </GridItem>
         ) : null}
-        {!isAivenCluster && selectedSub.topictype === "Consumer" ? (
+        {!isAivenCluster && selectedSubscription.topictype === "Consumer" ? (
           <GridItem colSpan={"span-2"}>
             <Box.Flex flexDirection={"column"}>
               <Typography.SmallStrong htmlTag={"dt"} color={"grey-60"}>

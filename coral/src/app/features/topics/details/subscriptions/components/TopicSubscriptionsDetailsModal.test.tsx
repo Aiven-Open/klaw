@@ -79,14 +79,14 @@ const testSelectedSubNonAiven: AclOverviewInfo = {
 const defaultPropsAiven = {
   closeDetailsModal: mockCloseDetailsModal,
   isAivenCluster: true,
-  selectedSub: testSelectedSubAiven,
+  selectedSubscription: testSelectedSubAiven,
   serviceAccountData: testServiceAccountData,
 };
 
 const defaultPropsNonAiven = {
   closeDetailsModal: mockCloseDetailsModal,
   isAivenCluster: false,
-  selectedSub: testSelectedSubNonAiven,
+  selectedSubscription: testSelectedSubNonAiven,
   offsetsData: testOffsetsData,
 };
 
@@ -122,34 +122,38 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
 
     expect(findTerm("Environment")).toBeVisible();
     expect(
-      findDefinition(defaultPropsAiven.selectedSub.environmentName)
+      findDefinition(defaultPropsAiven.selectedSubscription.environmentName)
     ).toBeVisible();
 
     expect(findTerm("Subscription type")).toBeVisible();
     expect(
-      findDefinition(defaultPropsAiven.selectedSub.topictype.toUpperCase())
+      findDefinition(
+        defaultPropsAiven.selectedSubscription.topictype.toUpperCase()
+      )
     ).toBeVisible();
 
     expect(findTerm("Pattern type")).toBeVisible();
     expect(
-      findDefinition(defaultPropsAiven.selectedSub.aclPatternType)
+      findDefinition(defaultPropsAiven.selectedSubscription.aclPatternType)
     ).toBeVisible();
 
     expect(findTerm("Topic name")).toBeVisible();
     expect(
-      findDefinition(defaultPropsAiven.selectedSub.topicname)
+      findDefinition(defaultPropsAiven.selectedSubscription.topicname)
     ).toBeVisible();
 
     expect(findTerm("Consumer group")).toBeVisible();
     expect(
-      findDefinition(defaultPropsAiven.selectedSub.consumergroup)
+      findDefinition(defaultPropsAiven.selectedSubscription.consumergroup)
     ).toBeVisible();
 
     expect(findTerm("IP or Service account based")).toBeVisible();
     expect(findDefinition("Service account")).toBeVisible();
 
     expect(findTerm("Service account")).toBeVisible();
-    expect(findDefinition(defaultPropsAiven.selectedSub.acl_ssl)).toBeVisible();
+    expect(
+      findDefinition(defaultPropsAiven.selectedSubscription.acl_ssl)
+    ).toBeVisible();
 
     expect(findTerm("Service account password")).toBeVisible();
     expect(
@@ -170,27 +174,29 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
 
     expect(findTerm("Environment")).toBeVisible();
     expect(
-      findDefinition(defaultPropsNonAiven.selectedSub.environmentName)
+      findDefinition(defaultPropsNonAiven.selectedSubscription.environmentName)
     ).toBeVisible();
 
     expect(findTerm("Subscription type")).toBeVisible();
     expect(
-      findDefinition(defaultPropsNonAiven.selectedSub.topictype.toUpperCase())
+      findDefinition(
+        defaultPropsNonAiven.selectedSubscription.topictype.toUpperCase()
+      )
     ).toBeVisible();
 
     expect(findTerm("Pattern type")).toBeVisible();
     expect(
-      findDefinition(defaultPropsNonAiven.selectedSub.aclPatternType)
+      findDefinition(defaultPropsNonAiven.selectedSubscription.aclPatternType)
     ).toBeVisible();
 
     expect(findTerm("Topic name")).toBeVisible();
     expect(
-      findDefinition(defaultPropsNonAiven.selectedSub.topicname)
+      findDefinition(defaultPropsNonAiven.selectedSubscription.topicname)
     ).toBeVisible();
 
     expect(findTerm("Consumer group")).toBeVisible();
     expect(
-      findDefinition(defaultPropsNonAiven.selectedSub.consumergroup)
+      findDefinition(defaultPropsNonAiven.selectedSubscription.consumergroup)
     ).toBeVisible();
 
     expect(findTerm("IP or Principal based")).toBeVisible();
@@ -198,7 +204,7 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
 
     expect(findTerm("IP")).toBeVisible();
     expect(
-      findDefinition(defaultPropsNonAiven.selectedSub.acl_ip)
+      findDefinition(defaultPropsNonAiven.selectedSubscription.acl_ip)
     ).toBeVisible();
 
     expect(

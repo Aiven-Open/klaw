@@ -148,7 +148,7 @@ const TopicSubscriptions = () => {
     });
   }, [search, teamId, aclType, selectedSubs, topicOverview]);
 
-  const selectedSub = filteredData.find(
+  const selectedSubscription = filteredData.find(
     ({ req_no }) => req_no === detailsModal.aclReqNo
   );
 
@@ -173,11 +173,11 @@ const TopicSubscriptions = () => {
           create a deletion request for approval.
         </Dialog>
       )}
-      {detailsModal.isOpen && selectedSub !== undefined && (
+      {detailsModal.isOpen && selectedSubscription !== undefined && (
         <TopicSubscriptionsDetailsModal
           closeDetailsModal={closeDetailsModal}
           isAivenCluster={detailsModal.isAivenCluster}
-          selectedSub={selectedSub}
+          selectedSubscription={selectedSubscription}
         />
       )}
       <PageHeader
