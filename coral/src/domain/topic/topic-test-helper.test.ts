@@ -21,13 +21,13 @@ describe("topic-test-helper.ts", () => {
         createMockTopic({
           topicName: "mocked name",
           topicId: 1,
-          environmentsList: ["DEV"],
+          environmentsList: [{ id: "1", name: "DEV" }],
         })
       ).toMatchObject({
         ...baseTestObjectMockedTopic(),
         topicName: "mocked name",
         topicid: 1,
-        environmentsList: ["DEV"],
+        environmentsList: [{ id: "1", name: "DEV" }],
       });
     });
   });

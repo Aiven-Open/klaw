@@ -1,5 +1,6 @@
 import { Topic, TopicRequest } from "src/domain/topic/topic-types";
 import { KlawApiResponse } from "types/utils";
+import { EnvironmentInfo } from "src/domain/environment/environment-types";
 
 // currently this file is used in code (topcis-api.msw.ts)
 // so "expect" is not defined there
@@ -18,7 +19,7 @@ const baseTestObjectMockedTopic = (): Topic => {
     teamId: 2,
     envId: "1",
     envName: "DEV",
-    environmentsList: expect.arrayContaining([expect.any(String)]),
+    environmentsList: expect.arrayContaining([expect.any(Object)]),
     showEditTopic: false,
     showDeleteTopic: false,
     topicDeletable: false,
@@ -30,13 +31,16 @@ function createMockTopic({
   topicId,
   totalNoPages = 1,
   currentPage = 1,
-  environmentsList = ["DEV", "TEST"],
+  environmentsList = [
+    { id: "1", name: "DEV" },
+    { id: "2", name: "TEST" },
+  ],
 }: {
   topicName: string;
   topicId: number;
   totalNoPages?: number;
   currentPage?: number;
-  environmentsList?: string[];
+  environmentsList?: EnvironmentInfo[];
 }): Topic {
   return {
     topicid: topicId,

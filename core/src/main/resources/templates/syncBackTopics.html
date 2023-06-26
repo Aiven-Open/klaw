@@ -559,17 +559,17 @@
 										<td>{{ resultBrowset.topicName}}</td>
 										<td>
 											<span ng-repeat="envs in resultBrowset.environmentsList" align="center">
-												<button ng-show="envs == 'DEV'" type="button" class="btn waves-effect waves-light btn-xs btn-success">
-													{{envs}}</button>
+												<button ng-show="envs.name == 'DEV'" type="button" class="btn waves-effect waves-light btn-xs btn-success">
+													{{envs.name}}</button>
 
-												<button ng-show="envs == 'PRD'" type="button" class="btn waves-effect waves-light btn-xs btn-danger">
-														{{envs}}</button>
+												<button ng-show="envs.name == 'PRD'" type="button" class="btn waves-effect waves-light btn-xs btn-danger">
+														{{envs.name}}</button>
 
-												<button ng-show="envs == 'TST'" type="button" class="btn waves-effect waves-light btn-xs btn-warning">
-														{{envs}}</button>
+												<button ng-show="envs.name == 'TST'" type="button" class="btn waves-effect waves-light btn-xs btn-warning">
+														{{envs.name}}</button>
 
-												<button ng-show="envs != 'DEV' && envs != 'PRD' && envs != 'TST'" type="button" class="btn waves-effect waves-light btn-xs btn-primary">
-													{{envs}}</button>
+												<button ng-show="envs.name != 'DEV' && envs.name != 'PRD' && envs.name != 'TST'" type="button" class="btn waves-effect waves-light btn-xs btn-primary">
+													{{envs.name}}</button>
 											</span>
 										</td>
 										<td>{{ resultBrowset.teamname}}</td>

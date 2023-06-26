@@ -33,6 +33,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicConfiguration;
@@ -1269,20 +1270,6 @@ public class TopicControllerService {
     return topicCounter;
   }
 
-  private List<String> getConvertedEnvs(List<Env> allEnvs, List<String> selectedEnvs) {
-    List<String> newEnvList = new ArrayList<>();
-    for (String env : selectedEnvs) {
-      for (Env env1 : allEnvs) {
-        if (Objects.equals(env, env1.getId())) {
-          newEnvList.add(env1.getName());
-          break;
-        }
-      }
-    }
-
-    return newEnvList;
-  }
-
   private List<TopicInfo> getTopicInfoList(
       List<Topic> topicsFromSOT,
       String pageNo,
@@ -1320,7 +1307,7 @@ public class TopicControllerService {
 
         mp.setTopicid(topicSOT.getTopicid());
         mp.setEnvId(topicSOT.getEnvironment());
-        mp.setEnvironmentsList(getConvertedEnvs(listAllEnvs, envList));
+        mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamId(topicSOT.getTeamId());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
