@@ -1,5 +1,6 @@
 package io.aiven.klaw.model;
 
+import io.aiven.klaw.model.response.EnvIdInfo;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Data;
@@ -24,7 +25,7 @@ public class TopicInfo {
 
   @NotNull private String envId;
 
-  @NotNull private List<String> environmentsList;
+  @NotNull private List<EnvIdInfo> environmentsList;
 
   @NotNull private boolean showEditTopic;
 
