@@ -13,13 +13,7 @@ type DocumentationViewProps = {
 
 function DocumentationView({ stringifiedHtml }: DocumentationViewProps) {
   return (
-    <Box
-      component={"article"}
-      padding={"l2"}
-      borderColor={"grey-10"}
-      borderWidth={"1px"}
-      borderRadius={"4px"}
-    >
+    <Box component={"article"} paddingTop={"l2"}>
       <ReactMarkdown
         className={classes.markdownEditor}
         rehypePlugins={[rehypeRaw]}
