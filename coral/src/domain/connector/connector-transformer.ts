@@ -1,8 +1,10 @@
 import {
   ConnectorApiResponse,
+  ConnectorOverview,
   ConnectorRequestsForApprover,
 } from "src/domain/connector/connector-types";
 import { KlawApiResponse } from "types/utils";
+import omit from "lodash/omit";
 
 const transformConnectorApiResponse = (
   data: KlawApiResponse<"getConnectors">
@@ -38,4 +40,17 @@ const transformConnectorRequestApiResponse = (
   };
 };
 
-export { transformConnectorApiResponse, transformConnectorRequestApiResponse };
+function transformConnectorOverviewResponse(
+  apiResponse: KlawApiResponse<"getConnectorOverview">
+): ConnectorOverview {
+  return {
+    ...omit(apiResponse, ["connectorInfoList"]),
+    connectorInfo: apiResponse.connectorInfoList[0],
+  };
+}
+
+export {
+  transformConnectorApiResponse,
+  transformConnectorRequestApiResponse,
+  transformConnectorOverviewResponse,
+};
