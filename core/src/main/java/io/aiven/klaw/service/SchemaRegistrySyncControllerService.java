@@ -33,8 +33,11 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,6 +48,8 @@ import org.springframework.stereotype.Service;
 public class SchemaRegistrySyncControllerService {
 
   public static final String NOT_IN_SYNC = "NOT_IN_SYNC";
+  public static final String NOT_ON_CLUSTER = "NOT_ON_CLUSTER";
+  public static final String VERSIONS_NOT_IN_SYNC = "VERSIONS_NOT_IN_SYNC";
   public static final String IN_SYNC = "IN_SYNC";
   public static final String SOURCE_METADATA = "metadata";
   public static final String SOURCE_CLUSTER = "cluster";
@@ -143,7 +148,9 @@ public class SchemaRegistrySyncControllerService {
         manageDatabase
             .getHandleDbRequests()
             .getTopicAndVersionsForEnvAndTenantId(schemaEnvId, tenantId);
-
+    if (log.isDebugEnabled()) {
+      log.debug("Schema Names,Versions retrieved from DB: {}", topicSchemaVersionsInDb);
+    }
     for (Topic topic : topicList) {
       if (topicSchemaVersionsInDb.containsKey(topic.getTopicname())) {
         Set<String> schemaVersions = topicSchemaVersionsInDb.get(topic.getTopicname());
@@ -153,7 +160,7 @@ public class SchemaRegistrySyncControllerService {
         }
 
         Set<Integer> schemaVersionsInt = new TreeSet<>();
-        schemaVersions.forEach(ver -> schemaVersionsInt.add(Integer.parseInt(ver)));
+        schemaVersions.forEach(ver -> schemaVersionsInt.add(parseIntFromSchemaVersion(ver)));
 
         SchemaSubjectInfoResponse schemaInfo = new SchemaSubjectInfoResponse();
         schemaInfo.setTopic(topic.getTopicname());
@@ -161,10 +168,39 @@ public class SchemaRegistrySyncControllerService {
         schemaInfo.setTeamId(topic.getTeamId());
 
         schemaInfoList.add(schemaInfo);
+        topicSchemaVersionsInDb.remove(topic.getTopicname());
       }
     }
-
     return schemaInfoList;
+  }
+
+  private List<SchemaSubjectInfoResponse> annotateAnomalousSchemasNotInDB(
+      String schemaEnvId,
+      List<SchemaSubjectInfoResponse> schemaInfoList,
+      Map<String, Set<String>> topicSchemaVersionsInDb,
+      Map<String, SchemaInfoOfTopic> schemaTopicAndVersions) {
+    // Annotate anomalous Schemas
+    Set<Map.Entry<String, Set<String>>> schemaTopicNameToVersionsDB =
+        topicSchemaVersionsInDb.entrySet();
+    for (Map.Entry<String, Set<String>> schemaDetail : schemaTopicNameToVersionsDB) {
+
+      Set<Integer> schemaVersionsInt = new TreeSet<>();
+      schemaDetail.getValue().forEach(ver -> schemaVersionsInt.add(parseIntFromSchemaVersion(ver)));
+      SchemaSubjectInfoResponse schemaInfo = new SchemaSubjectInfoResponse();
+
+      schemaInfo.setTopic(schemaDetail.getKey());
+      schemaInfo.setSchemaVersions(schemaVersionsInt);
+      schemaInfo.setEnvId(schemaEnvId);
+      schemaInfo.setRemarks(annotateSchemasNotInCluster(schemaInfo, schemaTopicAndVersions));
+
+      schemaInfoList.add(schemaInfo);
+    }
+    return schemaInfoList;
+  }
+
+  private static int parseIntFromSchemaVersion(String ver) {
+    double dub = Double.parseDouble(ver);
+    return (int) dub;
   }
 
   // schema versions only
@@ -209,6 +245,11 @@ public class SchemaRegistrySyncControllerService {
 
       List<SchemaInfoOfTopic> schemaInfoOfTopicList =
           schemasInfoOfClusterResponse.getSchemaInfoOfTopicList();
+
+      Map<String, SchemaInfoOfTopic> schemaTopicAndVersions =
+          schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().stream()
+              .collect(Collectors.toMap(SchemaInfoOfTopic::getTopic, Function.identity()));
+
       for (SchemaInfoOfTopic schemaInfoOfTopic : schemaInfoOfTopicList) {
         SchemaSubjectInfoResponse schemaSubjectInfoResponse = new SchemaSubjectInfoResponse();
         schemaSubjectInfoResponse.setSchemaVersions(schemaInfoOfTopic.getSchemaVersions());
@@ -217,8 +258,12 @@ public class SchemaRegistrySyncControllerService {
       }
 
       schemaSubjectInfoResponseList =
-          filterTopicsNotInDb(
-              schemaSubjectInfoResponseList, topicsFromSOT, schemaEnvSelected.getId(), tenantId);
+          annotateAllSchemaWithStatus(
+              schemaSubjectInfoResponseList,
+              topicsFromSOT,
+              schemaTopicAndVersions,
+              schemaEnvSelected.getId(),
+              tenantId);
 
       if (!showAllTopics) {
         schemaSubjectInfoResponseList =
@@ -243,11 +288,40 @@ public class SchemaRegistrySyncControllerService {
     }
   }
 
-  private List<SchemaSubjectInfoResponse> filterTopicsNotInDb(
+  private String annotateSchemasNotInCluster(
+      SchemaSubjectInfoResponse schemaInfo, Map<String, SchemaInfoOfTopic> schemas) {
+
+    try {
+
+      SchemaInfoOfTopic clusterSchema = schemas.get(schemaInfo.getTopic());
+      // Missing From Cluster
+      if (clusterSchema == null) {
+        return NOT_ON_CLUSTER;
+      } else {
+        // Schema version differences
+        if (!(schemaInfo.getSchemaVersions().size() == clusterSchema.getSchemaVersions().size()
+            && clusterSchema.getSchemaVersions().containsAll(schemaInfo.getSchemaVersions()))) {
+          return VERSIONS_NOT_IN_SYNC;
+        }
+      }
+    } catch (Exception ex) {
+      log.error("Error Caught while finding differences between cluster and metadata.");
+    }
+    return null;
+  }
+
+  /**
+   * Annotate All Schemas With State cycles through all schemas from the Cluster Api and the DB and
+   * finds all differences between them. these differences are annotated in the remarks section of
+   * the SchemaSubjectInfoResponse Object
+   */
+  private List<SchemaSubjectInfoResponse> annotateAllSchemaWithStatus(
       List<SchemaSubjectInfoResponse> schemaSubjectInfoResponseList,
       List<Topic> topicsFromSOT,
+      Map<String, SchemaInfoOfTopic> schemaTopicAndVersions,
       String schemaEnvId,
       int tenantId) {
+
     List<SchemaSubjectInfoResponse> updatedList = new ArrayList<>();
     Map<String, Set<String>> topicSchemaVersionsInDb =
         manageDatabase
@@ -265,6 +339,8 @@ public class SchemaRegistrySyncControllerService {
             topicSchemaVersionsInDb.get(schemaSubjectInfoResponse.getTopic()));
         updatedList.add(schemaSubjectInfoResponse);
       } else {
+        // Here The Topic does not exist in the Klaw DB we check if the Schema exists in the DB.
+        // If it does we mark it as an Orphan.
         List<MessageSchema> sch =
             manageDatabase
                 .getHandleDbRequests()
@@ -274,14 +350,23 @@ public class SchemaRegistrySyncControllerService {
           schemaSubjectInfoResponse.setTeamId(sch.get(0).getTeamId());
           schemaSubjectInfoResponse.setTeamname(
               manageDatabase.getTeamNameFromTeamId(tenantId, sch.get(0).getTeamId()));
-          schemaSubjectInfoResponse.setPossibleTeams(
-              List.of(schemaSubjectInfoResponse.getTeamname(), SYNC_102));
           schemaSubjectInfoResponse.setRemarks(SYNC_103);
+          updatedList.add(schemaSubjectInfoResponse);
         }
-        updatedList.add(schemaSubjectInfoResponse);
+        // Do not add anything here as there is no topic or schema associated with the cluster
+        // schema in Klaw.
       }
+      // We remove each schema which has been processed from the cluster from our list of schemas we
+      // have from the db.
+      topicSchemaVersionsInDb.remove(schemaSubjectInfoResponse.getTopic());
     }
-    return updatedList;
+    if (log.isDebugEnabled()) {
+      log.debug("Remaining schemas not removed {}", topicSchemaVersionsInDb);
+    }
+    // Any Schema not in the DB will be annotated below with not on cluster, versions not in sync or
+    // orphaned.
+    return annotateAnomalousSchemasNotInDB(
+        schemaEnvId, updatedList, topicSchemaVersionsInDb, schemaTopicAndVersions);
   }
 
   private void validateSchemas(
@@ -371,7 +456,7 @@ public class SchemaRegistrySyncControllerService {
                     tenantId, kafkaEnv.getAssociatedEnv().getId(), topicName);
         schemaList =
             schemaList.stream()
-                .sorted(Comparator.comparing(a -> Integer.parseInt(a.getSchemaversion())))
+                .sorted(Comparator.comparing(a -> parseIntFromSchemaVersion(a.getSchemaversion())))
                 .toList();
 
         List<MessageSchema> schemaListUpdated = new ArrayList<>();
@@ -600,16 +685,37 @@ public class SchemaRegistrySyncControllerService {
         mp.setTotalNoPages(totalPages + "");
         mp.setAllPageNos(numList);
         mp.setCurrentPage(pageNo);
+        mp.setTeamId(mp.getTeamId() == 0 ? getTeamIdFromDb(tenantId, mp) : mp.getTeamId());
         mp.setTeamname(
-            mp.getTeamname() == null
+            StringUtils.isEmpty(mp.getTeamname())
                 ? manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId())
                 : mp.getTeamname());
-        mp.setPossibleTeams(
-            mp.getPossibleTeams() == null ? List.of(mp.getTeamname()) : mp.getPossibleTeams());
+        mp.setPossibleTeams(getPossibleTeams(mp));
         pagedTopicSyncList.add(mp);
       }
     }
     return pagedTopicSyncList;
+  }
+
+  private static List<String> getPossibleTeams(SchemaSubjectInfoResponse mp) {
+    if (!StringUtils.isEmpty(mp.getRemarks())
+        && (mp.getRemarks().equals(SYNC_103) || mp.getRemarks().equals(NOT_ON_CLUSTER))) {
+      return List.of(mp.getTeamname(), SYNC_102);
+    }
+    return List.of(mp.getTeamname());
+  }
+
+  private Integer getTeamIdFromDb(int tenantId, SchemaSubjectInfoResponse mp) {
+    MessageSchema schema =
+        manageDatabase
+            .getHandleDbRequests()
+            .getTeamIdFromSchemaTopicNameAndEnvAndTenantId(
+                mp.getTopic(), String.valueOf(mp.getEnvId()), tenantId);
+    if (schema != null) {
+      return schema.getTeamId();
+    } else {
+      return mp.getTeamId();
+    }
   }
 
   private String getUserName() {
