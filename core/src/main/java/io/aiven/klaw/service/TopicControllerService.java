@@ -850,7 +850,7 @@ public class TopicControllerService {
             userName,
             tenantId,
             RequestEntityType.TOPIC.name(),
-            null);
+            RequestEntityType.TOPIC.name() + " " + topicRequest.getRequestOperationType());
     try {
       topicRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
     } catch (JsonProcessingException e) {

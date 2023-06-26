@@ -688,7 +688,12 @@ public class AclControllerService {
   }
 
   private void saveToTopicHistory(String userDetails, int tenantId, AclRequests aclReq) {
-    String remarksAcl = aclReq.getAclType();
+    String remarksAcl =
+        RequestEntityType.ACL.name()
+            + " "
+            + aclReq.getRequestOperationType()
+            + " "
+            + aclReq.getAclType();
     if (aclReq.getAclIpPrincipleType().equals(AclIPPrincipleType.IP_ADDRESS)) {
       remarksAcl = remarksAcl + " - " + aclReq.getAcl_ip();
     } else {

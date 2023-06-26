@@ -726,23 +726,28 @@ public class CommonUtilsService {
       String userName,
       int tenantId,
       String entityType,
-      String remarksAcl) {
+      String remarks) {
     List<TopicHistory> topicHistoryList = new ArrayList<>();
     try {
       AtomicReference<String> existingHistory = new AtomicReference<>("");
       List<TopicHistory> existingTopicHistory;
       List<Topic> existingTopicList = new ArrayList<>();
-      // topic requests (not create) or any acl requests
+      // topic requests (not create) or any acl/schema requests
       if ((!RequestOperationType.CREATE.value.equals(requestOperationType)
               && entityType.equals(RequestEntityType.TOPIC.name()))
-          || entityType.equals(RequestEntityType.ACL.name())) {
+          || entityType.equals(RequestEntityType.ACL.name())
+          || entityType.equals(RequestEntityType.SCHEMA.name())) {
         existingTopicList =
             getFilteredTopicsForTenant(getTopicsForTopicName(topicName, tenantId)).stream()
                 .filter(topic -> Objects.equals(topic.getEnvironment(), topicEnvironment))
                 .toList();
         existingTopicList.stream().findFirst().ifPresent(a -> existingHistory.set(a.getHistory()));
-        existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), VALUE_TYPE_REF);
-        topicHistoryList.addAll(existingTopicHistory);
+        try {
+          existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), VALUE_TYPE_REF);
+          topicHistoryList.addAll(existingTopicHistory);
+        } catch (Exception e) {
+          log.error("Error in parsing existing history {} {}", topicName, topicEnvironment);
+        }
       }
 
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
@@ -754,15 +759,13 @@ public class CommonUtilsService {
       topicHistory.setRequestedTime(simpleDateFormat.format(requestedTime));
       topicHistory.setApprovedBy(userName);
       topicHistory.setApprovedTime(simpleDateFormat.format(new Date()));
-      if (!existingTopicList.isEmpty() && entityType.equals(RequestEntityType.ACL.name())) {
-        topicHistory.setRemarks(entityType + " " + requestOperationType + " " + remarksAcl);
-      } else {
-        topicHistory.setRemarks(entityType + " " + requestOperationType);
-      }
+      topicHistory.setRemarks(remarks);
       topicHistoryList.add(topicHistory);
 
       try {
-        if (!existingTopicList.isEmpty() && entityType.equals(RequestEntityType.ACL.name())) {
+        if (!existingTopicList.isEmpty()
+            && (entityType.equals(RequestEntityType.ACL.name())
+                || entityType.equals(RequestEntityType.SCHEMA.name()))) {
           Topic topic = existingTopicList.get(0);
           topic.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
           topic.setExistingTopic(true);
