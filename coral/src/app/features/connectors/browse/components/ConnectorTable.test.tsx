@@ -3,6 +3,7 @@ import ConnectorTable from "src/app/features/connectors/browse/components/Connec
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
 import { Connector } from "src/domain/connector";
+import { EnvironmentInfo } from "src/domain/environment/environment-types";
 
 const mockConnectors: Connector[] = [
   {
@@ -15,7 +16,7 @@ const mockConnectors: Connector[] = [
     allPageNos: ["1"],
     totalNoPages: "1",
     currentPage: "1",
-    environmentsList: ["DEV"],
+    environmentsList: [{ id: "1", name: "DEV" }],
     description: "test connect desc",
     showEditConnector: false,
     showDeleteConnector: false,
@@ -34,7 +35,10 @@ const mockConnectors: Connector[] = [
     allPageNos: ["1"],
     totalNoPages: "1",
     currentPage: "1",
-    environmentsList: ["DEV", "TST"],
+    environmentsList: [
+      { id: "1", name: "DEV" },
+      { id: "2", name: "TST" },
+    ],
     description: "test connect desc",
     showEditConnector: false,
     showDeleteConnector: false,
@@ -53,7 +57,7 @@ const mockConnectors: Connector[] = [
     allPageNos: ["1"],
     totalNoPages: "1",
     currentPage: "1",
-    environmentsList: ["TST"],
+    environmentsList: [{ id: "2", name: "TST" }],
     description: "test connect desc",
     showEditConnector: false,
     showDeleteConnector: false,
@@ -163,14 +167,14 @@ describe("ConnectorTable.tsx", () => {
         const environmentList = within(row).getByRole("cell", {
           // environmentList could be undefined, but isn't in our usage here
           // so this is needed to prevent type errors
-          name: (connector.environmentsList as string[]).join(" "),
+          name: (connector.environmentsList as EnvironmentInfo[]).join(" "),
         });
 
         expect(environmentList).toBeVisible();
       });
       // environmentList could be undefined, but isn't in our usage here
       // so this is needed to prevent type errors
-      (connector.environmentsList as string[]).forEach((env) => {
+      (connector.environmentsList as EnvironmentInfo[]).forEach((env) => {
         it(`renders Environment ${env} for connector ${connector}`, () => {
           const table = screen.getByRole("table", {
             name: "Connectors overview, page 1 of 10",
@@ -181,7 +185,7 @@ describe("ConnectorTable.tsx", () => {
           const environmentList = within(row).getByRole("cell", {
             // environmentList could be undefined, but isn't in our usage here
             // so this is needed to prevent type errors
-            name: (connector.environmentsList as string[]).join(" "),
+            name: (connector.environmentsList as EnvironmentInfo[]).join(" "),
           });
 
           expect(environmentList).toBeVisible();

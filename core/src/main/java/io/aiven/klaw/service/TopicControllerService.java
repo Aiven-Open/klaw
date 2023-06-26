@@ -32,6 +32,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicConfiguration;
@@ -732,6 +733,7 @@ public class TopicControllerService {
     String updateTopicReqStatus;
     // Starts as success as their may be no schema related to this topic.
     String schemaUpdateStatus = ApiResultStatus.SUCCESS.value;
+    String updateSchemaMsg = "";
     if (RequestOperationType.CLAIM.value.equals(topicRequest.getRequestOperationType())) {
       List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
       for (Topic allTopic : allTopics) {
@@ -758,6 +760,7 @@ public class TopicControllerService {
       if (!updatedSchemas.isEmpty()) {
         schemaUpdateStatus =
             manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(updatedSchemas);
+        updateSchemaMsg = ", TopicSchemaStatus: " + schemaUpdateStatus;
       }
 
       updateTopicReqStatus = dbHandle.addToSynctopics(allTopics);
@@ -792,8 +795,7 @@ public class TopicControllerService {
         .success(
             (updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)
                 && ApiResultStatus.SUCCESS.value.equalsIgnoreCase(schemaUpdateStatus)))
-        .message(
-            "Topic Status: " + updateTopicReqStatus + ", TopicSchemaStatus: " + schemaUpdateStatus)
+        .message("Topic Status: " + updateTopicReqStatus + updateSchemaMsg)
         .build();
   }
 
@@ -1249,20 +1251,6 @@ public class TopicControllerService {
     return topicCounter;
   }
 
-  private List<String> getConvertedEnvs(List<Env> allEnvs, List<String> selectedEnvs) {
-    List<String> newEnvList = new ArrayList<>();
-    for (String env : selectedEnvs) {
-      for (Env env1 : allEnvs) {
-        if (Objects.equals(env, env1.getId())) {
-          newEnvList.add(env1.getName());
-          break;
-        }
-      }
-    }
-
-    return newEnvList;
-  }
-
   private List<TopicInfo> getTopicInfoList(
       List<Topic> topicsFromSOT,
       String pageNo,
@@ -1300,7 +1288,7 @@ public class TopicControllerService {
 
         mp.setTopicid(topicSOT.getTopicid());
         mp.setEnvId(topicSOT.getEnvironment());
-        mp.setEnvironmentsList(getConvertedEnvs(listAllEnvs, envList));
+        mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamId(topicSOT.getTeamId());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));

@@ -640,6 +640,10 @@ export type components = {
     SchemaResetCache: {
       kafkaEnvId?: string;
     };
+    EnvIdInfo: {
+      id: string;
+      name: string;
+    };
     TopicInfo: {
       /** Format: int32 */
       topicid: number;
@@ -653,7 +657,7 @@ export type components = {
       /** Format: int32 */
       teamId: number;
       envId: string;
-      environmentsList: (string)[];
+      environmentsList: (components["schemas"]["EnvIdInfo"])[];
       showEditTopic: boolean;
       showDeleteTopic: boolean;
       topicDeletable: boolean;
@@ -1034,10 +1038,6 @@ export type components = {
       consumergroup?: string;
       transactionalId?: string;
     };
-    EnvIdInfo: {
-      id: string;
-      name: string;
-    };
     PromotionStatus: {
       status: string;
       sourceEnv?: string;
@@ -1217,7 +1217,7 @@ export type components = {
       allPageNos?: (string)[];
       totalNoPages?: string;
       currentPage?: string;
-      environmentsList?: (string)[];
+      environmentsList?: (components["schemas"]["EnvIdInfo"])[];
       possibleTeams?: (string)[];
       connectorConfig?: string;
       environmentName?: string;
