@@ -2,12 +2,13 @@ import {
   DataTable,
   DataTableColumn,
   EmptyState,
-  Flexbox,
+  Box,
   StatusChip,
   InlineIcon,
 } from "@aivenio/aquarium";
 import { Connector } from "src/domain/connector";
 import link from "@aivenio/aquarium/dist/src/icons/link";
+import { Link } from "react-router-dom";
 
 type ConnectorTableProps = {
   connectors: Connector[];
@@ -19,6 +20,7 @@ interface ConnectorTableRow {
   connectorName: Connector["connectorName"];
   environmentsList: Connector["environmentsList"];
   teamName: Connector["teamName"];
+  environmentId: Connector["environmentId"];
 }
 
 function ConnectorTable(props: ConnectorTableProps) {
@@ -28,10 +30,10 @@ function ConnectorTable(props: ConnectorTableProps) {
     {
       type: "custom",
       headerName: "Connector",
-      UNSAFE_render: ({ connectorName }: ConnectorTableRow) => (
-        <a href={`/connectorOverview?connectorName=${connectorName}`}>
+      UNSAFE_render: ({ connectorName, environmentId }: ConnectorTableRow) => (
+        <Link to={`/connector/${connectorName}/overview`} state={environmentId}>
           {connectorName} <InlineIcon icon={link} />
-        </a>
+        </Link>
       ),
     },
     {
@@ -39,7 +41,7 @@ function ConnectorTable(props: ConnectorTableProps) {
       headerName: "Environments",
       UNSAFE_render: ({ environmentsList }: ConnectorTableRow) => {
         return (
-          <Flexbox wrap={"wrap"} gap={"2"}>
+          <Box.Flex wrap={"wrap"} gap={"2"}>
             {environmentsList?.map((env, index) => (
               <StatusChip
                 dense
@@ -51,7 +53,7 @@ function ConnectorTable(props: ConnectorTableProps) {
                 text={`${env} `}
               />
             ))}
-          </Flexbox>
+          </Box.Flex>
         );
       },
     },
@@ -62,12 +64,13 @@ function ConnectorTable(props: ConnectorTableProps) {
     },
   ];
 
-  const rows: ConnectorTableRow[] = connectors.map((connectors: Connector) => {
+  const rows: ConnectorTableRow[] = connectors.map((connector: Connector) => {
     return {
-      id: Number(connectors.connectorId),
-      connectorName: connectors.connectorName,
-      teamName: connectors.teamName,
-      environmentsList: connectors?.environmentsList ?? [],
+      id: Number(connector.connectorId),
+      connectorName: connector.connectorName,
+      teamName: connector.teamName,
+      environmentsList: connector?.environmentsList ?? [],
+      environmentId: connector.environmentId,
     };
   });
 
