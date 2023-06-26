@@ -248,7 +248,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                         }
                     );
                 }
-
+        $scope.updatedSchemaDeleteIdsArray = [];
         $scope.updatedSyncArray = [];
         $scope.topicsWithWarning = [];
         $scope.topicsWithWarningBulk = [];
@@ -286,7 +286,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
             if(!$scope.getSchemas.envName)
                    return;
 
-            if($scope.updatedTopicIdsArray.length === 0)
+            if($scope.updatedTopicIdsArray.length === 0 && $scope.updatedSchemaDeleteIdsArray.length === 0)
             {
                 swal({
                        title: "",
@@ -296,7 +296,25 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                    });
                 return;
             }
+            var duplicateWarn="";
+            for(let i = 0; i < $scope.updatedTopicIdsArray.length; i++) {
+                if($scope.updatedSchemaDeleteIdsArray.includes($scope.updatedTopicIdsArray[i])) {
+                    duplicateWarn = duplicateWarn + " " + $scope.updatedTopicIdsArray[i];
+                }
+            }
+
+            if(duplicateWarn.length > 0) {
+                swal({
+                      title: "",
+                      text: "The following records are marked both to synchronize and to be deleted" + duplicateWarn + " .Please select one option for these schemas.",
+                      timer: 2000,
+                      showConfirmButton: false
+                  });
+               return;
+             }
+
             serviceInput['topicList'] = $scope.updatedTopicIdsArray;
+            serviceInput['topicListForRemoval'] = $scope.updatedSchemaDeleteIdsArray;
             serviceInput['sourceKafkaEnvSelected'] = $scope.getSchemas.envName;
             serviceInput['typeOfSync'] = 'SYNC_SCHEMAS';
 
@@ -331,7 +349,9 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                             $scope.ShowSpinnerStatus = false;
                             $scope.alert = "Schema Sync Request : "+output.message;
                             $scope.updatedSyncArray = [];
-
+                            $scope.updatedSchemaDeleteIdsArray = [];
+                            //reset after its success
+                            $scope.updatedTopicIdsArray = [];
                              if(output.success){
                               swal({
                             		   title: "",
@@ -623,7 +643,7 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
                             $scope.ShowSpinnerStatus = false;
                             $scope.alertbulk = "Topic Sync Bulk Request : "+output.message;
                             $scope.updatedSyncArray = [];
-
+                            $scope.updatedSchemaDeleteIdsArray = [];
                              if(output.success){
                                 $scope.resetCheckBoxes();
                                 $scope.syncbulklog = output.data;
@@ -661,5 +681,35 @@ app.controller("synchronizeSchemasCtrl", function($scope, $http, $location, $win
 
 
         }
+
+        $scope.removeSchema = function(option, schemaId) {
+
+                    var seqFound = -1;
+                    var i;
+                    for (i = 0; i < $scope.updatedSchemaDeleteIdsArray.length; i++) {
+                      if($scope.updatedSchemaDeleteIdsArray[i]== schemaId) {
+                        seqFound = i;
+                        }
+                    }
+
+                    if(option != 'REMOVE FROM KLAW'){
+                    if(seqFound != -1){
+                    // Remove if it is already there
+                        $scope.updatedSchemaDeleteIdsArray.splice(seqFound,1);
+                        return;
+                    }
+                    return;
+                    } else {
+                        if(seqFound != -1){
+                        //already added
+                            return;
+                        } else {
+                        $scope.updatedSchemaDeleteIdsArray.push(schemaId);
+                        }
+                    }
+
+
+
+                }
 }
 );

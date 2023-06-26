@@ -109,7 +109,7 @@ const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
   testClusterApiConnection: "/testClusterApiConnection",
   shutdownApp: "/shutdownContext",
   showUsers: "/showUserList",
-  resetMemoryCache: "/resetMemoryCache/{tenantId}/{entityType}/{operationType}",
+  resetMemoryCache: "/resetMemoryCache",
   resetCache: "/resetCache",
   getRequestStatistics: "/requests/statistics",
   getRegistrationInfoFromId: "/getUserInfoFromRegistrationId",

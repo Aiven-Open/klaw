@@ -8,10 +8,10 @@ import {
 } from "@aivenio/aquarium";
 import link from "@aivenio/aquarium/dist/src/icons/link";
 import { Link } from "react-router-dom";
+import { createTopicOverviewLink } from "src/app/features/topics/browse/utils/create-topic-overview-link";
 import { Topic } from "src/domain/topic";
 import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
 import { FeatureFlag } from "src/services/feature-flags/types";
-import { createTopicOverviewLink } from "src/app/features/topics/browse/utils/create-topic-overview-link";
 
 type TopicListProps = {
   topics: Topic[];
@@ -23,6 +23,7 @@ interface TopicsTableRow {
   topicName: Topic["topicName"];
   environmentsList: string[];
   teamName: Topic["teamname"];
+  envId: Topic["envId"];
 }
 
 function TopicTable(props: TopicListProps) {
@@ -34,9 +35,8 @@ function TopicTable(props: TopicListProps) {
   const columns: Array<DataTableColumn<TopicsTableRow>> = [
     {
       type: "custom",
-      field: "topicName",
       headerName: "Topic",
-      UNSAFE_render: ({ topicName }: TopicsTableRow) => {
+      UNSAFE_render: ({ topicName, envId }: TopicsTableRow) => {
         if (!topicDetailsEnabled) {
           return (
             <a href={createTopicOverviewLink(topicName)}>
@@ -45,7 +45,7 @@ function TopicTable(props: TopicListProps) {
           );
         }
         return (
-          <Link to={`/topic/${topicName}/overview`}>
+          <Link to={`/topic/${topicName}/overview`} state={envId}>
             {topicName} <InlineIcon icon={link} />
           </Link>
         );
@@ -53,7 +53,6 @@ function TopicTable(props: TopicListProps) {
     },
     {
       type: "custom",
-      field: "environmentsList",
       headerName: "Environments",
       UNSAFE_render: ({ environmentsList }: TopicsTableRow) => {
         return (
@@ -86,6 +85,7 @@ function TopicTable(props: TopicListProps) {
       topicName: topic.topicName,
       teamName: topic.teamname,
       environmentsList: topic.environmentsList ?? [],
+      envId: topic.envId,
     };
   });
 

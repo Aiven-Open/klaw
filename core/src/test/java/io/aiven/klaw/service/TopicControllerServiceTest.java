@@ -15,6 +15,7 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
@@ -67,6 +68,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class TopicControllerServiceTest {
 
+  public static final String TOPIC_1 = "topic1";
+  public static final String EXPECTED_SUCCESS_RESPONSE =
+      "Topic Status: success, TopicSchemaStatus: success";
   @Mock private ClusterApiService clusterApiService;
 
   @Mock private UserDetails userDetails;
@@ -600,7 +604,7 @@ public class TopicControllerServiceTest {
   @Order(21)
   public void getCreatedTopicRequestsWithMoreElements() {
     List<TopicRequest> listTopicReqs = new ArrayList<>();
-    listTopicReqs.add(getTopicRequest("topic1"));
+    listTopicReqs.add(getTopicRequest(TOPIC_1));
     listTopicReqs.add(getTopicRequest("topic2"));
     listTopicReqs.add(getTopicRequest("topic3"));
     listTopicReqs.add(getTopicRequest("topic4"));
@@ -636,7 +640,7 @@ public class TopicControllerServiceTest {
 
     assertThat(topicList).hasSize(5);
     assertThat(topicList.get(0).getTopicpartitions()).isEqualTo(2);
-    assertThat(topicList.get(0).getTopicname()).isEqualTo("topic1");
+    assertThat(topicList.get(0).getTopicname()).isEqualTo(TOPIC_1);
     assertThat(topicList.get(1).getTopicname()).isEqualTo("topic2");
   }
 
@@ -654,7 +658,7 @@ public class TopicControllerServiceTest {
   @Test
   @Order(23)
   public void approveTopicRequests() throws KlawException {
-    String topicName = "topic1";
+    String topicName = TOPIC_1;
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
@@ -677,13 +681,13 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: success");
   }
 
   @Test
   @Order(24)
   public void approveTopicClaimRequests() throws KlawException {
-    String topicName = "topic1";
+    String topicName = TOPIC_1;
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     topicRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
@@ -714,13 +718,13 @@ public class TopicControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: success");
   }
 
   @Test
   @Order(25)
   public void approveTopicUpdateRequests() throws KlawException {
-    String topicName = "topic1";
+    String topicName = TOPIC_1;
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     topicRequest.setRequestOperationType(RequestOperationType.UPDATE.value);
@@ -750,13 +754,13 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: success");
   }
 
   @Test
   @Order(26)
   public void approveTopicRequestsFailureResponseFromCluster() throws KlawException {
-    String topicName = "topic1";
+    String topicName = TOPIC_1;
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
@@ -779,13 +783,13 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests("" + topicId);
-    assertThat(apiResponse1.getMessage()).isEqualTo("failure");
+    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: failure");
   }
 
   @Test
   @Order(27)
   public void approveTopicRequestsFailureNotAllowed() throws KlawException {
-    String topicName = "topic1";
+    String topicName = TOPIC_1;
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     topicRequest.setRequestor("kwusera");
@@ -1115,7 +1119,7 @@ public class TopicControllerServiceTest {
   public void updateTopicsSuccessAdvancedTopicConfigs()
       throws KlawException, KlawNotAuthorizedException {
     Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", ApiResultStatus.SUCCESS.value);
+    resultMap.put("result", EXPECTED_SUCCESS_RESPONSE);
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
@@ -1130,14 +1134,14 @@ public class TopicControllerServiceTest {
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsUpdateRequest(getTopicWithAdvancedConfigs());
-    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(EXPECTED_SUCCESS_RESPONSE);
   }
 
   @Test
   @Order(45)
   public void updateTopicsSuccessDefaultValues() throws KlawException, KlawNotAuthorizedException {
     Map<String, String> resultMap = new HashMap<>();
-    resultMap.put("result", ApiResultStatus.SUCCESS.value);
+    resultMap.put("result", EXPECTED_SUCCESS_RESPONSE);
 
     when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
@@ -1152,7 +1156,7 @@ public class TopicControllerServiceTest {
 
     ApiResponse apiResponse =
         topicControllerService.createTopicsUpdateRequest(getTopicWithDefaultConfigs());
-    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(EXPECTED_SUCCESS_RESPONSE);
   }
 
   // invalid partitions
@@ -1231,11 +1235,11 @@ public class TopicControllerServiceTest {
     userList.get(0).setTeamId(1);
     when(handleDbRequests.getAllUsersInfo(anyInt())).thenReturn(userList);
     Map<String, String> claimReqResult = new HashMap<>();
-    claimReqResult.put("result", ApiResultStatus.SUCCESS.value);
+    claimReqResult.put("result", EXPECTED_SUCCESS_RESPONSE);
     when(handleDbRequests.requestForTopic(any())).thenReturn(claimReqResult);
 
     ApiResponse apiResponse = topicControllerService.createClaimTopicRequest(topicName, envId);
-    assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    assertThat(apiResponse.getMessage()).isEqualTo(EXPECTED_SUCCESS_RESPONSE);
 
     verify(handleDbRequests, times(1)).requestForTopic(topicRequestCaptor.capture());
     TopicRequest req = topicRequestCaptor.getValue();
@@ -1413,6 +1417,105 @@ public class TopicControllerServiceTest {
       assertThat(origReqTime.compareTo(req.getRequesttime()) >= 0).isTrue();
       origReqTime = req.getRequesttime();
     }
+  }
+
+  @Test
+  @Order(54)
+  public void approveTopicClaimRequests_withAssocSchema_success() throws KlawException {
+    String topicName = TOPIC_1;
+    int topicId = 1001;
+    TopicRequest topicRequest = getTopicRequest(topicName);
+    topicRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+
+    stubUserInfo();
+    when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
+    when(handleDbRequests.updateTopicRequest(any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(getTopic(topicName)));
+    when(clusterApiService.approveTopicRequests(
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            anyInt(),
+            anyBoolean()))
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(List.of(getTopic(topicName)));
+    when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.updateTopicRequestStatus(any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(manageDatabase.getSchemaRegEnvList(eq(0))).thenReturn(List.of(env));
+    when(manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(any()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.getSchemaForTenantAndEnvAndTopic(
+            eq(0), eq("1"), eq(topicRequest.getTopicname())))
+        .thenReturn(getSchemas(2));
+
+    ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
+    assertThat(apiResponse1.getMessage()).isEqualTo(EXPECTED_SUCCESS_RESPONSE);
+  }
+
+  @Test
+  @Order(55)
+  public void approveTopicClaimRequests_withAssocSchema_failure() throws KlawException {
+    String topicName = TOPIC_1;
+    int topicId = 1001;
+    TopicRequest topicRequest = getTopicRequest(topicName);
+    topicRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
+    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+
+    stubUserInfo();
+    when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
+    when(handleDbRequests.updateTopicRequest(any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+        .thenReturn(List.of(getTopic(topicName)));
+    when(clusterApiService.approveTopicRequests(
+            anyString(),
+            anyString(),
+            anyInt(),
+            anyString(),
+            anyString(),
+            any(),
+            anyInt(),
+            anyBoolean()))
+        .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+        .thenReturn(new HashSet<>(Collections.singletonList("1")));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+        .thenReturn(List.of(getTopic(topicName)));
+    when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.updateTopicRequestStatus(any(), anyString()))
+        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(manageDatabase.getSchemaRegEnvList(eq(0))).thenReturn(List.of(env));
+    when(manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(any()))
+        .thenReturn(ApiResultStatus.FAILURE.value);
+    when(handleDbRequests.getSchemaForTenantAndEnvAndTopic(
+            eq(0), eq("1"), eq(topicRequest.getTopicname())))
+        .thenReturn(getSchemas(2));
+
+    ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
+    assertThat(apiResponse1.getMessage())
+        .isEqualTo("Topic Status: success, TopicSchemaStatus: failure");
+  }
+
+  private List<MessageSchema> getSchemas(int number) {
+    List<MessageSchema> schemas = new ArrayList<>();
+    for (int i = 0; i < number; i++) {
+      MessageSchema schema = new MessageSchema();
+      schema.setSchemaId(i + 1);
+      schema.setTenantId(101);
+      schema.setTopicname(TOPIC_1);
+      schemas.add(schema);
+    }
+    return schemas;
   }
 
   private List<TopicRequest> generateRequests(int number) {

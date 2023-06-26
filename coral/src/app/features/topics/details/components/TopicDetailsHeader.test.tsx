@@ -20,7 +20,7 @@ const mockSetEnvironmentId = jest.fn();
 const defaultProps = {
   topicName: testTopicName,
   environments: testEnvironments,
-  environmentId: "1",
+  environmentId: undefined,
   setEnvironmentId: mockSetEnvironmentId,
   topicExists: true,
 };
@@ -104,7 +104,7 @@ describe("TopicDetailsHeader", () => {
       expect(select).toBeEnabled();
     });
 
-    it("shows the first element from environments as the selected one", () => {
+    it("sets environmentId to be the first element from environments if it is undefined on load", () => {
       const select = screen.getByRole("combobox", {
         name: "Select environment",
       });

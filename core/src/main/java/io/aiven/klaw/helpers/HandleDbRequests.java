@@ -350,6 +350,8 @@ public interface HandleDbRequests {
 
   void deleteSchemas(Topic topicObj);
 
+  void deleteSchema(int tenantId, String topicName, String schemaEnv);
+
   String deleteAllUsers(int tenantId);
 
   String deleteAllTeams(int tenantId);
@@ -385,6 +387,9 @@ public interface HandleDbRequests {
   int getAllComponentsCountForUser(String userName, int tenantId);
 
   Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId);
+
+  MessageSchema getTeamIdFromSchemaTopicNameAndEnvAndTenantId(
+      String schemaTopicName, String envId, int tenantId);
 
   List<Topic> getAllTopics();
 

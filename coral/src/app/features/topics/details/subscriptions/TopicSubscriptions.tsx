@@ -26,6 +26,7 @@ import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
 import { TopicSubscriptionsTable } from "src/app/features/topics/details/subscriptions/TopicSubscriptionsTable";
+import TopicSubscriptionsDetailsModal from "src/app/features/topics/details/subscriptions/components/TopicSubscriptionsDetailsModal";
 import { getTopicStats } from "src/app/features/topics/details/utils";
 import { createAclDeletionRequest } from "src/domain/acl/acl-api";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
@@ -52,6 +53,12 @@ const TopicSubscriptions = () => {
     isOpen: boolean;
     req_no: string | null;
   }>({ isOpen: false, req_no: null });
+
+  const [detailsModal, setDetailsModal] = useState<{
+    isOpen: boolean;
+    isAivenCluster: boolean;
+    aclReqNo?: string;
+  }>({ isOpen: false, isAivenCluster: false, aclReqNo: undefined });
 
   const toast = useToast();
 
@@ -93,6 +100,24 @@ const TopicSubscriptions = () => {
     deleteRequest({ requestId: req_no });
   };
 
+  const openDetailsModal = ({
+    isAivenCluster,
+    aclReqNo,
+  }: {
+    isAivenCluster: boolean;
+    aclReqNo: string;
+  }) => {
+    setDetailsModal({ isOpen: true, isAivenCluster, aclReqNo });
+  };
+
+  const closeDetailsModal = () => {
+    setDetailsModal({
+      isOpen: false,
+      isAivenCluster: false,
+      aclReqNo: undefined,
+    });
+  };
+
   const subsStats = useMemo(() => {
     return getTopicStats(topicOverview);
   }, [topicOverview]);
@@ -123,6 +148,10 @@ const TopicSubscriptions = () => {
     });
   }, [search, teamId, aclType, selectedSubs, topicOverview]);
 
+  const selectedSubscription = filteredData.find(
+    ({ req_no }) => req_no === detailsModal.aclReqNo
+  );
+
   return (
     <>
       {deleteModal.isOpen && deleteModal.req_no !== null && (
@@ -143,6 +172,13 @@ const TopicSubscriptions = () => {
           Are you sure you want to delete this subscription? This action will
           create a deletion request for approval.
         </Dialog>
+      )}
+      {detailsModal.isOpen && selectedSubscription !== undefined && (
+        <TopicSubscriptionsDetailsModal
+          closeDetailsModal={closeDetailsModal}
+          isAivenCluster={detailsModal.isAivenCluster}
+          selectedSubscription={selectedSubscription}
+        />
       )}
       <PageHeader
         title="Subscriptions"
@@ -217,6 +253,7 @@ const TopicSubscriptions = () => {
             selectedSubs={selectedSubs}
             filteredData={filteredData}
             onDelete={openDeleteModal}
+            onDetails={openDetailsModal}
           />
         }
       />

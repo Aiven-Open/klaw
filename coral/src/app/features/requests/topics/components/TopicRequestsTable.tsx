@@ -40,7 +40,6 @@ function TopicRequestsTable({
     { type: "text", field: "topicname", headerName: "Topic" },
     {
       type: "status",
-      field: "environmentName",
       headerName: "Environment",
       status: ({ environmentName }) => ({
         status: "neutral",
@@ -50,7 +49,6 @@ function TopicRequestsTable({
     { type: "text", field: "teamname", headerName: "Owned by" },
     {
       type: "status",
-      field: "requestStatus",
       headerName: "Status",
       status: ({ requestStatus }) => {
         return {
@@ -61,7 +59,6 @@ function TopicRequestsTable({
     },
     {
       type: "status",
-      field: "requestOperationType",
       headerName: "Request type",
       status: ({ requestOperationType }) => {
         return {

@@ -822,6 +822,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public void deleteSchema(int tenantId, String topicName, String schemaEnv) {
+    jdbcDeleteHelper.deleteSchemasWithOptions(tenantId, topicName, schemaEnv);
+  }
+
+  @Override
   public String deleteAllUsers(int tenantId) {
     return jdbcDeleteHelper.deleteAllUsers(tenantId);
   }
@@ -904,6 +909,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId) {
     return jdbcSelectHelper.getTopicAndVersionsForEnvAndTenantId(envId, tenantId);
+  }
+
+  @Override
+  public MessageSchema getTeamIdFromSchemaTopicNameAndEnvAndTenantId(
+      String schemaTopicName, String envId, int tenantId) {
+    return jdbcSelectHelper.getTeamIdFromSchemaTopicNameAndEnvAndTenantId(
+        schemaTopicName, envId, tenantId);
   }
 
   @Override
