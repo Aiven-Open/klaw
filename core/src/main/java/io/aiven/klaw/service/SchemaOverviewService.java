@@ -299,11 +299,10 @@ public class SchemaOverviewService extends BaseOverviewService {
             : null,
         orderEnvs);
     if (schemaOverview.getSchemaPromotionDetails() == null) {
-      Map<String, PromotionStatus> searchOverviewPromotionDetails = new HashMap<>();
+      PromotionStatus searchOverviewPromotionDetails = new PromotionStatus();
       schemaOverview.setSchemaPromotionDetails(searchOverviewPromotionDetails);
     }
-    Map<String, PromotionStatus> existingPromoDetails = schemaOverview.getSchemaPromotionDetails();
-    existingPromoDetails.put(schemaEnv.getName(), promotionDetails);
+    PromotionStatus existingPromoDetails = promotionDetails;
     // verify if topic exists in target env
     if (!verifyIfTopicExistsInTargetSchemaEnv(kafkaEnvIds, promotionDetails, tenantId)) {
       promotionDetails.setStatus(NO_PROMOTION);

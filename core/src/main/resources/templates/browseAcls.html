@@ -924,27 +924,27 @@
 												<textarea class="form-control" style="background-color:#70C6DA;color:black;" disabled rows="10">{{ schemaDetails.content }}</textarea>
 											</td>
 										</tr>
-										<tr ng-repeat="(key, value) in schemaPromotionDetails">
+										<tr>
 											<td width="100%%" >
-												<div ng-show="value.status ==='success' && key === schemaDetails.env ">
+												<div ng-show="schemaPromotionDetails.status ==='success' ">
 													<table width="100%" class="table color-table success-table">
 														<tr>
 															<td width="25%">
 
 															</td>
 															<td align="left" width="25%">
-																<div ng-show="firstSchemaPromote == 'true' && firstSchemaEnvPromote === key" class="form-group has-success">
+																<div ng-show="firstSchemaPromote == 'true'" class="form-group has-success">
 																	<select class="form-control custom-select"
 																			required
 																			ng-model="schema.versionSelected"
 																			ng-options="schemaVersion for schemaVersion in schemaVersions">
-																		<option value="" selected="selected">
+																		<option schemaPromotionDetails="" selected="selected">
 																			Select Version to Promote</option>
 																	</select>
 																</div>
 															</td>
 															<td align="left" width="25%">
-																<div ng-show="firstSchemaPromote == 'true' && isForceRegisterAllowed == 'true' && firstSchemaEnvPromote === key" class="checkbox checkbox-primary pt-0 mytooltip">
+																<div ng-show="firstSchemaPromote == 'true' && isForceRegisterAllowed == 'true'" class="checkbox checkbox-primary pt-0 mytooltip">
 																		<input id="checkbox-force" type="checkbox" ng-model="schema.forceRegister">
 																		<label for="checkbox-force"> Force Register Schema </label>
 																	<span class="tooltip-content5">
@@ -957,17 +957,17 @@
 															</td>
 															<td width="5%"></td>
 															<td width="20%" align="right">
-																<button ng-show="value.status =='success' && firstSchemaEnvPromote != key"
+																<button ng-show="schemaPromotionDetails.status =='success'  && firstSchemaPromote !== 'true'"
 																		type="button"
 																		ng-click="onFirstSchemaPromote(schemaDetails)"
 																		class="btn btn-rounded btn-block btn-outline-info">
-																	Promote to {{value.targetEnv}}
+																	Promote to {{schemaPromotionDetails.targetEnv}}
 																</button>
-																<button ng-show="value.status =='success' && firstSchemaPromote == 'true'  && firstSchemaEnvPromote === key"
+																<button ng-show="schemaPromotionDetails.status =='success' && firstSchemaPromote == 'true' "
 																		type="button"
-																		ng-click="onFinalSchemaPromote(value.sourceEnv,value.targetEnvId)"
+																		ng-click="onFinalSchemaPromote(schemaPromotionDetails.sourceEnv,schemaPromotionDetails.targetEnvId)"
 																		class="btn btn-rounded btn-block btn-outline-info">
-																	Submit Promotion to {{value.targetEnv}}
+																	Submit Promotion to {{schemaPromotionDetails.targetEnv}}
 																</button>
 															</td>
 														</tr>
