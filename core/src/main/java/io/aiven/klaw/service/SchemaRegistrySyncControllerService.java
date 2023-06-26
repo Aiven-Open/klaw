@@ -199,8 +199,8 @@ public class SchemaRegistrySyncControllerService {
   }
 
   private static int parseIntFromSchemaVersion(String ver) {
-    Double dub = Double.parseDouble(ver);
-    return dub.intValue();
+    double dub = Double.parseDouble(ver);
+    return (int) dub;
   }
 
   // schema versions only
