@@ -9,7 +9,7 @@ function TopicDocumentation() {
   return (
     <>
       <PageHeader title={"Documentation"} />
-      {!topicOverview?.topicDocumentation ||
+      {topicOverview.topicDocumentation === undefined ||
       topicOverview.topicDocumentation.length === 0 ? (
         <NoDocumentationBanner />
       ) : (
