@@ -37,7 +37,7 @@ public class KafkaConnectorModelResponse {
 
   private String currentPage;
 
-  private List<String> environmentsList;
+  private List<EnvIdInfo> environmentsList;
 
   private List<String> possibleTeams;
 

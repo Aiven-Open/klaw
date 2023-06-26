@@ -43,27 +43,27 @@ public class KwConstants {
   public static final String MAIL_TOPICCLAIMREQUEST_CONTENT =
       "Dear User, \\nA request for a clam topic %s has been requested in Klaw.";
   public static final String MAIL_TOPICREQUESTAPPROVAL_CONTENT =
-      "Dear User, \\nA request for a new topic %s has been approved.";
+      "Dear User, \\nYour topic request for %s has been approved.\n";
   public static final String MAIL_TOPICREQUESTDENIAL_CONTENT =
-      "Dear User, \\nA request for a new topic %s has been declined.\\nReason : %s";
+      "Dear User, \\nYour topic request for %s has been declined.\\nReason : %s\n";
   public static final String MAIL_ACLREQUEST_CONTENT =
       "Dear User, \\nA request for a new acl %s for topic %s has been requested in Klaw.";
   public static final String MAIL_ACLREQUESTDELETE_CONTENT =
       "Dear User, \\nA request for a Delete acl %s for topic %s has been requested in Klaw.";
   public static final String MAIL_ACLREQUESTAPPROVAL_CONTENT =
-      "Dear User, \\nA request for a new acl %s for topic %s has been approved.";
+      "Dear User, \\nYour acl request %s for topic %s has been approved.";
   public static final String MAIL_ACLREQUESTDENIAL_CONTENT =
-      "Dear User, \\nA request for a new acl %s for topic %s has been declined.\\nReason : %s";
+      "Dear User, \\nYour acl request for %s for topic %s has been declined.\\nReason : %s";
   public static final String MAIL_REGISTERUSER_CONTENT =
       "Dear Super User, \\nYou have a new pending user registration request from : \\n\\nUser name : %s \\n\\nName : %s \\n\\nTeam : %s\\n\\nRole : %s";
   public static final String MAIL_REGISTERUSER_SAAS_CONTENT =
       "Dear Super User, \\nThere is a new user registration request from : \\n\\nUser name : %s \\n\\nName : %s ";
   public static final String MAIL_REGISTERUSERTOUSER_CONTENT =
-      "Dear User, \\nThankyou for registering in Klaw. Below here are your details. \\n\\nUser name : %s \\nName : %s \\nTeam : %s\\nRole : %s \\n\\n Account pending Activation.";
+      "Dear User, \\nThank you for registering in Klaw. Below here are your details. \\n\\nUser name : %s \\nName : %s \\nTeam : %s\\nRole : %s \\n\\n Account pending Activation.";
   public static final String MAIL_REGISTERUSERTOUSER_SAAS_CONTENT =
-      "Dear User, \\nThankyou for registering in Klaw. Below here are your registration details. \\n\\nUser name : %s \\nPassword : %s \\nName : %s \\nTenant : %s\\nTeam : %s\\nRole : %s \\n\\n  Account pending Activation.";
+      "Dear User, \\nThank you for registering in Klaw. Below here are your registration details. \\n\\nUser name : %s \\nPassword : %s \\nName : %s \\nTenant : %s\\nTeam : %s\\nRole : %s \\n\\n  Account pending Activation.";
   public static final String MAIL_REGISTERUSERTOUSER_SAAS_ADMIN_CONTENT =
-      "Dear User, \\nThankyou for registering in Klaw. Below here are your registration details. \\n\\nUser name : %s \\nPassword : %s \\nName : %s \\nTeam : %s\\nRole : %s \\n\\n ACTIVATE : Please click %s to activate.";
+      "Dear User, \\nThank you for registering in Klaw. Below here are your registration details. \\n\\nUser name : %s \\nPassword : %s \\nName : %s \\nTeam : %s\\nRole : %s \\n\\n ACTIVATE : Please click %s to activate.";
   public static final String MAIL_RECONTOPICS_CONTENT =
       "Dear User, \\n  Below are the topics which need to be reconciled. \\n\\n Tenant : %s \\n\\n Topics : \\n\\n %s";
   public static final String MAIL_NEWUSERADDED_CONTENT =
