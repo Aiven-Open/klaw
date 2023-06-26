@@ -12,6 +12,7 @@ import { createTopicOverviewLink } from "src/app/features/topics/browse/utils/cr
 import { Topic } from "src/domain/topic";
 import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
 import { FeatureFlag } from "src/services/feature-flags/types";
+import { EnvironmentInfo } from "src/domain/environment/environment-types";
 
 type TopicListProps = {
   topics: Topic[];
@@ -21,7 +22,7 @@ type TopicListProps = {
 interface TopicsTableRow {
   id: number;
   topicName: Topic["topicName"];
-  environmentsList: string[];
+  environmentsList: EnvironmentInfo[];
   teamName: Topic["teamname"];
   envId: Topic["envId"];
 }

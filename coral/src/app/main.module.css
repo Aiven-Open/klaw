@@ -40,6 +40,13 @@ body {
   --aquarium-colors-primary-5: #eff0fa;
   --aquarium-colors-primary-0: #5c6bc0;
 
+  /* --headline-text-color represents the value for
+     --aquarium-colors-grey-100. We need to set this
+     value for topic documentation h elements. Creating
+     a specific variable for that makes it more clear that
+     we're not overriding the DS value here, but reusing
+     it in one specific case. */
+  --headline-text-color: #19191d;
   --body-text-color: #4a4b57;
   --text-link-color: #0788d1;
   --text-link-color-hover: #02a8f3;

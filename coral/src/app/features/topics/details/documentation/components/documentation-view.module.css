@@ -1,0 +1,59 @@
+/* The html we show in ReactMarkdown does not contain */
+/* classes or style options. So elements are using the  */
+/* global styles that are based on the DS styles. Since these */
+/* are build in a way where styles should not rely on elements,  */
+/* e.g. h1 has the same font-size as body.  */
+/* We need to overwrite styles for elements in the markdown */
+/* context to show user a more refined documentation based */
+/* on their input.  */
+
+/*TYPOGRAPHY*/
+
+.markdownEditor h1,
+.markdownEditor h2,
+.markdownEditor h3 {
+  font-family: "Inter", serif;
+  font-weight: 700;
+  color: var(--headline-text-color);
+  /* setting margins since user can't style otherwise
+  and it should fit with the spacing for paragraphs */
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdownEditor h1 {
+  /*Aquarium large heading */
+  font-size: 32px;
+}
+
+.markdownEditor h2 {
+  /*Aquarium heading*/
+  font-size: 24px;
+}
+
+.markdownEditor h3 {
+  /*Aquarium sub-heading*/
+  font-size: 20px;
+}
+
+.markdownEditor p {
+  /*Browser default for p*/
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.markdownEditor ul,
+.markdownEditor ol {
+  /* Browser default ~ 40px. This is a bit less
+     spacing than 40px to make more sense in our layout
+     while still providing a list style */
+  padding-left: 1.75rem;
+}
+
+.markdownEditor ul {
+  list-style-type: initial;
+}
+
+.markdownEditor ol {
+  list-style-type: decimal;
+}
