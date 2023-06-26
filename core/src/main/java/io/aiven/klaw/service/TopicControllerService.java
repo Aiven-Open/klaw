@@ -736,6 +736,7 @@ public class TopicControllerService {
     String updateTopicReqStatus;
     // Starts as success as their may be no schema related to this topic.
     String schemaUpdateStatus = ApiResultStatus.SUCCESS.value;
+    String updateSchemaMsg = "";
     if (RequestOperationType.CLAIM.value.equals(topicRequest.getRequestOperationType())) {
       List<Topic> allTopics = getTopicFromName(topicRequest.getTopicname(), tenantId);
       for (Topic allTopic : allTopics) {
@@ -762,6 +763,7 @@ public class TopicControllerService {
       if (!updatedSchemas.isEmpty()) {
         schemaUpdateStatus =
             manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(updatedSchemas);
+        updateSchemaMsg = ", TopicSchemaStatus: " + schemaUpdateStatus;
       }
 
       updateTopicReqStatus = dbHandle.addToSynctopics(allTopics);
@@ -796,8 +798,7 @@ public class TopicControllerService {
         .success(
             (updateTopicReqStatus.equals(ApiResultStatus.SUCCESS.value)
                 && ApiResultStatus.SUCCESS.value.equalsIgnoreCase(schemaUpdateStatus)))
-        .message(
-            "Topic Status: " + updateTopicReqStatus + ", TopicSchemaStatus: " + schemaUpdateStatus)
+        .message("Topic Status: " + updateTopicReqStatus + updateSchemaMsg)
         .build();
   }
 
