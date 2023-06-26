@@ -7905,7 +7905,8 @@
             "type" : "integer",
             "format" : "int32"
           }
-        }
+        },
+        "required" : [ "connectorExists", "connectorInfoList" ]
       },
       "ConnectorOverviewPerEnv" : {
         "properties" : {

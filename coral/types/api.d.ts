@@ -1396,12 +1396,12 @@ export type components = {
       editable?: boolean;
     };
     ConnectorOverview: {
-      connectorInfoList?: (components["schemas"]["KafkaConnectorModelResponse"])[];
+      connectorInfoList: (components["schemas"]["KafkaConnectorModelResponse"])[];
       topicHistoryList?: (components["schemas"]["TopicHistory"])[];
       promotionDetails?: {
         [key: string]: string | undefined;
       };
-      connectorExists?: boolean;
+      connectorExists: boolean;
       topicDocumentation?: string;
       /** Format: int32 */
       topicIdForDocumentation?: number;
