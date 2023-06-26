@@ -37,6 +37,7 @@ import { TopicSubscriptionsPage } from "src/app/pages/topics/details/subscriptio
 import { TopicOverviewPage } from "src/app/pages/topics/details/overview";
 import { TopicDetailsSchemaPage } from "src/app/pages/topics/details/schema";
 import { TopicSettingsPage } from "src/app/pages/topics/details/settings";
+import { TopicDocumentationPage } from "src/app/pages/topics/details/documentation";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -86,7 +87,7 @@ const routes: Array<RouteObject> = [
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
               TopicOverviewTabEnum.DOCUMENTATION
             ],
-            element: <div>DOCUMENTATION</div>,
+            element: <TopicDocumentationPage />,
             id: TopicOverviewTabEnum.DOCUMENTATION,
           },
           {
