@@ -203,7 +203,7 @@ public class UpdateDataJdbc {
       return ApiResultStatus.SUCCESS.value;
     }
     switch (requestOperationType) {
-      case CREATE, PROMOTE -> insertDataJdbcHelper.insertIntoTopicSOT(topics, false);
+      case CREATE, PROMOTE -> insertDataJdbcHelper.insertIntoTopicSOT(topics);
       case UPDATE -> updateTopicSOT(topics, topicRequest.getOtherParams());
       case DELETE -> {
         deleteDataJdbcHelper.deleteTopics(topicObj);
