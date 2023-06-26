@@ -7,26 +7,53 @@
 /* context to show user a more refined documentation based */
 /* on their input.  */
 
+/*TYPOGRAPHY*/
+
+.markdownEditor h1,
+.markdownEditor h2,
+.markdownEditor h3 {
+  font-family: "Inter", serif;
+  font-weight: 700;
+  color: var(--headline-text-color);
+  /* setting margins since user can't style otherwise
+  and it should fit with the spacing for paragraphs */
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
 .markdownEditor h1 {
-  font-size: 2.5em;
+  /*Aquarium large heading */
+  font-size: 32px;
 }
 
 .markdownEditor h2 {
-  font-size: 2em;
+  /*Aquarium heading*/
+  font-size: 24px;
 }
 
 .markdownEditor h3 {
-  font-size: 1.75em;
+  /*Aquarium sub-heading*/
+  font-size: 20px;
 }
 
-.markdownEditor h4 {
-  font-size: 1.5em;
+.markdownEditor p {
+  /*Browser default for p*/
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
-.markdownEditor h5 {
-  font-size: 1.25em;
+.markdownEditor ul,
+.markdownEditor ol {
+  /* Browser default ~ 40px. This is a bit less
+     spacing than 40px to make more sense in our layout
+     while still providing a list style */
+  padding-left: 1.75rem;
 }
 
-.markdownEditor h6 {
-  font-size: 1em;
+.markdownEditor ul {
+  list-style-type: initial;
+}
+
+.markdownEditor ol {
+  list-style-type: decimal;
 }
