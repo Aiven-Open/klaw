@@ -21,6 +21,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
@@ -783,7 +784,7 @@ public class TopicSyncControllerService {
 
         mp.setTopicid(topicSOT.getTopicid());
         mp.setEnvName(topicSOT.getEnvironment());
-        mp.setEnvironmentsList(getConvertedEnvs(listAllEnvs, envList));
+        mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
         mp.setTopicName(topicSOT.getTopicname());
         mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
 
@@ -802,20 +803,6 @@ public class TopicSyncControllerService {
     }
 
     return topicsListMap;
-  }
-
-  private List<String> getConvertedEnvs(List<Env> allEnvs, List<String> selectedEnvs) {
-    List<String> newEnvList = new ArrayList<>();
-    for (String env : selectedEnvs) {
-      for (Env env1 : allEnvs) {
-        if (Objects.equals(env, env1.getId())) {
-          newEnvList.add(env1.getName());
-          break;
-        }
-      }
-    }
-
-    return newEnvList;
   }
 
   private int counterIncrement() {

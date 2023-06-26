@@ -5672,6 +5672,17 @@
           }
         }
       },
+      "EnvIdInfo" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "id", "name" ]
+      },
       "TopicInfo" : {
         "properties" : {
           "topicid" : {
@@ -5707,7 +5718,7 @@
           "environmentsList" : {
             "type" : "array",
             "items" : {
-              "type" : "string"
+              "$ref" : "#/components/schemas/EnvIdInfo"
             }
           },
           "showEditTopic" : {
@@ -6838,17 +6849,6 @@
         },
         "required" : [ "aclPatternType", "environment", "environmentName", "kafkaFlavorType", "req_no", "showDeleteAcl", "teamid", "teamname", "topicname", "topictype" ]
       },
-      "EnvIdInfo" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "id", "name" ]
-      },
       "PromotionStatus" : {
         "properties" : {
           "status" : {
@@ -7376,7 +7376,7 @@
           "environmentsList" : {
             "type" : "array",
             "items" : {
-              "type" : "string"
+              "$ref" : "#/components/schemas/EnvIdInfo"
             }
           },
           "possibleTeams" : {

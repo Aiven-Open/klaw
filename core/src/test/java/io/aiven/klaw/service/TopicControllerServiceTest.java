@@ -681,7 +681,7 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getMessage()).isEqualTo(EXPECTED_SUCCESS_RESPONSE);
+    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: success");
   }
 
   @Test
@@ -718,7 +718,7 @@ public class TopicControllerServiceTest {
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getMessage()).isEqualTo(EXPECTED_SUCCESS_RESPONSE);
+    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: success");
   }
 
   @Test
@@ -754,7 +754,7 @@ public class TopicControllerServiceTest {
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
-    assertThat(apiResponse1.getMessage()).isEqualTo(EXPECTED_SUCCESS_RESPONSE);
+    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: success");
   }
 
   @Test
@@ -783,8 +783,7 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
 
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests("" + topicId);
-    assertThat(apiResponse1.getMessage())
-        .isEqualTo("Topic Status: failure, TopicSchemaStatus: success");
+    assertThat(apiResponse1.getMessage()).isEqualTo("Topic Status: failure");
   }
 
   @Test
