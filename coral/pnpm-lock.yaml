@@ -46,7 +46,6 @@ specifiers:
   react-router-dom: ^6.10.0
   react-test-renderer: ^18.2.0
   rehype-parse: ^8.0.4
-  rehype-raw: ^6.1.1
   rehype-remark: ^9.1.2
   rehype-sanitize: ^5.0.1
   rehype-stringify: ^9.0.3
@@ -76,7 +75,6 @@ dependencies:
   react-markdown: 8.0.7_3mjolpizrsjgnt7s4ahgoveqvu
   react-router-dom: 6.10.0_biqbaboplfbrettd7655fr4n2y
   rehype-parse: 8.0.4
-  rehype-raw: 6.1.1
   rehype-remark: 9.1.2
   rehype-sanitize: 5.0.1
   rehype-stringify: 9.0.3
@@ -7825,14 +7823,6 @@ packages:
       '@types/hast': 2.3.4
       hast-util-from-parse5: 7.1.2
       parse5: 6.0.1
-      unified: 10.1.2
-    dev: false
-
-  /rehype-raw/6.1.1:
-    resolution: {integrity: sha512-d6AKtisSRtDRX4aSPsJGTfnzrX2ZkHQLE5kiUuGOeEoLpbEulFF4hj0mLPbsa+7vmguDKOVVEQdHKDSwoaIDsQ==}
-    dependencies:
-      '@types/hast': 2.3.4
-      hast-util-raw: 7.2.3
       unified: 10.1.2
     dev: false
 
