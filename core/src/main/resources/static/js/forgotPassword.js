@@ -104,23 +104,23 @@ app.controller("forgotPwdCtrl", function($scope, $http, $location, $window) {
                                               'token' : $scope.resetToken},
                                     data: {'username' : $scope.forgotPwdUsername}
                                 }).success(function(output) {
+                                console.log(" What is the output? : " + output);
                                     $scope.userFound = output.userFound;
-                                    if($scope.userFound == 'false')
+                                    if($scope.userFound == 'false') {
                                         $scope.alert = 'User not found !';
-                                    else if($scope.userFound == 'true' && output.tokenSent == 'false'){
+                                    } else if($scope.userFound == 'true' && output.tokenSent == 'false'){
                                         $scope.alert = 'An issue occurred while resetting password. Please contact Admin !';
-                                    }
-                                    else {
+                                    } else {
 
                                         $scope.alert = 'Your password has been reset.';
                                         $scope.tokenSent = 'true';
-                                        $scope.delay(1000).then(() => $window.location.href = $window.location.origin + "/login");
+                                       $scope.delay(1000).then(() => $window.location.href = $window.location.origin + "/login");
 
                                         }
                                 }).error(
                                     function(error)
                                     {
-                                        $scope.alert = 'User not found !'
+                                        $scope.alert = 'Unable to update your password. Please check your token has not expired and your user name is spelt correctly.'
                                     }
                                 );
                         }
