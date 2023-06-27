@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,6 +13,7 @@ import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRepo;
@@ -100,8 +102,7 @@ public class UpdateDataJdbcTest {
   public void updateUpdateTopicRequest() {
     int reqNum = 1001;
     String requestOperationType = "Update";
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     TopicRequest req = utilMethods.getTopicRequest(1001);
     req.setOtherParams("1001");
@@ -115,8 +116,7 @@ public class UpdateDataJdbcTest {
   public void updateDeleteTopicRequest() {
     int reqNum = 1001;
     String requestOperationType = "Delete";
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     when(selectDataJdbcHelper.selectEnvDetails(anyString(), anyInt())).thenReturn(kafkaEnv);
     EnvTag envTag = new EnvTag();
@@ -137,14 +137,13 @@ public class UpdateDataJdbcTest {
   @ValueSource(strings = {"Create", "Promote"})
   public void updateCreateAndPromoteTopicRequest(String requestOperationType) {
     int reqNum = 1001;
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), anyBoolean()))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     TopicRequest req = utilMethods.getTopicRequest(1001);
     req.setRequestOperationType(requestOperationType);
     String result = updateData.updateTopicRequest(req, "uiuser2");
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
-    verify(insertDataJdbcHelper, times(1)).insertIntoTopicSOT(any(), anyBoolean());
+    verify(insertDataJdbcHelper, times(1)).insertIntoTopicSOT(any());
   }
 
   @Test
@@ -181,7 +180,7 @@ public class UpdateDataJdbcTest {
   }
 
   @Test
-  public void resetPassword_withSuccess() {
+  public void resetPassword_withSuccess() throws KlawNotAuthorizedException {
     String user = "uiuser1";
     String resetToken = UUID.randomUUID().toString();
     when(userInfo.getResetTokenGeneratedAt()).thenReturn(Timestamp.from(Instant.now()));
@@ -193,19 +192,24 @@ public class UpdateDataJdbcTest {
   }
 
   @Test
-  public void resetPassword_withFailureIncorrectToken() {
+  public void resetPassword_withFailureIncorrectToken() throws KlawNotAuthorizedException {
     String user = "uiuser1";
     String resetToken = UUID.randomUUID().toString();
     when(userInfo.getResetTokenGeneratedAt()).thenReturn(Timestamp.from(Instant.now()));
     when(userInfo.getResetToken()).thenReturn(resetToken);
     when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
 
-    String result = updateData.resetPassword(user, "newPWD", UUID.randomUUID().toString());
-    assertThat(result).isEqualTo(ApiResultStatus.FAILURE.value);
+    assertThatThrownBy(
+            () -> {
+              updateData.resetPassword(user, "newPWD", UUID.randomUUID().toString());
+            })
+        .isInstanceOf(KlawNotAuthorizedException.class)
+        .hasMessageContaining(
+            "Password for uiuser1 not reset as token was no longer valid or supplied token was invalid.");
   }
 
   @Test
-  public void resetPassword_withFailureTokenTimeout() {
+  public void resetPassword_withFailureTokenTimeout() throws KlawNotAuthorizedException {
     String user = "uiuser1";
     String resetToken = UUID.randomUUID().toString();
     Timestamp timestamp = Timestamp.from(Instant.now());
@@ -215,12 +219,17 @@ public class UpdateDataJdbcTest {
     when(userInfo.getResetToken()).thenReturn(resetToken);
     when(userInfoRepo.findById(user)).thenReturn(Optional.of(userInfo));
 
-    String result = updateData.resetPassword(user, "newPWD", resetToken);
-    assertThat(result).isEqualTo(ApiResultStatus.FAILURE.value);
+    assertThatThrownBy(
+            () -> {
+              updateData.resetPassword(user, "newPWD", resetToken);
+            })
+        .isInstanceOf(KlawNotAuthorizedException.class)
+        .hasMessageContaining(
+            "Password for uiuser1 not reset as token was no longer valid or supplied token was invalid.");
   }
 
   @Test
-  public void resetPassword_withSucess() {
+  public void resetPassword_withSucess() throws KlawNotAuthorizedException {
     String user = "uiuser1";
     String resetToken = UUID.randomUUID().toString();
     Timestamp timestamp = Timestamp.from(Instant.now());

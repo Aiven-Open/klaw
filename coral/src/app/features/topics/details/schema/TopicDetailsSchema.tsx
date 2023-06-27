@@ -64,8 +64,7 @@ function TopicDetailsSchema() {
           throw new Error("No schema available");
         }
 
-        const { targetEnvId, sourceEnv } =
-          schemaPromotionDetails[schemaDetailsPerEnv.env] ?? {};
+        const { targetEnvId, sourceEnv } = schemaPromotionDetails;
 
         if (targetEnvId === undefined || sourceEnv === undefined) {
           throw new Error("No promotion details available");
@@ -113,8 +112,7 @@ function TopicDetailsSchema() {
     );
   }
 
-  const { targetEnv, status: promotionStatus } =
-    schemaPromotionDetails[schemaDetailsPerEnv.env] ?? {};
+  const { targetEnv, status: promotionStatus } = schemaPromotionDetails;
 
   return (
     <>

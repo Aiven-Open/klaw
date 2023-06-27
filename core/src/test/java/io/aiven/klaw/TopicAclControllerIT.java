@@ -2,6 +2,7 @@ package io.aiven.klaw;
 
 import static io.aiven.klaw.helpers.KwConstants.TENANT_CONFIG_PROPERTY;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -10,14 +11,17 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwPropertiesModel;
+import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -26,11 +30,13 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
+import io.aiven.klaw.model.requests.SchemaRequestModel;
 import io.aiven.klaw.model.requests.TopicDeleteRequestModel;
 import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
+import io.aiven.klaw.model.response.SchemaOverview;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
@@ -831,7 +837,6 @@ public class TopicAclControllerIT {
     TopicOverview response = OBJECT_MAPPER.readValue(res, TopicOverview.class);
     assertThat(response.getAclInfoList()).hasSize(1);
   }
-
   // get acls to be synced - retrieve from Source of truth
   @Order(25)
   @Test
@@ -1127,5 +1132,197 @@ public class TopicAclControllerIT {
     assertThat(response1.getMessage())
         .isEqualTo(
             "Topic Suffix and Topic Prefix overlap there is a requirement for prefix-suffix characters minimum to be unique between the prefix and suffix.");
+  }
+
+  @Test
+  @Order(32)
+  public void addNewSRCluster() throws Exception {
+    // Schema registry cluster
+
+    KwClustersModel kwClustersModelSch = mockMethods.getSchemaClusterModel("DEV_SCH");
+    String jsonReqSch = OBJECT_MAPPER.writer().writeValueAsString(kwClustersModelSch);
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewCluster")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReqSch)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    ApiResponse response2 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response2.isSuccess()).isTrue();
+
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getClusters")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("clusterType", KafkaClustersType.SCHEMA_REGISTRY.value)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<KwClustersModelResponse> kwClustersModelResponses =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(kwClustersModelResponses).hasSize(1);
+  }
+
+  @Test
+  @Order(33)
+  public void createSREnv() throws Exception {
+    EnvModel envModelSch = mockMethods.getEnvModel("DEVSCH");
+    envModelSch.setClusterId(3);
+    envModelSch.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
+    EnvTag envTag = new EnvTag();
+    envTag.setName("SCHD");
+    envTag.setId("1");
+    envModelSch.setAssociatedEnv(envTag);
+    String jsonReqSch = OBJECT_MAPPER.writer().writeValueAsString(envModelSch);
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/addNewEnv")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .content(jsonReqSch)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+
+    // get SR envs
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getSchemaRegEnvs")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    List<Map<String, Object>> envModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(envModels).hasSize(1);
+  }
+
+  @Order(34)
+  @Test
+  public void createSchemaRequest() throws Exception {
+    SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
+    schemaRequest.setTopicname(topicName + topicId1);
+    schemaRequest.setRequestor(user1);
+    schemaRequest.setEnvironment("4"); // Schema reg env
+    schemaRequest.setSchemafull(
+        "{\n"
+            + "   \"type\" : \"record\",\n"
+            + "   \"namespace\" : \"Klaw\",\n"
+            + "   \"name\" : \"Employee\",\n"
+            + "   \"fields\" : [\n"
+            + "      { \"name\" : \"Name\" , \"type\" : \"string\" },\n"
+            + "      { \"name\" : \"Age\" , \"type\" : \"int\" }\n"
+            + "   ]\n"
+            + "}");
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
+    ApiResponse apiResponse = ApiResponse.builder().success(true).build();
+    ResponseEntity<ApiResponse> responseResponseEntity =
+        new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    when(clusterApiService.validateSchema(anyString(), anyString(), anyString(), anyInt()))
+        .thenReturn(responseResponseEntity);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/uploadSchema")
+                .with(user(user1).password(PASSWORD).roles("USER"))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Order(35)
+  @Test
+  public void execSchemaRequests() throws Exception {
+    Map<String, Object> registerSchemaCustomResponse = new HashMap<>();
+    registerSchemaCustomResponse.put("schemaRegistered", true);
+    registerSchemaCustomResponse.put("version", 1);
+    registerSchemaCustomResponse.put("id", 1);
+    registerSchemaCustomResponse.put("compatibility", "BACKWARD");
+
+    ApiResponse apiResponse = ApiResponse.builder().data(registerSchemaCustomResponse).build();
+    ResponseEntity<ApiResponse> responseResponseEntity =
+        new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+    when(clusterApiService.postSchema(any(), anyString(), anyString(), anyInt()))
+        .thenReturn(responseResponseEntity);
+    mvc.perform(
+            MockMvcRequestBuilders.post("/execSchemaRequests")
+                .with(user(user2).password(PASSWORD).roles("USER"))
+                .param("avroSchemaReqId", "1001")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.message", is(ApiResultStatus.SUCCESS.value)));
+  }
+
+  @Order(36)
+  @Test
+  public void getSchemaOverview() throws Exception {
+    List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
+    when(clusterApiService.getAcls(
+            anyString(), any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyInt()))
+        .thenReturn(aclInfo);
+
+    String res =
+        mvc.perform(
+                get("/getSchemaOfTopic")
+                    .with(user(user1).password(PASSWORD))
+                    .param("topicName", topicName + topicId1)
+                    .param("kafkaEnvId", "1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    SchemaOverview response = OBJECT_MAPPER.readValue(res, SchemaOverview.class);
+    assertThat(response.getAllSchemaVersions()).hasSize(1);
+  }
+
+  @Order(37)
+  @Test
+  public void getHistoriesOfTopicAclSchema() throws Exception {
+    List<Map<String, String>> aclInfo = new ArrayList<>(utilMethods.getClusterAcls2());
+    when(clusterApiService.getAcls(
+            anyString(), any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyInt()))
+        .thenReturn(aclInfo);
+
+    String res =
+        mvc.perform(
+                get("/getTopicOverview")
+                    .with(user(user3).password(PASSWORD))
+                    .param("topicName", topicName + topicId1)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    TopicOverview response = OBJECT_MAPPER.readValue(res, TopicOverview.class);
+    assertThat(response.getTopicHistoryList())
+        .extracting(TopicHistory::getRemarks)
+        .containsExactlyInAnyOrder(
+            "TOPIC Create", "ACL Create Consumer - User:*", "SCHEMA Create Version : 1");
   }
 }
