@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers;
 
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestMode;
@@ -313,7 +314,8 @@ public interface HandleDbRequests {
 
   String updatePassword(String username, String pwd);
 
-  String resetPassword(String username, String resetToken, String pwd);
+  String resetPassword(String username, String resetToken, String pwd)
+      throws KlawNotAuthorizedException;
 
   String generatePasswordResetToken(String username);
 
