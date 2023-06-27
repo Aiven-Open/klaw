@@ -71,6 +71,11 @@ const mockConnectors: Connector[] = [
 
 const tableRowHeader = ["Connector", "Environments", "Team"];
 
+const isFeatureFlagActiveMock = jest.fn();
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
 describe("ConnectorTable.tsx", () => {
   describe("shows empty state correctly", () => {
     afterAll(cleanup);
@@ -94,6 +99,8 @@ describe("ConnectorTable.tsx", () => {
   describe("shows all Connectors as a table", () => {
     beforeAll(() => {
       mockIntersectionObserver();
+      isFeatureFlagActiveMock.mockReturnValue(true);
+
       customRender(
         <ConnectorTable
           connectors={mockConnectors}
@@ -193,6 +200,47 @@ describe("ConnectorTable.tsx", () => {
 
           expect(environmentList).toBeVisible();
         });
+      });
+    });
+  });
+
+  describe("renders link to angular app if feature-flag is not enabled", () => {
+    beforeAll(() => {
+      mockIntersectionObserver();
+      isFeatureFlagActiveMock.mockReturnValue(false);
+
+      customRender(
+        <ConnectorTable
+          connectors={mockConnectors}
+          ariaLabel={"Connectors overview, page 1 of 10"}
+        />,
+        { memoryRouter: true }
+      );
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    mockConnectors.forEach((connector) => {
+      it(`renders the connector name "${connector.connectorName}" as a link to the detail view as row header`, () => {
+        const table = screen.getByRole("table", {
+          name: "Connectors overview, page 1 of 10",
+        });
+        const rowHeader = within(table).getByRole("cell", {
+          name: connector.connectorName,
+        });
+        const link = within(rowHeader).getByRole("link", {
+          name: connector.connectorName,
+        });
+
+        expect(rowHeader).toBeVisible();
+        expect(link).toBeVisible();
+        expect(link).toHaveAttribute(
+          "href",
+          `http://localhost/connectorOverview?connectorName=${connector.connectorName}`
+        );
       });
     });
   });
