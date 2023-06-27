@@ -1,5 +1,5 @@
 import ReactMarkdown from "react-markdown";
-import rehypeRemark from "rehype-remark";
+import rehypeRaw from "rehype-raw";
 import { Box } from "@aivenio/aquarium";
 import classes from "src/app/features/topics/details/documentation/components/documentation-view.module.css";
 
@@ -17,8 +17,7 @@ function DocumentationViewOnly({ stringifiedHtml }: DocumentationViewProps) {
     <Box component={"article"} paddingTop={"l2"}>
       <ReactMarkdown
         className={classes.reactMarkdown}
-        // rehypePlugins={[rehypeRemark]}
-        remarkPlugins={[rehypeRemark]}
+        rehypePlugins={[rehypeRaw]}
       >
         {stringifiedHtml}
       </ReactMarkdown>
