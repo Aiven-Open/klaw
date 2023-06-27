@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CLAIM_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CREATE_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_DELETE_REQUESTED;
@@ -40,6 +41,7 @@ import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
 import io.aiven.klaw.model.response.ConnectorOverview;
 import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import java.text.SimpleDateFormat;
@@ -982,7 +984,7 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public ConnectorOverview getConnectorOverview(String connectorNamesearch) {
+  public ConnectorOverview getConnectorOverview(String connectorNamesearch, String envId) {
     log.debug("getConnectorOverview {}", connectorNamesearch);
     String userName = getUserName();
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
@@ -1001,12 +1003,13 @@ public class KafkaConnectControllerService {
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
+
     connectors =
         connectors.stream()
             .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
             .collect(Collectors.toList());
 
-    ConnectorOverview topicOverview = new ConnectorOverview();
+    ConnectorOverview topicOverview = filterByEnvironment(connectors, envId);
 
     if (connectors.size() == 0) {
       topicOverview.setConnectorExists(false);
@@ -1111,6 +1114,38 @@ public class KafkaConnectControllerService {
     }
 
     return topicOverview;
+  }
+
+  private ConnectorOverview filterByEnvironment(
+      List<KwKafkaConnector> connectors, String envId, int tenantId) {
+    ConnectorOverview overview = new ConnectorOverview();
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_KAFKA_CONNECT_ENVS);
+    List<String> orderOfEnvsArrayList = KlawResourceUtils.getOrderedEnvsList(orderOfEnvs);
+    List<EnvIdInfo> availableEnvs = new ArrayList<>();
+    List<EnvIdInfo> availableEnvsNotInPromotionOrder = new ArrayList<>();
+    connectors.forEach(
+        conn -> {
+          EnvIdInfo envIdInfo = new EnvIdInfo();
+          envIdInfo.setId(conn.getEnvironment());
+          envIdInfo.setName(
+              manageDatabase.getKafkaConnectEnvList(tenantId).stream()
+                  .filter(env -> env.getId().equals(conn.getEnvironment()))
+                  .map(Env::getName)
+                  .findFirst()
+                  .orElse("ENV_NOT_FOUND"));
+          if (orderOfEnvsArrayList.contains(envIdInfo.getId())) {
+            availableEnvs.add(envIdInfo);
+          } else {
+            availableEnvsNotInPromotionOrder.add(envIdInfo);
+          }
+        });
+    availableEnvs.sort(
+        Comparator.comparingInt(
+            topicEnv -> Objects.requireNonNull(orderOfEnvs).indexOf(topicEnv.getId())));
+    availableEnvs.addAll(availableEnvsNotInPromotionOrder);
+    overview.setAvailableEnvironments(availableEnvs);
+
+    return overview;
   }
 
   public ConnectorOverviewPerEnv getConnectorDetailsPerEnv(String envId, String connectorName) {
