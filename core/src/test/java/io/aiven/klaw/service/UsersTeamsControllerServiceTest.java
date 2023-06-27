@@ -13,6 +13,7 @@ import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -134,7 +135,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  public void resetPassword_withSuccess() throws KlawException {
+  public void resetPassword_withSuccess() throws KlawException, KlawNotAuthorizedException {
     String newPW = "newPW";
     String resetToken = UUID.randomUUID().toString();
     when(handleDbRequests.getUsersInfo(eq(OCTOPUS))).thenReturn(generateUser(OCTOPUS));
@@ -154,7 +155,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  public void resetPassword_withFailure() throws KlawException {
+  public void resetPassword_withFailure() throws KlawNotAuthorizedException {
     String newPW = "newPW";
     String resetToken = UUID.randomUUID().toString();
     when(handleDbRequests.getUsersInfo(eq(OCTOPUS))).thenReturn(generateUser(OCTOPUS));
@@ -173,7 +174,7 @@ public class UsersTeamsControllerServiceTest {
   }
 
   @Test
-  public void resetPassword_noUser() throws KlawException {
+  public void resetPassword_noUser() throws KlawNotAuthorizedException {
     String newPW = "newPW";
     String resetToken = UUID.randomUUID().toString();
     when(handleDbRequests.getUsersInfo(eq(OCTOPUS))).thenReturn(null);
