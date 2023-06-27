@@ -1,14 +1,17 @@
 import {
+  Box,
   DataTable,
   DataTableColumn,
   EmptyState,
-  Box,
-  StatusChip,
   InlineIcon,
+  StatusChip,
 } from "@aivenio/aquarium";
-import { Connector } from "src/domain/connector";
 import link from "@aivenio/aquarium/dist/src/icons/link";
 import { Link } from "react-router-dom";
+import { createConnectorOverviewLink } from "src/app/features/topics/browse/utils/create-topic-overview-link";
+import { Connector } from "src/domain/connector";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 type ConnectorTableProps = {
   connectors: Connector[];
@@ -25,16 +28,31 @@ interface ConnectorTableRow {
 
 function ConnectorTable(props: ConnectorTableProps) {
   const { connectors, ariaLabel } = props;
+  const connectorDetailsEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW
+  );
 
   const columns: Array<DataTableColumn<ConnectorTableRow>> = [
     {
       type: "custom",
       headerName: "Connector",
-      UNSAFE_render: ({ connectorName, environmentId }: ConnectorTableRow) => (
-        <Link to={`/connector/${connectorName}/overview`} state={environmentId}>
-          {connectorName} <InlineIcon icon={link} />
-        </Link>
-      ),
+      UNSAFE_render: ({ connectorName, environmentId }: ConnectorTableRow) => {
+        if (!connectorDetailsEnabled) {
+          return (
+            <a href={createConnectorOverviewLink(connectorName)}>
+              {connectorName} <InlineIcon icon={link} />
+            </a>
+          );
+        }
+        return (
+          <Link
+            to={`/connector/${connectorName}/overview`}
+            state={environmentId}
+          >
+            {connectorName} <InlineIcon icon={link} />
+          </Link>
+        );
+      },
     },
     {
       type: "custom",
