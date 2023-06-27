@@ -1,8 +1,14 @@
-const urlPartKlawAngularApp = "topicOverview?topicname=";
+const topicDetailsAngularKlawRoute = "topicOverview?topicname=";
+const connectorDetailsAngularKlawRoute = "connectorOverview?connectorName=";
 
 function createTopicOverviewLink(topicName: string): string {
   const originLocationKlawAngular = window.location.origin;
-  return `${originLocationKlawAngular}/${urlPartKlawAngularApp}${topicName}`;
+  return `${originLocationKlawAngular}/${topicDetailsAngularKlawRoute}${topicName}`;
 }
 
-export { createTopicOverviewLink };
+function createConnectorOverviewLink(connectorName: string): string {
+  const originLocationKlawAngular = window.location.origin;
+  return `${originLocationKlawAngular}/${connectorDetailsAngularKlawRoute}${connectorName}`;
+}
+
+export { createTopicOverviewLink, createConnectorOverviewLink };
