@@ -31,6 +31,7 @@ import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.model.ApiResponse;
@@ -311,7 +312,8 @@ public class UsersTeamsControllerService {
     return resetPasswordInfo;
   }
 
-  public ResetPasswordInfo resetPassword(String username, String password, String resetToken) {
+  public ResetPasswordInfo resetPassword(String username, String password, String resetToken)
+      throws KlawNotAuthorizedException {
     log.info("resetPassword {}", username);
     ResetPasswordInfo resetPasswordInfo = new ResetPasswordInfo();
     UserInfoModelResponse userInfoModel = getUserInfoDetails(username);
