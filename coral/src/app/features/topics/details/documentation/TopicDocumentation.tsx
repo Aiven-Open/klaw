@@ -43,7 +43,7 @@ function TopicDocumentation() {
       <>
         <PageHeader title={"Edit documentation"} />
         <DocumentationEditView
-          documentation={topicOverview.topicDocumentation}
+          documentation={topicDocumentation}
           cancelEdit={() => setEditMode(false)}
         />
       </>

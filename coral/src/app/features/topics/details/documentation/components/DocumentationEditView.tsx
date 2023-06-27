@@ -6,8 +6,9 @@ import {
   SegmentedControlGroup,
 } from "@aivenio/aquarium";
 import { DocumentationView } from "src/app/features/topics/details/documentation/components/DocumentationView";
+import { DocumentationEditor } from "src/app/features/topics/details/documentation/components/DocumentationEditor";
 
-type DocumentationEditorProps = {
+type DocumentationEditViewProps = {
   documentation?: string;
   cancelEdit: () => void;
 };
@@ -15,13 +16,13 @@ type DocumentationEditorProps = {
 type ViewMode = "edit" | "preview";
 
 function saveDocumentation(doc: string) {
-  console.log("save documentation mock");
+  console.log("save documentation mock:");
   console.log(doc);
 }
 function DocumentationEditView({
   documentation,
   cancelEdit,
-}: DocumentationEditorProps) {
+}: DocumentationEditViewProps) {
   const [text, setText] = useState(documentation || "");
   const [viewMode, setViewMode] = useState<ViewMode>("edit");
 
@@ -37,13 +38,10 @@ function DocumentationEditView({
         </SegmentedControlGroup>
       </Box.Flex>
 
-      {/*PLACEHOLDER*/}
       {viewMode === "edit" && (
-        <textarea
-          value={text}
-          rows={5}
-          style={{ border: "1px solid grey" }}
-          onChange={(event) => setText(event.target.value)}
+        <DocumentationEditor
+          documentation={text}
+          onChangeDocumentation={setText}
         />
       )}
 
