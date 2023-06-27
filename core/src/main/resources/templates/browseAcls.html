@@ -486,41 +486,50 @@
 							<div>
 								<table class="table table-hover color-table success-table">
 									<thead><tr>
-										<th align="left" width="25%">Environment</th>
-										<th align="left" width="25%">Partitions</th>
-										<th align="left" width="25%">Replication Factor</th>
+										<th align="left" width="20%">Environment</th>
+										<th align="left" width="20%">Partitions</th>
+										<th align="left" width="20%">Replication Factor</th>
+										<th align="left" width="20%">Advanced Configuration</th>
 										<th width="5%"></th>
-										<th width="20">
+										<th width="15">
 									</tr>
 									</thead>
 									<tbody>
 									<tr ng-repeat="resultB in topicOverview">
-										<td ng-show="resultB.envName == 'DEV'" align="left" width="25%">
+										<td ng-show="resultB.envName == 'DEV'" align="left" width="20%">
 											<a href="envs?envId={{resultB.envId}}">
 												<span class="badge badge-success">{{ resultB.envName}}</span>
 											</a>
 										</td>
-										<td ng-show="resultB.envName == 'TST'" align="left" width="25%">
+										<td ng-show="resultB.envName == 'TST'" align="left" width="20%">
 											<a href="envs?envId={{resultB.envId}}">
 												<span class="badge badge-warning">{{ resultB.envName}}</span>
 											</a>
 										</td>
-										<td ng-show="resultB.envName == 'PRD'" align="left" width="25%">
+										<td ng-show="resultB.envName == 'PRD'" align="left" width="20%">
 											<a href="envs?envId={{resultB.envId}}">
 												<span class="badge badge-danger">{{ resultB.envName}}</span>
 											</a>
 										</td>
-										<td ng-show="resultB.envName != 'DEV' && resultB.envName != 'TST' && resultB.envName != 'PRD'" align="left" width="25%">
+										<td ng-show="resultB.envName != 'DEV' && resultB.envName != 'TST' && resultB.envName != 'PRD'" align="left" width="20%">
 											<a href="envs?envId={{resultB.envId}}">
 												<span class="badge badge-primary">{{ resultB.envName}}</span>
 											</a>
 										</td>
 
-										<td align="left" width="25%">
+										<td align="left" width="20%">
 											<span class="badge badge-info">{{ resultB.noOfPartitions}}</span>
 										</td>
-										<td align="left" width="25%">
+										<td align="left" width="20%">
 											<span class="badge badge-info">{{ resultB.noOfReplicas}}</span>
+										</td>
+										<td align="left" width="20%">
+											<table>
+												<tr ng-repeat="(key, value) in resultB.advancedTopicConfiguration" class="gradeX">
+													<td>{{ key }}</td>
+													<td>{{ value }}</td>
+												</tr>
+											</table>
 										</td>
 										<td width="5%"></td>
 										<td align="right" width="10%">

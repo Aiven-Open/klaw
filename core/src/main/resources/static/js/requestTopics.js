@@ -138,9 +138,17 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
                     $scope.oldtopicpartitions = output.topicContents.noOfPartitions;
                     $scope.addTopic.topicpartitions = '' + output.topicContents.noOfPartitions;
+                    $scope.addTopic.replicationfactor = '' + output.topicContents.noOfReplicas;
+                    $scope.addTopic.advancedTopicConfiguration = output.topicContents.advancedTopicConfiguration
                     if($scope.envTopicMap.defaultPartitions === $scope.addTopic.topicpartitions)
                         $scope.addTopic.topicpartitions = $scope.addTopic.topicpartitions + " (default)"
                     $scope.addTopic.description = output.topicContents.description;
+
+                    for (let m in $scope.addTopic.advancedTopicConfiguration){
+                        $scope.topicConfigsSelectedDropdown.push(m);
+                        $scope.topicConfigsSelected.push(output.topicContents.advancedTopicConfiguration[m]);
+                        $scope.propertyInfoLink.push(apacheKafkaTopicConfigsUrl + m);
+                    }
                 }
                 else{
                     swal({

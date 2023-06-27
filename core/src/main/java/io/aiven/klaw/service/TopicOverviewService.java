@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
@@ -235,6 +236,18 @@ public class TopicOverviewService extends BaseOverviewService {
       topicInfo.setNoOfReplicas(topic.getNoOfReplicas());
       topicInfo.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topic.getTeamId()));
       topicInfo.setTeamId(topic.getTeamId());
+      String topicJsonParams = topic.getJsonParams();
+      if (topicJsonParams != null) {
+        TopicConfigurationRequest topicConfigurationRequest;
+        try {
+          topicConfigurationRequest =
+              OBJECT_MAPPER.readValue(topicJsonParams, TopicConfigurationRequest.class);
+          topicInfo.setAdvancedTopicConfiguration(
+              topicConfigurationRequest.getAdvancedTopicConfiguration());
+        } catch (JsonProcessingException e) {
+          throw new RuntimeException(e);
+        }
+      }
 
       if (syncCluster != null && syncCluster.equals(topic.getEnvironment())) {
         topicOverview.setTopicDocumentation(topic.getDocumentation());

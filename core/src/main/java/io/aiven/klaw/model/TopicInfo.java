@@ -3,6 +3,7 @@ package io.aiven.klaw.model;
 import io.aiven.klaw.model.response.EnvIdInfo;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -42,4 +43,6 @@ public class TopicInfo {
   private String documentation;
 
   private String envName;
+
+  private Map<String, String> advancedTopicConfiguration;
 }
