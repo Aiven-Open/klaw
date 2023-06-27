@@ -1041,6 +1041,8 @@ public class KafkaConnectControllerService {
 
     for (KwKafkaConnector topic : connectors) {
       KafkaConnectorModelResponse topicInfo = new KafkaConnectorModelResponse();
+      topicInfo.setConnectorId(topic.getConnectorId());
+
       topicInfo.setConnectorName(topic.getConnectorName());
       topicInfo.setEnvironmentName(getKafkaConnectEnvDetails(topic.getEnvironment()).getName());
       topicInfo.setEnvironmentId(topic.getEnvironment());
