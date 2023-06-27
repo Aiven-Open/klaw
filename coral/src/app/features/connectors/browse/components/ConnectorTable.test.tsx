@@ -177,7 +177,9 @@ describe("ConnectorTable.tsx", () => {
         const environmentList = within(row).getByRole("cell", {
           // environmentList could be undefined, but isn't in our usage here
           // so this is needed to prevent type errors
-          name: (connector.environmentsList as EnvironmentInfo[]).join(" "),
+          name: (connector.environmentsList as EnvironmentInfo[])
+            .map((env) => env.name)
+            .join(" "),
         });
 
         expect(environmentList).toBeVisible();
@@ -195,7 +197,9 @@ describe("ConnectorTable.tsx", () => {
           const environmentList = within(row).getByRole("cell", {
             // environmentList could be undefined, but isn't in our usage here
             // so this is needed to prevent type errors
-            name: (connector.environmentsList as EnvironmentInfo[]).join(" "),
+            name: (connector.environmentsList as EnvironmentInfo[])
+              .map((env) => env.name)
+              .join(" "),
           });
 
           expect(environmentList).toBeVisible();
