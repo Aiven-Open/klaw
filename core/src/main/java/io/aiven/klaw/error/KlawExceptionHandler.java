@@ -4,6 +4,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.REQ_FAILURE;
 
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler({KlawNotAuthorizedException.class})
   protected ResponseEntity<ApiResponse> handleKlawNotAuthoirzedExceptionInternal(
-      KlawException ex, WebRequest request) {
+      HttpServletRequest request, KlawNotAuthorizedException ex) {
     log.error("Error ", ex);
     return new ResponseEntity<>(
         ApiResponse.builder().success(false).message(ApiResultStatus.NOT_AUTHORIZED.value).build(),

@@ -1,6 +1,7 @@
 package io.aiven.klaw.controller;
 
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.requests.RegisterSaasUserInfoModel;
 import io.aiven.klaw.model.requests.RegisterUserInfoModel;
@@ -246,7 +247,8 @@ public class UsersTeamsController {
   public ResponseEntity<ResetPasswordInfo> resetPasswordWithToken(
       @RequestParam("token") String token,
       @RequestParam("password") String password,
-      @RequestParam("username") String username) {
+      @RequestParam("username") String username)
+      throws KlawNotAuthorizedException {
     return new ResponseEntity<>(
         usersTeamsControllerService.resetPassword(username, password, token), HttpStatus.OK);
   }
