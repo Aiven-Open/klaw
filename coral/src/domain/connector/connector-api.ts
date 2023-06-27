@@ -1,7 +1,8 @@
 import omitBy from "lodash/omitBy";
 import {
-  transformConnectorRequestApiResponse,
   transformConnectorApiResponse,
+  transformConnectorOverviewResponse,
+  transformConnectorRequestApiResponse,
 } from "src/domain/connector/connector-transformer";
 import {
   RequestVerdictApproval,
@@ -9,12 +10,12 @@ import {
   RequestVerdictDelete,
 } from "src/domain/requests/requests-types";
 import api, { API_PATHS } from "src/services/api";
+import { convertQueryValuesToString } from "src/services/api-helper";
 import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
-import { convertQueryValuesToString } from "src/services/api-helper";
 
 const filterGetConnectorRequestParams = (
   params: KlawApiRequestQueryParameters<"getConnectorRequests">
@@ -143,12 +144,24 @@ const createConnectorRequest = (
   });
 };
 
+type GetConnectorOverviewParams =
+  KlawApiRequestQueryParameters<"getConnectorOverview">;
+const getConnectorOverview = (params: GetConnectorOverviewParams) => {
+  return api
+    .get<KlawApiResponse<"getConnectorOverview">>(
+      API_PATHS.getConnectorOverview,
+      new URLSearchParams(params)
+    )
+    .then(transformConnectorOverviewResponse);
+};
+
 export {
-  getConnectorRequestsForApprover,
-  getConnectorRequests,
   approveConnectorRequest,
+  createConnectorRequest,
   declineConnectorRequest,
   deleteConnectorRequest,
+  getConnectorOverview,
+  getConnectorRequests,
+  getConnectorRequestsForApprover,
   getConnectors,
-  createConnectorRequest,
 };

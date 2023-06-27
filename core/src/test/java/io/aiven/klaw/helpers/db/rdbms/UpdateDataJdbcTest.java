@@ -100,8 +100,7 @@ public class UpdateDataJdbcTest {
   public void updateUpdateTopicRequest() {
     int reqNum = 1001;
     String requestOperationType = "Update";
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     TopicRequest req = utilMethods.getTopicRequest(1001);
     req.setOtherParams("1001");
@@ -115,8 +114,7 @@ public class UpdateDataJdbcTest {
   public void updateDeleteTopicRequest() {
     int reqNum = 1001;
     String requestOperationType = "Delete";
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), eq(false)))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     when(selectDataJdbcHelper.selectEnvDetails(anyString(), anyInt())).thenReturn(kafkaEnv);
     EnvTag envTag = new EnvTag();
@@ -137,14 +135,13 @@ public class UpdateDataJdbcTest {
   @ValueSource(strings = {"Create", "Promote"})
   public void updateCreateAndPromoteTopicRequest(String requestOperationType) {
     int reqNum = 1001;
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any(), anyBoolean()))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     TopicRequest req = utilMethods.getTopicRequest(1001);
     req.setRequestOperationType(requestOperationType);
     String result = updateData.updateTopicRequest(req, "uiuser2");
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
-    verify(insertDataJdbcHelper, times(1)).insertIntoTopicSOT(any(), anyBoolean());
+    verify(insertDataJdbcHelper, times(1)).insertIntoTopicSOT(any());
   }
 
   @Test

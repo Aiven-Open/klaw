@@ -4,6 +4,9 @@ import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
@@ -11,12 +14,15 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.KwTenantConfigModel;
+import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.Options;
 import io.aiven.klaw.model.charts.Title;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import java.io.*;
 import java.net.InetAddress;
@@ -27,15 +33,19 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.jasypt.util.text.BasicTextEncryptor;
@@ -64,6 +74,10 @@ public class CommonUtilsService {
 
   public static final String BASE_URL_ADDRESS = "BASE_URL_ADDRESS";
   public static final String BASE_URL_NAME = "BASE_URL_NAME";
+
+  public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+  public static final TypeReference<List<TopicHistory>> VALUE_TYPE_REF = new TypeReference<>() {};
 
   @Value("${klaw.enable.authorization.ad:false}")
   private boolean enableUserAuthorizationFromAD;
@@ -700,5 +714,78 @@ public class CommonUtilsService {
               });
         });
     return subTopicsList;
+  }
+
+  public List<TopicHistory> saveTopicHistory(
+      String requestOperationType,
+      String topicName,
+      String topicEnvironment,
+      String requestor,
+      Date requestedTime,
+      int ownerTeamId,
+      String userName,
+      int tenantId,
+      String entityType,
+      String remarks) {
+    List<TopicHistory> topicHistoryList = new ArrayList<>();
+    try {
+      AtomicReference<String> existingHistory = new AtomicReference<>("");
+      List<TopicHistory> existingTopicHistory;
+      List<Topic> existingTopicList = new ArrayList<>();
+      // topic requests (not create) or any acl/schema requests
+      if ((!RequestOperationType.CREATE.value.equals(requestOperationType)
+              && entityType.equals(RequestEntityType.TOPIC.name()))
+          || entityType.equals(RequestEntityType.ACL.name())
+          || entityType.equals(RequestEntityType.SCHEMA.name())) {
+        existingTopicList =
+            getFilteredTopicsForTenant(getTopicsForTopicName(topicName, tenantId)).stream()
+                .filter(topic -> Objects.equals(topic.getEnvironment(), topicEnvironment))
+                .toList();
+        existingTopicList.stream().findFirst().ifPresent(a -> existingHistory.set(a.getHistory()));
+        try {
+          existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), VALUE_TYPE_REF);
+          topicHistoryList.addAll(existingTopicHistory);
+        } catch (Exception e) {
+          log.error("Error in parsing existing history {} {}", topicName, topicEnvironment);
+        }
+      }
+
+      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
+
+      TopicHistory topicHistory = new TopicHistory();
+      topicHistory.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, ownerTeamId));
+      topicHistory.setEnvironmentName(getEnvDetails(topicEnvironment, tenantId).getName());
+      topicHistory.setRequestedBy(requestor);
+      topicHistory.setRequestedTime(simpleDateFormat.format(requestedTime));
+      topicHistory.setApprovedBy(userName);
+      topicHistory.setApprovedTime(simpleDateFormat.format(new Date()));
+      topicHistory.setRemarks(remarks);
+      topicHistoryList.add(topicHistory);
+
+      try {
+        if (!existingTopicList.isEmpty()
+            && (entityType.equals(RequestEntityType.ACL.name())
+                || entityType.equals(RequestEntityType.SCHEMA.name()))) {
+          Topic topic = existingTopicList.get(0);
+          topic.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
+          topic.setExistingTopic(true);
+          manageDatabase.getHandleDbRequests().addToSynctopics(existingTopicList);
+        }
+      } catch (JsonProcessingException e) {
+        log.error("Could not save history : ", e);
+      }
+
+    } catch (Exception e) {
+      log.error("Exception: ", e);
+    }
+    return topicHistoryList;
+  }
+
+  public Env getEnvDetails(String envId, int tenantId) {
+    Optional<Env> envFound =
+        manageDatabase.getKafkaEnvList(tenantId).stream()
+            .filter(env -> Objects.equals(env.getId(), envId))
+            .findFirst();
+    return envFound.orElse(null);
   }
 }
