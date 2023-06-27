@@ -1,6 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -74,7 +75,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   public String addToSynctopics(List<Topic> topicRequests) {
-    return jdbcInsertHelper.insertIntoTopicSOT(topicRequests, true);
+    return jdbcInsertHelper.insertIntoTopicSOT(topicRequests);
   }
 
   public String addToSyncConnectors(List<KwKafkaConnector> topicRequests) {
@@ -732,7 +733,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String resetPassword(String username, String resetToken, String pwd) {
+  public String resetPassword(String username, String resetToken, String pwd)
+      throws KlawNotAuthorizedException {
     return jdbcUpdateHelper.resetPassword(username, pwd, resetToken);
   }
 

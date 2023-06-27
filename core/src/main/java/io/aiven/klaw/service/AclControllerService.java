@@ -40,6 +40,7 @@ import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
@@ -666,6 +667,8 @@ public class AclControllerService {
     MailType notifyUserType = ACL_REQUEST_APPROVED;
     if (!updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)) {
       notifyUserType = ACL_REQUEST_FAILURE;
+    } else {
+      saveToTopicHistory(userDetails, tenantId, aclReq);
     }
 
     mailService.sendMail(
@@ -682,6 +685,32 @@ public class AclControllerService {
         .success((updateAclReqStatus.equals(ApiResultStatus.SUCCESS.value)))
         .message(updateAclReqStatus)
         .build();
+  }
+
+  private void saveToTopicHistory(String userDetails, int tenantId, AclRequests aclReq) {
+    String remarksAcl =
+        RequestEntityType.ACL.name()
+            + " "
+            + aclReq.getRequestOperationType()
+            + " "
+            + aclReq.getAclType();
+    if (aclReq.getAclIpPrincipleType().equals(AclIPPrincipleType.IP_ADDRESS)) {
+      remarksAcl = remarksAcl + " - " + aclReq.getAcl_ip();
+    } else {
+      remarksAcl = remarksAcl + " - " + aclReq.getAcl_ssl();
+    }
+
+    commonUtilsService.saveTopicHistory(
+        aclReq.getRequestOperationType(),
+        aclReq.getTopicname(),
+        aclReq.getEnvironment(),
+        aclReq.getRequestor(),
+        aclReq.getRequesttime(),
+        aclReq.getRequestingteam(),
+        userDetails,
+        tenantId,
+        RequestEntityType.ACL.name(),
+        remarksAcl);
   }
 
   private ApiResponse validateAclRequest(AclRequests aclReq, String userDetails, int tenantId) {

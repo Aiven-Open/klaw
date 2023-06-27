@@ -100,8 +100,7 @@ public class SchemaOverviewServiceTest {
     SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getStatus())
-        .isEqualTo("NO_PROMOTION");
+    assertThat(returnedValue.getSchemaPromotionDetails().getStatus()).isEqualTo("NO_PROMOTION");
   }
 
   @Test
@@ -123,12 +122,11 @@ public class SchemaOverviewServiceTest {
     SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getStatus())
+    assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
         .isEqualTo(ApiResultStatus.SUCCESS.value);
 
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getSourceEnv()).isEqualTo("1");
-    assertThat(returnedValue.getSchemaPromotionDetails().get("DEV").getTargetEnv())
-        .isEqualTo("test-2");
+    assertThat(returnedValue.getSchemaPromotionDetails().getSourceEnv()).isEqualTo("1");
+    assertThat(returnedValue.getSchemaPromotionDetails().getTargetEnv()).isEqualTo("test-2");
   }
 
   @Test
@@ -140,7 +138,7 @@ public class SchemaOverviewServiceTest {
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("1");
 
     SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 3, "1");
-    assertThat(returnedValue.getSchemaPromotionDetails()).isNullOrEmpty();
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
     assertThat(returnedValue.isSchemaExists()).isFalse();
   }
 

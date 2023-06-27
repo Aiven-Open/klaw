@@ -7704,16 +7704,13 @@
             "format" : "int32"
           },
           "schemaPromotionDetails" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "$ref" : "#/components/schemas/PromotionStatus"
-            }
+            "$ref" : "#/components/schemas/PromotionStatus"
           },
           "schemaDetailsPerEnv" : {
             "$ref" : "#/components/schemas/SchemaDetailsPerEnv"
           }
         },
-        "required" : [ "prefixAclsExists", "schemaExists", "topicExists", "txnAclsExists" ]
+        "required" : [ "prefixAclsExists", "schemaExists", "schemaPromotionDetails", "topicExists", "txnAclsExists" ]
       },
       "KwReport" : {
         "properties" : {

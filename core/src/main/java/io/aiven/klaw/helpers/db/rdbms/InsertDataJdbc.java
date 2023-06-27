@@ -150,7 +150,7 @@ public class InsertDataJdbc {
     return hashMap;
   }
 
-  public synchronized String insertIntoTopicSOT(List<Topic> topics, boolean isSyncTopics) {
+  public synchronized String insertIntoTopicSOT(List<Topic> topics) {
     topics.forEach(
         topic -> {
           log.debug("insertIntoTopicSOT {}", topic.getTopicname());
