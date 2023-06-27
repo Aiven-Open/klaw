@@ -5915,11 +5915,6 @@
             "type" : "string",
             "pattern" : "^[0-9]*$"
           },
-          "schemaFull" : {
-            "type" : "string",
-            "maxLength" : 2147483647,
-            "minLength" : 8
-          },
           "forceRegister" : {
             "type" : "boolean"
           },
@@ -5932,7 +5927,7 @@
             "pattern" : "^[a-zA-z 0-9]*$"
           }
         },
-        "required" : [ "appName", "remarks", "schemaFull", "schemaVersion", "sourceEnvironment", "targetEnvironment", "topicName" ]
+        "required" : [ "appName", "remarks", "schemaVersion", "sourceEnvironment", "targetEnvironment", "topicName" ]
       },
       "TopicCreateRequestModel" : {
         "properties" : {

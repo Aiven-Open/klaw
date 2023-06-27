@@ -76,7 +76,6 @@ function TopicDetailsSchema() {
           sourceEnvironment: sourceEnv,
           topicName,
           schemaVersion: String(schemaDetailsPerEnv.version),
-          schemaFull: schemaDetailsPerEnv.content,
           forceRegister,
           remarks,
         });
