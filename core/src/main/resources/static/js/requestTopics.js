@@ -47,7 +47,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 2000);
                 }
 
-         $scope.getEnvTopicPartitions = function(envSelected){
+         $scope.getEnvTopicPartitions = function(envSelected, reqType, envName){
                 $scope.topicPrefix = null;
                 $scope.topicSuffix = null;
                 $scope.topicRegex = null;
@@ -64,6 +64,16 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                             $scope.topicSuffix = output.topicSuffix[0];
                             $scope.topicRegex = output.topicRegex[0];
                             $scope.applyRegex = output.applyRegex;
+
+                            if(reqType != null && reqType === 'edit'){
+                                $scope.submitEditTopicRequest(envSelected, $scope.addTopic.topicname);
+                                $scope.addTopic.description = "Topic Update";
+                            }else if(reqType != null && reqType === 'promote'){
+                                $scope.requestType = 'PromoteTopic';
+                                $scope.requestTitle = "Topic Promotion Request"
+                                $scope.addTopic.envNameToDisplay = envName;
+                                $scope.addTopic.description = "Topic Promotion";
+                            }
 
                             }
 
@@ -110,17 +120,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
             $scope.addTopic.topicname = topicSelected;
             $scope.addTopic.envName = envSelected;
-            $scope.getEnvTopicPartitions(envSelected);
-
-            if(reqType != null && reqType === 'edit'){
-                $scope.submitEditTopicRequest(envSelected, topicSelected);
-                $scope.addTopic.description = "Topic Update";
-            }else if(reqType != null && reqType === 'promote'){
-                $scope.requestType = 'PromoteTopic';
-                $scope.requestTitle = "Topic Promotion Request"
-                $scope.addTopic.envNameToDisplay = envName;
-                $scope.addTopic.description = "Topic Promotion";
-            }
+            $scope.getEnvTopicPartitions(envSelected, reqType, envName);
         }
 
         $scope.submitEditTopicRequest = function(envSelected, topicSelected) {
@@ -142,6 +142,8 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     $scope.addTopic.advancedTopicConfiguration = output.topicContents.advancedTopicConfiguration
                     if($scope.envTopicMap.defaultPartitions === $scope.addTopic.topicpartitions)
                         $scope.addTopic.topicpartitions = $scope.addTopic.topicpartitions + " (default)"
+                    if($scope.envTopicMap.defaultRepFactor === $scope.addTopic.replicationfactor)
+                        $scope.addTopic.replicationfactor = $scope.addTopic.replicationfactor + " (default)"
                     $scope.addTopic.description = output.topicContents.description;
 
                     for (let m in $scope.addTopic.advancedTopicConfiguration){

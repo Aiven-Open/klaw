@@ -245,7 +245,7 @@ public class TopicOverviewService extends BaseOverviewService {
           topicInfo.setAdvancedTopicConfiguration(
               topicConfigurationRequest.getAdvancedTopicConfiguration());
         } catch (JsonProcessingException e) {
-          throw new RuntimeException(e);
+          log.error("Unable to parse topic advanced config {}", topicName);
         }
       }
 
