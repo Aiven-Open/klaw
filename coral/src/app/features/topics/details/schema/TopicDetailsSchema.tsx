@@ -25,6 +25,8 @@ import {
   PromoteSchemaPayload,
   promoteSchemaRequest,
 } from "src/domain/schema-request";
+import { HTTPError } from "src/services/api";
+import { parseErrorMsg } from "src/services/mutation-utils";
 import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
 
 function TopicDetailsSchema() {
@@ -80,8 +82,8 @@ function TopicDetailsSchema() {
         });
       },
       {
-        onError: (error: Error) => {
-          setErrorMessage(error.message);
+        onError: (error: HTTPError) => {
+          setErrorMessage(parseErrorMsg(error));
           setShowSchemaPromotionModal(false);
         },
         onSuccess: () => {
