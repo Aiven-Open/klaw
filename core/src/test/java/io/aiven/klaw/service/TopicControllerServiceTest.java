@@ -904,9 +904,11 @@ public class TopicControllerServiceTest {
   public void getTopicDetailsPerEnv() {
     stubUserInfo();
     String envId = "1", topicName = "testtopic";
+    List<Topic> topic = utilMethods.getTopics();
+    topic.get(0).setJsonParams("{\"advancedTopicConfiguration\":{\"retention.ms\":\"404800000\"}}");
+
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
-    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics());
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topic);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
@@ -916,6 +918,8 @@ public class TopicControllerServiceTest {
         topicControllerService.getTopicDetailsPerEnv(envId, topicName);
     assertThat(topicDetailsPerEnvResponse.isTopicExists()).isTrue();
     assertThat(topicDetailsPerEnvResponse.getTopicContents()).isNotNull();
+    assertThat(topicDetailsPerEnvResponse.getTopicContents().getAdvancedTopicConfiguration())
+        .containsEntry("retention.ms", "404800000");
   }
 
   @Test

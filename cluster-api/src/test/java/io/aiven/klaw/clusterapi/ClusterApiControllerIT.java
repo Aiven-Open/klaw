@@ -26,6 +26,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -33,14 +34,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.acl.AccessControlEntryFilter;
 import org.apache.kafka.common.acl.AclBinding;
 import org.apache.kafka.common.acl.AclBindingFilter;
 import org.apache.kafka.common.acl.AclOperation;
 import org.apache.kafka.common.acl.AclPermissionType;
+import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePatternFilter;
 import org.apache.kafka.common.resource.ResourceType;
@@ -160,6 +165,44 @@ public class ClusterApiControllerIT {
 
   @Test
   @Order(4)
+  public void updateTopics() throws Exception {
+    String topicName = "testtopic";
+    ClusterTopicRequest clusterTopicRequest = updateTopicRequest(topicName);
+
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(clusterTopicRequest);
+    String url = "/topics/updateTopics";
+    mvc.perform(
+            MockMvcRequestBuilders.post(url)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonReq)
+                .header(
+                    AUTHORIZATION,
+                    BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse();
+
+    embeddedKafkaBroker.doWithAdmin(
+        adminClient -> {
+          try {
+            ConfigResource configResource =
+                new ConfigResource(ConfigResource.Type.TOPIC, clusterTopicRequest.getTopicName());
+            Config topicConfig =
+                adminClient
+                    .describeConfigs(Collections.singleton(configResource))
+                    .all()
+                    .get(10, TimeUnit.SECONDS)
+                    .get(configResource);
+            assertThat(topicConfig.get("compression.type").value()).isEqualTo("snappy");
+          } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            log.error("Error : ", e);
+          }
+        });
+  }
+
+  @Test
+  @Order(5)
   public void createTopicsExistingTopicSameConfigSuccess() throws Exception {
     String topicName = "testtopic";
     ClusterTopicRequest clusterTopicRequest = createTopicRequest(topicName);
@@ -172,7 +215,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(5)
+  @Order(6)
   public void createTopicsExistingTopicDifferentConfigFailure() throws Exception {
     String topicName = "testtopic";
     ClusterTopicRequest clusterTopicRequest = createTopicRequest(topicName);
@@ -186,7 +229,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(6)
+  @Order(7)
   public void createAclProducerIPAddress() throws Exception {
     String topicName = "testtopic";
     String ipHost = "11.12.13.14";
@@ -228,7 +271,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(7)
+  @Order(8)
   public void createAclConsumerIPAddress() throws Exception {
     String topicName = "testtopic";
     String ipHost = "11.12.13.14";
@@ -293,7 +336,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(8)
+  @Order(9)
   public void createAclProducerPrincipal() throws Exception {
     String topicName = "testtopic";
     String principle = "CN=host,OU=dept";
@@ -338,7 +381,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(9)
+  @Order(10)
   public void createAclConsumerPrincipal() throws Exception {
     String topicName = "testtopic";
     String principle = "CN=host,OU=dept";
@@ -409,7 +452,7 @@ public class ClusterApiControllerIT {
   }
 
   @Test
-  @Order(10)
+  @Order(11)
   public void deleteTopics() throws Exception {
     // Create a topic
     String topicName = "testtopic-todelete";
@@ -474,6 +517,20 @@ public class ClusterApiControllerIT {
         .protocol(KafkaSupportedProtocol.SSL)
         .partitions(1)
         .replicationFactor(Short.parseShort("1"))
+        .build();
+  }
+
+  private static ClusterTopicRequest updateTopicRequest(String topicName) {
+    Map<String, String> advancedConfig = new HashMap<>();
+    advancedConfig.put("compression.type", "snappy");
+    return ClusterTopicRequest.builder()
+        .clusterName("DEV2")
+        .topicName(topicName)
+        .env(bootStrapServersSsl)
+        .protocol(KafkaSupportedProtocol.SSL)
+        .partitions(1)
+        .replicationFactor(Short.parseShort("1"))
+        .advancedTopicConfiguration(advancedConfig)
         .build();
   }
 
