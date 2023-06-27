@@ -704,6 +704,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                     $scope.schemaPromotionDetails = output.schemaPromotionDetails;
                     $scope.allSchemaVersions = output.allSchemaVersions;
                     $scope.displayedSchemaVersion = $scope.schemaDetails.version;
+
                 }
             }).error(
                 function(error)

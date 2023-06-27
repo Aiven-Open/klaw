@@ -121,12 +121,10 @@ const testTopicSchemas = {
   allSchemaVersions: [1],
   latestVersion: 1,
   schemaPromotionDetails: {
-    DEV: {
-      status: "success",
-      sourceEnv: "3",
-      targetEnv: "TST_SCH",
-      targetEnvId: "9",
-    },
+    status: "success",
+    sourceEnv: "3",
+    targetEnv: "TST_SCH",
+    targetEnvId: "9",
   },
   schemaDetails: [
     {
