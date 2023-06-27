@@ -25,6 +25,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
@@ -92,9 +93,8 @@ public class SchemaRegistryControllerService {
                 requestStatus,
                 search,
                 isApproval
-                    ? !commonUtilsService.isNotAuthorizedUser(
-                        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)
-                    : false,
+                    && !commonUtilsService.isNotAuthorizedUser(
+                        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS),
                 isMyRequest);
 
     // tenant filtering
@@ -299,6 +299,9 @@ public class SchemaRegistryControllerService {
               (String) registerSchemaCustomResponse.get("compatibility"));
         }
         String responseDb = dbHandle.updateSchemaRequest(schemaRequest, userDetails);
+        if (responseDb.equals(ApiResultStatus.SUCCESS.value)) {
+          saveToTopicHistory(userDetails, tenantId, schemaRequest);
+        }
         mailService.sendMail(
             schemaRequest.getTopicname(),
             null,
@@ -328,6 +331,35 @@ public class SchemaRegistryControllerService {
           .message(String.format(SCHEMA_ERR_102, errStr))
           .build();
     }
+  }
+
+  private void saveToTopicHistory(String userDetails, int tenantId, SchemaRequest schemaRequest) {
+    manageDatabase.getKafkaEnvList(tenantId).stream()
+        .filter(
+            kafkaEnv -> {
+              if (kafkaEnv.getAssociatedEnv() != null) {
+                return kafkaEnv.getAssociatedEnv().getId().equals(schemaRequest.getEnvironment());
+              }
+              return false;
+            })
+        .findFirst()
+        .ifPresent(
+            env ->
+                commonUtilsService.saveTopicHistory(
+                    schemaRequest.getRequestOperationType(),
+                    schemaRequest.getTopicname(),
+                    env.getId(),
+                    schemaRequest.getRequestor(),
+                    schemaRequest.getRequesttime(),
+                    schemaRequest.getTeamId(),
+                    userDetails,
+                    tenantId,
+                    RequestEntityType.SCHEMA.name(),
+                    RequestEntityType.SCHEMA.name()
+                        + " "
+                        + schemaRequest.getRequestOperationType()
+                        + " Version : "
+                        + schemaRequest.getSchemaversion()));
   }
 
   public ApiResponse execSchemaRequestsDecline(String avroSchemaId, String reasonForDecline)

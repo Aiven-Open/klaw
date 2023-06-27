@@ -20,7 +20,6 @@ import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
@@ -49,6 +48,7 @@ import io.aiven.klaw.model.enums.MailType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
@@ -56,11 +56,9 @@ import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +67,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -84,7 +81,6 @@ import org.springframework.stereotype.Service;
 public class TopicControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  public static final TypeReference<List<TopicHistory>> VALUE_TYPE_REF = new TypeReference<>() {};
   @Autowired private final ClusterApiService clusterApiService;
 
   @Autowired ManageDatabase manageDatabase;
@@ -825,7 +821,8 @@ public class TopicControllerService {
     updateTopicReqStatus = Objects.requireNonNull(response.getBody()).getMessage();
 
     if (response.getBody().isSuccess()) {
-      setTopicHistory(topicRequest, userName, tenantId);
+      saveToTopicHistory(userName, tenantId, topicRequest);
+
       updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userName);
       mailService.sendMail(
           topicRequest.getTopicname(),
@@ -839,6 +836,26 @@ public class TopicControllerService {
           commonUtilsService.getLoginUrl());
     }
     return updateTopicReqStatus;
+  }
+
+  private void saveToTopicHistory(String userName, int tenantId, TopicRequest topicRequest) {
+    List<TopicHistory> topicHistoryList =
+        commonUtilsService.saveTopicHistory(
+            topicRequest.getRequestOperationType(),
+            topicRequest.getTopicname(),
+            topicRequest.getEnvironment(),
+            topicRequest.getRequestor(),
+            topicRequest.getRequesttime(),
+            topicRequest.getTeamId(),
+            userName,
+            tenantId,
+            RequestEntityType.TOPIC.name(),
+            RequestEntityType.TOPIC.name() + " " + topicRequest.getRequestOperationType());
+    try {
+      topicRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
+    } catch (JsonProcessingException e) {
+      log.error("Could not save history : ", e);
+    }
   }
 
   private ApiResponse validateTopicRequest(TopicRequest topicRequest, String userName) {
@@ -859,42 +876,6 @@ public class TopicControllerService {
           .build();
     }
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
-  }
-
-  private void setTopicHistory(TopicRequest topicRequest, String userName, int tenantId) {
-    try {
-      AtomicReference<String> existingHistory = new AtomicReference<>("");
-      List<TopicHistory> existingTopicHistory;
-      List<TopicHistory> topicHistoryList = new ArrayList<>();
-
-      if (RequestOperationType.UPDATE.value.equals(topicRequest.getRequestOperationType())) {
-        List<Topic> existingTopicList =
-            getTopicFromName(topicRequest.getTopicname(), topicRequest.getTenantId());
-        existingTopicList.stream()
-            .filter(topic -> Objects.equals(topic.getEnvironment(), topicRequest.getEnvironment()))
-            .findFirst()
-            .ifPresent(a -> existingHistory.set(a.getHistory()));
-        existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), VALUE_TYPE_REF);
-        topicHistoryList.addAll(existingTopicHistory);
-      }
-
-      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-
-      TopicHistory topicHistory = new TopicHistory();
-      topicHistory.setTeamName(
-          manageDatabase.getTeamNameFromTeamId(tenantId, topicRequest.getTeamId()));
-      topicHistory.setEnvironmentName(getEnvDetails(topicRequest.getEnvironment()).getName());
-      topicHistory.setRequestedBy(topicRequest.getRequestor());
-      topicHistory.setRequestedTime(simpleDateFormat.format(topicRequest.getRequesttime()));
-      topicHistory.setApprovedBy(userName);
-      topicHistory.setApprovedTime(simpleDateFormat.format(new Date()));
-      topicHistory.setRemarks("Topic " + topicRequest.getRequestOperationType());
-      topicHistoryList.add(topicHistory);
-
-      topicRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
-    } catch (Exception e) {
-      log.error("Exception: ", e);
-    }
   }
 
   public ApiResponse declineTopicRequests(String topicId, String reasonForDecline)
