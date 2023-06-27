@@ -1,13 +1,17 @@
 import {
+  Box,
   DataTable,
   DataTableColumn,
   EmptyState,
-  Flexbox,
-  StatusChip,
   InlineIcon,
+  StatusChip,
 } from "@aivenio/aquarium";
-import { Connector } from "src/domain/connector";
 import link from "@aivenio/aquarium/dist/src/icons/link";
+import { Link } from "react-router-dom";
+import { createConnectorOverviewLink } from "src/app/features/topics/browse/utils/create-topic-overview-link";
+import { Connector } from "src/domain/connector";
+import useFeatureFlag from "src/services/feature-flags/hook/useFeatureFlag";
+import { FeatureFlag } from "src/services/feature-flags/types";
 
 type ConnectorTableProps = {
   connectors: Connector[];
@@ -19,39 +23,56 @@ interface ConnectorTableRow {
   connectorName: Connector["connectorName"];
   environmentsList: Connector["environmentsList"];
   teamName: Connector["teamName"];
+  environmentId: Connector["environmentId"];
 }
 
 function ConnectorTable(props: ConnectorTableProps) {
   const { connectors, ariaLabel } = props;
+  const connectorDetailsEnabled = useFeatureFlag(
+    FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW
+  );
 
   const columns: Array<DataTableColumn<ConnectorTableRow>> = [
     {
       type: "custom",
       headerName: "Connector",
-      UNSAFE_render: ({ connectorName }: ConnectorTableRow) => (
-        <a href={`/connectorOverview?connectorName=${connectorName}`}>
-          {connectorName} <InlineIcon icon={link} />
-        </a>
-      ),
+      UNSAFE_render: ({ connectorName, environmentId }: ConnectorTableRow) => {
+        if (!connectorDetailsEnabled) {
+          return (
+            <a href={createConnectorOverviewLink(connectorName)}>
+              {connectorName} <InlineIcon icon={link} />
+            </a>
+          );
+        }
+        return (
+          <Link
+            to={`/connector/${connectorName}/overview`}
+            state={environmentId}
+          >
+            {connectorName} <InlineIcon icon={link} />
+          </Link>
+        );
+      },
     },
     {
       type: "custom",
       headerName: "Environments",
       UNSAFE_render: ({ environmentsList }: ConnectorTableRow) => {
         return (
-          <Flexbox wrap={"wrap"} gap={"2"}>
-            {environmentsList?.map((env, index) => (
-              <StatusChip
-                dense
-                status="neutral"
-                key={`${env}-${index}`}
-                // We need to add a space after text value
-                // Otherwise a list of values would be rendered as value1value2value3 for screen readers
-                // Instead of value1 value2 value3
-                text={`${env} `}
-              />
+          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
+            {environmentsList?.map(({ name, id }) => (
+              <li key={id}>
+                <StatusChip
+                  dense
+                  status="neutral"
+                  // We need to add a space after text value
+                  // Otherwise a list of values would be rendered as value1value2value3 for screen readers
+                  // Instead of value1 value2 value3
+                  text={name}
+                />
+              </li>
             ))}
-          </Flexbox>
+          </Box.Flex>
         );
       },
     },
@@ -62,12 +83,13 @@ function ConnectorTable(props: ConnectorTableProps) {
     },
   ];
 
-  const rows: ConnectorTableRow[] = connectors.map((connectors: Connector) => {
+  const rows: ConnectorTableRow[] = connectors.map((connector: Connector) => {
     return {
-      id: Number(connectors.connectorId),
-      connectorName: connectors.connectorName,
-      teamName: connectors.teamName,
-      environmentsList: connectors?.environmentsList ?? [],
+      id: Number(connector.connectorId),
+      connectorName: connector.connectorName,
+      teamName: connector.teamName,
+      environmentsList: connector?.environmentsList ?? [],
+      environmentId: connector.environmentId,
     };
   });
 
