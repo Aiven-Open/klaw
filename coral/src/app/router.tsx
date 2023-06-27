@@ -111,9 +111,11 @@ const routes: Array<RouteObject> = [
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
       },
-      {
+      createRouteBehindFeatureFlag({
         path: Routes.CONNECTOR_OVERVIEW,
         element: <ConnectorDetailsPage />,
+        featureFlag: FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW,
+        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
         children: [
           {
             path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
@@ -137,7 +139,7 @@ const routes: Array<RouteObject> = [
             id: ConnectorOverviewTabEnum.HISTORY,
           },
         ],
-      },
+      }),
       {
         path: Routes.REQUESTS,
         element: <RequestsPage />,
