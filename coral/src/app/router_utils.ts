@@ -4,6 +4,7 @@ enum Routes {
   TOPICS = "/topics",
   TOPIC_OVERVIEW = "/topic/:topicName",
   CONNECTORS = "/connectors",
+  CONNECTOR_OVERVIEW = "/connector/:connectorName",
   CONNECTOR_REQUEST = "/connectors/request",
   TOPIC_REQUEST = "/topics/request",
   TOPIC_ACL_REQUEST = "/topic/:topicName/subscribe",
@@ -22,6 +23,12 @@ enum TopicOverviewTabEnum {
   DOCUMENTATION = "TOPIC_OVERVIEW_TAB_ENUM_documentation",
   HISTORY = "TOPIC_OVERVIEW_TAB_ENUM_history",
   SETTINGS = "TOPIC_OVERVIEW_TAB_ENUM_settings",
+}
+
+enum ConnectorOverviewTabEnum {
+  OVERVIEW = "CONNECTOR_OVERVIEW_TAB_ENUM_overview",
+  DOCUMENTATION = "CONNECTOR_OVERVIEW_TAB_ENUM_documentation",
+  HISTORY = "CONNECTOR_OVERVIEW_TAB_ENUM_history",
 }
 
 enum RequestsTabEnum {
@@ -48,6 +55,12 @@ const TOPIC_OVERVIEW_TAB_ID_INTO_PATH = {
   [TopicOverviewTabEnum.SETTINGS]: "settings",
 } as const;
 
+const CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH = {
+  [ConnectorOverviewTabEnum.OVERVIEW]: "overview",
+  [ConnectorOverviewTabEnum.DOCUMENTATION]: "documentation",
+  [ConnectorOverviewTabEnum.HISTORY]: "history",
+} as const;
+
 const REQUESTS_TAB_ID_INTO_PATH = {
   [RequestsTabEnum.TOPICS]: "topics",
   [RequestsTabEnum.ACLS]: "acls",
@@ -68,6 +81,18 @@ function isTopicsOverviewTabEnum(
   if (isString(value)) {
     return Object.prototype.hasOwnProperty.call(
       TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
+      value
+    );
+  }
+  return false;
+}
+
+function isConnectorsOverviewTabEnum(
+  value: unknown
+): value is ConnectorOverviewTabEnum {
+  if (isString(value)) {
+    return Object.prototype.hasOwnProperty.call(
+      CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
       value
     );
   }
@@ -98,11 +123,14 @@ export {
   RequestsTabEnum,
   ApprovalsTabEnum,
   TopicOverviewTabEnum,
+  ConnectorOverviewTabEnum,
   Routes,
   REQUESTS_TAB_ID_INTO_PATH,
   APPROVALS_TAB_ID_INTO_PATH,
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
+  CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
   isRequestsTabEnum,
   isApprovalsTabEnum,
   isTopicsOverviewTabEnum,
+  isConnectorsOverviewTabEnum,
 };

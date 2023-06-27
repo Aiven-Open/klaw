@@ -1,9 +1,10 @@
-import { cleanup, screen, render, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import ConnectorTable from "src/app/features/connectors/browse/components/ConnectorTable";
-import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { tabThroughForward } from "src/services/test-utils/tabbing";
 import { Connector } from "src/domain/connector";
 import { EnvironmentInfo } from "src/domain/environment/environment-types";
+import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { tabThroughForward } from "src/services/test-utils/tabbing";
 
 const mockConnectors: Connector[] = [
   {
@@ -70,16 +71,22 @@ const mockConnectors: Connector[] = [
 
 const tableRowHeader = ["Connector", "Environments", "Team"];
 
+const isFeatureFlagActiveMock = jest.fn();
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
 describe("ConnectorTable.tsx", () => {
   describe("shows empty state correctly", () => {
     afterAll(cleanup);
 
     it("show empty state when there is no data", () => {
-      render(
+      customRender(
         <ConnectorTable
           connectors={[]}
           ariaLabel={"Kafka Connector overview, page 0 of 0"}
-        />
+        />,
+        { memoryRouter: true }
       );
       expect(
         screen.getByRole("heading", {
@@ -92,11 +99,14 @@ describe("ConnectorTable.tsx", () => {
   describe("shows all Connectors as a table", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      render(
+      isFeatureFlagActiveMock.mockReturnValue(true);
+
+      customRender(
         <ConnectorTable
           connectors={mockConnectors}
           ariaLabel={"Connectors overview, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
       );
     });
 
@@ -139,7 +149,7 @@ describe("ConnectorTable.tsx", () => {
         expect(link).toBeVisible();
         expect(link).toHaveAttribute(
           "href",
-          `/connectorOverview?connectorName=${connector.connectorName}`
+          `/connector/${connector.connectorName}/overview`
         );
       });
 
@@ -194,14 +204,56 @@ describe("ConnectorTable.tsx", () => {
     });
   });
 
-  describe("enables user to keyboard navigate from connector name to connector name", () => {
-    beforeEach(() => {
+  describe("renders link to angular app if feature-flag is not enabled", () => {
+    beforeAll(() => {
       mockIntersectionObserver();
-      render(
+      isFeatureFlagActiveMock.mockReturnValue(false);
+
+      customRender(
         <ConnectorTable
           connectors={mockConnectors}
           ariaLabel={"Connectors overview, page 1 of 10"}
-        />
+        />,
+        { memoryRouter: true }
+      );
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    mockConnectors.forEach((connector) => {
+      it(`renders the connector name "${connector.connectorName}" as a link to the detail view as row header`, () => {
+        const table = screen.getByRole("table", {
+          name: "Connectors overview, page 1 of 10",
+        });
+        const rowHeader = within(table).getByRole("cell", {
+          name: connector.connectorName,
+        });
+        const link = within(rowHeader).getByRole("link", {
+          name: connector.connectorName,
+        });
+
+        expect(rowHeader).toBeVisible();
+        expect(link).toBeVisible();
+        expect(link).toHaveAttribute(
+          "href",
+          `http://localhost/connectorOverview?connectorName=${connector.connectorName}`
+        );
+      });
+    });
+  });
+
+  describe("enables user to keyboard navigate from connector name to connector name", () => {
+    beforeEach(() => {
+      mockIntersectionObserver();
+      customRender(
+        <ConnectorTable
+          connectors={mockConnectors}
+          ariaLabel={"Connectors overview, page 1 of 10"}
+        />,
+        { memoryRouter: true }
       );
       const table = screen.getByRole("table", {
         name: "Connectors overview, page 1 of 10",
