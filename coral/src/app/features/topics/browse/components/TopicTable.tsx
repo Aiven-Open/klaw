@@ -1,8 +1,8 @@
 import {
+  Box,
   DataTable,
   DataTableColumn,
   EmptyState,
-  Flexbox,
   InlineIcon,
   StatusChip,
 } from "@aivenio/aquarium";
@@ -57,19 +57,15 @@ function TopicTable(props: TopicListProps) {
       headerName: "Environments",
       UNSAFE_render: ({ environmentsList }: TopicsTableRow) => {
         return (
-          <Flexbox wrap={"wrap"} gap={"2"}>
-            {environmentsList.map((env, index) => (
-              <StatusChip
-                dense
-                status="neutral"
-                key={`${env}-${index}`}
-                // We need to add a space after text value
-                // Otherwise a list of values would be rendered as value1value2value3 for screen readers
-                // Instead of value1 value2 value3
-                text={`${env} `}
-              />
+          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
+            {environmentsList.map(({ name, id }) => (
+              // Using a list conveys the information for
+              // users with assistive technology better
+              <li key={id}>
+                <StatusChip dense status="neutral" text={name} />
+              </li>
             ))}
-          </Flexbox>
+          </Box.Flex>
         );
       },
     },

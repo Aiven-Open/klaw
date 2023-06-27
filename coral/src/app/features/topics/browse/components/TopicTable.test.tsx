@@ -105,30 +105,16 @@ describe("TopicTable.tsx", () => {
         const table = screen.getByRole("table", {
           name: "Topics overview, page 1 of 10",
         });
+
         const row = within(table).getByRole("row", {
           name: new RegExp(`${topic.topicName}`, "i"),
         });
+
         const environmentList = within(row).getByRole("cell", {
-          name: topic.environmentsList.join(" "),
+          name: topic.environmentsList.map((env) => env.name).join(" "),
         });
 
         expect(environmentList).toBeVisible();
-      });
-
-      topic.environmentsList.forEach((env) => {
-        it(`renders Environment ${env} for topic ${topic}`, () => {
-          const table = screen.getByRole("table", {
-            name: "Topics overview, page 1 of 10",
-          });
-          const row = within(table).getByRole("row", {
-            name: new RegExp(`${topic.topicName}`, "i"),
-          });
-          const environmentList = within(row).getByRole("cell", {
-            name: topic.environmentsList.join(" "),
-          });
-
-          expect(environmentList).toBeVisible();
-        });
       });
     });
   });
