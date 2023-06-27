@@ -19,11 +19,10 @@ const testTopicSchemas = {
   allSchemaVersions: [3, 2, 1],
   latestVersion: 3,
   schemaPromotionDetails: {
-
-      status: "success",
-      sourceEnv: "1",
-      targetEnv: "TST",
-      targetEnvId: "2",
+    status: "success",
+    sourceEnv: "1",
+    targetEnv: "TST",
+    targetEnvId: "2",
   },
   schemaDetailsPerEnv: {
     id: 0,
@@ -47,9 +46,7 @@ const noPromotion_testTopicSchemas = {
   allSchemaVersions: [3, 2, 1],
   latestVersion: 3,
   schemaPromotionDetails: {
-
-      status: "NO_PROMOTION",
-
+    status: "NO_PROMOTION",
   },
   schemaDetailsPerEnv: {
     id: 0,
