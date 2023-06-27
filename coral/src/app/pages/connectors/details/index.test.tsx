@@ -21,7 +21,7 @@ const mockGetConnectorOverview = getConnectorOverview as jest.MockedFunction<
 >;
 
 describe("ConnectorOverviewPage", () => {
-  describe("renders the component handling header and tabs for topic-overview", () => {
+  describe("renders the component handling header and tabs for connector-overview", () => {
     beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
@@ -58,7 +58,7 @@ describe("ConnectorOverviewPage", () => {
     });
   });
 
-  describe("redirects user if there is no topicName param", () => {
+  describe("redirects user if there is no connectorName param", () => {
     beforeAll(() => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       //@ts-ignore
@@ -77,7 +77,7 @@ describe("ConnectorOverviewPage", () => {
       cleanup();
     });
 
-    it("does not render the topics name", () => {
+    it("does not render the connector name", () => {
       const headline = screen.queryByRole("heading");
 
       expect(headline).not.toBeInTheDocument();

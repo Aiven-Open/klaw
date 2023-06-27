@@ -67,7 +67,7 @@ const defaultProps = {
   connectorOverview: testConnectorOverview,
 };
 
-describe("TopicDetailsResourceTabs", () => {
+describe("ConnectorOverviewResourceTabs", () => {
   const user = userEvent.setup();
 
   describe("handles error state", () => {
@@ -130,7 +130,7 @@ describe("TopicDetailsResourceTabs", () => {
     });
   });
 
-  describe("handles a non-existent topic", () => {
+  describe("handles a non-existent connector", () => {
     beforeAll(() => {
       customRender(
         <ConnectorOverviewResourcesTabs
@@ -155,7 +155,7 @@ describe("TopicDetailsResourceTabs", () => {
       expect(alert).toBeVisible();
     });
 
-    it("shows an information about non-existing topic", () => {
+    it("shows an information about non-existing connector", () => {
       const alert = screen.getByRole("alert");
 
       expect(alert).toHaveTextContent(
@@ -170,7 +170,7 @@ describe("TopicDetailsResourceTabs", () => {
     });
   });
 
-  describe("renders the detail page for topic", () => {
+  describe("renders the detail page for connector", () => {
     beforeAll(() => {
       customRender(
         <ConnectorOverviewResourcesTabs
