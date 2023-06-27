@@ -21,6 +21,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicID;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.NewUserStatus;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -379,7 +380,8 @@ public class UpdateDataJdbc {
     return ApiResultStatus.FAILURE.value;
   }
 
-  public String resetPassword(String username, String password, String resetToken) {
+  public String resetPassword(String username, String password, String resetToken)
+      throws KlawNotAuthorizedException {
     log.debug("resetPassword {}, token {}", username, resetToken);
     Optional<UserInfo> userRec = userInfoRepo.findById(username);
     if (userRec.isPresent()
@@ -393,11 +395,13 @@ public class UpdateDataJdbc {
       userInfoRepo.save(userInfo);
       return ApiResultStatus.SUCCESS.value;
     } else {
-      log.warn(
-          "Password for {} not reset as token was no longer valid or supplied token was invalid.",
-          username);
+      String msg =
+          String.format(
+              "Password for %s not reset as token was no longer valid or supplied token was invalid.",
+              username);
+      log.warn(msg);
+      throw new KlawNotAuthorizedException(msg);
     }
-    return ApiResultStatus.FAILURE.value;
   }
 
   public String generatePasswordResetToken(String username) {
