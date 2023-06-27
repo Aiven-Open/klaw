@@ -9,6 +9,7 @@ import {
 import {
   transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsResponse,
+  transformMarkdownToStringifiedHtml,
   transformTopicApiResponse,
   transformTopicOverviewResponse,
 } from "src/domain/topic/topic-transformer";
@@ -266,6 +267,37 @@ const getSchemaOfTopic = (
   );
 };
 
+type UpdateTopicDocumentation = {
+  topicName: string;
+  topicIdForDocumentation: number;
+  markdownString: string;
+};
+async function updateTopicDocumentation({
+  topicName,
+  topicIdForDocumentation,
+  markdownString,
+}: UpdateTopicDocumentation) {
+  const documentationToSave = await transformMarkdownToStringifiedHtml(
+    markdownString
+  );
+
+  // requestBody matches the request body the Angular
+  // app sends right now, which does not match the
+  // openapi definition. Backend is working on it
+  const requestBody = {
+    topicName,
+    topicid: topicIdForDocumentation,
+    documentation: documentationToSave,
+  };
+
+  return api.post<
+    KlawApiResponse<"saveTopicDocumentation">,
+    KlawApiRequest<"saveTopicDocumentation">
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+  >(API_PATHS.saveTopicDocumentation, requestBody);
+}
+
 export {
   getTopics,
   getTopicNames,
@@ -281,4 +313,5 @@ export {
   getTopicMessages,
   getSchemaOfTopic,
   deleteTopic,
+  updateTopicDocumentation,
 };

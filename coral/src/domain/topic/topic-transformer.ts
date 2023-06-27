@@ -6,6 +6,11 @@ import {
 } from "src/domain/topic/topic-types";
 import { KlawApiResponse } from "types/utils";
 import omit from "lodash/omit";
+import { unified } from "unified";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import rehypeSanitize from "rehype-sanitize";
+import rehypeStringify from "rehype-stringify";
 
 // @TODO check zod for this!
 function transformTopicApiResponse(
@@ -178,9 +183,21 @@ function transformTopicOverviewResponse(
   };
 }
 
+async function transformMarkdownToStringifiedHtml(markdownText: string) {
+  const result = await unified()
+    .use(remarkParse)
+    .use(remarkRehype)
+    .use(rehypeSanitize)
+    .use(rehypeStringify)
+    .process(markdownText);
+
+  return String(result);
+}
+
 export {
   transformTopicApiResponse,
   transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsResponse,
   transformTopicOverviewResponse,
+  transformMarkdownToStringifiedHtml,
 };

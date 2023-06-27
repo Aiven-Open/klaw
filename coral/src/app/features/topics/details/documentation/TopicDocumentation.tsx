@@ -29,23 +29,25 @@ function TopicDocumentation() {
     }
   }, [topicOverview.topicDocumentation]);
 
-  if (!topicDocumentation) {
-    return (
-      <>
-        <PageHeader title={"Documentation"} />
-        <NoDocumentationBanner />
-      </>
-    );
-  }
-
   if (editMode) {
     return (
       <>
         <PageHeader title={"Edit documentation"} />
         <DocumentationEditView
+          topicName={topicOverview.topicInfo.topicName}
+          topicIdForDocumentation={topicOverview.topicIdForDocumentation}
           documentation={topicDocumentation}
-          cancelEdit={() => setEditMode(false)}
+          closeEditView={() => setEditMode(false)}
         />
+      </>
+    );
+  }
+
+  if (!topicDocumentation) {
+    return (
+      <>
+        <PageHeader title={"Documentation"} />
+        <NoDocumentationBanner addDocumentation={() => setEditMode(true)} />
       </>
     );
   }
