@@ -1,14 +1,14 @@
-import { DocumentationView } from "src/app/features/topics/details/documentation/components/DocumentationView";
+import { DocumentationViewOnly } from "src/app/features/topics/details/documentation/components/DocumentationViewOnly";
 import { cleanup, render, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
 
 const testStringifiedHtml = `<h1>Hello</h1>World!<b>Great</b>to see you!`;
 
 jest.mock("rehype-raw");
-describe("DocumentationView", () => {
+describe("DocumentationViewOnly", () => {
   describe("shows all necessary elements", () => {
     beforeAll(() => {
-      render(<DocumentationView stringifiedHtml={testStringifiedHtml} />);
+      render(<DocumentationViewOnly stringifiedHtml={testStringifiedHtml} />);
     });
 
     afterAll(cleanup);
