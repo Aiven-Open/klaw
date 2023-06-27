@@ -19,12 +19,11 @@ const testTopicSchemas = {
   allSchemaVersions: [3, 2, 1],
   latestVersion: 3,
   schemaPromotionDetails: {
-    DEV: {
+
       status: "success",
       sourceEnv: "1",
       targetEnv: "TST",
       targetEnvId: "2",
-    },
   },
   schemaDetailsPerEnv: {
     id: 0,
@@ -48,9 +47,9 @@ const noPromotion_testTopicSchemas = {
   allSchemaVersions: [3, 2, 1],
   latestVersion: 3,
   schemaPromotionDetails: {
-    TST: {
+
       status: "NO_PROMOTION",
-    },
+
   },
   schemaDetailsPerEnv: {
     id: 0,
@@ -131,7 +130,7 @@ describe("TopicDetailsSchema (topic owner)", () => {
 
   it("shows information about possible promotion", () => {
     const infoText = screen.getByText(
-      `This schema has not yet been promoted to the ${testTopicSchemas.schemaPromotionDetails["DEV"].targetEnv} environment.`
+      `This schema has not yet been promoted to the ${testTopicSchemas.schemaPromotionDetails.targetEnv} environment.`
     );
 
     expect(infoText).toBeVisible();

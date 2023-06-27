@@ -63,7 +63,7 @@ function TopicDetailsSchema() {
         }
 
         const { targetEnvId, sourceEnv } =
-          schemaPromotionDetails[schemaDetailsPerEnv.env] ?? {};
+          schemaPromotionDetails ?? {};
 
         if (targetEnvId === undefined || sourceEnv === undefined) {
           throw new Error("No promotion details available");
@@ -112,7 +112,7 @@ function TopicDetailsSchema() {
   }
 
   const { targetEnv, status: promotionStatus } =
-    schemaPromotionDetails[schemaDetailsPerEnv.env] ?? {};
+    schemaPromotionDetails ?? {};
 
   return (
     <>
