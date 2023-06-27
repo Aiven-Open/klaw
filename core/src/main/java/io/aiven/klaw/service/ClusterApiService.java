@@ -786,7 +786,7 @@ public class ClusterApiService {
     throw new KlawException(clusterApiErr123);
   }
 
-  ResponseEntity<ApiResponse> postSchema(
+  public ResponseEntity<ApiResponse> postSchema(
       SchemaRequest schemaRequest, String env, String topicName, int tenantId)
       throws KlawException {
     log.info("postSchema {} {}", topicName, env);
@@ -876,7 +876,7 @@ public class ClusterApiService {
     return response;
   }
 
-  ResponseEntity<ApiResponse> validateSchema(
+  public ResponseEntity<ApiResponse> validateSchema(
       String fullSchema, String env, String topicName, int tenantId) throws KlawException {
     log.info("postSchema {} {}", topicName, env);
     getClusterApiProperties(tenantId);

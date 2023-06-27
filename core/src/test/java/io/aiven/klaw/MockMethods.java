@@ -92,6 +92,18 @@ public class MockMethods {
     return kwClustersModel;
   }
 
+  public KwClustersModel getSchemaClusterModel(String dev_cluster) {
+    KwClustersModel kwClustersModel = new KwClustersModel();
+    kwClustersModel.setClusterName(dev_cluster);
+    kwClustersModel.setBootstrapServers("localhost:8081");
+    kwClustersModel.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
+    kwClustersModel.setClusterType(KafkaClustersType.SCHEMA_REGISTRY.value);
+    kwClustersModel.setKafkaFlavor("Apache Kafka");
+    kwClustersModel.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+
+    return kwClustersModel;
+  }
+
   public KwClustersModel getAivenKafkaClusterModel(String dev_cluster) {
     KwClustersModel kwClustersModel = new KwClustersModel();
     kwClustersModel.setClusterName(dev_cluster);

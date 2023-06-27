@@ -74,7 +74,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   public String addToSynctopics(List<Topic> topicRequests) {
-    return jdbcInsertHelper.insertIntoTopicSOT(topicRequests, true);
+    return jdbcInsertHelper.insertIntoTopicSOT(topicRequests);
   }
 
   public String addToSyncConnectors(List<KwKafkaConnector> topicRequests) {
