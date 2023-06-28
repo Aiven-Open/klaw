@@ -463,7 +463,15 @@
 									</td>
 								</tr>
 								<tr>
-									<td align="left"><span class="badge badge-warning">{{ connectorOverview[0].teamName}}</span></td>
+									<td style="width: 5%;alignment:left">
+										<span class="badge badge-warning">{{ connectorOverview.teamName}}</span>
+									</td>
+
+									<td style="alignment:left">
+										<select style="width: 20%" class="form-control custom-select" ng-change="setConnector(selectedEnvId);"
+												ng-model="selectedEnvId" ng-options="env.id as env.name for env in availableEnvironments">
+										</select>
+									</td>
 									<td></td>
 								</tr>
 							</table>
@@ -478,28 +486,29 @@
 									</tr>
 									</thead>
 									<tbody>
-									<tr ng-repeat="resultB in connectorOverview">
-										<td ng-show="resultB.environmentName == 'DEV'" align="left" width="15%">
-											<span class="badge badge-success">{{ resultB.environmentName}}</span>
+
+									<tr >
+										<td ng-show="connectorOverview.environmentName == 'DEV'" align="left" width="15%">
+											<span class="badge badge-success">{{ connectorOverview.environmentName}}</span>
 										</td>
-										<td ng-show="resultB.environmentName == 'TST'" align="left" width="15%">
-											<span class="badge badge-warning">{{ resultB.environmentName}}</span>
+										<td ng-show="connectorOverview.environmentName == 'TST'" align="left" width="15%">
+											<span class="badge badge-warning">{{ connectorOverview.environmentName}}</span>
 										</td>
-										<td ng-show="resultB.environmentName == 'PRD'" align="left" width="15%">
-											<span class="badge badge-danger">{{ resultB.environmentName}}</span>
+										<td ng-show="connectorOverview.environmentName == 'PRD'" align="left" width="15%">
+											<span class="badge badge-danger">{{ connectorOverview.environmentName}}</span>
 										</td>
-										<td ng-show="resultB.environmentName != 'DEV' && resultB.environmentName != 'TST' && resultB.environmentName != 'PRD'" align="left" width="15%">
-											<span class="badge badge-primary">{{ resultB.environmentName}}</span>
+										<td ng-show="connectorOverview.environmentName != 'DEV' && connectorOverview.environmentName != 'TST' && connectorOverview.environmentName != 'PRD'" align="left" width="15%">
+											<span class="badge badge-primary">{{ connectorOverview.environmentName}}</span>
 										</td>
 
 										<td align="left" width="70%">
-											<textarea class="form-control" style="background-color:#ffffff;color:black;" disabled  rows="6">{{ resultB.connectorConfig}}</textarea>
+											<textarea class="form-control" style="background-color:#ffffff;color:black;" disabled  rows="6">{{ connectorOverview.connectorConfig}}</textarea>
 										</td>
 										<td width="5%"></td>
 										<td align="right" width="10%">
 											<div class="p-2" style="width:5%">
-												<a href="requestConnector?connectorName={{topicSelectedParam}}&env={{resultB.environmentId}}">
-													<button ng-show="resultB.showEditConnector == true"
+												<a href="requestConnector?connectorName={{topicSelectedParam}}&env={{connectorOverview.environmentId}}">
+													<button ng-show="connectorOverview.showEditConnector == true"
 															type="button" class="btn btn-sm btn-outline-secondary btn-circle"><i class="fas fa-edit"></i>
 													</button>
 												</a>
@@ -507,8 +516,8 @@
 										</td>
 										<td align="right" width="10%" style="padding-right:5%">
 											<div class="p-2" style="width:5%">
-												<button ng-show="resultB.showDeleteConnector == true"
-														ng-click="onDeleteConnector(resultB.environmentId, resultB.connectorDeletable)" type="button" class="btn btn-sm btn-outline-danger btn-circle"><i class="fas fa-times"></i>
+												<button ng-show="connectorOverview.showDeleteConnector == true"
+														ng-click="onDeleteConnector(connectorOverview.environmentId, connectorOverview.connectorDeletable)" type="button" class="btn btn-sm btn-outline-danger btn-circle"><i class="fas fa-times"></i>
 												</button>
 											</div>
 										</td>
@@ -532,13 +541,13 @@
 
 										<td width="5%"></td>
 										<td width="20%" align="right">
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'false'"
+												<button ng-show="promotionDetails.status =='success' && firstPromote == 'false' && selectedEnvId == promotionDetails.sourceEnv"
 														type="button"
 														ng-click="onFirstPromote(promotionDetails.targetEnvId)"
 														class="btn btn-rounded btn-block btn-outline-info">
 													Promote to {{promotionDetails.targetEnv}}
 												</button>
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'true'"
+												<button ng-show="promotionDetails.status =='success' && firstPromote == 'true' && selectedEnvId == promotionDetails.sourceEnv"
 														type="button"
 														ng-click="onFinalPromote(promotionDetails.targetEnvId)"
 														class="btn btn-rounded btn-block btn-outline-info">
