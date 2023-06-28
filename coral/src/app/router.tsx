@@ -17,11 +17,14 @@ import TopicRequestsPage from "src/app/pages/requests/topics";
 import Topics from "src/app/pages/topics";
 import AclRequest from "src/app/pages/topics/acl-request";
 import { TopicDetailsPage } from "src/app/pages/topics/details";
+import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
 import RequestTopic from "src/app/pages/topics/request";
 import SchemaRequest from "src/app/pages/topics/schema-request";
 import {
   APPROVALS_TAB_ID_INTO_PATH,
   ApprovalsTabEnum,
+  CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
+  ConnectorOverviewTabEnum,
   REQUESTS_TAB_ID_INTO_PATH,
   RequestsTabEnum,
   Routes,
@@ -108,6 +111,35 @@ const routes: Array<RouteObject> = [
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
       },
+      createRouteBehindFeatureFlag({
+        path: Routes.CONNECTOR_OVERVIEW,
+        element: <ConnectorDetailsPage />,
+        featureFlag: FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW,
+        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
+        children: [
+          {
+            path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
+              ConnectorOverviewTabEnum.OVERVIEW
+            ],
+            element: <div>OVERVIEW</div>,
+            id: ConnectorOverviewTabEnum.OVERVIEW,
+          },
+          {
+            path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
+              ConnectorOverviewTabEnum.DOCUMENTATION
+            ],
+            element: <div>DOCUMENTATION</div>,
+            id: ConnectorOverviewTabEnum.DOCUMENTATION,
+          },
+          {
+            path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
+              ConnectorOverviewTabEnum.HISTORY
+            ],
+            element: <div>HISTORY</div>,
+            id: ConnectorOverviewTabEnum.HISTORY,
+          },
+        ],
+      }),
       {
         path: Routes.REQUESTS,
         element: <RequestsPage />,
