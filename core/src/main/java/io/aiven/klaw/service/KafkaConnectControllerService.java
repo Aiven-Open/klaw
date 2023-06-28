@@ -1079,7 +1079,7 @@ public class KafkaConnectControllerService {
     }
 
     connectorOverview.setTopicHistoryList(topicHistoryList);
-
+    // TODO is this needed can we just grab this from the connectors above? circa line 1019
     List<KwKafkaConnector> topicsSearchList =
         manageDatabase.getHandleDbRequests().getConnectorsFromName(connectorNamesearch, tenantId);
 
@@ -1099,6 +1099,15 @@ public class KafkaConnectControllerService {
       if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
         connectorOverview.setPromotionDetails(
             getConnectorPromotionEnv(connectorNamesearch, connectors, tenantId));
+
+        if (connectorOverview.getPromotionDetails().get("status").equals("success")
+            && !StringUtils.isEmpty(envId)) {
+          if (!connectorOverview.getPromotionDetails().get("sourceEnv").equals(envId)) {
+            Map<String, String> hashMap = new HashMap<>();
+            hashMap.put("status", "NO_PROMOTION");
+            connectorOverview.setPromotionDetails(hashMap);
+          }
+        }
 
         if (topicInfoList.size() > 0) {
           KafkaConnectorModelResponse lastItem = topicInfoList.get(topicInfoList.size() - 1);
@@ -1148,14 +1157,6 @@ public class KafkaConnectControllerService {
             topicEnv -> Objects.requireNonNull(orderOfEnvs).indexOf(topicEnv.getId())));
     availableEnvs.addAll(availableEnvsNotInPromotionOrder);
     overview.setAvailableEnvironments(availableEnvs);
-
-    if (!StringUtils.isEmpty(envId)) {
-
-      connectors =
-          connectors.stream()
-              .filter(conn -> !conn.getEnvironment().equals(envId))
-              .collect(Collectors.toList());
-    }
 
     return overview;
   }
@@ -1242,6 +1243,11 @@ public class KafkaConnectControllerService {
         // tenant filtering
         String orderOfEnvs =
             commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
+        if (orderOfEnvs.length() == 0) {
+          // No promotion order set return no promotion
+          hashMap.put("status", "NO_PROMOTION");
+          return hashMap;
+        }
 
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
