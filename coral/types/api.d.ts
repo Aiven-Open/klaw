@@ -666,6 +666,9 @@ export type components = {
       allPageNos: (string)[];
       documentation?: string;
       envName?: string;
+      advancedTopicConfiguration?: {
+        [key: string]: string | undefined;
+      };
     };
     KafkaConnectorModel: {
       /** Format: int32 */
@@ -1085,6 +1088,9 @@ export type components = {
       hasOpenRequest: boolean;
       hasOpenACLRequest: boolean;
       envName: string;
+      advancedTopicConfiguration?: {
+        [key: string]: string | undefined;
+      };
       topicOwner?: boolean;
       highestEnv?: boolean;
     };

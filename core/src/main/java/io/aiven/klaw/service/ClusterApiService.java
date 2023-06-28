@@ -518,6 +518,7 @@ public class ClusterApiService {
             clusterTopicRequest.toBuilder()
                 .partitions(topicPartitions)
                 .replicationFactor(Short.parseShort(replicationFactor))
+                .advancedTopicConfiguration(advancedTopicConfiguration)
                 .build();
       } else {
         uri = clusterConnUrl + URI_DELETE_TOPICS;

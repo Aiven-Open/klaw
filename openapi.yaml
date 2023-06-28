@@ -5747,6 +5747,12 @@
           },
           "envName" : {
             "type" : "string"
+          },
+          "advancedTopicConfiguration" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
           }
         },
         "required" : [ "allPageNos", "currentPage", "description", "envId", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
@@ -6995,6 +7001,12 @@
           },
           "envName" : {
             "type" : "string"
+          },
+          "advancedTopicConfiguration" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
           },
           "topicOwner" : {
             "type" : "boolean"
