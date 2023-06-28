@@ -64,14 +64,6 @@ public class EmailService {
           + "\t</tr>\n"
           + "</table>\n"
           + "<table style=\"height:40px; width:60%;background-color:#016BA7;color:white;text-align:center;font-family: Arial, Helvetica, sans-serif; margin-left: auto;margin-right: auto;\">\n"
-          + "\t<tr>\n"
-          + "\t\t<td align=\"center\" valign=\"top\">\n"
-          + "\t\t\t\n"
-          + "\t\t\t<a href=\"https://www.linkedin.com/company/kafkawize/\"><img width=\"4%\" src=\"https://kafkawize.io/wp-content/uploads/2021/11/linkedin.png\"></a>  &nbsp;&nbsp;&nbsp;\n"
-          + "\t\t\n"
-          + "\t\t\t<a href=\"https://www.twitter.com/kafkawize/\"><img width=\"4%\" src=\"https://kafkawize.io/wp-content/uploads/2021/11/twitterf.png\"></a>\n"
-          + "\t\t<td>\n"
-          + "\t</tr>\n"
           + "</table></html>";
 
   public void sendSimpleMessage(
