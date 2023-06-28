@@ -7,6 +7,7 @@ import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.Config;
+import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
@@ -27,6 +30,7 @@ import org.apache.kafka.clients.admin.NewPartitions;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaException;
+import org.apache.kafka.common.config.ConfigResource;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -198,12 +202,31 @@ public class ApacheKafkaTopicService {
       deleteTopic(clusterTopicRequest);
       createTopic(clusterTopicRequest);
     } else {
+      // Update partitions
       Map<String, NewPartitions> newPartitionSet = new HashMap<>();
       newPartitionSet.put(
           clusterTopicRequest.getTopicName(),
           NewPartitions.increaseTo(clusterTopicRequest.getPartitions()));
+      if (result.partitions().size() != clusterTopicRequest.getPartitions()) {
+        client.createPartitions(newPartitionSet);
+      }
 
-      client.createPartitions(newPartitionSet);
+      // Update advanced config
+      ConfigResource configResource =
+          new ConfigResource(ConfigResource.Type.TOPIC, clusterTopicRequest.getTopicName());
+      Map<ConfigResource, Config> updateConfig = new HashMap<>();
+
+      Map<String, String> advancedConfig = clusterTopicRequest.getAdvancedTopicConfiguration();
+      Collection<ConfigEntry> entries = new ArrayList<>();
+      for (String key : advancedConfig.keySet()) {
+        ConfigEntry configEntry = new ConfigEntry(key, advancedConfig.get(key));
+        entries.add(configEntry);
+      }
+
+      if (!advancedConfig.isEmpty()) {
+        updateConfig.put(configResource, new Config(entries));
+        client.alterConfigs(updateConfig);
+      }
     }
 
     return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
