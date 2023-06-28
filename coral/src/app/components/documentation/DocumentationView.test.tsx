@@ -1,6 +1,6 @@
-import { DocumentationView } from "src/app/features/topics/details/documentation/components/DocumentationView";
 import { cleanup, render, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
+import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 
 const markdownInput = `# Hello world`;
 

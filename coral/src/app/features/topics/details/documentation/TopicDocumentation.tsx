@@ -1,10 +1,10 @@
 import { PageHeader } from "@aivenio/aquarium";
 import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
-import { DocumentationView } from "src/app/features/topics/details/documentation/components/DocumentationView";
 import { DocumentationEditView } from "src/app/features/topics/details/documentation/components/DocumentationEditView";
 import { useEffect, useState } from "react";
-import { createMarkdown } from "src/app/features/topics/details/documentation/utils/topic-documentation-helper";
+import { createMarkdown } from "src/app/components/documentation/utils/topic-documentation-helper";
+import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 
 function TopicDocumentation() {
   const { topicOverview } = useTopicDetails();

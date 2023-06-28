@@ -8,12 +8,13 @@ import {
   SegmentedControlGroup,
   useToast,
 } from "@aivenio/aquarium";
-import { DocumentationView } from "src/app/features/topics/details/documentation/components/DocumentationView";
-import { DocumentationEditor } from "src/app/features/topics/details/documentation/components/DocumentationEditor";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { updateTopicDocumentation } from "src/domain/topic/topic-api";
 import loading from "@aivenio/aquarium/icons/loading";
+import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
+import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 
 type DocumentationEditViewProps = {
   documentation?: string;
