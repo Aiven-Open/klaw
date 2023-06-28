@@ -65,6 +65,7 @@ function DocumentationEditor({
               PreTag="div"
               style={a11yLight}
               wrapLongLines={true}
+              customStyle={{ minHeight: "40vh" }}
             >
               {text}
             </SyntaxHighlighter>

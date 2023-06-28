@@ -5,9 +5,7 @@
 }
 
 .markdownSyntaxHighlight {
-  min-height: 50vh;
   line-height: var(--markdown-editor-line-height);
-
   /*padding-bottom is needed for the short state when user does line break
     without that they started typing. This would not create a line break, so
     the cursor would over over the border. This way, making a new line, there
@@ -34,6 +32,7 @@ textarea.markdownTextarea {
        and syntax highlight correctly. */
   padding: 9px;
   color: transparent;
+  border: 2px solid red;
   caret-color: black;
   line-height: var(--markdown-editor-line-height);
   background-color: transparent;
