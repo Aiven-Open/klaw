@@ -855,7 +855,6 @@ public class SchemaRegistryControllerServiceTest {
     schema.setSchemaVersion(SchemaVersion);
     schema.setRemarks("Promote Schema.");
     schema.setForceRegister(isForceRegister);
-    schema.setSchemaFull("{'name':'tester'}");
     schema.setSourceEnvironment("1");
     schema.setTargetEnvironment("8");
     schema.setTopicName(TESTTOPIC);
@@ -865,7 +864,6 @@ public class SchemaRegistryControllerServiceTest {
   private List<SchemaRequest> getSchemasReqs() {
     List<SchemaRequest> schList = new ArrayList<>();
     SchemaRequest schReq = new SchemaRequest();
-    schReq.setSchemafull("<Schema>");
     schReq.setEnvironment("1");
     schReq.setRequestStatus(RequestStatus.CREATED.value);
     schReq.setTeamId(101);
@@ -873,7 +871,6 @@ public class SchemaRegistryControllerServiceTest {
     schList.add(schReq);
 
     schReq = new SchemaRequest();
-    schReq.setSchemafull("<Schema1>");
     schReq.setEnvironment("1");
     schReq.setRequestStatus(RequestStatus.CREATED.value);
     schReq.setTeamId(102);
@@ -887,7 +884,6 @@ public class SchemaRegistryControllerServiceTest {
     List<SchemaRequest> schList = new ArrayList<>();
     for (int i = 0; i < number; i++) {
       SchemaRequest schReq = new SchemaRequest();
-      schReq.setSchemafull("<Schema>");
       schReq.setEnvironment("1");
       schReq.setRequestStatus(RequestStatus.CREATED.value);
       schReq.setTeamId(101);

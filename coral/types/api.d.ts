@@ -727,7 +727,6 @@ export type components = {
       sourceEnvironment: string;
       topicName: string;
       schemaVersion: string;
-      schemaFull: string;
       forceRegister?: boolean;
       appName: string;
       remarks: string;
