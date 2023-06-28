@@ -3,7 +3,6 @@ import { NoDocumentationBanner } from "src/app/features/topics/details/documenta
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { useState } from "react";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
-import { useDocumentation } from "src/app/components/documentation/hooks/useDocumentation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateTopicDocumentation } from "src/domain/topic/topic-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
@@ -15,17 +14,15 @@ function TopicDocumentation() {
   const [editMode, setEditMode] = useState(false);
 
   const { topicOverview } = useTopicDetails();
-  const { topicDocumentationMarkdownString } = useDocumentation(
-    topicOverview.topicDocumentation
-  );
+
   const toast = useToast();
 
   const { mutate, isError, isLoading, error } = useMutation(
-    (stringifiedHtml: string) => {
+    (markdownString: string) => {
       return updateTopicDocumentation({
         topicName: topicOverview.topicInfo.topicName,
         topicIdForDocumentation: topicOverview.topicIdForDocumentation,
-        topicDocumentation: stringifiedHtml,
+        topicDocumentation: markdownString,
       });
     },
     {
@@ -56,7 +53,7 @@ function TopicDocumentation() {
             </Box>
           )}
           <DocumentationEditor
-            documentation={topicDocumentationMarkdownString}
+            documentation={topicOverview.topicDocumentation}
             save={(text) => mutate(text)}
             cancel={() => setEditMode(false)}
             isSaving={isLoading}
@@ -66,7 +63,10 @@ function TopicDocumentation() {
     );
   }
 
-  if (!topicDocumentationMarkdownString) {
+  if (
+    !topicOverview.topicDocumentation ||
+    topicOverview.topicDocumentation.length === 0
+  ) {
     return (
       <>
         <PageHeader title={"Documentation"} />
@@ -84,7 +84,7 @@ function TopicDocumentation() {
           onClick: () => setEditMode(true),
         }}
       />
-      <DocumentationView markdownString={topicDocumentationMarkdownString} />
+      <DocumentationView markdownString={topicOverview.topicDocumentation} />
     </>
   );
 }

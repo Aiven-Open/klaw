@@ -1,6 +1,8 @@
 import "@testing-library/jest-dom";
 import "whatwg-fetch";
 import * as process from "process";
+import "src/services/test-utils/mock-documenation-helper";
+
 // This is needed to be able to use crypto.randomUUID in testing components which use it
 // ie: components using useToast
 import { Crypto } from "@peculiar/webcrypto";

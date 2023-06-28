@@ -11,7 +11,6 @@ import classes from "src/app/components/documentation/documentation-editor.modul
 import { useState } from "react";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 import loading from "@aivenio/aquarium/icons/loading";
-import { createStringifiedHtml } from "src/app/components/documentation/utils/topic-documentation-helper";
 
 type DocumentationEditorProps = {
   documentation?: string;
@@ -29,11 +28,6 @@ function DocumentationEditor({
 }: DocumentationEditorProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("edit");
   const [text, setText] = useState(documentation || "");
-
-  async function transformAndSave() {
-    const stringifiedHtml = await createStringifiedHtml(text);
-    save(stringifiedHtml);
-  }
 
   return (
     <Box.Flex flexDirection={"column"} rowGap={"l1"}>
@@ -90,7 +84,7 @@ function DocumentationEditor({
         {!isSaving && (
           <>
             <Button.Secondary onClick={cancel}>Cancel</Button.Secondary>
-            <Button.Primary onClick={transformAndSave}>
+            <Button.Primary onClick={() => save(text.trim())}>
               Save documentation
             </Button.Primary>
           </>

@@ -29,6 +29,7 @@ import {
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
+import { createStringifiedHtml } from "src/domain/helper/documentation-helper";
 
 const getTopics = async (
   params: KlawApiRequestQueryParameters<"getTopics">
@@ -276,10 +277,11 @@ async function updateTopicDocumentation({
   topicIdForDocumentation,
   topicDocumentation,
 }: UpdateTopicDocumentation) {
+  const stringifiedHtml = await createStringifiedHtml(topicDocumentation);
   const requestBody = {
     topicName,
     topicid: topicIdForDocumentation,
-    documentation: topicDocumentation,
+    documentation: stringifiedHtml,
   };
 
   return api.post<
