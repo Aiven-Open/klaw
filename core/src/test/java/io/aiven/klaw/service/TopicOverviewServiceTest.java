@@ -22,6 +22,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.KwTenantConfigModel;
+import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
@@ -116,10 +117,13 @@ public class TopicOverviewServiceTest {
         .thenReturn(utilMethods.getTeams());
     when(handleDbRequests.getSyncAcls(anyString(), anyString(), anyInt()))
         .thenReturn(getAclsSOT(TESTTOPIC));
-    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-        .thenReturn(utilMethods.getTopics(TESTTOPIC));
-    when(commonUtilsService.getFilteredTopicsForTenant(any()))
-        .thenReturn(utilMethods.getTopics(TESTTOPIC));
+
+    List<Topic> topics = utilMethods.getTopics(TESTTOPIC);
+    topics
+        .get(0)
+        .setJsonParams("{\"advancedTopicConfiguration\":{\"retention.ms\":\"404800000\"}}");
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topics);
+    when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(topics);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
         .thenReturn(kwClustersHashMap);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
@@ -128,11 +132,18 @@ public class TopicOverviewServiceTest {
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
     when(commonUtilsService.getEnvProperty(eq(101), eq(REQUEST_TOPICS_OF_ENVS))).thenReturn("1");
     mockTenantConfig();
+    TopicOverviewInfo topicOverviewInfo =
+        topicOverviewService
+            .getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE)
+            .getTopicInfoList()
+            .get(0);
     List<AclOverviewInfo> aclList =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE).getAclInfoList();
 
     assertThat(aclList).hasSize(1);
 
+    assertThat(topicOverviewInfo.getAdvancedTopicConfiguration())
+        .containsEntry("retention.ms", "404800000");
     assertThat(aclList.get(0).getTopicname()).isEqualTo(TESTTOPIC);
     assertThat(aclList.get(0).getConsumergroup()).isEqualTo("mygrp1");
     assertThat(aclList.get(0).getAcl_ip()).isEqualTo("2.1.2.1");
