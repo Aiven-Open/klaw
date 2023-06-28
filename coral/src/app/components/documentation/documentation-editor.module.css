@@ -32,7 +32,6 @@ textarea.markdownTextarea {
        and syntax highlight correctly. */
   padding: 9px;
   color: transparent;
-  border: 2px solid red;
   caret-color: black;
   line-height: var(--markdown-editor-line-height);
   background-color: transparent;
