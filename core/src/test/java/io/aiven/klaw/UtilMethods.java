@@ -574,7 +574,6 @@ public class UtilMethods {
     SchemaPromotion promo = new SchemaPromotion();
     promo.setRemarks("Promotion Schema Request");
     promo.setAppName("App");
-    promo.setSchemaFull("Nonsense Schema");
     promo.setSchemaVersion("1");
     promo.setTopicName("topic-1");
     promo.setForceRegister(false);

@@ -2,7 +2,6 @@ package io.aiven.klaw.model.requests;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,10 +25,6 @@ public class SchemaPromotion {
   @NotNull
   @Pattern(message = "Invalid Schema Version. Pattern [0-9]", regexp = "^[0-9]*$")
   private String schemaVersion;
-
-  @NotNull
-  @Size(min = 8, message = "Please fill in a valid schema.")
-  private String schemaFull;
 
   private boolean forceRegister;
 
