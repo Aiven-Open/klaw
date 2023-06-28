@@ -60,6 +60,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -1009,13 +1010,13 @@ public class KafkaConnectControllerService {
             .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
             .collect(Collectors.toList());
 
-    ConnectorOverview topicOverview = filterByEnvironment(connectors, envId);
+    ConnectorOverview connectorOverview = filterByEnvironment(connectors, envId, tenantId);
 
     if (connectors.size() == 0) {
-      topicOverview.setConnectorExists(false);
-      return topicOverview;
+      connectorOverview.setConnectorExists(false);
+      return connectorOverview;
     } else {
-      topicOverview.setConnectorExists(true);
+      connectorOverview.setConnectorExists(true);
     }
 
     String syncCluster;
@@ -1042,39 +1043,42 @@ public class KafkaConnectControllerService {
     ArrayList<TopicHistory> topicHistoryFromTopic;
     List<TopicHistory> topicHistoryList = new ArrayList<>();
 
-    for (KwKafkaConnector topic : connectors) {
-      KafkaConnectorModelResponse topicInfo = new KafkaConnectorModelResponse();
-      topicInfo.setConnectorId(topic.getConnectorId());
+    for (KwKafkaConnector conn : connectors) {
+      if (StringUtils.isEmpty(envId) || conn.getEnvironment().equals(envId)) {
+        KafkaConnectorModelResponse connectorInfo = new KafkaConnectorModelResponse();
+        connectorInfo.setConnectorId(conn.getConnectorId());
 
-      topicInfo.setConnectorName(topic.getConnectorName());
-      topicInfo.setEnvironmentName(getKafkaConnectEnvDetails(topic.getEnvironment()).getName());
-      topicInfo.setEnvironmentId(topic.getEnvironment());
-      topicInfo.setConnectorConfig(topic.getConnectorConfig());
-      topicInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, topic.getTeamId()));
+        connectorInfo.setConnectorName(conn.getConnectorName());
+        connectorInfo.setEnvironmentName(
+            getKafkaConnectEnvDetails(conn.getEnvironment()).getName());
+        connectorInfo.setEnvironmentId(conn.getEnvironment());
+        connectorInfo.setConnectorConfig(conn.getConnectorConfig());
+        connectorInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, conn.getTeamId()));
 
-      if (Objects.equals(syncCluster, topic.getEnvironment())) {
-        topicOverview.setTopicDocumentation(topic.getDocumentation());
-        topicOverview.setTopicIdForDocumentation(topic.getConnectorId());
-      }
-
-      if (topic.getHistory() != null) {
-        try {
-          topicHistoryFromTopic = OBJECT_MAPPER.readValue(topic.getHistory(), VALUE_TYPE_REF);
-          topicHistoryList.addAll(topicHistoryFromTopic);
-        } catch (JsonProcessingException e) {
-          log.error("Unable to parse topicHistory", e);
+        if (Objects.equals(syncCluster, conn.getEnvironment())) {
+          connectorOverview.setTopicDocumentation(conn.getDocumentation());
+          connectorOverview.setTopicIdForDocumentation(conn.getConnectorId());
         }
+
+        if (conn.getHistory() != null) {
+          try {
+            topicHistoryFromTopic = OBJECT_MAPPER.readValue(conn.getHistory(), VALUE_TYPE_REF);
+            topicHistoryList.addAll(topicHistoryFromTopic);
+          } catch (JsonProcessingException e) {
+            log.error("Unable to parse topicHistory", e);
+          }
+        }
+
+        topicInfoList.add(connectorInfo);
       }
-
-      topicInfoList.add(topicInfo);
     }
 
-    if (topicOverview.getTopicIdForDocumentation() == null) {
-      topicOverview.setTopicDocumentation(connectors.get(0).getDocumentation());
-      topicOverview.setTopicIdForDocumentation(connectors.get(0).getConnectorId());
+    if (connectorOverview.getTopicIdForDocumentation() == null) {
+      connectorOverview.setTopicDocumentation(connectors.get(0).getDocumentation());
+      connectorOverview.setTopicIdForDocumentation(connectors.get(0).getConnectorId());
     }
 
-    topicOverview.setTopicHistoryList(topicHistoryList);
+    connectorOverview.setTopicHistoryList(topicHistoryList);
 
     List<KwKafkaConnector> topicsSearchList =
         manageDatabase.getHandleDbRequests().getConnectorsFromName(connectorNamesearch, tenantId);
@@ -1090,10 +1094,10 @@ public class KafkaConnectControllerService {
       }
     }
 
-    topicOverview.setConnectorInfoList(topicInfoList);
+    connectorOverview.setConnectorInfoList(topicInfoList);
     try {
       if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
-        topicOverview.setPromotionDetails(
+        connectorOverview.setPromotionDetails(
             getConnectorPromotionEnv(connectorNamesearch, connectors, tenantId));
 
         if (topicInfoList.size() > 0) {
@@ -1104,16 +1108,16 @@ public class KafkaConnectControllerService {
       } else {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-        topicOverview.setPromotionDetails(hashMap);
+        connectorOverview.setPromotionDetails(hashMap);
       }
     } catch (Exception e) {
       log.error("Exception:", e);
       Map<String, String> hashMap = new HashMap<>();
       hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-      topicOverview.setPromotionDetails(hashMap);
+      connectorOverview.setPromotionDetails(hashMap);
     }
 
-    return topicOverview;
+    return connectorOverview;
   }
 
   private ConnectorOverview filterByEnvironment(
@@ -1144,6 +1148,14 @@ public class KafkaConnectControllerService {
             topicEnv -> Objects.requireNonNull(orderOfEnvs).indexOf(topicEnv.getId())));
     availableEnvs.addAll(availableEnvsNotInPromotionOrder);
     overview.setAvailableEnvironments(availableEnvs);
+
+    if (!StringUtils.isEmpty(envId)) {
+
+      connectors =
+          connectors.stream()
+              .filter(conn -> !conn.getEnvironment().equals(envId))
+              .collect(Collectors.toList());
+    }
 
     return overview;
   }

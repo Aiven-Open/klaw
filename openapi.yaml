@@ -4412,6 +4412,14 @@
           "schema" : {
             "type" : "string"
           }
+        }, {
+          "name" : "environmentId",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
         } ],
         "responses" : {
           "200" : {
@@ -7907,6 +7915,12 @@
           "connectorExists" : {
             "type" : "boolean"
           },
+          "availableEnvironments" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EnvIdInfo"
+            }
+          },
           "topicDocumentation" : {
             "type" : "string"
           },
@@ -7915,7 +7929,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "connectorExists", "connectorInfoList" ]
+        "required" : [ "availableEnvironments", "connectorExists", "connectorInfoList" ]
       },
       "ConnectorOverviewPerEnv" : {
         "properties" : {

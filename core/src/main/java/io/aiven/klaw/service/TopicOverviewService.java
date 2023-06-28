@@ -314,7 +314,7 @@ public class TopicOverviewService extends BaseOverviewService {
     }
   }
 
-  private boolean isRequestAlreadyOpen(String topicNameSearch, String environmentId, in tenantId) {
+  private boolean isRequestAlreadyOpen(String topicNameSearch, String environmentId, int tenantId) {
 
     List<TopicRequest> topicReqs =
         manageDatabase
