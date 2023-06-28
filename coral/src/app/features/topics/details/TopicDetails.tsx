@@ -54,6 +54,7 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: topicIsError,
     error: topicError,
     isLoading: topicIsLoading,
+    isRefetching: topicIsRefetching,
     isFetched: topicDataFetched,
   } = useQuery(["topic-overview", environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
@@ -93,7 +94,7 @@ function TopicDetails(props: TopicOverviewProps) {
       />
 
       <TopicOverviewResourcesTabs
-        isLoading={topicIsLoading || schemaIsLoading}
+        isLoading={topicIsLoading || schemaIsLoading || topicIsRefetching}
         isError={topicIsError || schemaIsError}
         error={topicError || schemaError}
         currentTab={currentTab}

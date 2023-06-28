@@ -1,49 +1,72 @@
-import { PageHeader } from "@aivenio/aquarium";
+import { Alert, Box, PageHeader, useToast } from "@aivenio/aquarium";
 import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
-import { DocumentationEditView } from "src/app/features/topics/details/documentation/components/DocumentationEditView";
-import { useEffect, useState } from "react";
-import { createMarkdown } from "src/app/components/documentation/utils/topic-documentation-helper";
+import { useState } from "react";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
+import { useDocumentation } from "src/app/components/documentation/hooks/useDocumentation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateTopicDocumentation } from "src/domain/topic/topic-api";
+import { parseErrorMsg } from "src/services/mutation-utils";
+import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
 
 function TopicDocumentation() {
-  const { topicOverview } = useTopicDetails();
-  const [topicDocumentation, setTopicDocumentation] = useState<
-    string | undefined
-  >();
+  const queryClient = useQueryClient();
+
   const [editMode, setEditMode] = useState(false);
 
-  useEffect(() => {
-    // It would be more clear and responsibilities better split
-    // to do that on API level, so outside from 'domain' we don't
-    // even know that we handle stringified html, but that would
-    // require to do that on all topicOverview entries and is
-    // unnecessary load for user
-    if (topicOverview.topicDocumentation !== undefined) {
-      const docToTransform = topicOverview.topicDocumentation;
-      const transformDocumentationString = async () => {
-        const documentation = await createMarkdown(docToTransform);
-        setTopicDocumentation(documentation);
-      };
-      transformDocumentationString();
+  const { topicOverview } = useTopicDetails();
+  const { topicDocumentationMarkdownString } = useDocumentation(
+    topicOverview.topicDocumentation
+  );
+  const toast = useToast();
+
+  const { mutate, isError, isLoading, error } = useMutation(
+    (stringifiedHtml: string) => {
+      return updateTopicDocumentation({
+        topicName: topicOverview.topicInfo.topicName,
+        topicIdForDocumentation: topicOverview.topicIdForDocumentation,
+        topicDocumentation: stringifiedHtml,
+      });
+    },
+    {
+      onSuccess: () => {
+        setEditMode(false);
+        queryClient.refetchQueries(["topic-overview"]).then(() => {
+          toast({
+            message: "Documentation successfully updated",
+            position: "bottom-left",
+            variant: "default",
+          });
+        });
+      },
     }
-  }, [topicOverview.topicDocumentation]);
+  );
 
   if (editMode) {
     return (
       <>
         <PageHeader title={"Edit documentation"} />
-        <DocumentationEditView
-          topicName={topicOverview.topicInfo.topicName}
-          topicIdForDocumentation={topicOverview.topicIdForDocumentation}
-          documentation={topicDocumentation}
-          closeEditView={() => setEditMode(false)}
-        />
+        <>
+          {isError && (
+            <Box marginBottom={"l1"} role="alert">
+              <Alert type="error">
+                The documentation could not be saved, there was an error: <br />
+                {parseErrorMsg(error)}
+              </Alert>
+            </Box>
+          )}
+          <DocumentationEditor
+            documentation={topicDocumentationMarkdownString}
+            save={(text) => mutate(text)}
+            cancel={() => setEditMode(false)}
+            isSaving={isLoading}
+          />
+        </>
       </>
     );
   }
 
-  if (!topicDocumentation) {
+  if (!topicDocumentationMarkdownString) {
     return (
       <>
         <PageHeader title={"Documentation"} />
@@ -61,7 +84,7 @@ function TopicDocumentation() {
           onClick: () => setEditMode(true),
         }}
       />
-      <DocumentationView markdownString={topicDocumentation} />
+      <DocumentationView markdownString={topicDocumentationMarkdownString} />
     </>
   );
 }

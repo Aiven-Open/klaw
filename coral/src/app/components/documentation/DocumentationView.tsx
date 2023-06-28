@@ -1,6 +1,6 @@
 import ReactMarkdown from "react-markdown";
 import { Box } from "@aivenio/aquarium";
-import classes from "src/app/features/topics/details/documentation/components/documentation-view.module.css";
+import classes from "src/app/components/documentation/documentation-view.module.css";
 
 type DocumentationViewProps = {
   //⚠️ This component assumes that we're

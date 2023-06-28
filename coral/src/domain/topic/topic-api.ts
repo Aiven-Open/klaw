@@ -9,7 +9,6 @@ import {
 import {
   transformGetTopicAdvancedConfigOptionsResponse,
   transformGetTopicRequestsResponse,
-  transformMarkdownToStringifiedHtml,
   transformTopicApiResponse,
   transformTopicOverviewResponse,
 } from "src/domain/topic/topic-transformer";
@@ -270,24 +269,17 @@ const getSchemaOfTopic = (
 type UpdateTopicDocumentation = {
   topicName: string;
   topicIdForDocumentation: number;
-  markdownString: string;
+  topicDocumentation: string;
 };
 async function updateTopicDocumentation({
   topicName,
   topicIdForDocumentation,
-  markdownString,
+  topicDocumentation,
 }: UpdateTopicDocumentation) {
-  const documentationToSave = await transformMarkdownToStringifiedHtml(
-    markdownString
-  );
-
-  // requestBody matches the request body the Angular
-  // app sends right now, which does not match the
-  // openapi definition. Backend is working on it
   const requestBody = {
     topicName,
     topicid: topicIdForDocumentation,
-    documentation: documentationToSave,
+    documentation: topicDocumentation,
   };
 
   return api.post<
