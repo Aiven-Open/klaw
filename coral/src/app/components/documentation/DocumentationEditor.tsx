@@ -3,14 +3,13 @@ import { a11yLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import {
   Box,
   Button,
-  Icon,
   SegmentedControl,
   SegmentedControlGroup,
+  Typography,
 } from "@aivenio/aquarium";
 import classes from "src/app/components/documentation/documentation-editor.module.css";
 import { useState } from "react";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
-import loading from "@aivenio/aquarium/icons/loading";
 
 type DocumentationEditorProps = {
   documentation?: string;
@@ -29,15 +28,37 @@ function DocumentationEditor({
   const [viewMode, setViewMode] = useState<ViewMode>("edit");
   const [text, setText] = useState(documentation || "");
 
+  function saveDocumentation() {
+    // trim to remove unnecessary whitespace at end/start
+    const newDocumentation = text.trim();
+
+    // existing `documentation` needs to be trimmed to compare, since
+    // there we don't know if the value saved before migrating to React
+    // contains spaces at beginning / end
+    if (documentation && newDocumentation === documentation.trim()) return;
+    save(newDocumentation);
+  }
+
   return (
     <Box.Flex flexDirection={"column"} rowGap={"l1"}>
-      <Box.Flex alignSelf={"end"}>
+      <Box.Flex
+        alignSelf={"end"}
+        component={"section"}
+        aria-label={"Switch between edit and preview mode"}
+      >
         <SegmentedControlGroup
           onChange={(value: ViewMode) => setViewMode(value)}
           value={viewMode}
         >
-          <SegmentedControl value={"edit"}>Edit markdown</SegmentedControl>
-          <SegmentedControl value={"preview"}>Preview</SegmentedControl>
+          <SegmentedControl aria-pressed={viewMode === "edit"} value={"edit"}>
+            Edit
+          </SegmentedControl>
+          <SegmentedControl
+            aria-pressed={viewMode === "preview"}
+            value={"preview"}
+          >
+            Preview
+          </SegmentedControl>
         </SegmentedControlGroup>
       </Box.Flex>
 
@@ -47,23 +68,38 @@ function DocumentationEditor({
             borderColor={"grey-20"}
             borderWidth={"1px"}
             borderRadius={"2px"}
+            marginBottom={"l1"}
             className={classes.markdownSyntaxHighlight}
           >
+            <label
+              className={"visually-hidden"}
+              htmlFor={"markdown-editor-textarea"}
+            >
+              Markdown editor
+            </label>
             <textarea
+              id={"markdown-editor-textarea"}
+              aria-describedby={"editor-markdown-description"}
               value={text}
               onChange={(event) => setText(event?.target?.value)}
               className={classes.markdownTextarea}
             />
-            <SyntaxHighlighter
-              language={"markdown"}
-              PreTag="div"
-              style={a11yLight}
-              wrapLongLines={true}
-              customStyle={{ minHeight: "40vh" }}
-            >
-              {text}
-            </SyntaxHighlighter>
+            <div aria-hidden={"true"}>
+              <SyntaxHighlighter
+                language={"markdown"}
+                PreTag="div"
+                style={a11yLight}
+                wrapLongLines={true}
+                customStyle={{ minHeight: "40vh" }}
+              >
+                {text}
+              </SyntaxHighlighter>
+            </div>
           </Box>
+          <Typography.SmallTextBold id={"editor-markdown-description"}>
+            We are supporting markdown following the{" "}
+            <a href={"https://commonmark.org/help/"}>CommonMark</a> standard.
+          </Typography.SmallTextBold>
         </div>
       )}
 
@@ -75,20 +111,12 @@ function DocumentationEditor({
         justifyContent={"end"}
         alignItems={"center"}
       >
-        {isSaving && (
-          <>
-            <Icon icon={loading} fontSize={"30px"} />
-            Saving documentation
-          </>
-        )}
-        {!isSaving && (
-          <>
-            <Button.Secondary onClick={cancel}>Cancel</Button.Secondary>
-            <Button.Primary onClick={() => save(text.trim())}>
-              Save documentation
-            </Button.Primary>
-          </>
-        )}
+        <Button.Secondary onClick={cancel} loading={isSaving}>
+          Cancel
+        </Button.Secondary>
+        <Button.Primary onClick={saveDocumentation} loading={isSaving}>
+          Save documentation
+        </Button.Primary>
       </Box.Flex>
     </Box.Flex>
   );
