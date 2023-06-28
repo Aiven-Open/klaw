@@ -1,6 +1,7 @@
 package io.aiven.klaw.model;
 
 import jakarta.validation.constraints.NotNull;
+import java.util.Map;
 import lombok.Data;
 
 @Data
@@ -33,4 +34,6 @@ public class TopicOverviewInfo {
   @NotNull private boolean hasOpenACLRequest;
 
   @NotNull private String envName;
+
+  private Map<String, String> advancedTopicConfiguration;
 }

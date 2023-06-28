@@ -1028,6 +1028,19 @@ public class TopicControllerService {
         topicDetailsPerEnv.setTopicId("" + topicOptional.get().getTopicid());
         topicInfo.setDescription(topicDescription);
 
+        String topicJsonParams = topicOptional.get().getJsonParams();
+        if (topicJsonParams != null) {
+          TopicConfigurationRequest topicConfigurationRequest;
+          try {
+            topicConfigurationRequest =
+                OBJECT_MAPPER.readValue(topicJsonParams, TopicConfigurationRequest.class);
+            topicInfo.setAdvancedTopicConfiguration(
+                topicConfigurationRequest.getAdvancedTopicConfiguration());
+          } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+          }
+        }
+
         Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
         if (!Objects.equals(loggedInUserTeamId, topicOptional.get().getTeamId())) {
           topicDetailsPerEnv.setError(TOPICS_ERR_114);

@@ -10,6 +10,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
@@ -226,6 +227,18 @@ public class TopicOverviewService extends BaseOverviewService {
       topicInfo.setNoOfReplicas(topic.getNoOfReplicas());
       topicInfo.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topic.getTeamId()));
       topicInfo.setTeamId(topic.getTeamId());
+      String topicJsonParams = topic.getJsonParams();
+      if (topicJsonParams != null) {
+        TopicConfigurationRequest topicConfigurationRequest;
+        try {
+          topicConfigurationRequest =
+              OBJECT_MAPPER.readValue(topicJsonParams, TopicConfigurationRequest.class);
+          topicInfo.setAdvancedTopicConfiguration(
+              topicConfigurationRequest.getAdvancedTopicConfiguration());
+        } catch (JsonProcessingException e) {
+          log.error("Unable to parse topic advanced config {}", topicName);
+        }
+      }
 
       if (syncCluster != null && syncCluster.equals(topic.getEnvironment())) {
         topicOverview.setTopicDocumentation(topic.getDocumentation());
@@ -301,7 +314,7 @@ public class TopicOverviewService extends BaseOverviewService {
     }
   }
 
-  private boolean isRequestAlreadyOpen(String topicNameSearch, String environmentId, int tenantId) {
+  private boolean isRequestAlreadyOpen(String topicNameSearch, String environmentId, in tenantId) {
 
     List<TopicRequest> topicReqs =
         manageDatabase
