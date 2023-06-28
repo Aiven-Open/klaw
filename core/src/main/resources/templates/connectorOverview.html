@@ -451,7 +451,7 @@
 								<tr>
 									<td align="left"><h4 class="card-title">Connector : {{ topicSelectedParam }}</h4></td>
 									<td align="right" width="15%">
-										<button ng-show="connectorOverview[0].teamName != teamname && dashboardDetails.requestItems=='Authorized'" type="button" ng-click="onClaimConnector(topicSelectedParam, connectorOverview[0].environmentId);"
+										<button ng-show="connectorOverview.teamName != teamname && dashboardDetails.requestItems=='Authorized'" type="button" ng-click="onClaimConnector(topicSelectedParam, connectorOverview.environmentId);"
 												class="btn waves-effect waves-light btn-rounded btn-sm btn-info">Claim Connector</button>
 									</td>
 									<td align="right" width="15%">
@@ -606,7 +606,7 @@
 									</div>
 
 									<div ng-show="topicDocumentation == null && addDocsVar != 'true'" class="row button-group">
-										<div ng-show="connectorOverview[0].teamName == teamname" class="col-lg-2 col-md-4">
+										<div ng-show="connectorOverview.teamName == teamname" class="col-lg-2 col-md-4">
 											<button type="button" ng-click="addDocs();"
 													class="btn waves-effect waves-light btn-block btn-secondary">Add Documentation</button>
 										</div>
@@ -631,7 +631,7 @@
 										<!-- Display topic documentation -->
 										<div id="topicDocId" markdown=1></div>
 
-										<div ng-show="connectorOverview[0].teamName == teamname" class="form-actions">
+										<div ng-show="connectorOverview.teamName == teamname" class="form-actions">
 											<button ng-click="updateDocs();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
 												Update</button>
 										</div>
