@@ -19,7 +19,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
 
   const testMainNavigationLinks = subNavigationLinks.map((link, index) => {
     return (
-      <a key={`${index}`} href={`${link.href}`}>
+      <a key={`${index}`} href={link.href}>
         {link.name}
       </a>
     );

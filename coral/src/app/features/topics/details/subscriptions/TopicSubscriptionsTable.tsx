@@ -111,19 +111,13 @@ const getColumns = (
       headerName: "Principals/Usernames",
       UNSAFE_render: ({ principals }: AclInfoListRow) => {
         return (
-          <Box display="flex" wrap={"wrap"} gap={"2"}>
+          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
             {principals.map((principal, index) => (
-              <StatusChip
-                dense
-                status="neutral"
-                key={`${principal}-${index}`}
-                // We need to add a space after text value
-                // Otherwise a list of values would be rendered as value1value2value3 for screen readers
-                // Instead of value1 value2 value3
-                text={`${principal} `}
-              />
+              <li key={`${principal}-${index}`}>
+                <StatusChip dense status="neutral" text={principal} />
+              </li>
             ))}
-          </Box>
+          </Box.Flex>
         );
       },
     },
@@ -135,19 +129,13 @@ const getColumns = (
           return "*";
         }
         return (
-          <Box display="flex" wrap={"wrap"} gap={"2"}>
+          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
             {ips.map((ip, index) => (
-              <StatusChip
-                dense
-                status="neutral"
-                key={`${ip}-${index}`}
-                // We need to add a space after text value
-                // Otherwise a list of values would be rendered as value1value2value3 for screen readers
-                // Instead of value1 value2 value3
-                text={`${ip} `}
-              />
+              <li key={`${ip}-${index}`}>
+                <StatusChip dense status="neutral" text={ip} />
+              </li>
             ))}
-          </Box>
+          </Box.Flex>
         );
       },
     },

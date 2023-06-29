@@ -105,12 +105,12 @@ describe("AclDetailsModalContent", () => {
     });
     it("renders Principals/Username", () => {
       expect(findTerm("Principals/Usernames")).toBeVisible();
-      expect(findDefinition("User:* ")).toBeVisible();
+      expect(findDefinition("User:*")).toBeVisible();
     });
     it("renders IP addresses", () => {
       expect(findTerm("IP addresses")).toBeVisible();
-      expect(findDefinition("3.3.3.32 ")).toBeVisible();
-      expect(findDefinition("3.3.3.33 ")).toBeVisible();
+      expect(findDefinition("3.3.3.32")).toBeVisible();
+      expect(findDefinition("3.3.3.33")).toBeVisible();
     });
     it("renders Consumer group default text", () => {
       expect(findTerm("Consumer group")).toBeVisible();
@@ -156,8 +156,8 @@ describe("AclDetailsModalContent", () => {
     });
     it("renders Principals/Username", () => {
       expect(findTerm("Principals/Usernames")).toBeVisible();
-      expect(findDefinition("mbasani ")).toBeVisible();
-      expect(findDefinition("maulbach ")).toBeVisible();
+      expect(findDefinition("mbasani")).toBeVisible();
+      expect(findDefinition("maulbach")).toBeVisible();
     });
     it("does not renders IP addresses", () => {
       expect(findTerm("IP addresses")).toBeUndefined();

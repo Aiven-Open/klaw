@@ -146,7 +146,7 @@ describe("AclRequestsTable", () => {
       within(getNthRow(0)).getAllByRole("columnheader")[3]
     ).toHaveTextContent("IP addresses");
     expect(within(getNthRow(2)).getAllByRole("cell")[3]).toHaveTextContent(
-      "1.1.1.1 2.2.2.2"
+      "1.1.1.12.2.2.2"
     );
   });
 

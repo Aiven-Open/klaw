@@ -152,13 +152,19 @@ describe("AclApprovalsTable", () => {
     );
   });
 
-  it("has column to describe the ip addresses", () => {
+  it("has column to describe the list with ip addresses", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[4]
     ).toHaveTextContent("IP addresses");
-    expect(within(getNthRow(2)).getAllByRole("cell")[4]).toHaveTextContent(
-      "3.3.3.32 3.3.3.33"
+
+    const row = within(getNthRow(2)).getAllByRole("cell")[4];
+
+    expect(within(row).getAllByRole("listitem")[0]).toHaveTextContent(
+      "3.3.3.32"
+    );
+    expect(within(row).getAllByRole("listitem")[1]).toHaveTextContent(
+      "3.3.3.33"
     );
   });
 
@@ -167,6 +173,7 @@ describe("AclApprovalsTable", () => {
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[5]
     ).toHaveTextContent("Team");
+
     expect(within(getNthRow(1)).getAllByRole("cell")[5]).toHaveTextContent(
       "Ospo"
     );
@@ -182,7 +189,7 @@ describe("AclApprovalsTable", () => {
     );
   });
 
-  it("has column to decsribe the request type", () => {
+  it("has column to describe the request type", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[7]
@@ -272,17 +279,23 @@ describe("AclApprovalsTable", () => {
     expect(notPrefixedCells).toHaveLength(1);
   });
 
-  it("renders all values for cells who can have multiple values", () => {
+  it("renders a list for cells who can have multiple values", () => {
     renderFromProps();
     const cells = screen.getAllByRole("cell");
-    expect(
-      cells.filter((cell) => {
-        return cell.textContent === "mbasani maulbach ";
-      })
-    ).toHaveLength(1);
-    expect(
-      cells.filter((cell) => cell.textContent === "3.3.3.32 3.3.3.33 ")
-    ).toHaveLength(1);
+
+    const userNames = cells.filter((cell) => {
+      return cell.textContent === "mbasanimaulbach";
+    })[0];
+
+    expect(within(userNames).getByRole("list")).toBeVisible();
+    expect(within(userNames).getAllByRole("listitem")).toHaveLength(2);
+
+    const ipAdresses = cells.filter((cell) => {
+      return cell.textContent === "3.3.3.323.3.3.33";
+    })[0];
+
+    expect(within(ipAdresses).getByRole("list")).toBeVisible();
+    expect(within(ipAdresses).getAllByRole("listitem")).toHaveLength(2);
   });
 
   it("disables action buttons when status is not CREATED", () => {
