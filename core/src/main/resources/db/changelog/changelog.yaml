@@ -1092,3 +1092,14 @@ databaseChangeLog:
                     name: locked_by
                     type: VARCHAR2(255)
               tableName: kwshedlock
+    - changeSet:
+        id: 29-06-2023 Column if team is active or deleted
+        author: muralibasani
+        changes:
+          - addColumn:
+              columns:
+                - column:
+                    name: active
+                    type: BOOLEAN
+                    defaultValue: true
+              tableName: kwteams
