@@ -521,11 +521,12 @@
 												<select class="form-control custom-select"
 														required
 														ng-model="addTopic.topicpartitions"
+														ng-change="checkPartitionAndRepFactorWarnings()"
 														ng-options="partitions as partitions for partitions in envTopicMap.partitionsList">
 													<option value="" selected="selected">
 														Select Partitions</option>
 												</select>
-
+												<span ng-show="partitionWarn!=='' ">{{partitionWarn}}</span>
 											</div>
 										</div>
 										<!--/span-->
@@ -536,11 +537,12 @@
 												<select class="form-control custom-select"
 														required
 														ng-model="addTopic.replicationfactor"
+														ng-change="checkPartitionAndRepFactorWarnings()"
 														ng-options="rf as rf for rf in envTopicMap.replicationFactorList">
 													<option value="" selected="selected">
 														Select Replication factor</option>
 												</select>
-
+												<span ng-show="repFactorWarn!=='' ">{{repFactorWarn}}</span>
 											</div>
 										</div>
 										<!--/span-->
