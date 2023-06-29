@@ -727,7 +727,6 @@ export type components = {
       sourceEnvironment: string;
       topicName: string;
       schemaVersion: string;
-      schemaFull: string;
       forceRegister?: boolean;
       appName: string;
       remarks: string;
@@ -1406,6 +1405,7 @@ export type components = {
         [key: string]: string | undefined;
       };
       connectorExists: boolean;
+      availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       topicDocumentation?: string;
       /** Format: int32 */
       topicIdForDocumentation?: number;
@@ -3603,6 +3603,7 @@ export type operations = {
     parameters: {
       query: {
         connectornamesearch: string;
+        environmentId?: string;
       };
     };
     responses: {

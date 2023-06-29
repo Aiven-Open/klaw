@@ -1,4 +1,4 @@
-import { Flexbox, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
+import { Flexbox, Box, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
 import { AclRequest } from "src/domain/acl/acl-types";
 
 interface DetailsModalContentProps {
@@ -59,13 +59,15 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
           <Label>Principals/Usernames</Label>
-          <Flexbox direction={"row"} gap={"2"}>
+          <Box.Flex direction={"row"} gap={"2"} component={"ul"}>
             {acl_ssl.map((principal) => (
-              <dd key={principal}>
-                <StatusChip status={"neutral"} text={`${principal} `} />
-              </dd>
+              <li key={principal}>
+                <dd>
+                  <StatusChip status={"neutral"} text={principal} />
+                </dd>
+              </li>
             ))}
-          </Flexbox>
+          </Box.Flex>
         </Flexbox>
       </GridItem>
 
@@ -73,13 +75,15 @@ const TopicDetailsModalContent = ({ request }: DetailsModalContentProps) => {
         <GridItem colSpan={"span-2"}>
           <Flexbox direction={"column"}>
             <Label>IP addresses</Label>
-            <Flexbox direction={"row"} gap={"2"}>
+            <Box.Flex direction={"row"} gap={"2"} component={"ul"}>
               {acl_ip.map((ip) => (
-                <dd key={ip}>
-                  <StatusChip status={"neutral"} text={`${ip} `} />
-                </dd>
+                <li key={ip}>
+                  <dd>
+                    <StatusChip status={"neutral"} text={ip} />
+                  </dd>
+                </li>
               ))}
-            </Flexbox>
+            </Box.Flex>
           </Flexbox>
         </GridItem>
       )}

@@ -67,7 +67,7 @@ function FileInput(props: FileInputProps) {
             display={"flex"}
             alignItems={"center"}
             backgroundColor={"white"}
-            className={`${classes.fakeButton}`}
+            className={classes.fakeButton}
             onClick={handleWrapperClick}
             data-testid="file-input-fake-button"
           >
@@ -126,7 +126,7 @@ function FileInput(props: FileInputProps) {
               ref={inputRef}
               aria-required={props.required}
               aria-invalid={!valid}
-              className={`${classes.fileInput}`}
+              className={classes.fileInput}
               {...(!valid && { "aria-describedby": errorMessageId })}
             />
           </label>

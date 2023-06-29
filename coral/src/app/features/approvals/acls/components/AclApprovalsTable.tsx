@@ -1,6 +1,6 @@
 import {
   StatusChip,
-  Flexbox,
+  Box,
   DataTable,
   DataTableColumn,
   EmptyState,
@@ -119,19 +119,13 @@ export default function AclApprovalsTable({
       headerName: "Principals/Usernames",
       UNSAFE_render: ({ acl_ssl }: AclRequestTableRow) => {
         return (
-          <Flexbox wrap={"wrap"} gap={"2"}>
+          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
             {acl_ssl.map((ssl, index) => (
-              <StatusChip
-                dense
-                status="neutral"
-                key={`${ssl}-${index}`}
-                // We need to add a space after text value
-                // Otherwise a list of values would be rendered as value1value2value3 for screen readers
-                // Instead of value1 value2 value3
-                text={`${ssl} `}
-              />
+              <li key={`${ssl}-${index}`}>
+                <StatusChip dense status="neutral" text={ssl} />
+              </li>
             ))}
-          </Flexbox>
+          </Box.Flex>
         );
       },
     },
@@ -140,19 +134,13 @@ export default function AclApprovalsTable({
       headerName: "IP addresses",
       UNSAFE_render: ({ acl_ip }: AclRequestTableRow) => {
         return (
-          <Flexbox wrap={"wrap"} gap={"2"}>
+          <Box.Flex wrap={"wrap"} gap={"2"} component={"ul"}>
             {acl_ip.map((ip, index) => (
-              <StatusChip
-                dense
-                status="neutral"
-                key={`${ip}-${index}`}
-                // We need to add a space after text value
-                // Otherwise a list of values would be rendered as value1value2value3 for screen readers
-                // Instead of value1 value2 value3
-                text={`${ip} `}
-              />
+              <li key={`${ip}-${index}`}>
+                <StatusChip dense status="neutral" text={ip} />
+              </li>
             ))}
-          </Flexbox>
+          </Box.Flex>
         );
       },
     },

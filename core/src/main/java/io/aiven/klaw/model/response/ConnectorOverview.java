@@ -12,7 +12,7 @@ public class ConnectorOverview {
   private List<TopicHistory> topicHistoryList;
   Map<String, String> promotionDetails;
   @NotNull boolean connectorExists;
-
+  @NotNull private List<EnvIdInfo> availableEnvironments;
   String topicDocumentation;
   Integer topicIdForDocumentation;
 }

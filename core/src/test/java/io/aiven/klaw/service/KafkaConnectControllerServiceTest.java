@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -22,6 +23,7 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
+import io.aiven.klaw.model.response.ConnectorOverview;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -52,6 +54,10 @@ import org.springframework.test.util.ReflectionTestUtils;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class KafkaConnectControllerServiceTest {
 
+  public static final String NO_PROMOTION = "NO_PROMOTION";
+  public static final String USERNAME = "kwusera";
+  public static final String CONNECTOR_NAME = "conn1";
+  public static final int TENANT_ID = 101;
   @Mock private UserDetails userDetails;
 
   @Mock private UserInfo userInfo;
@@ -111,7 +117,7 @@ public class KafkaConnectControllerServiceTest {
 
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
+    when(commonUtilsService.getTenantId(anyString())).thenReturn(TENANT_ID);
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncKafkaConnectCluster()).thenReturn("1");
     when(commonUtilsService.getTeamId(anyString())).thenReturn(1);
@@ -181,8 +187,8 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("1");
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getTenantId(any())).thenReturn(101);
-    when(handleDbRequests.getConnectorsFromName(eq("ConnectorOne"), eq(101)))
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(handleDbRequests.getConnectorsFromName(eq("ConnectorOne"), eq(TENANT_ID)))
         .thenReturn(List.of(getKwKafkaConnector()));
     when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(envListIds);
     Map<String, String> res = new HashMap<>();
@@ -203,9 +209,9 @@ public class KafkaConnectControllerServiceTest {
     envListIds.add("DEV");
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(handleDbRequests.getConnectorRequests(
-            "ConnectorOne", "1", RequestStatus.CREATED.value, 101))
+            "ConnectorOne", "1", RequestStatus.CREATED.value, TENANT_ID))
         .thenReturn(List.of(new KafkaConnectorRequest()));
     ApiResponse apiResponse =
         kafkaConnectControllerService.createClaimConnectorRequest("ConnectorOne", "1");
@@ -220,7 +226,7 @@ public class KafkaConnectControllerServiceTest {
     Set<String> envListIds = new HashSet<>();
     envListIds.add("DEV");
     stubUserInfo();
-    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
@@ -229,7 +235,7 @@ public class KafkaConnectControllerServiceTest {
             eq(RequestStatus.CREATED),
             eq(null),
             eq(null),
-            eq(101),
+            eq(TENANT_ID),
             eq(false)))
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -265,7 +271,7 @@ public class KafkaConnectControllerServiceTest {
     Set<String> envListIds = new HashSet<>();
     envListIds.add("DEV");
     stubUserInfo();
-    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
@@ -274,7 +280,7 @@ public class KafkaConnectControllerServiceTest {
             eq(RequestStatus.CREATED),
             eq(null),
             eq(null),
-            eq(101),
+            eq(TENANT_ID),
             eq(false)))
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -310,7 +316,7 @@ public class KafkaConnectControllerServiceTest {
     Set<String> envListIds = new HashSet<>();
     envListIds.add("DEV");
     stubUserInfo();
-    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
@@ -319,7 +325,7 @@ public class KafkaConnectControllerServiceTest {
             eq(RequestStatus.CREATED),
             eq(null),
             eq(null),
-            eq(101),
+            eq(TENANT_ID),
             eq(true)))
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -346,7 +352,7 @@ public class KafkaConnectControllerServiceTest {
             eq(RequestStatus.CREATED),
             eq(null),
             eq(null),
-            eq(101),
+            eq(TENANT_ID),
             eq(true));
   }
 
@@ -356,7 +362,7 @@ public class KafkaConnectControllerServiceTest {
     Set<String> envListIds = new HashSet<>();
     envListIds.add("DEV");
     stubUserInfo();
-    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     when(handleDbRequests.getAllConnectorRequests(
@@ -365,7 +371,7 @@ public class KafkaConnectControllerServiceTest {
             eq(RequestStatus.CREATED),
             eq(null),
             eq(null),
-            eq(101),
+            eq(TENANT_ID),
             eq(true)))
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -392,7 +398,7 @@ public class KafkaConnectControllerServiceTest {
             eq(RequestStatus.CREATED),
             eq(null),
             eq(null),
-            eq(101),
+            eq(TENANT_ID),
             eq(true));
   }
 
@@ -402,7 +408,7 @@ public class KafkaConnectControllerServiceTest {
     Set<String> envListIds = new HashSet<>();
     envListIds.add("DEV");
     stubUserInfo();
-    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     List<KafkaConnectorRequest> connectorRequests = generateKafkaConnectorRequests(9);
     connectorRequests.addAll(generateKafkaConnectorRequests(1, 7, RequestOperationType.CLAIM));
@@ -412,7 +418,7 @@ public class KafkaConnectControllerServiceTest {
             eq(RequestStatus.CREATED),
             eq(null),
             eq(null),
-            eq(101),
+            eq(TENANT_ID),
             eq(false)))
         .thenReturn(connectorRequests);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
@@ -451,7 +457,7 @@ public class KafkaConnectControllerServiceTest {
     Set<String> envListIds = new HashSet<>();
     envListIds.add("DEV");
     stubUserInfo();
-    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     List<KafkaConnectorRequest> connectorRequests = generateKafkaConnectorRequests(9);
     connectorRequests.addAll(generateKafkaConnectorRequests(1, 7, RequestOperationType.CLAIM));
@@ -461,14 +467,14 @@ public class KafkaConnectControllerServiceTest {
             eq(RequestStatus.CREATED),
             eq(null),
             eq(null),
-            eq(101),
+            eq(TENANT_ID),
             eq(false)))
         .thenReturn(connectorRequests);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
         .thenReturn("1", "2");
-    when(handleDbRequests.getConnectorsFromName(eq("Conn0"), eq(101)))
+    when(handleDbRequests.getConnectorsFromName(eq("Conn0"), eq(TENANT_ID)))
         .thenReturn(List.of(getKwKafkaConnector()));
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
@@ -497,6 +503,209 @@ public class KafkaConnectControllerServiceTest {
     }
   }
 
+  @Test
+  @Order(13)
+  public void getConnectorOverview_WithNoParams_returnsNull() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(3));
+
+    ConnectorOverview response = kafkaConnectControllerService.getConnectorOverview(null, null);
+
+    assertThat(response).isNull();
+  }
+
+  @Test
+  @Order(14)
+  public void getConnectorOverview_WithAllEnvs_noPromotionOrderSet() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(3));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(3));
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, null);
+
+    assertThat(response.getConnectorInfoList()).hasSize(3);
+    assertThat(response.getPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(response.getAvailableEnvironments()).hasSize(3);
+  }
+
+  private List<Env> generateEnvironments() {
+    Env dev = new Env();
+    dev.setId("0");
+    dev.setName("DEV");
+    Env tst = new Env();
+    tst.setId("1");
+    tst.setName("TST");
+    Env prd = new Env();
+    prd.setId("2");
+    prd.setName("PRD");
+    return List.of(dev, tst, prd);
+  }
+
+  @Test
+  @Order(15)
+  public void getConnectorOverview_WithAllEnvs() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(3));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("2,1,0");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(3));
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, null);
+
+    assertThat(response.getConnectorInfoList()).hasSize(3);
+    assertThat(response.getPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(response.getAvailableEnvironments()).hasSize(3);
+  }
+
+  @Test
+  @Order(15)
+  public void getConnectorOverview_WithOneEnv() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(3));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("2,1,0");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(3));
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
+
+    assertThat(response.getConnectorInfoList()).hasSize(1);
+    assertThat(response.getConnectorInfoList().get(0).getConnectorId()).isEqualTo(1);
+    assertThat(response.getPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(response.getAvailableEnvironments()).hasSize(3);
+  }
+
+  @Test
+  @Order(15)
+  public void getConnectorOverview_WithOneEnvAndPromotion() throws KlawException {
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("0,1,2");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
+
+    assertThat(response.getConnectorInfoList()).hasSize(1);
+    assertThat(response.getPromotionDetails().get("status")).isEqualTo("success");
+    assertThat(response.getPromotionDetails().get("targetEnv")).isEqualTo("PRD");
+    assertThat(response.getAvailableEnvironments()).hasSize(2);
+  }
+
+  @Test
+  @Order(15)
+  public void getConnectorOverview_WithOneEnvAndNoPromotionForBaseEnv() throws KlawException {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("0,1,2");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "0");
+
+    assertThat(response.getConnectorInfoList()).hasSize(1);
+    assertThat(response.getPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(response.getAvailableEnvironments()).hasSize(2);
+  }
+
+  private List<KwKafkaConnector> generateKafkaConnectors(int number) {
+    List<KwKafkaConnector> connectors = new ArrayList<>();
+    for (int i = 0; i < number; i++) {
+      KwKafkaConnector conn = new KwKafkaConnector();
+      conn.setConnectorId(i);
+      conn.setTeamId(8);
+      conn.setConnectorName(CONNECTOR_NAME);
+      conn.setEnvironment(String.valueOf(i));
+
+      connectors.add(conn);
+    }
+    return connectors;
+  }
+
   private static List<KafkaConnectorRequest> generateKafkaConnectorRequests(int number) {
     return generateKafkaConnectorRequests(number, 8);
   }
@@ -520,7 +729,7 @@ public class KafkaConnectControllerServiceTest {
       req.setEnvironmentName("DEV");
       reqs.add(req);
       req.setTeamId(teamId);
-      req.setTenantId(101);
+      req.setTenantId(TENANT_ID);
     }
     return reqs;
   }
@@ -542,7 +751,7 @@ public class KafkaConnectControllerServiceTest {
     connector.setEnvironment("1");
     connector.setDescription("My Desc");
     connector.setTeamId(8);
-    connector.setTenantId(101);
+    connector.setTenantId(TENANT_ID);
     return connector;
   }
 
@@ -578,8 +787,8 @@ public class KafkaConnectControllerServiceTest {
 
   private void stubUserInfo() {
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
-    when(userInfo.getTeamId()).thenReturn(101);
-    when(mailService.getUserName(any())).thenReturn("kwusera");
+    when(userInfo.getTeamId()).thenReturn(TENANT_ID);
+    when(mailService.getUserName(any())).thenReturn(USERNAME);
     Env e = new Env();
     e.setId("1");
     e.setName("DEV");

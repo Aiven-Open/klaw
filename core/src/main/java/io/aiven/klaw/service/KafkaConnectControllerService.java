@@ -1,11 +1,13 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.error.KlawErrorMessages.*;
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CLAIM_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CREATE_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_DELETE_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_REQUEST_APPROVED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_REQUEST_DENIED;
+import static io.aiven.klaw.service.BaseOverviewService.NO_PROMOTION;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -40,6 +42,7 @@ import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
 import io.aiven.klaw.model.response.ConnectorOverview;
 import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
 import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
 import java.text.SimpleDateFormat;
@@ -58,6 +61,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -982,7 +986,7 @@ public class KafkaConnectControllerService {
     }
   }
 
-  public ConnectorOverview getConnectorOverview(String connectorNamesearch) {
+  public ConnectorOverview getConnectorOverview(String connectorNamesearch, String envId) {
     log.debug("getConnectorOverview {}", connectorNamesearch);
     String userName = getUserName();
     HandleDbRequests handleDb = manageDatabase.getHandleDbRequests();
@@ -1001,23 +1005,24 @@ public class KafkaConnectControllerService {
 
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
+
     connectors =
         connectors.stream()
-            .filter(topicObj -> allowedEnvIdSet.contains(topicObj.getEnvironment()))
+            .filter(connectorObj -> allowedEnvIdSet.contains(connectorObj.getEnvironment()))
             .collect(Collectors.toList());
 
-    ConnectorOverview topicOverview = new ConnectorOverview();
+    ConnectorOverview connectorOverview = filterByEnvironment(connectors, envId, tenantId);
 
     if (connectors.size() == 0) {
-      topicOverview.setConnectorExists(false);
-      return topicOverview;
+      connectorOverview.setConnectorExists(false);
+      return connectorOverview;
     } else {
-      topicOverview.setConnectorExists(true);
+      connectorOverview.setConnectorExists(true);
     }
 
     String syncCluster;
-    String[] reqTopicsEnvs;
-    ArrayList<String> reqTopicsEnvsList = new ArrayList<>();
+    String[] reqconnsEnvs;
+    ArrayList<String> reqconnsEnvsList = new ArrayList<>();
 
     try {
       syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncKafkaConnectCluster();
@@ -1027,90 +1032,136 @@ public class KafkaConnectControllerService {
     }
 
     try {
-      String requestTopicsEnvs =
+      String requestconnsEnvs =
           commonUtilsService.getEnvProperty(tenantId, "REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS");
-      reqTopicsEnvs = requestTopicsEnvs.split(",");
-      reqTopicsEnvsList = new ArrayList<>(Arrays.asList(reqTopicsEnvs));
+      reqconnsEnvs = requestconnsEnvs.split(",");
+      reqconnsEnvsList = new ArrayList<>(Arrays.asList(reqconnsEnvs));
     } catch (Exception e) {
       log.error("Error in getting req topic envs", e);
     }
 
-    List<KafkaConnectorModelResponse> topicInfoList = new ArrayList<>();
-    ArrayList<TopicHistory> topicHistoryFromTopic;
-    List<TopicHistory> topicHistoryList = new ArrayList<>();
+    List<KafkaConnectorModelResponse> connectorInfoList = new ArrayList<>();
+    ArrayList<TopicHistory> connectorHistory;
+    List<TopicHistory> connectorHistoryList = new ArrayList<>();
 
-    for (KwKafkaConnector topic : connectors) {
-      KafkaConnectorModelResponse topicInfo = new KafkaConnectorModelResponse();
-      topicInfo.setConnectorId(topic.getConnectorId());
+    for (KwKafkaConnector conn : connectors) {
+      if (StringUtils.isEmpty(envId) || conn.getEnvironment().equals(envId)) {
+        KafkaConnectorModelResponse connectorInfo = new KafkaConnectorModelResponse();
+        connectorInfo.setConnectorId(conn.getConnectorId());
 
-      topicInfo.setConnectorName(topic.getConnectorName());
-      topicInfo.setEnvironmentName(getKafkaConnectEnvDetails(topic.getEnvironment()).getName());
-      topicInfo.setEnvironmentId(topic.getEnvironment());
-      topicInfo.setConnectorConfig(topic.getConnectorConfig());
-      topicInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, topic.getTeamId()));
+        connectorInfo.setConnectorName(conn.getConnectorName());
+        connectorInfo.setEnvironmentName(
+            getKafkaConnectEnvDetails(conn.getEnvironment()).getName());
+        connectorInfo.setEnvironmentId(conn.getEnvironment());
+        connectorInfo.setConnectorConfig(conn.getConnectorConfig());
+        connectorInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, conn.getTeamId()));
 
-      if (Objects.equals(syncCluster, topic.getEnvironment())) {
-        topicOverview.setTopicDocumentation(topic.getDocumentation());
-        topicOverview.setTopicIdForDocumentation(topic.getConnectorId());
-      }
-
-      if (topic.getHistory() != null) {
-        try {
-          topicHistoryFromTopic = OBJECT_MAPPER.readValue(topic.getHistory(), VALUE_TYPE_REF);
-          topicHistoryList.addAll(topicHistoryFromTopic);
-        } catch (JsonProcessingException e) {
-          log.error("Unable to parse topicHistory", e);
+        if (Objects.equals(syncCluster, conn.getEnvironment())) {
+          connectorOverview.setTopicDocumentation(conn.getDocumentation());
+          connectorOverview.setTopicIdForDocumentation(conn.getConnectorId());
         }
+
+        if (conn.getHistory() != null) {
+          try {
+            connectorHistory = OBJECT_MAPPER.readValue(conn.getHistory(), VALUE_TYPE_REF);
+            connectorHistoryList.addAll(connectorHistory);
+          } catch (JsonProcessingException e) {
+            log.error("Unable to parse topicHistory", e);
+          }
+        }
+
+        connectorInfoList.add(connectorInfo);
       }
-
-      topicInfoList.add(topicInfo);
     }
 
-    if (topicOverview.getTopicIdForDocumentation() == null) {
-      topicOverview.setTopicDocumentation(connectors.get(0).getDocumentation());
-      topicOverview.setTopicIdForDocumentation(connectors.get(0).getConnectorId());
+    if (connectorOverview.getTopicIdForDocumentation() == null) {
+      connectorOverview.setTopicDocumentation(connectors.get(0).getDocumentation());
+      connectorOverview.setTopicIdForDocumentation(connectors.get(0).getConnectorId());
     }
 
-    topicOverview.setTopicHistoryList(topicHistoryList);
-
-    List<KwKafkaConnector> topicsSearchList =
+    connectorOverview.setTopicHistoryList(connectorHistoryList);
+    // TODO is this needed can we just grab this from the connectors above? circa line 1019
+    List<KwKafkaConnector> connectorsSearchList =
         manageDatabase.getHandleDbRequests().getConnectorsFromName(connectorNamesearch, tenantId);
 
     // tenant filtering
-    Integer topicOwnerTeam = getFilteredConnectorsForTenant(topicsSearchList).get(0).getTeamId();
+    Integer connectorOwnerTeam =
+        getFilteredConnectorsForTenant(connectorsSearchList).get(0).getTeamId();
 
-    for (KafkaConnectorModelResponse topicInfo : topicInfoList) {
+    for (KafkaConnectorModelResponse connectorInfo : connectorInfoList) {
       // show edit button only for restricted envs
-      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)
-          && reqTopicsEnvsList.contains(topicInfo.getEnvironmentId())) {
-        topicInfo.setShowEditConnector(true);
+      if (Objects.equals(connectorOwnerTeam, loggedInUserTeam)
+          && reqconnsEnvsList.contains(connectorInfo.getEnvironmentId())) {
+        connectorInfo.setShowEditConnector(true);
       }
     }
 
-    topicOverview.setConnectorInfoList(topicInfoList);
+    connectorOverview.setConnectorInfoList(connectorInfoList);
     try {
-      if (Objects.equals(topicOwnerTeam, loggedInUserTeam)) {
-        topicOverview.setPromotionDetails(
+      if (Objects.equals(connectorOwnerTeam, loggedInUserTeam)) {
+        connectorOverview.setPromotionDetails(
             getConnectorPromotionEnv(connectorNamesearch, connectors, tenantId));
 
-        if (topicInfoList.size() > 0) {
-          KafkaConnectorModelResponse lastItem = topicInfoList.get(topicInfoList.size() - 1);
+        if (connectorOverview.getPromotionDetails().get("status").equals("success")
+            && !StringUtils.isEmpty(envId)) {
+          if (!connectorOverview.getPromotionDetails().get("sourceEnv").equals(envId)) {
+            Map<String, String> hashMap = new HashMap<>();
+            hashMap.put("status", NO_PROMOTION);
+            connectorOverview.setPromotionDetails(hashMap);
+          }
+        }
+
+        if (connectorInfoList.size() > 0) {
+          KafkaConnectorModelResponse lastItem =
+              connectorInfoList.get(connectorInfoList.size() - 1);
           lastItem.setConnectorDeletable(true);
           lastItem.setShowDeleteConnector(true);
         }
       } else {
         Map<String, String> hashMap = new HashMap<>();
         hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-        topicOverview.setPromotionDetails(hashMap);
+        connectorOverview.setPromotionDetails(hashMap);
       }
     } catch (Exception e) {
       log.error("Exception:", e);
       Map<String, String> hashMap = new HashMap<>();
       hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-      topicOverview.setPromotionDetails(hashMap);
+      connectorOverview.setPromotionDetails(hashMap);
     }
 
-    return topicOverview;
+    return connectorOverview;
+  }
+
+  private ConnectorOverview filterByEnvironment(
+      List<KwKafkaConnector> connectors, String envId, int tenantId) {
+    ConnectorOverview overview = new ConnectorOverview();
+    String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_KAFKA_CONNECT_ENVS);
+    List<String> orderOfEnvsArrayList = KlawResourceUtils.getOrderedEnvsList(orderOfEnvs);
+    List<EnvIdInfo> availableEnvs = new ArrayList<>();
+    List<EnvIdInfo> availableEnvsNotInPromotionOrder = new ArrayList<>();
+    connectors.forEach(
+        conn -> {
+          EnvIdInfo envIdInfo = new EnvIdInfo();
+          envIdInfo.setId(conn.getEnvironment());
+          envIdInfo.setName(
+              manageDatabase.getKafkaConnectEnvList(tenantId).stream()
+                  .filter(env -> env.getId().equals(conn.getEnvironment()))
+                  .map(Env::getName)
+                  .findFirst()
+                  .orElse("ENV_NOT_FOUND"));
+          if (orderOfEnvsArrayList.contains(envIdInfo.getId())) {
+            availableEnvs.add(envIdInfo);
+          } else {
+            availableEnvsNotInPromotionOrder.add(envIdInfo);
+          }
+        });
+    availableEnvs.sort(
+        Comparator.comparingInt(
+            topicEnv -> Objects.requireNonNull(orderOfEnvs).indexOf(topicEnv.getId())));
+    availableEnvs.addAll(availableEnvsNotInPromotionOrder);
+    overview.setAvailableEnvironments(availableEnvs);
+
+    return overview;
   }
 
   public ConnectorOverviewPerEnv getConnectorDetailsPerEnv(String envId, String connectorName) {
@@ -1195,6 +1246,11 @@ public class KafkaConnectControllerService {
         // tenant filtering
         String orderOfEnvs =
             commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
+        if (orderOfEnvs.length() == 0) {
+          // No promotion order set return no promotion
+          hashMap.put("status", NO_PROMOTION);
+          return hashMap;
+        }
 
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
@@ -1208,7 +1264,7 @@ public class KafkaConnectControllerService {
         List<String> orderdEnvs = Arrays.asList(orderOfEnvs.split(","));
 
         if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
-          hashMap.put("status", "NO_PROMOTION"); // PRD
+          hashMap.put("status", NO_PROMOTION); // PRD
         } else {
           hashMap.put("status", ApiResultStatus.SUCCESS.value);
           hashMap.put("sourceEnv", lastEnv);
