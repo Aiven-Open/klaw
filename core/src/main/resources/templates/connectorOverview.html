@@ -449,7 +449,7 @@
 						<div class="card-body">
 							<table width="100%">
 								<tr>
-									<td align="left" width="50%"><h4 class="card-title">Connector : {{ topicSelectedParam }}</h4></td>
+									<td align="left" style=" white-space: nowrap;"><h4 class="card-title">Connector : {{ topicSelectedParam }}</h4></td>
 									<td align="right">
 										<button ng-show="connectorOverview.teamName != teamname && dashboardDetails.requestItems=='Authorized'" type="button" ng-click="onClaimConnector(topicSelectedParam, connectorOverview.environmentId);"
 												class="btn waves-effect waves-light btn-rounded btn-sm btn-info">Claim Connector</button>
@@ -465,7 +465,8 @@
 								<tr>
 									<td style="width: 15%;alignment:left">
 										<span class="badge badge-warning">{{ connectorOverview.teamName}}</span>
-									
+								</td>
+									<td>
 										<select style="width: 20%" class="form-control custom-select" ng-change="setConnector(selectedEnvId);"
 												ng-model="selectedEnvId" ng-options="env.id as env.name for env in availableEnvironments">
 										</select>
