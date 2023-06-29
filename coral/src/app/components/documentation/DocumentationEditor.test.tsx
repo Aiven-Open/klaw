@@ -2,6 +2,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
 import userEvent from "@testing-library/user-event";
+import { tabThroughForward } from "src/services/test-utils/tabbing";
 
 const mockSave = jest.fn();
 const mockCancel = jest.fn();
@@ -270,10 +271,47 @@ describe("DocumentationEditor", () => {
       cleanup();
     });
 
-    it("sets focus on textarea when user opens editor", async () => {
-      const textarea = screen.getByRole("textbox", { name: "Markdown editor" });
+    it("sets focus on edit mode button when tabs after opening editor", async () => {
+      await tabThroughForward(1);
+      const editButton = screen.getByRole("button", {
+        name: "Edit",
+      });
 
-      expect(textarea).toHaveFocus();
+      expect(editButton).toHaveFocus();
+    });
+
+    it("enables user to switch to between edit and preview mode with keyboard only", async () => {
+      const switchSection = screen.getByLabelText(
+        "Switch between edit and preview mode"
+      );
+      const previewModeButton = within(switchSection).getByRole("button", {
+        name: "Preview",
+      });
+      const editButton = within(switchSection).getByRole("button", {
+        name: "Edit",
+      });
+
+      expect(previewModeButton).not.toHaveFocus();
+      expect(editButton).not.toHaveFocus();
+
+      expect(previewModeButton).toHaveAttribute("aria-pressed", "false");
+      expect(editButton).toHaveAttribute("aria-pressed", "true");
+
+      await tabThroughForward(2);
+      expect(previewModeButton).toHaveFocus();
+
+      await user.tab({ shift: true });
+      expect(editButton).toHaveFocus();
+
+      await user.tab();
+      expect(previewModeButton).toHaveFocus();
+      await user.keyboard("{Enter}");
+
+      const previewView = screen.getByTestId("react-markdown-mock");
+
+      expect(previewModeButton).toHaveAttribute("aria-pressed", "true");
+      expect(editButton).toHaveAttribute("aria-pressed", "false");
+      expect(previewView).toBeVisible();
     });
 
     it("enables the user to type without clicking textarea first", async () => {
@@ -315,40 +353,6 @@ describe("DocumentationEditor", () => {
       await user.keyboard("{Enter}");
 
       expect(mockSave).toHaveBeenCalledWith("#Hello world");
-    });
-
-    it("enables user to switch to between edit and preview mode with keyboard only", async () => {
-      const switchSection = screen.getByLabelText(
-        "Switch between edit and preview mode"
-      );
-      const previewModeButton = within(switchSection).getByRole("button", {
-        name: "Preview",
-      });
-      const editButton = within(switchSection).getByRole("button", {
-        name: "Edit",
-      });
-
-      expect(previewModeButton).not.toHaveFocus();
-      expect(editButton).not.toHaveFocus();
-
-      expect(previewModeButton).toHaveAttribute("aria-pressed", "false");
-      expect(editButton).toHaveAttribute("aria-pressed", "true");
-
-      await user.tab({ shift: true });
-      expect(previewModeButton).toHaveFocus();
-
-      await user.tab({ shift: true });
-      expect(editButton).toHaveFocus();
-
-      await user.tab();
-      expect(previewModeButton).toHaveFocus();
-      await user.keyboard("{Enter}");
-
-      const previewView = screen.getByTestId("react-markdown-mock");
-
-      expect(previewModeButton).toHaveAttribute("aria-pressed", "true");
-      expect(editButton).toHaveAttribute("aria-pressed", "false");
-      expect(previewView).toBeVisible();
     });
   });
 });

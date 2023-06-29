@@ -80,7 +80,6 @@ function DocumentationEditor({
             <textarea
               id={"markdown-editor-textarea"}
               aria-describedby={"editor-markdown-description"}
-              autoFocus
               value={text}
               onChange={(event) => setText(event?.target?.value)}
               className={classes.markdownTextarea}
