@@ -90,7 +90,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
         $scope.requestButton = "Submit";
 
         $scope.loadEditTopicInfo = function(){
-            var envSelected, topicSelected, reqType, envName, sourceEnvName;
+            var envSelected, topicSelected, reqType, envName, sourceEnv;
 
             var sPageURL = window.location.search.substring(1);
             var sURLVariables = sPageURL.split('&');
@@ -106,17 +106,24 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     reqType = sParameterName[1];
                 }
                 else if (sParameterName[0] === "env")
-                {
-                    envSelected = sParameterName[1];
-                }
-                else if (sParameterName[0] === "envName")
-                {
-                    envName = sParameterName[1];
-                }
-                else if (sParameterName[0] === "sourceEnvName")
-                {
-                    sourceEnvName = sParameterName[1];
-                }
+               {
+                   envSelected = sParameterName[1];
+               }
+               else if (sParameterName[0] === "envName")
+               {
+                   envName = sParameterName[1];
+               } else if (sParameterName[0] === "targetEnvId")
+               {
+                   envSelected = sParameterName[1];
+               }
+               else if (sParameterName[0] === "targetEnvName")
+               {
+                   envName = sParameterName[1];
+               }
+               else if (sParameterName[0] === "sourceEnvId")
+               {
+                   sourceEnv = sParameterName[1];
+               }
             }
 
             if(!topicSelected && !envSelected)
@@ -125,7 +132,10 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             $scope.addTopic.topicname = topicSelected;
             $scope.addTopic.envName = envSelected;
             $scope.getEnvTopicPartitions(envSelected, reqType, envName);
-            $scope.getTopicEnvDetails(sourceEnvName,topicSelected);
+            //only make this call if it is a promote operation.
+            if(reqType=="promote") {
+            $scope.getTopicEnvDetails(sourceEnv,topicSelected);
+            }
         }
 
         $scope.submitEditTopicRequest = function(envSelected, topicSelected) {
@@ -178,13 +188,13 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
         $scope.checkPartitionAndRepFactorWarnings = function() {
 
                 if($scope.envTopicMap.defaultRepFactor > $scope.addTopic.replicationfactor) {
-                $scope.repFactorWarn = 'Replication Factor is below default setting';
+                $scope.repFactorWarn = 'Replication factor is below default value';
                 } else {
                 $scope.repFactorWarn = '';
                 }
 
                 if($scope.envTopicMap.defaultPartitions > $scope.addTopic.topicpartitions) {
-                $scope.partitionWarn = 'Partitions Factor is below default setting';
+                $scope.partitionWarn = 'Partitions is below default value';
                 } else {
                 $scope.partitionWarn = '';
                 }
