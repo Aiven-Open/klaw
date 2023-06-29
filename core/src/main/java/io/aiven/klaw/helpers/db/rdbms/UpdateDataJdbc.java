@@ -505,7 +505,7 @@ public class UpdateDataJdbc {
     log.debug("updateTeam {}", team);
     TeamID teamID = new TeamID(team.getTeamId(), team.getTenantId());
     Optional<Team> teamExists = teamRepo.findById(teamID);
-    if (teamExists.isEmpty()) {
+    if (teamExists.isEmpty() || !teamExists.get().isActive()) {
       return "Failure. Team doesn't exist";
     }
 

@@ -432,6 +432,7 @@ public class UtilMethods {
     team.setTenantId(101);
     team.setTeamphone("3142342343242");
     team.setTeammail("test@test.com");
+    team.setActive(true);
 
     ServiceAccounts serviceAccounts = new ServiceAccounts();
     Set<String> serviceAccountsList = new HashSet<>();

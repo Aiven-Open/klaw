@@ -55,4 +55,7 @@ public class Team implements Serializable {
 
   @Column(name = "otherparams")
   private String otherParams;
+
+  @Column(name = "active")
+  private boolean active;
 }

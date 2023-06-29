@@ -212,11 +212,18 @@ public class DeleteDataJdbc {
 
   public String deleteTeamRequest(Integer teamId, int tenantId) {
     log.debug("deleteTeamRequest {}", teamId);
-    Team team = new Team();
-    team.setTeamId(teamId);
-    team.setTenantId(tenantId);
+    TeamID teamID = new TeamID();
+    teamID.setTeamId(teamId);
+    teamID.setTenantId(tenantId);
 
-    teamRepo.delete(team);
+    Optional<Team> teamOptional = teamRepo.findById(teamID);
+    if (teamOptional.isPresent()) {
+      Team teamFound = teamOptional.get();
+      teamFound.setActive(false);
+      teamFound.setTeamname(teamFound.getTeamname() + "-DELETED");
+      teamRepo.save(teamFound);
+    }
+
     return ApiResultStatus.SUCCESS.value;
   }
 

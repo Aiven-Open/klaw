@@ -311,6 +311,7 @@ public class InsertDataJdbc {
     int teamId = getNextTeamId(team.getTenantId());
     TeamID teamID = new TeamID(teamId, team.getTenantId());
     team.setTeamId(teamId);
+    team.setActive(true);
 
     Optional<Team> teamExists = teamRepo.findById(teamID);
     if (teamExists.isPresent()) {

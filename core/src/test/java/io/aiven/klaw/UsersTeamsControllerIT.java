@@ -268,6 +268,20 @@ public class UsersTeamsControllerIT {
 
     response =
         mvc.perform(
+                MockMvcRequestBuilders.get("/getAllTeamsSU")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    List<TeamModelResponse> teamModels =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(teamModels).hasSize(3);
+
+    response =
+        mvc.perform(
                 MockMvcRequestBuilders.post("/deleteTeamRequest")
                     .with(user(superAdmin).password(superAdminPwd))
                     .param("teamId", "1004")
@@ -293,8 +307,22 @@ public class UsersTeamsControllerIT {
             .andReturn()
             .getResponse()
             .getContentAsString();
+    TeamModelResponse teamModelResponse =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(teamModelResponse.getTeamname()).isEqualTo(newTeam + "-DELETED");
 
-    assertThat(response).isEmpty();
+    response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getAllTeamsSU")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    teamModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(teamModels).hasSize(2);
   }
 
   // Delete team failure
@@ -369,7 +397,7 @@ public class UsersTeamsControllerIT {
 
     List<TeamModelResponse> teamModels =
         OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    assertThat(teamModels).hasSize(3);
+    assertThat(teamModels).hasSize(2);
   }
 
   // Create user with USER role, switch teams

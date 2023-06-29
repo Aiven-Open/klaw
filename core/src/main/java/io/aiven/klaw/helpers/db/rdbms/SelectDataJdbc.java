@@ -862,7 +862,7 @@ public class SelectDataJdbc {
   }
 
   public List<Team> selectAllTeams(int tenantId) {
-    return teamRepo.findAllByTenantId(tenantId);
+    return teamRepo.findAllByTenantId(tenantId).stream().filter(Team::isActive).toList();
   }
 
   public AclRequests selectAcl(int req_no, int tenantId) {
@@ -1801,7 +1801,7 @@ public class SelectDataJdbc {
   }
 
   public List<Team> selectTeams() {
-    return Lists.newArrayList(teamRepo.findAll());
+    return Lists.newArrayList(teamRepo.findAll()).stream().filter(Team::isActive).toList();
   }
 
   public List<KwProperties> selectKwProperties() {
