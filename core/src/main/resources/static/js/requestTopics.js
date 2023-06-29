@@ -187,13 +187,13 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
 
         $scope.checkPartitionAndRepFactorWarnings = function() {
 
-                if($scope.envTopicMap.defaultRepFactor > $scope.addTopic.replicationfactor) {
+                if(parseInt($scope.envTopicMap.defaultRepFactor,10) > parseInt($scope.addTopic.replicationfactor,10)) {
                 $scope.repFactorWarn = 'Replication factor is below default value';
                 } else {
                 $scope.repFactorWarn = '';
                 }
 
-                if($scope.envTopicMap.defaultPartitions > $scope.addTopic.topicpartitions) {
+                if(parseInt($scope.envTopicMap.defaultPartitions,10) > parseInt($scope.addTopic.topicpartitions,10)) {
                 $scope.partitionWarn = 'Partitions is below default value';
                 } else {
                 $scope.partitionWarn = '';
