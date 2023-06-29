@@ -2,23 +2,26 @@ import { Alert, Box, PageHeader, useToast } from "@aivenio/aquarium";
 import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { useState } from "react";
-import { DocumentationView } from "src/app/components/documentation/DocumentationView";
+
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateTopicDocumentation } from "src/domain/topic/topic-api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
+import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 
 function TopicDocumentation() {
   const queryClient = useQueryClient();
 
   const [editMode, setEditMode] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const { topicOverview } = useTopicDetails();
 
   const toast = useToast();
 
-  const { mutate, isError, isLoading, error } = useMutation(
+  const { mutate, isError, error } = useMutation(
     (markdownString: string) => {
+      setSaving(true);
       return updateTopicDocumentation({
         topicName: topicOverview.topicInfo.topicName,
         topicIdForDocumentation: topicOverview.topicIdForDocumentation,
@@ -27,7 +30,6 @@ function TopicDocumentation() {
     },
     {
       onSuccess: () => {
-        setEditMode(false);
         queryClient.refetchQueries(["topic-overview"]).then(() => {
           toast({
             message: "Documentation successfully updated",
@@ -35,7 +37,10 @@ function TopicDocumentation() {
             variant: "default",
           });
         });
+        setSaving(false);
+        setEditMode(false);
       },
+      onError: () => setEditMode(false),
     }
   );
 
@@ -56,7 +61,7 @@ function TopicDocumentation() {
             documentation={topicOverview.topicDocumentation}
             save={(text) => mutate(text)}
             cancel={() => setEditMode(false)}
-            isSaving={isLoading}
+            isSaving={saving}
           />
         </>
       </>
