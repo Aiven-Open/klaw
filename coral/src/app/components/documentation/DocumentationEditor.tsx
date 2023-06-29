@@ -50,10 +50,13 @@ function DocumentationEditor({
           onChange={(value: ViewMode) => setViewMode(value)}
           value={viewMode}
         >
-          <SegmentedControl aria-pressed={viewMode === "edit"} value={"edit"}>
+          <SegmentedControl<ViewMode>
+            aria-pressed={viewMode === "edit"}
+            value={"edit"}
+          >
             Edit
           </SegmentedControl>
-          <SegmentedControl
+          <SegmentedControl<ViewMode>
             aria-pressed={viewMode === "preview"}
             value={"preview"}
           >
