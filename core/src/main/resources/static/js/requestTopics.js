@@ -90,7 +90,7 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
         $scope.requestButton = "Submit";
 
         $scope.loadEditTopicInfo = function(){
-            var envSelected, topicSelected, reqType, envName;
+            var envSelected, topicSelected, reqType, envName, sourceEnv;
 
             var sPageURL = window.location.search.substring(1);
             var sURLVariables = sPageURL.split('&');
@@ -106,13 +106,24 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                     reqType = sParameterName[1];
                 }
                 else if (sParameterName[0] === "env")
-                {
-                    envSelected = sParameterName[1];
-                }
-                else if (sParameterName[0] === "envName")
-                {
-                    envName = sParameterName[1];
-                }
+               {
+                   envSelected = sParameterName[1];
+               }
+               else if (sParameterName[0] === "envName")
+               {
+                   envName = sParameterName[1];
+               } else if (sParameterName[0] === "targetEnvId")
+               {
+                   envSelected = sParameterName[1];
+               }
+               else if (sParameterName[0] === "targetEnvName")
+               {
+                   envName = sParameterName[1];
+               }
+               else if (sParameterName[0] === "sourceEnvId")
+               {
+                   sourceEnv = sParameterName[1];
+               }
             }
 
             if(!topicSelected && !envSelected)
@@ -121,6 +132,10 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
             $scope.addTopic.topicname = topicSelected;
             $scope.addTopic.envName = envSelected;
             $scope.getEnvTopicPartitions(envSelected, reqType, envName);
+            //only make this call if it is a promote operation.
+            if(reqType=="promote") {
+            $scope.getTopicEnvDetails(sourceEnv,topicSelected);
+            }
         }
 
         $scope.submitEditTopicRequest = function(envSelected, topicSelected) {
@@ -168,6 +183,60 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                 }
             );
         }
+
+
+        $scope.checkPartitionAndRepFactorWarnings = function() {
+
+                if(parseInt($scope.envTopicMap.defaultRepFactor,10) > parseInt($scope.addTopic.replicationfactor,10)) {
+                $scope.repFactorWarn = 'Replication factor is below default value';
+                } else {
+                $scope.repFactorWarn = '';
+                }
+
+                if(parseInt($scope.envTopicMap.defaultPartitions,10) > parseInt($scope.addTopic.topicpartitions,10)) {
+                $scope.partitionWarn = 'Partitions is below default value';
+                } else {
+                $scope.partitionWarn = '';
+                }
+        }
+
+         $scope.getTopicEnvDetails = function(envSelected, topicSelected) {
+                    $http({
+                        method: "GET",
+                        url: "getTopicDetailsPerEnv",
+                        headers : { 'Content-Type' : 'application/json' },
+                        params: {'envSelected' : envSelected,  'topicname' : topicSelected }
+                    }).success(function(output) {
+                        if(output.topicExists){
+                            $scope.oldtopicpartitions = output.topicContents.noOfPartitions;
+                            $scope.addTopic.topicpartitions = '' + output.topicContents.noOfPartitions;
+                            $scope.addTopic.replicationfactor = '' + output.topicContents.noOfReplicas;
+                            $scope.addTopic.advancedTopicConfiguration = output.topicContents.advancedTopicConfiguration
+                            $scope.addTopic.description = output.topicContents.description;
+                            //set env defaults
+                            $scope.addTopic.topicpartitions = $scope.envTopicMap.defaultPartitions  + " (default)"
+                            $scope.addTopic.replicationfactor = $scope.envTopicMap.defaultRepFactor + " (default)"
+
+
+                            $scope.checkPartitionAndRepFactorWarnings();
+
+                            for (let m in $scope.addTopic.advancedTopicConfiguration){
+                                $scope.topicConfigsSelectedDropdown.push(m);
+                                $scope.topicConfigsSelected.push(output.topicContents.advancedTopicConfiguration[m]);
+                                $scope.propertyInfoLink.push(apacheKafkaTopicConfigsUrl + m);
+                            }
+                        }
+                        else{
+                            $scope.alertnote = "Unable to load Promotion Config from lower environment.";
+                            $scope.showAlertToast();
+                        }
+                    }).error(
+                        function(error)
+                        {
+                            $scope.alert = error;
+                        }
+                    );
+                }
 
         $scope.addTopic = function() {
 
