@@ -40,7 +40,7 @@ function DocumentationEditor({
   }
 
   return (
-    <Box.Flex flexDirection={"column"} rowGap={"l1"}>
+    <Box.Flex flexDirection={"column"} rowGap={"3"}>
       <Box.Flex
         alignSelf={"start"}
         component={"section"}
@@ -68,7 +68,7 @@ function DocumentationEditor({
             borderColor={"grey-20"}
             borderWidth={"1px"}
             borderRadius={"2px"}
-            marginBottom={"l1"}
+            marginBottom={"2"}
             className={classes.markdownSyntaxHighlight}
           >
             <label
@@ -91,7 +91,7 @@ function DocumentationEditor({
                 PreTag="div"
                 style={a11yLight}
                 wrapLongLines={true}
-                customStyle={{ minHeight: "40vh" }}
+                customStyle={{ minHeight: "35vh" }}
               >
                 {text}
               </SyntaxHighlighter>
@@ -106,17 +106,12 @@ function DocumentationEditor({
 
       {viewMode === "preview" && <DocumentationView markdownString={text} />}
 
-      <Box.Flex
-        colGap={"l1"}
-        paddingTop={"l2"}
-        justifyContent={"end"}
-        alignItems={"center"}
-      >
+      <Box.Flex colGap={"l1"} justifyContent={"end"} alignItems={"center"}>
         <Button.Secondary onClick={cancel} loading={isSaving}>
-          Cancel
+          {isSaving ? "Saving documentation" : "Cancel"}
         </Button.Secondary>
         <Button.Primary onClick={saveDocumentation} loading={isSaving}>
-          Save documentation
+          {isSaving ? "Saving documentation" : "Save documentation"}
         </Button.Primary>
       </Box.Flex>
     </Box.Flex>

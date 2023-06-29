@@ -2,9 +2,8 @@ import { Alert, Box, PageHeader, useToast } from "@aivenio/aquarium";
 import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { useState } from "react";
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateTopicDocumentation } from "src/domain/topic/topic-api";
+import { updateTopicDocumentation } from "src/domain/topic";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
@@ -36,9 +35,9 @@ function TopicDocumentation() {
             position: "bottom-left",
             variant: "default",
           });
+          setSaving(false);
+          setEditMode(false);
         });
-        setSaving(false);
-        setEditMode(false);
       },
       onError: () => setEditMode(false),
     }
