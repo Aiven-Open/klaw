@@ -42,7 +42,7 @@ function DocumentationEditor({
   return (
     <Box.Flex flexDirection={"column"} rowGap={"l1"}>
       <Box.Flex
-        alignSelf={"end"}
+        alignSelf={"start"}
         component={"section"}
         aria-label={"Switch between edit and preview mode"}
       >
