@@ -202,11 +202,11 @@ app.controller("requestTopicsCtrl", function($scope, $http, $location, $window) 
                             $scope.addTopic.topicpartitions = '' + output.topicContents.noOfPartitions;
                             $scope.addTopic.replicationfactor = '' + output.topicContents.noOfReplicas;
                             $scope.addTopic.advancedTopicConfiguration = output.topicContents.advancedTopicConfiguration
-                            if($scope.envTopicMap.defaultPartitions === $scope.addTopic.topicpartitions)
-                                $scope.addTopic.topicpartitions = $scope.addTopic.topicpartitions + " (default)"
-                            if($scope.envTopicMap.defaultRepFactor === $scope.addTopic.replicationfactor)
-                                $scope.addTopic.replicationfactor = $scope.addTopic.replicationfactor + " (default)"
                             $scope.addTopic.description = output.topicContents.description;
+                            //set env defaults
+                            $scope.addTopic.topicpartitions = $scope.envTopicMap.defaultPartitions  + " (default)"
+                            $scope.addTopic.replicationfactor = $scope.envTopicMap.defaultRepFactor + " (default)"
+
 
                             $scope.checkPartitionAndRepFactorWarnings();
 
