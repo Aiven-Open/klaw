@@ -49,6 +49,16 @@ const testConnectorOverview: ConnectorOverview = {
     status: "success",
   },
   connectorExists: true,
+  availableEnvironments: [
+    {
+      id: "3",
+      name: "DEV",
+    },
+    {
+      id: "10",
+      name: "ACC",
+    },
+  ],
   topicIdForDocumentation: 1003,
 };
 

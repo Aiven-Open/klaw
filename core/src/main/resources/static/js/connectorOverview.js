@@ -529,7 +529,12 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
 		}).success(function(output) {
 		    if(output.connectorExists === true){
 		        $scope.resultBrowse = output.aclInfoList;
-            	$scope.connectorOverview = output.connectorInfoList;
+		        $scope.availableEnvironments = output.availableEnvironments;
+                $scope.connectorInfoList = output.connectorInfoList;
+            	if($scope.availableEnvironments.length > 0 ){
+            	  $scope.selectedEnvId = $scope.availableEnvironments[0].id;
+            	  $scope.setConnector($scope.availableEnvironments[0].id);
+            	}
             	$scope.promotionDetails = output.promotionDetails;
 
                 $scope.topicHistoryList = output.topicHistoryList;
@@ -548,6 +553,15 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
 			}
 		);
 		
+	}
+
+	$scope.setConnector = function(envId) {
+
+        for(var i=0;i<$scope.connectorInfoList.length;i++) {
+            if($scope.connectorInfoList[i].environmentId ==envId) {
+              $scope.connectorOverview = $scope.connectorInfoList[i];
+            }
+        }
 	}
 
 	$scope.sendMessageToAdmin = function(){

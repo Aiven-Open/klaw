@@ -185,9 +185,11 @@ public class KafkaConnectController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ConnectorOverview> getConnectorOverview(
-      @RequestParam(value = "connectornamesearch") String connectorNameSearch) {
+      @RequestParam(value = "connectornamesearch") String connectorNameSearch,
+      @RequestParam(value = "environmentId", defaultValue = "") String environmentId) {
     return new ResponseEntity<>(
-        kafkaConnectControllerService.getConnectorOverview(connectorNameSearch), HttpStatus.OK);
+        kafkaConnectControllerService.getConnectorOverview(connectorNameSearch, environmentId),
+        HttpStatus.OK);
   }
 
   @PostMapping(

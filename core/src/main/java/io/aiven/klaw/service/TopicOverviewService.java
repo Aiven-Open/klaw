@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
@@ -20,7 +21,6 @@ import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -128,7 +128,7 @@ public class TopicOverviewService extends BaseOverviewService {
     List<EnvIdInfo> availableEnvs = new ArrayList<>();
     List<EnvIdInfo> availableEnvsNotInPromotionOrder = new ArrayList<>();
     String orderOfEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
-    List<String> orderOfEnvsArrayList = getOrderedEnvsList(orderOfEnvs);
+    List<String> orderOfEnvsArrayList = KlawResourceUtils.getOrderedEnvsList(orderOfEnvs);
     topics.forEach(
         topic -> {
           EnvIdInfo envIdInfo = new EnvIdInfo();
@@ -159,15 +159,6 @@ public class TopicOverviewService extends BaseOverviewService {
     topics =
         topics.stream().filter(topic -> topic.getEnvironment().equals(finalEnvironmentId)).toList();
     return Pair.of(environmentId, topics);
-  }
-
-  private static List<String> getOrderedEnvsList(String orderOfEnvs) {
-    List<String> orderOfEnvsArrayList = new ArrayList<>();
-    if (orderOfEnvs != null && !orderOfEnvs.equals("")) {
-      String[] orderOfEnvsList = orderOfEnvs.split(",");
-      orderOfEnvsArrayList = Arrays.asList(orderOfEnvsList);
-    }
-    return orderOfEnvsArrayList;
   }
 
   private void enrichTopicInfoList(
@@ -350,7 +341,7 @@ public class TopicOverviewService extends BaseOverviewService {
       }
       promotionStatus.setTopicName(topicSearch);
       String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
-      List<String> envOrderList = getOrderedEnvsList(orderEnvs);
+      List<String> envOrderList = KlawResourceUtils.getOrderedEnvsList(orderEnvs);
 
       if (topics != null && topics.size() > 0) {
         List<String> envList =
