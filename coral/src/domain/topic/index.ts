@@ -18,11 +18,11 @@ import {
   TopicRequest,
   TopicRequestOperationTypes,
   TopicRequestStatus,
+  TopicSchemaOverview,
   TopicTeam,
 } from "src/domain/topic/topic-types";
 
 export {
-  TopicTeam,
   deleteTopic,
   getTopicDetailsPerEnv,
   getTopicNames,
@@ -33,7 +33,6 @@ export {
   updateTopicDocumentation,
 };
 export type {
-  ,
   DeleteTopicPayload,
   Topic,
   TopicDetailsPerEnv,
@@ -43,4 +42,6 @@ export type {
   TopicRequest,
   TopicRequestOperationTypes,
   TopicRequestStatus,
+  TopicSchemaOverview,
+  TopicTeam,
 };

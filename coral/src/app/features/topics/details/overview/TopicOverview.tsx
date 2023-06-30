@@ -17,8 +17,8 @@ import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
 import { getTopicStats } from "src/app/features/topics/details/utils";
-import { getTopicRequests } from "src/domain/topic";
 import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
+import { getTopicRequests } from "src/domain/topic";
 
 function TopicOverview() {
   const user = useAuthContext();
