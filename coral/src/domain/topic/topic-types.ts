@@ -1,14 +1,14 @@
+import { MarkdownString } from "src/domain/helper/documentation-helper";
+import {
+  RequestOperationType,
+  RequestStatus,
+} from "src/domain/requests/requests-types";
 import type {
   KlawApiModel,
   KlawApiResponse,
   Paginated,
   ResolveIntersectionTypes,
 } from "types/utils";
-import {
-  RequestStatus,
-  RequestOperationType,
-} from "src/domain/requests/requests-types";
-import { MarkdownString } from "src/domain/helper/documentation-helper";
 
 type TopicApiResponse = ResolveIntersectionTypes<Paginated<Topic[]>>;
 
@@ -74,21 +74,24 @@ type DeleteTopicPayload = ResolveIntersectionTypes<
   }
 >;
 
+type TopicDetailsPerEnv = KlawApiModel<"TopicDetailsPerEnv">;
+
 export type {
+  AclOverviewInfo,
+  DeleteTopicPayload,
+  NoContent,
   Topic,
-  TopicNames,
-  TopicTeam,
-  TopicApiResponse,
   TopicAdvancedConfigurationOptions,
+  TopicApiResponse,
+  TopicDetailsPerEnv,
+  TopicDocumentationMarkdown,
+  TopicMessages,
+  TopicNames,
+  TopicOverview,
   TopicRequest,
+  TopicRequestApiResponse,
   TopicRequestOperationTypes,
   TopicRequestStatus,
-  TopicRequestApiResponse,
-  AclOverviewInfo,
-  TopicMessages,
-  NoContent,
-  TopicOverview,
   TopicSchemaOverview,
-  DeleteTopicPayload,
-  TopicDocumentationMarkdown,
+  TopicTeam,
 };

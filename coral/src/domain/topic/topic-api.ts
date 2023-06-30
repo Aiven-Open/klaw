@@ -2,6 +2,10 @@ import omitBy from "lodash/omitBy";
 import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { transformAdvancedConfigEntries } from "src/app/features/topics/request/utils";
 import {
+  StringifiedHtml,
+  createStringifiedHtml,
+} from "src/domain/helper/documentation-helper";
+import {
   RequestVerdictApproval,
   RequestVerdictDecline,
   RequestVerdictDelete,
@@ -30,10 +34,6 @@ import {
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
-import {
-  createStringifiedHtml,
-  StringifiedHtml,
-} from "src/domain/helper/documentation-helper";
 
 const getTopics = async (
   params: KlawApiRequestQueryParameters<"getTopics">
@@ -102,7 +102,9 @@ const getTopicAdvancedConfigOptions = (): Promise<
     )
     .then(transformGetTopicAdvancedConfigOptionsResponse);
 
-const requestTopic = (data: Schema): Promise<unknown> => {
+const requestTopic = (
+  data: Schema
+): Promise<KlawApiResponse<"createTopicsCreateRequest">> => {
   const payload: KlawApiRequest<"createTopicsCreateRequest"> = {
     description: data.description,
     environment: data.environment.id,
@@ -114,6 +116,27 @@ const requestTopic = (data: Schema): Promise<unknown> => {
       data.advancedConfiguration
     ),
     requestOperationType: "CREATE",
+  };
+  return api.post<
+    KlawApiResponse<"createTopicsCreateRequest">,
+    KlawApiRequest<"createTopicsCreateRequest">
+  >(API_PATHS.createTopicsCreateRequest, payload);
+};
+
+const promoteTopic = (
+  data: Schema
+): Promise<KlawApiResponse<"createTopicsCreateRequest">> => {
+  const payload: KlawApiRequest<"createTopicsCreateRequest"> = {
+    description: data.description,
+    environment: data.environment.id,
+    remarks: data.remarks,
+    topicname: data.topicname,
+    replicationfactor: data.replicationfactor,
+    topicpartitions: parseInt(data.topicpartitions, 10),
+    advancedTopicConfigEntries: transformAdvancedConfigEntries(
+      data.advancedConfiguration
+    ),
+    requestOperationType: "PROMOTE",
   };
   return api.post<
     KlawApiResponse<"createTopicsCreateRequest">,
@@ -307,21 +330,31 @@ async function updateTopicDocumentation({
     //@ts-ignore
   >(API_PATHS.saveTopicDocumentation, requestBody);
 }
+const getTopicDetailsPerEnv = (
+  params: KlawApiRequestQueryParameters<"getTopicDetailsPerEnv">
+) => {
+  return api.get<KlawApiResponse<"getTopicDetailsPerEnv">>(
+    API_PATHS.getTopicDetailsPerEnv,
+    new URLSearchParams(params)
+  );
+};
 
 export {
-  getTopics,
-  getTopicNames,
-  getTopicTeam,
-  getTopicAdvancedConfigOptions,
-  requestTopic,
-  getTopicRequestsForApprover,
-  getTopicRequests,
   approveTopicRequest,
   declineTopicRequest,
-  deleteTopicRequest,
-  getTopicOverview,
-  getTopicMessages,
-  getSchemaOfTopic,
   deleteTopic,
+  deleteTopicRequest,
+  getSchemaOfTopic,
+  getTopicAdvancedConfigOptions,
+  getTopicDetailsPerEnv,
+  getTopicMessages,
+  getTopicNames,
+  getTopicOverview,
+  getTopicRequests,
+  getTopicRequestsForApprover,
+  getTopicTeam,
+  getTopics,
+  promoteTopic,
+  requestTopic,
   updateTopicDocumentation,
 };
