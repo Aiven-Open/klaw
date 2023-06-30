@@ -1,7 +1,6 @@
 package io.aiven.klaw.clusterapi.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
@@ -9,10 +8,8 @@ import io.aiven.klaw.clusterapi.UtilMethods;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
-import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.RegisterSchemaCustomResponse;
 import io.aiven.klaw.clusterapi.models.RegisterSchemaResponse;
-import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
 import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
@@ -22,7 +19,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,10 +26,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateAclsResult;
-import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DescribeAclsResult;
-import org.apache.kafka.clients.admin.DescribeTopicsResult;
-import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
@@ -68,25 +61,13 @@ public class UtilComponentsServiceTest {
 
   @Mock private AdminClient adminClient;
 
-  @Mock private ListTopicsResult listTopicsResult;
-
-  @Mock private KafkaFuture<Set<String>> kafkaFuture;
-
-  @Mock private KafkaFuture<Map<String, TopicDescription>> kafkaFutureTopicdesc;
-
   @Mock private KafkaFuture<Collection<AclBinding>> kafkaFutureCollection;
-
-  @Mock private DescribeTopicsResult describeTopicsResult;
 
   @Mock private DescribeAclsResult describeAclsResult;
 
   @Mock private AccessControlEntry accessControlEntry;
 
-  @Mock private CreateTopicsResult createTopicsResult;
-
   @Mock private CreateAclsResult createAclsResult;
-
-  @Mock private Map<String, KafkaFuture<Void>> futureTocpiCreateResult;
 
   @Mock private KafkaFuture<Void> kFutureVoid;
 
@@ -98,18 +79,12 @@ public class UtilComponentsServiceTest {
 
   private ApacheKafkaAclService apacheKafkaAclService;
 
-  private ApacheKafkaTopicService apacheKafkaTopicService;
-
-  private ConfluentCloudApiService confluentCloudApiService;
-
   private SchemaService schemaService;
 
   @BeforeEach
   public void setUp() {
-    confluentCloudApiService = new ConfluentCloudApiService(env, clusterApiUtils);
     utilComponentsService = new UtilComponentsService(env, clusterApiUtils);
     apacheKafkaAclService = new ApacheKafkaAclService(clusterApiUtils);
-    apacheKafkaTopicService = new ApacheKafkaTopicService(clusterApiUtils, schemaService);
     schemaService = new SchemaService(clusterApiUtils);
     utilMethods = new UtilMethods();
   }
@@ -188,120 +163,6 @@ public class UtilComponentsServiceTest {
     Set<Map<String, String>> result =
         apacheKafkaAclService.loadAcls("localhost", KafkaSupportedProtocol.PLAINTEXT, "");
     assertThat(result).isEmpty();
-  }
-
-  @Test
-  public void loadTopics() throws Exception {
-    Set<String> list = new HashSet<>();
-    when(clusterApiUtils.getAdminClient(
-            anyString(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
-        .thenReturn(adminClient);
-    when(adminClient.listTopics(any())).thenReturn(listTopicsResult);
-    when(listTopicsResult.names()).thenReturn(kafkaFuture);
-    when(kafkaFuture.get()).thenReturn(list);
-
-    // Mockito seems to have trouble with stubbing default methods.
-    when(adminClient.describeTopics(anyCollection())).thenReturn(describeTopicsResult);
-    when(describeTopicsResult.all()).thenReturn(kafkaFutureTopicdesc);
-    when(kafkaFutureTopicdesc.get(anyLong(), any(TimeUnit.class))).thenReturn(getTopicDescs());
-
-    Set<TopicConfig> result =
-        apacheKafkaTopicService.loadTopics("localhost", KafkaSupportedProtocol.PLAINTEXT, "");
-
-    TopicConfig topicConfig = new TopicConfig();
-    topicConfig.setPartitions("2");
-    topicConfig.setReplicationFactor("1");
-    topicConfig.setTopicName("testtopic2");
-
-    TopicConfig topicConfig1 = new TopicConfig();
-    topicConfig1.setPartitions("2");
-    topicConfig1.setReplicationFactor("1");
-    topicConfig1.setTopicName("testtopic1");
-
-    assertThat(result).hasSize(2);
-    assertThat(result).contains(topicConfig).contains(topicConfig1);
-  }
-
-  @Test
-  public void createTopicSuccess() throws Exception {
-    ClusterTopicRequest clusterTopicRequest =
-        ClusterTopicRequest.builder()
-            .env("localhost")
-            .protocol(KafkaSupportedProtocol.PLAINTEXT)
-            .topicName("testtopic")
-            .partitions(1)
-            .replicationFactor(Short.parseShort("1"))
-            .clusterName("")
-            .build();
-    Set<String> list = new HashSet<>();
-
-    when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
-        .thenReturn(adminClient);
-    when(adminClient.createTopics(any())).thenReturn(createTopicsResult);
-    when(createTopicsResult.values()).thenReturn(futureTocpiCreateResult);
-    when(futureTocpiCreateResult.get(anyString())).thenReturn(kFutureVoid);
-
-    ApiResponse result = apacheKafkaTopicService.createTopic(clusterTopicRequest);
-    assertThat(result.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
-  }
-
-  // TODO review test configuration, since an NPE is thrown, which is most likely not intended here.
-  @Test
-  public void createTopicFailure1() throws Exception {
-    assertThatThrownBy(
-            () -> {
-              ClusterTopicRequest clusterTopicRequest =
-                  ClusterTopicRequest.builder()
-                      .env("localhost")
-                      .protocol(KafkaSupportedProtocol.PLAINTEXT)
-                      .topicName("testtopic")
-                      .partitions(1)
-                      .replicationFactor(Short.parseShort("1"))
-                      .clusterName("")
-                      .build();
-              apacheKafkaTopicService.createTopic(clusterTopicRequest);
-            })
-        .isInstanceOf(Exception.class);
-  }
-
-  @Test
-  public void createTopicFailure2() throws Exception {
-    assertThatThrownBy(
-            () -> {
-              ClusterTopicRequest clusterTopicRequest =
-                  ClusterTopicRequest.builder()
-                      .env("localhost")
-                      .protocol(KafkaSupportedProtocol.PLAINTEXT)
-                      .topicName("testtopic")
-                      .partitions(1)
-                      .replicationFactor(Short.parseShort("1aa"))
-                      .clusterName("")
-                      .build();
-              when(clusterApiUtils.getAdminClient(
-                      any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
-                  .thenReturn(adminClient);
-              apacheKafkaTopicService.createTopic(clusterTopicRequest);
-            })
-        .isInstanceOf(NumberFormatException.class);
-  }
-
-  // TODO review test configuration, since an NPE is thrown, which is most likely not intended here.
-  @Test
-  public void createTopicFailure4() throws Exception {
-    assertThatThrownBy(
-            () -> {
-              ClusterTopicRequest clusterTopicRequest =
-                  ClusterTopicRequest.builder()
-                      .env("localhost")
-                      .protocol(KafkaSupportedProtocol.PLAINTEXT)
-                      .topicName("testtopic1")
-                      .partitions(1)
-                      .replicationFactor(Short.parseShort("1aa"))
-                      .clusterName("")
-                      .build();
-              apacheKafkaTopicService.createTopic(clusterTopicRequest);
-            })
-        .isInstanceOf(RuntimeException.class);
   }
 
   @Test
