@@ -9,6 +9,7 @@ enum Routes {
   TOPIC_REQUEST = "/topics/request",
   TOPIC_ACL_REQUEST = "/topic/:topicName/subscribe",
   TOPIC_SCHEMA_REQUEST = "/topic/:topicName/request-schema",
+  TOPIC_PROMOTION_REQUEST = "/topic/:topicName/request-promotion",
   ACL_REQUEST = "/request/acl",
   SCHEMA_REQUEST = "/request/schema",
   REQUESTS = "/requests",

@@ -7,6 +7,7 @@ import ConnectorApprovalsPage from "src/app/pages/approvals/connectors";
 import SchemaApprovalsPage from "src/app/pages/approvals/schemas";
 import TopicApprovalsPage from "src/app/pages/approvals/topics";
 import ConnectorsPage from "src/app/pages/connectors";
+import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
 import RequestConnector from "src/app/pages/connectors/request";
 import NotFound from "src/app/pages/not-found";
 import RequestsPage from "src/app/pages/requests";
@@ -17,7 +18,14 @@ import TopicRequestsPage from "src/app/pages/requests/topics";
 import Topics from "src/app/pages/topics";
 import AclRequest from "src/app/pages/topics/acl-request";
 import { TopicDetailsPage } from "src/app/pages/topics/details";
-import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
+import { TopicDocumentationPage } from "src/app/pages/topics/details/documentation";
+import { TopicHistoryPage } from "src/app/pages/topics/details/history";
+import { TopicMessagesPage } from "src/app/pages/topics/details/messages";
+import { TopicOverviewPage } from "src/app/pages/topics/details/overview";
+import { TopicDetailsSchemaPage } from "src/app/pages/topics/details/schema";
+import { TopicSettingsPage } from "src/app/pages/topics/details/settings";
+import { TopicSubscriptionsPage } from "src/app/pages/topics/details/subscriptions";
+import TopicPromotionRequestPage from "src/app/pages/topics/promotion-request";
 import RequestTopic from "src/app/pages/topics/request";
 import SchemaRequest from "src/app/pages/topics/schema-request";
 import {
@@ -34,13 +42,6 @@ import {
 import { getRouterBasename } from "src/config";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
-import { TopicHistoryPage } from "src/app/pages/topics/details/history";
-import { TopicMessagesPage } from "src/app/pages/topics/details/messages";
-import { TopicSubscriptionsPage } from "src/app/pages/topics/details/subscriptions";
-import { TopicOverviewPage } from "src/app/pages/topics/details/overview";
-import { TopicDetailsSchemaPage } from "src/app/pages/topics/details/schema";
-import { TopicSettingsPage } from "src/app/pages/topics/details/settings";
-import { TopicDocumentationPage } from "src/app/pages/topics/details/documentation";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -222,6 +223,10 @@ const routes: Array<RouteObject> = [
       {
         path: Routes.TOPIC_SCHEMA_REQUEST,
         element: <SchemaRequest />,
+      },
+      {
+        path: Routes.TOPIC_PROMOTION_REQUEST,
+        element: <TopicPromotionRequestPage />,
       },
     ],
   },
