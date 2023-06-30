@@ -86,6 +86,9 @@ function DocumentationEditor({
             >
               Markdown editor
             </label>
+            {/* The <textarea> is the element that takes and handles user */}
+            {/* input and is accessible by assistive technology. It is presented */}
+            {/* as not visible via the custom css styles (see css module) */}
             <textarea
               id={"markdown-editor-textarea"}
               aria-describedby={"editor-markdown-description"}
@@ -93,6 +96,10 @@ function DocumentationEditor({
               onChange={(event) => setText(event?.target?.value)}
               className={classes.markdownTextarea}
             />
+            {/* The <SyntaxHighlighter> is showing the current value of the */}
+            {/* <textarea> as an improved visual feedback for users. It is */}
+            {/* hidden from assitive technology so this does not get the */}
+            {/* same information twice */}
             <div aria-hidden={"true"}>
               <SyntaxHighlighter
                 language={"markdown"}
