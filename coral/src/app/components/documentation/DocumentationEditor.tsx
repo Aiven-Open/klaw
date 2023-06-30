@@ -10,10 +10,16 @@ import {
 import classes from "src/app/components/documentation/documentation-editor.module.css";
 import { useState } from "react";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
+import { TopicDocumentationMarkdown } from "src/domain/topic";
 
 type DocumentationEditorProps = {
-  documentation?: string;
-  save: (documentation: string) => void;
+  // using TopicDocumentation instead of string gives
+  // a bit of type safety to make sure that up until this
+  // place, we're only passing a markdown string that
+  // we've created (and sanitized) ourselves
+
+  documentation?: TopicDocumentationMarkdown;
+  save: (documentation: TopicDocumentationMarkdown) => void;
   cancel: () => void;
   isSaving?: boolean;
 };
@@ -26,7 +32,7 @@ function DocumentationEditor({
   isSaving,
 }: DocumentationEditorProps) {
   const [viewMode, setViewMode] = useState<ViewMode>("edit");
-  const [text, setText] = useState(documentation || "");
+  const [text, setText] = useState((documentation as string) || "");
 
   function saveDocumentation() {
     // trim to remove unnecessary whitespace at end/start
@@ -36,7 +42,7 @@ function DocumentationEditor({
     // there we don't know if the value saved before migrating to React
     // contains spaces at beginning / end
     if (documentation && newDocumentation === documentation.trim()) return;
-    save(newDocumentation);
+    save(newDocumentation as TopicDocumentationMarkdown);
   }
 
   return (
@@ -99,10 +105,10 @@ function DocumentationEditor({
               </SyntaxHighlighter>
             </div>
           </Box>
-          <Typography.SmallTextBold id={"editor-markdown-description"}>
+          <Typography.SmallStrong id={"editor-markdown-description"}>
             We are supporting markdown following the{" "}
             <a href={"https://commonmark.org/help/"}>CommonMark</a> standard.
-          </Typography.SmallTextBold>
+          </Typography.SmallStrong>
         </div>
       )}
 

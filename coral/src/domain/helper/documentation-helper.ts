@@ -18,6 +18,15 @@ import rehypeStringify from "rehype-stringify";
  *  directory, there's no information about stringified html.
  */
 
+// The type MarkdownString does provide us a bit of type safety against slips,
+// in case someone tries to pass a (not properly sanitized) string
+// to DocumentView
+type MarkdownStringBrand = string & {
+  readonly __brand: unique symbol;
+};
+
+type MarkdownString = Awaited<ReturnType<typeof createMarkdown>>;
+
 // `createMarkdown` is used to transform documentation on the api response
 //  for example on TopicOverview. The `topicDocumentation` is a html string
 //  that we transform to markdown.
@@ -31,11 +40,20 @@ async function createMarkdown(stringifiedHtml: string) {
       .use(rehypeRemark)
       .use(remarkStringify)
       .process(stringifiedHtml);
-    return String(result);
+    return String(result) as MarkdownStringBrand;
   } else {
-    return "";
+    return "" as MarkdownStringBrand;
   }
 }
+
+// The type MarkdownString does provide us a bit of type safety against slips,
+// in case someone tries to pass a (not properly sanitized) html string
+// to updateTopicDocumentation
+type StringifiedHtmlBrand = string & {
+  readonly __brand: unique symbol;
+};
+
+type StringifiedHtml = Awaited<ReturnType<typeof createStringifiedHtml>>;
 
 // `createStringifiedHtml` is used to transform documentation from user input
 //  for example from the topic documentation
@@ -52,10 +70,11 @@ async function createStringifiedHtml(markdownString: string) {
       .use(rehypeStringify)
       .process(markdownString);
 
-    return String(result);
+    return String(result) as StringifiedHtmlBrand;
   } else {
-    return "";
+    return "" as StringifiedHtmlBrand;
   }
 }
 
 export { createMarkdown, createStringifiedHtml };
+export type { MarkdownString, StringifiedHtml };

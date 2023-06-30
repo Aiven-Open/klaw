@@ -3,6 +3,7 @@ import { within } from "@testing-library/react/pure";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
 import userEvent from "@testing-library/user-event";
 import { tabThroughForward } from "src/services/test-utils/tabbing";
+import { TopicDocumentationMarkdown } from "src/domain/topic";
 
 const mockSave = jest.fn();
 const mockCancel = jest.fn();
@@ -108,7 +109,8 @@ describe("DocumentationEditor", () => {
   });
 
   describe("shows all necessary elements including an existing documentation", () => {
-    const testDocumentation = `# Hello world this is documentation`;
+    const testDocumentation =
+      `# Hello world this is documentation` as TopicDocumentationMarkdown;
     beforeAll(() => {
       render(
         <DocumentationEditor
@@ -196,7 +198,7 @@ describe("DocumentationEditor", () => {
   });
 
   describe("enables user to add documentation in markdown format", () => {
-    const existingDoc = "#Hello";
+    const existingDoc = "#Hello" as TopicDocumentationMarkdown;
     beforeEach(() => {
       render(
         <DocumentationEditor {...requiredProps} documentation={existingDoc} />

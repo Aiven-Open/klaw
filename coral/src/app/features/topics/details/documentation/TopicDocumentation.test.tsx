@@ -1,13 +1,13 @@
 import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { TopicDocumentation } from "src/app/features/topics/details/documentation/TopicDocumentation";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
-import { TopicOverview } from "src/domain/topic";
+import { TopicDocumentationMarkdown, TopicOverview } from "src/domain/topic";
 import { TopicSchemaOverview } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { updateTopicDocumentation } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { TopicDocumentation } from "src/app/features/topics/details/documentation/TopicDocumentation";
 
 jest.mock("src/app/features/topics/details/TopicDetails");
 const mockUseTopicDetails = useTopicDetails as jest.MockedFunction<
@@ -135,7 +135,7 @@ describe("TopicDocumentation", () => {
   });
 
   describe("if the topic has existing documentation", () => {
-    const existingDocumentation = "# Hello";
+    const existingDocumentation = "# Hello" as TopicDocumentationMarkdown;
 
     describe("shows all necessary elements", () => {
       beforeAll(() => {

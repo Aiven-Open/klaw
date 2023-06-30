@@ -9,9 +9,12 @@
 // -> could change through a (automatic) reorder of imports etc.
 // so we're importing this in setupAfterEnv to make sure it's mocked
 // at the right time
+import { TopicDocumentationMarkdown } from "src/domain/topic";
+import { StringifiedHtml } from "src/domain/helper/documentation-helper";
+
 jest.mock("src/domain/helper/documentation-helper", () => ({
   createMarkdown: (string: string | undefined) =>
-    `create-markdown-mock-${string}`,
+    `create-markdown-mock-${string}` as TopicDocumentationMarkdown,
   createStringifiedHtml: (string: string | undefined) =>
-    `create-stringified-html-${string}`,
+    `create-stringified-html-${string}` as StringifiedHtml,
 }));

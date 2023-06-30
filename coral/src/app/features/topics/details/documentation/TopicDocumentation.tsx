@@ -3,7 +3,10 @@ import { NoDocumentationBanner } from "src/app/features/topics/details/documenta
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateTopicDocumentation } from "src/domain/topic";
+import {
+  TopicDocumentationMarkdown,
+  updateTopicDocumentation,
+} from "src/domain/topic";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
@@ -19,7 +22,7 @@ function TopicDocumentation() {
   const toast = useToast();
 
   const { mutate, isError, error } = useMutation(
-    (markdownString: string) => {
+    (markdownString: TopicDocumentationMarkdown) => {
       setSaving(true);
       return updateTopicDocumentation({
         topicName: topicOverview.topicInfo.topicName,

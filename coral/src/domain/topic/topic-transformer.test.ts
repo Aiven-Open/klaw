@@ -4,6 +4,7 @@ import {
   TopicRequestApiResponse,
   TopicRequest,
   TopicOverview,
+  TopicDocumentationMarkdown,
 } from "src/domain/topic/topic-types";
 
 import {
@@ -19,7 +20,6 @@ import {
 } from "src/domain/topic/topic-test-helper";
 import { KlawApiResponse } from "types/utils";
 
-// const mockCreateMarkdown = jest.fn();
 describe("topic-transformer.ts", () => {
   describe("'transformTopicApiResponse' transforms API response into list of topics", () => {
     const mockedTopic: Topic = baseTestObjectMockedTopic();
@@ -407,7 +407,8 @@ describe("topic-transformer.ts", () => {
             topictype: "test",
           },
         ],
-        topicDocumentation: "create-markdown-mock-This is the documentation",
+        topicDocumentation:
+          "create-markdown-mock-This is the documentation" as TopicDocumentationMarkdown,
         topicHistoryList: [
           {
             approvedBy: "them",
