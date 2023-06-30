@@ -1,0 +1,44 @@
+.markdownEditor {
+  position: relative;
+  /*Setting a few shared variables to create styles*/
+  --markdown-editor-line-height: 24px;
+}
+
+.markdownSyntaxHighlight {
+  line-height: var(--markdown-editor-line-height);
+  /*padding-bottom is needed for the short state when user does line break
+    without that they started typing. This would not create a line break, so
+    the cursor would over over the border. This way, making a new line, there
+    will be the visual pedant to a new line added ;*/
+  padding-bottom: calc(var(--markdown-editor-line-height) / 2 + 6px);
+}
+.markdownSyntaxHighlight:focus-within {
+  outline: 2px solid var(--interactive-elements-focus) !important;
+  outline-offset: 0 !important;
+}
+
+:root textarea.markdownTextarea:focus-visible {
+  /*overrides the focus styles to enable sizing we need*/
+  outline: 0 solid transparent !important;
+  outline-offset: 0 !important;
+}
+
+textarea.markdownTextarea {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* 9px exact is needed to overlay text for textarea
+       and syntax highlight correctly. */
+  padding: 9px;
+  color: transparent;
+  caret-color: black;
+  line-height: var(--markdown-editor-line-height);
+  background-color: transparent;
+  resize: none;
+  overflow: hidden;
+  /*matches style for <code> element based on tailwind (aquarium)*/
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 1em;
+}

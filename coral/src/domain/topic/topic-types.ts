@@ -8,6 +8,7 @@ import {
   RequestStatus,
   RequestOperationType,
 } from "src/domain/requests/requests-types";
+import { MarkdownString } from "src/domain/helper/documentation-helper";
 
 type TopicApiResponse = ResolveIntersectionTypes<Paginated<Topic[]>>;
 
@@ -39,6 +40,8 @@ type TopicRequestApiResponse = ResolveIntersectionTypes<
   Paginated<TopicRequest[]>
 >;
 
+type TopicDocumentationMarkdown = MarkdownString;
+
 // KlawApiModel<"TopicOverview">
 // Represents the TopicOverview as defined in the backend.
 // "TopicOverview" is the type (and object) we're using in FE
@@ -46,11 +49,15 @@ type TopicRequestApiResponse = ResolveIntersectionTypes<
 // transformTopicOverviewResponse() is taking care of transforming
 // the properties and makes sure the types are matching between BE and FE
 type TopicOverview = ResolveIntersectionTypes<
-  Omit<KlawApiModel<"TopicOverview">, "topicInfoList"> & {
+  Omit<
+    KlawApiModel<"TopicOverview">,
+    "topicInfoList" | "topicDocumentation"
+  > & {
     // "topicInfoList" is a list of KlawApiModel<"TopicOverviewInfo">
     // there is only ever one entry in this list, and we want to access
     // it accordingly, that's why we transform it to topicInfo instead
     topicInfo: KlawApiModel<"TopicOverviewInfo">;
+    topicDocumentation?: TopicDocumentationMarkdown;
   }
 >;
 
@@ -66,6 +73,7 @@ type DeleteTopicPayload = ResolveIntersectionTypes<
     remark?: string;
   }
 >;
+
 export type {
   Topic,
   TopicNames,
@@ -82,4 +90,5 @@ export type {
   TopicOverview,
   TopicSchemaOverview,
   DeleteTopicPayload,
+  TopicDocumentationMarkdown,
 };

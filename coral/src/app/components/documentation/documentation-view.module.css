@@ -9,9 +9,9 @@
 
 /*TYPOGRAPHY*/
 
-.markdownEditor h1,
-.markdownEditor h2,
-.markdownEditor h3 {
+.reactMarkdown h1,
+.reactMarkdown h2,
+.reactMarkdown h3 {
   font-family: "Inter", serif;
   font-weight: 700;
   color: var(--headline-text-color);
@@ -21,39 +21,39 @@
   margin-bottom: 0.5rem;
 }
 
-.markdownEditor h1 {
+.reactMarkdown h1 {
   /*Aquarium large heading */
   font-size: 32px;
 }
 
-.markdownEditor h2 {
+.reactMarkdown h2 {
   /*Aquarium heading*/
   font-size: 24px;
 }
 
-.markdownEditor h3 {
+.reactMarkdown h3 {
   /*Aquarium sub-heading*/
   font-size: 20px;
 }
 
-.markdownEditor p {
+.reactMarkdown p {
   /*Browser default for p*/
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
 
-.markdownEditor ul,
-.markdownEditor ol {
+.reactMarkdown ul,
+.reactMarkdown ol {
   /* Browser default ~ 40px. This is a bit less
      spacing than 40px to make more sense in our layout
      while still providing a list style */
   padding-left: 1.75rem;
 }
 
-.markdownEditor ul {
+.reactMarkdown ul {
   list-style-type: initial;
 }
 
-.markdownEditor ol {
+.reactMarkdown ol {
   list-style-type: decimal;
 }

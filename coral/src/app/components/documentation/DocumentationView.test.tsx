@@ -1,14 +1,13 @@
-import { DocumentationView } from "src/app/features/topics/details/documentation/components/DocumentationView";
 import { cleanup, render, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
+import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 
-const testStringifiedHtml = `<h1>Hello</h1>World!<b>Great</b>to see you!`;
+const markdownInput = `# Hello world`;
 
-jest.mock("rehype-raw");
 describe("DocumentationView", () => {
   describe("shows all necessary elements", () => {
     beforeAll(() => {
-      render(<DocumentationView stringifiedHtml={testStringifiedHtml} />);
+      render(<DocumentationView markdownString={markdownInput} />);
     });
 
     afterAll(cleanup);
@@ -28,7 +27,7 @@ describe("DocumentationView", () => {
 
       // due to the react-markdown mock the html is escaped, the test
       // should only verify it's passed at children
-      const escapedHtml = String(testStringifiedHtml);
+      const escapedHtml = String(markdownInput);
       const text = within(reactMarkdownMock).getByText(escapedHtml);
 
       expect(text).toBeVisible();
