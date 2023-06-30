@@ -135,6 +135,32 @@ describe("DocumentationEditor", () => {
     });
   });
 
+  describe("shows a state where saving of documentation is in progress", () => {
+    beforeAll(() => {
+      render(<DocumentationEditor {...requiredProps} isSaving={true} />);
+    });
+
+    afterAll(cleanup);
+
+    it("disables the textarea", () => {
+      const textarea = screen.getByRole("textbox", { name: "Markdown editor" });
+
+      expect(textarea).toBeDisabled();
+    });
+
+    it("disables the cancel button", () => {
+      const cancel = screen.getByRole("button", { name: "Cancel" });
+
+      expect(cancel).toBeDisabled();
+    });
+
+    it("disables the save button and shows loading information", () => {
+      const save = screen.getByRole("button", { name: "Saving documentation" });
+
+      expect(save).toBeDisabled();
+    });
+  });
+
   describe("enables user to switch between edit and preview mode", () => {
     beforeEach(() => {
       render(<DocumentationEditor {...requiredProps} />);

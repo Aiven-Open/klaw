@@ -95,6 +95,7 @@ function DocumentationEditor({
               value={text}
               onChange={(event) => setText(event?.target?.value)}
               className={classes.markdownTextarea}
+              disabled={isSaving}
             />
             {/* The <SyntaxHighlighter> is showing the current value of the */}
             {/* <textarea> as an improved visual feedback for users. It is */}
@@ -122,8 +123,8 @@ function DocumentationEditor({
       {viewMode === "preview" && <DocumentationView markdownString={text} />}
 
       <Box.Flex colGap={"l1"} justifyContent={"end"} alignItems={"center"}>
-        <Button.Secondary onClick={cancel} loading={isSaving}>
-          {isSaving ? "Saving documentation" : "Cancel"}
+        <Button.Secondary onClick={cancel} disabled={isSaving}>
+          Cancel
         </Button.Secondary>
         <Button.Primary onClick={saveDocumentation} loading={isSaving}>
           {isSaving ? "Saving documentation" : "Save documentation"}
