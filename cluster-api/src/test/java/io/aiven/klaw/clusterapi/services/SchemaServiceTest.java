@@ -32,7 +32,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -492,15 +491,15 @@ class SchemaServiceTest {
     String suffixUrl = environmentVal + "/" + "subjects";
     String url = "http://" + suffixUrl;
 
-    when(getAdminClient.getRequestDetails(suffixUrl, protocol)).thenReturn(Pair.of(url, restTemplate));
+    when(getAdminClient.getRequestDetails(suffixUrl, protocol))
+        .thenReturn(Pair.of(url, restTemplate));
     this.mockRestServiceServer
-            .expect(requestTo(url))
-            .andRespond(
-                    withSuccess(
-                            objectMapper.writeValueAsString(Object.class),
-                            MediaType.APPLICATION_JSON));
+        .expect(requestTo(url))
+        .andRespond(
+            withSuccess(objectMapper.writeValueAsString(Object.class), MediaType.APPLICATION_JSON));
 
-    ClusterStatus actual = schemaService.getSchemaRegistryStatus(environmentVal, protocol, clusterIdentification);
+    ClusterStatus actual =
+        schemaService.getSchemaRegistryStatus(environmentVal, protocol, clusterIdentification);
     ClusterStatus expected = ClusterStatus.ONLINE;
 
     Assertions.assertThat(actual).isEqualTo(expected);
@@ -515,12 +514,12 @@ class SchemaServiceTest {
     String suffixUrl = environmentVal + "/" + "subjects";
     String url = "http://" + suffixUrl;
 
-    when(getAdminClient.getRequestDetails(suffixUrl, protocol)).thenReturn(Pair.of(url, restTemplate));
-    this.mockRestServiceServer
-            .expect(requestTo(url))
-            .andRespond(withUnauthorizedRequest());
+    when(getAdminClient.getRequestDetails(suffixUrl, protocol))
+        .thenReturn(Pair.of(url, restTemplate));
+    this.mockRestServiceServer.expect(requestTo(url)).andRespond(withUnauthorizedRequest());
 
-    ClusterStatus actual = schemaService.getSchemaRegistryStatus(environmentVal, protocol, clusterIdentification);
+    ClusterStatus actual =
+        schemaService.getSchemaRegistryStatus(environmentVal, protocol, clusterIdentification);
     ClusterStatus expected = ClusterStatus.OFFLINE;
 
     Assertions.assertThat(actual).isEqualTo(expected);

@@ -18,9 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.apache.commons.lang3.tuple.Pair;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -451,19 +449,19 @@ class SchemaServiceRegisterSchemaTest {
     when(clusterApiUtil.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
     when(clusterApiUtil.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
     when(restTemplate.postForEntity(anyString(), any(), eq(RegisterSchemaResponse.class)))
-            .thenReturn(new ResponseEntity<>(registerSchemaResponse, HttpStatus.OK));
+        .thenReturn(new ResponseEntity<>(registerSchemaResponse, HttpStatus.OK));
     when(restTemplate.exchange(
             anyString(),
             eq(HttpMethod.GET),
             any(),
             eq(new ParameterizedTypeReference<Set<Integer>>() {}),
             anyMap()))
-            .thenReturn(response2);
+        .thenReturn(response2);
 
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
     assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
     RegisterSchemaCustomResponse registerSchemaCustomResponse =
-            (RegisterSchemaCustomResponse) resultResp.getData();
+        (RegisterSchemaCustomResponse) resultResp.getData();
     assertThat(registerSchemaCustomResponse.isSchemaRegistered()).isTrue();
     assertThat(registerSchemaCustomResponse.getVersion()).isEqualTo(1);
     assertThat(registerSchemaCustomResponse.getId()).isEqualTo(1);
@@ -477,11 +475,11 @@ class SchemaServiceRegisterSchemaTest {
     when(clusterApiUtil.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
 
     when(restTemplate.postForEntity(anyString(), any(), eq(RegisterSchemaResponse.class)))
-            .thenThrow(new RuntimeException("Unable to connect"));
+        .thenThrow(new RuntimeException("Unable to connect"));
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
     assertThat(resultResp.getMessage())
-            .contains("Failure in registering schema.")
-            .contains("Unable to connect");
+        .contains("Failure in registering schema.")
+        .contains("Unable to connect");
   }
 
   private ResponseEntity<Map<String, String>> createErrorCompatibilityResponseEntity(

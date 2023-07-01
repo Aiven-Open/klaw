@@ -130,14 +130,14 @@ public class ConfluentCloudApiServiceTest {
             eq(HttpMethod.GET),
             any(),
             (ParameterizedTypeReference<ListAclsResponse>) any()))
-            .thenThrow(new RestClientException("Cannot connect to confluent cluster"));
-
+        .thenThrow(new RestClientException("Cannot connect to confluent cluster"));
 
     assertThatThrownBy(
             () -> {
-              confluentCloudApiService.listAcls("localhost:443", KafkaSupportedProtocol.SSL, CLUSTER_ID);
+              confluentCloudApiService.listAcls(
+                  "localhost:443", KafkaSupportedProtocol.SSL, CLUSTER_ID);
             })
-            .hasMessage("Error in listing acls : " + "Cannot connect to confluent cluster");
+        .hasMessage("Error in listing acls : " + "Cannot connect to confluent cluster");
   }
 
   @Test
@@ -220,7 +220,7 @@ public class ConfluentCloudApiServiceTest {
             eq(HttpMethod.DELETE),
             any(),
             (ParameterizedTypeReference<ListAclsResponse>) any()))
-            .thenReturn(null);
+        .thenReturn(null);
 
     String response = confluentCloudApiService.deleteAcls(clusterAclRequest);
     assertThat(response).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -242,7 +242,7 @@ public class ConfluentCloudApiServiceTest {
 
     stubTopics();
     when(restTemplate.postForEntity(anyString(), any(), any()))
-            .thenThrow(new RestClientException("Topic already exists."));
+        .thenThrow(new RestClientException("Topic already exists."));
 
     ApiResponse apiResponse = confluentCloudApiService.createTopic(clusterTopicRequest);
 
@@ -256,11 +256,10 @@ public class ConfluentCloudApiServiceTest {
     Exception exception = new RestClientException("Error occurred.");
 
     stubTopics();
-    when(restTemplate.postForEntity(anyString(), any(), any()))
-            .thenThrow(exception);
+    when(restTemplate.postForEntity(anyString(), any(), any())).thenThrow(exception);
 
     assertThatThrownBy(() -> confluentCloudApiService.createTopic(clusterTopicRequest))
-            .isEqualTo(exception);
+        .isEqualTo(exception);
   }
 
   @Test
@@ -279,7 +278,7 @@ public class ConfluentCloudApiServiceTest {
 
     stubTopics();
     when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), any(), eq(String.class)))
-            .thenThrow(new RestClientException("This server does not host this topic"));
+        .thenThrow(new RestClientException("This server does not host this topic"));
 
     ApiResponse apiResponse = confluentCloudApiService.deleteTopic(clusterTopicRequest);
 
@@ -294,10 +293,10 @@ public class ConfluentCloudApiServiceTest {
 
     stubTopics();
     when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), any(), eq(String.class)))
-            .thenThrow(exception);
+        .thenThrow(exception);
 
     assertThatThrownBy(() -> confluentCloudApiService.deleteTopic(clusterTopicRequest))
-            .isEqualTo(exception);
+        .isEqualTo(exception);
   }
 
   @Test
@@ -380,18 +379,18 @@ public class ConfluentCloudApiServiceTest {
 
   public ClusterAclRequest getClusterAclRequest(String aclType) {
     return ClusterAclRequest.builder()
-            .env("localhost")
-            .topicName("testtopic")
-            .protocol(KafkaSupportedProtocol.PLAINTEXT)
-            .consumerGroup("congroup1")
-            .clusterName("clusterName")
-            .aclType(aclType)
-            .aclIp("11.12.33.122")
-            .aclSsl(null)
-            .requestOperationType(RequestOperationType.CREATE)
-            .aclNativeType(AclsNativeType.CONFLUENT_CLOUD.name())
-            .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
-            .transactionalId("transactionalId")
-            .build();
+        .env("localhost")
+        .topicName("testtopic")
+        .protocol(KafkaSupportedProtocol.PLAINTEXT)
+        .consumerGroup("congroup1")
+        .clusterName("clusterName")
+        .aclType(aclType)
+        .aclIp("11.12.33.122")
+        .aclSsl(null)
+        .requestOperationType(RequestOperationType.CREATE)
+        .aclNativeType(AclsNativeType.CONFLUENT_CLOUD.name())
+        .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
+        .transactionalId("transactionalId")
+        .build();
   }
 }
