@@ -1,20 +1,13 @@
 package io.aiven.klaw.dao.migration;
 
-import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.KwProperties;
 import io.aiven.klaw.dao.KwTenants;
-import io.aiven.klaw.dao.UserInfo;
-import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.InsertDataJdbc;
 import io.aiven.klaw.helpers.db.rdbms.SelectDataJdbc;
 import io.aiven.klaw.model.enums.EntityType;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @DataMigration(version = "2.5.0", order = 3)
 @Slf4j
@@ -27,8 +20,7 @@ public class MigrateData2x5x0 {
 
   public MigrateData2x5x0() {}
 
-  public MigrateData2x5x0(
-      SelectDataJdbc selectDataJdbc, InsertDataJdbc insertDataJdbc) {
+  public MigrateData2x5x0(SelectDataJdbc selectDataJdbc, InsertDataJdbc insertDataJdbc) {
     this.selectDataJdbc = selectDataJdbc;
     this.insertDataJdbc = insertDataJdbc;
   }
@@ -37,10 +29,11 @@ public class MigrateData2x5x0 {
   public boolean migrate() {
     log.info("Start to migrate 2.5.0 data. Update sequences.");
 
-    List<KwTenants> tenantsList =  selectDataJdbc.getTenants();
-    int defaultStartingSequence = 100;
+    List<KwTenants> tenantsList = selectDataJdbc.getTenants();
+    int defaultStartingSequence = 101;
 
-    if(selectDataJdbc.getDataFromKwEntitySequences() > 0){
+    if (selectDataJdbc.getDataFromKwEntitySequences() > 0) {
+      // Sequences already updated. Nothing to do.
       return true;
     }
 
@@ -70,5 +63,4 @@ public class MigrateData2x5x0 {
     }
     return nextId;
   }
-
 }

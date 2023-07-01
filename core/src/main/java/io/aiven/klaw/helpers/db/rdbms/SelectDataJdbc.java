@@ -1847,19 +1847,19 @@ public class SelectDataJdbc {
     return Lists.newArrayList(kafkaConnectorRequestsRepo.findAll());
   }
 
-  public Integer getNextClusterId(int tenantId){
+  public Integer getNextClusterId(int tenantId) {
     return kwClusterRepo.getNextClusterId(tenantId);
   }
 
-  public Integer getNextEnvId(int tenantId){
+  public Integer getNextEnvId(int tenantId) {
     return envRepo.getNextId(tenantId);
   }
 
-  public Integer getNextTeamId(int tenantId){
+  public Integer getNextTeamId(int tenantId) {
     return teamRepo.getNextTeamId(tenantId);
   }
 
-  public long getDataFromKwEntitySequences(){
+  public long getDataFromKwEntitySequences() {
     return kwEntitySequenceRepo.count();
   }
 }

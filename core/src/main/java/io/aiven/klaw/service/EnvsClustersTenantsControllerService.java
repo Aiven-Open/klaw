@@ -644,7 +644,6 @@ public class EnvsClustersTenantsControllerService {
                   newEnv.getParams().getDefaultRepFactor(), newEnv.getParams().getMaxRepFactor()));
     }
 
-    String envIdAlreadyExistsInDeleteStatus = "";
     List<Env> envActualList = manageDatabase.getHandleDbRequests().getAllEnvs(tenantId);
     List<Env> kafkaEnvs = manageDatabase.getKafkaEnvList(tenantId);
     List<Env> schemaEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
@@ -674,32 +673,10 @@ public class EnvsClustersTenantsControllerService {
                         && Objects.equals(en.getEnvExists(), "true"));
     if (envNameAlreadyPresent) {
       return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_101).build();
-    } else if (envActualList.stream()
-        .anyMatch(
-            en ->
-                Objects.equals(en.getName(), newEnv.getName())
-                    && Objects.equals(en.getType(), newEnv.getType())
-                    && Objects.equals(en.getTenantId(), newEnv.getTenantId())
-                    && Objects.equals(en.getEnvExists(), "false"))) {
-      Optional<Env> envAlreadyExistsInDeleted =
-          envActualList.stream()
-              .filter(
-                  en ->
-                      en.getName().equals(newEnv.getName())
-                          && en.getType().equals(newEnv.getType())
-                          && en.getTenantId().equals(newEnv.getTenantId())
-                          && en.getEnvExists().equals("false"))
-              .findFirst();
-      if (envAlreadyExistsInDeleted.isPresent()) {
-        envIdAlreadyExistsInDeleteStatus = envAlreadyExistsInDeleted.get().getId();
-      }
     }
 
     Env env = new Env();
     copyProperties(newEnv, env);
-    if (!"".equals(envIdAlreadyExistsInDeleteStatus)) {
-      env.setId(envIdAlreadyExistsInDeleteStatus);
-    }
     env.setEnvExists("true");
 
     try {

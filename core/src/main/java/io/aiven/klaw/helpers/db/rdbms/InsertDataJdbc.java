@@ -339,7 +339,7 @@ public class InsertDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public void insertIntoKwEntitySequence(String entityName, int maxId, int tenantId){
+  public void insertIntoKwEntitySequence(String entityName, int maxId, int tenantId) {
     KwEntitySequence kwEntitySequence = new KwEntitySequence();
     kwEntitySequence.setEntityName(entityName);
     kwEntitySequence.setSeqId(maxId);
@@ -360,9 +360,9 @@ public class InsertDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public Integer getNextSeqIdAndUpdate(String entityName, int tenantId){
-    List<KwEntitySequence> kwEntitySequenceList = kwEntitySequenceRepo
-            .findAllByEntityNameAndTenantId(entityName, tenantId);
+  public Integer getNextSeqIdAndUpdate(String entityName, int tenantId) {
+    List<KwEntitySequence> kwEntitySequenceList =
+        kwEntitySequenceRepo.findAllByEntityNameAndTenantId(entityName, tenantId);
     Integer lastId = kwEntitySequenceList.get(0).getSeqId();
     insertIntoKwEntitySequence(entityName, lastId + 1, tenantId);
     return lastId;

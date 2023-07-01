@@ -1,6 +1,5 @@
 package io.aiven.klaw.repository;
 
-import io.aiven.klaw.dao.EnvID;
 import io.aiven.klaw.dao.KwEntitySequence;
 import io.aiven.klaw.dao.KwEntitySequenceID;
 import java.util.List;
