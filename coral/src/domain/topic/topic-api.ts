@@ -17,6 +17,7 @@ import {
   NoContent,
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
+  TopicDocumentationMarkdown,
   TopicMessages,
   TopicOverview,
   TopicRequestApiResponse,
@@ -29,6 +30,10 @@ import {
   KlawApiRequestQueryParameters,
   KlawApiResponse,
 } from "types/utils";
+import {
+  createStringifiedHtml,
+  StringifiedHtml,
+} from "src/domain/helper/documentation-helper";
 
 const getTopics = async (
   params: KlawApiRequestQueryParameters<"getTopics">
@@ -266,6 +271,43 @@ const getSchemaOfTopic = (
   );
 };
 
+type UpdateTopicDocumentation = {
+  topicName: string;
+  topicIdForDocumentation: number;
+  topicDocumentation: TopicDocumentationMarkdown;
+};
+async function updateTopicDocumentation({
+  topicName,
+  topicIdForDocumentation,
+  topicDocumentation,
+}: UpdateTopicDocumentation) {
+  const stringifiedHtml = await createStringifiedHtml(topicDocumentation);
+
+  // @ TODO
+  // KlawApiRequest<"saveTopicDocumentation"> currently
+  // lists too many props as required, only the three we're
+  // passing are needed and used in Angular, too.
+  // BE is working on that. We still need to use our
+  // own typing for stringifiedHtml to make sure we
+  // get a certain type safety up until this point
+  const requestBody: {
+    topicName: string;
+    topicid: number;
+    documentation: StringifiedHtml;
+  } = {
+    topicName,
+    topicid: topicIdForDocumentation,
+    documentation: stringifiedHtml,
+  };
+
+  return api.post<
+    KlawApiResponse<"saveTopicDocumentation">,
+    KlawApiRequest<"saveTopicDocumentation">
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+  >(API_PATHS.saveTopicDocumentation, requestBody);
+}
+
 export {
   getTopics,
   getTopicNames,
@@ -281,4 +323,5 @@ export {
   getTopicMessages,
   getSchemaOfTopic,
   deleteTopic,
+  updateTopicDocumentation,
 };

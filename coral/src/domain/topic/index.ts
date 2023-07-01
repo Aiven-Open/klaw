@@ -3,6 +3,7 @@ import {
   getTopics,
   getTopicTeam,
   deleteTopic,
+  updateTopicDocumentation,
 } from "src/domain/topic/topic-api";
 import {
   Topic,
@@ -13,6 +14,7 @@ import {
   TopicRequest,
   TopicOverview,
   DeleteTopicPayload,
+  TopicDocumentationMarkdown,
 } from "src/domain/topic/topic-types";
 
 export type {
@@ -24,5 +26,12 @@ export type {
   TopicRequestStatus,
   TopicOverview,
   DeleteTopicPayload,
+  TopicDocumentationMarkdown,
 };
-export { getTopics, getTopicNames, getTopicTeam, deleteTopic };
+export {
+  getTopics,
+  getTopicNames,
+  getTopicTeam,
+  deleteTopic,
+  updateTopicDocumentation,
+};

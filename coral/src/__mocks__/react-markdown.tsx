@@ -1,6 +1,4 @@
-jest.mock("rehype-raw");
-// jest.mock("hast-util-raw");
-
+//ReactMarkdown users ES modules that jest still does not support well
 function ReactMarkdown({ children }: { children: string }) {
   return <div data-testid={"react-markdown-mock"}>{children}</div>;
 }
