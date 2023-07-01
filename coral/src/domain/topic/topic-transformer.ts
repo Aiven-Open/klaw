@@ -6,6 +6,7 @@ import {
 } from "src/domain/topic/topic-types";
 import { KlawApiResponse } from "types/utils";
 import omit from "lodash/omit";
+import { createMarkdown } from "src/domain/helper/documentation-helper";
 
 // @TODO check zod for this!
 function transformTopicApiResponse(
@@ -169,12 +170,27 @@ function transformGetTopicRequestsResponse(
   };
 }
 
-function transformTopicOverviewResponse(
+async function transformTopicOverviewResponse(
   apiResponse: KlawApiResponse<"getTopicOverview">
-): TopicOverview {
+): Promise<TopicOverview> {
+  // while we save documentation in stringified html to be
+  // backwards compatible with the Angular app for now,
+  // we're planing to migrate to pure Markdown at some
+  // point and don't want stringfied html to bleed into
+  // an area outside from `/domain`
+
+  let documentation;
+  if (
+    apiResponse.topicDocumentation &&
+    apiResponse.topicDocumentation.trim().length > 0
+  ) {
+    documentation = await createMarkdown(apiResponse.topicDocumentation);
+  }
+
   return {
     ...omit(apiResponse, ["topicInfoList"]),
     topicInfo: apiResponse.topicInfoList[0],
+    topicDocumentation: documentation,
   };
 }
 

@@ -1,16 +1,19 @@
 import {
-  transformGetTopicAdvancedConfigOptionsResponse,
-  transformGetTopicRequestsResponse,
-  transformTopicApiResponse,
-  transformTopicOverviewResponse,
-} from "src/domain/topic/topic-transformer";
-import {
   Topic,
   TopicApiResponse,
   TopicRequestApiResponse,
   TopicRequest,
   TopicOverview,
+  TopicDocumentationMarkdown,
 } from "src/domain/topic/topic-types";
+
+import {
+  transformGetTopicAdvancedConfigOptionsResponse,
+  transformGetTopicRequestsResponse,
+  transformTopicApiResponse,
+  transformTopicOverviewResponse,
+} from "src/domain/topic/topic-transformer";
+import "src/services/test-utils/mock-documenation-helper";
 import {
   baseTestObjectMockedTopic,
   createMockTopicApiResponse,
@@ -189,7 +192,7 @@ describe("topic-transformer.ts", () => {
   });
 
   describe("transformTopicOverviewResponse", () => {
-    it("transforms topic overview from backend with only required properties", () => {
+    it("transforms topic overview from backend with only required properties", async () => {
       const mockedResponse: KlawApiResponse<"getTopicOverview"> = {
         topicExists: false,
         schemaExists: false,
@@ -218,8 +221,9 @@ describe("topic-transformer.ts", () => {
         topicIdForDocumentation: 1,
       };
 
-      const transformedResponse =
-        transformTopicOverviewResponse(mockedResponse);
+      const transformedResponse = await transformTopicOverviewResponse(
+        mockedResponse
+      );
 
       const result: TopicOverview = {
         availableEnvironments: [],
@@ -250,7 +254,7 @@ describe("topic-transformer.ts", () => {
       expect(transformedResponse).toEqual(result);
     });
 
-    it("transforms topic overview from backend with all properties", () => {
+    it("transforms topic overview from backend with all properties", async () => {
       const mockedResponse: KlawApiResponse<"getTopicOverview"> = {
         topicExists: false,
         schemaExists: false,
@@ -333,8 +337,9 @@ describe("topic-transformer.ts", () => {
         ],
       };
 
-      const transformedResponse =
-        transformTopicOverviewResponse(mockedResponse);
+      const transformedResponse = await transformTopicOverviewResponse(
+        mockedResponse
+      );
 
       const result: TopicOverview = {
         availableEnvironments: [],
@@ -402,7 +407,8 @@ describe("topic-transformer.ts", () => {
             topictype: "test",
           },
         ],
-        topicDocumentation: "This is the documentation",
+        topicDocumentation:
+          "create-markdown-mock-This is the documentation" as TopicDocumentationMarkdown,
         topicHistoryList: [
           {
             approvedBy: "them",
