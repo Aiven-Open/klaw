@@ -5,10 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withRawStatus;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withResourceNotFound;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,11 +14,7 @@ import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
 import io.aiven.klaw.clusterapi.models.SchemaInfoOfTopic;
 import io.aiven.klaw.clusterapi.models.SchemasInfoOfClusterResponse;
-import io.aiven.klaw.clusterapi.models.enums.AclsNativeType;
-import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
-import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
-import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
-import io.aiven.klaw.clusterapi.models.enums.SchemaCacheUpdateType;
+import io.aiven.klaw.clusterapi.models.enums.*;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -38,6 +32,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -472,6 +467,49 @@ class SchemaServiceTest {
         schemaService.loadAllSchemasInfoFromCluster(
             dev, KafkaSupportedProtocol.PLAINTEXT, "20", false, SchemaCacheUpdateType.NONE, null);
     assertThat(schemasInfoOfClusterResponse.getSchemaInfoOfTopicList().size()).isEqualTo(0);
+  }
+
+  @Test
+  @Order(13)
+  public void getSchemaRegistryStatusClusterStatusOnline() throws JsonProcessingException {
+    String environmentVal = "ENVIRONMENT";
+    KafkaSupportedProtocol protocol = KafkaSupportedProtocol.PLAINTEXT;
+    String clusterIdentification = "CLUSTER";
+    String suffixUrl = environmentVal + "/" + "subjects";
+    String url = "http://" + suffixUrl;
+
+    when(getAdminClient.getRequestDetails(suffixUrl, protocol)).thenReturn(Pair.of(url, restTemplate));
+    this.mockRestServiceServer
+            .expect(requestTo(url))
+            .andRespond(
+                    withSuccess(
+                            objectMapper.writeValueAsString(Object.class),
+                            MediaType.APPLICATION_JSON));
+
+    ClusterStatus actual = schemaService.getSchemaRegistryStatus(environmentVal, protocol, clusterIdentification);
+    ClusterStatus expected = ClusterStatus.ONLINE;
+
+    Assertions.assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  @Order(14)
+  public void getSchemaRegistryStatusClusterStatusOffline() throws JsonProcessingException {
+    String environmentVal = "ENVIRONMENT";
+    KafkaSupportedProtocol protocol = KafkaSupportedProtocol.PLAINTEXT;
+    String clusterIdentification = "CLUSTER";
+    String suffixUrl = environmentVal + "/" + "subjects";
+    String url = "http://" + suffixUrl;
+
+    when(getAdminClient.getRequestDetails(suffixUrl, protocol)).thenReturn(Pair.of(url, restTemplate));
+    this.mockRestServiceServer
+            .expect(requestTo(url))
+            .andRespond(withUnauthorizedRequest());
+
+    ClusterStatus actual = schemaService.getSchemaRegistryStatus(environmentVal, protocol, clusterIdentification);
+    ClusterStatus expected = ClusterStatus.OFFLINE;
+
+    Assertions.assertThat(actual).isEqualTo(expected);
   }
 
   private static ClusterTopicRequest deleteTopicRequest(String topicName) {
