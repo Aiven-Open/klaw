@@ -655,21 +655,6 @@ public class EnvsClustersTenantsControllerService {
       if (validateConnectedClusters(newEnv, kafkaClusterIds, schemaClusterIds)) {
         return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_110).build();
       }
-
-      List<Env> kafkaConnectEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
-      List<Integer> idListInts = new ArrayList<>();
-
-      kafkaEnvs.forEach(a -> idListInts.add(Integer.valueOf(a.getId())));
-      schemaEnvs.forEach(a -> idListInts.add(Integer.valueOf(a.getId())));
-      kafkaConnectEnvs.forEach(a -> idListInts.add(Integer.valueOf(a.getId())));
-
-      Optional<Integer> updatedList = idListInts.stream().max(Comparator.naturalOrder());
-      if (updatedList.isPresent()) {
-        int nextId = updatedList.get() + 1;
-        newEnv.setId(String.valueOf(nextId));
-      } else {
-        newEnv.setId("1");
-      }
     } else {
       // modify env
       envActualList =

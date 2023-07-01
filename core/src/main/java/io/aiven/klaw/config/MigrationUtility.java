@@ -41,7 +41,7 @@ public class MigrationUtility {
   @Autowired private ApplicationContext context;
 
   @SchedulerLock(
-      name = "TaskScheduler_MigrationUtility",
+      name = "TaskScheduler_MigrationUtility10",
       lockAtLeastFor = "${klaw.shedlock.lockAtLeastFor:PT30M}",
       lockAtMostFor = "${klaw.shedlock.lockAtMostFor:PT60M}")
   public void startMigration() throws Exception {
