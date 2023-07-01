@@ -46,14 +46,28 @@ class SchemaServiceTest {
 
   public static final String TOPIC_GET_VERSIONS_URI_TEMPLATE =
       "/subjects/{topic_name}-value/versions";
-
-  private ObjectMapper mapper = new ObjectMapper();
   @Autowired SchemaService schemaService;
-
   RestTemplate restTemplate;
   @Autowired ObjectMapper objectMapper;
+  private ObjectMapper mapper = new ObjectMapper();
   private MockRestServiceServer mockRestServiceServer;
   @MockBean private ClusterApiUtils getAdminClient;
+
+  private static ClusterTopicRequest deleteTopicRequest(String topicName) {
+    return ClusterTopicRequest.builder()
+        .clusterName("DEV2")
+        .topicName(topicName)
+        .env("bootStrapServersSsl")
+        .protocol(KafkaSupportedProtocol.SSL)
+        .partitions(1)
+        .replicationFactor(Short.parseShort("1"))
+        .aclsNativeType(AclsNativeType.NATIVE)
+        .deleteAssociatedSchema(true)
+        .schemaClusterIdentification("DEV3")
+        .schemaEnv("schemaservers")
+        .schemaEnvProtocol(KafkaSupportedProtocol.SSL)
+        .build();
+  }
 
   @BeforeEach
   public void setUp() {
@@ -510,21 +524,5 @@ class SchemaServiceTest {
     ClusterStatus expected = ClusterStatus.OFFLINE;
 
     Assertions.assertThat(actual).isEqualTo(expected);
-  }
-
-  private static ClusterTopicRequest deleteTopicRequest(String topicName) {
-    return ClusterTopicRequest.builder()
-        .clusterName("DEV2")
-        .topicName(topicName)
-        .env("bootStrapServersSsl")
-        .protocol(KafkaSupportedProtocol.SSL)
-        .partitions(1)
-        .replicationFactor(Short.parseShort("1"))
-        .aclsNativeType(AclsNativeType.NATIVE)
-        .deleteAssociatedSchema(true)
-        .schemaClusterIdentification("DEV3")
-        .schemaEnv("schemaservers")
-        .schemaEnvProtocol(KafkaSupportedProtocol.SSL)
-        .build();
   }
 }

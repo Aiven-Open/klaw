@@ -43,10 +43,9 @@ public class ConfluentCloudApiServiceTest {
       "/kafka/v3/clusters/cluster-id/acls";
   public static final String CLUSTER_ID = "CC_DEV1";
   ConfluentCloudApiService confluentCloudApiService;
-  @Mock private Environment env;
-
   @Mock RestTemplate restTemplate;
   @Mock ClusterApiUtils clusterApiUtils;
+  @Mock private Environment env;
   private UtilMethods utilMethods;
 
   @BeforeEach

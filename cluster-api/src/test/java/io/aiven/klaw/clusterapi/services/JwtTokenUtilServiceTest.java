@@ -18,9 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class JwtTokenUtilServiceTest {
-    JwtTokenUtilService jwtTokenUtilService;
     private final String clusterApiSecret = "dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==";
     private final byte[] decodedSecret = Base64.decodeBase64(clusterApiSecret);
+    JwtTokenUtilService jwtTokenUtilService;
 
     @BeforeEach
     public void setUp() {

@@ -25,49 +25,45 @@ import static org.mockito.ArgumentMatchers.anyString;
 @ExtendWith(MockitoExtension.class)
 class MetricsApiServiceTest {
 
-    @Mock
-    private MetricsUtils metricsUtils;
-    @Mock
-    private JMXConnector jmxConnector;
-    @Mock
-    private MBeanServerConnection mBeanServerConnection;
-    @Mock
-    private MBeanInfo mBeanInfo;
-    @InjectMocks
-    private MetricsApiService metricsApiService;
+  @Mock private MetricsUtils metricsUtils;
+  @Mock private JMXConnector jmxConnector;
+  @Mock private MBeanServerConnection mBeanServerConnection;
+  @Mock private MBeanInfo mBeanInfo;
+  @InjectMocks private MetricsApiService metricsApiService;
 
-    @Test
-    void getMetrics() throws Exception {
-        String jmxUrl = "service:jmx:rmi:///jndi/rmi://localhost:9996/jmxrmi";
-        String objectName = "kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec";
-        MBeanAttributeInfo mBeanAttributeInfo = new MBeanAttributeInfo("name", "type", "description", true, true, false);
-        MBeanAttributeInfo[] attributes = new MBeanAttributeInfo[1];
-        attributes[0] = mBeanAttributeInfo;
+  @Test
+  void getMetrics() throws Exception {
+    String jmxUrl = "service:jmx:rmi:///jndi/rmi://localhost:9996/jmxrmi";
+    String objectName = "kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec";
+    MBeanAttributeInfo mBeanAttributeInfo =
+        new MBeanAttributeInfo("name", "type", "description", true, true, false);
+    MBeanAttributeInfo[] attributes = new MBeanAttributeInfo[1];
+    attributes[0] = mBeanAttributeInfo;
 
-        Mockito.when(metricsUtils.getJmxConnector(jmxUrl)).thenReturn(jmxConnector);
-        Mockito.when(jmxConnector.getMBeanServerConnection()).thenReturn(mBeanServerConnection);
-        Mockito.when(mBeanServerConnection.getMBeanInfo(any(ObjectName.class))).thenReturn(mBeanInfo);
-        Mockito.when(mBeanInfo.getAttributes()).thenReturn(attributes);
-        Mockito.when(mBeanServerConnection.getAttribute(any(ObjectName.class), anyString())).thenReturn("attribute");
+    Mockito.when(metricsUtils.getJmxConnector(jmxUrl)).thenReturn(jmxConnector);
+    Mockito.when(jmxConnector.getMBeanServerConnection()).thenReturn(mBeanServerConnection);
+    Mockito.when(mBeanServerConnection.getMBeanInfo(any(ObjectName.class))).thenReturn(mBeanInfo);
+    Mockito.when(mBeanInfo.getAttributes()).thenReturn(attributes);
+    Mockito.when(mBeanServerConnection.getAttribute(any(ObjectName.class), anyString()))
+        .thenReturn("attribute");
 
-        Map<String, String> actual = metricsApiService.getMetrics(jmxUrl, objectName);
-        Map<String, String> expected = Map.of("name", "attribute");
+    Map<String, String> actual = metricsApiService.getMetrics(jmxUrl, objectName);
+    Map<String, String> expected = Map.of("name", "attribute");
 
-        Assertions.assertThat(actual).isEqualTo(expected);
-    }
+    Assertions.assertThat(actual).isEqualTo(expected);
+  }
 
-    @Test
-    void getMetrics_Failure() throws Exception {
-        String jmxUrl = "service:jmx:rmi:///jndi/rmi://localhost:9996/jmxrmi";
-        String objectName = "kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec";
-        Exception expected = new Exception("Error while getting metrics.");
+  @Test
+  void getMetrics_Failure() throws Exception {
+    String jmxUrl = "service:jmx:rmi:///jndi/rmi://localhost:9996/jmxrmi";
+    String objectName = "kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec";
+    Exception expected = new Exception("Error while getting metrics.");
 
-        Mockito.when(metricsUtils.getJmxConnector(jmxUrl)).thenThrow(expected);
+    Mockito.when(metricsUtils.getJmxConnector(jmxUrl)).thenThrow(expected);
 
-        AbstractThrowableAssert<?, ? extends Throwable> exception =
-                assertThatThrownBy(() -> metricsApiService.getMetrics(jmxUrl, objectName));
+    AbstractThrowableAssert<?, ? extends Throwable> exception =
+        assertThatThrownBy(() -> metricsApiService.getMetrics(jmxUrl, objectName));
 
-        exception.isEqualTo(expected);
-    }
-
+    exception.isEqualTo(expected);
+  }
 }

@@ -45,7 +45,9 @@ public class UtilComponentsServiceTest {
 
   @BeforeEach
   public void setUp() {
-    utilComponentsService = new UtilComponentsService(env, clusterApiUtils, schemaService, kafkaConnectService, confluentCloudApiService);
+    utilComponentsService =
+        new UtilComponentsService(
+            env, clusterApiUtils, schemaService, kafkaConnectService, confluentCloudApiService);
   }
 
   @Test
@@ -57,30 +59,34 @@ public class UtilComponentsServiceTest {
     String kafkaFlavor = "Confluent Cloud";
 
     ClusterStatus result =
-            utilComponentsService.getStatus(
-                    environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
+        utilComponentsService.getStatus(
+            environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
 
     assertThat(result).isSameAs(ClusterStatus.ONLINE);
   }
 
   @Test
-  public void getStatus_ClusterTypeKafkaAndKafkaFlavorNotConfluentCloudAndClientNotNull() throws Exception {
+  public void getStatus_ClusterTypeKafkaAndKafkaFlavorNotConfluentCloudAndClientNotNull()
+      throws Exception {
     String environment = "ENVIRONMENT";
     KafkaSupportedProtocol protocol = KafkaSupportedProtocol.PLAINTEXT;
     String clusterIdentification = "CLUSTER_IDENTIFICATION";
     String clusterType = "kafka";
     String kafkaFlavor = "Apache Kafka";
 
-    Mockito.when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
-            .thenReturn(adminClient);
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+        .thenReturn(adminClient);
     ClusterStatus result =
-            utilComponentsService.getStatus(
-                    environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
+        utilComponentsService.getStatus(
+            environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
     assertThat(result).isSameAs(ClusterStatus.ONLINE);
   }
 
   @Test
-  public void getStatus_ClusterTypeKafkaAndKafkaFlavorNotConfluentCloudAndClientNull() throws Exception {
+  public void getStatus_ClusterTypeKafkaAndKafkaFlavorNotConfluentCloudAndClientNull()
+      throws Exception {
     String environment = "ENVIRONMENT";
     KafkaSupportedProtocol protocol = KafkaSupportedProtocol.PLAINTEXT;
     String clusterIdentification = "CLUSTER_IDENTIFICATION";
@@ -88,8 +94,8 @@ public class UtilComponentsServiceTest {
     String kafkaFlavor = "Apache Kafka";
 
     ClusterStatus result =
-            utilComponentsService.getStatus(
-                    environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
+        utilComponentsService.getStatus(
+            environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
 
     assertThat(result).isSameAs(ClusterStatus.OFFLINE);
   }
@@ -102,12 +108,14 @@ public class UtilComponentsServiceTest {
     String clusterType = "kafka";
     String kafkaFlavor = "Apache Kafka";
 
-    Mockito.when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
-            .thenThrow(new Exception("error occured"));
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
+        .thenThrow(new Exception("error occured"));
 
     ClusterStatus result =
-            utilComponentsService.getStatus(
-                    environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
+        utilComponentsService.getStatus(
+            environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
 
     assertThat(result).isSameAs(ClusterStatus.OFFLINE);
   }
@@ -121,8 +129,8 @@ public class UtilComponentsServiceTest {
     String kafkaFlavor = "Confluent Cloud";
 
     ClusterStatus result =
-            utilComponentsService.getStatus(
-                    environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
+        utilComponentsService.getStatus(
+            environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
 
     assertThat(result).isSameAs(ClusterStatus.OFFLINE);
   }
@@ -135,11 +143,13 @@ public class UtilComponentsServiceTest {
     String clusterType = "schemaregistry";
     String kafkaFlavor = "Apache Kafka";
 
-    Mockito.when(schemaService.getSchemaRegistryStatus(environment, protocol, clusterIdentification)).thenReturn(ClusterStatus.ONLINE);
+    Mockito.when(
+            schemaService.getSchemaRegistryStatus(environment, protocol, clusterIdentification))
+        .thenReturn(ClusterStatus.ONLINE);
 
     ClusterStatus result =
         utilComponentsService.getStatus(
-                environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
+            environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
 
     assertThat(result).isSameAs(ClusterStatus.ONLINE);
   }
@@ -152,11 +162,13 @@ public class UtilComponentsServiceTest {
     String clusterType = "kafkaconnect";
     String kafkaFlavor = "Apache Kafka";
 
-    Mockito.when(kafkaConnectService.getKafkaConnectStatus(environment, protocol, clusterIdentification)).thenReturn(ClusterStatus.ONLINE);
+    Mockito.when(
+            kafkaConnectService.getKafkaConnectStatus(environment, protocol, clusterIdentification))
+        .thenReturn(ClusterStatus.ONLINE);
 
     ClusterStatus result =
-            utilComponentsService.getStatus(
-                    environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
+        utilComponentsService.getStatus(
+            environment, protocol, clusterIdentification, clusterType, kafkaFlavor);
 
     assertThat(result).isSameAs(ClusterStatus.ONLINE);
   }

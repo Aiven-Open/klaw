@@ -51,10 +51,9 @@ class SchemaServiceRegisterSchemaTest {
   public static final String REGISTRY_URL = "https:registryEtc";
   public static final String COMPATIBILITY_NODE_KEY = "compatibility";
   SchemaService schemaService;
-
+  @Captor ArgumentCaptor<HttpEntity<Map<String, String>>> schemaCompatibility;
   @Mock private RestTemplate restTemplate;
   @Mock private ClusterApiUtils clusterApiUtil;
-  @Captor ArgumentCaptor<HttpEntity<Map<String, String>>> schemaCompatibility;
   private UtilMethods utilMethods;
 
   @BeforeEach

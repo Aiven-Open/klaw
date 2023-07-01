@@ -48,6 +48,18 @@ class ApacheKafkaTopicServiceTest {
     @Mock private CreateTopicsResult createTopicsResult;
     @Mock private DeleteTopicsResult deleteTopicsResult;
 
+    private static Stream<Exception> exceptionProviderForCreateTopic() {
+        return Stream.of(new RuntimeException(), new NumberFormatException(),
+                new KafkaException(), new InterruptedException(),
+                new ExecutionException(new RuntimeException()));
+    }
+
+    private static Stream<Exception> exceptionProviderForDeleteTopic() {
+        return Stream.of(new RuntimeException(""), new KafkaException(""),
+                new InterruptedException(""),
+                new ExecutionException(new RuntimeException("")));
+    }
+
     @BeforeEach
     void setUp() {
         apacheKafkaTopicService = new ApacheKafkaTopicService(clusterApiUtils, schemaService);
@@ -237,12 +249,6 @@ class ApacheKafkaTopicServiceTest {
         exception.isEqualTo(expected);
     }
 
-    private static Stream<Exception> exceptionProviderForCreateTopic() {
-        return Stream.of(new RuntimeException(), new NumberFormatException(),
-                new KafkaException(), new InterruptedException(),
-                new ExecutionException(new RuntimeException()));
-    }
-
     @Test
     void updateTopicClientNull() throws Exception {
         String environment = "ENVIRONMENT";
@@ -405,11 +411,5 @@ class ApacheKafkaTopicServiceTest {
         AbstractThrowableAssert<?, ? extends Throwable> exception =
                 assertThatThrownBy(() -> apacheKafkaTopicService.deleteTopic(clusterTopicRequest));
         exception.isEqualTo(expected);
-    }
-
-    private static Stream<Exception> exceptionProviderForDeleteTopic() {
-        return Stream.of(new RuntimeException(""), new KafkaException(""),
-                new InterruptedException(""),
-                new ExecutionException(new RuntimeException("")));
     }
 }

@@ -261,7 +261,8 @@ public class AivenApiServiceTest {
     Map<String, String> aclMap6 = Map.of("topic", "TOPIC");
     Map<String, String> aclMap7 = Map.of("username", "USERNAME");
 
-    List<Map<String, String>> aclList = List.of(aclMap1, aclMap2, aclMap3, aclMap4, aclMap5, aclMap6, aclMap7);
+    List<Map<String, String>> aclList =
+        List.of(aclMap1, aclMap2, aclMap3, aclMap4, aclMap5, aclMap6, aclMap7);
 
     Map<String, List<Map<String, String>>> aclsResp = Map.of("acl", aclList);
 
@@ -282,17 +283,17 @@ public class AivenApiServiceTest {
   @Test
   public void listAclsFailure() throws Exception {
     String getAclsUrl =
-            "https://api.aiven.io/v1/project/" + "testproject" + "/service/" + "testservice" + "/acl";
+        "https://api.aiven.io/v1/project/" + "testproject" + "/service/" + "testservice" + "/acl";
 
     when(restTemplate.exchange(
             eq(getAclsUrl),
             eq(HttpMethod.GET),
             any(),
             (ParameterizedTypeReference<Map<String, List<Map<String, String>>>>) any()))
-            .thenThrow(new RestClientException(""));
+        .thenThrow(new RestClientException(""));
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
-            assertThatThrownBy(() -> aivenApiService.listAcls("testproject", "testservice"));
+        assertThatThrownBy(() -> aivenApiService.listAcls("testproject", "testservice"));
     exception.isInstanceOf(Exception.class);
     exception.hasMessage("Error in listing acls : ");
   }
@@ -317,28 +318,25 @@ public class AivenApiServiceTest {
   public void deleteAclsTestFailure() throws Exception {
     // TODO when, asserts
     ClusterAclRequest clusterAclRequest =
-            ClusterAclRequest.builder()
-                    .aivenAclKey("4322342")
-                    .projectName("testproject")
-                    .serviceName("serviceName")
-                    .build();
+        ClusterAclRequest.builder()
+            .aivenAclKey("4322342")
+            .projectName("testproject")
+            .serviceName("serviceName")
+            .build();
     String aclsUrl =
-            "https://api.aiven.io/v1/project/"
-                    + clusterAclRequest.getProjectName()
-                    + "/service/"
-                    + clusterAclRequest.getServiceName()
-                    + "/acl/"
-                    + clusterAclRequest.getAivenAclKey();
+        "https://api.aiven.io/v1/project/"
+            + clusterAclRequest.getProjectName()
+            + "/service/"
+            + clusterAclRequest.getServiceName()
+            + "/acl/"
+            + clusterAclRequest.getAivenAclKey();
     when(restTemplate.exchange(
-            eq(aclsUrl),
-            eq(HttpMethod.DELETE),
-            any(HttpEntity.class), any(Class.class)))
-            .thenThrow(new RuntimeException(""));
+            eq(aclsUrl), eq(HttpMethod.DELETE), any(HttpEntity.class), any(Class.class)))
+        .thenThrow(new RuntimeException(""));
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
-            assertThatThrownBy(() -> aivenApiService.deleteAcls(clusterAclRequest));
+        assertThatThrownBy(() -> aivenApiService.deleteAcls(clusterAclRequest));
     exception.isInstanceOf(Exception.class);
     exception.hasMessage("Error in deleting acls ");
   }
-
 }
