@@ -108,7 +108,7 @@ function TopicPromotionRequest() {
       ) {
         form.setValue(
           "advancedConfiguration",
-          String(
+          JSON.stringify(
             topicDetailsForSourceEnv.topicContents.advancedTopicConfiguration
           )
         );
