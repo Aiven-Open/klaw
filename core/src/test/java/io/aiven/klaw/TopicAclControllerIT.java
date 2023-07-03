@@ -1222,7 +1222,7 @@ public class TopicAclControllerIT {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
     schemaRequest.setTopicname(topicName + topicId1);
     schemaRequest.setRequestor(user1);
-    schemaRequest.setEnvironment("4"); // Schema reg env
+    schemaRequest.setEnvironment("3"); // Schema reg env
     schemaRequest.setSchemafull(
         "{\n"
             + "   \"type\" : \"record\",\n"

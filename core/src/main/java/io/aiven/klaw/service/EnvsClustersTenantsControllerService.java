@@ -654,6 +654,14 @@ public class EnvsClustersTenantsControllerService {
       if (validateConnectedClusters(newEnv, kafkaClusterIds, schemaClusterIds)) {
         return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_110).build();
       }
+      Integer id =
+          manageDatabase
+              .getHandleDbRequests()
+              .getNextSeqIdAndUpdate(EntityType.ENVIRONMENT.name(), tenantId);
+      if (id == null) {
+        id = 1;
+      }
+      newEnv.setId(String.valueOf(id));
     } else {
       // modify env
       envActualList =

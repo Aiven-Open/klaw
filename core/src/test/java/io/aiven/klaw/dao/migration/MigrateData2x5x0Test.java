@@ -44,11 +44,11 @@ class MigrateData2x5x0Test {
 
     boolean success = migrateData2x5x0.migrate();
     verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(101), eq(101));
+        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(1), eq(101));
     verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(101), eq(101));
+        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(1), eq(101));
     verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(101), eq(101));
+        .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1001), eq(101));
     assertThat(success).isTrue();
   }
 
@@ -56,15 +56,15 @@ class MigrateData2x5x0Test {
   public void addSequencesWhenDataAvailable() {
     when(selectDataJdbc.getDataFromKwEntitySequences()).thenReturn(0L);
     when(selectDataJdbc.getTenants()).thenReturn(utilMethods.getTenants());
-    when(selectDataJdbc.getNextClusterId(anyInt())).thenReturn(101);
-    when(selectDataJdbc.getNextEnvId(anyInt())).thenReturn(102);
+    when(selectDataJdbc.getNextClusterId(anyInt())).thenReturn(1);
+    when(selectDataJdbc.getNextEnvId(anyInt())).thenReturn(2);
     when(selectDataJdbc.getNextTeamId(anyInt())).thenReturn(1003);
 
     boolean success = migrateData2x5x0.migrate();
     verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(102), eq(101));
+        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(2), eq(101));
     verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(103), eq(101));
+        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(3), eq(101));
     verify(insertDataJdbc, times(1))
         .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1004), eq(101));
     assertThat(success).isTrue();
@@ -80,9 +80,9 @@ class MigrateData2x5x0Test {
 
     boolean success = migrateData2x5x0.migrate();
     verify(insertDataJdbc, times(0))
-        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(102), eq(101));
+        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(2), eq(101));
     verify(insertDataJdbc, times(0))
-        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(103), eq(101));
+        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(3), eq(101));
     verify(insertDataJdbc, times(0))
         .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1004), eq(101));
     assertThat(success).isTrue();
@@ -93,15 +93,15 @@ class MigrateData2x5x0Test {
     when(selectDataJdbc.getDataFromKwEntitySequences())
         .thenReturn(2L); // only 2 recs found instead of 3 (CLUSTER, ENV, TEAM)
     when(selectDataJdbc.getTenants()).thenReturn(utilMethods.getTenants());
-    when(selectDataJdbc.getNextClusterId(anyInt())).thenReturn(101);
-    when(selectDataJdbc.getNextEnvId(anyInt())).thenReturn(102);
+    when(selectDataJdbc.getNextClusterId(anyInt())).thenReturn(1);
+    when(selectDataJdbc.getNextEnvId(anyInt())).thenReturn(2);
     when(selectDataJdbc.getNextTeamId(anyInt())).thenReturn(1003);
 
     boolean success = migrateData2x5x0.migrate();
     verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(102), eq(101));
+        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(2), eq(101));
     verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(103), eq(101));
+        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(3), eq(101));
     verify(insertDataJdbc, times(1))
         .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1004), eq(101));
     assertThat(success).isTrue();

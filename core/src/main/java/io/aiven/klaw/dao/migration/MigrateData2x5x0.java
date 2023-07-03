@@ -30,7 +30,7 @@ public class MigrateData2x5x0 {
     log.info("Start to migrate 2.5.0 data. Update sequences.");
 
     List<KwTenants> tenantsList = selectDataJdbc.getTenants();
-    int defaultStartingSequence = 101;
+    int defaultStartingSequence = 1;
 
     if ((tenantsList.size() * 3L) == selectDataJdbc.getDataFromKwEntitySequences()) {
       // Sequences already updated. Nothing to do.
@@ -40,15 +40,15 @@ public class MigrateData2x5x0 {
     for (KwTenants kwTenants : tenantsList) {
       int tenantId = kwTenants.getTenantId();
       Integer lastId = selectDataJdbc.getNextClusterId(tenantId);
-      lastId = getNextId(defaultStartingSequence, lastId);
+      lastId = getNextId(1, lastId);
       insertDataJdbc.insertIntoKwEntitySequence(EntityType.CLUSTER.name(), lastId, tenantId);
 
       lastId = selectDataJdbc.getNextEnvId(tenantId);
-      lastId = getNextId(defaultStartingSequence, lastId);
+      lastId = getNextId(1, lastId);
       insertDataJdbc.insertIntoKwEntitySequence(EntityType.ENVIRONMENT.name(), lastId, tenantId);
 
       lastId = selectDataJdbc.getNextTeamId(tenantId);
-      lastId = getNextId(defaultStartingSequence, lastId);
+      lastId = getNextId(1001, lastId);
       insertDataJdbc.insertIntoKwEntitySequence(EntityType.TEAM.name(), lastId, tenantId);
     }
 

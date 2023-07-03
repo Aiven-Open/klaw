@@ -312,7 +312,11 @@ public class InsertDataJdbc {
 
   public String insertIntoTeams(Team team) {
     log.debug("insertIntoTeams {}", team.getTeamname());
-    int teamId = getNextSeqIdAndUpdate(EntityType.TEAM.name(), team.getTenantId());
+    Integer teamId = getNextSeqIdAndUpdate(EntityType.TEAM.name(), team.getTenantId());
+    if (teamId == null) { // check for INFRATEAM, STAGINTEAM
+      teamId = 1001;
+      insertIntoKwEntitySequence(EntityType.TEAM.name(), teamId + 1, team.getTenantId());
+    }
     TeamID teamID = new TeamID(teamId, team.getTenantId());
     team.setTeamId(teamId);
 
@@ -324,6 +328,15 @@ public class InsertDataJdbc {
     team.setApp("");
     teamRepo.save(team);
     return ApiResultStatus.SUCCESS.value;
+  }
+
+  public Integer getNextTeamId(int tenantId) {
+    Integer teamId = teamRepo.getNextTeamId(tenantId);
+    if (teamId == null) {
+      return 1001;
+    } else {
+      return teamId + 1;
+    }
   }
 
   public String addNewEnv(Env env) {
@@ -363,9 +376,13 @@ public class InsertDataJdbc {
   public Integer getNextSeqIdAndUpdate(String entityName, int tenantId) {
     List<KwEntitySequence> kwEntitySequenceList =
         kwEntitySequenceRepo.findAllByEntityNameAndTenantId(entityName, tenantId);
-    Integer lastId = kwEntitySequenceList.get(0).getSeqId();
-    insertIntoKwEntitySequence(entityName, lastId + 1, tenantId);
-    return lastId;
+    if (!kwEntitySequenceList.isEmpty()) {
+      Integer lastId = kwEntitySequenceList.get(0).getSeqId();
+      insertIntoKwEntitySequence(entityName, lastId + 1, tenantId);
+      return lastId;
+    } else {
+      return null;
+    }
   }
 
   public String insertIntoRegisterUsers(RegisterUserInfo userInfo) {

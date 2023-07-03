@@ -20,6 +20,7 @@ import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvParams;
@@ -139,11 +140,13 @@ class EnvsClustersTenantsControllerServiceTest {
         .thenReturn(SchemaEnv);
     when(handleDbRequestsJdbc.getEnvDetails(eq("2"), eq(101)))
         .thenReturn(generateKafkaEnv("2", "Kafka"));
+    when(handleDbRequestsJdbc.getNextSeqIdAndUpdate(eq(EntityType.ENVIRONMENT.name()), eq(101)))
+        .thenReturn(1);
     ApiResponse response = service.addNewEnv(env);
     kafkaEnv.setAssociatedEnv(env.getAssociatedEnv());
     verify(handleDbRequestsJdbc, times(1)).addNewEnv(eq(kafkaEnv));
     // 1 for saving the schema env 1 for updating the kafka env 1 for updating previous kafka env
-    verify(handleDbRequestsJdbc, times(2)).addNewEnv(any(Env.class));
+    verify(handleDbRequestsJdbc, times(3)).addNewEnv(any(Env.class));
     assertThat(response.getMessage()).contains("success");
   }
 
@@ -200,11 +203,13 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.getEnvDetails(eq("2"), eq(101)))
         .thenReturn(generateKafkaEnv("2", "Kafka"));
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequestsJdbc.getNextSeqIdAndUpdate(eq(EntityType.ENVIRONMENT.name()), eq(101)))
+        .thenReturn(1);
     ApiResponse response = service.addNewEnv(env);
 
     assertThat(response.getMessage()).contains("success");
     // 1 time for the env we are saving and 1 time for removing an existing mapping of a kafka env.
-    verify(handleDbRequestsJdbc, times(1)).addNewEnv(any(Env.class));
+    verify(handleDbRequestsJdbc, times(2)).addNewEnv(any(Env.class));
   }
 
   private static Env generateKafkaEnv(String id, String Kafka) {
