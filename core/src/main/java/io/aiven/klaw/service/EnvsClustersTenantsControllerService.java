@@ -658,9 +658,6 @@ public class EnvsClustersTenantsControllerService {
           manageDatabase
               .getHandleDbRequests()
               .getNextSeqIdAndUpdate(EntityType.ENVIRONMENT.name(), tenantId);
-      if (id == null) {
-        id = 1;
-      }
       newEnv.setId(String.valueOf(id));
     } else {
       // modify env

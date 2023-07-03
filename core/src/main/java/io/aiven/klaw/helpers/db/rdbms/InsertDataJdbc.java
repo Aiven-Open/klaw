@@ -381,6 +381,7 @@ public class InsertDataJdbc {
       insertIntoKwEntitySequence(entityName, lastId + 1, tenantId);
       return lastId;
     } else {
+      // only for entityName TEAM as STAGING and INFRATEAM are added during startup
       return null;
     }
   }
