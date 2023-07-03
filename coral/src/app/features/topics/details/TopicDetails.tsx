@@ -54,8 +54,7 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: topicIsError,
     error: topicError,
     isLoading: topicIsLoading,
-    isFetched: topicDataFetched,
-  } = useQuery(["topic-overview", environmentId], {
+  } = useQuery(["topic-overview", topicName, environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
   });
 
@@ -64,8 +63,7 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: schemaIsError,
     error: schemaError,
     isLoading: schemaIsLoading,
-    isFetched: schemaDataFetched,
-  } = useQuery(["schema-overview", environmentId, schemaVersion], {
+  } = useQuery(["schema-overview", topicName, environmentId, schemaVersion], {
     queryFn: () => {
       if (environmentId !== undefined) {
         return getSchemaOfTopic({
@@ -101,9 +99,8 @@ function TopicDetails(props: TopicOverviewProps) {
         // These state setters are used refresh the queries with the correct params...
         // ...when a user selects schema version
         setSchemaVersion={setSchemaVersion}
-        // We pass undefined when data is not fetched to avoid flash of stale data in the UI
-        topicOverview={topicDataFetched ? topicData : undefined}
-        topicSchemas={schemaDataFetched ? schemaData : undefined}
+        topicOverview={topicData}
+        topicSchemas={schemaData}
       />
     </div>
   );
