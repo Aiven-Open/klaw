@@ -540,9 +540,31 @@ public class EnvsClustersTenantsControllerIT {
     assertThat(envModel.getName()).isEqualTo("DEV");
   }
 
-  // delete env success
+  // get env params success
   @Test
   @Order(12)
+  public void getEnvParamsSuccess() throws Exception {
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/getEnvParams")
+                    .with(user(superAdmin).password(superAdminPwd))
+                    .param("envSelected", "1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    EnvParams clusterModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    String defaultPartitions = clusterModels.getDefaultPartitions();
+    assertThat(defaultPartitions).isEqualTo("2");
+  }
+
+  // delete env success
+  @Test
+  @Order(13)
   public void deleteEnvSuccess() throws Exception {
     EnvModel envModel = mockMethods.getEnvModel("ACC");
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(envModel);
@@ -580,7 +602,7 @@ public class EnvsClustersTenantsControllerIT {
         mvc.perform(
                 MockMvcRequestBuilders.post("/deleteEnvironmentRequest")
                     .with(user(superAdmin).password(superAdminPwd))
-                    .param("envId", "2")
+                    .param("envId", "1")
                     .param("envType", KafkaClustersType.KAFKA.value)
                     .content(jsonReq)
                     .contentType(MediaType.APPLICATION_JSON)
@@ -592,28 +614,6 @@ public class EnvsClustersTenantsControllerIT {
 
     ApiResponse response2 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response2.isSuccess()).isTrue();
-  }
-
-  // get env params success
-  @Test
-  @Order(13)
-  public void getEnvParamsSuccess() throws Exception {
-
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/getEnvParams")
-                    .with(user(superAdmin).password(superAdminPwd))
-                    .param("envSelected", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
-    EnvParams clusterModels = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
-    String defaultPartitions = clusterModels.getDefaultPartitions();
-    assertThat(defaultPartitions).isEqualTo("2");
   }
 
   // get standard env names success
