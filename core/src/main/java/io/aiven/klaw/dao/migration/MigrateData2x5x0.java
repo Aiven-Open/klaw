@@ -32,7 +32,7 @@ public class MigrateData2x5x0 {
     List<KwTenants> tenantsList = selectDataJdbc.getTenants();
     int defaultStartingSequence = 101;
 
-    if (selectDataJdbc.getDataFromKwEntitySequences() > 0) {
+    if ((tenantsList.size() * 3L) == selectDataJdbc.getDataFromKwEntitySequences()) {
       // Sequences already updated. Nothing to do.
       return true;
     }

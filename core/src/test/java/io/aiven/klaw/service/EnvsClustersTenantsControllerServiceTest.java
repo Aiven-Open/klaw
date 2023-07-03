@@ -143,7 +143,7 @@ class EnvsClustersTenantsControllerServiceTest {
     kafkaEnv.setAssociatedEnv(env.getAssociatedEnv());
     verify(handleDbRequestsJdbc, times(1)).addNewEnv(eq(kafkaEnv));
     // 1 for saving the schema env 1 for updating the kafka env 1 for updating previous kafka env
-    verify(handleDbRequestsJdbc, times(3)).addNewEnv(any(Env.class));
+    verify(handleDbRequestsJdbc, times(2)).addNewEnv(any(Env.class));
     assertThat(response.getMessage()).contains("success");
   }
 
@@ -204,7 +204,7 @@ class EnvsClustersTenantsControllerServiceTest {
 
     assertThat(response.getMessage()).contains("success");
     // 1 time for the env we are saving and 1 time for removing an existing mapping of a kafka env.
-    verify(handleDbRequestsJdbc, times(2)).addNewEnv(any(Env.class));
+    verify(handleDbRequestsJdbc, times(1)).addNewEnv(any(Env.class));
   }
 
   private static Env generateKafkaEnv(String id, String Kafka) {

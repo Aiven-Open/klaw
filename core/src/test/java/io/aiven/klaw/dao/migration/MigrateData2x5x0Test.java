@@ -87,4 +87,23 @@ class MigrateData2x5x0Test {
         .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1004), eq(101));
     assertThat(success).isTrue();
   }
+
+  @Test
+  public void addSequencesFailWhenSequencesUpdatedAlready() {
+    when(selectDataJdbc.getDataFromKwEntitySequences())
+        .thenReturn(2L); // only 2 recs found instead of 3 (CLUSTER, ENV, TEAM)
+    when(selectDataJdbc.getTenants()).thenReturn(utilMethods.getTenants());
+    when(selectDataJdbc.getNextClusterId(anyInt())).thenReturn(101);
+    when(selectDataJdbc.getNextEnvId(anyInt())).thenReturn(102);
+    when(selectDataJdbc.getNextTeamId(anyInt())).thenReturn(1003);
+
+    boolean success = migrateData2x5x0.migrate();
+    verify(insertDataJdbc, times(1))
+        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(102), eq(101));
+    verify(insertDataJdbc, times(1))
+        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(103), eq(101));
+    verify(insertDataJdbc, times(1))
+        .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1004), eq(101));
+    assertThat(success).isTrue();
+  }
 }
