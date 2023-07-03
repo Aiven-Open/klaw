@@ -53,8 +53,8 @@ function TopicDetails(props: TopicOverviewProps) {
     data: topicData,
     isError: topicIsError,
     error: topicError,
-    isFetching: topicIsFetching,
-  } = useQuery(["topic-overview", environmentId], {
+    isLoading: topicIsLoading,
+  } = useQuery(["topic-overview", topicName, environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
   });
 
@@ -62,8 +62,8 @@ function TopicDetails(props: TopicOverviewProps) {
     data: schemaData,
     isError: schemaIsError,
     error: schemaError,
-    isFetching: schemaIsFetching,
-  } = useQuery(["schema-overview", environmentId, schemaVersion], {
+    isLoading: schemaIsLoading,
+  } = useQuery(["schema-overview", topicName, environmentId, schemaVersion], {
     queryFn: () => {
       if (environmentId !== undefined) {
         return getSchemaOfTopic({
@@ -91,7 +91,7 @@ function TopicDetails(props: TopicOverviewProps) {
       />
 
       <TopicOverviewResourcesTabs
-        isLoading={topicIsFetching || schemaIsFetching}
+        isLoading={topicIsLoading || schemaIsLoading}
         isError={topicIsError || schemaIsError}
         error={topicError || schemaError}
         currentTab={currentTab}
