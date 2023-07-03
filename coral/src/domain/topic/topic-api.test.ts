@@ -12,6 +12,8 @@ import { KlawApiRequestQueryParameters } from "types/utils";
 import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { Environment } from "src/domain/environment";
 
+jest.mock("src/domain/helper/documentation-helper.ts");
+
 describe("topic-api", () => {
   beforeAll(() => {
     server.listen();

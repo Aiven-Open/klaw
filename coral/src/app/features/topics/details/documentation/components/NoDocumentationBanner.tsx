@@ -1,7 +1,12 @@
 import { EmptyState, EmptyStateLayout } from "@aivenio/aquarium";
 import illustration from "src/app/images/topic-details-documentation-illustration.svg";
 
-function NoDocumentationBanner() {
+type NoDocumentationBannerProps = {
+  addDocumentation: () => void;
+};
+function NoDocumentationBanner({
+  addDocumentation,
+}: NoDocumentationBannerProps) {
   return (
     <EmptyState
       title={"No documentation"}
@@ -9,7 +14,7 @@ function NoDocumentationBanner() {
       layout={EmptyStateLayout.CenterHorizontal}
       primaryAction={{
         text: "Add documentation",
-        onClick: () => console.log("hu"),
+        onClick: addDocumentation,
       }}
     >
       You can add documentation for your topic.
