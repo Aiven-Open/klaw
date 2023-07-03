@@ -204,8 +204,8 @@ const mockUseTopicDetailsDataWithoutPromotion = {
   },
 };
 
-describe("TopicOverview", () => {
-  it("renders correct DOM according to data from useTopicDetails (with promotion banner)", () => {
+describe("TopicOverview (with promotion banner)", () => {
+  it("renders correct DOM according to data from useTopicDetails ", () => {
     mockedUseTopicDetails.mockReturnValue(mockUseTopicDetailsDataWithPromotion);
     const result = customRender(<TopicOverview />, {
       memoryRouter: true,
@@ -213,7 +213,10 @@ describe("TopicOverview", () => {
     });
     expect(result).toMatchSnapshot();
   });
-  it("renders correct DOM according to data from useTopicDetails (without promotion banner)", () => {
+});
+
+describe("TopicOverview (without promotion banner)", () => {
+  it("renders correct DOM according to data from useTopicDetails ", () => {
     mockedUseTopicDetails.mockReturnValue(
       mockUseTopicDetailsDataWithoutPromotion
     );

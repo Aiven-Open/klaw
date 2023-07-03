@@ -1,38 +1,42 @@
-import { GridItem, Banner, Box, Button } from "@aivenio/aquarium";
+import { Banner, Box, Button, GridItem } from "@aivenio/aquarium";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "src/app/context-provider/AuthProvider";
+import { TopicOverview } from "src/domain/topic";
 import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
 
-interface PomoteConfig {
-  type: "PROMOTE";
-  topicName: string;
-  targetEnv: string;
-  sourceEnv: string;
-  targetEnvId: string;
+interface TopicPromotionBannerProps {
+  topicPromotionDetails: TopicOverview["topicPromotionDetails"];
+  isTopicOwner?: boolean;
+  existingPromotionRequest?: {
+    requestor: string;
+    teamName: string;
+  };
 }
 
-interface ApprovePromotionConfig {
-  type: "APPROVE_PROMOTION";
-  topicName: string;
-  requestor: string;
-  teamName: string;
-}
+const TopicPromotionBanner = ({
+  isTopicOwner,
+  topicPromotionDetails,
+  existingPromotionRequest,
+}: TopicPromotionBannerProps) => {
+  const user = useAuthContext();
+  const { status, targetEnv, sourceEnv, targetEnvId, topicName } =
+    topicPromotionDetails;
 
-interface SeePromotionConfig {
-  type: "SEE_PROMOTION";
-  topicName: string;
-}
+  const showRequestPromotionBanner =
+    isTopicOwner &&
+    status !== "NO_PROMOTION" &&
+    existingPromotionRequest === undefined &&
+    targetEnv !== undefined &&
+    sourceEnv !== undefined &&
+    targetEnvId !== undefined;
+  const showApprovePromotionBanner =
+    existingPromotionRequest !== undefined &&
+    user?.username !== existingPromotionRequest.requestor;
+  const showSeePromotionBanner =
+    existingPromotionRequest !== undefined &&
+    user?.username === existingPromotionRequest.requestor;
 
-type TopicPromotionBannerProps =
-  | PomoteConfig
-  | ApprovePromotionConfig
-  | SeePromotionConfig;
-
-const TopicPromotionBanner = (props: TopicPromotionBannerProps) => {
-  const { type } = props;
-
-  if (type === "PROMOTE") {
-    const { targetEnv, topicName, sourceEnv, targetEnvId } = props;
-
+  if (showRequestPromotionBanner) {
     return (
       <GridItem colSpan={"span-2"}>
         <Banner image={illustration} layout="vertical" title={""}>
@@ -50,8 +54,8 @@ const TopicPromotionBanner = (props: TopicPromotionBannerProps) => {
     );
   }
 
-  if (type === "APPROVE_PROMOTION") {
-    const { topicName, requestor, teamName } = props;
+  if (showApprovePromotionBanner) {
+    const { requestor, teamName } = existingPromotionRequest;
 
     return (
       <GridItem colSpan={"span-2"}>
@@ -70,9 +74,7 @@ const TopicPromotionBanner = (props: TopicPromotionBannerProps) => {
     );
   }
 
-  if (type === "SEE_PROMOTION") {
-    const { topicName } = props;
-
+  if (showSeePromotionBanner) {
     return (
       <GridItem colSpan={"span-2"}>
         <Banner image={illustration} layout="vertical" title={""}>

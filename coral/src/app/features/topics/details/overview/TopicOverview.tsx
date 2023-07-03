@@ -12,7 +12,6 @@ import loading from "@aivenio/aquarium/icons/loading";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
 import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
@@ -20,19 +19,12 @@ import { getTopicStats } from "src/app/features/topics/details/utils";
 import { getTopicRequests } from "src/domain/topic";
 
 function TopicOverview() {
-  const user = useAuthContext();
-
   const { topicName, environmentId, topicOverview, topicSchemas } =
     useTopicDetails();
 
   const {
     topicInfo: { topicOwner },
-    topicPromotionDetails: {
-      status: promotionStatus,
-      targetEnv,
-      targetEnvId,
-      sourceEnv,
-    },
+    topicPromotionDetails,
   } = topicOverview;
 
   const stats = useMemo(() => getTopicStats(topicOverview), [topicOverview]);
@@ -40,24 +32,27 @@ function TopicOverview() {
   const {
     data: existingPromotionRequest,
     isLoading: isLoadingExistingPromotionRequest,
-  } = useQuery(["getTopicRequests", topicName, targetEnvId], {
-    queryFn: () =>
-      getTopicRequests({
-        pageNo: "1",
-        search: topicName || "",
-        env: targetEnvId || "",
-        operationType: "PROMOTE",
-      }),
-    select: ({ entries, totalPages }) => {
-      if (totalPages === 0 || entries[0].requestOperationType !== "PROMOTE") {
-        return undefined;
-      }
-      return {
-        requestor: entries[0].requestor,
-        teamName: entries[0].teamname,
-      };
-    },
-  });
+  } = useQuery(
+    ["getTopicRequests", topicName, topicPromotionDetails.targetEnvId],
+    {
+      queryFn: () =>
+        getTopicRequests({
+          pageNo: "1",
+          search: topicName || "",
+          env: topicPromotionDetails.targetEnvId || "",
+          operationType: "PROMOTE",
+        }),
+      select: ({ entries, totalPages }) => {
+        if (totalPages === 0 || entries[0].requestOperationType !== "PROMOTE") {
+          return undefined;
+        }
+        return {
+          requestor: entries[0].requestor,
+          teamName: entries[0].teamname,
+        };
+      },
+    }
+  );
 
   if (isLoadingExistingPromotionRequest) {
     return (
@@ -67,20 +62,6 @@ function TopicOverview() {
       </Box>
     );
   }
-
-  const showRequestPromotionBanner =
-    topicOwner &&
-    promotionStatus !== "NO_PROMOTION" &&
-    existingPromotionRequest === undefined &&
-    targetEnv !== undefined &&
-    sourceEnv !== undefined &&
-    targetEnvId !== undefined;
-  const showApprovePromotionBanner =
-    existingPromotionRequest !== undefined &&
-    user?.username !== existingPromotionRequest.requestor;
-  const showSeePromotionBanner =
-    existingPromotionRequest !== undefined &&
-    user?.username === existingPromotionRequest.requestor;
 
   return (
     <Grid cols={"2"} rows={"2"} gap={"l2"} style={{ gridTemplateRows: "auto" }}>
@@ -93,26 +74,11 @@ function TopicOverview() {
         </Card>
       </GridItem>
 
-      {showRequestPromotionBanner && (
-        <TopicPromotionBanner
-          type={"PROMOTE"}
-          topicName={topicName}
-          targetEnv={targetEnv}
-          sourceEnv={sourceEnv}
-          targetEnvId={targetEnvId}
-        />
-      )}
-      {showApprovePromotionBanner && (
-        <TopicPromotionBanner
-          type={"APPROVE_PROMOTION"}
-          topicName={topicName}
-          requestor={existingPromotionRequest.requestor}
-          teamName={existingPromotionRequest.teamName}
-        />
-      )}
-      {showSeePromotionBanner && (
-        <TopicPromotionBanner type={"SEE_PROMOTION"} topicName={topicName} />
-      )}
+      <TopicPromotionBanner
+        topicPromotionDetails={topicPromotionDetails}
+        isTopicOwner={topicOwner}
+        existingPromotionRequest={existingPromotionRequest}
+      />
 
       <Card title={"Subscriptions"} fullWidth>
         <Box.Flex gap={"l7"}>

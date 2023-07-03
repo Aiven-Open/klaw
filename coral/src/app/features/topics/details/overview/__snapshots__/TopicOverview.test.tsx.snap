@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopicOverview renders correct DOM according to data from useTopicDetails (with promotion banner) 1`] = `
+exports[`TopicOverview (with promotion banner) renders correct DOM according to data from useTopicDetails  1`] = `
 {
   "asFragment": [Function],
   "baseElement": <body>
@@ -89,7 +89,7 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
 }
 `;
 
-exports[`TopicOverview renders correct DOM according to data from useTopicDetails (without promotion banner) 1`] = `
+exports[`TopicOverview (without promotion banner) renders correct DOM according to data from useTopicDetails  1`] = `
 {
   "asFragment": [Function],
   "baseElement": <body>
