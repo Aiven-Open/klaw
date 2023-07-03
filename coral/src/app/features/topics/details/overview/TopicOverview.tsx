@@ -1,5 +1,4 @@
 import {
-  Banner,
   Box,
   Button,
   Card,
@@ -16,8 +15,8 @@ import { Link } from "react-router-dom";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
+import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
 import { getTopicStats } from "src/app/features/topics/details/utils";
-import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
 import { getTopicRequests } from "src/domain/topic";
 
 function TopicOverview() {
@@ -72,7 +71,10 @@ function TopicOverview() {
   const showRequestPromotionBanner =
     topicOwner &&
     promotionStatus !== "NO_PROMOTION" &&
-    existingPromotionRequest === undefined;
+    existingPromotionRequest === undefined &&
+    targetEnv !== undefined &&
+    sourceEnv !== undefined &&
+    targetEnvId !== undefined;
   const showApprovePromotionBanner =
     existingPromotionRequest !== undefined &&
     user?.username !== existingPromotionRequest.requestor;
@@ -90,50 +92,26 @@ function TopicOverview() {
           </Box.Flex>
         </Card>
       </GridItem>
+
       {showRequestPromotionBanner && (
-        <GridItem colSpan={"span-2"}>
-          <Banner image={illustration} layout="vertical" title={""}>
-            <Box element={"p"} marginBottom={"l1"}>
-              This schema has not yet been promoted to the {targetEnv}{" "}
-              environment.
-            </Box>
-            <Link
-              to={`/topic/${topicName}/request-promotion?sourceEnv=${sourceEnv}&targetEnv=${targetEnvId}`}
-            >
-              <Button.Primary>Promote</Button.Primary>
-            </Link>
-          </Banner>
-        </GridItem>
+        <TopicPromotionBanner
+          type={"PROMOTE"}
+          topicName={topicName}
+          targetEnv={targetEnv}
+          sourceEnv={sourceEnv}
+          targetEnvId={targetEnvId}
+        />
       )}
       {showApprovePromotionBanner && (
-        <GridItem colSpan={"span-2"}>
-          <Banner image={illustration} layout="vertical" title={""}>
-            <Box element={"p"} marginBottom={"l1"}>
-              A promotion request has already been created by{" "}
-              {existingPromotionRequest.requestor} from the team{" "}
-              {existingPromotionRequest.teamName}.
-            </Box>
-            <Link
-              to={`/approvals/topics?search=${topicName}&page=1&requestType=PROMOTE`}
-            >
-              <Button.Primary>Approve the request</Button.Primary>
-            </Link>
-          </Banner>
-        </GridItem>
+        <TopicPromotionBanner
+          type={"APPROVE_PROMOTION"}
+          topicName={topicName}
+          requestor={existingPromotionRequest.requestor}
+          teamName={existingPromotionRequest.teamName}
+        />
       )}
       {showSeePromotionBanner && (
-        <GridItem colSpan={"span-2"}>
-          <Banner image={illustration} layout="vertical" title={""}>
-            <Box element={"p"} marginBottom={"l1"}>
-              You have created a promotion request for {topicName}.
-            </Box>
-            <Link
-              to={`/requests/topics?search=${topicName}&page=1&requestType=PROMOTE`}
-            >
-              <Button.Primary>See the request</Button.Primary>
-            </Link>
-          </Banner>
-        </GridItem>
+        <TopicPromotionBanner type={"SEE_PROMOTION"} topicName={topicName} />
       )}
 
       <Card title={"Subscriptions"} fullWidth>
