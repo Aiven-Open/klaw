@@ -7028,7 +7028,7 @@
         },
         "required" : [ "description", "envId", "envName", "hasOpenACLRequest", "hasOpenRequest", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
-      "TopicConfig" : {
+      "TopicBaseConfig" : {
         "properties" : {
           "topicName" : {
             "type" : "string"
@@ -7064,7 +7064,7 @@
             "type" : "string"
           },
           "topicContents" : {
-            "$ref" : "#/components/schemas/TopicConfig"
+            "$ref" : "#/components/schemas/TopicBaseConfig"
           }
         },
         "required" : [ "topicExists" ]

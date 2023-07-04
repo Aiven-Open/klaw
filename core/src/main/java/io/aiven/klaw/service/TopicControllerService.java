@@ -34,7 +34,7 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.TopicConfig;
+import io.aiven.klaw.model.TopicBaseConfig;
 import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
@@ -53,6 +53,7 @@ import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
+import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
@@ -995,7 +996,7 @@ public class TopicControllerService {
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
 
-    TopicConfig topicInfo = new TopicConfig();
+    TopicBaseConfig topicInfo = new TopicBaseConfig();
     List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
@@ -1067,12 +1068,9 @@ public class TopicControllerService {
     }
   }
 
-  static class TopicNameSyncComparator
-      implements Comparator<io.aiven.klaw.model.response.TopicConfig> {
+  static class TopicNameSyncComparator implements Comparator<TopicConfig> {
     @Override
-    public int compare(
-        io.aiven.klaw.model.response.TopicConfig topic1,
-        io.aiven.klaw.model.response.TopicConfig topic2) {
+    public int compare(TopicConfig topic1, TopicConfig topic2) {
       return topic1.getTopicName().compareTo(topic2.getTopicName());
     }
   }

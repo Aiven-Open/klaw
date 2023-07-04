@@ -6,7 +6,7 @@ import lombok.Data;
 
 /** All the Information on the configuration of a single topic. */
 @Data
-public class TopicConfig {
+public class TopicBaseConfig {
 
   @NotNull private String topicName;
 

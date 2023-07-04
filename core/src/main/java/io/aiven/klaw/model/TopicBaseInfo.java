@@ -5,7 +5,7 @@ import lombok.Data;
 
 /** All the Information from TopicConfig and the ownership & environment of a topic. */
 @Data
-public class TopicBaseInfo extends TopicConfig {
+public class TopicBaseInfo extends TopicBaseConfig {
 
   @NotNull private String teamname;
 
