@@ -69,7 +69,10 @@ const mockTopicDetails = {
 } as unknown as KlawApiResponse<"getTopicDetailsPerEnv">;
 
 describe("<TopicPromotionRequest />", () => {
+  const originalConsoleError = console.error;
+
   beforeAll(() => {
+    console.error = jest.fn();
     mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(mockEnvironments);
     mockGetTopicDetailsPerEnv.mockResolvedValue(mockTopicDetails);
 
@@ -98,6 +101,7 @@ describe("<TopicPromotionRequest />", () => {
   });
 
   afterAll(() => {
+    console.error = originalConsoleError;
     cleanup();
     jest.clearAllMocks();
   });
