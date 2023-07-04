@@ -1,15 +1,16 @@
 import { Banner, Box, Button, GridItem } from "@aivenio/aquarium";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "src/app/context-provider/AuthProvider";
-import { TopicOverview } from "src/domain/topic";
+import { TopicOverview, TopicRequest } from "src/domain/topic";
 import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
 
 interface TopicPromotionBannerProps {
   topicPromotionDetails: TopicOverview["topicPromotionDetails"];
   isTopicOwner?: boolean;
   existingPromotionRequest?: {
-    requestor: string;
-    teamName: string;
+    requestor: TopicRequest["requestor"];
+    teamName: TopicRequest["teamname"];
+    status: TopicRequest["requestStatus"];
   };
 }
 
@@ -25,15 +26,19 @@ const TopicPromotionBanner = ({
   const showRequestPromotionBanner =
     isTopicOwner &&
     status !== "NO_PROMOTION" &&
-    existingPromotionRequest === undefined &&
+    (existingPromotionRequest === undefined ||
+      existingPromotionRequest.status !== "CREATED") &&
     targetEnv !== undefined &&
     sourceEnv !== undefined &&
     targetEnvId !== undefined;
   const showApprovePromotionBanner =
     existingPromotionRequest !== undefined &&
+    existingPromotionRequest.status === "CREATED" &&
     user?.username !== existingPromotionRequest.requestor;
   const showSeePromotionBanner =
     existingPromotionRequest !== undefined &&
+    (existingPromotionRequest.status === "CREATED" ||
+      existingPromotionRequest.status === "APPROVED") &&
     user?.username === existingPromotionRequest.requestor;
 
   if (showRequestPromotionBanner) {

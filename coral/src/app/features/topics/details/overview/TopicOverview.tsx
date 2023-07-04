@@ -49,6 +49,7 @@ function TopicOverview() {
         return {
           requestor: entries[0].requestor,
           teamName: entries[0].teamname,
+          status: entries[0].requestStatus,
         };
       },
     }
