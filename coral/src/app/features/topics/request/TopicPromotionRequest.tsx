@@ -145,11 +145,11 @@ function TopicPromotionRequest() {
         <Dialog
           title={`Cancel topic promotion request?`}
           primaryAction={{
-            text: `Cancel topic promotion request`,
+            text: `Cancel request`,
             onClick: () => cancelRequest(),
           }}
           secondaryAction={{
-            text: `Cancel topic promotion request`,
+            text: `Continue with request`,
             onClick: () => setCancelDialogVisible(false),
           }}
           type={"warning"}
