@@ -87,6 +87,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public Integer getNextSeqIdAndUpdate(String entityName, int tenantId) {
+    return jdbcInsertHelper.getNextSeqIdAndUpdate(entityName, tenantId);
+  }
+
+  @Override
   public String registerUser(RegisterUserInfo newUser) {
     return jdbcInsertHelper.insertIntoRegisterUsers(newUser);
   }

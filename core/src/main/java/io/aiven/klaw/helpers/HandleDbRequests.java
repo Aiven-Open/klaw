@@ -41,6 +41,8 @@ public interface HandleDbRequests {
 
   String addToSyncacls(List<Acl> acls);
 
+  public Integer getNextSeqIdAndUpdate(String entityName, int tenantId);
+
   String registerUser(RegisterUserInfo newUser);
 
   String registerUserForAD(RegisterUserInfo newUser);
