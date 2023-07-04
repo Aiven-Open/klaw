@@ -8,7 +8,6 @@ import { mockedEnvironmentResponse } from "src/domain/environment/environment-ap
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { getTopicDetailsPerEnv, promoteTopic } from "src/domain/topic";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { KlawApiResponse } from "types/utils";
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -55,6 +54,7 @@ const mockTopicDetails = {
   topicExists: true,
   topicId: "1200",
   topicContents: {
+    topicName: "test-topic-name",
     noOfPartitions: 1,
     description: "Topic description",
     noOfReplicas: "2",
@@ -66,7 +66,7 @@ const mockTopicDetails = {
       "cleanup.policy": "compact",
     },
   },
-} as unknown as KlawApiResponse<"getTopicDetailsPerEnv">;
+};
 
 describe("<TopicPromotionRequest />", () => {
   const originalConsoleError = console.error;
