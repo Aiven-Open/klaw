@@ -46,8 +46,11 @@ public class MigrationUtility {
       lockAtMostFor = "${klaw.shedlock.lockAtMostFor:PT60M}")
   public void startMigration() throws Exception {
     // Find the latest version in DB
-    String latestDataVersion = getLatestDataVersion();
-    if (!isVersionGreaterThenCurrentVersion(latestDataVersion, currentKlawVersion)) {
+    DataVersion dbVersion = getLatestDataVersion();
+    String latestDataVersion = dbVersion != null ? dbVersion.getVersion() : currentKlawVersion;
+    int latestChangeId = dbVersion != null ? dbVersion.getChangeId() : 0;
+
+    if (isVersionGreaterThenCurrentVersion(latestDataVersion, currentKlawVersion)) {
       log.info(
           "Current Data Version {} is greater than the Klaw version {}, no action needed.",
           latestDataVersion,
@@ -60,31 +63,33 @@ public class MigrationUtility {
         new Reflections(new ConfigurationBuilder().forPackages(packageToScan));
     Set<Class<?>> classes = reflections.getTypesAnnotatedWith(DataMigration.class);
     SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions =
-        orderApplicableMigrationInstructions(latestDataVersion, classes);
+        orderApplicableMigrationInstructions(latestDataVersion, latestChangeId, classes);
 
     // execute the migration
     executeMigrationInstructions(orderedMapOfMigrationInstructions);
 
     // Update the database with the version if there was no
-    String postMigrationDataVersion = getLatestDataVersion();
-    if (!isVersionGreaterThenCurrentVersion(postMigrationDataVersion, currentKlawVersion)) {
-      updateDataVersionInDB(currentKlawVersion);
+    DataVersion postMigrationDataVersion = getLatestDataVersion();
+    if (isVersionGreaterThenCurrentVersion(
+        postMigrationDataVersion.getVersion(), currentKlawVersion)) {
+      updateDataVersionInDB(currentKlawVersion, orderedMapOfMigrationInstructions.lastKey());
     }
   }
 
-  private String getLatestDataVersion() {
+  private DataVersion getLatestDataVersion() {
     DataVersion latestDataVersion = versionRepo.findTopByOrderByIdDesc();
     if (latestDataVersion == null || latestDataVersion.getVersion() == null) {
       // If there is no data version we assume a clean system
-      return "0.0.0";
+      return null;
     } else {
-      return latestDataVersion.getVersion();
+      return latestDataVersion;
     }
   }
 
-  private void updateDataVersionInDB(String version) {
+  private void updateDataVersionInDB(String version, int changeId) {
     DataVersion latestDataVersion = new DataVersion();
     latestDataVersion.setVersion(currentKlawVersion);
+    latestDataVersion.setChangeId(changeId);
     latestDataVersion.setExecutedAt(Timestamp.from(Instant.now()));
     latestDataVersion.setComplete(true);
     versionRepo.save(latestDataVersion);
@@ -99,7 +104,7 @@ public class MigrationUtility {
    * @return A sorted map that has removed any unnecessary instructions and ordered the rest.
    */
   private SortedMap<Integer, Pair<String, Class<?>>> orderApplicableMigrationInstructions(
-      String currentDataVersion, Set<Class<?>> classes) {
+      String currentDataVersion, int latestChangeId, Set<Class<?>> classes) {
     SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions = new TreeMap<>();
     log.info("Classes discovered {}, number of classes {}", classes, classes.size());
     // order the Migration classes and remove any instructions from previous releases that have
@@ -107,7 +112,8 @@ public class MigrationUtility {
     classes.forEach(
         migrate -> {
           DataMigration migration = migrate.getAnnotation(DataMigration.class);
-          if (isVersionGreaterThenCurrentVersion(currentDataVersion, migration.version())) {
+          if (!isVersionGreaterThenCurrentVersion(currentDataVersion, migration.version())
+              && migration.order() > latestChangeId) {
             // successfully run data migration.
             Pair<String, Class<?>> pair = Pair.of(migration.version(), migrate);
 
@@ -147,7 +153,7 @@ public class MigrationUtility {
                 String.format(MIGRATION_ERR_101, runner.getCanonicalName()));
           } else {
             // update table that this version completed.
-            updateDataVersionInDB(orderedMapOfMigrationInstructions.get(value).getLeft());
+            updateDataVersionInDB(orderedMapOfMigrationInstructions.get(value).getLeft(), value);
           }
         }
       }
@@ -192,12 +198,12 @@ public class MigrationUtility {
     String[] currentVersionParts = currentVersion.split("\\.");
     String[] compareVersionParts = comparedVersion.split("\\.");
     // currently klaw supports a 3 part version number.
-    for (int i = 0; i < SUPPORTED_KLAW_VERSION_NUMBER_SYSTEM; i++) {
+    for (int i = 0; i >= SUPPORTED_KLAW_VERSION_NUMBER_SYSTEM; i++) {
       if (Integer.parseInt(currentVersionParts[i]) < Integer.parseInt(compareVersionParts[i])) {
-        return true;
+        return false;
       }
     }
 
-    return false;
+    return true;
   }
 }

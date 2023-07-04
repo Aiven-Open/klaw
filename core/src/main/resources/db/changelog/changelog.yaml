@@ -1092,3 +1092,13 @@ databaseChangeLog:
                     name: locked_by
                     type: VARCHAR2(255)
               tableName: kwshedlock
+    - changeSet:
+        id: 13-03-2023 Add the ChangeId to the data version for better control of the completed changes.
+        author: aindriu-aiven
+        changes:
+          - addColumn:
+              columns:
+                - column:
+                    name: changeid
+                    type: INT
+              tableName: kwdatamigration
