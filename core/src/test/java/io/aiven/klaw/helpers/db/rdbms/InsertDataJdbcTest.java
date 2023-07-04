@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.KwEntitySequence;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
@@ -17,12 +18,14 @@ import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
 import io.aiven.klaw.repository.ActivityLogRepo;
 import io.aiven.klaw.repository.EnvRepo;
+import io.aiven.klaw.repository.KwEntitySequenceRepo;
 import io.aiven.klaw.repository.MessageSchemaRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TeamRepo;
 import io.aiven.klaw.repository.TopicRepo;
 import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,6 +41,8 @@ public class InsertDataJdbcTest {
   @Mock private UserInfoRepo userInfoRepo;
 
   @Mock private TeamRepo teamRepo;
+
+  @Mock private KwEntitySequenceRepo kwEntitySequenceRepo;
 
   @Mock private EnvRepo envRepo;
 
@@ -78,6 +83,7 @@ public class InsertDataJdbcTest {
     ReflectionTestUtils.setField(insertData, "schemaRequestRepo", schemaRequestRepo);
     ReflectionTestUtils.setField(insertData, "aclRequestsRepo", aclRequestsRepo);
     ReflectionTestUtils.setField(insertData, "envRepo", envRepo);
+    ReflectionTestUtils.setField(insertData, "kwEntitySequenceRepo", kwEntitySequenceRepo);
   }
 
   @Test
@@ -149,8 +155,15 @@ public class InsertDataJdbcTest {
 
   @Test
   public void insertIntoTeams() {
+    List<KwEntitySequence> kwEntitySequenceList = new ArrayList<>();
+    KwEntitySequence kwEntitySequence = new KwEntitySequence();
+    kwEntitySequence.setEntityName("ENVIRONMENT");
+    kwEntitySequence.setTenantId(101);
+    kwEntitySequence.setSeqId(101);
+    kwEntitySequenceList.add(kwEntitySequence);
+    when(kwEntitySequenceRepo.findAllByEntityNameAndTenantId(anyString(), anyInt()))
+        .thenReturn(kwEntitySequenceList);
     String result = insertData.insertIntoTeams(utilMethods.getTeams().get(0));
-    when(teamRepo.getNextTeamId(anyInt())).thenReturn(101);
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 }
