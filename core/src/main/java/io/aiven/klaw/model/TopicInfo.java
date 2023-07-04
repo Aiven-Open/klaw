@@ -11,8 +11,6 @@ public class TopicInfo extends TopicBaseInfo {
 
   @NotNull private String sequence;
 
-  @NotNull private String envId;
-
   @NotNull private List<EnvIdInfo> environmentsList;
 
   @NotNull private String totalNoPages;
@@ -22,6 +20,4 @@ public class TopicInfo extends TopicBaseInfo {
   @NotNull private List<String> allPageNos;
 
   private String documentation;
-
-  private String envName;
 }

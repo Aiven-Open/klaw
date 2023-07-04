@@ -5703,13 +5703,6 @@
           "noOfReplicas" : {
             "type" : "string"
           },
-          "teamname" : {
-            "type" : "string"
-          },
-          "teamId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "description" : {
             "type" : "string"
           },
@@ -5728,14 +5721,24 @@
               "type" : "string"
             }
           },
+          "teamname" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "envId" : {
+            "type" : "string"
+          },
+          "envName" : {
+            "type" : "string"
+          },
           "topicid" : {
             "type" : "integer",
             "format" : "int32"
           },
           "sequence" : {
-            "type" : "string"
-          },
-          "envId" : {
             "type" : "string"
           },
           "environmentsList" : {
@@ -5758,12 +5761,9 @@
           },
           "documentation" : {
             "type" : "string"
-          },
-          "envName" : {
-            "type" : "string"
           }
         },
-        "required" : [ "allPageNos", "currentPage", "description", "envId", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
+        "required" : [ "allPageNos", "currentPage", "description", "envId", "envName", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
       },
       "KafkaConnectorModel" : {
         "properties" : {
@@ -6982,13 +6982,6 @@
           "noOfReplicas" : {
             "type" : "string"
           },
-          "teamname" : {
-            "type" : "string"
-          },
-          "teamId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "description" : {
             "type" : "string"
           },
@@ -7007,7 +7000,17 @@
               "type" : "string"
             }
           },
+          "teamname" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "envId" : {
+            "type" : "string"
+          },
+          "envName" : {
             "type" : "string"
           },
           "hasOpenRequest" : {
@@ -7015,9 +7018,6 @@
           },
           "hasOpenACLRequest" : {
             "type" : "boolean"
-          },
-          "envName" : {
-            "type" : "string"
           },
           "topicOwner" : {
             "type" : "boolean"
@@ -7028,7 +7028,7 @@
         },
         "required" : [ "description", "envId", "envName", "hasOpenACLRequest", "hasOpenRequest", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
-      "TopicBaseInfo" : {
+      "TopicConfig" : {
         "properties" : {
           "topicName" : {
             "type" : "string"
@@ -7040,13 +7040,6 @@
           "noOfReplicas" : {
             "type" : "string"
           },
-          "teamname" : {
-            "type" : "string"
-          },
-          "teamId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "description" : {
             "type" : "string"
           },
@@ -7066,7 +7059,7 @@
             }
           }
         },
-        "required" : [ "description", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "description", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "topicDeletable", "topicName" ]
       },
       "TopicDetailsPerEnv" : {
         "properties" : {
@@ -7080,7 +7073,7 @@
             "type" : "string"
           },
           "topicContents" : {
-            "$ref" : "#/components/schemas/TopicBaseInfo"
+            "$ref" : "#/components/schemas/TopicConfig"
           }
         },
         "required" : [ "topicExists" ]

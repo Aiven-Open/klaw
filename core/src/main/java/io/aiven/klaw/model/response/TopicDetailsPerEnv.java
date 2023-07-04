@@ -1,6 +1,6 @@
 package io.aiven.klaw.model.response;
 
-import io.aiven.klaw.model.TopicBaseInfo;
+import io.aiven.klaw.model.TopicConfig;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -13,5 +13,5 @@ public class TopicDetailsPerEnv {
 
   private String topicId;
 
-  private TopicBaseInfo topicContents;
+  private TopicConfig topicContents;
 }

@@ -34,7 +34,7 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.TopicBaseInfo;
+import io.aiven.klaw.model.TopicConfig;
 import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
@@ -53,7 +53,6 @@ import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
-import io.aiven.klaw.model.response.TopicConfig;
 import io.aiven.klaw.model.response.TopicDetailsPerEnv;
 import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.model.response.TopicTeamResponse;
@@ -996,7 +995,7 @@ public class TopicControllerService {
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
 
-    TopicBaseInfo topicInfo = new TopicBaseInfo();
+    TopicConfig topicInfo = new TopicConfig();
     List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
@@ -1028,10 +1027,6 @@ public class TopicControllerService {
         topicInfo.setNoOfReplicas(topicOptional.get().getNoOfReplicas());
         topicDetailsPerEnv.setTopicId("" + topicOptional.get().getTopicid());
         topicInfo.setDescription(topicDescription);
-        topicInfo.setTeamId(topicOptional.get().getTeamId());
-        topicInfo.setTeamname(
-            manageDatabase.getTeamNameFromTeamId(
-                topicOptional.get().getTenantId(), topicOptional.get().getTeamId()));
 
         String topicJsonParams = topicOptional.get().getJsonParams();
         if (topicJsonParams != null) {
@@ -1072,9 +1067,12 @@ public class TopicControllerService {
     }
   }
 
-  static class TopicNameSyncComparator implements Comparator<TopicConfig> {
+  static class TopicNameSyncComparator
+      implements Comparator<io.aiven.klaw.model.response.TopicConfig> {
     @Override
-    public int compare(TopicConfig topic1, TopicConfig topic2) {
+    public int compare(
+        io.aiven.klaw.model.response.TopicConfig topic1,
+        io.aiven.klaw.model.response.TopicConfig topic2) {
       return topic1.getTopicName().compareTo(topic2.getTopicName());
     }
   }

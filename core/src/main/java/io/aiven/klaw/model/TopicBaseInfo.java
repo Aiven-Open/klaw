@@ -1,30 +1,17 @@
 package io.aiven.klaw.model;
 
 import jakarta.validation.constraints.NotNull;
-import java.util.Map;
 import lombok.Data;
 
-/** All the Information on the configuration and ownership of a single topic. */
+/** All the Information from TopicConfig and the ownership & environment of a topic. */
 @Data
-public class TopicBaseInfo {
-
-  @NotNull private String topicName;
-
-  @NotNull private Integer noOfPartitions;
-
-  @NotNull private String noOfReplicas;
+public class TopicBaseInfo extends TopicConfig {
 
   @NotNull private String teamname;
 
   @NotNull private int teamId;
 
-  @NotNull private String description;
+  @NotNull private String envId;
 
-  @NotNull private boolean showEditTopic;
-
-  @NotNull private boolean showDeleteTopic;
-
-  @NotNull private boolean topicDeletable;
-
-  private Map<String, String> advancedTopicConfiguration;
+  @NotNull private String envName;
 }

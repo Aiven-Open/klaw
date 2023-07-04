@@ -891,8 +891,6 @@ public class TopicControllerServiceTest {
         .thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(3))).thenReturn("Octopus");
     TopicDetailsPerEnv topicDetailsPerEnvResponse =
         topicControllerService.getTopicDetailsPerEnv(envId, topicName);
     assertThat(topicDetailsPerEnvResponse.getError())
@@ -912,14 +910,12 @@ public class TopicControllerServiceTest {
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(3))).thenReturn("Octopus");
     when(commonUtilsService.getTeamId(anyString())).thenReturn(3);
 
     TopicDetailsPerEnv topicDetailsPerEnvResponse =
         topicControllerService.getTopicDetailsPerEnv(envId, topicName);
     assertThat(topicDetailsPerEnvResponse.isTopicExists()).isTrue();
     assertThat(topicDetailsPerEnvResponse.getTopicContents()).isNotNull();
-    assertThat(topicDetailsPerEnvResponse.getTopicContents().getTeamname()).isEqualTo("Octopus");
     assertThat(topicDetailsPerEnvResponse.getTopicContents().getAdvancedTopicConfiguration())
         .containsEntry("retention.ms", "404800000");
   }

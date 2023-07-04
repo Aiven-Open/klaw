@@ -10,8 +10,6 @@ import lombok.Data;
 @Data
 public class TopicOverviewInfo extends TopicBaseInfo {
 
-  @NotNull private String envId;
-
   @NotNull private boolean hasOpenRequest;
 
   @NotNull private boolean isTopicOwner;
@@ -19,6 +17,4 @@ public class TopicOverviewInfo extends TopicBaseInfo {
   @NotNull private boolean isHighestEnv;
 
   @NotNull private boolean hasOpenACLRequest;
-
-  @NotNull private String envName;
 }
