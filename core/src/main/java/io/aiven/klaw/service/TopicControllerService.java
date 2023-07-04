@@ -34,6 +34,7 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.TopicBaseConfig;
 import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
@@ -995,7 +996,7 @@ public class TopicControllerService {
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
 
-    TopicInfo topicInfo = new TopicInfo();
+    TopicBaseConfig topicInfo = new TopicBaseConfig();
     List<Topic> topics = commonUtilsService.getTopicsForTopicName(topicName, tenantId);
 
     // tenant filtering
