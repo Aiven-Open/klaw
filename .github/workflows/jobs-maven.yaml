@@ -15,6 +15,14 @@ env:
 on:
   workflow_call
 
+# The jobs for maven can be triggered by different
+# workflows / scenarios. We want to make sure that
+# an already running job is cancelled as soon as a new
+# event required this jobs to be run again.
+concurrency:
+  group: maven-jobs-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
