@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   PageHeader,
+  Skeleton,
   Typography,
   useToast,
 } from "@aivenio/aquarium";
@@ -16,7 +17,8 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { TopicDeleteConfirmationModal } from "src/app/features/topics/details/settings/components/TopicDeleteConfirmationModal";
 
 function TopicSettings() {
-  const { topicName, environmentId, topicOverview } = useTopicDetails();
+  const { topicName, environmentId, topicOverview, topicOverviewIsRefetching } =
+    useTopicDetails();
 
   const isTopicOwner = topicOverview.topicInfo.topicOwner;
   const showDeleteTopic = topicOverview.topicInfo.showDeleteTopic;
@@ -110,20 +112,31 @@ function TopicSettings() {
       {isTopicOwner && (
         <>
           <Typography.Subheading>Danger zone</Typography.Subheading>
+          {topicOverviewIsRefetching && (
+            <div className={"visually-hidden"}>Loading information</div>
+          )}
           <BorderBox
+            date-testid={"topic-settings-danger-zone-content"}
             display={"flex"}
             flexDirection={"column"}
             borderColor={"error-60"}
             padding={"l2"}
             marginTop={"l2"}
             rowGap={"l2"}
+            aria-hidden={topicOverviewIsRefetching}
           >
             {!showDeleteTopic && (
               <Alert type={"warning"}>
-                <>
-                  You can not create a delete request for this topic: <br />
-                  {getDeleteDisabledInformation()}
-                </>
+                {topicOverviewIsRefetching ? (
+                  <Typography.DefaultStrong htmlTag={"div"}>
+                    <Skeleton />
+                  </Typography.DefaultStrong>
+                ) : (
+                  <>
+                    You can not create a delete request for this topic: <br />
+                    {getDeleteDisabledInformation()}
+                  </>
+                )}
               </Alert>
             )}
             <Box
@@ -131,20 +144,27 @@ function TopicSettings() {
               alignItems={"center"}
               justifyContent={"space-between"}
             >
-              <div>
-                <Typography.DefaultStrong htmlTag={"h3"}>
-                  Delete this topic
-                </Typography.DefaultStrong>
-                <Box component={"p"}>
-                  Once you delete a topic, there is no going back. Please be
-                  certain.
+              {topicOverviewIsRefetching ? (
+                <Box width={"full"}>
+                  <Skeleton />
+                  <Skeleton />
                 </Box>
-              </div>
+              ) : (
+                <div>
+                  <Typography.DefaultStrong htmlTag={"h3"}>
+                    Delete this topic
+                  </Typography.DefaultStrong>
+                  <Box component={"p"}>
+                    Once you delete a topic, there is no going back. Please be
+                    certain.
+                  </Box>
+                </div>
+              )}
 
               <div>
                 <Button.Primary
                   onClick={() => setShowConfirmation(true)}
-                  disabled={!showDeleteTopic}
+                  disabled={!showDeleteTopic || topicOverviewIsRefetching}
                 >
                   Delete topic
                 </Button.Primary>
