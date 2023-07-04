@@ -183,6 +183,7 @@ public class UtilMethods {
     topicRequest.setTopicname("testtopic");
     topicRequest.setTeamId(3);
     topicRequest.setNoOfPartitions(1);
+    topicRequest.setTenantId(101);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }

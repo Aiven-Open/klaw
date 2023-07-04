@@ -1,29 +1,16 @@
 package io.aiven.klaw.model;
 
 import jakarta.validation.constraints.NotNull;
-import java.util.Map;
 import lombok.Data;
 
+/**
+ * All the information on a specific topic ownership & environment and inherited configuration of
+ * the topic.
+ */
 @Data
-public class TopicOverviewInfo {
-
-  @NotNull private String topicName;
-
-  @NotNull private Integer noOfPartitions;
-
-  @NotNull private String noOfReplicas;
-
-  @NotNull private String teamname;
-
-  @NotNull private int teamId;
+public class TopicOverviewInfo extends TopicBaseInfo {
 
   @NotNull private String envId;
-
-  @NotNull private boolean showEditTopic;
-
-  @NotNull private boolean showDeleteTopic;
-
-  @NotNull private boolean topicDeletable;
 
   @NotNull private boolean hasOpenRequest;
 
@@ -34,6 +21,4 @@ public class TopicOverviewInfo {
   @NotNull private boolean hasOpenACLRequest;
 
   @NotNull private String envName;
-
-  private Map<String, String> advancedTopicConfiguration;
 }
