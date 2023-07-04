@@ -5,6 +5,7 @@ import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
@@ -15,6 +16,7 @@ import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.EnvIdInfo;
@@ -198,15 +200,27 @@ public class TopicOverviewService extends BaseOverviewService {
         tmpAclPrefixed = applyFiltersAclsForSOT(loggedInUserTeam, prefixedAcls, tenantId);
         prefixedAclsInfo.addAll(tmpAclPrefixed);
       }
-      topicInfo.setHasOpenACLRequest(
-          aclInfo.stream()
-              .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
+      setHasAcl(aclInfo, topicInfo);
       // show edit button only forenv owned by your team
       if (Objects.equals(topicOwnerTeamId, loggedInUserTeam)) {
         topicInfo.setShowEditTopic(true);
         topicInfo.setTopicOwner(true);
       }
     }
+  }
+
+  private void setHasOpenAclRequest(List<AclOverviewInfo> aclInfo, TopicOverviewInfo topicInfo) {
+    topicInfo.setHasOpenACLRequest(
+            aclInfo.stream()
+                    .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
+  }
+
+
+
+  private void setHasAcl(List<AclOverviewInfo> aclInfo, TopicOverviewInfo topicInfo) {
+    topicInfo.setHasACL(
+            aclInfo.stream()
+                    .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
   }
 
   private void enrichTopicOverview(
@@ -296,7 +310,7 @@ public class TopicOverviewService extends BaseOverviewService {
                       .getId(),
                   lastItem.getEnvId()));
           lastItem.setHasOpenRequest(
-              isRequestAlreadyOpen(topicNameSearch, environmentId, tenantId));
+              isTopicRequestAlreadyOpen(topicNameSearch, environmentId, tenantId));
           lastItem.setShowDeleteTopic(
               lastItem.isTopicDeletable()
                   && lastItem.isHighestEnv()
@@ -314,22 +328,36 @@ public class TopicOverviewService extends BaseOverviewService {
     }
   }
 
-  private boolean isRequestAlreadyOpen(String topicNameSearch, String environmentId, int tenantId) {
+  private boolean isTopicRequestAlreadyOpen(String topicNameSearch, String environmentId, int tenantId) {
 
     List<TopicRequest> topicReqs =
-        manageDatabase
-            .getHandleDbRequests()
-            .getAllTopicRequests(
-                getUserName(),
-                RequestStatus.CREATED.value,
-                null,
-                environmentId,
-                topicNameSearch,
-                false,
-                tenantId);
+            manageDatabase
+                    .getHandleDbRequests()
+                    .getCreatedTopicRequests(
+                            getUserName(),
+                            RequestStatus.CREATED.value,
+                            true,
+                            tenantId,
+                            null,
+                            environmentId,
+                            null,
+                            topicNameSearch);
     log.debug("Open Reqs for Topics {} , size {}", topicReqs, topicReqs.size());
     // there should only ever be 1 delete request and in any other scenario this should be 0.
     return topicReqs.size() >= 1;
+  }
+
+  private boolean isACLRequestAlreadyOpen(String topicNameSearch, String environmentId, int tenantId) {
+
+    List<AclRequests> AclReqs =
+            manageDatabase
+                    .getHandleDbRequests()
+                    .getAllAclRequests(true,getUserName(),null,RequestStatus.CREATED.value,true,null,topicNameSearch,environmentId,null,null,false,tenantId);
+
+
+    log.debug("Open Reqs for Topics {} , size {}", AclReqs, AclReqs.size());
+    // there should only ever be 1 delete request and in any other scenario this should be 0.
+    return AclReqs.size() >= 1;
   }
 
   private PromotionStatus getTopicPromotionEnv(
