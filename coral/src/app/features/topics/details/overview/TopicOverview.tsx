@@ -4,65 +4,26 @@ import {
   Card,
   Grid,
   GridItem,
-  Icon,
   Typography,
 } from "@aivenio/aquarium";
 import add from "@aivenio/aquarium/dist/src/icons/add";
-import loading from "@aivenio/aquarium/icons/loading";
-import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
 import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
 import { getTopicStats } from "src/app/features/topics/details/utils";
-import { getTopicRequests } from "src/domain/topic";
 
 function TopicOverview() {
   const { topicName, environmentId, topicOverview, topicSchemas } =
     useTopicDetails();
 
   const {
-    topicInfo: { topicOwner },
+    topicInfo: { topicOwner, hasOpenRequest },
     topicPromotionDetails,
   } = topicOverview;
 
   const stats = useMemo(() => getTopicStats(topicOverview), [topicOverview]);
-
-  const {
-    data: existingPromotionRequest,
-    isLoading: isLoadingExistingPromotionRequest,
-  } = useQuery(
-    ["getTopicRequests", topicName, topicPromotionDetails.targetEnvId],
-    {
-      queryFn: () =>
-        getTopicRequests({
-          pageNo: "1",
-          search: topicName || "",
-          env: topicPromotionDetails.targetEnvId || "",
-          operationType: "PROMOTE",
-        }),
-      select: ({ entries, totalPages }) => {
-        if (totalPages === 0 || entries[0].requestOperationType !== "PROMOTE") {
-          return undefined;
-        }
-        return {
-          requestor: entries[0].requestor,
-          teamName: entries[0].teamname,
-          status: entries[0].requestStatus,
-        };
-      },
-    }
-  );
-
-  if (isLoadingExistingPromotionRequest) {
-    return (
-      <Box paddingTop={"l2"} display={"flex"} justifyContent={"center"}>
-        <div className={"visually-hidden"}>Loading topic details</div>
-        <Icon icon={loading} fontSize={"30px"} />
-      </Box>
-    );
-  }
 
   return (
     <Grid cols={"2"} rows={"2"} gap={"l2"} style={{ gridTemplateRows: "auto" }}>
@@ -78,7 +39,7 @@ function TopicOverview() {
       <TopicPromotionBanner
         topicPromotionDetails={topicPromotionDetails}
         isTopicOwner={topicOwner}
-        existingPromotionRequest={existingPromotionRequest}
+        hasOpenRequest={hasOpenRequest}
       />
 
       <Card title={"Subscriptions"} fullWidth>

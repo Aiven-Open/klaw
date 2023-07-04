@@ -1,45 +1,29 @@
 import { Banner, Box, Button, GridItem } from "@aivenio/aquarium";
 import { Link } from "react-router-dom";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
-import { TopicOverview, TopicRequest } from "src/domain/topic";
+import { TopicOverview } from "src/domain/topic";
 import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
 
 interface TopicPromotionBannerProps {
   topicPromotionDetails: TopicOverview["topicPromotionDetails"];
+  hasOpenRequest: boolean;
   isTopicOwner?: boolean;
-  existingPromotionRequest?: {
-    requestor: TopicRequest["requestor"];
-    teamName: TopicRequest["teamname"];
-    status: TopicRequest["requestStatus"];
-  };
 }
 
 const TopicPromotionBanner = ({
   isTopicOwner,
   topicPromotionDetails,
-  existingPromotionRequest,
+  hasOpenRequest,
 }: TopicPromotionBannerProps) => {
-  const user = useAuthContext();
   const { status, targetEnv, sourceEnv, targetEnvId, topicName } =
     topicPromotionDetails;
 
   const showRequestPromotionBanner =
     isTopicOwner &&
     status !== "NO_PROMOTION" &&
-    (existingPromotionRequest === undefined ||
-      existingPromotionRequest.status !== "CREATED") &&
+    !hasOpenRequest &&
     targetEnv !== undefined &&
     sourceEnv !== undefined &&
     targetEnvId !== undefined;
-  const showApprovePromotionBanner =
-    existingPromotionRequest !== undefined &&
-    existingPromotionRequest.status === "CREATED" &&
-    user?.username !== existingPromotionRequest.requestor;
-  const showSeePromotionBanner =
-    existingPromotionRequest !== undefined &&
-    (existingPromotionRequest.status === "CREATED" ||
-      existingPromotionRequest.status === "APPROVED") &&
-    user?.username === existingPromotionRequest.requestor;
 
   if (showRequestPromotionBanner) {
     return (
@@ -59,35 +43,15 @@ const TopicPromotionBanner = ({
     );
   }
 
-  if (showApprovePromotionBanner) {
-    const { requestor, teamName } = existingPromotionRequest;
-
+  if (hasOpenRequest) {
     return (
       <GridItem colSpan={"span-2"}>
         <Banner image={illustration} layout="vertical" title={""}>
           <Box element={"p"} marginBottom={"l1"}>
-            A promotion request has already been created by {requestor} from the
-            team {teamName}.
+            There is an open request for {topicName}.
           </Box>
           <Link
-            to={`/approvals/topics?search=${topicName}&page=1&requestType=PROMOTE`}
-          >
-            <Button.Primary>Approve the request</Button.Primary>
-          </Link>
-        </Banner>
-      </GridItem>
-    );
-  }
-
-  if (showSeePromotionBanner) {
-    return (
-      <GridItem colSpan={"span-2"}>
-        <Banner image={illustration} layout="vertical" title={""}>
-          <Box element={"p"} marginBottom={"l1"}>
-            You have created a promotion request for {topicName}.
-          </Box>
-          <Link
-            to={`/requests/topics?search=${topicName}&page=1&requestType=PROMOTE`}
+            to={`/requests/topics?search=${topicName}&status=CREATED&page=1`}
           >
             <Button.Primary>See the request</Button.Primary>
           </Link>
