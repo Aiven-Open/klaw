@@ -16,10 +16,17 @@ name: Pull Request pipeline
 on:
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  pull_request_review:
+    types:
+       - submitted
   workflow_dispatch:
 
 jobs:
   check-changes:
+    # When a pull_request is already approved, merge-to-main will run the
+    # needed jobs on synchronized, and we don't need to run them here again
+    if: (github.event_name == 'pull_request' && github.event.action == 'synchronize' 
+      && github.event.review.state != 'approved')
     runs-on: ubuntu-latest
     outputs:
       changes-maven: ${{ steps.check-changed-dirs.outputs.changes-maven }}
