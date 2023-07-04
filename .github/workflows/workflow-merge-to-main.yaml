@@ -50,6 +50,13 @@ jobs:
 
   merge-to-main:
     name: Status check for enabling merging to main
+    # The jobs for maven can be triggered by different
+    # workflows / scenarios. We want to make sure that
+    # an already running job is cancelled as soon as a new
+    # event required this jobs to be run again.
+    concurrency:
+      group: merge-to-main-required-job-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     if: (github.event_name == 'pull_request' && github.event.action == 'synchronize' && github.event.review.state == 'approved') ||
       (github.event_name == 'pull_request_review' && github.event.review.state == 'approved')
     runs-on: ubuntu-latest
