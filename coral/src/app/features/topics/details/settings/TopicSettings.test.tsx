@@ -37,6 +37,7 @@ const testTopicInfo: KlawApiModel<"TopicOverviewInfo"> = {
   hasOpenACLRequest: false,
   highestEnv: true,
   hasOpenRequest: false,
+  description: "my description",
 };
 const testTopicOverview: TopicOverview = {
   topicExists: true,

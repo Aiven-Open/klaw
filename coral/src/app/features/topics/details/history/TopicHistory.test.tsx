@@ -43,6 +43,7 @@ const testTopicOverview: TopicOverview = {
     topicName: "my awesome topic",
     hasOpenACLRequest: true,
     hasOpenRequest: true,
+    description: "my description",
   },
   aclInfoList: [],
   prefixedAclInfoList: [],
