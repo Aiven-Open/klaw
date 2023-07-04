@@ -37,6 +37,8 @@ const testTopicOverview: TopicOverview = {
 };
 
 const mockTopicDetails = {
+  topicOverviewIsRefetching: false,
+  topicSchemasIsRefetching: false,
   environmentId: "1",
   topicName: "hello",
   topicOverview: testTopicOverview,

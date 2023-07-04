@@ -39,6 +39,7 @@ function TopicDetailsSchema() {
       schemaDetailsPerEnv,
       schemaPromotionDetails,
     },
+    topicSchemasIsRefetching,
     setSchemaVersion,
     topicOverview,
   } = useTopicDetails();
@@ -184,6 +185,7 @@ function TopicDetailsSchema() {
         </Banner>
       )}
       <SchemaStats
+        isLoading={topicSchemasIsRefetching}
         version={schemaDetailsPerEnv.version}
         id={schemaDetailsPerEnv.id}
         compatibility={schemaDetailsPerEnv.compatibility.toUpperCase()}

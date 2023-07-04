@@ -8,6 +8,8 @@ jest.mock("src/app/features/topics/details/TopicDetails", () => ({
 }));
 
 const mockUseTopicDetailsDataWithPromotion = {
+  topicOverviewIsRefetching: false,
+  topicSchemasIsRefetching: false,
   topicName: "aivendemotopic",
   environmentId: "1",
   topicOverview: {

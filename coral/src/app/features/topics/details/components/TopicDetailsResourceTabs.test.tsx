@@ -148,6 +148,8 @@ const defaultProps = {
   topicName: testTopicName,
   topicOverview: testTopicOverview,
   setSchemaVersion: mockSetSchemaVersion,
+  topicOverviewIsRefetching: false,
+  topicSchemasIsRefetching: false,
 };
 describe("TopicDetailsResourceTabs", () => {
   const user = userEvent.setup();

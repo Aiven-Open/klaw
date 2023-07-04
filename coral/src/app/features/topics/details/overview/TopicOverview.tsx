@@ -15,8 +15,14 @@ import { TopicPromotionBanner } from "src/app/features/topics/details/overview/c
 import { getTopicStats } from "src/app/features/topics/details/utils";
 
 function TopicOverview() {
-  const { topicName, environmentId, topicOverview, topicSchemas } =
-    useTopicDetails();
+  const {
+    topicName,
+    environmentId,
+    topicOverview,
+    topicOverviewIsRefetching,
+    topicSchemas,
+    topicSchemasIsRefetching,
+  } = useTopicDetails();
 
   const {
     topicInfo: { topicOwner = false, hasOpenTopicRequest },
@@ -30,8 +36,16 @@ function TopicOverview() {
       <GridItem colSpan={"span-2"}>
         <Card title="Topic details" fullWidth>
           <Box.Flex display="flex" gap={"l7"}>
-            <StatsDisplay amount={stats.replicas} entity={"Replicas"} />
-            <StatsDisplay amount={stats.partitions} entity={"Partitions"} />
+            <StatsDisplay
+              isLoading={topicOverviewIsRefetching}
+              amount={stats.replicas}
+              entity={"Replicas"}
+            />
+            <StatsDisplay
+              isLoading={topicOverviewIsRefetching}
+              amount={stats.partitions}
+              entity={"Partitions"}
+            />
           </Box.Flex>
         </Card>
       </GridItem>
@@ -44,8 +58,16 @@ function TopicOverview() {
 
       <Card title={"Subscriptions"} fullWidth>
         <Box.Flex gap={"l7"}>
-          <StatsDisplay amount={stats.producers} entity={"Producers"} />
-          <StatsDisplay amount={stats.consumers} entity={"Consumers"} />
+          <StatsDisplay
+            isLoading={topicOverviewIsRefetching}
+            amount={stats.producers}
+            entity={"Producers"}
+          />
+          <StatsDisplay
+            isLoading={topicOverviewIsRefetching}
+            amount={stats.consumers}
+            entity={"Consumers"}
+          />
         </Box.Flex>
         <Box.Flex flexDirection={"row"} gap={"l3"} paddingTop={"l2"}>
           <Link to={`/topic/${topicName}/subscribe?env=${environmentId}`}>
@@ -66,6 +88,7 @@ function TopicOverview() {
       </Card>
       <Card title={"Schemas"} fullWidth>
         <StatsDisplay
+          isLoading={topicSchemasIsRefetching}
           amount={
             topicSchemas.allSchemaVersions !== undefined
               ? Object.keys(topicSchemas.allSchemaVersions).length

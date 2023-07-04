@@ -66,6 +66,8 @@ const noPromotion_testTopicSchemas = {
 describe("TopicDetailsSchema (topic owner)", () => {
   beforeAll(() => {
     mockedUseTopicDetails.mockReturnValue({
+      topicOverviewIsRefetching: false,
+      topicSchemasIsRefetching: false,
       topicName: testTopicName,
       environmentId: testEnvironmentId,
       topicSchemas: testTopicSchemas,
@@ -199,6 +201,8 @@ describe("TopicDetailsSchema (topic owner)", () => {
 describe("TopicDetailsSchema (NOT topic owner)", () => {
   beforeAll(() => {
     mockedUseTopicDetails.mockReturnValue({
+      topicOverviewIsRefetching: false,
+      topicSchemasIsRefetching: false,
       topicName: testTopicName,
       environmentId: testEnvironmentId,
       topicSchemas: testTopicSchemas,
@@ -242,6 +246,8 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
   describe("TopicDetailsSchema (status: NO_PROMOTION)", () => {
     beforeAll(() => {
       mockedUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
         topicName: testTopicName,
         environmentId: testEnvironmentId,
         topicSchemas: noPromotion_testTopicSchemas,

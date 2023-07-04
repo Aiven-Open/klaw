@@ -5,35 +5,81 @@ const testVersion = 99;
 const testId = 111;
 const testCompatibility = "BACKWARD";
 describe("SchemaStats", () => {
-  beforeAll(() => {
+  describe("renders a loading state", () => {
     render(
       <SchemaStats
+        isLoading={true}
         version={testVersion}
         id={testId}
         compatibility={testCompatibility}
       />
     );
+
+    afterAll(cleanup);
+
+    it("shows loading information", () => {
+      const loadingInformation = screen.getAllByText("Loading information");
+
+      expect(loadingInformation).toHaveLength(3);
+      loadingInformation.forEach((element) => {
+        expect(element).toBeVisible();
+        expect(element).toHaveClass("visually-hidden");
+      });
+    });
+
+    it("shows no data for version number", () => {
+      const versionStat = screen.queryByText(testVersion);
+
+      expect(versionStat).not.toBeInTheDocument();
+    });
+
+    it("shows no data for ID", () => {
+      const idStat = screen.queryByText(testId);
+
+      expect(idStat).not.toBeInTheDocument();
+    });
+
+    it("shows no data for compatibility", () => {
+      const compatibilityStat = screen.queryByText(testCompatibility);
+
+      expect(compatibilityStat).not.toBeInTheDocument();
+    });
   });
 
-  afterAll(cleanup);
+  describe("renders all necessary data", () => {
+    beforeAll(() => {
+      render(
+        <SchemaStats
+          isLoading={false}
+          version={testVersion}
+          id={testId}
+          compatibility={testCompatibility}
+        />
+      );
+    });
 
-  it("shows the given version number", () => {
-    const version = screen.getByText("Version no.");
+    afterAll(cleanup);
 
-    expect(version.parentElement).toHaveTextContent(`${testVersion}Version no`);
-  });
+    it("shows the given version number", () => {
+      const version = screen.getByText("Version no.");
 
-  it("shows the given ID", () => {
-    const id = screen.getByText("ID");
+      expect(version.parentElement).toHaveTextContent(
+        `${testVersion}Version no`
+      );
+    });
 
-    expect(id.parentElement).toHaveTextContent(`${testId}ID`);
-  });
+    it("shows the given ID", () => {
+      const id = screen.getByText("ID");
 
-  it("shows the given compatibility info", () => {
-    const compatibility = screen.getByText("Compatibility");
+      expect(id.parentElement).toHaveTextContent(`${testId}ID`);
+    });
 
-    expect(compatibility.parentElement).toHaveTextContent(
-      `${testCompatibility}Compatibility`
-    );
+    it("shows the given compatibility info", () => {
+      const compatibility = screen.getByText("Compatibility");
+
+      expect(compatibility.parentElement).toHaveTextContent(
+        `${testCompatibility}Compatibility`
+      );
+    });
   });
 });

@@ -19,7 +19,9 @@ type Props = {
   isError: boolean;
   isLoading: boolean;
   topicOverview?: TopicOverview;
+  topicOverviewIsRefetching: boolean;
   topicSchemas?: TopicSchemaOverview;
+  topicSchemasIsRefetching?: boolean;
 };
 
 function TopicOverviewResourcesTabs({
@@ -30,7 +32,9 @@ function TopicOverviewResourcesTabs({
   isError,
   isLoading,
   topicOverview,
+  topicOverviewIsRefetching,
   topicSchemas,
+  topicSchemasIsRefetching,
 }: Props) {
   const navigate = useNavigate();
   const topicName = topicOverview?.topicInfo.topicName;
@@ -121,8 +125,10 @@ function TopicOverviewResourcesTabs({
               environmentId || topicOverview.availableEnvironments[0].id,
             setSchemaVersion,
             topicOverview,
+            topicOverviewIsRefetching,
             topicName: topicOverview.topicInfo.topicName,
             topicSchemas,
+            topicSchemasIsRefetching,
             userCanDeleteTopic: topicOverview.topicInfo.topicDeletable,
             topicHasOpenDeleteRequest: !topicOverview.topicInfo.showDeleteTopic,
           }}

@@ -115,6 +115,8 @@ describe("TopicHistory", () => {
   describe("handles an empty history", () => {
     beforeAll(() => {
       mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
         environmentId: "1",
         topicName: "hello",
         topicOverview: { ...testTopicOverview, topicHistoryList: [] },
@@ -164,6 +166,8 @@ describe("TopicHistory", () => {
   describe("shows a table with topics history", () => {
     beforeAll(() => {
       mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
         environmentId: "1",
         topicName: "hello",
         topicOverview: testTopicOverview,

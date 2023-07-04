@@ -59,6 +59,8 @@ const mockTopicDetails = {
   topicName: "my-nice-topic",
   environmentId: 8,
   topicOverview: testTopicOverview,
+  topicOverviewIsRefetching: false,
+  topicSchemasIsRefetching: false,
 };
 describe("TopicSettings", () => {
   const user = userEvent.setup();
