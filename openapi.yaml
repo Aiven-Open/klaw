@@ -5706,15 +5706,6 @@
           "description" : {
             "type" : "string"
           },
-          "showEditTopic" : {
-            "type" : "boolean"
-          },
-          "showDeleteTopic" : {
-            "type" : "boolean"
-          },
-          "topicDeletable" : {
-            "type" : "boolean"
-          },
           "advancedTopicConfiguration" : {
             "type" : "object",
             "additionalProperties" : {
@@ -5733,6 +5724,15 @@
           },
           "envName" : {
             "type" : "string"
+          },
+          "showEditTopic" : {
+            "type" : "boolean"
+          },
+          "showDeleteTopic" : {
+            "type" : "boolean"
+          },
+          "topicDeletable" : {
+            "type" : "boolean"
           },
           "topicid" : {
             "type" : "integer",
@@ -6985,15 +6985,6 @@
           "description" : {
             "type" : "string"
           },
-          "showEditTopic" : {
-            "type" : "boolean"
-          },
-          "showDeleteTopic" : {
-            "type" : "boolean"
-          },
-          "topicDeletable" : {
-            "type" : "boolean"
-          },
           "advancedTopicConfiguration" : {
             "type" : "object",
             "additionalProperties" : {
@@ -7012,6 +7003,15 @@
           },
           "envName" : {
             "type" : "string"
+          },
+          "showEditTopic" : {
+            "type" : "boolean"
+          },
+          "showDeleteTopic" : {
+            "type" : "boolean"
+          },
+          "topicDeletable" : {
+            "type" : "boolean"
           },
           "hasOpenRequest" : {
             "type" : "boolean"
@@ -7043,15 +7043,6 @@
           "description" : {
             "type" : "string"
           },
-          "showEditTopic" : {
-            "type" : "boolean"
-          },
-          "showDeleteTopic" : {
-            "type" : "boolean"
-          },
-          "topicDeletable" : {
-            "type" : "boolean"
-          },
           "advancedTopicConfiguration" : {
             "type" : "object",
             "additionalProperties" : {
@@ -7059,7 +7050,7 @@
             }
           }
         },
-        "required" : [ "description", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "topicDeletable", "topicName" ]
+        "required" : [ "description", "noOfPartitions", "noOfReplicas", "topicName" ]
       },
       "TopicDetailsPerEnv" : {
         "properties" : {

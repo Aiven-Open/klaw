@@ -16,11 +16,5 @@ public class TopicConfig {
 
   @NotNull private String description;
 
-  @NotNull private boolean showEditTopic;
-
-  @NotNull private boolean showDeleteTopic;
-
-  @NotNull private boolean topicDeletable;
-
   private Map<String, String> advancedTopicConfiguration;
 }

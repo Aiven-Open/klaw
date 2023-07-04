@@ -14,4 +14,10 @@ public class TopicBaseInfo extends TopicConfig {
   @NotNull private String envId;
 
   @NotNull private String envName;
+
+  @NotNull private boolean showEditTopic;
+
+  @NotNull private boolean showDeleteTopic;
+
+  @NotNull private boolean topicDeletable;
 }
