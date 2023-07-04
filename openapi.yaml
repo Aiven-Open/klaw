@@ -5693,13 +5693,6 @@
       },
       "TopicInfo" : {
         "properties" : {
-          "topicid" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "sequence" : {
-            "type" : "string"
-          },
           "topicName" : {
             "type" : "string"
           },
@@ -5707,11 +5700,17 @@
             "type" : "integer",
             "format" : "int32"
           },
+          "noOfReplicas" : {
+            "type" : "string"
+          },
           "description" : {
             "type" : "string"
           },
-          "noOfReplicas" : {
-            "type" : "string"
+          "advancedTopicConfiguration" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
           },
           "teamname" : {
             "type" : "string"
@@ -5723,11 +5722,8 @@
           "envId" : {
             "type" : "string"
           },
-          "environmentsList" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/EnvIdInfo"
-            }
+          "envName" : {
+            "type" : "string"
           },
           "showEditTopic" : {
             "type" : "boolean"
@@ -5737,6 +5733,19 @@
           },
           "topicDeletable" : {
             "type" : "boolean"
+          },
+          "topicid" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "sequence" : {
+            "type" : "string"
+          },
+          "environmentsList" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/EnvIdInfo"
+            }
           },
           "totalNoPages" : {
             "type" : "string"
@@ -5752,18 +5761,9 @@
           },
           "documentation" : {
             "type" : "string"
-          },
-          "envName" : {
-            "type" : "string"
-          },
-          "advancedTopicConfiguration" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
           }
         },
-        "required" : [ "allPageNos", "currentPage", "description", "envId", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
+        "required" : [ "allPageNos", "currentPage", "description", "envId", "envName", "environmentsList", "noOfPartitions", "noOfReplicas", "sequence", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName", "topicid", "totalNoPages" ]
       },
       "KafkaConnectorModel" : {
         "properties" : {
@@ -6982,6 +6982,15 @@
           "noOfReplicas" : {
             "type" : "string"
           },
+          "description" : {
+            "type" : "string"
+          },
+          "advancedTopicConfiguration" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
           "teamname" : {
             "type" : "string"
           },
@@ -6990,6 +6999,9 @@
             "format" : "int32"
           },
           "envId" : {
+            "type" : "string"
+          },
+          "envName" : {
             "type" : "string"
           },
           "showEditTopic" : {
@@ -7007,15 +7019,6 @@
           "hasOpenACLRequest" : {
             "type" : "boolean"
           },
-          "envName" : {
-            "type" : "string"
-          },
-          "advancedTopicConfiguration" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          },
           "topicOwner" : {
             "type" : "boolean"
           },
@@ -7023,7 +7026,31 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "envId", "envName", "hasOpenACLRequest", "hasOpenRequest", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "description", "envId", "envName", "hasOpenACLRequest", "hasOpenRequest", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+      },
+      "TopicBaseConfig" : {
+        "properties" : {
+          "topicName" : {
+            "type" : "string"
+          },
+          "noOfPartitions" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "noOfReplicas" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "advancedTopicConfiguration" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        },
+        "required" : [ "description", "noOfPartitions", "noOfReplicas", "topicName" ]
       },
       "TopicDetailsPerEnv" : {
         "properties" : {
@@ -7037,7 +7064,7 @@
             "type" : "string"
           },
           "topicContents" : {
-            "$ref" : "#/components/schemas/TopicInfo"
+            "$ref" : "#/components/schemas/TopicBaseConfig"
           }
         },
         "required" : [ "topicExists" ]

@@ -644,7 +644,6 @@ public class EnvsClustersTenantsControllerService {
                   newEnv.getParams().getDefaultRepFactor(), newEnv.getParams().getMaxRepFactor()));
     }
 
-    String envIdAlreadyExistsInDeleteStatus = "";
     List<Env> envActualList = manageDatabase.getHandleDbRequests().getAllEnvs(tenantId);
     List<Env> kafkaEnvs = manageDatabase.getKafkaEnvList(tenantId);
     List<Env> schemaEnvs = manageDatabase.getSchemaRegEnvList(tenantId);
@@ -655,21 +654,11 @@ public class EnvsClustersTenantsControllerService {
       if (validateConnectedClusters(newEnv, kafkaClusterIds, schemaClusterIds)) {
         return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_110).build();
       }
-
-      List<Env> kafkaConnectEnvs = manageDatabase.getKafkaConnectEnvList(tenantId);
-      List<Integer> idListInts = new ArrayList<>();
-
-      kafkaEnvs.forEach(a -> idListInts.add(Integer.valueOf(a.getId())));
-      schemaEnvs.forEach(a -> idListInts.add(Integer.valueOf(a.getId())));
-      kafkaConnectEnvs.forEach(a -> idListInts.add(Integer.valueOf(a.getId())));
-
-      Optional<Integer> updatedList = idListInts.stream().max(Comparator.naturalOrder());
-      if (updatedList.isPresent()) {
-        int nextId = updatedList.get() + 1;
-        newEnv.setId(String.valueOf(nextId));
-      } else {
-        newEnv.setId("1");
-      }
+      Integer id =
+          manageDatabase
+              .getHandleDbRequests()
+              .getNextSeqIdAndUpdate(EntityType.ENVIRONMENT.name(), tenantId);
+      newEnv.setId(String.valueOf(id));
     } else {
       // modify env
       envActualList =
@@ -689,32 +678,10 @@ public class EnvsClustersTenantsControllerService {
                         && Objects.equals(en.getEnvExists(), "true"));
     if (envNameAlreadyPresent) {
       return ApiResponse.builder().success(false).message(ENV_CLUSTER_TNT_ERR_101).build();
-    } else if (envActualList.stream()
-        .anyMatch(
-            en ->
-                Objects.equals(en.getName(), newEnv.getName())
-                    && Objects.equals(en.getType(), newEnv.getType())
-                    && Objects.equals(en.getTenantId(), newEnv.getTenantId())
-                    && Objects.equals(en.getEnvExists(), "false"))) {
-      Optional<Env> envAlreadyExistsInDeleted =
-          envActualList.stream()
-              .filter(
-                  en ->
-                      en.getName().equals(newEnv.getName())
-                          && en.getType().equals(newEnv.getType())
-                          && en.getTenantId().equals(newEnv.getTenantId())
-                          && en.getEnvExists().equals("false"))
-              .findFirst();
-      if (envAlreadyExistsInDeleted.isPresent()) {
-        envIdAlreadyExistsInDeleteStatus = envAlreadyExistsInDeleted.get().getId();
-      }
     }
 
     Env env = new Env();
     copyProperties(newEnv, env);
-    if (!"".equals(envIdAlreadyExistsInDeleteStatus)) {
-      env.setId(envIdAlreadyExistsInDeleteStatus);
-    }
     env.setEnvExists("true");
 
     try {

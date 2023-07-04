@@ -107,7 +107,7 @@ class MigrationUtilityTest {
     Reflections reflections = new Reflections(PROD_PACKAGE_TO_SCAN);
     Set<Class<?>> classes = reflections.getTypesAnnotatedWith(DataMigration.class);
     // When adding a new package you will need to increment this by 1.
-    assertThat(classes.size()).isEqualTo(3);
+    assertThat(classes.size()).isEqualTo(4);
     Set<Integer> uniqueOrder = new HashSet<>();
     // Check Order Numbers are correctly assigned
     classes.forEach(

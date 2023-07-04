@@ -20,6 +20,7 @@ import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvParams;
@@ -139,6 +140,8 @@ class EnvsClustersTenantsControllerServiceTest {
         .thenReturn(SchemaEnv);
     when(handleDbRequestsJdbc.getEnvDetails(eq("2"), eq(101)))
         .thenReturn(generateKafkaEnv("2", "Kafka"));
+    when(handleDbRequestsJdbc.getNextSeqIdAndUpdate(eq(EntityType.ENVIRONMENT.name()), eq(101)))
+        .thenReturn(1);
     ApiResponse response = service.addNewEnv(env);
     kafkaEnv.setAssociatedEnv(env.getAssociatedEnv());
     verify(handleDbRequestsJdbc, times(1)).addNewEnv(eq(kafkaEnv));
@@ -200,6 +203,8 @@ class EnvsClustersTenantsControllerServiceTest {
     when(handleDbRequestsJdbc.getEnvDetails(eq("2"), eq(101)))
         .thenReturn(generateKafkaEnv("2", "Kafka"));
     when(handleDbRequestsJdbc.addNewEnv(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequestsJdbc.getNextSeqIdAndUpdate(eq(EntityType.ENVIRONMENT.name()), eq(101)))
+        .thenReturn(1);
     ApiResponse response = service.addNewEnv(env);
 
     assertThat(response.getMessage()).contains("success");
