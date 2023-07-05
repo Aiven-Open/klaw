@@ -3,9 +3,11 @@ import {
   DataTableColumn,
   EmptyState,
   PageHeader,
+  Skeleton,
 } from "@aivenio/aquarium";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicOverview } from "src/domain/topic";
+import { LoadingTable } from "src/app/features/components/layouts/LoadingTable";
 
 interface TopicHistoryRow {
   id: number;
@@ -18,7 +20,7 @@ interface TopicHistoryRow {
 }
 
 function TopicHistory() {
-  const { topicOverview } = useTopicDetails();
+  const { topicOverview, topicOverviewIsRefetching } = useTopicDetails();
 
   const columns: Array<DataTableColumn<TopicHistoryRow>> = [
     {
@@ -50,6 +52,14 @@ function TopicHistory() {
     },
   ];
 
+  const loadingColumns = columns.map((col) => {
+    return {
+      headerName: col.headerName,
+      width: col.width,
+      headerVisible: col.headerInvisible,
+    };
+  });
+
   const historyList: TopicOverview["topicHistoryList"] =
     topicOverview.topicHistoryList;
 
@@ -71,10 +81,19 @@ function TopicHistory() {
       <PageHeader title={"History"} />
       {!rows.length && rows.length === 0 && (
         <EmptyState title="No Topic history">
-          This Topic contains no history.
+          {!topicOverviewIsRefetching && <>This Topic contains no history.</>}
+          {topicOverviewIsRefetching && (
+            <div style={{ width: "650px", paddingLeft: "200px" }}>
+              <Skeleton />
+            </div>
+          )}
         </EmptyState>
       )}
-      {rows.length > 0 && (
+      {topicOverviewIsRefetching && rows.length > 0 && (
+        <LoadingTable rowLength={rows.length} columns={loadingColumns} />
+      )}
+
+      {!topicOverviewIsRefetching && rows.length > 0 && (
         <DataTable
           ariaLabel={"Topic history"}
           columns={columns}
