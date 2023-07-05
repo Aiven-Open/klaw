@@ -2,6 +2,7 @@ package io.aiven.klaw.clusterapi.services;
 
 import static org.mockito.ArgumentMatchers.any;
 
+import io.aiven.klaw.clusterapi.constants.TestConstants;
 import io.aiven.klaw.clusterapi.models.OffsetDetails;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
@@ -42,17 +43,13 @@ class MonitoringServiceTest {
 
   @Test
   void getConsumerGroupDetails() throws Exception {
-    String consumerGroupId = "consumerGroupId";
-    String topicName = "topicName";
-    String environment = "environment";
-    String clusterName = "clusterName";
-    int partition = 1;
     int offset = 1;
     List<TopicPartitionInfo> partitions = List.of(topicPartitionInfo);
     TopicDescription topicDescription = new TopicDescription("name", false, partitions);
     Map<String, KafkaFuture<TopicDescription>> nameTopicDescriptionFutures =
-        Map.of("topicName", KafkaFuture.completedFuture(topicDescription));
-    TopicPartition topicPartition = new TopicPartition(topicName, partition);
+        Map.of(TestConstants.TOPIC_NAME, KafkaFuture.completedFuture(topicDescription));
+    TopicPartition topicPartition =
+        new TopicPartition(TestConstants.TOPIC_NAME, TestConstants.SINGLE_PARTITION);
     KafkaFuture<ListOffsetsResult.ListOffsetsResultInfo> listOffsetResultInfoFutures =
         KafkaFuture.completedFuture(
             new ListOffsetsResult.ListOffsetsResultInfo(offset, 1, Optional.of(1)));
@@ -62,19 +59,25 @@ class MonitoringServiceTest {
     offsetDetails.setEndOffset(Long.toString(offset));
     offsetDetails.setLag(Long.toString(0));
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterName))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
         .thenReturn(adminClient);
-    Mockito.when(adminClient.describeTopics(Collections.singletonList(topicName)))
+    Mockito.when(adminClient.describeTopics(Collections.singletonList(TestConstants.TOPIC_NAME)))
         .thenReturn(describeTopicsResult);
     Mockito.when(describeTopicsResult.values()).thenReturn(nameTopicDescriptionFutures);
-    Mockito.when(topicPartitionInfo.partition()).thenReturn(partition);
+    Mockito.when(topicPartitionInfo.partition()).thenReturn(TestConstants.SINGLE_PARTITION);
     Mockito.when(adminClient.listOffsets(any())).thenReturn(listOffsetsEarliestResult);
     Mockito.when(listOffsetsEarliestResult.partitionResult(any()))
         .thenReturn(listOffsetResultInfoFutures);
 
     List<OffsetDetails> actual =
         monitoringService.getConsumerGroupDetails(
-            consumerGroupId, topicName, environment, protocol, clusterName);
+            TestConstants.CONSUMER_GROUP_ID,
+            TestConstants.TOPIC_NAME,
+            TestConstants.ENVIRONMENT,
+            protocol,
+            TestConstants.CLUSTER_NAME);
     List<OffsetDetails> expected = List.of(offsetDetails);
 
     Assertions.assertThat(actual).isEqualTo(expected);
@@ -82,17 +85,18 @@ class MonitoringServiceTest {
 
   @Test
   void getConsumerGroupDetailsFailure() throws Exception {
-    String consumerGroupId = "consumerGroupId";
-    String topicName = "topicName";
-    String environment = "environment";
-    String clusterName = "clusterName";
-
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterName))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
         .thenReturn(adminClient);
 
     List<OffsetDetails> actual =
         monitoringService.getConsumerGroupDetails(
-            consumerGroupId, topicName, environment, protocol, clusterName);
+            TestConstants.CONSUMER_GROUP_ID,
+            TestConstants.TOPIC_NAME,
+            TestConstants.ENVIRONMENT,
+            protocol,
+            TestConstants.CLUSTER_NAME);
     List<OffsetDetails> expected = Collections.emptyList();
 
     Assertions.assertThat(actual).isEqualTo(expected);

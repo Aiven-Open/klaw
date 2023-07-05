@@ -39,6 +39,8 @@ public class AivenApiServiceTest {
 
   private UtilMethods utilMethods;
 
+  private static final String ACLS_BASE_URL = "https://api.aiven.io/v1/project/";
+
   @BeforeEach
   public void setUp() {
     aivenApiService = new AivenApiService();
@@ -77,7 +79,7 @@ public class AivenApiServiceTest {
   public void createAclsServiceAccountDoesNotExist() throws Exception {
     ClusterAclRequest clusterAclRequest = utilMethods.getAivenAclRequest("Producer");
     String createAclsUri =
-        "https://api.aiven.io/v1/project/"
+        ACLS_BASE_URL
             + clusterAclRequest.getProjectName()
             + "/service/"
             + clusterAclRequest.getServiceName()
@@ -94,7 +96,7 @@ public class AivenApiServiceTest {
 
     // get service account stubs
     String getServiceAccountUri =
-        "https://api.aiven.io/v1/project/"
+        ACLS_BASE_URL
             + clusterAclRequest.getProjectName()
             + "/service/"
             + clusterAclRequest.getServiceName()
@@ -110,7 +112,7 @@ public class AivenApiServiceTest {
 
     // create service account stubs
     String createServiceAccountUri =
-        "https://api.aiven.io/v1/project/"
+        ACLS_BASE_URL
             + clusterAclRequest.getProjectName()
             + "/service/"
             + clusterAclRequest.getServiceName()
@@ -130,7 +132,7 @@ public class AivenApiServiceTest {
   public void createAclsServiceAccountExists() throws Exception {
     ClusterAclRequest clusterAclRequest = utilMethods.getAivenAclRequest("Producer");
     String createAclsUri =
-        "https://api.aiven.io/v1/project/"
+        ACLS_BASE_URL
             + clusterAclRequest.getProjectName()
             + "/service/"
             + clusterAclRequest.getServiceName()
@@ -147,7 +149,7 @@ public class AivenApiServiceTest {
 
     // get service account stubs
     String getServiceAccountUri =
-        "https://api.aiven.io/v1/project/"
+        ACLS_BASE_URL
             + clusterAclRequest.getProjectName()
             + "/service/"
             + clusterAclRequest.getServiceName()
@@ -176,7 +178,7 @@ public class AivenApiServiceTest {
   public void createAclsServiceAccountExistsFailure() {
     ClusterAclRequest clusterAclRequest = utilMethods.getAivenAclRequest("Producer");
     String createAclsUri =
-        "https://api.aiven.io/v1/project/"
+        ACLS_BASE_URL
             + clusterAclRequest.getProjectName()
             + "/service/"
             + clusterAclRequest.getServiceName()
@@ -194,8 +196,7 @@ public class AivenApiServiceTest {
   @Test
   public void getServiceAccounts() {
     // get service account stubs
-    String getServiceAccountUri =
-        "https://api.aiven.io/v1/project/" + "testproject" + "/service/" + "testservice";
+    String getServiceAccountUri = ACLS_BASE_URL + "testproject" + "/service/" + "testservice";
 
     Map<String, Map<String, Object>> serviceAccountsResponse = new HashMap<>();
     Map<String, Object> userNameMap = new HashMap<>();
@@ -229,8 +230,7 @@ public class AivenApiServiceTest {
   @Test
   public void getServiceAccountsDontExist() {
     // get service account stubs
-    String getServiceAccountUri =
-        "https://api.aiven.io/v1/project/" + "testproject" + "/service/" + "testservice";
+    String getServiceAccountUri = ACLS_BASE_URL + "testproject" + "/service/" + "testservice";
 
     Map<String, Map<String, Object>> serviceAccountsResponse = new HashMap<>();
     ResponseEntity responseEntityServiceAccount =
@@ -249,8 +249,7 @@ public class AivenApiServiceTest {
 
   @Test
   public void listAcls() throws Exception {
-    String getAclsUrl =
-        "https://api.aiven.io/v1/project/" + "testproject" + "/service/" + "testservice" + "/acl";
+    String getAclsUrl = ACLS_BASE_URL + "testproject" + "/service/" + "testservice" + "/acl";
 
     Map<String, String> aclMap1 = Map.of("permission", "read");
     Map<String, String> aclMap2 = Map.of("permission", "write");
@@ -281,8 +280,7 @@ public class AivenApiServiceTest {
 
   @Test
   public void listAclsFailure() throws Exception {
-    String getAclsUrl =
-        "https://api.aiven.io/v1/project/" + "testproject" + "/service/" + "testservice" + "/acl";
+    String getAclsUrl = ACLS_BASE_URL + "testproject" + "/service/" + "testservice" + "/acl";
 
     when(restTemplate.exchange(
             eq(getAclsUrl),
@@ -299,7 +297,6 @@ public class AivenApiServiceTest {
 
   @Test
   public void deleteAclsTest() throws Exception {
-    // TODO when, asserts
     ClusterAclRequest clusterAclRequest =
         ClusterAclRequest.builder()
             .aivenAclKey("4322342")
@@ -308,14 +305,13 @@ public class AivenApiServiceTest {
             .build();
 
     String actual = aivenApiService.deleteAcls(clusterAclRequest);
-    String expected = "success";
+    String expected = ApiResultStatus.SUCCESS.value;
 
     assertThat(actual).isEqualTo(expected);
   }
 
   @Test
   public void deleteAclsTestFailure() throws Exception {
-    // TODO when, asserts
     ClusterAclRequest clusterAclRequest =
         ClusterAclRequest.builder()
             .aivenAclKey("4322342")
@@ -323,7 +319,7 @@ public class AivenApiServiceTest {
             .serviceName("serviceName")
             .build();
     String aclsUrl =
-        "https://api.aiven.io/v1/project/"
+        ACLS_BASE_URL
             + clusterAclRequest.getProjectName()
             + "/service/"
             + clusterAclRequest.getServiceName()

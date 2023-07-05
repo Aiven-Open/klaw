@@ -2,6 +2,7 @@ package io.aiven.klaw.clusterapi.services;
 
 import static io.aiven.klaw.clusterapi.services.SchemaService.SCHEMA_VALUE_URI;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -9,6 +10,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.clusterapi.constants.TestConstants;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.SchemaCompatibilityCheckResponse;
@@ -45,6 +47,10 @@ class SchemaServiceTest {
 
   public static final String TOPIC_GET_VERSIONS_URI_TEMPLATE =
       "/subjects/{topic_name}-value/versions";
+
+  public static final String SCHEMA_SUBJECTS_URL =
+      "http://" + TestConstants.ENVIRONMENT + "/subjects";
+
   @Autowired SchemaService schemaService;
   RestTemplate restTemplate;
   @Autowired ObjectMapper objectMapper;
@@ -485,21 +491,18 @@ class SchemaServiceTest {
   @Test
   @Order(13)
   public void getSchemaRegistryStatusClusterStatusOnline() throws JsonProcessingException {
-    String environmentVal = "ENVIRONMENT";
     KafkaSupportedProtocol protocol = KafkaSupportedProtocol.PLAINTEXT;
-    String clusterIdentification = "CLUSTER";
-    String suffixUrl = environmentVal + "/" + "subjects";
-    String url = "http://" + suffixUrl;
 
-    when(getAdminClient.getRequestDetails(suffixUrl, protocol))
-        .thenReturn(Pair.of(url, restTemplate));
+    when(getAdminClient.getRequestDetails(anyString(), eq(protocol)))
+        .thenReturn(Pair.of(SCHEMA_SUBJECTS_URL, restTemplate));
     this.mockRestServiceServer
-        .expect(requestTo(url))
+        .expect(requestTo(SCHEMA_SUBJECTS_URL))
         .andRespond(
             withSuccess(objectMapper.writeValueAsString(Object.class), MediaType.APPLICATION_JSON));
 
     ClusterStatus actual =
-        schemaService.getSchemaRegistryStatus(environmentVal, protocol, clusterIdentification);
+        schemaService.getSchemaRegistryStatus(
+            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION);
     ClusterStatus expected = ClusterStatus.ONLINE;
 
     Assertions.assertThat(actual).isEqualTo(expected);
@@ -507,19 +510,18 @@ class SchemaServiceTest {
 
   @Test
   @Order(14)
-  public void getSchemaRegistryStatusClusterStatusOffline() throws JsonProcessingException {
-    String environmentVal = "ENVIRONMENT";
+  public void getSchemaRegistryStatusClusterStatusOffline() {
     KafkaSupportedProtocol protocol = KafkaSupportedProtocol.PLAINTEXT;
-    String clusterIdentification = "CLUSTER";
-    String suffixUrl = environmentVal + "/" + "subjects";
-    String url = "http://" + suffixUrl;
 
-    when(getAdminClient.getRequestDetails(suffixUrl, protocol))
-        .thenReturn(Pair.of(url, restTemplate));
-    this.mockRestServiceServer.expect(requestTo(url)).andRespond(withUnauthorizedRequest());
+    when(getAdminClient.getRequestDetails(anyString(), eq(protocol)))
+        .thenReturn(Pair.of(SCHEMA_SUBJECTS_URL, restTemplate));
+    this.mockRestServiceServer
+        .expect(requestTo(SCHEMA_SUBJECTS_URL))
+        .andRespond(withUnauthorizedRequest());
 
     ClusterStatus actual =
-        schemaService.getSchemaRegistryStatus(environmentVal, protocol, clusterIdentification);
+        schemaService.getSchemaRegistryStatus(
+            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION);
     ClusterStatus expected = ClusterStatus.OFFLINE;
 
     Assertions.assertThat(actual).isEqualTo(expected);

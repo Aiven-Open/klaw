@@ -55,7 +55,7 @@ class ApacheKafkaAclServiceTest {
   }
 
   @Test
-  public void loadAcls1() throws Exception {
+  public void loadAcls_OperationRead() throws Exception {
     List<AclBinding> listAclBindings = utilMethods.getListAclBindings(accessControlEntry);
 
     when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
@@ -73,7 +73,7 @@ class ApacheKafkaAclServiceTest {
   }
 
   @Test
-  public void loadAcls2() throws Exception {
+  public void loadAcls_OperationCreate() throws Exception {
     List<AclBinding> listAclBindings = utilMethods.getListAclBindings(accessControlEntry);
 
     when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
@@ -90,7 +90,7 @@ class ApacheKafkaAclServiceTest {
   }
 
   @Test
-  public void loadAcls3() throws Exception {
+  public void loadAclsFailure() throws Exception {
     when(clusterApiUtils.getAdminClient(any(), eq(KafkaSupportedProtocol.PLAINTEXT), anyString()))
         .thenReturn(adminClient);
     when(adminClient.describeAcls(any())).thenThrow(new RuntimeException("Describe Acls Error"));

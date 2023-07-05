@@ -15,7 +15,6 @@ import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
@@ -441,11 +440,12 @@ class SchemaServiceRegisterSchemaTest {
 
   @Test
   public void registerNewSchema() {
+    int id = 1;
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
     RegisterSchemaResponse registerSchemaResponse = new RegisterSchemaResponse();
-    registerSchemaResponse.setId(1);
+    registerSchemaResponse.setId(id);
+    ResponseEntity<Set<Integer>> response = new ResponseEntity<>(Set.of(id), HttpStatus.OK);
 
-    ResponseEntity<Set<Integer>> response2 = new ResponseEntity<>(Set.of(1), HttpStatus.OK);
     when(clusterApiUtil.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
     when(clusterApiUtil.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
     when(restTemplate.postForEntity(anyString(), any(), eq(RegisterSchemaResponse.class)))
@@ -456,7 +456,7 @@ class SchemaServiceRegisterSchemaTest {
             any(),
             eq(new ParameterizedTypeReference<Set<Integer>>() {}),
             anyMap()))
-        .thenReturn(response2);
+        .thenReturn(response);
 
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
     assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
@@ -464,18 +464,18 @@ class SchemaServiceRegisterSchemaTest {
         (RegisterSchemaCustomResponse) resultResp.getData();
     assertThat(registerSchemaCustomResponse.isSchemaRegistered()).isTrue();
     assertThat(registerSchemaCustomResponse.getVersion()).isEqualTo(1);
-    assertThat(registerSchemaCustomResponse.getId()).isEqualTo(1);
+    assertThat(registerSchemaCustomResponse.getId()).isEqualTo(id);
   }
 
   @Test
   public void registerSchemaFailure() {
     ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
-    ResponseEntity<List<Integer>> response = new ResponseEntity<>(List.of(1, 2), HttpStatus.OK);
+
     when(clusterApiUtil.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
     when(clusterApiUtil.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
-
     when(restTemplate.postForEntity(anyString(), any(), eq(RegisterSchemaResponse.class)))
         .thenThrow(new RuntimeException("Unable to connect"));
+
     ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
     assertThat(resultResp.getMessage())
         .contains("Failure in registering schema.")

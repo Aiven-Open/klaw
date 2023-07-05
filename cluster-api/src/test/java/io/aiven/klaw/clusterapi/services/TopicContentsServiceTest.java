@@ -1,5 +1,6 @@
 package io.aiven.klaw.clusterapi.services;
 
+import io.aiven.klaw.clusterapi.constants.TestConstants;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
 import java.util.Map;
@@ -25,26 +26,23 @@ class TopicContentsServiceTest {
   @Test
   void readEvents() {
     String protocol = "SSL";
-    String clusterName = "cluster_name";
-    String topicName = "topic_name";
     int offsetPosition = 0;
     String readMessagesType = "OFFSET_ID";
-    String consumerGroupId = "my-consumer-group";
     String bootstrapServers = "localhost:9092";
-    String clusterIdentification = "my-cluster-identifier";
 
-    Mockito.when(clusterApiUtils.getSslConfig(clusterIdentification)).thenReturn(new Properties());
+    Mockito.when(clusterApiUtils.getSslConfig(TestConstants.CLUSTER_IDENTIFICATION))
+        .thenReturn(new Properties());
 
     Map<Long, String> actual =
         topicContentsService.readEvents(
             bootstrapServers,
             protocol,
-            clusterName,
-            consumerGroupId,
-            topicName,
+            TestConstants.CLUSTER_NAME,
+            TestConstants.CONSUMER_GROUP_ID,
+            TestConstants.TOPIC_NAME,
             offsetPosition,
             readMessagesType,
-            clusterIdentification);
+            TestConstants.CLUSTER_IDENTIFICATION);
 
     Map<Long, String> expected = Collections.emptyMap();
     Assertions.assertThat(actual).isEqualTo(expected);

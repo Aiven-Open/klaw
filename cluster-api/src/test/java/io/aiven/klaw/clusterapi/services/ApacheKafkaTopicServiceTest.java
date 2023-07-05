@@ -4,9 +4,11 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
 
+import io.aiven.klaw.clusterapi.constants.TestConstants;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
 import io.aiven.klaw.clusterapi.models.TopicConfig;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.*;
@@ -46,6 +48,7 @@ class ApacheKafkaTopicServiceTest {
   @Mock private TopicPartitionInfo topicPartitionInfo;
   @Mock private CreateTopicsResult createTopicsResult;
   @Mock private DeleteTopicsResult deleteTopicsResult;
+  @Mock private KafkaFuture<Void> kafkaFuture;
 
   private static Stream<Exception> exceptionProviderForCreateTopic() {
     return Stream.of(
@@ -71,15 +74,16 @@ class ApacheKafkaTopicServiceTest {
 
   @Test
   void loadTopicsClientNull() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
-
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(null);
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
         assertThatThrownBy(
-            () -> apacheKafkaTopicService.loadTopics(environment, protocol, clusterIdentification));
+            () ->
+                apacheKafkaTopicService.loadTopics(
+                    TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION));
 
     exception.isInstanceOf(Exception.class);
     exception.hasMessage("Cannot connect to cluster.");
@@ -87,8 +91,6 @@ class ApacheKafkaTopicServiceTest {
 
   @Test
   void loadTopics() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
     Map<String, TopicDescription> topicDescriptionsPerAdminClient =
         new HashMap<>(
             Map.of(
@@ -97,7 +99,9 @@ class ApacheKafkaTopicServiceTest {
                 "_schemas", topicDescription,
                 "topic", topicDescription));
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
     Mockito.when(adminClient.listTopics(any(ListTopicsOptions.class))).thenReturn(listTopicsResult);
     Mockito.when(listTopicsResult.names()).thenReturn(KafkaFuture.completedFuture(Set.of("name")));
@@ -108,23 +112,24 @@ class ApacheKafkaTopicServiceTest {
     Mockito.when(topicDescription.partitions()).thenReturn(List.of(topicPartitionInfo));
 
     Set<TopicConfig> topicConfigs =
-        apacheKafkaTopicService.loadTopics(environment, protocol, clusterIdentification);
+        apacheKafkaTopicService.loadTopics(
+            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION);
 
     Assertions.assertThat(topicConfigs.size()).isEqualTo(1);
   }
 
   @Test
   void createTopicClientNull() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
             .build();
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(null);
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
@@ -136,62 +141,54 @@ class ApacheKafkaTopicServiceTest {
 
   @Test
   void createTopic() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
-    String topicName = "TOPIC_NAME";
-    int partitions = 5;
-    short replicationFactor = 1;
-    Map<String, String> advancedTopicConfiguration = Map.of("topic", "config");
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
-            .topicName(topicName)
-            .partitions(partitions)
-            .replicationFactor(replicationFactor)
-            .advancedTopicConfiguration(advancedTopicConfiguration)
+            .topicName(TestConstants.TOPIC_NAME)
+            .partitions(TestConstants.MULTIPLE_PARTITIONS)
+            .replicationFactor(TestConstants.REPLICATION_FACTOR)
+            .advancedTopicConfiguration(TestConstants.ADVANCED_TOPIC_CONFIGURATION)
             .build();
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
     Mockito.when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
     Mockito.when(createTopicsResult.values())
-        .thenReturn(Map.of(topicName, KafkaFuture.completedFuture(null)));
+        .thenReturn(Map.of(TestConstants.TOPIC_NAME, KafkaFuture.completedFuture(null)));
 
     ApiResponse response = apacheKafkaTopicService.createTopic(clusterTopicRequest);
 
     Assertions.assertThat(response.isSuccess()).isTrue();
-    Assertions.assertThat(response.getMessage()).isEqualTo("success");
+    Assertions.assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   void createTopicTopicExistsException() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
-    String topicName = "TOPIC_NAME";
-    int partitions = 5;
-    short replicationFactor = 1;
-    Map<String, String> advancedTopicConfiguration = Map.of("topic", "config");
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
-            .topicName(topicName)
-            .partitions(partitions)
-            .replicationFactor(replicationFactor)
-            .advancedTopicConfiguration(advancedTopicConfiguration)
+            .topicName(TestConstants.TOPIC_NAME)
+            .partitions(TestConstants.MULTIPLE_PARTITIONS)
+            .replicationFactor(TestConstants.REPLICATION_FACTOR)
+            .advancedTopicConfiguration(TestConstants.ADVANCED_TOPIC_CONFIGURATION)
             .build();
     Map<String, TopicDescription> topicDescriptionsPerAdminClient =
-        new HashMap<>(Map.of(topicName, topicDescription));
-    Exception expected = new ExecutionException(new TopicExistsException(topicName));
-    KafkaFuture<Void> kafkaFuture = mock(KafkaFuture.class);
+        new HashMap<>(Map.of(TestConstants.TOPIC_NAME, topicDescription));
+    Exception expected = new ExecutionException(new TopicExistsException(TestConstants.TOPIC_NAME));
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
     Mockito.when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
-    Mockito.when(createTopicsResult.values()).thenReturn(Map.of(topicName, kafkaFuture));
+    Mockito.when(createTopicsResult.values())
+        .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
     Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS)).thenThrow(expected);
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
@@ -207,31 +204,27 @@ class ApacheKafkaTopicServiceTest {
 
   @Test
   void createTopicTopicExistsWithSameConfig() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
-    String topicName = "TOPIC_NAME";
-    int partitions = 1;
-    short replicationFactor = 1;
-    Map<String, String> advancedTopicConfiguration = Map.of("topic", "config");
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
-            .topicName(topicName)
-            .partitions(partitions)
-            .replicationFactor(replicationFactor)
-            .advancedTopicConfiguration(advancedTopicConfiguration)
+            .topicName(TestConstants.TOPIC_NAME)
+            .partitions(TestConstants.SINGLE_PARTITION)
+            .replicationFactor(TestConstants.REPLICATION_FACTOR)
+            .advancedTopicConfiguration(TestConstants.ADVANCED_TOPIC_CONFIGURATION)
             .build();
     Map<String, TopicDescription> topicDescriptionsPerAdminClient =
-        new HashMap<>(Map.of(topicName, topicDescription));
-    Exception expected = new ExecutionException(new TopicExistsException(topicName));
-    KafkaFuture<Void> kafkaFuture = mock(KafkaFuture.class);
+        new HashMap<>(Map.of(TestConstants.TOPIC_NAME, topicDescription));
+    Exception expected = new ExecutionException(new TopicExistsException(TestConstants.TOPIC_NAME));
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
     Mockito.when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
-    Mockito.when(createTopicsResult.values()).thenReturn(Map.of(topicName, kafkaFuture));
+    Mockito.when(createTopicsResult.values())
+        .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
     Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS)).thenThrow(expected);
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
@@ -243,34 +236,30 @@ class ApacheKafkaTopicServiceTest {
     ApiResponse response = apacheKafkaTopicService.createTopic(clusterTopicRequest);
 
     Assertions.assertThat(response.isSuccess()).isTrue();
-    Assertions.assertThat(response.getMessage()).isEqualTo("success");
+    Assertions.assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @ParameterizedTest
   @MethodSource("exceptionProviderForCreateTopic")
   void createTopicException(Exception expected) throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
-    String topicName = "TOPIC_NAME";
-    int partitions = 5;
-    short replicationFactor = 1;
-    Map<String, String> advancedTopicConfiguration = Map.of("topic", "config");
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
-            .topicName(topicName)
-            .partitions(partitions)
-            .replicationFactor(replicationFactor)
-            .advancedTopicConfiguration(advancedTopicConfiguration)
+            .topicName(TestConstants.TOPIC_NAME)
+            .partitions(TestConstants.MULTIPLE_PARTITIONS)
+            .replicationFactor(TestConstants.REPLICATION_FACTOR)
+            .advancedTopicConfiguration(TestConstants.ADVANCED_TOPIC_CONFIGURATION)
             .build();
-    KafkaFuture<Void> kafkaFuture = mock(KafkaFuture.class);
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
     Mockito.when(adminClient.createTopics(anyCollection())).thenReturn(createTopicsResult);
-    Mockito.when(createTopicsResult.values()).thenReturn(Map.of(topicName, kafkaFuture));
+    Mockito.when(createTopicsResult.values())
+        .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
     Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS)).thenThrow(expected);
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
@@ -280,16 +269,16 @@ class ApacheKafkaTopicServiceTest {
 
   @Test
   void updateTopicClientNull() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
             .build();
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(null);
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
@@ -301,26 +290,22 @@ class ApacheKafkaTopicServiceTest {
 
   @Test
   void updateTopic() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
-    String topicName = "TOPIC_NAME";
-    int partitions = 5;
-    short replicationFactor = 1;
-    Map<String, String> advancedTopicConfiguration = Map.of("topic", "config");
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
-            .topicName(topicName)
-            .partitions(partitions)
-            .replicationFactor(replicationFactor)
-            .advancedTopicConfiguration(advancedTopicConfiguration)
+            .topicName(TestConstants.TOPIC_NAME)
+            .partitions(TestConstants.MULTIPLE_PARTITIONS)
+            .replicationFactor(TestConstants.REPLICATION_FACTOR)
+            .advancedTopicConfiguration(TestConstants.ADVANCED_TOPIC_CONFIGURATION)
             .build();
     Map<String, TopicDescription> topicDescriptionsPerAdminClient =
-        new HashMap<>(Map.of(topicName, topicDescription));
+        new HashMap<>(Map.of(TestConstants.TOPIC_NAME, topicDescription));
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
     Mockito.when(adminClient.describeTopics(any(Collection.class)))
         .thenReturn(describeTopicsResult);
@@ -332,21 +317,21 @@ class ApacheKafkaTopicServiceTest {
     ApiResponse response = apacheKafkaTopicService.updateTopic(clusterTopicRequest);
 
     Assertions.assertThat(response.isSuccess()).isTrue();
-    Assertions.assertThat(response.getMessage()).isEqualTo("success");
+    Assertions.assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   void deleteTopicClientNull() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
             .build();
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(null);
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
@@ -358,100 +343,87 @@ class ApacheKafkaTopicServiceTest {
 
   @Test
   void deleteTopic() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
-    String topicName = "TOPIC_NAME";
-    int partitions = 1;
-    short replicationFactor = 1;
-    Map<String, String> advancedTopicConfiguration = Map.of("topic", "config");
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
-            .topicName(topicName)
-            .partitions(partitions)
-            .replicationFactor(replicationFactor)
-            .advancedTopicConfiguration(advancedTopicConfiguration)
+            .topicName(TestConstants.TOPIC_NAME)
+            .partitions(TestConstants.SINGLE_PARTITION)
+            .replicationFactor(TestConstants.REPLICATION_FACTOR)
+            .advancedTopicConfiguration(TestConstants.ADVANCED_TOPIC_CONFIGURATION)
             .deleteAssociatedSchema(true)
             .build();
-    ApiResponse schemaApiResponse = ApiResponse.builder().message("success").build();
+    ApiResponse schemaApiResponse =
+        ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
     Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
     Mockito.when(deleteTopicsResult.values())
-        .thenReturn(Map.of(topicName, KafkaFuture.completedFuture(null)));
+        .thenReturn(Map.of(TestConstants.TOPIC_NAME, KafkaFuture.completedFuture(null)));
     Mockito.when(schemaService.deleteSchema(clusterTopicRequest)).thenReturn(schemaApiResponse);
 
     ApiResponse response = apacheKafkaTopicService.deleteTopic(clusterTopicRequest);
 
     Assertions.assertThat(response.isSuccess()).isTrue();
-    Assertions.assertThat(response.getMessage()).isEqualTo("success");
+    Assertions.assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @Test
   void deleteTopicUnknownTopicOrPartitionException() throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
-    String topicName = "TOPIC_NAME";
-    int partitions = 1;
-    short replicationFactor = 1;
-    Map<String, String> advancedTopicConfiguration = Map.of("topic", "config");
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
-            .topicName(topicName)
-            .partitions(partitions)
-            .replicationFactor(replicationFactor)
-            .advancedTopicConfiguration(advancedTopicConfiguration)
+            .topicName(TestConstants.TOPIC_NAME)
+            .partitions(TestConstants.SINGLE_PARTITION)
+            .replicationFactor(TestConstants.REPLICATION_FACTOR)
+            .advancedTopicConfiguration(TestConstants.ADVANCED_TOPIC_CONFIGURATION)
             .deleteAssociatedSchema(true)
             .build();
-    ApiResponse schemaApiResponse = ApiResponse.builder().message("success").build();
-    KafkaFuture<Void> kafkaFuture = mock(KafkaFuture.class);
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
     Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
-    Mockito.when(deleteTopicsResult.values()).thenReturn(Map.of(topicName, kafkaFuture));
+    Mockito.when(deleteTopicsResult.values())
+        .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
     Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS))
         .thenThrow(new InterruptedException("UnknownTopicOrPartition"));
 
     ApiResponse response = apacheKafkaTopicService.deleteTopic(clusterTopicRequest);
 
     Assertions.assertThat(response.isSuccess()).isTrue();
-    Assertions.assertThat(response.getMessage()).isEqualTo("success");
+    Assertions.assertThat(response.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
   @ParameterizedTest
   @MethodSource("exceptionProviderForDeleteTopic")
   void deleteTopicException(Exception expected) throws Exception {
-    String environment = "ENVIRONMENT";
-    String clusterIdentification = "CLUSTER_IDENTIFICATION";
-    String topicName = "TOPIC_NAME";
-    int partitions = 1;
-    short replicationFactor = 1;
-    Map<String, String> advancedTopicConfiguration = Map.of("topic", "config");
     ClusterTopicRequest clusterTopicRequest =
         ClusterTopicRequest.builder()
-            .env(environment)
-            .clusterName(clusterIdentification)
+            .env(TestConstants.ENVIRONMENT)
+            .clusterName(TestConstants.CLUSTER_IDENTIFICATION)
             .protocol(protocol)
-            .topicName(topicName)
-            .partitions(partitions)
-            .replicationFactor(replicationFactor)
-            .advancedTopicConfiguration(advancedTopicConfiguration)
+            .topicName(TestConstants.TOPIC_NAME)
+            .partitions(TestConstants.SINGLE_PARTITION)
+            .replicationFactor(TestConstants.REPLICATION_FACTOR)
+            .advancedTopicConfiguration(TestConstants.ADVANCED_TOPIC_CONFIGURATION)
             .deleteAssociatedSchema(true)
             .build();
-    ApiResponse schemaApiResponse = ApiResponse.builder().message("success").build();
-    KafkaFuture<Void> kafkaFuture = mock(KafkaFuture.class);
 
-    Mockito.when(clusterApiUtils.getAdminClient(environment, protocol, clusterIdentification))
+    Mockito.when(
+            clusterApiUtils.getAdminClient(
+                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_IDENTIFICATION))
         .thenReturn(adminClient);
     Mockito.when(adminClient.deleteTopics(any(Collection.class))).thenReturn(deleteTopicsResult);
-    Mockito.when(deleteTopicsResult.values()).thenReturn(Map.of(topicName, kafkaFuture));
+    Mockito.when(deleteTopicsResult.values())
+        .thenReturn(Map.of(TestConstants.TOPIC_NAME, kafkaFuture));
     Mockito.when(kafkaFuture.get(5, TimeUnit.SECONDS)).thenThrow(expected);
 
     AbstractThrowableAssert<?, ? extends Throwable> exception =
