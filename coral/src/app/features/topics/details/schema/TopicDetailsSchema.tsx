@@ -9,6 +9,7 @@ import {
   NativeSelect,
   Option,
   PageHeader,
+  TextareaBase,
   Typography,
   useToast,
 } from "@aivenio/aquarium";
@@ -192,27 +193,29 @@ function TopicDetailsSchema() {
       />
       <Box marginTop={"l3"} marginBottom={"l2"}>
         <Label>Schema</Label>
-
-        <Box borderColor={"grey-20"} borderWidth={"1px"}>
-          <MonacoEditor
-            data-testid="topic-schema"
-            height="250px"
-            language="json"
-            theme={"light"}
-            value={schemaDetailsPerEnv.content}
-            loading={"Loading preview"}
-            options={{
-              ariaLabel: "Schema preview",
-              readOnly: true,
-              domReadOnly: true,
-              renderControlCharacters: false,
-              minimap: { enabled: false },
-              folding: false,
-              lineNumbers: "off",
-              scrollBeyondLastLine: false,
-            }}
-          />
-        </Box>
+        {topicSchemasIsRefetching ? (
+          <TextareaBase.Skeleton />
+        ) : (
+          <Box borderColor={"grey-20"} borderWidth={"1px"}>
+            <MonacoEditor
+              data-testid="topic-schema"
+              height="250px"
+              language="json"
+              theme={"light"}
+              value={schemaDetailsPerEnv.content}
+              options={{
+                ariaLabel: "Schema preview",
+                readOnly: true,
+                domReadOnly: true,
+                renderControlCharacters: false,
+                minimap: { enabled: false },
+                folding: false,
+                lineNumbers: "off",
+                scrollBeyondLastLine: false,
+              }}
+            />
+          </Box>
+        )}
       </Box>
     </>
   );
