@@ -157,124 +157,116 @@ function TopicPromotionRequest() {
           Do you want to cancel this request? The data added will be lost.
         </Dialog>
       )}
-      <Box>
-        <Form
-          {...form}
-          ariaLabel={"Request topic promotion"}
-          onSubmit={onPromoteSubmit}
-        >
-          <Box width={"full"}>
-            {targetEnvironment !== undefined ? (
-              <NativeSelect
-                name="environment"
-                labelText={"Environment"}
-                required
-                readOnly
+      <Form
+        {...form}
+        ariaLabel={"Request topic promotion"}
+        onSubmit={onPromoteSubmit}
+      >
+        <Box width={"full"}>
+          {targetEnvironment !== undefined ? (
+            <NativeSelect
+              name="environment"
+              labelText={"Environment"}
+              required
+              readOnly
+            >
+              <Option
+                key={targetEnvironment.name}
+                value={targetEnvironment.name}
               >
-                <Option
-                  key={targetEnvironment.name}
-                  value={targetEnvironment.name}
-                >
-                  {targetEnvironment.name}
-                </Option>
-              </NativeSelect>
+                {targetEnvironment.name}
+              </Option>
+            </NativeSelect>
+          ) : (
+            <NativeSelect.Skeleton />
+          )}
+        </Box>
+        <Box paddingY={"l1"}>
+          <Divider />
+        </Box>
+        <TextInput<Schema>
+          name={"topicname"}
+          labelText="Topic name"
+          placeholder={generateTopicNameDescription(targetEnvironment?.params)}
+          required={true}
+          readOnly
+        />
+        <Box.Flex gap={"l1"}>
+          <Box grow={1} width={"1/2"}>
+            {targetEnvironment !== undefined ? (
+              <SelectOrNumberInput
+                name={"topicpartitions"}
+                label={"Topic partitions"}
+                max={targetEnvironment.params?.maxPartitions}
+                required={true}
+              />
             ) : (
-              <NativeSelect.Skeleton />
+              <Input.Skeleton />
             )}
           </Box>
-          <Box>
-            <Box paddingY={"l1"}>
-              <Divider />
-            </Box>
-            <TextInput<Schema>
-              name={"topicname"}
-              labelText="Topic name"
-              placeholder={generateTopicNameDescription(
-                targetEnvironment?.params
-              )}
+          <Box grow={1} width={"1/2"}>
+            {targetEnvironment !== undefined ? (
+              <SelectOrNumberInput
+                name={"replicationfactor"}
+                label={"Replication factor"}
+                max={targetEnvironment.params?.maxRepFactor}
+                required={true}
+              />
+            ) : (
+              <Input.Skeleton />
+            )}
+          </Box>
+        </Box.Flex>
+
+        <Box paddingY={"l1"}>
+          <Divider />
+        </Box>
+        <AdvancedConfiguration name={"advancedConfiguration"} />
+
+        <Box paddingY={"l1"}>
+          <Divider />
+        </Box>
+        <Box.Flex gap={"l1"}>
+          <Box grow={1} width={"1/2"}>
+            <Textarea<Schema>
+              name="description"
+              labelText="Description"
+              rows={5}
               required={true}
               readOnly
             />
-            <Box.Flex gap={"l1"}>
-              <Box grow={1} width={"1/2"}>
-                {targetEnvironment !== undefined ? (
-                  <SelectOrNumberInput
-                    name={"topicpartitions"}
-                    label={"Topic partitions"}
-                    max={targetEnvironment.params?.maxPartitions}
-                    required={true}
-                  />
-                ) : (
-                  <Input.Skeleton />
-                )}
-              </Box>
-              <Box grow={1} width={"1/2"}>
-                {targetEnvironment !== undefined ? (
-                  <SelectOrNumberInput
-                    name={"replicationfactor"}
-                    label={"Replication factor"}
-                    max={targetEnvironment.params?.maxRepFactor}
-                    required={true}
-                  />
-                ) : (
-                  <Input.Skeleton />
-                )}
-              </Box>
-            </Box.Flex>
           </Box>
-          <Box>
-            <Box paddingY={"l1"}>
-              <Divider />
-            </Box>
-            <AdvancedConfiguration name={"advancedConfiguration"} />
+          <Box grow={1} width={"1/2"}>
+            <Textarea<Schema>
+              name="remarks"
+              labelText="Message for approval"
+              rows={5}
+            />
           </Box>
+        </Box.Flex>
 
-          <Box>
-            <Box paddingY={"l1"}>
-              <Divider />
-            </Box>
-            <Box.Flex gap={"l1"}>
-              <Box grow={1} width={"1/2"}>
-                <Textarea<Schema>
-                  name="description"
-                  labelText="Description"
-                  rows={5}
-                  required={true}
-                  readOnly
-                />
-              </Box>
-              <Box grow={1} width={"1/2"}>
-                <Textarea<Schema>
-                  name="remarks"
-                  labelText="Message for approval"
-                  rows={5}
-                />
-              </Box>
-            </Box.Flex>
+        {promoteIsError && (
+          <Box marginBottom={"l1"} role="alert">
+            <Alert type="error">{parseErrorMsg(promoteError)}</Alert>
           </Box>
-          {promoteIsError && (
-            <Box marginBottom={"l1"} role="alert">
-              <Alert type="error">{parseErrorMsg(promoteError)}</Alert>
-            </Box>
-          )}
-          <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
-            <SubmitButton loading={promoteIsLoading}>
-              Submit promotion request
-            </SubmitButton>
-            <Button
-              type="button"
-              kind={"secondary"}
-              onClick={
-                form.formState.isDirty
-                  ? () => setCancelDialogVisible(true)
-                  : () => cancelRequest()
-              }
-            >
-              Cancel
-            </Button>
-          </Box>
-        </Form>
-      </Box>
+        )}
+        <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
+          <SubmitButton loading={promoteIsLoading}>
+            Submit promotion request
+          </SubmitButton>
+          <Button
+            type="button"
+            kind={"secondary"}
+            onClick={
+              form.formState.isDirty
+                ? () => setCancelDialogVisible(true)
+                : () => cancelRequest()
+            }
+          >
+            Cancel
+          </Button>
+        </Box>
+      </Form>
     </>
   );
 }
