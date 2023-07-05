@@ -41,12 +41,10 @@ describe("TopicPromotionBanner (with promotion banner)", () => {
       memoryRouter: true,
     });
 
-    const button = screen.getByRole("button", { name: "Promote" });
     const link = screen.getByRole("link", {
       name: "Promote",
     });
 
-    expect(button).toBeVisible();
     expect(link).toBeVisible();
     expect(link).toHaveAttribute(
       "href",
@@ -59,14 +57,10 @@ describe("TopicPromotionBanner (with promotion banner)", () => {
       memoryRouter: true,
     });
 
-    const button = screen.getByRole("button", {
-      name: "See the request",
-    });
     const link = screen.getByRole("link", {
       name: "See the request",
     });
 
-    expect(button).toBeVisible();
     expect(link).toBeVisible();
     expect(link).toHaveAttribute(
       "href",
