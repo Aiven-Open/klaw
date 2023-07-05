@@ -122,7 +122,7 @@ public class SchemaOverviewService extends BaseOverviewService {
                 topicSchemaVersionsInDb,
                 schemaUpdated,
                 schemaObjects);
-
+        log.info("SchemaObjects {}", schemaObjects);
         // If the schemaObject is null ie does not exist do not try to manipulate it.
         if (schemaObjects != null && !schemaObjects.isEmpty()) {
           Set<Integer> allVersions = schemaObjects.keySet();
@@ -180,8 +180,6 @@ public class SchemaOverviewService extends BaseOverviewService {
           schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
           schemaDetailsPerEnv.setContent(schemaOfObj);
 
-          //            schemaDetails.add(schemaDetailsPerEnv);
-          schemaOverview.setSchemaExists(true);
           // A team owns a topic across all environments so we can assume if the search returned
           // one or more topics it is owned by this users team.
           if (topics.size() > 0) {
@@ -199,7 +197,7 @@ public class SchemaOverviewService extends BaseOverviewService {
         log.error("Error ", e);
       }
 
-      if (schemaOverview.isSchemaExists()) {
+      if (schemaDetailsPerEnv.getContent() != null) {
         log.debug("SchemaDetails {}", schemaDetailsPerEnv);
         schemaOverview.setSchemaDetailsPerEnv(schemaDetailsPerEnv);
       }

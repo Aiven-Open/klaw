@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.MessageSchema;
+import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.helpers.HandleDbRequests;
@@ -16,7 +18,6 @@ import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.ApiResultStatus;
-import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.EnvIdInfo;
@@ -25,6 +26,7 @@ import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -209,18 +211,39 @@ public class TopicOverviewService extends BaseOverviewService {
     }
   }
 
-  private void setHasOpenAclRequest(List<AclOverviewInfo> aclInfo, TopicOverviewInfo topicInfo) {
-    topicInfo.setHasOpenACLRequest(
-            aclInfo.stream()
-                    .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
+  private void setHasOpenRequestBooleans(
+      TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
+    topicInfo.setHasOpenACLRequest(isACLRequestOpen(topicName, envId, tenantId));
+    topicInfo.setHasOpenTopicRequest(isTopicRequestOpen(topicName, envId, tenantId));
+    topicInfo.setHasOpenRequest(
+        topicInfo.isHasOpenACLRequest()
+            || isSchemaRequestOpen(topicName, envId, tenantId)
+            || topicInfo.isHasOpenTopicRequest());
   }
 
+  private void setHasSchema(
+      TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
+    Map<String, Env> allEnv = manageDatabase.getEnvMap(tenantId);
+    if (!allEnv.isEmpty()) {
+      Env topicEnv = allEnv.get(envId);
+      if (topicEnv.getAssociatedEnv() != null && topicEnv.getAssociatedEnv().getId() != null) {
+        List<MessageSchema> schema =
+            manageDatabase
+                .getHandleDbRequests()
+                .getSchemaForTenantAndEnvAndTopic(
+                    tenantId, topicEnv.getAssociatedEnv().getId(), topicName);
+        topicInfo.setHasSchema(!schema.isEmpty());
+      } else {
 
+        topicInfo.setHasSchema(false);
+      }
+    }
+  }
 
   private void setHasAcl(List<AclOverviewInfo> aclInfo, TopicOverviewInfo topicInfo) {
     topicInfo.setHasACL(
-            aclInfo.stream()
-                    .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
+        aclInfo.stream()
+            .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
   }
 
   private void enrichTopicOverview(
@@ -309,8 +332,8 @@ public class TopicOverviewService extends BaseOverviewService {
                       .get(topicOverview.getAvailableEnvironments().size() - 1)
                       .getId(),
                   lastItem.getEnvId()));
-          lastItem.setHasOpenRequest(
-              isTopicRequestAlreadyOpen(topicNameSearch, environmentId, tenantId));
+          setHasOpenRequestBooleans(lastItem, topicNameSearch, environmentId, tenantId);
+          setHasSchema(lastItem, topicNameSearch, environmentId, tenantId);
           lastItem.setShowDeleteTopic(
               lastItem.isTopicDeletable()
                   && lastItem.isHighestEnv()
@@ -328,36 +351,67 @@ public class TopicOverviewService extends BaseOverviewService {
     }
   }
 
-  private boolean isTopicRequestAlreadyOpen(String topicNameSearch, String environmentId, int tenantId) {
+  private boolean isTopicRequestOpen(String topicName, String environmentId, int tenantId) {
 
     List<TopicRequest> topicReqs =
-            manageDatabase
-                    .getHandleDbRequests()
-                    .getCreatedTopicRequests(
-                            getUserName(),
-                            RequestStatus.CREATED.value,
-                            true,
-                            tenantId,
-                            null,
-                            environmentId,
-                            null,
-                            topicNameSearch);
+        manageDatabase
+            .getHandleDbRequests()
+            .getCreatedTopicRequests(
+                getUserName(),
+                RequestStatus.CREATED.value,
+                true,
+                tenantId,
+                null,
+                environmentId,
+                null,
+                topicName);
     log.debug("Open Reqs for Topics {} , size {}", topicReqs, topicReqs.size());
     // there should only ever be 1 delete request and in any other scenario this should be 0.
-    return topicReqs.size() >= 1;
+    return !topicReqs.isEmpty();
   }
 
-  private boolean isACLRequestAlreadyOpen(String topicNameSearch, String environmentId, int tenantId) {
+  private boolean isACLRequestOpen(String topicName, String environmentId, int tenantId) {
 
     List<AclRequests> AclReqs =
-            manageDatabase
-                    .getHandleDbRequests()
-                    .getAllAclRequests(true,getUserName(),null,RequestStatus.CREATED.value,true,null,topicNameSearch,environmentId,null,null,false,tenantId);
-
+        manageDatabase
+            .getHandleDbRequests()
+            .getAllAclRequests(
+                true,
+                getUserName(),
+                null,
+                RequestStatus.CREATED.value,
+                true,
+                null,
+                topicName,
+                environmentId,
+                null,
+                null,
+                false,
+                tenantId);
 
     log.debug("Open Reqs for Topics {} , size {}", AclReqs, AclReqs.size());
     // there should only ever be 1 delete request and in any other scenario this should be 0.
-    return AclReqs.size() >= 1;
+    return !AclReqs.isEmpty();
+  }
+
+  private boolean isSchemaRequestOpen(String topicName, String envId, int tenantId) {
+
+    List<SchemaRequest> schemaReqs =
+        manageDatabase
+            .getHandleDbRequests()
+            .getAllSchemaRequests(
+                false,
+                getUserName(),
+                tenantId,
+                null,
+                topicName,
+                envId,
+                RequestStatus.CREATED.value,
+                null,
+                true,
+                false);
+
+    return !schemaReqs.isEmpty();
   }
 
   private PromotionStatus getTopicPromotionEnv(

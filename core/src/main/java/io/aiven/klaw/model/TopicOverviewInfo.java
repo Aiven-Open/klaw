@@ -31,6 +31,8 @@ public class TopicOverviewInfo {
 
   @NotNull private boolean hasOpenRequest;
 
+  @NotNull private boolean hasOpenTopicRequest;
+
   @NotNull private boolean hasOpenACLRequest;
 
   @NotNull private boolean hasACL;

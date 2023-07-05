@@ -6912,9 +6912,6 @@
           "topicExists" : {
             "type" : "boolean"
           },
-          "schemaExists" : {
-            "type" : "boolean"
-          },
           "prefixAclsExists" : {
             "type" : "boolean"
           },
@@ -6968,7 +6965,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "availableEnvironments", "prefixAclsExists", "schemaExists", "topicExists", "topicIdForDocumentation", "topicInfoList", "topicPromotionDetails", "txnAclsExists" ]
+        "required" : [ "availableEnvironments", "prefixAclsExists", "topicExists", "topicIdForDocumentation", "topicInfoList", "topicPromotionDetails", "txnAclsExists" ]
       },
       "TopicOverviewInfo" : {
         "properties" : {
@@ -7004,7 +7001,16 @@
           "hasOpenRequest" : {
             "type" : "boolean"
           },
+          "hasOpenTopicRequest" : {
+            "type" : "boolean"
+          },
           "hasOpenACLRequest" : {
+            "type" : "boolean"
+          },
+          "hasACL" : {
+            "type" : "boolean"
+          },
+          "hasSchema" : {
             "type" : "boolean"
           },
           "envName" : {
@@ -7023,7 +7029,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "envId", "envName", "hasOpenACLRequest", "hasOpenRequest", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
       "TopicDetailsPerEnv" : {
         "properties" : {
@@ -7703,9 +7709,6 @@
           "topicExists" : {
             "type" : "boolean"
           },
-          "schemaExists" : {
-            "type" : "boolean"
-          },
           "prefixAclsExists" : {
             "type" : "boolean"
           },
@@ -7730,7 +7733,7 @@
             "$ref" : "#/components/schemas/SchemaDetailsPerEnv"
           }
         },
-        "required" : [ "prefixAclsExists", "schemaExists", "schemaPromotionDetails", "topicExists", "txnAclsExists" ]
+        "required" : [ "prefixAclsExists", "schemaPromotionDetails", "topicExists", "txnAclsExists" ]
       },
       "KwReport" : {
         "properties" : {
