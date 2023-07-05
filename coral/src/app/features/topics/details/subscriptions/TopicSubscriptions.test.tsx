@@ -84,6 +84,7 @@ const testTopicOverview: TopicOverview = {
     topicName: testTopicName,
     hasOpenACLRequest: true,
     hasOpenRequest: true,
+    description: "my description",
   },
   aclInfoList: [
     {

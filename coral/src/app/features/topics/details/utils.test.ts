@@ -19,6 +19,7 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
     envName: "DEV",
     hasOpenACLRequest: true,
     hasOpenRequest: true,
+    description: "my description",
   },
   aclInfoList: [
     {
@@ -79,6 +80,7 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
     envName: "DEV",
     hasOpenACLRequest: true,
     hasOpenRequest: true,
+    description: "my description",
   },
   aclInfoList: [],
   topicHistoryList: [
