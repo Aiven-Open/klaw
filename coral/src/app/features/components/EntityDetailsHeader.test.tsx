@@ -104,7 +104,7 @@ describe("EntityDetailsHeader (topic)", () => {
     });
   });
 
-  describe("shows all necessary elements", () => {
+  describe("shows all necessary elements if topic exists", () => {
     beforeAll(() => {
       render(<EntityDetailsHeader {...defaultTopicProps} />);
     });
@@ -259,7 +259,7 @@ describe("EntityDetailsHeader (connector)", () => {
     });
   });
 
-  describe("shows all necessary elements", () => {
+  describe("shows all necessary elements if connector exists", () => {
     beforeAll(() => {
       render(<EntityDetailsHeader {...defaultConnectorProps} />);
     });
