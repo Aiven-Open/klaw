@@ -15,6 +15,7 @@ const promoteProps = {
 };
 
 const seeProps = {
+  isTopicOwner: false,
   topicPromotionDetails: {
     status: "success",
     targetEnv: "TST",
@@ -26,6 +27,7 @@ const seeProps = {
 };
 
 const nullProps = {
+  isTopicOwner: false,
   topicPromotionDetails: {
     status: "NO_PROMOTION",
     topicName: "SchemaTest",
