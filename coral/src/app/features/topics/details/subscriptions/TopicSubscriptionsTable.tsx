@@ -17,7 +17,7 @@ type SubscriptionOptions =
   | "transactionalAclInfoList";
 
 interface TopicSubscriptionsTableProps {
-  isLoading: boolean;
+  isUpdating: boolean;
   selectedSubs: SubscriptionOptions;
   filteredData: AclOverviewInfo[];
   onDelete: (req_no: string) => void;
@@ -205,7 +205,7 @@ export const TopicSubscriptionsTable = ({
   filteredData,
   onDelete,
   onDetails,
-  isLoading,
+  isUpdating,
 }: TopicSubscriptionsTableProps) => {
   const rows = getRows(selectedSubs, filteredData);
   const columns = getColumns(selectedSubs, onDelete, onDetails);
@@ -220,8 +220,8 @@ export const TopicSubscriptionsTable = ({
   if (rows.length === 0) {
     return (
       <EmptyState title="No subscriptions">
-        {!isLoading && <>No subscription matched your criteria.</>}
-        {isLoading && (
+        {!isUpdating && <>No subscription matched your criteria.</>}
+        {isUpdating && (
           <div style={{ width: "650px", paddingLeft: "200px" }}>
             <Skeleton />
           </div>
@@ -230,7 +230,7 @@ export const TopicSubscriptionsTable = ({
     );
   }
 
-  return isLoading ? (
+  return isUpdating ? (
     <LoadingTable rowLength={rows.length} columns={loadingColumns} />
   ) : (
     <DataTable

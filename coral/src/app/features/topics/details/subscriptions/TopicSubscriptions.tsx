@@ -259,7 +259,7 @@ const TopicSubscriptions = () => {
         ]}
         table={
           <TopicSubscriptionsTable
-            isLoading={topicOverviewIsRefetching}
+            isUpdating={topicOverviewIsRefetching}
             selectedSubs={selectedSubs}
             filteredData={filteredData}
             onDelete={openDeleteModal}
