@@ -204,7 +204,7 @@ describe("<TopicPromotionRequest />", () => {
       });
     });
 
-    it("shows a notification that request was successful and redirects userEvent", async () => {
+    it("shows a notification that request was successful and redirects user", async () => {
       await userEvent.click(
         screen.getByRole("button", { name: "Submit promotion request" })
       );
