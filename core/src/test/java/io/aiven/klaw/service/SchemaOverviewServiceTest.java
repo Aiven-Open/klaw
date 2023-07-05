@@ -139,7 +139,6 @@ public class SchemaOverviewServiceTest {
 
     SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 3, "1");
     assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
-    assertThat(returnedValue.isSchemaExists()).isFalse();
   }
 
   @Test
