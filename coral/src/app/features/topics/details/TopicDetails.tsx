@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Navigate,
   useLocation,
   useMatches,
   useOutletContext,
 } from "react-router-dom";
-import { TopicDetailsHeader } from "src/app/features/topics/details/components/TopicDetailsHeader";
+import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import {
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
@@ -76,15 +76,27 @@ function TopicDetails(props: TopicOverviewProps) {
     enabled: environmentId !== undefined,
   });
 
+  useEffect(() => {
+    if (
+      topicData?.availableEnvironments !== undefined &&
+      environmentId === undefined
+    ) {
+      setEnvironmentId(topicData.availableEnvironments[0].id);
+    }
+  }, [topicData?.availableEnvironments, environmentId, setEnvironmentId]);
+
   if (currentTab === undefined) {
     return <Navigate to={`/topic/${topicName}/overview`} replace={true} />;
   }
 
   return (
     <div>
-      <TopicDetailsHeader
-        topicName={topicName}
-        topicExists={Boolean(topicData?.topicExists)}
+      <EntityDetailsHeader
+        entity={{ name: topicName, type: "topic" }}
+        entityExists={Boolean(topicData?.topicExists)}
+        entityEditLink={
+          "/topicOverview/topicname=SchemaTest&env=${topicOverview.availableEnvironments[0].id}&requestType=edit"
+        }
         environments={topicData?.availableEnvironments}
         environmentId={environmentId}
         setEnvironmentId={setEnvironmentId}
