@@ -19,7 +19,7 @@ function TopicOverview() {
     useTopicDetails();
 
   const {
-    topicInfo: { topicOwner, hasOpenRequest },
+    topicInfo: { topicOwner = false, hasOpenRequest },
     topicPromotionDetails,
   } = topicOverview;
 

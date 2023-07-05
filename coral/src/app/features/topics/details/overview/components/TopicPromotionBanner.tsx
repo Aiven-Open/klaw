@@ -6,7 +6,7 @@ import illustration from "/src/app/images/topic-details-schema-Illustration.svg"
 interface TopicPromotionBannerProps {
   topicPromotionDetails: TopicOverview["topicPromotionDetails"];
   hasOpenRequest: boolean;
-  isTopicOwner?: boolean;
+  isTopicOwner: boolean;
 }
 
 const TopicPromotionBanner = ({
