@@ -179,10 +179,13 @@ describe("TopicDetails", () => {
         memoryRouter: true,
         queryClient: true,
       });
-      expect(mockGetTopicOverview).toHaveBeenCalledWith({
-        topicName: testTopicName,
-        environmentId: undefined,
-      });
+
+      await waitFor(() =>
+        expect(mockGetTopicOverview).toHaveBeenCalledWith({
+          topicName: testTopicName,
+          environmentId: testTopicOverview.availableEnvironments[0].id,
+        })
+      );
 
       // This is a dependent query relying on mockGetTopicOverview to have finished fetching
       // So we need to await
