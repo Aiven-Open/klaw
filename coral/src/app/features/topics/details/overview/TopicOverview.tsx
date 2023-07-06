@@ -19,7 +19,7 @@ function TopicOverview() {
     useTopicDetails();
 
   const {
-    topicInfo: { topicOwner = false, hasOpenRequest },
+    topicInfo: { topicOwner = false, hasOpenTopicRequest },
     topicPromotionDetails,
   } = topicOverview;
 
@@ -39,7 +39,7 @@ function TopicOverview() {
       <TopicPromotionBanner
         topicPromotionDetails={topicPromotionDetails}
         isTopicOwner={topicOwner}
-        hasOpenRequest={hasOpenRequest}
+        hasOpenRequest={hasOpenTopicRequest}
       />
 
       <Card title={"Subscriptions"} fullWidth>

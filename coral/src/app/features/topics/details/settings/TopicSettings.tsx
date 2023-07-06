@@ -54,13 +54,13 @@ function TopicSettings() {
   );
 
   function getDeleteDisabledInformation() {
-    const topicHasOpenACLRequest = topicOverview.topicInfo.hasOpenACLRequest;
+    const topicHasActiveSubscriptions = topicOverview.topicInfo.hasACL;
     const topicIsOnHigherEnvironment = !topicOverview.topicInfo.highestEnv;
     const topicHasPendingRequests = topicOverview.topicInfo.hasOpenRequest;
 
     return (
       <ul style={{ listStyle: "initial" }}>
-        {topicHasOpenACLRequest && (
+        {topicHasActiveSubscriptions && (
           <li>
             The topic has active subscriptions. Please delete them before
             deleting the topic.

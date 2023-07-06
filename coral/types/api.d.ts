@@ -1091,11 +1091,14 @@ export type components = {
       showDeleteTopic: boolean;
       topicDeletable: boolean;
       hasOpenRequest: boolean;
+      hasOpenTopicRequest: boolean;
       hasOpenACLRequest: boolean;
+      hasACL: boolean;
+      hasSchema: boolean;
       topicOwner?: boolean;
       highestEnv?: boolean;
     };
-    TopicConfig: {
+    TopicBaseConfig: {
       topicName: string;
       /** Format: int32 */
       noOfPartitions: number;
@@ -1109,7 +1112,7 @@ export type components = {
       topicExists: boolean;
       error?: string;
       topicId?: string;
-      topicContents?: components["schemas"]["TopicConfig"];
+      topicContents?: components["schemas"]["TopicBaseConfig"];
     };
     TenantInfo: {
       /** Format: int32 */

@@ -34,16 +34,19 @@ const testTopicInfo: KlawApiModel<"TopicOverviewInfo"> = {
   topicDeletable: true,
   envName: "DEV",
   topicOwner: true,
+  hasACL: false,
+  hasOpenTopicRequest: false,
   hasOpenACLRequest: false,
   highestEnv: true,
   hasOpenRequest: false,
+  hasSchema: false,
   description: "my description",
 };
 const testTopicOverview: TopicOverview = {
   topicExists: true,
-  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
+  schemaExists: false,
   topicInfo: testTopicInfo,
   aclInfoList: [],
   topicHistoryList: [],
@@ -127,7 +130,7 @@ describe("TopicSettings", () => {
             topicInfo: {
               ...testTopicInfo,
               showDeleteTopic: false,
-              hasOpenACLRequest: true,
+              hasACL: true,
             },
           },
         });
@@ -315,7 +318,7 @@ describe("TopicSettings", () => {
               ...testTopicInfo,
               showDeleteTopic: false,
               hasOpenRequest: true,
-              hasOpenACLRequest: true,
+              hasACL: true,
             },
           },
         });

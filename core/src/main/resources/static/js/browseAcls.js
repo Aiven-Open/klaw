@@ -1,19 +1,19 @@
 'use strict'
 
 // confirmation of delete
-// edit 
+// edit
 // solution for transaction
 // message store / key / gui
 var app = angular.module('browseAclsApp',['textAngular']);
 
 app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
-	
+
 	// Set http service defaults
 	// We force the "Accept" header to be only "application/json"
 	// otherwise we risk the Accept header being set by default to:
 	// "application/json; text/plain" and this can result in us
 	// getting a "text/plain" response which is not able to be
-	// parsed. 
+	// parsed.
 	//$http.defaults.headers.common['Accept'] = 'application/json';
 	$scope.envSelectedParam;
 
@@ -218,7 +218,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 			$scope.checkPendingApprovals = function() {
                 if($scope.dashboardDetails.pendingApprovalsRedirectionPage === '')
                     return;
-                
+
                 if(sessionStorage.getItem("pending_reqs_shown") === null){
                     $scope.redirectToPendingReqs($scope.dashboardDetails.pendingApprovalsRedirectionPage);
                     sessionStorage.setItem("pending_reqs_shown", "true");
@@ -646,6 +646,9 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		        $scope.resultBrowsePrefix = output.prefixedAclInfoList;
 		        $scope.resultBrowseTxnId = output.transactionalAclInfoList;
             	$scope.topicOverview = output.topicInfoList;
+            	$scope.schemaExists = output.schemaExists;
+
+
             	$scope.topicPromotionDetails = output.topicPromotionDetails;
                 $scope.topicPromotionDetails = output.topicPromotionDetails;
             	$scope.availableEnvironments = output.availableEnvironments;
@@ -653,7 +656,6 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                     $scope.topicOverviewEnvId = $scope.availableEnvironments[0].id;
                 }
 
-            	$scope.schemaExists = output.schemaExists;
             	$scope.prefixAclsExists = output.prefixAclsExists;
             	$scope.txnAclsExists = output.txnAclsExists;
                 $scope.topicHistoryList = output.topicHistoryList;
@@ -666,13 +668,13 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		    else
 		        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/browseTopics";
 		}).error(
-			function(error) 
+			function(error)
 			{
 			    $scope.ShowSpinnerStatusTopics = false;
 				$scope.alert = error;
 			}
 		);
-		
+
 	}
 
     $scope.getSchemaOfTopic = function(){
@@ -700,7 +702,7 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
                 $scope.ShowSpinnerStatusSchemas = false;
                 if(output.schemaDetailsPerEnv ){
                     $scope.schemaDetails = output.schemaDetailsPerEnv;
-                    $scope.schemaExists = output.schemaExists;
+                    $scope.schemaExists = output.allSchemaVersions.length > 0;
                     $scope.schemaPromotionDetails = output.schemaPromotionDetails;
                     $scope.allSchemaVersions = output.allSchemaVersions;
                     $scope.displayedSchemaVersion = $scope.schemaDetails.version;

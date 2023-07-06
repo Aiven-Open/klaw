@@ -96,6 +96,12 @@ public class SelectDataJdbc {
   @Autowired(required = false)
   private KwEntitySequenceRepo kwEntitySequenceRepo;
 
+  public boolean existsAclRequest(
+      String topicName, String requestStatus, String env, int tenantId) {
+    return aclRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
+        tenantId, env, requestStatus, topicName);
+  }
+
   public List<AclRequests> selectFilteredAclRequests(
       boolean isApproval,
       String requestor,
@@ -1861,5 +1867,43 @@ public class SelectDataJdbc {
 
   public long getDataFromKwEntitySequences() {
     return kwEntitySequenceRepo.count();
+  }
+
+  public boolean existsSchemaRequest(
+      String topicName, String requestStatus, String env, int tenantId) {
+    return schemaRequestRepo.existsByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
+        tenantId, env, requestStatus, topicName);
+  }
+
+  public boolean existsSchemaRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId) {
+    return schemaRequestRepo
+        .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(
+            tenantId, env, requestStatus, requestOperationType, topicName);
+  }
+
+  public boolean existsTopicRequest(
+      String topicName, String requestStatus, String env, int tenantId) {
+    return topicRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
+        tenantId, env, requestStatus, topicName);
+  }
+
+  public boolean existsTopicRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId) {
+    return topicRequestsRepo
+        .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(
+            tenantId, env, requestStatus, requestOperationType, topicName);
+  }
+
+  public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
+    return messageSchemaRepo.existsByTenantIdAndTopicnameAndEnvironment(tenantId, topicName, env);
   }
 }

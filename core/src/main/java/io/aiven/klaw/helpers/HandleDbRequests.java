@@ -135,6 +135,28 @@ public interface HandleDbRequests {
 
   Acl getSyncAclsFromReqNo(int reqNo, int tenantId);
 
+  boolean existsAclRequest(String topicName, String requestStatus, String env, int tenantId);
+
+  boolean existsSchemaRequest(String topicName, String requestStatus, String env, int tenantId);
+
+  boolean existsSchemaRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId);
+
+  boolean existsTopicRequest(String topicName, String requestStatus, String env, int tenantId);
+
+  boolean existsTopicRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId);
+
+  boolean existsSchemaForTopic(String topicName, String env, int tenantId);
+
   List<AclRequests> getAllAclRequests(
       boolean allReqs,
       String requestor,
