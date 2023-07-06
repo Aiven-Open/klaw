@@ -306,6 +306,18 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return envMapPerTenant.get(tenantId);
   }
 
+  public Optional<String> getAssociatedSchemaEnvIdFromTopicId(String topicEnvId, int tenantId) {
+    String schemaEnvId = null;
+    Map<String, Env> allEnv = getEnvMap(tenantId);
+    if (!allEnv.isEmpty()) {
+      Env topicEnv = allEnv.get(topicEnvId);
+      if (topicEnv.getAssociatedEnv() != null && topicEnv.getAssociatedEnv().getId() != null) {
+        schemaEnvId = topicEnv.getAssociatedEnv().getId();
+      }
+    }
+    return Optional.ofNullable(schemaEnvId);
+  }
+
   public List<Env> getKafkaEnvList(int tenantId) {
     if (kafkaEnvListPerTenant.get(tenantId).isEmpty()) {
       return new ArrayList<>();

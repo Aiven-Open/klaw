@@ -314,6 +314,51 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsAclRequest(
+      String topicName, String requestStatus, String env, int tenantId) {
+    return jdbcSelectHelper.existsAclRequest(topicName, requestStatus, env, tenantId);
+  }
+
+  @Override
+  public boolean existsSchemaRequest(
+      String topicName, String requestStatus, String env, int tenantId) {
+    return jdbcSelectHelper.existsSchemaRequest(topicName, requestStatus, env, tenantId);
+  }
+
+  @Override
+  public boolean existsSchemaRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId) {
+    return jdbcSelectHelper.existsSchemaRequest(
+        topicName, requestStatus, requestOperationType, env, tenantId);
+  }
+
+  @Override
+  public boolean existsTopicRequest(
+      String topicName, String requestStatus, String env, int tenantId) {
+    return jdbcSelectHelper.existsTopicRequest(topicName, requestStatus, env, tenantId);
+  }
+
+  @Override
+  public boolean existsTopicRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId) {
+    return jdbcSelectHelper.existsTopicRequest(
+        topicName, requestStatus, requestOperationType, env, tenantId);
+  }
+
+  @Override
+  public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
+    return jdbcSelectHelper.existsSchemaForTopic(topicName, env, tenantId);
+  }
+
+  @Override
   public List<AclRequests> getAllAclRequests(
       boolean isApproval,
       String requestor,

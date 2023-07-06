@@ -781,6 +781,19 @@ public class CommonUtilsService {
     return topicHistoryList;
   }
 
+  public boolean existsSchemaForTopic(String topicName, String topicEnvId, int tenantId) {
+
+    Optional<String> schemaEnvId =
+        manageDatabase.getAssociatedSchemaEnvIdFromTopicId(topicEnvId, tenantId);
+    if (schemaEnvId.isPresent()) {
+      return manageDatabase
+          .getHandleDbRequests()
+          .existsSchemaForTopic(topicName, schemaEnvId.get(), tenantId);
+    } else {
+      return false;
+    }
+  }
+
   public Env getEnvDetails(String envId, int tenantId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(tenantId).stream()

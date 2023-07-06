@@ -11,6 +11,9 @@ import org.springframework.data.repository.query.Param;
 public interface MessageSchemaRepo extends CrudRepository<MessageSchema, MessageSchemaID> {
   Optional<MessageSchema> findById(MessageSchemaID avroSchemaId);
 
+  boolean existsByTenantIdAndTopicnameAndEnvironment(
+      int tenantId, String topicName, String environmentId);
+
   List<MessageSchema> findAllByTenantId(int tenantId);
 
   List<MessageSchema> findAllByTenantIdAndTopicnameAndEnvironment(

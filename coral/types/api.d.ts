@@ -1059,6 +1059,7 @@ export type components = {
     };
     TopicOverview: {
       topicExists: boolean;
+      schemaExists: boolean;
       prefixAclsExists: boolean;
       txnAclsExists: boolean;
       topicInfoList: (components["schemas"]["TopicOverviewInfo"])[];
@@ -1343,13 +1344,13 @@ export type components = {
     };
     SchemaOverview: {
       topicExists: boolean;
+      schemaExists: boolean;
       prefixAclsExists: boolean;
       txnAclsExists: boolean;
       allSchemaVersions?: (number)[];
       /** Format: int32 */
       latestVersion?: number;
       schemaPromotionDetails: components["schemas"]["PromotionStatus"];
-      schemaExists: boolean;
       schemaDetailsPerEnv?: components["schemas"]["SchemaDetailsPerEnv"];
     };
     KwReport: {

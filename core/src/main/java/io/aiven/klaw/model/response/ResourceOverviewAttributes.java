@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class ResourceOverviewAttributes {
   @NotNull boolean topicExists;
+  @NotNull boolean schemaExists;
   @NotNull boolean prefixAclsExists;
   @NotNull boolean txnAclsExists;
 }

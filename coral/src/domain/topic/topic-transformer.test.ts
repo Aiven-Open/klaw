@@ -195,6 +195,7 @@ describe("topic-transformer.ts", () => {
     it("transforms topic overview from backend with only required properties", async () => {
       const mockedResponse: KlawApiResponse<"getTopicOverview"> = {
         topicExists: false,
+        schemaExists: false,
         prefixAclsExists: false,
         txnAclsExists: false,
         topicInfoList: [
@@ -232,6 +233,7 @@ describe("topic-transformer.ts", () => {
       const result: TopicOverview = {
         availableEnvironments: [],
         prefixAclsExists: false,
+        schemaExists: false,
         topicExists: false,
         topicIdForDocumentation: 1,
         topicInfo: {
@@ -267,6 +269,7 @@ describe("topic-transformer.ts", () => {
         topicExists: false,
         prefixAclsExists: false,
         txnAclsExists: false,
+        schemaExists: false,
         topicInfoList: [
           {
             topicName: "test-topic",
@@ -356,6 +359,7 @@ describe("topic-transformer.ts", () => {
       const result: TopicOverview = {
         availableEnvironments: [],
         prefixAclsExists: false,
+        schemaExists: false,
         topicExists: false,
         topicIdForDocumentation: 1,
         topicInfo: {

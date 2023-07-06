@@ -6912,6 +6912,9 @@
           "topicExists" : {
             "type" : "boolean"
           },
+          "schemaExists" : {
+            "type" : "boolean"
+          },
           "prefixAclsExists" : {
             "type" : "boolean"
           },
@@ -6965,7 +6968,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "availableEnvironments", "prefixAclsExists", "topicExists", "topicIdForDocumentation", "topicInfoList", "topicPromotionDetails", "txnAclsExists" ]
+        "required" : [ "availableEnvironments", "prefixAclsExists", "schemaExists", "topicExists", "topicIdForDocumentation", "topicInfoList", "topicPromotionDetails", "txnAclsExists" ]
       },
       "TopicOverviewInfo" : {
         "properties" : {
@@ -7736,6 +7739,9 @@
           "topicExists" : {
             "type" : "boolean"
           },
+          "schemaExists" : {
+            "type" : "boolean"
+          },
           "prefixAclsExists" : {
             "type" : "boolean"
           },
@@ -7755,9 +7761,6 @@
           },
           "schemaPromotionDetails" : {
             "$ref" : "#/components/schemas/PromotionStatus"
-          },
-          "schemaExists" : {
-            "type" : "boolean"
           },
           "schemaDetailsPerEnv" : {
             "$ref" : "#/components/schemas/SchemaDetailsPerEnv"

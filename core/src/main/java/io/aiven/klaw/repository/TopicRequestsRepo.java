@@ -15,6 +15,16 @@ public interface TopicRequestsRepo
 
   List<TopicRequest> findAllByTenantId(int tenantId);
 
+  boolean existsByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
+      int tenantId, String environment, String requestStatus, String topicname);
+
+  boolean existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(
+      int tenantId,
+      String environment,
+      String requestStatus,
+      String requestOperationType,
+      String topicname);
+
   List<TopicRequest> findAllByRequestStatusAndTopicnameAndEnvironmentAndTenantId(
       String topicStatus, String topicName, String envId, int tenantId);
 

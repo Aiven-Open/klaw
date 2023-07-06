@@ -122,7 +122,6 @@ public class SchemaOverviewService extends BaseOverviewService {
                 topicSchemaVersionsInDb,
                 schemaUpdated,
                 schemaObjects);
-        log.info("SchemaObjects {}", schemaObjects);
         // If the schemaObject is null ie does not exist do not try to manipulate it.
         if (schemaObjects != null && !schemaObjects.isEmpty()) {
           Set<Integer> allVersions = schemaObjects.keySet();

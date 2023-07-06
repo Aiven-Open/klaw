@@ -46,6 +46,7 @@ const testTopicOverview: TopicOverview = {
   topicExists: true,
   prefixAclsExists: false,
   txnAclsExists: false,
+  schemaExists: false,
   topicInfo: testTopicInfo,
   aclInfoList: [],
   topicHistoryList: [],
