@@ -13,9 +13,8 @@ import {
   TopicOverviewTabEnum,
   isTopicsOverviewTabEnum,
 } from "src/app/router_utils";
-import { TopicOverview } from "src/domain/topic";
 import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
-import { TopicSchemaOverview } from "src/domain/topic/topic-types";
+import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 
 type TopicOverviewProps = {
   topicName: string;
