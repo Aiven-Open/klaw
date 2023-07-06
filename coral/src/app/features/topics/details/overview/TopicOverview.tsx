@@ -50,11 +50,13 @@ function TopicOverview() {
         </Card>
       </GridItem>
 
-      <TopicPromotionBanner
-        topicPromotionDetails={topicPromotionDetails}
-        isTopicOwner={topicOwner}
-        hasOpenRequest={hasOpenTopicRequest}
-      />
+      {!topicOverviewIsRefetching && (
+        <TopicPromotionBanner
+          topicPromotionDetails={topicPromotionDetails}
+          isTopicOwner={topicOwner}
+          hasOpenRequest={hasOpenTopicRequest}
+        />
+      )}
 
       <Card title={"Subscriptions"} fullWidth>
         <Box.Flex gap={"l7"}>
