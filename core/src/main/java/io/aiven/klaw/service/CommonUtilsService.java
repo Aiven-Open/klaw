@@ -785,13 +785,13 @@ public class CommonUtilsService {
 
     Optional<String> schemaEnvId =
         manageDatabase.getAssociatedSchemaEnvIdFromTopicId(topicEnvId, tenantId);
-    if (schemaEnvId.isPresent()) {
-      return manageDatabase
-          .getHandleDbRequests()
-          .existsSchemaForTopic(topicName, schemaEnvId.get(), tenantId);
-    } else {
-      return false;
-    }
+    return schemaEnvId
+        .filter(
+            envId ->
+                manageDatabase
+                    .getHandleDbRequests()
+                    .existsSchemaForTopic(topicName, envId, tenantId))
+        .isPresent();
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
