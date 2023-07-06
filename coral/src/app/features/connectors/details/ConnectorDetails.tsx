@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Navigate,
   useLocation,
   useMatches,
   useOutletContext,
 } from "react-router-dom";
+import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { ConnectorOverviewResourcesTabs } from "src/app/features/connectors/details/components/ConnectorOverviewResourcesTabs";
 import {
   CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
@@ -43,8 +44,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
 
-  // @TODO add setEnvironmentId when getConnectorOverview is updated to take an environmentId param
-  const [environmentId] = useState<string | undefined>(
+  const [environmentId, setEnvironmentId] = useState<string | undefined>(
     initialEnvironment ?? undefined
   );
 
@@ -53,10 +53,22 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     isError: connectorIsError,
     error: connectorError,
     isLoading: connectorIsLoading,
-    isFetched: connectorDataFetched,
-  } = useQuery(["topic-overview", environmentId], {
-    queryFn: () => getConnectorOverview({ connectornamesearch: connectorName }),
+  } = useQuery(["topic-overview", connectorName, environmentId], {
+    queryFn: () =>
+      getConnectorOverview({
+        connectornamesearch: connectorName,
+        environmentId,
+      }),
   });
+
+  useEffect(() => {
+    if (
+      connectorData?.availableEnvironments !== undefined &&
+      environmentId === undefined
+    ) {
+      setEnvironmentId(connectorData?.availableEnvironments[0].id);
+    }
+  }, [connectorData?.availableEnvironments, environmentId, setEnvironmentId]);
 
   if (currentTab === undefined) {
     return (
@@ -66,7 +78,16 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
 
   return (
     <div>
-      <h1>{connectorName}</h1>
+      <EntityDetailsHeader
+        entity={{ name: connectorName, type: "connector" }}
+        entityExists={Boolean(connectorData?.connectorExists)}
+        entityEditLink={
+          "/connector/connectorName=SchemaTest&env=${connectorOverview.availableEnvironments[0].id}&requestType=edit"
+        }
+        environments={connectorData?.availableEnvironments}
+        environmentId={environmentId}
+        setEnvironmentId={setEnvironmentId}
+      />
 
       <ConnectorOverviewResourcesTabs
         isError={connectorIsError}
@@ -74,8 +95,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         isLoading={connectorIsLoading}
         currentTab={currentTab}
         environmentId={environmentId}
-        // We pass undefined when data is not fetched to avoid flash of stale data in the UI
-        connectorOverview={connectorDataFetched ? connectorData : undefined}
+        connectorOverview={connectorData}
       />
     </div>
   );
