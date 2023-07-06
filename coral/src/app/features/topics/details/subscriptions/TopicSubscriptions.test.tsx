@@ -68,6 +68,7 @@ jest.mock("react-router-dom", () => ({
 const testTopicName = "aiventopic1";
 const testTopicOverview: TopicOverview = {
   topicExists: true,
+  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {

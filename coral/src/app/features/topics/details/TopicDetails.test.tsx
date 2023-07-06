@@ -28,6 +28,7 @@ const mockGetSchemaOfTopic = getSchemaOfTopic as jest.MockedFunction<
 const testTopicName = "my-nice-topic";
 const testTopicOverview: TopicOverview = {
   topicExists: true,
+  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {

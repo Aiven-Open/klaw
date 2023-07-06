@@ -27,6 +27,7 @@ const testTopicHistoryList = [
 ];
 const testTopicOverview: TopicOverview = {
   topicExists: true,
+  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {

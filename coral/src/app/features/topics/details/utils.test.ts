@@ -3,6 +3,7 @@ import { TopicOverview } from "src/domain/topic";
 
 const mockUseTopicDetailsDataWithAcl: TopicOverview = {
   topicExists: true,
+  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {
@@ -67,6 +68,7 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
 
 const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
   topicExists: true,
+  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {

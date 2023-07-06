@@ -28,6 +28,7 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.TopicOverview;
 import java.util.ArrayList;
@@ -376,6 +377,269 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicPromotionDetails().getStatus()).isEqualTo(NO_PROMOTION);
     assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
         .isFalse(); // topic can't be deleted
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL())
+            .isTrue(); // topic hasAcl
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest())
+            .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
+            .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
+            .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema())
+            .isFalse(); // topic hasAcl
+  }
+
+  @Test
+  @Order(9)
+  public void getTopicOverviewWithNoAcls_OpenTopicRequests() {
+
+    mockTenantConfig();
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+            .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    when(manageDatabase.getAllEnvList(anyInt()))
+            .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+
+    TopicOverview topicOverview =
+            topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(3);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus()).isEqualTo(NO_PROMOTION);
+    assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
+            .isTrue(); // topic can be deleted
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus())
+            .isEqualTo(ApiResultStatus.SUCCESS.value);
+
+    when(handleDbRequests.existsTopicRequest(eq(TESTTOPIC),eq(RequestStatus.CREATED.value),eq("1"),eq(101))).thenReturn(true);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+            .thenReturn(kwClustersHashMap);
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL())
+            .isFalse(); // topic hasAcl
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest())
+            .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
+            .isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
+            .isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema())
+            .isFalse(); // topic hasAcl
+
+  }
+
+
+  @Test
+  @Order(10)
+  public void getTopicOverviewWithNoAcls_OpenSchemaRequests() {
+
+    mockTenantConfig();
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+            .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    when(manageDatabase.getAllEnvList(anyInt()))
+            .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+
+    TopicOverview topicOverview =
+            topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(3);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus()).isEqualTo(NO_PROMOTION);
+    assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
+            .isTrue(); // topic can be deleted
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus())
+            .isEqualTo(ApiResultStatus.SUCCESS.value);
+
+    when(handleDbRequests.existsSchemaRequest(eq(TESTTOPIC),eq(RequestStatus.CREATED.value),eq("1"),eq(101))).thenReturn(true);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+            .thenReturn(kwClustersHashMap);
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL())
+            .isFalse(); // topic hasAcl
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest())
+            .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
+            .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
+            .isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema())
+            .isFalse(); // topic hasAcl
+
+  }
+
+
+
+  @Test
+  @Order(11)
+  public void getTopicOverviewWithNoAcls_OpenTopicACLSchemaRequests() {
+
+    mockTenantConfig();
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+            .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    when(manageDatabase.getAllEnvList(anyInt()))
+            .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+
+    TopicOverview topicOverview =
+            topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(3);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus()).isEqualTo(NO_PROMOTION);
+    assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
+            .isTrue(); // topic can be deleted
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus())
+            .isEqualTo(ApiResultStatus.SUCCESS.value);
+
+    when(handleDbRequests.existsSchemaRequest(eq(TESTTOPIC),eq(RequestStatus.CREATED.value),eq("1"),eq(101))).thenReturn(true);
+    when(handleDbRequests.existsAclRequest(eq(TESTTOPIC),eq(RequestStatus.CREATED.value),eq("1"),eq(101))).thenReturn(true);
+    when(handleDbRequests.existsTopicRequest(eq(TESTTOPIC),eq(RequestStatus.CREATED.value),eq("1"),eq(101))).thenReturn(true);
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+            .thenReturn(kwClustersHashMap);
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL())
+            .isFalse(); // topic hasAcl
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest())
+            .isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
+            .isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
+            .isTrue(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema())
+            .isFalse(); // topic hasAcl
+
+  }
+
+
+  @Test
+  @Order(12)
+  public void getTopicOverviewWithNoAcls_hasSchema() {
+
+    mockTenantConfig();
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(101);
+    when(commonUtilsService.getEnvsFromUserId(anyString()))
+            .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    when(manageDatabase.getAllEnvList(anyInt()))
+            .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+
+    TopicOverview topicOverview =
+            topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(3);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus()).isEqualTo(NO_PROMOTION);
+    assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
+            .isTrue(); // topic can be deleted
+
+    when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+    when(commonUtilsService.getFilteredTopicsForTenant(any()))
+            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
+    assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
+    assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
+    assertThat(topicOverview.getTopicPromotionDetails().getStatus())
+            .isEqualTo(ApiResultStatus.SUCCESS.value);
+
+    when(commonUtilsService.existsSchemaForTopic(eq(TESTTOPIC),eq("1"),eq(101))).thenReturn(true);
+
+    when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
+            .thenReturn(kwClustersHashMap);
+    when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
+
+    topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL())
+            .isFalse(); // topic hasAcl
+
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest())
+            .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
+            .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
+            .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema())
+            .isTrue(); // topic hasAcl
+
   }
 
   private static Map<Integer, KwClusters> getKwClusterMap() {

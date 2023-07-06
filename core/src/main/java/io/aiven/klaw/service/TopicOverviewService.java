@@ -219,21 +219,7 @@ public class TopicOverviewService extends BaseOverviewService {
 
   private void setHasSchema(
       TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
-    //    Optional<String> schemaEnvId =
-    // manageDatabase.getAssociatedSchemaEnvIdFromTopicId(envId,tenantId);
-
-    //    if (schemaEnvId.isPresent()) {
-    //        List<MessageSchema> schema =
-    //            manageDatabase
-    //                .getHandleDbRequests()
-    //                .getSchemaForTenantAndEnvAndTopic(
-    //                    tenantId, schemaEnvId.get(), topicName);
-    //        topicInfo.setHasSchema(!schema.isEmpty());
-    //      } else {
-
     topicInfo.setHasSchema(commonUtilsService.existsSchemaForTopic(topicName, envId, tenantId));
-    //      }
-
   }
 
   private void setHasAcl(List<AclOverviewInfo> aclInfo, TopicOverviewInfo topicInfo) {
