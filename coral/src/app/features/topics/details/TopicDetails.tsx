@@ -95,9 +95,7 @@ function TopicDetails(props: TopicOverviewProps) {
       <EntityDetailsHeader
         entity={{ name: topicName, type: "topic" }}
         entityExists={Boolean(topicData?.topicExists)}
-        entityEditLink={
-          "/topicOverview/topicname=SchemaTest&env=${topicOverview.availableEnvironments[0].id}&requestType=edit"
-        }
+        entityEditLink={`/topic/${topicName}/request-update?env=${topicData?.topicInfo.envId}`}
         showEditButton={Boolean(
           topicData?.topicInfo.showEditTopic &&
             !topicData?.topicInfo.hasOpenRequest
