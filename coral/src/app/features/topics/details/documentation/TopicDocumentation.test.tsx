@@ -228,6 +228,61 @@ describe("TopicDocumentation", () => {
     });
   });
 
+  describe("if documentation is updating", () => {
+    const existingDocumentation = "# Hello" as TopicDocumentationMarkdown;
+
+    beforeAll(() => {
+      mockUseTopicDetails.mockReturnValue({
+        ...mockTopicDetails,
+        topicOverviewIsRefetching: true,
+        topicOverview: {
+          ...mockTopicDetails.topicOverview,
+          topicDocumentation: existingDocumentation,
+        },
+      });
+
+      mockUpdateTopicDocumentation.mockResolvedValue({
+        success: true,
+        message: "",
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicDocumentation />
+        </AquariumContext>,
+        { queryClient: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows documentation headline", () => {
+      const headline = screen.getByRole("heading", { name: "Documentation" });
+
+      expect(headline).toBeVisible();
+    });
+
+    it("shows accessible information about loading documentation", () => {
+      const loadingInformation = screen.getByText("Loading documentation");
+
+      expect(loadingInformation).toBeVisible();
+      expect(loadingInformation).toHaveClass("visually-hidden");
+    });
+
+    it("shows no documentation", () => {
+      const markdownView = screen.queryByTestId("react-markdown-mock");
+
+      expect(markdownView).not.toBeInTheDocument();
+    });
+
+    it("shows no button to edit documentation", () => {
+      const addDocumentationButton = screen.queryByRole("button", {
+        name: "Edit documentation",
+      });
+      expect(addDocumentationButton).not.toBeInTheDocument();
+    });
+  });
+
   describe("enables user to update documentation", () => {
     const userInput = "**Hello world**";
 
