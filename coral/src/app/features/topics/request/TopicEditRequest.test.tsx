@@ -51,9 +51,9 @@ const mockTopicDetails = {
   topicId: "1200",
   topicContents: {
     topicName: "test-topic-name",
-    noOfPartitions: 1,
+    noOfPartitions: 2,
     description: "Topic description",
-    noOfReplicas: "2",
+    noOfReplicas: "1",
     teamId: 0,
     showEditTopic: true,
     showDeleteTopic: false,
@@ -126,7 +126,7 @@ describe("<TopicEditRequest />", () => {
       });
       expect(input).toBeEnabled();
       expect(input).toBeRequired();
-      expect(input).toHaveDisplayValue("1");
+      expect(input).toHaveDisplayValue("2");
     });
 
     it("shows a select element for 'Replication factor' with correct default value", async () => {
@@ -192,9 +192,9 @@ describe("<TopicEditRequest />", () => {
           type: "kafka",
         },
         remarks: "",
-        replicationfactor: "2",
+        replicationfactor: "1",
         topicname: "test-topic-name",
-        topicpartitions: "1",
+        topicpartitions: "2",
       });
     });
 
