@@ -11,11 +11,17 @@ import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import StatsDisplay from "src/app/features/topics/details/components/StatsDisplay";
+import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
 import { getTopicStats } from "src/app/features/topics/details/utils";
 
 function TopicOverview() {
   const { topicName, environmentId, topicOverview, topicSchemas } =
     useTopicDetails();
+
+  const {
+    topicInfo: { topicOwner = false, hasOpenRequest },
+    topicPromotionDetails,
+  } = topicOverview;
 
   const stats = useMemo(() => getTopicStats(topicOverview), [topicOverview]);
 
@@ -29,6 +35,12 @@ function TopicOverview() {
           </Box.Flex>
         </Card>
       </GridItem>
+
+      <TopicPromotionBanner
+        topicPromotionDetails={topicPromotionDetails}
+        isTopicOwner={topicOwner}
+        hasOpenRequest={hasOpenRequest}
+      />
 
       <Card title={"Subscriptions"} fullWidth>
         <Box.Flex gap={"l7"}>
@@ -52,7 +64,6 @@ function TopicOverview() {
           </Link>
         </Box.Flex>
       </Card>
-
       <Card title={"Schemas"} fullWidth>
         <StatsDisplay
           amount={
