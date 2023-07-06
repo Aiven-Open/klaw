@@ -15,8 +15,7 @@ import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListAclsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.ListTopicsResponse;
 import io.aiven.klaw.clusterapi.models.confluentcloud.TopicCreateRequest;
-import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
-import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.clusterapi.models.enums.*;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,6 +32,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @ExtendWith(SpringExtension.class)
@@ -43,10 +43,9 @@ public class ConfluentCloudApiServiceTest {
       "/kafka/v3/clusters/cluster-id/acls";
   public static final String CLUSTER_ID = "CC_DEV1";
   ConfluentCloudApiService confluentCloudApiService;
-  @Mock private Environment env;
-
   @Mock RestTemplate restTemplate;
   @Mock ClusterApiUtils clusterApiUtils;
+  @Mock private Environment env;
   private UtilMethods utilMethods;
 
   @BeforeEach
@@ -85,13 +84,13 @@ public class ConfluentCloudApiServiceTest {
             eq(HttpMethod.GET),
             any(),
             (ParameterizedTypeReference<ListTopicsResponse>) any()))
-        .thenThrow(new RuntimeException("Cannot connect to confluent cluster"));
+        .thenThrow(new RestClientException("Cannot connect to confluent cluster"));
     assertThatThrownBy(
             () -> {
               confluentCloudApiService.listTopics(
                   "localhost:443", KafkaSupportedProtocol.SSL, CLUSTER_ID);
             })
-        .isInstanceOf(Exception.class);
+        .hasMessage("Error in listing topics : " + "Cannot connect to confluent cluster");
   }
 
   @Test
@@ -124,9 +123,27 @@ public class ConfluentCloudApiServiceTest {
   }
 
   @Test
+  public void listAclsConnectivityFailure() {
+    stubAcls();
+    when(restTemplate.exchange(
+            anyString(),
+            eq(HttpMethod.GET),
+            any(),
+            (ParameterizedTypeReference<ListAclsResponse>) any()))
+        .thenThrow(new RestClientException("Cannot connect to confluent cluster"));
+
+    assertThatThrownBy(
+            () -> {
+              confluentCloudApiService.listAcls(
+                  "localhost:443", KafkaSupportedProtocol.SSL, CLUSTER_ID);
+            })
+        .hasMessage("Error in listing acls : " + "Cannot connect to confluent cluster");
+  }
+
+  @Test
   public void createAclsProducer() throws Exception {
     stubAcls();
-    ClusterAclRequest clusterAclRequest = utilMethods.getConfluentCloudProducerAclRequest();
+    ClusterAclRequest clusterAclRequest = getClusterAclRequest(AclType.PRODUCER.value);
     Map<String, String> createAclsResponse = confluentCloudApiService.createAcls(clusterAclRequest);
 
     when(restTemplate.postForEntity(anyString(), any(), any())).thenReturn(null);
@@ -157,7 +174,7 @@ public class ConfluentCloudApiServiceTest {
 
   @Test
   public void updateAclMapProducer() {
-    ClusterAclRequest clusterAclRequest = utilMethods.getConfluentCloudProducerAclRequest();
+    ClusterAclRequest clusterAclRequest = getClusterAclRequest(AclType.PRODUCER.value);
     Map<String, String> aclMap = new HashMap<>();
     Map<String, String> resultMap =
         confluentCloudApiService.updateAclMap(clusterAclRequest, aclMap);
@@ -180,8 +197,23 @@ public class ConfluentCloudApiServiceTest {
   }
 
   @Test
-  public void deleteAcls() throws Exception {
-    ClusterAclRequest clusterAclRequest = utilMethods.getConfluentCloudProducerAclRequest();
+  public void deleteAcls_AclTypeProducer() throws Exception {
+    ClusterAclRequest clusterAclRequest = getClusterAclRequest(AclType.PRODUCER.value);
+    stubAcls();
+    when(restTemplate.exchange(
+            anyString(),
+            eq(HttpMethod.DELETE),
+            any(),
+            (ParameterizedTypeReference<ListAclsResponse>) any()))
+        .thenReturn(null);
+
+    String response = confluentCloudApiService.deleteAcls(clusterAclRequest);
+    assertThat(response).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void deleteAcls_AclTypeConsumer() throws Exception {
+    ClusterAclRequest clusterAclRequest = getClusterAclRequest(AclType.CONSUMER.value);
     stubAcls();
     when(restTemplate.exchange(
             anyString(),
@@ -205,6 +237,32 @@ public class ConfluentCloudApiServiceTest {
   }
 
   @Test
+  public void createTopic_AlredyExistsFailure() throws Exception {
+    ClusterTopicRequest clusterTopicRequest = utilMethods.getTopicRequest();
+
+    stubTopics();
+    when(restTemplate.postForEntity(anyString(), any(), any()))
+        .thenThrow(new RestClientException("Topic already exists."));
+
+    ApiResponse apiResponse = confluentCloudApiService.createTopic(clusterTopicRequest);
+
+    assertThat(apiResponse.getMessage()).isEqualTo("Topic already exists.");
+    assertThat(apiResponse.isSuccess()).isFalse();
+  }
+
+  @Test
+  public void createTopic_Failure() {
+    ClusterTopicRequest clusterTopicRequest = utilMethods.getTopicRequest();
+    Exception exception = new RestClientException("Error occurred.");
+
+    stubTopics();
+    when(restTemplate.postForEntity(anyString(), any(), any())).thenThrow(exception);
+
+    assertThatThrownBy(() -> confluentCloudApiService.createTopic(clusterTopicRequest))
+        .isEqualTo(exception);
+  }
+
+  @Test
   public void deleteTopic() throws Exception {
     stubTopics();
     ClusterTopicRequest clusterTopicRequest = utilMethods.getTopicRequest();
@@ -212,6 +270,33 @@ public class ConfluentCloudApiServiceTest {
 
     ApiResponse apiResponse = confluentCloudApiService.deleteTopic(clusterTopicRequest);
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  public void deleteTopic_AlredyExistsFailure() throws Exception {
+    ClusterTopicRequest clusterTopicRequest = utilMethods.getTopicRequest();
+
+    stubTopics();
+    when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), any(), eq(String.class)))
+        .thenThrow(new RestClientException("This server does not host this topic"));
+
+    ApiResponse apiResponse = confluentCloudApiService.deleteTopic(clusterTopicRequest);
+
+    assertThat(apiResponse.getMessage()).isEqualTo("This server does not host this topic");
+    assertThat(apiResponse.isSuccess()).isFalse();
+  }
+
+  @Test
+  public void deleteTopic_Failure() {
+    ClusterTopicRequest clusterTopicRequest = utilMethods.getTopicRequest();
+    Exception exception = new RestClientException("Error occurred.");
+
+    stubTopics();
+    when(restTemplate.exchange(anyString(), eq(HttpMethod.DELETE), any(), eq(String.class)))
+        .thenThrow(exception);
+
+    assertThatThrownBy(() -> confluentCloudApiService.deleteTopic(clusterTopicRequest))
+        .isEqualTo(exception);
   }
 
   @Test
@@ -230,7 +315,7 @@ public class ConfluentCloudApiServiceTest {
 
   @Test
   public void getQueryParamsHost() {
-    ClusterAclRequest clusterAclRequest = utilMethods.getConfluentCloudProducerAclRequest();
+    ClusterAclRequest clusterAclRequest = getClusterAclRequest(AclType.PRODUCER.value);
     String resourceType = "TOPIC";
     String operation = "WRITE";
     String response =
@@ -290,5 +375,22 @@ public class ConfluentCloudApiServiceTest {
         .thenReturn(Pair.of("", restTemplate));
     when(clusterApiUtils.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
     when(env.getProperty(any())).thenReturn(KAFKA_V_3_CLUSTERS_CLUSTER_ID_ACLS);
+  }
+
+  public ClusterAclRequest getClusterAclRequest(String aclType) {
+    return ClusterAclRequest.builder()
+        .env("localhost")
+        .topicName("testtopic")
+        .protocol(KafkaSupportedProtocol.PLAINTEXT)
+        .consumerGroup("congroup1")
+        .clusterName("clusterName")
+        .aclType(aclType)
+        .aclIp("11.12.33.122")
+        .aclSsl(null)
+        .requestOperationType(RequestOperationType.CREATE)
+        .aclNativeType(AclsNativeType.CONFLUENT_CLOUD.name())
+        .aclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS.name())
+        .transactionalId("transactionalId")
+        .build();
   }
 }
