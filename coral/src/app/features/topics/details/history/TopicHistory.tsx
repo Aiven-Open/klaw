@@ -3,7 +3,6 @@ import {
   DataTableColumn,
   EmptyState,
   PageHeader,
-  Skeleton,
 } from "@aivenio/aquarium";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicOverview } from "src/domain/topic";
@@ -76,30 +75,28 @@ function TopicHistory() {
       };
     }) || [];
 
+  const loadingRowLength = rows.length === 0 ? 1 : rows.length;
   return (
     <>
       <PageHeader title={"History"} />
-      {!rows.length && rows.length === 0 && (
-        <EmptyState title="No Topic history">
-          {!topicOverviewIsRefetching && <>This Topic contains no history.</>}
-          {topicOverviewIsRefetching && (
-            <div style={{ width: "650px", paddingLeft: "200px" }}>
-              <Skeleton />
-            </div>
+      {topicOverviewIsRefetching ? (
+        <LoadingTable rowLength={loadingRowLength} columns={loadingColumns} />
+      ) : (
+        <>
+          {rows.length === 0 && (
+            <EmptyState title="No Topic history">
+              This Topic contains no history.
+            </EmptyState>
           )}
-        </EmptyState>
-      )}
-      {topicOverviewIsRefetching && rows.length > 0 && (
-        <LoadingTable rowLength={rows.length} columns={loadingColumns} />
-      )}
-
-      {!topicOverviewIsRefetching && rows.length > 0 && (
-        <DataTable
-          ariaLabel={"Topic history"}
-          columns={columns}
-          rows={rows}
-          noWrap={false}
-        />
+          {rows.length > 0 && (
+            <DataTable
+              ariaLabel={"Topic history"}
+              columns={columns}
+              rows={rows}
+              noWrap={false}
+            />
+          )}
+        </>
       )}
     </>
   );
