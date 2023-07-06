@@ -2,6 +2,7 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
@@ -73,6 +74,9 @@ public class InsertDataJdbc {
 
   @Autowired(required = false)
   private KwMetricsRepo metricsRepo;
+
+  @Autowired(required = false)
+  private KwEntitySequenceRepo kwEntitySequenceRepo;
 
   @Autowired private SelectDataJdbc jdbcSelectHelper;
 
@@ -308,7 +312,11 @@ public class InsertDataJdbc {
 
   public String insertIntoTeams(Team team) {
     log.debug("insertIntoTeams {}", team.getTeamname());
-    int teamId = getNextTeamId(team.getTenantId());
+    Integer teamId = getNextSeqIdAndUpdate(EntityType.TEAM.name(), team.getTenantId());
+    if (teamId == null) { // check for INFRATEAM, STAGINTEAM
+      teamId = 1001;
+      insertIntoKwEntitySequence(EntityType.TEAM.name(), teamId + 1, team.getTenantId());
+    }
     TeamID teamID = new TeamID(teamId, team.getTenantId());
     team.setTeamId(teamId);
 
@@ -322,28 +330,60 @@ public class InsertDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
+  public Integer getNextTeamId(int tenantId) {
+    Integer teamId = teamRepo.getNextTeamId(tenantId);
+    if (teamId == null) {
+      return 1001;
+    } else {
+      return teamId + 1;
+    }
+  }
+
   public String addNewEnv(Env env) {
     log.debug("Insert or Update Env {}", env.getName());
+
+    Integer lastId;
+    if (env.getId() == null) {
+      lastId = getNextSeqIdAndUpdate(EntityType.ENVIRONMENT.name(), env.getTenantId());
+      env.setId(lastId + "");
+    }
+
     envRepo.save(env);
     return ApiResultStatus.SUCCESS.value;
   }
 
+  public void insertIntoKwEntitySequence(String entityName, int maxId, int tenantId) {
+    KwEntitySequence kwEntitySequence = new KwEntitySequence();
+    kwEntitySequence.setEntityName(entityName);
+    kwEntitySequence.setSeqId(maxId);
+    kwEntitySequence.setTenantId(tenantId);
+    kwEntitySequenceRepo.save(kwEntitySequence);
+  }
+
   public String insertIntoClusters(KwClusters kwClusters) {
     log.debug("insertIntoClusters {}", kwClusters.getClusterName());
-    Integer lastClusterId;
+
+    Integer lastId;
     if (kwClusters.getClusterId() == null) {
-      lastClusterId = kwClusterRepo.getNextClusterId(kwClusters.getTenantId());
-
-      if (lastClusterId == null) {
-        lastClusterId = 1;
-      } else {
-        lastClusterId = lastClusterId + 1;
-      }
-
-      kwClusters.setClusterId(lastClusterId);
+      lastId = getNextSeqIdAndUpdate(EntityType.CLUSTER.name(), kwClusters.getTenantId());
+      kwClusters.setClusterId(lastId);
     }
     kwClusterRepo.save(kwClusters);
+
     return ApiResultStatus.SUCCESS.value;
+  }
+
+  public Integer getNextSeqIdAndUpdate(String entityName, int tenantId) {
+    List<KwEntitySequence> kwEntitySequenceList =
+        kwEntitySequenceRepo.findAllByEntityNameAndTenantId(entityName, tenantId);
+    if (!kwEntitySequenceList.isEmpty()) {
+      Integer lastId = kwEntitySequenceList.get(0).getSeqId();
+      insertIntoKwEntitySequence(entityName, lastId + 1, tenantId);
+      return lastId;
+    } else {
+      // only for entityName TEAM as STAGING and INFRATEAM are added during startup
+      return null;
+    }
   }
 
   public String insertIntoRegisterUsers(RegisterUserInfo userInfo) {
@@ -364,14 +404,6 @@ public class InsertDataJdbc {
 
     registerInfoRepo.save(userInfo);
     return ApiResultStatus.SUCCESS.value;
-  }
-
-  public Integer getNextTeamId(int tenantId) {
-    Integer teamId = teamRepo.getNextTeamId(tenantId);
-    if (teamId == null) return 1001;
-    else {
-      return teamId + 1;
-    }
   }
 
   public Integer getNextAclRequestId(int tenantId) {

@@ -22,6 +22,7 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
     highestEnv: true,
     hasOpenRequest: false,
     hasSchema: false,
+    description: "my description",
   },
   aclInfoList: [
     {
@@ -85,6 +86,7 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
     highestEnv: true,
     hasOpenRequest: false,
     hasSchema: false,
+    description: "my description",
   },
   aclInfoList: [],
   topicHistoryList: [

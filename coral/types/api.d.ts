@@ -645,30 +645,30 @@ export type components = {
       name: string;
     };
     TopicInfo: {
-      /** Format: int32 */
-      topicid: number;
-      sequence: string;
       topicName: string;
       /** Format: int32 */
       noOfPartitions: number;
-      description: string;
       noOfReplicas: string;
+      description: string;
+      advancedTopicConfiguration?: {
+        [key: string]: string | undefined;
+      };
       teamname: string;
       /** Format: int32 */
       teamId: number;
       envId: string;
-      environmentsList: (components["schemas"]["EnvIdInfo"])[];
+      envName: string;
       showEditTopic: boolean;
       showDeleteTopic: boolean;
       topicDeletable: boolean;
+      /** Format: int32 */
+      topicid: number;
+      sequence: string;
+      environmentsList: (components["schemas"]["EnvIdInfo"])[];
       totalNoPages: string;
       currentPage: string;
       allPageNos: (string)[];
       documentation?: string;
-      envName?: string;
-      advancedTopicConfiguration?: {
-        [key: string]: string | undefined;
-      };
     };
     KafkaConnectorModel: {
       /** Format: int32 */
@@ -1077,10 +1077,15 @@ export type components = {
       /** Format: int32 */
       noOfPartitions: number;
       noOfReplicas: string;
+      description: string;
+      advancedTopicConfiguration?: {
+        [key: string]: string | undefined;
+      };
       teamname: string;
       /** Format: int32 */
       teamId: number;
       envId: string;
+      envName: string;
       showEditTopic: boolean;
       showDeleteTopic: boolean;
       topicDeletable: boolean;
@@ -1089,18 +1094,24 @@ export type components = {
       hasOpenACLRequest: boolean;
       hasACL: boolean;
       hasSchema: boolean;
-      envName: string;
+      topicOwner?: boolean;
+      highestEnv?: boolean;
+    };
+    TopicBaseConfig: {
+      topicName: string;
+      /** Format: int32 */
+      noOfPartitions: number;
+      noOfReplicas: string;
+      description: string;
       advancedTopicConfiguration?: {
         [key: string]: string | undefined;
       };
-      topicOwner?: boolean;
-      highestEnv?: boolean;
     };
     TopicDetailsPerEnv: {
       topicExists: boolean;
       error?: string;
       topicId?: string;
-      topicContents?: components["schemas"]["TopicInfo"];
+      topicContents?: components["schemas"]["TopicBaseConfig"];
     };
     TenantInfo: {
       /** Format: int32 */

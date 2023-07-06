@@ -68,6 +68,7 @@ const testTopicOverview: TopicOverview = {
     highestEnv: true,
     hasOpenRequest: false,
     hasSchema: false,
+    description: "my description",
   },
   aclInfoList: [
     {

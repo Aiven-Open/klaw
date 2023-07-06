@@ -93,6 +93,9 @@ public class SelectDataJdbc {
   @Autowired(required = false)
   private ProductDetailsRepo productDetailsRepo;
 
+  @Autowired(required = false)
+  private KwEntitySequenceRepo kwEntitySequenceRepo;
+
   public List<AclRequests> selectFilteredAclRequests(
       boolean isApproval,
       String requestor,
@@ -1842,5 +1845,21 @@ public class SelectDataJdbc {
 
   public List<KafkaConnectorRequest> getAllConnectorRequests() {
     return Lists.newArrayList(kafkaConnectorRequestsRepo.findAll());
+  }
+
+  public Integer getNextClusterId(int tenantId) {
+    return kwClusterRepo.getNextClusterId(tenantId);
+  }
+
+  public Integer getNextEnvId(int tenantId) {
+    return envRepo.getNextId(tenantId);
+  }
+
+  public Integer getNextTeamId(int tenantId) {
+    return teamRepo.getNextTeamId(tenantId);
+  }
+
+  public long getDataFromKwEntitySequences() {
+    return kwEntitySequenceRepo.count();
   }
 }
