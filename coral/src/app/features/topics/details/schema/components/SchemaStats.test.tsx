@@ -6,14 +6,16 @@ const testId = 111;
 const testCompatibility = "BACKWARD";
 describe("SchemaStats", () => {
   describe("renders a loading state", () => {
-    render(
-      <SchemaStats
-        isLoading={true}
-        version={testVersion}
-        id={testId}
-        compatibility={testCompatibility}
-      />
-    );
+    beforeAll(() => {
+      render(
+        <SchemaStats
+          isLoading={true}
+          version={testVersion}
+          id={testId}
+          compatibility={testCompatibility}
+        />
+      );
+    });
 
     afterAll(cleanup);
 
