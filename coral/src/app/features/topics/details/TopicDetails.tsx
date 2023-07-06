@@ -98,6 +98,10 @@ function TopicDetails(props: TopicOverviewProps) {
         entityEditLink={
           "/topicOverview/topicname=SchemaTest&env=${topicOverview.availableEnvironments[0].id}&requestType=edit"
         }
+        showEditButton={Boolean(
+          topicData?.topicInfo.showEditTopic &&
+            !topicData?.topicInfo.hasOpenRequest
+        )}
         environments={topicData?.availableEnvironments}
         environmentId={environmentId}
         setEnvironmentId={setEnvironmentId}

@@ -14,6 +14,7 @@ import { EnvironmentInfo } from "src/domain/environment";
 type TopicOverviewHeaderProps = {
   entity: { name: string; type: "connector" | "topic" };
   entityEditLink: string;
+  showEditButton: boolean;
   entityExists: boolean;
   environments?: EnvironmentInfo[];
   environmentId?: string;
@@ -23,6 +24,7 @@ type TopicOverviewHeaderProps = {
 function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
   const {
     entity,
+    showEditButton,
     entityEditLink,
     environments,
     environmentId,
@@ -96,12 +98,14 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
           </Box>
         )}
       </Box>
-      <Button.Primary
-        disabled={!entityExists}
-        onClick={() => navigate(entityEditLink)}
-      >
-        Edit {entity.type}
-      </Button.Primary>
+      {showEditButton && (
+        <Button.Primary
+          disabled={!entityExists}
+          onClick={() => navigate(entityEditLink)}
+        >
+          Edit {entity.type}
+        </Button.Primary>
+      )}
     </Box>
   );
 }
