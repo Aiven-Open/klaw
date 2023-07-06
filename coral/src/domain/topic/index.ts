@@ -1,5 +1,6 @@
 import {
   deleteTopic,
+  editTopic,
   getTopicDetailsPerEnv,
   getTopicNames,
   getTopicRequests,
@@ -24,6 +25,7 @@ import {
 
 export {
   deleteTopic,
+  editTopic,
   getTopicDetailsPerEnv,
   getTopicNames,
   getTopicRequests,
