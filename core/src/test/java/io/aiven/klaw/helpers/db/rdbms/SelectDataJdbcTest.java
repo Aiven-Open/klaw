@@ -310,5 +310,4 @@ public class SelectDataJdbcTest {
     teamList = selectData.selectTeamsOfUsers(username, 1);
     assertThat(teamList).isEmpty();
   }
-
 }
