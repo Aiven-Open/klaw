@@ -38,6 +38,7 @@ const testTopicSchemas = {
     latest: true,
   },
 };
+
 const noPromotion_testTopicSchemas = {
   topicExists: true,
   schemaExists: true,
@@ -63,194 +64,15 @@ const noPromotion_testTopicSchemas = {
   },
 };
 
-describe("TopicDetailsSchema (topic owner)", () => {
-  beforeAll(() => {
-    mockedUseTopicDetails.mockReturnValue({
-      topicOverviewIsRefetching: false,
-      topicSchemasIsRefetching: false,
-      topicName: testTopicName,
-      environmentId: testEnvironmentId,
-      topicSchemas: testTopicSchemas,
-      setSchemaVersion: mockSetSchemaVersion,
-      topicOverview: { topicInfo: { topicOwner: true } },
-    });
-    customRender(
-      <AquariumContext>
-        <TopicDetailsSchema />
-      </AquariumContext>,
-      {
-        memoryRouter: true,
-        queryClient: true,
-      }
-    );
-  });
-
-  afterAll(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
-  it("shows a headline", () => {
-    const headline = screen.getByRole("heading", { name: "Schema" });
-
-    expect(headline).toBeVisible();
-  });
-
-  it("shows a select element to choose version", () => {
-    const select = screen.getByRole("combobox", { name: "Select version" });
-
-    expect(select).toBeEnabled();
-  });
-
-  it("shows all options", () => {
-    const select = screen.getByRole("combobox", { name: "Select version" });
-    const options = within(select).getAllByRole("option");
-
-    expect(options).toHaveLength(3);
-    expect(options[0]).toHaveValue("3");
-    expect(options[0]).toHaveTextContent("Version 3 (latest)");
-  });
-
-  it("shows information about available amount of versions", () => {
-    const versions = screen.getByText("3 versions");
-
-    expect(versions).toBeVisible();
-  });
-
-  it("shows a link to request a new schema version", () => {
-    const link = screen.getByRole("link", { name: "Request a new version" });
-
-    expect(link).toBeVisible();
-    expect(link).toHaveAttribute(
-      "href",
-      `/topic/${testTopicName}/request-schema?env=${testTopicSchemas.schemaDetailsPerEnv.env}`
-    );
-  });
-
-  it("shows information about possible promotion", () => {
-    const infoText = screen.getByText(
-      `This schema has not yet been promoted to the ${testTopicSchemas.schemaPromotionDetails.targetEnv} environment.`
-    );
-
-    expect(infoText).toBeVisible();
-  });
-
-  it("shows a button to promote schema", () => {
-    const button = screen.getByRole("button", { name: "Promote" });
-
-    expect(button).toBeEnabled();
-  });
-
-  it("shows a modal to promote schema when clicking on the Promote schema button", async () => {
-    const button = screen.getByRole("button", { name: "Promote" });
-
-    await userEvent.click(button);
-
-    expect(screen.getByRole("dialog")).toBeVisible();
-  });
-
-  it("shows information about schema promotion", () => {
-    const banner = screen.getByText("This schema has not yet been promoted", {
-      exact: false,
-    });
-    const button = screen.getByRole("button", { name: "Promote" });
-
-    expect(banner).toBeVisible();
-    expect(button).toBeEnabled();
-  });
-
-  it("shows schema statistic about versions", () => {
-    const versionsStats = screen.getByText("Version no.");
-
-    expect(versionsStats).toBeVisible();
-    expect(versionsStats.parentElement).toHaveTextContent("3Version no.");
-  });
-
-  it("shows schema info about ID", () => {
-    const idInfo = screen.getByText("ID");
-
-    expect(idInfo).toBeVisible();
-    expect(idInfo.parentElement).toHaveTextContent("0ID");
-  });
-
-  it("shows schema info about compatibility", () => {
-    const compatibilityInfo = screen.getByText("Compatibility");
-
-    expect(compatibilityInfo).toBeVisible();
-    expect(compatibilityInfo.parentElement).toHaveTextContent(
-      "COULDN'T RETRIEVECompatibility"
-    );
-  });
-
-  it("shows an editor with preview of the schema", () => {
-    const previewEditor = screen.getByTestId("topic-schema");
-
-    expect(previewEditor).toBeVisible();
-  });
-
-  it("allows changing the version of the schema", async () => {
-    const select = screen.getByRole("combobox", { name: "Select version" });
-    await userEvent.selectOptions(select, "2");
-
-    expect(select).toHaveValue("2");
-
-    expect(mockSetSchemaVersion).toHaveBeenCalledWith(2);
-  });
-});
-
-describe("TopicDetailsSchema (NOT topic owner)", () => {
-  beforeAll(() => {
-    mockedUseTopicDetails.mockReturnValue({
-      topicOverviewIsRefetching: false,
-      topicSchemasIsRefetching: false,
-      topicName: testTopicName,
-      environmentId: testEnvironmentId,
-      topicSchemas: testTopicSchemas,
-      setSchemaVersion: mockSetSchemaVersion,
-      topicOverview: { topicInfo: { topicOwner: false } },
-    });
-    customRender(
-      <AquariumContext>
-        <TopicDetailsSchema />
-      </AquariumContext>,
-      {
-        memoryRouter: true,
-        queryClient: true,
-      }
-    );
-  });
-
-  afterAll(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
-  it("does not show a link to request a new schema version", () => {
-    const link = screen.queryByRole("link", {
-      name: "Request a new version",
-    });
-
-    expect(link).not.toBeInTheDocument();
-  });
-
-  it("does not show information about schema promotion", () => {
-    const banner = screen.queryByText("This schema has not yet been promoted", {
-      exact: false,
-    });
-    const button = screen.queryByRole("button", { name: "Promote" });
-
-    expect(banner).not.toBeInTheDocument();
-    expect(button).not.toBeInTheDocument();
-  });
-
-  describe("TopicDetailsSchema (status: NO_PROMOTION)", () => {
+describe("TopicDetailsSchema", () => {
+  describe("renders right view for topic owner", () => {
     beforeAll(() => {
       mockedUseTopicDetails.mockReturnValue({
         topicOverviewIsRefetching: false,
         topicSchemasIsRefetching: false,
         topicName: testTopicName,
         environmentId: testEnvironmentId,
-        topicSchemas: noPromotion_testTopicSchemas,
+        topicSchemas: testTopicSchemas,
         setSchemaVersion: mockSetSchemaVersion,
         topicOverview: { topicInfo: { topicOwner: true } },
       });
@@ -265,14 +87,259 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
       );
     });
 
-    afterAll(cleanup);
+    afterAll(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("shows a headline", () => {
+      const headline = screen.getByRole("heading", { name: "Schema" });
+
+      expect(headline).toBeVisible();
+    });
+
+    it("shows a select element to choose version", () => {
+      const select = screen.getByRole("combobox", { name: "Select version" });
+
+      expect(select).toBeEnabled();
+    });
+
+    it("shows all options", () => {
+      const select = screen.getByRole("combobox", { name: "Select version" });
+      const options = within(select).getAllByRole("option");
+
+      expect(options).toHaveLength(3);
+      expect(options[0]).toHaveValue("3");
+      expect(options[0]).toHaveTextContent("Version 3 (latest)");
+    });
+
+    it("shows information about available amount of versions", () => {
+      const versions = screen.getByText("3 versions");
+
+      expect(versions).toBeVisible();
+    });
+
+    it("shows a link to request a new schema version", () => {
+      const link = screen.getByRole("link", { name: "Request a new version" });
+
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute(
+        "href",
+        `/topic/${testTopicName}/request-schema?env=${testTopicSchemas.schemaDetailsPerEnv.env}`
+      );
+    });
+
+    it("shows information about possible promotion", () => {
+      const infoText = screen.getByText(
+        `This schema has not yet been promoted to the ${testTopicSchemas.schemaPromotionDetails.targetEnv} environment.`
+      );
+
+      expect(infoText).toBeVisible();
+    });
+
+    it("shows a button to promote schema", () => {
+      const button = screen.getByRole("button", { name: "Promote" });
+
+      expect(button).toBeEnabled();
+    });
+
+    it("shows a modal to promote schema when clicking on the Promote schema button", async () => {
+      const button = screen.getByRole("button", { name: "Promote" });
+
+      await userEvent.click(button);
+
+      expect(screen.getByRole("dialog")).toBeVisible();
+    });
+
+    it("shows information about schema promotion", () => {
+      const banner = screen.getByText("This schema has not yet been promoted", {
+        exact: false,
+      });
+      const button = screen.getByRole("button", { name: "Promote" });
+
+      expect(banner).toBeVisible();
+      expect(button).toBeEnabled();
+    });
+
+    it("shows schema statistic about versions", () => {
+      const versionsStats = screen.getByText("Version no.");
+
+      expect(versionsStats).toBeVisible();
+      expect(versionsStats.parentElement).toHaveTextContent("3Version no.");
+    });
+
+    it("shows schema info about ID", () => {
+      const idInfo = screen.getByText("ID");
+
+      expect(idInfo).toBeVisible();
+      expect(idInfo.parentElement).toHaveTextContent("0ID");
+    });
+
+    it("shows schema info about compatibility", () => {
+      const compatibilityInfo = screen.getByText("Compatibility");
+
+      expect(compatibilityInfo).toBeVisible();
+      expect(compatibilityInfo.parentElement).toHaveTextContent(
+        "COULDN'T RETRIEVECompatibility"
+      );
+    });
+
+    it("shows an editor with preview of the schema", () => {
+      const previewEditor = screen.getByTestId("topic-schema");
+
+      expect(previewEditor).toBeVisible();
+    });
+
+    it("allows changing the version of the schema", async () => {
+      const select = screen.getByRole("combobox", { name: "Select version" });
+      await userEvent.selectOptions(select, "2");
+
+      expect(select).toHaveValue("2");
+
+      expect(mockSetSchemaVersion).toHaveBeenCalledWith(2);
+    });
+  });
+
+  describe("renders right view for topic owner when data is updating", () => {
+    beforeAll(() => {
+      mockedUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: true,
+        topicName: testTopicName,
+        environmentId: testEnvironmentId,
+        topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+        topicOverview: { topicInfo: { topicOwner: true } },
+      });
+      customRender(
+        <AquariumContext>
+          <TopicDetailsSchema />
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("shows no select element to choose version", () => {
+      const select = screen.queryByRole("combobox", { name: "Select version" });
+
+      expect(select).not.toBeInTheDocument();
+    });
+
+    it("shows accessible information that versions are loading", () => {
+      const loadingInformation = screen.getByText("Versions loading");
+
+      expect(loadingInformation).toBeVisible();
+      expect(loadingInformation).toHaveClass("visually-hidden");
+    });
+
+    it("shows no information about available amount of versions", () => {
+      const versions = screen.queryByText("3 versions");
+
+      expect(versions).not.toBeInTheDocument();
+    });
+
+    it("shows a no link to request a new schema version", () => {
+      const link = screen.queryByRole("link", {
+        name: "Request a new version",
+      });
+
+      expect(link).not.toBeInTheDocument();
+    });
+
+    it("shows no information about possible promotion", () => {
+      const infoText = screen.queryByText(
+        `This schema has not yet been promoted to the ${testTopicSchemas.schemaPromotionDetails.targetEnv} environment.`
+      );
+
+      expect(infoText).not.toBeInTheDocument();
+    });
+
+    it("shows no button to promote schema", () => {
+      const button = screen.queryByRole("button", { name: "Promote" });
+
+      expect(button).not.toBeInTheDocument();
+    });
+
+    it("shows schema statistic about versions", () => {
+      const versionsStats = screen.getByText("Version no.");
+
+      expect(versionsStats).toBeVisible();
+      expect(versionsStats.parentElement).toHaveTextContent(
+        "Loading informationVersion no."
+      );
+    });
+
+    it("shows schema info about ID", () => {
+      const idInfo = screen.getByText("ID");
+
+      expect(idInfo).toBeVisible();
+      expect(idInfo.parentElement).toHaveTextContent("Loading informationID");
+    });
+
+    it("shows schema info about compatibility", () => {
+      const compatibilityInfo = screen.getByText("Compatibility");
+
+      expect(compatibilityInfo).toBeVisible();
+      expect(compatibilityInfo.parentElement).toHaveTextContent(
+        "Loading informationCompatibility"
+      );
+    });
+
+    it("shows no editor with preview of the schema", () => {
+      const previewEditor = screen.queryByTestId("topic-schema");
+
+      expect(previewEditor).not.toBeInTheDocument();
+    });
+
+    it("shows accessible loading information for preview", () => {
+      const loadingPreview = screen.getByText("Loading schema preview");
+
+      expect(loadingPreview).toBeVisible();
+      expect(loadingPreview).toHaveClass("visually-hidden");
+    });
+  });
+
+  describe("renders right view for user that is not topic owner)", () => {
+    beforeAll(() => {
+      mockedUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
+        topicName: testTopicName,
+        environmentId: testEnvironmentId,
+        topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+        topicOverview: { topicInfo: { topicOwner: false } },
+      });
+      customRender(
+        <AquariumContext>
+          <TopicDetailsSchema />
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
 
     it("does not show a link to request a new schema version", () => {
       const link = screen.queryByRole("link", {
         name: "Request a new version",
       });
 
-      expect(link).toBeInTheDocument();
+      expect(link).not.toBeInTheDocument();
     });
 
     it("does not show information about schema promotion", () => {
@@ -286,6 +353,52 @@ describe("TopicDetailsSchema (NOT topic owner)", () => {
 
       expect(banner).not.toBeInTheDocument();
       expect(button).not.toBeInTheDocument();
+    });
+
+    describe("TopicDetailsSchema (status: NO_PROMOTION)", () => {
+      beforeAll(() => {
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: noPromotion_testTopicSchemas,
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: { topicInfo: { topicOwner: true } },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("does not show a link to request a new schema version", () => {
+        const link = screen.queryByRole("link", {
+          name: "Request a new version",
+        });
+
+        expect(link).toBeInTheDocument();
+      });
+
+      it("does not show information about schema promotion", () => {
+        const banner = screen.queryByText(
+          "This schema has not yet been promoted",
+          {
+            exact: false,
+          }
+        );
+        const button = screen.queryByRole("button", { name: "Promote" });
+
+        expect(banner).not.toBeInTheDocument();
+        expect(button).not.toBeInTheDocument();
+      });
     });
   });
 });
