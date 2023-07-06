@@ -3,7 +3,6 @@ import {
   DataTable,
   DataTableColumn,
   EmptyState,
-  Skeleton,
   StatusChip,
 } from "@aivenio/aquarium";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";

@@ -1,4 +1,4 @@
-import { DataTable, EmptyState, Skeleton } from "@aivenio/aquarium";
+import { DataTable, Skeleton } from "@aivenio/aquarium";
 import { DataTableRow } from "@aivenio/aquarium/dist/src/utils/table/types";
 
 type LoadingTableColumn = {
