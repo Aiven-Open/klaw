@@ -7729,11 +7729,14 @@
           "schemaPromotionDetails" : {
             "$ref" : "#/components/schemas/PromotionStatus"
           },
+          "schemaExists" : {
+            "type" : "boolean"
+          },
           "schemaDetailsPerEnv" : {
             "$ref" : "#/components/schemas/SchemaDetailsPerEnv"
           }
         },
-        "required" : [ "prefixAclsExists", "schemaPromotionDetails", "topicExists", "txnAclsExists" ]
+        "required" : [ "prefixAclsExists", "schemaExists", "schemaPromotionDetails", "topicExists", "txnAclsExists" ]
       },
       "KwReport" : {
         "properties" : {

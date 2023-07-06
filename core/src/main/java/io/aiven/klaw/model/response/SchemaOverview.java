@@ -9,5 +9,6 @@ public class SchemaOverview extends ResourceOverviewAttributes {
   private List<Integer> allSchemaVersions;
   private Integer latestVersion;
   @NotNull private PromotionStatus schemaPromotionDetails;
+  @NotNull boolean schemaExists;
   private SchemaDetailsPerEnv schemaDetailsPerEnv;
 }

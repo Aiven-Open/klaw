@@ -646,9 +646,8 @@ app.controller("browseAclsCtrl", function($scope, $http, $location, $window) {
 		        $scope.resultBrowsePrefix = output.prefixedAclInfoList;
 		        $scope.resultBrowseTxnId = output.transactionalAclInfoList;
             	$scope.topicOverview = output.topicInfoList;
-            	if($scope.topicOverview.length >0) {
-            	$scope.schemaExists = $scope.topicOverview[0].hasSchema;
-            	}
+            	$scope.schemaExists = output.schemaExists;
+
 
             	$scope.topicPromotionDetails = output.topicPromotionDetails;
                 $scope.topicPromotionDetails = output.topicPromotionDetails;

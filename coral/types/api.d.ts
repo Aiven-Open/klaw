@@ -1338,6 +1338,7 @@ export type components = {
       /** Format: int32 */
       latestVersion?: number;
       schemaPromotionDetails: components["schemas"]["PromotionStatus"];
+      schemaExists: boolean;
       schemaDetailsPerEnv?: components["schemas"]["SchemaDetailsPerEnv"];
     };
     KwReport: {

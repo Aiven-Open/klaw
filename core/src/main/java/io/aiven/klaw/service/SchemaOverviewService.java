@@ -179,6 +179,7 @@ public class SchemaOverviewService extends BaseOverviewService {
           dynamicObj = OBJECT_MAPPER.readValue(schemaOfObj, Object.class);
           schemaOfObj = WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(dynamicObj);
           schemaDetailsPerEnv.setContent(schemaOfObj);
+          schemaOverview.setSchemaExists(true);
 
           // A team owns a topic across all environments so we can assume if the search returned
           // one or more topics it is owned by this users team.
@@ -197,7 +198,7 @@ public class SchemaOverviewService extends BaseOverviewService {
         log.error("Error ", e);
       }
 
-      if (schemaDetailsPerEnv.getContent() != null) {
+      if (schemaOverview.isSchemaExists()) {
         log.debug("SchemaDetails {}", schemaDetailsPerEnv);
         schemaOverview.setSchemaDetailsPerEnv(schemaDetailsPerEnv);
       }
