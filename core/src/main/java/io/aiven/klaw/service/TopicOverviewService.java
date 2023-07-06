@@ -356,15 +356,14 @@ public class TopicOverviewService extends BaseOverviewService {
     List<TopicRequest> topicReqs =
         manageDatabase
             .getHandleDbRequests()
-            .getCreatedTopicRequests(
+            .getAllTopicRequests(
                 getUserName(),
                 RequestStatus.CREATED.value,
-                true,
-                tenantId,
                 null,
                 environmentId,
-                null,
-                topicName);
+                topicName,
+                false,
+                tenantId);
     log.debug("Open Reqs for Topics {} , size {}", topicReqs, topicReqs.size());
     // there should only ever be 1 delete request and in any other scenario this should be 0.
     return !topicReqs.isEmpty();
@@ -376,7 +375,7 @@ public class TopicOverviewService extends BaseOverviewService {
         manageDatabase
             .getHandleDbRequests()
             .getAllAclRequests(
-                true,
+                false,
                 getUserName(),
                 null,
                 RequestStatus.CREATED.value,

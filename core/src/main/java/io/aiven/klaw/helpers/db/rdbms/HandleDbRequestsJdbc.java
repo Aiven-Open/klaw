@@ -315,7 +315,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   @Override
   public List<AclRequests> getAllAclRequests(
-      boolean allReqs,
+      boolean isApproval,
       String requestor,
       String role,
       String requestStatus,
@@ -328,7 +328,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       boolean isMyRequest,
       int tenantId) {
     return jdbcSelectHelper.selectFilteredAclRequests(
-        allReqs,
+        isApproval,
         requestor,
         role,
         requestStatus,
