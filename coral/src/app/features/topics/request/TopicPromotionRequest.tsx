@@ -157,6 +157,11 @@ function TopicPromotionRequest() {
           Do you want to cancel this request? The data added will be lost.
         </Dialog>
       )}
+      {promoteIsError && (
+        <Box marginBottom={"l1"} role="alert">
+          <Alert type="error">{parseErrorMsg(promoteError)}</Alert>
+        </Box>
+      )}
       <Form
         {...form}
         ariaLabel={"Request topic promotion"}
@@ -245,11 +250,6 @@ function TopicPromotionRequest() {
           </Box>
         </Box.Flex>
 
-        {promoteIsError && (
-          <Box marginBottom={"l1"} role="alert">
-            <Alert type="error">{parseErrorMsg(promoteError)}</Alert>
-          </Box>
-        )}
         <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
           <SubmitButton loading={promoteIsLoading}>
             Submit promotion request
