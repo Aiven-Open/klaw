@@ -49,7 +49,6 @@ const testTopicName = "my-nice-topic";
 
 const testTopicOverview: TopicOverview = {
   topicExists: true,
-  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {
@@ -63,8 +62,12 @@ const testTopicOverview: TopicOverview = {
     showDeleteTopic: false,
     topicDeletable: false,
     envName: "DEV",
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
   },
   aclInfoList: [
     {

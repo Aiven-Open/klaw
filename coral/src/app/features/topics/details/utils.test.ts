@@ -3,7 +3,6 @@ import { TopicOverview } from "src/domain/topic";
 
 const mockUseTopicDetailsDataWithAcl: TopicOverview = {
   topicExists: true,
-  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {
@@ -17,8 +16,12 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
     showDeleteTopic: false,
     topicDeletable: false,
     envName: "DEV",
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
   },
   aclInfoList: [
     {
@@ -63,7 +66,6 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
 
 const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
   topicExists: true,
-  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {
@@ -77,8 +79,12 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
     showDeleteTopic: false,
     topicDeletable: false,
     envName: "DEV",
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
   },
   aclInfoList: [],
   topicHistoryList: [

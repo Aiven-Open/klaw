@@ -23,7 +23,6 @@ const mockUpdateTopicDocumentation =
 const testTopicOverview: TopicOverview = {
   availableEnvironments: [],
   prefixAclsExists: false,
-  schemaExists: false,
   txnAclsExists: false,
   topicPromotionDetails: { status: "" },
   topicIdForDocumentation: 99999,

@@ -27,7 +27,6 @@ const testTopicHistoryList = [
 ];
 const testTopicOverview: TopicOverview = {
   topicExists: true,
-  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {
@@ -41,8 +40,12 @@ const testTopicOverview: TopicOverview = {
     topicDeletable: false,
     envName: "DEV",
     topicName: "my awesome topic",
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
   },
   aclInfoList: [],
   prefixedAclInfoList: [],

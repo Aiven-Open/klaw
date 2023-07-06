@@ -195,7 +195,6 @@ describe("topic-transformer.ts", () => {
     it("transforms topic overview from backend with only required properties", async () => {
       const mockedResponse: KlawApiResponse<"getTopicOverview"> = {
         topicExists: false,
-        schemaExists: false,
         prefixAclsExists: false,
         txnAclsExists: false,
         topicInfoList: [
@@ -209,8 +208,12 @@ describe("topic-transformer.ts", () => {
             showEditTopic: false,
             showDeleteTopic: false,
             topicDeletable: false,
-            hasOpenRequest: false,
+            hasOpenTopicRequest: false,
             hasOpenACLRequest: false,
+            highestEnv: true,
+            hasOpenRequest: false,
+            hasSchema: false,
+            hasACL: false,
             envName: "DEV",
           },
         ],
@@ -228,14 +231,17 @@ describe("topic-transformer.ts", () => {
       const result: TopicOverview = {
         availableEnvironments: [],
         prefixAclsExists: false,
-        schemaExists: false,
         topicExists: false,
         topicIdForDocumentation: 1,
         topicInfo: {
           envId: "4",
           envName: "DEV",
+          hasOpenTopicRequest: false,
           hasOpenACLRequest: false,
+          highestEnv: true,
           hasOpenRequest: false,
+          hasSchema: false,
+          hasACL: false,
           noOfPartitions: 1,
           noOfReplicas: "2",
           showDeleteTopic: false,
@@ -257,7 +263,6 @@ describe("topic-transformer.ts", () => {
     it("transforms topic overview from backend with all properties", async () => {
       const mockedResponse: KlawApiResponse<"getTopicOverview"> = {
         topicExists: false,
-        schemaExists: false,
         prefixAclsExists: false,
         txnAclsExists: false,
         topicInfoList: [
@@ -271,8 +276,12 @@ describe("topic-transformer.ts", () => {
             showEditTopic: false,
             showDeleteTopic: false,
             topicDeletable: false,
-            hasOpenRequest: false,
+            hasOpenTopicRequest: false,
             hasOpenACLRequest: false,
+            highestEnv: true,
+            hasOpenRequest: false,
+            hasSchema: false,
+            hasACL: false,
             envName: "DEV",
           },
         ],
@@ -344,14 +353,17 @@ describe("topic-transformer.ts", () => {
       const result: TopicOverview = {
         availableEnvironments: [],
         prefixAclsExists: false,
-        schemaExists: false,
         topicExists: false,
         topicIdForDocumentation: 1,
         topicInfo: {
           envId: "4",
           envName: "DEV",
+          hasOpenTopicRequest: false,
           hasOpenACLRequest: false,
+          highestEnv: true,
           hasOpenRequest: false,
+          hasSchema: false,
+          hasACL: false,
           noOfPartitions: 1,
           noOfReplicas: "2",
           showDeleteTopic: false,

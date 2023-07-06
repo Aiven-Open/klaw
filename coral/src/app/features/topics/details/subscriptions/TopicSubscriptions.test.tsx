@@ -68,7 +68,6 @@ jest.mock("react-router-dom", () => ({
 const testTopicName = "aiventopic1";
 const testTopicOverview: TopicOverview = {
   topicExists: true,
-  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: {
@@ -82,8 +81,12 @@ const testTopicOverview: TopicOverview = {
     topicDeletable: false,
     envName: "DEV",
     topicName: testTopicName,
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
   },
   aclInfoList: [
     {

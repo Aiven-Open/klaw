@@ -1059,7 +1059,6 @@ export type components = {
     };
     TopicOverview: {
       topicExists: boolean;
-      schemaExists: boolean;
       prefixAclsExists: boolean;
       txnAclsExists: boolean;
       topicInfoList: (components["schemas"]["TopicOverviewInfo"])[];
@@ -1086,7 +1085,10 @@ export type components = {
       showDeleteTopic: boolean;
       topicDeletable: boolean;
       hasOpenRequest: boolean;
+      hasOpenTopicRequest: boolean;
       hasOpenACLRequest: boolean;
+      hasACL: boolean;
+      hasSchema: boolean;
       envName: string;
       advancedTopicConfiguration?: {
         [key: string]: string | undefined;
@@ -1330,7 +1332,6 @@ export type components = {
     };
     SchemaOverview: {
       topicExists: boolean;
-      schemaExists: boolean;
       prefixAclsExists: boolean;
       txnAclsExists: boolean;
       allSchemaVersions?: (number)[];

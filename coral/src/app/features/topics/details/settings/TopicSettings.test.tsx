@@ -34,13 +34,15 @@ const testTopicInfo: KlawApiModel<"TopicOverviewInfo"> = {
   topicDeletable: true,
   envName: "DEV",
   topicOwner: true,
+  hasACL: false,
+  hasOpenTopicRequest: false,
   hasOpenACLRequest: false,
   highestEnv: true,
   hasOpenRequest: false,
+  hasSchema: false,
 };
 const testTopicOverview: TopicOverview = {
   topicExists: true,
-  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
   topicInfo: testTopicInfo,
