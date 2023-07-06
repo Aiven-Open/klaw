@@ -130,7 +130,7 @@ describe("TopicSettings", () => {
             topicInfo: {
               ...testTopicInfo,
               showDeleteTopic: false,
-              hasOpenACLRequest: true,
+              hasACL: true,
             },
           },
         });
@@ -318,7 +318,7 @@ describe("TopicSettings", () => {
               ...testTopicInfo,
               showDeleteTopic: false,
               hasOpenRequest: true,
-              hasOpenACLRequest: true,
+              hasACL: true,
             },
           },
         });
