@@ -25,6 +25,9 @@ jest.mock("src/domain/topic/topic-api.ts");
 const mockPromoteTopic = promoteTopic as jest.MockedFunction<
   typeof promoteTopic
 >;
+const mockGetTopicDetailsPerEnv = getTopicDetailsPerEnv as jest.MockedFunction<
+  typeof getTopicDetailsPerEnv
+>;
 
 jest.mock("src/domain/environment/environment-api.ts");
 const mockGetAllEnvironmentsForTopicAndAcl =
@@ -44,11 +47,6 @@ const mockEnvironments = transformEnvironmentApiResponse(
     maxRepFactor: 1,
   },
 }));
-
-jest.mock("src/domain/topic/topic-api.ts");
-const mockGetTopicDetailsPerEnv = getTopicDetailsPerEnv as jest.MockedFunction<
-  typeof getTopicDetailsPerEnv
->;
 
 const mockTopicDetails = {
   topicExists: true,
