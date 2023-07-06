@@ -7,37 +7,28 @@ import {
   Typography,
 } from "@aivenio/aquarium";
 import database from "@aivenio/aquarium/dist/src/icons/database";
-import { Dispatch, SetStateAction, useEffect } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
 import { EnvironmentInfo } from "src/domain/environment";
 
 type TopicOverviewHeaderProps = {
-  topicName: string;
-  topicExists: boolean;
+  entity: { name: string; type: "connector" | "topic" };
+  entityEditLink: string;
+  entityExists: boolean;
   environments?: EnvironmentInfo[];
   environmentId?: string;
   setEnvironmentId: Dispatch<SetStateAction<string | undefined>>;
 };
 
-function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
+function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
   const {
-    topicName,
+    entity,
+    entityEditLink,
     environments,
     environmentId,
     setEnvironmentId,
-    topicExists,
+    entityExists,
   } = props;
-
-  // To simplify data fetching in TopicDetails, we need environmentId to always be defined.
-  // This should always be the case through the state prop on the Browse topics page links setting an initial env...
-  // ... but if a user accesses the Topic overview directly, we do not have access to it.
-  // We therefore need to set it in this way.
-  // This will unfortunately trigger a superfluous refetch for getTopicOverview, but it should be infrequent
-  useEffect(() => {
-    if (environments !== undefined && environmentId === undefined) {
-      setEnvironmentId(environments[0].id);
-    }
-  }, [environments, environmentId, setEnvironmentId]);
 
   const navigate = useNavigate();
 
@@ -55,7 +46,7 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
         alignItems={"center"}
         colGap={"l2"}
       >
-        <Typography.Heading>{topicName}</Typography.Heading>
+        <Typography.Heading>{entity.name}</Typography.Heading>
 
         <Box width={"l6"}>
           {!environments && (
@@ -64,7 +55,7 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
               disabled={true}
             ></NativeSelectBase>
           )}
-          {environments && topicExists && (
+          {environments && entityExists && (
             <NativeSelectBase
               aria-label={"Select environment"}
               value={environmentId}
@@ -93,7 +84,7 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
           )}
         </Box>
 
-        {topicExists && environments && environments.length > 0 && (
+        {entityExists && environments && environments.length > 0 && (
           <Box display={"flex"} alignItems={"center"} colGap={"2"}>
             <Typography.SmallStrong color={"grey-40"}>
               <Icon icon={database} />
@@ -106,17 +97,13 @@ function TopicDetailsHeader(props: TopicOverviewHeaderProps) {
         )}
       </Box>
       <Button.Primary
-        disabled={!topicExists}
-        onClick={() =>
-          navigate(
-            "/topicOverview/topicname=SchemaTest&env=${topicOverview.availableEnvironments[0].id}&requestType=edit"
-          )
-        }
+        disabled={!entityExists}
+        onClick={() => navigate(entityEditLink)}
       >
-        Edit topic
+        Edit {entity.type}
       </Button.Primary>
     </Box>
   );
 }
 
-export { TopicDetailsHeader };
+export { EntityDetailsHeader };
