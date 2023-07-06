@@ -217,22 +217,22 @@ export const TopicSubscriptionsTable = ({
     };
   });
 
+  if (isUpdating) {
+    const loadingRowLength = rows.length === 0 ? 1 : rows.length;
+    return (
+      <LoadingTable rowLength={loadingRowLength} columns={loadingColumns} />
+    );
+  }
+
   if (rows.length === 0) {
     return (
       <EmptyState title="No subscriptions">
-        {!isUpdating && <>No subscription matched your criteria.</>}
-        {isUpdating && (
-          <div style={{ width: "650px", paddingLeft: "200px" }}>
-            <Skeleton />
-          </div>
-        )}
+        No subscription matched your criteria.
       </EmptyState>
     );
   }
 
-  return isUpdating ? (
-    <LoadingTable rowLength={rows.length} columns={loadingColumns} />
-  ) : (
+  return (
     <DataTable
       ariaLabel={"Topic subscriptions"}
       columns={columns}
