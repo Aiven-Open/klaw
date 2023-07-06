@@ -115,41 +115,65 @@ function TopicSettings() {
           {topicOverviewIsRefetching && (
             <div className={"visually-hidden"}>Loading information</div>
           )}
-          <BorderBox
-            date-testid={"topic-settings-danger-zone-content"}
-            display={"flex"}
-            flexDirection={"column"}
-            borderColor={"error-60"}
-            padding={"l2"}
-            marginTop={"l2"}
-            rowGap={"l2"}
-            aria-hidden={topicOverviewIsRefetching}
-          >
-            {!showDeleteTopic && (
-              <Alert type={"warning"}>
-                {topicOverviewIsRefetching ? (
-                  <Typography.DefaultStrong htmlTag={"div"}>
-                    <Skeleton />
-                  </Typography.DefaultStrong>
-                ) : (
-                  <>
-                    You can not create a delete request for this topic: <br />
-                    {getDeleteDisabledInformation()}
-                  </>
-                )}
-              </Alert>
-            )}
-            <Box
+          {topicOverviewIsRefetching && (
+            <BorderBox
+              date-testid={"topic-settings-danger-zone-content"}
               display={"flex"}
-              alignItems={"center"}
-              justifyContent={"space-between"}
+              flexDirection={"column"}
+              borderColor={"error-60"}
+              padding={"l2"}
+              marginTop={"l2"}
+              rowGap={"l2"}
             >
-              {topicOverviewIsRefetching ? (
+              <Box
+                display={"flex"}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+              >
                 <Box width={"full"}>
                   <Skeleton />
                   <Skeleton />
                 </Box>
-              ) : (
+                <div>
+                  {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
+                  <Button.Primary onClick={() => {}} disabled={true}>
+                    Delete topic
+                  </Button.Primary>
+                </div>
+              </Box>
+            </BorderBox>
+          )}
+
+          {!topicOverviewIsRefetching && (
+            <BorderBox
+              date-testid={"topic-settings-danger-zone-content"}
+              display={"flex"}
+              flexDirection={"column"}
+              borderColor={"error-60"}
+              padding={"l2"}
+              marginTop={"l2"}
+              rowGap={"l2"}
+              aria-hidden={topicOverviewIsRefetching}
+            >
+              {!showDeleteTopic && (
+                <Alert type={"warning"}>
+                  {topicOverviewIsRefetching ? (
+                    <Typography.DefaultStrong htmlTag={"div"}>
+                      <Skeleton />
+                    </Typography.DefaultStrong>
+                  ) : (
+                    <>
+                      You can not create a delete request for this topic: <br />
+                      {getDeleteDisabledInformation()}
+                    </>
+                  )}
+                </Alert>
+              )}
+              <Box
+                display={"flex"}
+                alignItems={"center"}
+                justifyContent={"space-between"}
+              >
                 <div>
                   <Typography.DefaultStrong htmlTag={"h3"}>
                     Delete this topic
@@ -159,18 +183,18 @@ function TopicSettings() {
                     certain.
                   </Box>
                 </div>
-              )}
 
-              <div>
-                <Button.Primary
-                  onClick={() => setShowConfirmation(true)}
-                  disabled={!showDeleteTopic || topicOverviewIsRefetching}
-                >
-                  Delete topic
-                </Button.Primary>
-              </div>
-            </Box>
-          </BorderBox>
+                <div>
+                  <Button.Primary
+                    onClick={() => setShowConfirmation(true)}
+                    disabled={!showDeleteTopic}
+                  >
+                    Delete topic
+                  </Button.Primary>
+                </div>
+              </Box>
+            </BorderBox>
+          )}
         </>
       )}
     </>
