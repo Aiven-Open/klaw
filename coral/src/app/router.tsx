@@ -26,6 +26,7 @@ import { TopicOverviewPage } from "src/app/pages/topics/details/overview";
 import { TopicDetailsSchemaPage } from "src/app/pages/topics/details/schema";
 import { TopicSettingsPage } from "src/app/pages/topics/details/settings";
 import { TopicSubscriptionsPage } from "src/app/pages/topics/details/subscriptions";
+import TopicPromotionRequestPage from "src/app/pages/topics/promotion-request";
 import RequestTopic from "src/app/pages/topics/request";
 import SchemaRequest from "src/app/pages/topics/schema-request";
 import {
@@ -224,6 +225,12 @@ const routes: Array<RouteObject> = [
         path: Routes.TOPIC_SCHEMA_REQUEST,
         element: <SchemaRequest />,
       },
+      createRouteBehindFeatureFlag({
+        path: Routes.TOPIC_PROMOTION_REQUEST,
+        element: <TopicPromotionRequestPage />,
+        featureFlag: FeatureFlag.FEATURE_FLAG_PROMOTE_TOPIC,
+        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+      }),
     ],
   },
   {

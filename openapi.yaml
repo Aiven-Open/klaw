@@ -7016,7 +7016,16 @@
           "hasOpenRequest" : {
             "type" : "boolean"
           },
+          "hasOpenTopicRequest" : {
+            "type" : "boolean"
+          },
           "hasOpenACLRequest" : {
+            "type" : "boolean"
+          },
+          "hasACL" : {
+            "type" : "boolean"
+          },
+          "hasSchema" : {
             "type" : "boolean"
           },
           "topicOwner" : {
@@ -7026,7 +7035,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "description", "envId", "envName", "hasOpenACLRequest", "hasOpenRequest", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
       "TopicBaseConfig" : {
         "properties" : {

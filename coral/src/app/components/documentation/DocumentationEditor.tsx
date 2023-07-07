@@ -113,16 +113,18 @@ function DocumentationEditor({
               </SyntaxHighlighter>
             </div>
           </Box>
-          <Typography.SmallStrong id={"editor-markdown-description"}>
-            We are supporting markdown following the{" "}
-            <a href={"https://commonmark.org/help/"}>CommonMark</a> standard.
-          </Typography.SmallStrong>
+          <Box.Flex justifyContent={"end"}>
+            <Typography.SmallStrong id={"editor-markdown-description"}>
+              We are supporting markdown following the{" "}
+              <a href={"https://commonmark.org/help/"}>CommonMark</a> standard.
+            </Typography.SmallStrong>
+          </Box.Flex>
         </div>
       )}
 
       {viewMode === "preview" && <DocumentationView markdownString={text} />}
 
-      <Box.Flex colGap={"l1"} justifyContent={"end"} alignItems={"center"}>
+      <Box.Flex colGap={"l1"} justifyContent={"start"} alignItems={"center"}>
         <Button.Secondary onClick={cancel} disabled={isSaving}>
           Cancel
         </Button.Secondary>

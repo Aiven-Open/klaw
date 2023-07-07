@@ -5,8 +5,14 @@ type SchemaStatsProps = {
   version: number;
   id: number;
   compatibility: string;
+  isLoading: boolean;
 };
-function SchemaStats({ version, id, compatibility }: SchemaStatsProps) {
+function SchemaStats({
+  isLoading,
+  version,
+  id,
+  compatibility,
+}: SchemaStatsProps) {
   return (
     <Grid
       cols={"2"}
@@ -18,9 +24,14 @@ function SchemaStats({ version, id, compatibility }: SchemaStatsProps) {
       <GridItem colSpan={"span-2"}>
         <Card title="" fullWidth>
           <Box.Flex display="flex" gap={"l7"}>
-            <StatsDisplay amount={version} entity={"Version no."} />
-            <StatsDisplay amount={id} entity={"ID"} />
             <StatsDisplay
+              isLoading={isLoading}
+              amount={version}
+              entity={"Version no."}
+            />
+            <StatsDisplay isLoading={isLoading} amount={id} entity={"ID"} />
+            <StatsDisplay
+              isLoading={isLoading}
               chip={{ status: "info", text: compatibility }}
               entity={"Compatibility"}
             />

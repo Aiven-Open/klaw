@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -98,7 +99,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   // key tenantId, sub key clusterid Pertenant
   private static Map<Integer, Map<Integer, KwClusters>> kwKafkaConnectClustersPertenant;
-
+  private static Map<Integer, Map<String, Env>> envMapPerTenant = new HashMap<>();
   private static Map<Integer, List<Env>> kafkaEnvListPerTenant = new HashMap<>();
   private static Map<Integer, List<Env>> schemaRegEnvListPerTenant = new HashMap<>();
   private static Map<Integer, List<Env>> kafkaConnectEnvListPerTenant = new HashMap<>();
@@ -296,6 +297,25 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       allClustersSize += kwKafkaClustersPertenant.get(tenantId).size();
     }
     return allClustersSize;
+  }
+
+  public Map<String, Env> getEnvMap(int tenantId) {
+    if (!envMapPerTenant.containsKey(tenantId)) {
+      return new HashMap<>();
+    }
+    return envMapPerTenant.get(tenantId);
+  }
+
+  public Optional<String> getAssociatedSchemaEnvIdFromTopicId(String topicEnvId, int tenantId) {
+    String schemaEnvId = null;
+    Map<String, Env> allEnv = getEnvMap(tenantId);
+    if (!allEnv.isEmpty()) {
+      Env topicEnv = allEnv.get(topicEnvId);
+      if (topicEnv.getAssociatedEnv() != null && topicEnv.getAssociatedEnv().getId() != null) {
+        schemaEnvId = topicEnv.getAssociatedEnv().getId();
+      }
+    }
+    return Optional.ofNullable(schemaEnvId);
   }
 
   public List<Env> getKafkaEnvList(int tenantId) {
@@ -722,6 +742,11 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       envParamsMap.put(env.getId(), env.getParams());
     }
     envParamsMapPerTenant.put(tenantId, envParamsMap);
+
+    //
+    List<Env> allEnvs = handleDbRequests.getAllEnvs(tenantId);
+    envMapPerTenant.put(
+        tenantId, allEnvs.stream().collect(Collectors.toMap(Env::getId, Function.identity())));
   }
 
   public Map<String, List<String>> getRolesPermissionsPerTenant(int tenantId) {

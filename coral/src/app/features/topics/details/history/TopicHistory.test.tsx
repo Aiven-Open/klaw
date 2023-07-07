@@ -41,8 +41,12 @@ const testTopicOverview: TopicOverview = {
     topicDeletable: false,
     envName: "DEV",
     topicName: "my awesome topic",
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
     description: "my description",
   },
   aclInfoList: [],
@@ -111,6 +115,8 @@ describe("TopicHistory", () => {
   describe("handles an empty history", () => {
     beforeAll(() => {
       mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
         environmentId: "1",
         topicName: "hello",
         topicOverview: { ...testTopicOverview, topicHistoryList: [] },
@@ -157,9 +163,54 @@ describe("TopicHistory", () => {
     });
   });
 
+  describe("handles a loading state on former empty history", () => {
+    beforeAll(() => {
+      mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: true,
+        topicSchemasIsRefetching: false,
+        environmentId: "1",
+        topicName: "hello",
+        topicOverview: { ...testTopicOverview, topicHistoryList: [] },
+        topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+      });
+
+      customRender(<TopicHistory />, {
+        memoryRouter: true,
+      });
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows a table with loading information for topics history", () => {
+      const loadingTable = screen.getByRole("table", {
+        name: "Loading",
+      });
+
+      expect(loadingTable).toBeVisible();
+    });
+
+    it("shows all column headers", () => {
+      const header = screen.getAllByRole("columnheader");
+
+      expect(header).toHaveLength(columnsFieldMap.length);
+    });
+
+    it("shows one row for loading animation plus header row", () => {
+      const row = screen.getAllByRole("row");
+
+      expect(row).toHaveLength(2);
+    });
+  });
+
   describe("shows a table with topics history", () => {
     beforeAll(() => {
       mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
         environmentId: "1",
         topicName: "hello",
         topicOverview: testTopicOverview,
@@ -257,6 +308,49 @@ describe("TopicHistory", () => {
           expect(cell).toBeVisible();
         });
       });
+    });
+  });
+
+  describe("handles a loading state for updating existing data", () => {
+    beforeAll(() => {
+      mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: true,
+        topicSchemasIsRefetching: false,
+        environmentId: "1",
+        topicName: "hello",
+        topicOverview: testTopicOverview,
+        topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+      });
+
+      customRender(<TopicHistory />, {
+        memoryRouter: true,
+      });
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows a table with loading information for topics history", () => {
+      const loadingTable = screen.getByRole("table", {
+        name: "Loading",
+      });
+
+      expect(loadingTable).toBeVisible();
+    });
+
+    it("shows all column headers", () => {
+      const header = screen.getAllByRole("columnheader");
+
+      expect(header).toHaveLength(columnsFieldMap.length);
+    });
+
+    it("shows one row per entry with animation plus header row", () => {
+      const row = screen.getAllByRole("row");
+
+      expect(row).toHaveLength(testTopicHistoryList.length + 1);
     });
   });
 });

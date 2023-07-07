@@ -1,532 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopicOverview renders correct DOM according to data from useTopicDetails 1`] = `
+exports[`TopicOverview renders all necessary elements with promotion banner renders correct DOM according to data from useTopicDetails 1`] = `
 {
-  "asFragment": [Function],
-  "baseElement": <body>
-    <div>
-      <div
-        style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; gap: 24px;"
-      >
-        <div
-          style="grid-column: span 2 / span 2;"
-        >
-          <div
-            class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
-          >
-            <div
-              class="flex flex-col gap-4"
-            >
-              <div
-                class="typography-default-strong text-black"
-              >
-                Topic details
-              </div>
-              <div
-                class="typography-caption text-grey-70"
-              >
-                <div
-                  style="display: flex; gap: 160px;"
-                >
-                  <div
-                    style="display: flex; justify-content: space-around; flex-direction: column;"
-                  >
-                    <div
-                      class="typography-heading text-grey-80"
-                    >
-                      1
-                    </div>
-                    <div
-                      class="typography-small text-grey-50"
-                    >
-                      Replicas
-                    </div>
-                  </div>
-                  <div
-                    style="display: flex; justify-content: space-around; flex-direction: column;"
-                  >
-                    <div
-                      class="typography-heading text-grey-80"
-                    >
-                      1
-                    </div>
-                    <div
-                      class="typography-small text-grey-50"
-                    >
-                      Partitions
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
-        >
-          <div
-            class="flex flex-col gap-4"
-          >
-            <div
-              class="typography-default-strong text-black"
-            >
-              Subscriptions
-            </div>
-            <div
-              class="typography-caption text-grey-70"
-            >
-              <div
-                style="display: flex; gap: 160px;"
-              >
-                <div
-                  style="display: flex; justify-content: space-around; flex-direction: column;"
-                >
-                  <div
-                    class="typography-heading text-grey-80"
-                  >
-                    1
-                  </div>
-                  <div
-                    class="typography-small text-grey-50"
-                  >
-                    Producers
-                  </div>
-                </div>
-                <div
-                  style="display: flex; justify-content: space-around; flex-direction: column;"
-                >
-                  <div
-                    class="typography-heading text-grey-80"
-                  >
-                    0
-                  </div>
-                  <div
-                    class="typography-small text-grey-50"
-                  >
-                    Consumers
-                  </div>
-                </div>
-              </div>
-              <div
-                style="display: flex; flex-direction: row; padding-top: 24px; gap: 32px;"
-              >
-                <a
-                  href="/topic/aivendemotopic/subscribe?env=1"
-                >
-                  <button
-                    class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
-                  >
-                    <div
-                      style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
-                    >
-                      <span
-                        class="children:inline-block inline-flex justify-center items-center"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="Aquarium-InlineIcon"
-                          height="20px"
-                          preserveAspectRatio="xMidYMid meet"
-                          role="img"
-                          style="vertical-align: -0.125em;"
-                          viewBox="0 0 22 22"
-                          width="20px"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                        >
-                          <path
-                            d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="1.5"
-                          />
-                        </svg>
-                      </span>
-                      <div>
-                        <div
-                          class="typography-small-strong text-primary-80"
-                        >
-                          Request new subscription
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                </a>
-                <a
-                  href="/topic/aivendemotopic/subscriptions"
-                >
-                  <button
-                    class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
-                  >
-                    <div
-                      class="typography-small-strong text-primary-80"
-                    >
-                      See subscriptions
-                    </div>
-                  </button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
-        >
-          <div
-            class="flex flex-col gap-4"
-          >
-            <div
-              class="typography-default-strong text-black"
-            >
-              Schemas
-            </div>
-            <div
-              class="typography-caption text-grey-70"
-            >
-              <div
-                style="display: flex; justify-content: space-around; flex-direction: column;"
-              >
-                <div
-                  class="typography-heading text-grey-80"
-                >
-                  1
-                </div>
-                <div
-                  class="typography-small text-grey-50"
-                >
-                  Schemas
-                </div>
-              </div>
-              <div
-                style="display: flex; flex-direction: row; padding-top: 24px; gap: 32px;"
-              >
-                <a
-                  href="/topic/aivendemotopic/request-schema"
-                >
-                  <button
-                    class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
-                  >
-                    <div
-                      style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
-                    >
-                      <span
-                        class="children:inline-block inline-flex justify-center items-center"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="Aquarium-InlineIcon"
-                          height="20px"
-                          preserveAspectRatio="xMidYMid meet"
-                          role="img"
-                          style="vertical-align: -0.125em;"
-                          viewBox="0 0 22 22"
-                          width="20px"
-                          xmlns="http://www.w3.org/2000/svg"
-                          xmlns:xlink="http://www.w3.org/1999/xlink"
-                        >
-                          <path
-                            d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="1.5"
-                          />
-                        </svg>
-                      </span>
-                      <div>
-                        <div
-                          class="typography-small-strong text-primary-80"
-                        >
-                          Request new schema
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                </a>
-                <a
-                  href="/topic/aivendemotopic/schema"
-                >
-                  <button
-                    class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
-                  >
-                    <div
-                      class="typography-small-strong text-primary-80"
-                    >
-                      See schema
-                    </div>
-                  </button>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </body>,
-  "container": <div>
-    <div
-      style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; gap: 24px;"
-    >
-      <div
-        style="grid-column: span 2 / span 2;"
-      >
-        <div
-          class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
-        >
-          <div
-            class="flex flex-col gap-4"
-          >
-            <div
-              class="typography-default-strong text-black"
-            >
-              Topic details
-            </div>
-            <div
-              class="typography-caption text-grey-70"
-            >
-              <div
-                style="display: flex; gap: 160px;"
-              >
-                <div
-                  style="display: flex; justify-content: space-around; flex-direction: column;"
-                >
-                  <div
-                    class="typography-heading text-grey-80"
-                  >
-                    1
-                  </div>
-                  <div
-                    class="typography-small text-grey-50"
-                  >
-                    Replicas
-                  </div>
-                </div>
-                <div
-                  style="display: flex; justify-content: space-around; flex-direction: column;"
-                >
-                  <div
-                    class="typography-heading text-grey-80"
-                  >
-                    1
-                  </div>
-                  <div
-                    class="typography-small text-grey-50"
-                  >
-                    Partitions
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
-      >
-        <div
-          class="flex flex-col gap-4"
-        >
-          <div
-            class="typography-default-strong text-black"
-          >
-            Subscriptions
-          </div>
-          <div
-            class="typography-caption text-grey-70"
-          >
-            <div
-              style="display: flex; gap: 160px;"
-            >
-              <div
-                style="display: flex; justify-content: space-around; flex-direction: column;"
-              >
-                <div
-                  class="typography-heading text-grey-80"
-                >
-                  1
-                </div>
-                <div
-                  class="typography-small text-grey-50"
-                >
-                  Producers
-                </div>
-              </div>
-              <div
-                style="display: flex; justify-content: space-around; flex-direction: column;"
-              >
-                <div
-                  class="typography-heading text-grey-80"
-                >
-                  0
-                </div>
-                <div
-                  class="typography-small text-grey-50"
-                >
-                  Consumers
-                </div>
-              </div>
-            </div>
-            <div
-              style="display: flex; flex-direction: row; padding-top: 24px; gap: 32px;"
-            >
-              <a
-                href="/topic/aivendemotopic/subscribe?env=1"
-              >
-                <button
-                  class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
-                >
-                  <div
-                    style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
-                  >
-                    <span
-                      class="children:inline-block inline-flex justify-center items-center"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="Aquarium-InlineIcon"
-                        height="20px"
-                        preserveAspectRatio="xMidYMid meet"
-                        role="img"
-                        style="vertical-align: -0.125em;"
-                        viewBox="0 0 22 22"
-                        width="20px"
-                        xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
-                      >
-                        <path
-                          d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="1.5"
-                        />
-                      </svg>
-                    </span>
-                    <div>
-                      <div
-                        class="typography-small-strong text-primary-80"
-                      >
-                        Request new subscription
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              </a>
-              <a
-                href="/topic/aivendemotopic/subscriptions"
-              >
-                <button
-                  class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
-                >
-                  <div
-                    class="typography-small-strong text-primary-80"
-                  >
-                    See subscriptions
-                  </div>
-                </button>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
-      >
-        <div
-          class="flex flex-col gap-4"
-        >
-          <div
-            class="typography-default-strong text-black"
-          >
-            Schemas
-          </div>
-          <div
-            class="typography-caption text-grey-70"
-          >
-            <div
-              style="display: flex; justify-content: space-around; flex-direction: column;"
-            >
-              <div
-                class="typography-heading text-grey-80"
-              >
-                1
-              </div>
-              <div
-                class="typography-small text-grey-50"
-              >
-                Schemas
-              </div>
-            </div>
-            <div
-              style="display: flex; flex-direction: row; padding-top: 24px; gap: 32px;"
-            >
-              <a
-                href="/topic/aivendemotopic/request-schema"
-              >
-                <button
-                  class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
-                >
-                  <div
-                    style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
-                  >
-                    <span
-                      class="children:inline-block inline-flex justify-center items-center"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="Aquarium-InlineIcon"
-                        height="20px"
-                        preserveAspectRatio="xMidYMid meet"
-                        role="img"
-                        style="vertical-align: -0.125em;"
-                        viewBox="0 0 22 22"
-                        width="20px"
-                        xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
-                      >
-                        <path
-                          d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="1.5"
-                        />
-                      </svg>
-                    </span>
-                    <div>
-                      <div
-                        class="typography-small-strong text-primary-80"
-                      >
-                        Request new schema
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              </a>
-              <a
-                href="/topic/aivendemotopic/schema"
-              >
-                <button
-                  class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
-                >
-                  <div
-                    class="typography-small-strong text-primary-80"
-                  >
-                    See schema
-                  </div>
-                </button>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>,
   "debug": [Function],
   "findAllByAltText": [Function],
   "findAllByDisplayValue": [Function],
@@ -560,6 +35,7 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
   "getByTestId": [Function],
   "getByText": [Function],
   "getByTitle": [Function],
+  "logTestingPlaygroundURL": [Function],
   "queryAllByAltText": [Function],
   "queryAllByDisplayValue": [Function],
   "queryAllByLabelText": [Function],
@@ -576,7 +52,60 @@ exports[`TopicOverview renders correct DOM according to data from useTopicDetail
   "queryByTestId": [Function],
   "queryByText": [Function],
   "queryByTitle": [Function],
-  "rerender": [Function],
-  "unmount": [Function],
+}
+`;
+
+exports[`TopicOverview renders all necessary elements without promotion banner renders correct DOM according to data from useTopicDetails 1`] = `
+{
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "logTestingPlaygroundURL": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
 }
 `;

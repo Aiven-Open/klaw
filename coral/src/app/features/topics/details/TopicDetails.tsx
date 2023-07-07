@@ -13,9 +13,8 @@ import {
   TopicOverviewTabEnum,
   isTopicsOverviewTabEnum,
 } from "src/app/router_utils";
-import { TopicOverview } from "src/domain/topic";
 import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
-import { TopicSchemaOverview } from "src/domain/topic/topic-types";
+import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 
 type TopicOverviewProps = {
   topicName: string;
@@ -54,6 +53,7 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: topicIsError,
     error: topicError,
     isLoading: topicIsLoading,
+    isRefetching: topicIsRefetching,
   } = useQuery(["topic-overview", topicName, environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
   });
@@ -63,6 +63,7 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: schemaIsError,
     error: schemaError,
     isLoading: schemaIsLoading,
+    isRefetching: schemaIsRefetching,
   } = useQuery(["schema-overview", topicName, environmentId, schemaVersion], {
     queryFn: () => {
       if (environmentId !== undefined) {
@@ -112,7 +113,9 @@ function TopicDetails(props: TopicOverviewProps) {
         // ...when a user selects schema version
         setSchemaVersion={setSchemaVersion}
         topicOverview={topicData}
+        topicOverviewIsRefetching={topicIsRefetching}
         topicSchemas={schemaData}
+        topicSchemasIsRefetching={schemaIsRefetching}
       />
     </div>
   );
@@ -123,8 +126,10 @@ function useTopicDetails() {
     environmentId: string;
     setSchemaVersion: (id: number) => void;
     topicOverview: TopicOverview;
+    topicOverviewIsRefetching: boolean;
     topicName: string;
     topicSchemas: TopicSchemaOverview;
+    topicSchemasIsRefetching: boolean;
   }>();
 }
 

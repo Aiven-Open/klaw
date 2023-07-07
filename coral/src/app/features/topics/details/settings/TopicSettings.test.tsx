@@ -34,16 +34,19 @@ const testTopicInfo: KlawApiModel<"TopicOverviewInfo"> = {
   topicDeletable: true,
   envName: "DEV",
   topicOwner: true,
+  hasACL: false,
+  hasOpenTopicRequest: false,
   hasOpenACLRequest: false,
   highestEnv: true,
   hasOpenRequest: false,
+  hasSchema: false,
   description: "my description",
 };
 const testTopicOverview: TopicOverview = {
   topicExists: true,
-  schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
+  schemaExists: false,
   topicInfo: testTopicInfo,
   aclInfoList: [],
   topicHistoryList: [],
@@ -56,6 +59,8 @@ const mockTopicDetails = {
   topicName: "my-nice-topic",
   environmentId: 8,
   topicOverview: testTopicOverview,
+  topicOverviewIsRefetching: false,
+  topicSchemasIsRefetching: false,
 };
 describe("TopicSettings", () => {
   const user = userEvent.setup();
@@ -127,7 +132,7 @@ describe("TopicSettings", () => {
             topicInfo: {
               ...testTopicInfo,
               showDeleteTopic: false,
-              hasOpenACLRequest: true,
+              hasACL: true,
             },
           },
         });
@@ -315,7 +320,7 @@ describe("TopicSettings", () => {
               ...testTopicInfo,
               showDeleteTopic: false,
               hasOpenRequest: true,
-              hasOpenACLRequest: true,
+              hasACL: true,
             },
           },
         });
@@ -404,6 +409,70 @@ describe("TopicSettings", () => {
       });
 
       expect(button).toBeVisible();
+    });
+  });
+
+  describe("shows information about refetching state", () => {
+    beforeAll(() => {
+      mockDeleteTopic.mockImplementation(jest.fn());
+      mockedUseTopicDetails.mockReturnValue({
+        ...mockTopicDetails,
+        topicOverviewIsRefetching: true,
+        topicOverview: {
+          ...testTopicOverview,
+          topicInfo: {
+            ...testTopicInfo,
+            showDeleteTopic: false,
+            hasOpenACLRequest: true,
+          },
+        },
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicSettings />
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows a SR only text", () => {
+      const loadingInformation = screen.getByText("Loading information");
+
+      expect(loadingInformation).toBeVisible();
+      expect(loadingInformation).toHaveClass("visually-hidden");
+    });
+
+    it("does not show information why user can not delete request", () => {
+      const noDeleteText = screen.queryByText(
+        "You can not create a delete request for this topic"
+      );
+
+      expect(noDeleteText).not.toBeInTheDocument();
+    });
+
+    it("does not show headline and text with information about deletion", () => {
+      const deleteHeadline = screen.queryByText("Delete this topic");
+      const deleteInformation = screen.queryByText(
+        "Once you delete a topic, there is no going back. Please be certain."
+      );
+
+      expect(deleteHeadline).not.toBeInTheDocument();
+      expect(deleteInformation).not.toBeInTheDocument();
+    });
+
+    it("disables the button to delete a topic", () => {
+      const deleteButton = screen.getByRole("button", {
+        name: "Delete topic",
+        hidden: true,
+      });
+
+      expect(deleteButton).toBeDisabled();
     });
   });
 
