@@ -9,6 +9,7 @@ import {
   NativeSelect,
   Option,
   PageHeader,
+  TextareaBase,
   Typography,
   useToast,
 } from "@aivenio/aquarium";
@@ -39,6 +40,7 @@ function TopicDetailsSchema() {
       schemaDetailsPerEnv,
       schemaPromotionDetails,
     },
+    topicSchemasIsRefetching,
     setSchemaVersion,
     topicOverview,
   } = useTopicDetails();
@@ -105,6 +107,7 @@ function TopicDetailsSchema() {
           primaryAction={{
             onClick: () => navigate(`/topic/${topicName}/request-schema`),
             text: "Request a new schema",
+            disabled: topicSchemasIsRefetching,
           }}
         />
       </>
@@ -133,84 +136,104 @@ function TopicDetailsSchema() {
       <PageHeader title="Schema" />
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} colGap={"l1"}>
-          <NativeSelect
-            style={{ width: "300px" }}
-            aria-label={"Select version"}
-            onChange={(e) => setSchemaVersion(Number(e.target.value))}
-            defaultValue={schemaDetailsPerEnv.version}
-          >
-            {allSchemaVersions.map((version) => (
-              <Option key={version} value={version}>
-                Version {version} {version === latestVersion && "(latest)"}
-              </Option>
-            ))}
-          </NativeSelect>
-          <Typography.SmallStrong color={"grey-40"}>
-            <Box display={"flex"} marginTop={"3"} colGap={"2"}>
-              <Icon icon={gitNewBranch} style={{ marginTop: "2px" }} />{" "}
-              <span>{allSchemaVersions.length} versions</span>
-            </Box>
-          </Typography.SmallStrong>
+          {topicSchemasIsRefetching ? (
+            <>
+              <div className={"visually-hidden"}>Versions loading</div>
+              <NativeSelect.Skeleton />
+            </>
+          ) : (
+            <>
+              <NativeSelect
+                style={{ width: "300px" }}
+                aria-label={"Select version"}
+                onChange={(e) => setSchemaVersion(Number(e.target.value))}
+                defaultValue={schemaDetailsPerEnv.version}
+              >
+                {allSchemaVersions.map((version) => (
+                  <Option key={version} value={version}>
+                    Version {version} {version === latestVersion && "(latest)"}
+                  </Option>
+                ))}
+              </NativeSelect>
+              <Typography.SmallStrong color={"grey-40"}>
+                <Box display={"flex"} marginTop={"3"} colGap={"2"}>
+                  <Icon icon={gitNewBranch} style={{ marginTop: "2px" }} />{" "}
+                  <span>{allSchemaVersions.length} versions</span>
+                </Box>
+              </Typography.SmallStrong>
+            </>
+          )}
         </Box>
 
-        {isTopicOwner && (
+        {!topicSchemasIsRefetching && isTopicOwner && (
           <Box alignSelf={"top"}>
             <Link
               to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
             >
-              <Button.Primary icon={add}>Request a new version</Button.Primary>
+              <Button.Primary icon={add} disabled={topicSchemasIsRefetching}>
+                Request a new version
+              </Button.Primary>
             </Link>
           </Box>
         )}
       </Box>
-      {isTopicOwner && promotionStatus !== "NO_PROMOTION" && (
-        <Banner image={illustration} layout="vertical" title={""}>
-          <Box element={"p"} marginBottom={"l1"}>
-            This schema has not yet been promoted to the {targetEnv}{" "}
-            environment.
-          </Box>
-          {errorMessage.length > 0 && (
+
+      {!topicSchemasIsRefetching &&
+        isTopicOwner &&
+        promotionStatus !== "NO_PROMOTION" && (
+          <Banner image={illustration} layout="vertical" title={""}>
             <Box element={"p"} marginBottom={"l1"}>
-              <Alert type="error">{errorMessage}</Alert>
+              This schema has not yet been promoted to the {targetEnv}{" "}
+              environment.
             </Box>
-          )}
-          <Button.Primary
-            onClick={() =>
-              setShowSchemaPromotionModal(!showSchemaPromotionModal)
-            }
-          >
-            Promote
-          </Button.Primary>
-        </Banner>
-      )}
+            {errorMessage.length > 0 && (
+              <Box element={"p"} marginBottom={"l1"}>
+                <Alert type="error">{errorMessage}</Alert>
+              </Box>
+            )}
+            <Button.Primary
+              onClick={() =>
+                setShowSchemaPromotionModal(!showSchemaPromotionModal)
+              }
+            >
+              Promote
+            </Button.Primary>
+          </Banner>
+        )}
       <SchemaStats
+        isLoading={topicSchemasIsRefetching}
         version={schemaDetailsPerEnv.version}
         id={schemaDetailsPerEnv.id}
         compatibility={schemaDetailsPerEnv.compatibility.toUpperCase()}
       />
       <Box marginTop={"l3"} marginBottom={"l2"}>
         <Label>Schema</Label>
-
-        <Box borderColor={"grey-20"} borderWidth={"1px"}>
-          <MonacoEditor
-            data-testid="topic-schema"
-            height="250px"
-            language="json"
-            theme={"light"}
-            value={schemaDetailsPerEnv.content}
-            loading={"Loading preview"}
-            options={{
-              ariaLabel: "Schema preview",
-              readOnly: true,
-              domReadOnly: true,
-              renderControlCharacters: false,
-              minimap: { enabled: false },
-              folding: false,
-              lineNumbers: "off",
-              scrollBeyondLastLine: false,
-            }}
-          />
-        </Box>
+        {topicSchemasIsRefetching ? (
+          <>
+            <div className={"visually-hidden"}>Loading schema preview</div>
+            <TextareaBase.Skeleton />
+          </>
+        ) : (
+          <Box borderColor={"grey-20"} borderWidth={"1px"}>
+            <MonacoEditor
+              data-testid="topic-schema"
+              height="250px"
+              language="json"
+              theme={"light"}
+              value={schemaDetailsPerEnv.content}
+              options={{
+                ariaLabel: "Schema preview",
+                readOnly: true,
+                domReadOnly: true,
+                renderControlCharacters: false,
+                minimap: { enabled: false },
+                folding: false,
+                lineNumbers: "off",
+                scrollBeyondLastLine: false,
+              }}
+            />
+          </Box>
+        )}
       </Box>
     </>
   );
