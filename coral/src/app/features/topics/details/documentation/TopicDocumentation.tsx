@@ -1,4 +1,4 @@
-import { Alert, Box, PageHeader, useToast } from "@aivenio/aquarium";
+import { Alert, Box, PageHeader, Skeleton, useToast } from "@aivenio/aquarium";
 import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { useState } from "react";
@@ -17,7 +17,7 @@ function TopicDocumentation() {
   const [editMode, setEditMode] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const { topicOverview } = useTopicDetails();
+  const { topicOverview, topicOverviewIsRefetching } = useTopicDetails();
 
   const toast = useToast();
 
@@ -45,6 +45,18 @@ function TopicDocumentation() {
       onError: () => setEditMode(false),
     }
   );
+
+  if (topicOverviewIsRefetching) {
+    return (
+      <>
+        <PageHeader title={"Documentation"} />
+        <Box paddingTop={"l2"}>
+          <div className={"visually-hidden"}>Loading documentation</div>
+          <Skeleton />
+        </Box>
+      </>
+    );
+  }
 
   if (editMode) {
     return (
@@ -91,7 +103,9 @@ function TopicDocumentation() {
           onClick: () => setEditMode(true),
         }}
       />
-      <DocumentationView markdownString={topicOverview.topicDocumentation} />
+      <Box paddingTop={"l2"}>
+        <DocumentationView markdownString={topicOverview.topicDocumentation} />
+      </Box>
     </>
   );
 }

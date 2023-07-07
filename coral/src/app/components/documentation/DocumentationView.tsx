@@ -8,7 +8,7 @@ type DocumentationViewProps = {
 
 function DocumentationView({ markdownString }: DocumentationViewProps) {
   return (
-    <Box component={"article"} paddingTop={"l2"}>
+    <Box component={"article"}>
       <ReactMarkdown className={classes.reactMarkdown}>
         {markdownString}
       </ReactMarkdown>

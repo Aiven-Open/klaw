@@ -47,7 +47,8 @@ const isSubscriptionsOption = (value: string): value is SubscriptionOptions => {
 
 const TopicSubscriptions = () => {
   const navigate = useNavigate();
-  const { topicOverview, environmentId, topicName } = useTopicDetails();
+  const { topicOverview, topicOverviewIsRefetching, environmentId, topicName } =
+    useTopicDetails();
 
   const [deleteModal, setDeleteModal] = useState<{
     isOpen: boolean;
@@ -201,14 +202,22 @@ const TopicSubscriptions = () => {
           padding={"l2"}
           title="Amount of producer subscriptions"
         >
-          <StatsDisplay amount={subsStats.producers} entity={"Producers"} />
+          <StatsDisplay
+            isLoading={topicOverviewIsRefetching}
+            amount={subsStats.producers}
+            entity={"Producers"}
+          />
         </BorderBox>
         <BorderBox
           borderColor="grey-5"
           padding={"l2"}
           title="Amount of consumer subscriptions"
         >
-          <StatsDisplay amount={subsStats.consumers} entity={"Consumers"} />
+          <StatsDisplay
+            isLoading={topicOverviewIsRefetching}
+            amount={subsStats.consumers}
+            entity={"Consumers"}
+          />
         </BorderBox>
       </Grid>
 
@@ -250,6 +259,7 @@ const TopicSubscriptions = () => {
         ]}
         table={
           <TopicSubscriptionsTable
+            isUpdating={topicOverviewIsRefetching}
             selectedSubs={selectedSubs}
             filteredData={filteredData}
             onDelete={openDeleteModal}
