@@ -248,9 +248,7 @@ function TopicEditRequest() {
         </Box.Flex>
 
         <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
-          <SubmitButton loading={editIsLoading}>
-            Submit update request
-          </SubmitButton>
+          <SubmitButton>Submit update request</SubmitButton>
           <Button
             type="button"
             kind={"secondary"}
@@ -259,6 +257,7 @@ function TopicEditRequest() {
                 ? () => setCancelDialogVisible(true)
                 : () => cancelRequest()
             }
+            disabled={editIsLoading}
           >
             Cancel
           </Button>
