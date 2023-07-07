@@ -1,4 +1,5 @@
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -35,35 +36,44 @@ const nullProps = {
   hasOpenRequest: false,
 };
 
+const mockedNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedNavigate,
+}));
+
 describe("TopicPromotionBanner (with promotion banner)", () => {
-  it("renders correct banner (promote topic)", () => {
+  it("renders correct banner (promote topic)", async () => {
     customRender(<TopicPromotionBanner {...promoteProps} />, {
       memoryRouter: true,
     });
 
-    const link = screen.getByRole("link", {
+    const button = screen.getByRole("button", {
       name: "Promote",
     });
 
-    expect(link).toBeVisible();
-    expect(link).toHaveAttribute(
-      "href",
+    expect(button).toBeVisible();
+
+    await userEvent.click(button);
+    expect(mockedNavigate).toHaveBeenCalledWith(
       `/topic/${promoteProps.topicPromotionDetails.topicName}/request-promotion?sourceEnv=${promoteProps.topicPromotionDetails.sourceEnv}&targetEnv=${promoteProps.topicPromotionDetails.targetEnvId}`
     );
   });
 
-  it("renders correct banner (see promotion request)", () => {
+  it("renders correct banner (see promotion request)", async () => {
     customRender(<TopicPromotionBanner {...seeProps} />, {
       memoryRouter: true,
     });
 
-    const link = screen.getByRole("link", {
+    const button = screen.getByRole("button", {
       name: "See the request",
     });
 
-    expect(link).toBeVisible();
-    expect(link).toHaveAttribute(
-      "href",
+    expect(button).toBeVisible();
+
+    await userEvent.click(button);
+
+    expect(mockedNavigate).toHaveBeenCalledWith(
       `/requests/topics?search=${promoteProps.topicPromotionDetails.topicName}&status=CREATED&page=1`
     );
   });
