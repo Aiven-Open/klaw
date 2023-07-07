@@ -8,6 +8,7 @@ import {
   useToast,
 } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import isEqual from "lodash/isEqual";
 import { useEffect, useState } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -130,7 +131,17 @@ function TopicEditRequest() {
     },
   });
 
-  const onEditSubmit: SubmitHandler<Schema> = (data) => edit(data);
+  const onEditSubmit: SubmitHandler<Schema> = (data) => {
+    if (isEqual(data, form.watch())) {
+      toast({
+        message: "No changes were made to the topic.",
+        position: "bottom-left",
+        variant: "default",
+      });
+      return;
+    }
+    edit(data);
+  };
 
   function cancelRequest() {
     form.reset();
