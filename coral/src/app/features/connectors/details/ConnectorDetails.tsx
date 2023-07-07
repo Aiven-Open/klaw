@@ -54,7 +54,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     error: connectorError,
     isLoading: connectorIsLoading,
     isRefetching: connectorIsRefetching,
-  } = useQuery(["topic-overview", connectorName, environmentId], {
+  } = useQuery(["connector-overview", connectorName, environmentId], {
     queryFn: () =>
       getConnectorOverview({
         connectornamesearch: connectorName,
