@@ -115,7 +115,7 @@ function TopicEditRequest() {
   }, [currentEnvironment, topicDetailsForSourceEnv]);
 
   const {
-    mutate: edit,
+    mutateAsync: edit,
     isLoading: editIsLoading,
     isError: editIsError,
     error: editError,
