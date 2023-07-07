@@ -53,6 +53,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     isError: connectorIsError,
     error: connectorError,
     isLoading: connectorIsLoading,
+    isRefetching: connectorIsRefetching,
   } = useQuery(["topic-overview", connectorName, environmentId], {
     queryFn: () =>
       getConnectorOverview({
@@ -96,6 +97,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         currentTab={currentTab}
         environmentId={environmentId}
         connectorOverview={connectorData}
+        connectorIsRefetching={connectorIsRefetching}
       />
     </div>
   );
@@ -105,6 +107,7 @@ function useConnectorDetails() {
   return useOutletContext<{
     environmentId: string;
     connectorOverview: ConnectorOverview;
+    connectorIsRefetching: boolean;
   }>();
 }
 
