@@ -75,6 +75,7 @@ const defaultProps = {
   isLoading: false,
   topicName: testConnectorName,
   connectorOverview: testConnectorOverview,
+  connectorIsRefetching: false,
 };
 
 describe("ConnectorOverviewResourceTabs", () => {
@@ -115,25 +116,40 @@ describe("ConnectorOverviewResourceTabs", () => {
   });
 
   describe("handles loading state", () => {
-    beforeAll(() => {
-      customRender(
-        <ConnectorOverviewResourcesTabs {...defaultProps} isLoading={true} />,
-        { queryClient: true, memoryRouter: true }
-      );
-    });
-
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
       jest.resetAllMocks();
     });
 
-    it("shows a loading information", () => {
+    it("shows a loading information (initial load)", () => {
+      customRender(
+        <ConnectorOverviewResourcesTabs {...defaultProps} isLoading={true} />,
+        { queryClient: true, memoryRouter: true }
+      );
+      const loading = screen.getByText("Loading connector details");
+
+      expect(loading).toBeVisible();
+    });
+
+    it("shows a loading information (refetching)", () => {
+      customRender(
+        <ConnectorOverviewResourcesTabs
+          {...defaultProps}
+          isLoading={false}
+          connectorIsRefetching={true}
+        />,
+        { queryClient: true, memoryRouter: true }
+      );
       const loading = screen.getByText("Loading connector details");
 
       expect(loading).toBeVisible();
     });
 
     it("does not show content for active tab navigation", () => {
+      customRender(
+        <ConnectorOverviewResourcesTabs {...defaultProps} isLoading={true} />,
+        { queryClient: true, memoryRouter: true }
+      );
       const tablist = screen.queryByTestId("tabpanel-content");
 
       expect(tablist).not.toBeInTheDocument();
