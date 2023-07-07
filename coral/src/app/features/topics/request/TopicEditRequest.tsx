@@ -84,34 +84,26 @@ function TopicEditRequest() {
       currentEnvironment !== undefined &&
       topicDetailsForSourceEnv !== undefined
     ) {
-      form.setValue("environment", currentEnvironment);
-      form.setValue(
-        "topicpartitions",
-        String(topicDetailsForSourceEnv.topicContents?.noOfPartitions)
-      );
-      form.setValue(
-        "replicationfactor",
-        String(topicDetailsForSourceEnv.topicContents?.noOfReplicas)
-      );
-
-      if (topicDetailsForSourceEnv.topicContents?.description !== undefined) {
-        form.setValue(
-          "description",
-          topicDetailsForSourceEnv.topicContents.description
-        );
-      }
-
-      if (
-        topicDetailsForSourceEnv.topicContents?.advancedTopicConfiguration !==
-        undefined
-      ) {
-        form.setValue(
-          "advancedConfiguration",
-          JSON.stringify(
-            topicDetailsForSourceEnv.topicContents.advancedTopicConfiguration
+      const defaultAdvancedTopicConfiguration = topicDetailsForSourceEnv
+        .topicContents?.advancedTopicConfiguration
+        ? JSON.stringify(
+            topicDetailsForSourceEnv.topicContents?.advancedTopicConfiguration
           )
-        );
-      }
+        : "{\n}";
+
+      form.reset({
+        environment: currentEnvironment,
+        topicpartitions: String(
+          topicDetailsForSourceEnv.topicContents?.noOfPartitions
+        ),
+        replicationfactor: String(
+          topicDetailsForSourceEnv.topicContents?.noOfReplicas
+        ),
+        topicname: topicName,
+        remarks: "",
+        description: topicDetailsForSourceEnv.topicContents?.description || "",
+        advancedConfiguration: defaultAdvancedTopicConfiguration,
+      });
     }
   }, [currentEnvironment, topicDetailsForSourceEnv]);
 
@@ -132,7 +124,7 @@ function TopicEditRequest() {
   });
 
   const onEditSubmit: SubmitHandler<Schema> = (data) => {
-    if (isEqual(data, form.watch())) {
+    if (isEqual(data, form.formState.defaultValues)) {
       toast({
         message: "No changes were made to the topic.",
         position: "bottom-left",
