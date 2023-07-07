@@ -8,6 +8,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.PromotionStatus;
@@ -311,10 +312,10 @@ public class SchemaOverviewService extends BaseOverviewService {
     PromotionStatus existingPromoDetails = promotionDetails;
     // verify if topic exists in target env
     if (!verifyIfTopicExistsInTargetSchemaEnv(kafkaEnvIds, promotionDetails, tenantId)) {
-      promotionDetails.setStatus(NO_PROMOTION);
+      promotionDetails.setStatus(PromotionStatusType.NO_PROMOTION);
     } else if (isSchemaPromoteRequestOpen(
         topicNameSearch, promotionDetails.getTargetEnvId(), tenantId)) {
-      promotionDetails.setStatus(REQUEST_OPEN);
+      promotionDetails.setStatus(PromotionStatusType.REQUEST_OPEN);
     }
     schemaOverview.setSchemaPromotionDetails(existingPromoDetails);
   }

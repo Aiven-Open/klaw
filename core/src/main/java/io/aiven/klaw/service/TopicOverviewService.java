@@ -13,7 +13,7 @@ import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
-import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
@@ -326,12 +326,12 @@ public class TopicOverviewService extends BaseOverviewService {
         }
       } else {
         PromotionStatus promotionStatus = new PromotionStatus();
-        promotionStatus.setStatus(ApiResultStatus.NOT_AUTHORIZED.value);
+        promotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
         topicOverview.setTopicPromotionDetails(promotionStatus);
       }
     } catch (Exception e) {
       PromotionStatus promotionStatus = new PromotionStatus();
-      promotionStatus.setStatus(ApiResultStatus.NOT_AUTHORIZED.value);
+      promotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
       topicOverview.setTopicPromotionDetails(promotionStatus);
     }
   }
@@ -388,10 +388,10 @@ public class TopicOverviewService extends BaseOverviewService {
           String targetEnvId = promotionStatus.getTargetEnvId();
           if (!((envOrderList.indexOf(targetEnvId) - envOrderList.indexOf(environmentId)) == 1)
               || !envOrderList.contains(environmentId)) {
-            promotionStatus.setStatus(NO_PROMOTION);
+            promotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
           } else if (isTopicPromoteRequestOpen(
               topicSearch, promotionStatus.getTargetEnvId(), tenantId)) {
-            promotionStatus.setStatus(REQUEST_OPEN);
+            promotionStatus.setStatus(PromotionStatusType.REQUEST_OPEN);
           }
         }
 
@@ -399,7 +399,7 @@ public class TopicOverviewService extends BaseOverviewService {
       }
     } catch (Exception e) {
       log.error("getTopicPromotionEnv error ", e);
-      promotionStatus.setStatus(ApiResultStatus.FAILURE.value);
+      promotionStatus.setStatus(PromotionStatusType.FAILURE);
       promotionStatus.setError(TOPIC_OVW_ERR_101);
     }
 

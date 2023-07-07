@@ -21,9 +21,9 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.SchemaOverview;
@@ -103,7 +103,8 @@ public class SchemaOverviewServiceTest {
     SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().getStatus()).isEqualTo("NO_PROMOTION");
+    assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.NO_PROMOTION);
   }
 
   @Test
@@ -126,7 +127,7 @@ public class SchemaOverviewServiceTest {
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
-        .isEqualTo(ApiResultStatus.SUCCESS.value);
+        .isEqualTo(PromotionStatusType.SUCCESS);
 
     assertThat(returnedValue.getSchemaPromotionDetails().getSourceEnv()).isEqualTo("1");
     assertThat(returnedValue.getSchemaPromotionDetails().getTargetEnv()).isEqualTo("test-2");
@@ -264,7 +265,8 @@ public class SchemaOverviewServiceTest {
     SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
 
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().getStatus()).isEqualTo("REQUEST_OPEN");
+    assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.REQUEST_OPEN);
 
     assertThat(returnedValue.getSchemaPromotionDetails().getSourceEnv()).isEqualTo("1");
     assertThat(returnedValue.getSchemaPromotionDetails().getTargetEnv()).isEqualTo("test-2");
@@ -307,7 +309,8 @@ public class SchemaOverviewServiceTest {
             eq(101));
     verify(manageDatabase, times(0)).getAssociatedSchemaEnvIdFromTopicId(eq("2"), eq(101));
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
-    assertThat(returnedValue.getSchemaPromotionDetails().getStatus()).isEqualTo("NO_PROMOTION");
+    assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.NO_PROMOTION);
   }
 
   private TreeMap<Integer, Map<String, Object>> getAvroSchemas(int numOfEntries) {

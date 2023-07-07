@@ -13,9 +13,9 @@ import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.AclType;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
@@ -47,8 +47,7 @@ public abstract class BaseOverviewService {
   public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
   private static final String MASKED_FOR_SECURITY = BASE_OVERVIEW_101;
-  public static final String NO_PROMOTION = "NO_PROMOTION";
-  public static final String REQUEST_OPEN = "REQUEST_OPEN";
+
   @Autowired protected ManageDatabase manageDatabase;
   @Autowired protected ClusterApiService clusterApiService;
   @Autowired protected CommonUtilsService commonUtilsService;
@@ -294,7 +293,7 @@ public abstract class BaseOverviewService {
     if (envList != null && envList.size() > 0) {
       // tenant filtering
       if (orderOfEnvs == null || orderOfEnvs.equals("")) {
-        schemaPromotionStatus.setStatus(NO_PROMOTION);
+        schemaPromotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
         return;
       }
       envList.sort(Comparator.comparingInt(Objects.requireNonNull(orderOfEnvs)::indexOf));
@@ -303,16 +302,16 @@ public abstract class BaseOverviewService {
       List<String> orderedEnvsList = Arrays.asList(orderOfEnvs.split(","));
 
       if (orderedEnvsList.indexOf(lastEnv) == orderedEnvsList.size() - 1) {
-        schemaPromotionStatus.setStatus(NO_PROMOTION);
+        schemaPromotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
       } else {
         if (orderedEnvsList.size() > 0) {
-          schemaPromotionStatus.setStatus(ApiResultStatus.SUCCESS.value);
+          schemaPromotionStatus.setStatus(PromotionStatusType.SUCCESS);
           schemaPromotionStatus.setSourceEnv(lastEnv);
           String targetEnv = orderedEnvsList.get(orderedEnvsList.indexOf(lastEnv) + 1);
           schemaPromotionStatus.setTargetEnv(getEnvDetails(targetEnv, tenantId).getName());
           schemaPromotionStatus.setTargetEnvId(targetEnv);
         } else {
-          schemaPromotionStatus.setStatus(NO_PROMOTION);
+          schemaPromotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
         }
       }
     }
