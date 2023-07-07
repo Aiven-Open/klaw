@@ -98,7 +98,7 @@ function TopicDetails(props: TopicOverviewProps) {
         entityEditLink={`/topic/${topicName}/request-update?env=${topicData?.topicInfo.envId}`}
         showEditButton={Boolean(
           topicData?.topicInfo.showEditTopic &&
-            !topicData?.topicInfo.hasOpenRequest
+            !topicData?.topicInfo.hasOpenTopicRequest
         )}
         environments={topicData?.availableEnvironments}
         environmentId={environmentId}
