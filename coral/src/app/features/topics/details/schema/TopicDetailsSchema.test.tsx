@@ -4,6 +4,7 @@ import { within } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { TopicSchemaOverview } from "src/domain/topic";
 
 const mockedUseTopicDetails = jest.fn();
 jest.mock("src/app/features/topics/details/TopicDetails", () => ({
@@ -13,13 +14,15 @@ const mockSetSchemaVersion = jest.fn();
 
 const testTopicName = "topic-name";
 const testEnvironmentId = 1;
-const testTopicSchemas = {
+const testTopicSchemas: TopicSchemaOverview = {
+  prefixAclsExists: false,
+  txnAclsExists: false,
   topicExists: true,
   schemaExists: true,
   allSchemaVersions: [3, 2, 1],
   latestVersion: 3,
   schemaPromotionDetails: {
-    status: "success",
+    status: "SUCCESS",
     sourceEnv: "1",
     targetEnv: "TST",
     targetEnvId: "2",
@@ -122,10 +125,16 @@ describe("TopicDetailsSchema", () => {
     it("shows a link to request a new schema version", () => {
       const link = screen.getByRole("link", { name: "Request a new version" });
 
+      // schemaDetailsPerEnv could be undefined based on its type,
+      // but it's always defined for the test here
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-ignore
+      const environment = testTopicSchemas.schemaDetailsPerEnv.env;
+
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
-        `/topic/${testTopicName}/request-schema?env=${testTopicSchemas.schemaDetailsPerEnv.env}`
+        `/topic/${testTopicName}/request-schema?env=${environment}`
       );
     });
 

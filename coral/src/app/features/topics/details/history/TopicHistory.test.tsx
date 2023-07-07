@@ -1,7 +1,7 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicHistory } from "src/app/features/topics/details/history/TopicHistory";
-import { TopicOverview } from "src/domain/topic";
+import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -62,7 +62,7 @@ const testTopicOverview: TopicOverview = {
   topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
-const testTopicSchemas = {
+const testTopicSchemas: TopicSchemaOverview = {
   topicExists: true,
   schemaExists: true,
   prefixAclsExists: false,
@@ -75,21 +75,19 @@ const testTopicSchemas = {
     targetEnv: "TST_SCH",
     targetEnvId: "9",
   },
-  schemaDetails: [
-    {
-      id: 2,
-      version: 1,
-      nextVersion: 0,
-      prevVersion: 0,
-      compatibility: "BACKWARD",
-      content:
-        '{\n  "doc" : "example",\n  "fields" : [ {\n    "default" : "6666665",\n    "doc" : "my test number",\n    "name" : "test",\n    "namespace" : "test",\n    "type" : "string"\n  } ],\n  "name" : "example",\n  "namespace" : "example",\n  "type" : "record"\n}',
-      env: "DEV",
-      showNext: false,
-      showPrev: false,
-      latest: true,
-    },
-  ],
+  schemaDetailsPerEnv: {
+    id: 2,
+    version: 1,
+    nextVersion: 0,
+    prevVersion: 0,
+    compatibility: "BACKWARD",
+    content:
+      '{\n  "doc" : "example",\n  "fields" : [ {\n    "default" : "6666665",\n    "doc" : "my test number",\n    "name" : "test",\n    "namespace" : "test",\n    "type" : "string"\n  } ],\n  "name" : "example",\n  "namespace" : "example",\n  "type" : "record"\n}',
+    env: "DEV",
+    showNext: false,
+    showPrev: false,
+    latest: true,
+  },
 };
 
 const mockSetSchemaVersion = jest.fn();
