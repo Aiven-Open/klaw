@@ -1881,9 +1881,13 @@ public class SelectDataJdbc {
       String requestOperationType,
       String env,
       int tenantId) {
-    return schemaRequestRepo
-        .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(
-            tenantId, env, requestStatus, requestOperationType, topicName);
+
+    boolean retval =
+        schemaRequestRepo
+            .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(
+                tenantId, env, requestStatus, requestOperationType, topicName);
+    log.info("the boolean answer {}", retval);
+    return retval;
   }
 
   public boolean existsTopicRequest(

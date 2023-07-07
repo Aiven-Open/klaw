@@ -24,12 +24,15 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.SchemaOverview;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -231,6 +234,80 @@ public class SchemaOverviewServiceTest {
 
     verify(manageDatabase.getHandleDbRequests(), times(0)).insertIntoMessageSchemaSOT(any());
     assertThat(returnedValue.getSchemaPromotionDetails()).isNull();
+  }
+
+  @Test
+  @Order(8)
+  public void givenASchemaWithAPromotionRequestAlreadyOpen_ReturnREQUESTOPEN() throws Exception {
+    // Schema Envs are 3,4
+    //      kafka envs are 1,2
+    //      Expecting kafka env ids to be returned now instead of schema env ids
+    stubUserInfo();
+
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
+
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2");
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
+    when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
+            eq(TESTTOPIC), eq(10), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1"), createTopic(TESTTOPIC, "2")));
+    when(handleDbRequests.existsSchemaRequest(
+            eq(TESTTOPIC),
+            eq(RequestStatus.CREATED.value),
+            eq(RequestOperationType.CREATE.value),
+            eq("4"),
+            eq(101)))
+        .thenReturn(true);
+    when(manageDatabase.getAssociatedSchemaEnvIdFromTopicId(eq("2"), eq(101)))
+        .thenReturn(Optional.of("4"));
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
+
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getSchemaPromotionDetails().getStatus()).isEqualTo("REQUEST_OPEN");
+
+    assertThat(returnedValue.getSchemaPromotionDetails().getSourceEnv()).isEqualTo("1");
+    assertThat(returnedValue.getSchemaPromotionDetails().getTargetEnv()).isEqualTo("test-2");
+  }
+
+  @Test
+  @Order(9)
+  public void givenASchemaWithNoTopicInHigherEnv_DoNotCheckForOpenRequestInHigherEnv()
+      throws Exception {
+    // Schema Envs are 3,4
+    //      kafka envs are 1,2
+    //      Expecting kafka env ids to be returned now instead of schema env ids
+    stubUserInfo();
+
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
+
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3");
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1");
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
+    when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
+            eq(TESTTOPIC), eq(10), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1"), createTopic(TESTTOPIC, "2")));
+    when(handleDbRequests.existsSchemaRequest(
+            eq(TESTTOPIC),
+            eq(RequestStatus.CREATED.value),
+            eq(RequestOperationType.CREATE.value),
+            eq("4"),
+            eq(101)))
+        .thenReturn(true);
+    when(manageDatabase.getAssociatedSchemaEnvIdFromTopicId(eq("2"), eq(101)))
+        .thenReturn(Optional.of("4"));
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "1");
+
+    verify(handleDbRequests, times(0))
+        .existsSchemaRequest(
+            eq(TESTTOPIC),
+            eq(RequestStatus.CREATED.value),
+            eq(RequestOperationType.CREATE.value),
+            eq("4"),
+            eq(101));
+    verify(manageDatabase, times(0)).getAssociatedSchemaEnvIdFromTopicId(eq("2"), eq(101));
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getSchemaPromotionDetails().getStatus()).isEqualTo("NO_PROMOTION");
   }
 
   private TreeMap<Integer, Map<String, Object>> getAvroSchemas(int numOfEntries) {

@@ -366,17 +366,6 @@ public class TopicOverviewService extends BaseOverviewService {
         .existsSchemaRequest(topicName, RequestStatus.CREATED.value, envId, tenantId);
   }
 
-  private boolean isSchemaPromoteRequestOpen(String topicName, String envId, int tenantId) {
-    return manageDatabase
-        .getHandleDbRequests()
-        .existsSchemaRequest(
-            topicName,
-            RequestStatus.CREATED.value,
-            RequestOperationType.PROMOTE.value,
-            envId,
-            tenantId);
-  }
-
   private PromotionStatus getTopicPromotionEnv(
       String topicSearch, List<Topic> topics, int tenantId, String environmentId) {
     PromotionStatus promotionStatus = new PromotionStatus();
@@ -400,6 +389,9 @@ public class TopicOverviewService extends BaseOverviewService {
           if (!((envOrderList.indexOf(targetEnvId) - envOrderList.indexOf(environmentId)) == 1)
               || !envOrderList.contains(environmentId)) {
             promotionStatus.setStatus(NO_PROMOTION);
+          } else if (isTopicPromoteRequestOpen(
+              topicSearch, promotionStatus.getTargetEnvId(), tenantId)) {
+            promotionStatus.setStatus(REQUEST_OPEN);
           }
         }
 

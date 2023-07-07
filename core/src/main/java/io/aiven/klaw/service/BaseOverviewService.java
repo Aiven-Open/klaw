@@ -48,6 +48,7 @@ public abstract class BaseOverviewService {
       new TypeReference<>() {};
   private static final String MASKED_FOR_SECURITY = BASE_OVERVIEW_101;
   public static final String NO_PROMOTION = "NO_PROMOTION";
+  public static final String REQUEST_OPEN = "REQUEST_OPEN";
   @Autowired protected ManageDatabase manageDatabase;
   @Autowired protected ClusterApiService clusterApiService;
   @Autowired protected CommonUtilsService commonUtilsService;
