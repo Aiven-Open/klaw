@@ -2,7 +2,6 @@ import { TopicOverview } from "src/app/features/topics/details/overview/TopicOve
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { cleanup, screen } from "@testing-library/react";
 import { TopicOverview as TopicOverviewTyp } from "src/domain/topic";
-import { expectType } from "@tanstack/react-query/build/lib/__tests__/utils";
 
 const mockedUseTopicDetails = jest.fn();
 jest.mock("src/app/features/topics/details/TopicDetails", () => ({
