@@ -82,6 +82,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
       <EntityDetailsHeader
         entity={{ name: connectorName, type: "connector" }}
         entityExists={Boolean(connectorData?.connectorExists)}
+        entityUpdating={connectorIsRefetching}
         entityEditLink={
           "/connector/connectorName=SchemaTest&env=${connectorOverview.availableEnvironments[0].id}&requestType=edit"
         }

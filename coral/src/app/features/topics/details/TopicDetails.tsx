@@ -95,6 +95,7 @@ function TopicDetails(props: TopicOverviewProps) {
       <EntityDetailsHeader
         entity={{ name: topicName, type: "topic" }}
         entityExists={Boolean(topicData?.topicExists)}
+        entityUpdating={topicIsRefetching}
         entityEditLink={
           "/topicOverview/topicname=SchemaTest&env=${topicOverview.availableEnvironments[0].id}&requestType=edit"
         }
