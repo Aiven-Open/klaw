@@ -252,7 +252,7 @@ describe("TopicOverview", () => {
     });
 
     it("shows a link to promote topic", () => {
-      const link = screen.getByRole("link", { name: "Promote" });
+      const link = screen.getByRole("button", { name: "Promote" });
 
       expect(link).toBeEnabled();
     });
