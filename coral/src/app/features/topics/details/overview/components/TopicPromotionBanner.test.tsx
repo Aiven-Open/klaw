@@ -5,7 +5,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 const promoteProps = {
   isTopicOwner: true,
   topicPromotionDetails: {
-    status: "success",
+    status: "SUCCESS",
     targetEnv: "TST",
     sourceEnv: "DEV",
     targetEnvId: "2",
@@ -17,7 +17,7 @@ const promoteProps = {
 const seeProps = {
   isTopicOwner: false,
   topicPromotionDetails: {
-    status: "success",
+    status: "SUCCESS",
     targetEnv: "TST",
     sourceEnv: "DEV",
     targetEnvId: "2",

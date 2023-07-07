@@ -59,7 +59,7 @@ const testTopicOverview: TopicOverview = {
       name: "DEV",
     },
   ],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
 const testTopicSchemas = {
@@ -70,7 +70,7 @@ const testTopicSchemas = {
   allSchemaVersions: [1],
   latestVersion: 1,
   schemaPromotionDetails: {
-    status: "success",
+    status: "SUCCESS",
     sourceEnv: "3",
     targetEnv: "TST_SCH",
     targetEnvId: "9",

@@ -1041,7 +1041,8 @@ export type components = {
       transactionalId?: string;
     };
     PromotionStatus: {
-      status: string;
+      /** @enum {string} */
+      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
       sourceEnv?: string;
       targetEnv?: string;
       targetEnvId?: string;

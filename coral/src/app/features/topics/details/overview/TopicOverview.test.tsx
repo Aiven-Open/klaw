@@ -71,7 +71,7 @@ const topicOverviewWithPromotion: TopicOverviewTyp = {
     },
   ],
   topicPromotionDetails: {
-    status: "success",
+    status: "SUCCESS",
     sourceEnv: "1",
     targetEnv: "TST",
     targetEnvId: "2",
@@ -96,7 +96,7 @@ const mockUseTopicDetailsDataWithPromotion = {
     },
     schemaPromotionDetails: {
       DEV: {
-        status: "success",
+        status: "SUCCESS",
         sourceEnv: "3",
         targetEnv: "TST_SCH",
         targetEnvId: "9",
@@ -184,7 +184,7 @@ const topicOverviewWithoutPromotion: TopicOverviewTyp = {
     },
   ],
   topicPromotionDetails: {
-    status: "success",
+    status: "SUCCESS",
     sourceEnv: "1",
     targetEnv: "TST",
     targetEnvId: "2",

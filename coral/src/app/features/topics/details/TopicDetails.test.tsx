@@ -105,7 +105,7 @@ const testTopicOverview: TopicOverview = {
       remarks: "Create",
     },
   ],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   availableEnvironments: [
     {
       id: "1",
@@ -126,7 +126,7 @@ const testTopicSchemas = {
   allSchemaVersions: [1],
   latestVersion: 1,
   schemaPromotionDetails: {
-    status: "success",
+    status: "SUCCESS",
     sourceEnv: "3",
     targetEnv: "TST_SCH",
     targetEnvId: "9",
