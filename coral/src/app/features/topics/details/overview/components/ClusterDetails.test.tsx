@@ -171,4 +171,49 @@ describe("ClusterDetails", () => {
       });
     });
   });
+
+  describe("logs error for developers if they pass wrong props", () => {
+    const originalConsoleError = console.error;
+    beforeEach(() => {
+      console.error = jest.fn();
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+    });
+
+    it("logs no error if isUpdating is true and cluster details undefined", () => {
+      render(<ClusterDetails clusterDetails={undefined} isUpdating={true} />);
+
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("logs no error if isUpdating is true and cluster details defined", () => {
+      render(
+        <ClusterDetails clusterDetails={testClusterDetails} isUpdating={true} />
+      );
+
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("logs no error if isUpdating is false and cluster details defined", () => {
+      render(
+        <ClusterDetails
+          clusterDetails={testClusterDetails}
+          isUpdating={false}
+        />
+      );
+
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("logs error if isUpdating is true and cluster details undefined", () => {
+      render(<ClusterDetails clusterDetails={undefined} isUpdating={false} />);
+
+      expect(console.error).toHaveBeenCalledWith(
+        "You must pass cluster details when the state of isUpdating is true"
+      );
+    });
+  });
 });
