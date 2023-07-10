@@ -13,8 +13,8 @@ import {
   TopicOverviewTabEnum,
   isTopicsOverviewTabEnum,
 } from "src/app/router_utils";
-import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
 import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
+import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
 
 type TopicOverviewProps = {
   topicName: string;
@@ -95,10 +95,12 @@ function TopicDetails(props: TopicOverviewProps) {
       <EntityDetailsHeader
         entity={{ name: topicName, type: "topic" }}
         entityExists={Boolean(topicData?.topicExists)}
+        entityEditLink={`/topic/${topicName}/request-update?env=${topicData?.topicInfo.envId}`}
+        showEditButton={Boolean(
+          topicData?.topicInfo.showEditTopic &&
+            !topicData?.topicInfo.hasOpenTopicRequest
+        )}
         entityUpdating={topicIsRefetching}
-        entityEditLink={
-          "/topicOverview/topicname=SchemaTest&env=${topicOverview.availableEnvironments[0].id}&requestType=edit"
-        }
         environments={topicData?.availableEnvironments}
         environmentId={environmentId}
         setEnvironmentId={setEnvironmentId}
