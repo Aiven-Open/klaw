@@ -1,18 +1,22 @@
 package io.aiven.klaw.clusterapi.services;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import io.aiven.klaw.clusterapi.UtilMethods;
+import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterSchemaRequest;
+import io.aiven.klaw.clusterapi.models.RegisterSchemaCustomResponse;
+import io.aiven.klaw.clusterapi.models.RegisterSchemaResponse;
+import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -44,15 +48,15 @@ class SchemaServiceRegisterSchemaTest {
   public static final String REGISTRY_URL = "https:registryEtc";
   public static final String COMPATIBILITY_NODE_KEY = "compatibility";
   SchemaService schemaService;
-
+  @Captor ArgumentCaptor<HttpEntity<Map<String, String>>> schemaCompatibility;
   @Mock private RestTemplate restTemplate;
   @Mock private ClusterApiUtils clusterApiUtil;
-  @Captor ArgumentCaptor<HttpEntity<Map<String, String>>> schemaCompatibility;
+  private UtilMethods utilMethods;
 
   @BeforeEach
   public void setUp() {
-
     schemaService = new SchemaService(clusterApiUtil);
+    utilMethods = new UtilMethods();
   }
 
   @Test
@@ -432,6 +436,50 @@ class SchemaServiceRegisterSchemaTest {
             any(HttpEntity.class),
             eq(new ParameterizedTypeReference<Map<String, String>>() {}),
             any(HashMap.class));
+  }
+
+  @Test
+  public void registerNewSchema() {
+    int id = 1;
+    ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
+    RegisterSchemaResponse registerSchemaResponse = new RegisterSchemaResponse();
+    registerSchemaResponse.setId(id);
+    ResponseEntity<Set<Integer>> response = new ResponseEntity<>(Set.of(id), HttpStatus.OK);
+
+    when(clusterApiUtil.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
+    when(clusterApiUtil.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
+    when(restTemplate.postForEntity(anyString(), any(), eq(RegisterSchemaResponse.class)))
+        .thenReturn(new ResponseEntity<>(registerSchemaResponse, HttpStatus.OK));
+    when(restTemplate.exchange(
+            anyString(),
+            eq(HttpMethod.GET),
+            any(),
+            eq(new ParameterizedTypeReference<Set<Integer>>() {}),
+            anyMap()))
+        .thenReturn(response);
+
+    ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
+    assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    RegisterSchemaCustomResponse registerSchemaCustomResponse =
+        (RegisterSchemaCustomResponse) resultResp.getData();
+    assertThat(registerSchemaCustomResponse.isSchemaRegistered()).isTrue();
+    assertThat(registerSchemaCustomResponse.getVersion()).isEqualTo(1);
+    assertThat(registerSchemaCustomResponse.getId()).isEqualTo(id);
+  }
+
+  @Test
+  public void registerSchemaFailure() {
+    ClusterSchemaRequest clusterSchemaRequest = utilMethods.getSchema();
+
+    when(clusterApiUtil.getRequestDetails(any(), any())).thenReturn(Pair.of("", restTemplate));
+    when(clusterApiUtil.createHeaders(anyString(), any())).thenReturn(new HttpHeaders());
+    when(restTemplate.postForEntity(anyString(), any(), eq(RegisterSchemaResponse.class)))
+        .thenThrow(new RuntimeException("Unable to connect"));
+
+    ApiResponse resultResp = schemaService.registerSchema(clusterSchemaRequest);
+    assertThat(resultResp.getMessage())
+        .contains("Failure in registering schema.")
+        .contains("Unable to connect");
   }
 
   private ResponseEntity<Map<String, String>> createErrorCompatibilityResponseEntity(

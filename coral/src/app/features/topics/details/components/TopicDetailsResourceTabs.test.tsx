@@ -59,12 +59,18 @@ const testTopicOverview: TopicOverview = {
     teamname: "Ospo",
     teamId: 0,
     envId: "1",
+    clusterId: 6,
     showEditTopic: true,
     showDeleteTopic: false,
     topicDeletable: false,
     envName: "DEV",
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
+    description: "my description",
   },
   aclInfoList: [
     {
@@ -131,7 +137,7 @@ const testTopicOverview: TopicOverview = {
       name: "TST",
     },
   ],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
 
@@ -143,6 +149,8 @@ const defaultProps = {
   topicName: testTopicName,
   topicOverview: testTopicOverview,
   setSchemaVersion: mockSetSchemaVersion,
+  topicOverviewIsRefetching: false,
+  topicSchemasIsRefetching: false,
 };
 describe("TopicDetailsResourceTabs", () => {
   const user = userEvent.setup();

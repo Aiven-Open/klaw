@@ -2,12 +2,15 @@ import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
-import { TopicDocumentationMarkdown, TopicOverview } from "src/domain/topic";
+import { TopicDocumentation } from "src/app/features/topics/details/documentation/TopicDocumentation";
+import {
+  TopicDocumentationMarkdown,
+  TopicOverview,
+  updateTopicDocumentation,
+} from "src/domain/topic";
 import { TopicSchemaOverview } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
-import { updateTopicDocumentation } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { TopicDocumentation } from "src/app/features/topics/details/documentation/TopicDocumentation";
 
 jest.mock("src/app/features/topics/details/TopicDetails");
 const mockUseTopicDetails = useTopicDetails as jest.MockedFunction<
@@ -25,7 +28,7 @@ const testTopicOverview: TopicOverview = {
   prefixAclsExists: false,
   schemaExists: false,
   txnAclsExists: false,
-  topicPromotionDetails: { status: "" },
+  topicPromotionDetails: { status: "NO_PROMOTION" },
   topicIdForDocumentation: 99999,
   topicInfo: {
     topicName: "documentation-test-topic",
@@ -34,6 +37,8 @@ const testTopicOverview: TopicOverview = {
 };
 
 const mockTopicDetails = {
+  topicOverviewIsRefetching: false,
+  topicSchemasIsRefetching: false,
   environmentId: "1",
   topicName: "hello",
   topicOverview: testTopicOverview,
@@ -220,6 +225,61 @@ describe("TopicDocumentation", () => {
         expect(markdownEditor).toBeVisible();
         expect(headlineEdit).toBeVisible();
       });
+    });
+  });
+
+  describe("if documentation is updating", () => {
+    const existingDocumentation = "# Hello" as TopicDocumentationMarkdown;
+
+    beforeAll(() => {
+      mockUseTopicDetails.mockReturnValue({
+        ...mockTopicDetails,
+        topicOverviewIsRefetching: true,
+        topicOverview: {
+          ...mockTopicDetails.topicOverview,
+          topicDocumentation: existingDocumentation,
+        },
+      });
+
+      mockUpdateTopicDocumentation.mockResolvedValue({
+        success: true,
+        message: "",
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicDocumentation />
+        </AquariumContext>,
+        { queryClient: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows documentation headline", () => {
+      const headline = screen.getByRole("heading", { name: "Documentation" });
+
+      expect(headline).toBeVisible();
+    });
+
+    it("shows accessible information about loading documentation", () => {
+      const loadingInformation = screen.getByText("Loading documentation");
+
+      expect(loadingInformation).toBeVisible();
+      expect(loadingInformation).toHaveClass("visually-hidden");
+    });
+
+    it("shows no documentation", () => {
+      const markdownView = screen.queryByTestId("react-markdown-mock");
+
+      expect(markdownView).not.toBeInTheDocument();
+    });
+
+    it("shows no button to edit documentation", () => {
+      const addDocumentationButton = screen.queryByRole("button", {
+        name: "Edit documentation",
+      });
+      expect(addDocumentationButton).not.toBeInTheDocument();
     });
   });
 

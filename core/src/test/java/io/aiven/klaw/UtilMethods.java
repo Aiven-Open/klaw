@@ -8,6 +8,7 @@ import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
+import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.ServiceAccounts;
@@ -183,6 +184,7 @@ public class UtilMethods {
     topicRequest.setTopicname("testtopic");
     topicRequest.setTeamId(3);
     topicRequest.setNoOfPartitions(1);
+    topicRequest.setTenantId(101);
     allTopicReqs.add(topicRequest);
     return allTopicReqs;
   }
@@ -1059,5 +1061,15 @@ public class UtilMethods {
         .entityValue("testuser")
         .operationType(MetadataOperationType.CREATE.name())
         .build();
+  }
+
+  public List<KwTenants> getTenants() {
+    List<KwTenants> kwTenantsList = new ArrayList<>();
+    KwTenants kwTenants = new KwTenants();
+    kwTenants.setTenantId(101);
+    kwTenants.setTenantName("default");
+    kwTenantsList.add(kwTenants);
+
+    return kwTenantsList;
   }
 }

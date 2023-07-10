@@ -7,14 +7,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
-import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PromotionStatusType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.EnvIdInfo;
@@ -198,15 +198,34 @@ public class TopicOverviewService extends BaseOverviewService {
         tmpAclPrefixed = applyFiltersAclsForSOT(loggedInUserTeam, prefixedAcls, tenantId);
         prefixedAclsInfo.addAll(tmpAclPrefixed);
       }
-      topicInfo.setHasOpenACLRequest(
-          aclInfo.stream()
-              .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
+      setHasAcl(aclInfo, topicInfo);
       // show edit button only forenv owned by your team
       if (Objects.equals(topicOwnerTeamId, loggedInUserTeam)) {
         topicInfo.setShowEditTopic(true);
         topicInfo.setTopicOwner(true);
       }
     }
+  }
+
+  private void setHasOpenRequestBooleans(
+      TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
+    topicInfo.setHasOpenACLRequest(isACLRequestOpen(topicName, envId, tenantId));
+    topicInfo.setHasOpenTopicRequest(isTopicRequestOpen(topicName, envId, tenantId));
+    topicInfo.setHasOpenRequest(
+        topicInfo.isHasOpenACLRequest()
+            || isSchemaRequestOpen(topicName, envId, tenantId)
+            || topicInfo.isHasOpenTopicRequest());
+  }
+
+  private void setHasSchema(
+      TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
+    topicInfo.setHasSchema(commonUtilsService.existsSchemaForTopic(topicName, envId, tenantId));
+  }
+
+  private void setHasAcl(List<AclOverviewInfo> aclInfo, TopicOverviewInfo topicInfo) {
+    topicInfo.setHasACL(
+        aclInfo.stream()
+            .anyMatch(aclItem -> Objects.equals(aclItem.getEnvironment(), topicInfo.getEnvId())));
   }
 
   private void enrichTopicOverview(
@@ -221,7 +240,9 @@ public class TopicOverviewService extends BaseOverviewService {
     for (Topic topic : topics) {
       TopicOverviewInfo topicInfo = new TopicOverviewInfo();
       topicInfo.setTopicName(topicName);
-      topicInfo.setEnvName(getEnvDetails(topic.getEnvironment(), tenantId).getName());
+      Env topicEnv = getEnvDetails(topic.getEnvironment(), tenantId);
+      topicInfo.setEnvName(topicEnv.getName());
+      topicInfo.setClusterId(topicEnv.getClusterId());
       topicInfo.setEnvId(topic.getEnvironment());
       topicInfo.setNoOfPartitions(topic.getNoOfPartitions());
       topicInfo.setNoOfReplicas(topic.getNoOfReplicas());
@@ -295,41 +316,56 @@ public class TopicOverviewService extends BaseOverviewService {
                       .get(topicOverview.getAvailableEnvironments().size() - 1)
                       .getId(),
                   lastItem.getEnvId()));
-          lastItem.setHasOpenRequest(
-              isRequestAlreadyOpen(topicNameSearch, environmentId, tenantId));
+          setHasOpenRequestBooleans(lastItem, topicNameSearch, environmentId, tenantId);
+          setHasSchema(lastItem, topicNameSearch, environmentId, tenantId);
           lastItem.setShowDeleteTopic(
               lastItem.isTopicDeletable()
                   && lastItem.isHighestEnv()
                   && !lastItem.isHasOpenRequest());
+
+          topicOverview.setSchemaExists(
+              commonUtilsService.existsSchemaForTopic(topicNameSearch, environmentId, tenantId));
         }
       } else {
         PromotionStatus promotionStatus = new PromotionStatus();
-        promotionStatus.setStatus(ApiResultStatus.NOT_AUTHORIZED.value);
+        promotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
         topicOverview.setTopicPromotionDetails(promotionStatus);
       }
     } catch (Exception e) {
       PromotionStatus promotionStatus = new PromotionStatus();
-      promotionStatus.setStatus(ApiResultStatus.NOT_AUTHORIZED.value);
+      promotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
       topicOverview.setTopicPromotionDetails(promotionStatus);
     }
   }
 
-  private boolean isRequestAlreadyOpen(String topicNameSearch, String environmentId, int tenantId) {
+  private boolean isTopicRequestOpen(String topicName, String environmentId, int tenantId) {
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsTopicRequest(topicName, RequestStatus.CREATED.value, environmentId, tenantId);
+  }
 
-    List<TopicRequest> topicReqs =
-        manageDatabase
-            .getHandleDbRequests()
-            .getAllTopicRequests(
-                getUserName(),
-                RequestStatus.CREATED.value,
-                null,
-                environmentId,
-                topicNameSearch,
-                false,
-                tenantId);
-    log.debug("Open Reqs for Topics {} , size {}", topicReqs, topicReqs.size());
-    // there should only ever be 1 delete request and in any other scenario this should be 0.
-    return topicReqs.size() >= 1;
+  private boolean isTopicPromoteRequestOpen(String topicName, String environmentId, int tenantId) {
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsTopicRequest(
+            topicName,
+            RequestStatus.CREATED.value,
+            RequestOperationType.PROMOTE.value,
+            environmentId,
+            tenantId);
+  }
+
+  private boolean isACLRequestOpen(String topicName, String environmentId, int tenantId) {
+
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsAclRequest(topicName, RequestStatus.CREATED.value, environmentId, tenantId);
+  }
+
+  private boolean isSchemaRequestOpen(String topicName, String envId, int tenantId) {
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsSchemaRequest(topicName, RequestStatus.CREATED.value, envId, tenantId);
   }
 
   private PromotionStatus getTopicPromotionEnv(
@@ -354,7 +390,10 @@ public class TopicOverviewService extends BaseOverviewService {
           String targetEnvId = promotionStatus.getTargetEnvId();
           if (!((envOrderList.indexOf(targetEnvId) - envOrderList.indexOf(environmentId)) == 1)
               || !envOrderList.contains(environmentId)) {
-            promotionStatus.setStatus(NO_PROMOTION);
+            promotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
+          } else if (isTopicPromoteRequestOpen(
+              topicSearch, promotionStatus.getTargetEnvId(), tenantId)) {
+            promotionStatus.setStatus(PromotionStatusType.REQUEST_OPEN);
           }
         }
 
@@ -362,7 +401,7 @@ public class TopicOverviewService extends BaseOverviewService {
       }
     } catch (Exception e) {
       log.error("getTopicPromotionEnv error ", e);
-      promotionStatus.setStatus(ApiResultStatus.FAILURE.value);
+      promotionStatus.setStatus(PromotionStatusType.FAILURE);
       promotionStatus.setError(TOPIC_OVW_ERR_101);
     }
 

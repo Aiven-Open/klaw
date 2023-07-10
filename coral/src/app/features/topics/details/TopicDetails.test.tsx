@@ -2,7 +2,7 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { TopicDetails } from "src/app/features/topics/details/TopicDetails";
-import { TopicOverview } from "src/domain/topic";
+import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -38,12 +38,18 @@ const testTopicOverview: TopicOverview = {
     teamname: "Ospo",
     teamId: 0,
     envId: "1",
+    clusterId: 6,
     showEditTopic: true,
     showDeleteTopic: false,
     topicDeletable: false,
     envName: "DEV",
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
+    description: "my description",
   },
   aclInfoList: [
     {
@@ -100,7 +106,7 @@ const testTopicOverview: TopicOverview = {
       remarks: "Create",
     },
   ],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   availableEnvironments: [
     {
       id: "1",
@@ -113,7 +119,8 @@ const testTopicOverview: TopicOverview = {
   ],
   topicIdForDocumentation: 1,
 };
-const testTopicSchemas = {
+
+const testTopicSchemas: TopicSchemaOverview = {
   topicExists: true,
   schemaExists: true,
   prefixAclsExists: false,
@@ -121,26 +128,24 @@ const testTopicSchemas = {
   allSchemaVersions: [1],
   latestVersion: 1,
   schemaPromotionDetails: {
-    status: "success",
+    status: "SUCCESS",
     sourceEnv: "3",
     targetEnv: "TST_SCH",
     targetEnvId: "9",
   },
-  schemaDetails: [
-    {
-      id: 2,
-      version: 1,
-      nextVersion: 0,
-      prevVersion: 0,
-      compatibility: "BACKWARD",
-      content:
-        '{\n  "doc" : "example",\n  "fields" : [ {\n    "default" : "6666665",\n    "doc" : "my test number",\n    "name" : "test",\n    "namespace" : "test",\n    "type" : "string"\n  } ],\n  "name" : "example",\n  "namespace" : "example",\n  "type" : "record"\n}',
-      env: "DEV",
-      showNext: false,
-      showPrev: false,
-      latest: true,
-    },
-  ],
+  schemaDetailsPerEnv: {
+    id: 2,
+    version: 1,
+    nextVersion: 0,
+    prevVersion: 0,
+    compatibility: "BACKWARD",
+    content:
+      '{\n  "doc" : "example",\n  "fields" : [ {\n    "default" : "6666665",\n    "doc" : "my test number",\n    "name" : "test",\n    "namespace" : "test",\n    "type" : "string"\n  } ],\n  "name" : "example",\n  "namespace" : "example",\n  "type" : "record"\n}',
+    env: "DEV",
+    showNext: false,
+    showPrev: false,
+    latest: true,
+  },
 };
 
 describe("TopicDetails", () => {
@@ -178,10 +183,13 @@ describe("TopicDetails", () => {
         memoryRouter: true,
         queryClient: true,
       });
-      expect(mockGetTopicOverview).toHaveBeenCalledWith({
-        topicName: testTopicName,
-        environmentId: undefined,
-      });
+
+      await waitFor(() =>
+        expect(mockGetTopicOverview).toHaveBeenCalledWith({
+          topicName: testTopicName,
+          environmentId: testTopicOverview.availableEnvironments[0].id,
+        })
+      );
 
       // This is a dependent query relying on mockGetTopicOverview to have finished fetching
       // So we need to await

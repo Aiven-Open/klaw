@@ -7,7 +7,6 @@ import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CREATE_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_DELETE_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_REQUEST_APPROVED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_REQUEST_DENIED;
-import static io.aiven.klaw.service.BaseOverviewService.NO_PROMOTION;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -35,6 +34,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorModel;
@@ -1106,7 +1106,7 @@ public class KafkaConnectControllerService {
             && !StringUtils.isEmpty(envId)) {
           if (!connectorOverview.getPromotionDetails().get("sourceEnv").equals(envId)) {
             Map<String, String> hashMap = new HashMap<>();
-            hashMap.put("status", NO_PROMOTION);
+            hashMap.put("status", PromotionStatusType.NO_PROMOTION.value);
             connectorOverview.setPromotionDetails(hashMap);
           }
         }
@@ -1248,7 +1248,7 @@ public class KafkaConnectControllerService {
             commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
         if (orderOfEnvs.length() == 0) {
           // No promotion order set return no promotion
-          hashMap.put("status", NO_PROMOTION);
+          hashMap.put("status", PromotionStatusType.NO_PROMOTION.value);
           return hashMap;
         }
 
@@ -1264,7 +1264,7 @@ public class KafkaConnectControllerService {
         List<String> orderdEnvs = Arrays.asList(orderOfEnvs.split(","));
 
         if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
-          hashMap.put("status", NO_PROMOTION); // PRD
+          hashMap.put("status", PromotionStatusType.NO_PROMOTION.value); // PRD
         } else {
           hashMap.put("status", ApiResultStatus.SUCCESS.value);
           hashMap.put("sourceEnv", lastEnv);

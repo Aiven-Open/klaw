@@ -1,7 +1,7 @@
 import { cleanup, screen, within } from "@testing-library/react";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { TopicHistory } from "src/app/features/topics/details/history/TopicHistory";
-import { TopicOverview } from "src/domain/topic";
+import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -36,13 +36,19 @@ const testTopicOverview: TopicOverview = {
     teamname: "Ospo",
     teamId: 1003,
     envId: "1",
+    clusterId: 3,
     showEditTopic: true,
     showDeleteTopic: false,
     topicDeletable: false,
     envName: "DEV",
     topicName: "my awesome topic",
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
+    description: "my description",
   },
   aclInfoList: [],
   prefixedAclInfoList: [],
@@ -54,10 +60,10 @@ const testTopicOverview: TopicOverview = {
       name: "DEV",
     },
   ],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
-const testTopicSchemas = {
+const testTopicSchemas: TopicSchemaOverview = {
   topicExists: true,
   schemaExists: true,
   prefixAclsExists: false,
@@ -65,26 +71,24 @@ const testTopicSchemas = {
   allSchemaVersions: [1],
   latestVersion: 1,
   schemaPromotionDetails: {
-    status: "success",
+    status: "SUCCESS",
     sourceEnv: "3",
     targetEnv: "TST_SCH",
     targetEnvId: "9",
   },
-  schemaDetails: [
-    {
-      id: 2,
-      version: 1,
-      nextVersion: 0,
-      prevVersion: 0,
-      compatibility: "BACKWARD",
-      content:
-        '{\n  "doc" : "example",\n  "fields" : [ {\n    "default" : "6666665",\n    "doc" : "my test number",\n    "name" : "test",\n    "namespace" : "test",\n    "type" : "string"\n  } ],\n  "name" : "example",\n  "namespace" : "example",\n  "type" : "record"\n}',
-      env: "DEV",
-      showNext: false,
-      showPrev: false,
-      latest: true,
-    },
-  ],
+  schemaDetailsPerEnv: {
+    id: 2,
+    version: 1,
+    nextVersion: 0,
+    prevVersion: 0,
+    compatibility: "BACKWARD",
+    content:
+      '{\n  "doc" : "example",\n  "fields" : [ {\n    "default" : "6666665",\n    "doc" : "my test number",\n    "name" : "test",\n    "namespace" : "test",\n    "type" : "string"\n  } ],\n  "name" : "example",\n  "namespace" : "example",\n  "type" : "record"\n}',
+    env: "DEV",
+    showNext: false,
+    showPrev: false,
+    latest: true,
+  },
 };
 
 const mockSetSchemaVersion = jest.fn();
@@ -110,6 +114,8 @@ describe("TopicHistory", () => {
   describe("handles an empty history", () => {
     beforeAll(() => {
       mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
         environmentId: "1",
         topicName: "hello",
         topicOverview: { ...testTopicOverview, topicHistoryList: [] },
@@ -156,9 +162,54 @@ describe("TopicHistory", () => {
     });
   });
 
+  describe("handles a loading state on former empty history", () => {
+    beforeAll(() => {
+      mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: true,
+        topicSchemasIsRefetching: false,
+        environmentId: "1",
+        topicName: "hello",
+        topicOverview: { ...testTopicOverview, topicHistoryList: [] },
+        topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+      });
+
+      customRender(<TopicHistory />, {
+        memoryRouter: true,
+      });
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows a table with loading information for topics history", () => {
+      const loadingTable = screen.getByRole("table", {
+        name: "Loading",
+      });
+
+      expect(loadingTable).toBeVisible();
+    });
+
+    it("shows all column headers", () => {
+      const header = screen.getAllByRole("columnheader");
+
+      expect(header).toHaveLength(columnsFieldMap.length);
+    });
+
+    it("shows one row for loading animation plus header row", () => {
+      const row = screen.getAllByRole("row");
+
+      expect(row).toHaveLength(2);
+    });
+  });
+
   describe("shows a table with topics history", () => {
     beforeAll(() => {
       mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
         environmentId: "1",
         topicName: "hello",
         topicOverview: testTopicOverview,
@@ -256,6 +307,49 @@ describe("TopicHistory", () => {
           expect(cell).toBeVisible();
         });
       });
+    });
+  });
+
+  describe("handles a loading state for updating existing data", () => {
+    beforeAll(() => {
+      mockUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: true,
+        topicSchemasIsRefetching: false,
+        environmentId: "1",
+        topicName: "hello",
+        topicOverview: testTopicOverview,
+        topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+      });
+
+      customRender(<TopicHistory />, {
+        memoryRouter: true,
+      });
+    });
+
+    afterAll(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
+
+    it("shows a table with loading information for topics history", () => {
+      const loadingTable = screen.getByRole("table", {
+        name: "Loading",
+      });
+
+      expect(loadingTable).toBeVisible();
+    });
+
+    it("shows all column headers", () => {
+      const header = screen.getAllByRole("columnheader");
+
+      expect(header).toHaveLength(columnsFieldMap.length);
+    });
+
+    it("shows one row per entry with animation plus header row", () => {
+      const row = screen.getAllByRole("row");
+
+      expect(row).toHaveLength(testTopicHistoryList.length + 1);
     });
   });
 });

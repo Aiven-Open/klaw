@@ -16,6 +16,7 @@ type Props = {
   error?: unknown;
   isError: boolean;
   isLoading: boolean;
+  connectorIsRefetching: boolean;
   connectorOverview?: ConnectorOverview;
 };
 
@@ -26,6 +27,7 @@ function ConnectorOverviewResourcesTabs({
   isError,
   isLoading,
   connectorOverview,
+  connectorIsRefetching,
 }: Props) {
   const navigate = useNavigate();
   const connectorName = connectorOverview?.connectorInfo.connectorName;
@@ -76,7 +78,7 @@ function ConnectorOverviewResourcesTabs({
       );
     }
 
-    if (isLoading) {
+    if (isLoading || connectorIsRefetching) {
       return (
         <Box paddingTop={"l2"} display={"flex"} justifyContent={"center"}>
           <div className={"visually-hidden"}>Loading connector details</div>
@@ -102,6 +104,7 @@ function ConnectorOverviewResourcesTabs({
             environmentId:
               environmentId || connectorOverview?.connectorInfo.environmentId,
             connectorOverview,
+            connectorIsRefetching,
           }}
         />
       </div>

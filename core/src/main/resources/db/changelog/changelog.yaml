@@ -1093,7 +1093,33 @@ databaseChangeLog:
                     type: VARCHAR2(255)
               tableName: kwshedlock
     - changeSet:
-        id: 13-03-2023 Add the ChangeId to the data version for better control of the completed changes.
+        id: table to store unique ids of teams, envs, clusters
+        author: muralibasani
+        changes:
+          - createTable:
+              columns:
+                - column:
+                    constraints:
+                      nullable: false
+                      primaryKey: true
+                      primaryKeyName: CONSTRAINT_KWENT_SEQ
+                    name: entity_name
+                    type: VARCHAR(15)
+                - column:
+                    constraints:
+                      nullable: false
+                    name: seq_id
+                    type: INT
+                - column:
+                    constraints:
+                      nullable: false
+                      primaryKey: true
+                      primaryKeyName: CONSTRAINT_KWENT_SEQ
+                    name: tenantid
+                    type: INT
+              tableName: kwentityseq
+    - changeSet:
+        id: 10-07-2023 Add the ChangeId to the data version for better control of the completed changes.
         author: aindriu-aiven
         changes:
           - addColumn:
@@ -1102,3 +1128,4 @@ databaseChangeLog:
                     name: changeid
                     type: INT
               tableName: kwdatamigration
+

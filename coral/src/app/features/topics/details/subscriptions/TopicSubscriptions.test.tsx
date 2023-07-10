@@ -77,13 +77,19 @@ const testTopicOverview: TopicOverview = {
     teamname: "Ospo",
     teamId: 1003,
     envId: "1",
+    clusterId: 4,
     showEditTopic: true,
     showDeleteTopic: false,
     topicDeletable: false,
     envName: "DEV",
     topicName: testTopicName,
-    hasOpenACLRequest: true,
-    hasOpenRequest: true,
+    hasACL: false,
+    hasOpenTopicRequest: false,
+    hasOpenACLRequest: false,
+    highestEnv: true,
+    hasOpenRequest: false,
+    hasSchema: false,
+    description: "my description",
   },
   aclInfoList: [
     {
@@ -182,7 +188,7 @@ const testTopicOverview: TopicOverview = {
       name: "TST",
     },
   ],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
 

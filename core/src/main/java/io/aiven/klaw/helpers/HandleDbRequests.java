@@ -41,6 +41,8 @@ public interface HandleDbRequests {
 
   String addToSyncacls(List<Acl> acls);
 
+  public Integer getNextSeqIdAndUpdate(String entityName, int tenantId);
+
   String registerUser(RegisterUserInfo newUser);
 
   String registerUserForAD(RegisterUserInfo newUser);
@@ -132,6 +134,28 @@ public interface HandleDbRequests {
   List<Acl> getUniqueConsumerGroups(int tenantId);
 
   Acl getSyncAclsFromReqNo(int reqNo, int tenantId);
+
+  boolean existsAclRequest(String topicName, String requestStatus, String env, int tenantId);
+
+  boolean existsSchemaRequest(String topicName, String requestStatus, String env, int tenantId);
+
+  boolean existsSchemaRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId);
+
+  boolean existsTopicRequest(String topicName, String requestStatus, String env, int tenantId);
+
+  boolean existsTopicRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId);
+
+  boolean existsSchemaForTopic(String topicName, String env, int tenantId);
 
   List<AclRequests> getAllAclRequests(
       boolean allReqs,

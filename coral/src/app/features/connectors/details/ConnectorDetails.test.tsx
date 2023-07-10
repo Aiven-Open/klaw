@@ -1,8 +1,9 @@
-import { cleanup, screen } from "@testing-library/react";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
 import { ConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
 import { ConnectorOverview, getConnectorOverview } from "src/domain/connector";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import userEvent from "@testing-library/user-event";
 
 const mockUseParams = jest.fn();
 const mockMatches = jest.fn();
@@ -63,9 +64,7 @@ const testConnectorOverview: ConnectorOverview = {
 };
 
 describe("ConnectorDetails", () => {
-  // const user = userEvent.setup();
-
-  beforeEach(() => {
+  beforeAll(() => {
     mockGetConnectorOverview.mockResolvedValue(testConnectorOverview);
 
     mockUseParams.mockReturnValue({
@@ -96,34 +95,36 @@ describe("ConnectorDetails", () => {
         memoryRouter: true,
         queryClient: true,
       });
-      expect(mockGetConnectorOverview).toHaveBeenCalledWith({
-        connectornamesearch: testConnectorName,
-      });
+      await waitFor(() =>
+        expect(mockGetConnectorOverview).toHaveBeenCalledWith({
+          connectornamesearch: testConnectorName,
+          environmentId: testConnectorOverview.availableEnvironments[0].id,
+        })
+      );
     });
 
-    // @ TODO add this test when envirnmentID param is added and switcher is implemented
-    // it("fetches the data anew when user changes environment", async () => {
-    //   customRender(<ConnectorDetails connectorName={testConnectorName} />, {
-    //     memoryRouter: true,
-    //     queryClient: true,
-    //   });
+    it("fetches the data anew when user changes environment", async () => {
+      customRender(<ConnectorDetails connectorName={testConnectorName} />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
 
-    //   const select = await screen.findByRole("combobox", {
-    //     name: "Select environment",
-    //   });
+      const select = await screen.findByRole("combobox", {
+        name: "Select environment",
+      });
 
-    //   await user.selectOptions(
-    //     select,
-    //     testConnectorOverview.availableEnvironments[1].name
-    //   );
+      await userEvent.selectOptions(
+        select,
+        testConnectorOverview.availableEnvironments[1].name
+      );
 
-    //   await waitFor(() =>
-    //     expect(mockGetConnectorOverview).toHaveBeenCalledWith({
-    //       connectorName: testConnectorName,
-    //       environmentId: testConnectorOverview.availableEnvironments[1].id,
-    //     })
-    //   );
-    // });
+      await waitFor(() =>
+        expect(mockGetConnectorOverview).toHaveBeenCalledWith({
+          connectornamesearch: testConnectorName,
+          environmentId: testConnectorOverview.availableEnvironments[1].id,
+        })
+      );
+    });
   });
 
   describe("renders the correct tab navigation based on router match", () => {

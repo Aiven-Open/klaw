@@ -87,6 +87,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public Integer getNextSeqIdAndUpdate(String entityName, int tenantId) {
+    return jdbcInsertHelper.getNextSeqIdAndUpdate(entityName, tenantId);
+  }
+
+  @Override
   public String registerUser(RegisterUserInfo newUser) {
     return jdbcInsertHelper.insertIntoRegisterUsers(newUser);
   }
@@ -309,8 +314,53 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsAclRequest(
+      String topicName, String requestStatus, String env, int tenantId) {
+    return jdbcSelectHelper.existsAclRequest(topicName, requestStatus, env, tenantId);
+  }
+
+  @Override
+  public boolean existsSchemaRequest(
+      String topicName, String requestStatus, String env, int tenantId) {
+    return jdbcSelectHelper.existsSchemaRequest(topicName, requestStatus, env, tenantId);
+  }
+
+  @Override
+  public boolean existsSchemaRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId) {
+    return jdbcSelectHelper.existsSchemaRequest(
+        topicName, requestStatus, requestOperationType, env, tenantId);
+  }
+
+  @Override
+  public boolean existsTopicRequest(
+      String topicName, String requestStatus, String env, int tenantId) {
+    return jdbcSelectHelper.existsTopicRequest(topicName, requestStatus, env, tenantId);
+  }
+
+  @Override
+  public boolean existsTopicRequest(
+      String topicName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId) {
+    return jdbcSelectHelper.existsTopicRequest(
+        topicName, requestStatus, requestOperationType, env, tenantId);
+  }
+
+  @Override
+  public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
+    return jdbcSelectHelper.existsSchemaForTopic(topicName, env, tenantId);
+  }
+
+  @Override
   public List<AclRequests> getAllAclRequests(
-      boolean allReqs,
+      boolean isApproval,
       String requestor,
       String role,
       String requestStatus,
@@ -323,7 +373,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       boolean isMyRequest,
       int tenantId) {
     return jdbcSelectHelper.selectFilteredAclRequests(
-        allReqs,
+        isApproval,
         requestor,
         role,
         requestStatus,

@@ -891,8 +891,6 @@ public class TopicControllerServiceTest {
         .thenReturn(utilMethods.getTopics());
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-
     TopicDetailsPerEnv topicDetailsPerEnvResponse =
         topicControllerService.getTopicDetailsPerEnv(envId, topicName);
     assertThat(topicDetailsPerEnvResponse.getError())
