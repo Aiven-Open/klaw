@@ -1,5 +1,5 @@
 import { ClusterDetails as ClusterDetailsType } from "src/domain/cluster";
-import { render, cleanup } from "@testing-library/react";
+import { render, cleanup, RenderResult, screen } from "@testing-library/react";
 import { ClusterDetails } from "src/app/features/topics/details/overview/components/ClusterDetails";
 import {
   getByTermInList,
@@ -24,7 +24,10 @@ describe("ClusterDetails", () => {
     let definitionList: HTMLDListElement;
     beforeAll(() => {
       const component = render(
-        <ClusterDetails clusterDetails={testClusterDetails} />
+        <ClusterDetails
+          clusterDetails={testClusterDetails}
+          isUpdating={false}
+        />
       );
       definitionList = getDefinitionList(component);
     });
@@ -93,6 +96,7 @@ describe("ClusterDetails", () => {
             ...testClusterDetails,
             associatedServers: "https://example.com",
           }}
+          isUpdating={false}
         />
       );
       definitionList = getDefinitionList(component);
@@ -110,6 +114,61 @@ describe("ClusterDetails", () => {
 
       expect(term).toBeVisible();
       expect(definition[0]).toHaveTextContent("https://example.com");
+    });
+  });
+
+  describe("shows loading state when details are updating", () => {
+    describe('when "isUpdating" is false', () => {
+      let component: RenderResult;
+      beforeAll(() => {
+        component = render(
+          <ClusterDetails
+            clusterDetails={testClusterDetails}
+            isUpdating={false}
+          />
+        );
+      });
+
+      afterAll(cleanup);
+      it("does not render loading information", () => {
+        const info = screen.queryByText("Cluster details are updating");
+
+        expect(info).not.toBeInTheDocument();
+      });
+
+      it("does not hide definition list from assistive technology", () => {
+        const definitionList = getDefinitionList(component);
+        expect(definitionList.parentElement).not.toHaveAttribute(
+          "aria-hidden",
+          "true"
+        );
+      });
+    });
+
+    describe('when "isUpdating" is true', () => {
+      let component: RenderResult;
+      beforeAll(() => {
+        component = render(
+          <ClusterDetails
+            clusterDetails={testClusterDetails}
+            isUpdating={true}
+          />
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows loading information for assistive technology", () => {
+        const info = screen.getByText("Cluster details are updating");
+
+        expect(info).toBeVisible();
+        expect(info).toHaveClass("visually-hidden");
+      });
+
+      it("hides the definition list from assitive technology", () => {
+        const list = getDefinitionList(component);
+        expect(list.parentElement).toHaveAttribute("aria-hidden", "true");
+      });
     });
   });
 });
