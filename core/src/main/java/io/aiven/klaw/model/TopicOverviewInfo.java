@@ -27,5 +27,7 @@ public class TopicOverviewInfo extends TopicBaseInfo {
 
   @NotNull private String envName;
 
+  @NotNull private Integer clusterId;
+
   private Map<String, String> advancedTopicConfiguration;
 }

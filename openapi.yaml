@@ -7028,6 +7028,10 @@
           "hasSchema" : {
             "type" : "boolean"
           },
+          "clusterId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "topicOwner" : {
             "type" : "boolean"
           },
@@ -7035,7 +7039,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
       "TopicBaseConfig" : {
         "properties" : {

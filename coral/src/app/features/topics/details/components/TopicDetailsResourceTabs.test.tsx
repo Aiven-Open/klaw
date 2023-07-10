@@ -59,6 +59,7 @@ const testTopicOverview: TopicOverview = {
     teamname: "Ospo",
     teamId: 0,
     envId: "1",
+    clusterId: 6,
     showEditTopic: true,
     showDeleteTopic: false,
     topicDeletable: false,

@@ -240,7 +240,9 @@ public class TopicOverviewService extends BaseOverviewService {
     for (Topic topic : topics) {
       TopicOverviewInfo topicInfo = new TopicOverviewInfo();
       topicInfo.setTopicName(topicName);
-      topicInfo.setEnvName(getEnvDetails(topic.getEnvironment(), tenantId).getName());
+      Env topicEnv = getEnvDetails(topic.getEnvironment(), tenantId);
+      topicInfo.setEnvName(topicEnv.getName());
+      topicInfo.setClusterId(topicEnv.getClusterId());
       topicInfo.setEnvId(topic.getEnvironment());
       topicInfo.setNoOfPartitions(topic.getNoOfPartitions());
       topicInfo.setNoOfReplicas(topic.getNoOfReplicas());
