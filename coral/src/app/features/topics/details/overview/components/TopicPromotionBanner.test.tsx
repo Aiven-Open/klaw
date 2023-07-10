@@ -52,7 +52,7 @@ describe("TopicPromotionBanner (with promotion banner)", () => {
       name: "Promote",
     });
 
-    expect(button).toBeVisible();
+    expect(button).toBeEnabled();
 
     await userEvent.click(button);
     expect(mockedNavigate).toHaveBeenCalledWith(
@@ -69,7 +69,7 @@ describe("TopicPromotionBanner (with promotion banner)", () => {
       name: "See the request",
     });
 
-    expect(button).toBeVisible();
+    expect(button).toBeEnabled();
 
     await userEvent.click(button);
 
