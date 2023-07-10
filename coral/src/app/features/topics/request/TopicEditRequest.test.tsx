@@ -10,6 +10,8 @@ import { editTopic, getTopicDetailsPerEnv } from "src/domain/topic";
 import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
+const TOPIC_NAME = "test-topic-name";
+
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -55,7 +57,7 @@ const mockTopicDetails = {
   topicExists: true,
   topicId: "1200",
   topicContents: {
-    topicName: "test-topic-name",
+    topicName: TOPIC_NAME,
     noOfPartitions: 2,
     description: "Topic description",
     noOfReplicas: "1",
@@ -281,10 +283,7 @@ const mockTransformedGetTopicAdvancedConfigOptions = [
 ];
 
 describe("<TopicEditRequest />", () => {
-  const originalConsoleError = console.error;
-
   beforeAll(() => {
-    console.error = jest.fn();
     mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(mockEnvironments);
     mockGetTopicDetailsPerEnv.mockResolvedValue(mockTopicDetails);
     mockgGetTopicAdvancedConfigOptions.mockResolvedValue(
@@ -305,7 +304,7 @@ describe("<TopicEditRequest />", () => {
       {
         queryClient: true,
         memoryRouter: true,
-        customRoutePath: "/topic/test-topic-name/request-update?env=1",
+        customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=1`,
       }
     );
   });
@@ -315,7 +314,6 @@ describe("<TopicEditRequest />", () => {
   });
 
   afterAll(() => {
-    console.error = originalConsoleError;
     cleanup();
     jest.clearAllMocks();
   });
@@ -336,7 +334,7 @@ describe("<TopicEditRequest />", () => {
       });
       expect(input).toHaveAttribute("readonly");
       expect(input).toBeRequired();
-      expect(input).toHaveDisplayValue("test-topic-name");
+      expect(input).toHaveDisplayValue(TOPIC_NAME);
     });
 
     it("shows a select element for 'Topic partitions' with correct default value", async () => {
@@ -439,26 +437,15 @@ describe("<TopicEditRequest />", () => {
 
       expect(mockEditTopic).toHaveBeenCalledTimes(1);
       expect(mockEditTopic).toHaveBeenCalledWith({
-        advancedConfiguration: '{"cleanup.policy":"compact"}',
-        description: "Topic description",
-        environment: {
-          id: "1",
-          name: "DEV",
-          params: {
-            applyRegex: undefined,
-            defaultPartitions: 2,
-            defaultRepFactor: 1,
-            maxPartitions: 2,
-            maxRepFactor: 1,
-            topicPrefix: undefined,
-            topicSuffix: undefined,
-          },
-          type: "kafka",
-        },
+        advancedConfiguration: JSON.stringify(
+          mockTopicDetails.topicContents.advancedTopicConfiguration
+        ),
+        description: mockTopicDetails.topicContents.description,
+        environment: mockEnvironments[0],
         remarks: "please approve",
-        replicationfactor: "1",
-        topicname: "test-topic-name",
-        topicpartitions: "2",
+        replicationfactor: mockTopicDetails.topicContents.noOfReplicas,
+        topicname: TOPIC_NAME,
+        topicpartitions: String(mockTopicDetails.topicContents.noOfPartitions),
       });
     });
 
