@@ -32,7 +32,9 @@ const defaultTopicProps = {
   environmentId: undefined,
   setEnvironmentId: mockSetEnvironmentId,
   entityExists: true,
+  entityUpdating: false,
 };
+
 const defaultConnectorProps = {
   entity: testConnector,
   entityEditLink: "/hello/connector",
@@ -41,311 +43,359 @@ const defaultConnectorProps = {
   environmentId: undefined,
   setEnvironmentId: mockSetEnvironmentId,
   entityExists: true,
+  entityUpdating: false,
 };
 
-describe("EntityDetailsHeader (topic)", () => {
-  const user = userEvent.setup();
+describe("EntityDetailsHeader", () => {
+  describe("handles header for details view for topic", () => {
+    const user = userEvent.setup();
 
-  describe("handles loading state when environments are not yet given", () => {
-    beforeAll(() => {
-      render(
-        <EntityDetailsHeader {...defaultTopicProps} environments={undefined} />
-      );
-    });
-
-    afterAll(cleanup);
-
-    it("shows a disabled select", () => {
-      const select = screen.getByRole("combobox");
-
-      expect(select).toBeDisabled();
-    });
-
-    it("shows a placeholder 'Loading' for the select", () => {
-      const select = screen.getByRole("combobox");
-
-      expect(select).toHaveAttribute("placeholder", "Loading");
-    });
-
-    it("shows no information about amount of environments", () => {
-      const environmentAmountInfo = screen.queryByText("Environment", {
-        exact: false,
+    describe("handles loading state when environments are not yet given", () => {
+      beforeAll(() => {
+        render(
+          <EntityDetailsHeader
+            {...defaultTopicProps}
+            environments={undefined}
+          />
+        );
       });
 
-      expect(environmentAmountInfo).not.toBeInTheDocument();
+      afterAll(cleanup);
+
+      it("shows a disabled select", () => {
+        const select = screen.getByRole("combobox");
+
+        expect(select).toBeDisabled();
+      });
+
+      it("shows a placeholder 'Loading' for the select", () => {
+        const select = screen.getByRole("combobox");
+
+        expect(select).toHaveAttribute("placeholder", "Loading");
+      });
+
+      it("shows no information about amount of environments", () => {
+        const environmentAmountInfo = screen.queryByText("Environment", {
+          exact: false,
+        });
+
+        expect(environmentAmountInfo).not.toBeInTheDocument();
+      });
+    });
+
+    describe("handles a non existent topic", () => {
+      beforeAll(() => {
+        render(
+          <EntityDetailsHeader {...defaultTopicProps} entityExists={false} />
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows no select element when topic does not exist", () => {
+        const select = screen.queryByRole("combobox");
+
+        expect(select).not.toBeInTheDocument();
+      });
+
+      it("shows the button to edit topic as disabled", () => {
+        const button = screen.getByRole("button", { name: "Edit topic" });
+
+        expect(button).toBeDisabled();
+      });
+
+      it("shows no information about amount of environments", () => {
+        const environmentAmountInfo = screen.queryByText("Environment", {
+          exact: false,
+        });
+
+        expect(environmentAmountInfo).not.toBeInTheDocument();
+      });
+    });
+
+    describe("shows all necessary elements if topic exists", () => {
+      beforeAll(() => {
+        render(<EntityDetailsHeader {...defaultTopicProps} />);
+      });
+
+      afterAll(cleanup);
+
+      it("shows the topic name", () => {
+        const name = screen.getByRole("heading", {
+          name: defaultTopicProps.entity.name,
+        });
+
+        expect(name).toBeVisible();
+      });
+
+      it("shows a select element for environments", () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
+
+        expect(select).toBeEnabled();
+      });
+
+      it("sets environmentId to be the first element from environments if it is undefined on load", () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
+
+        expect(select).toHaveValue(testEnvironments[0].id);
+        expect(select).toHaveDisplayValue(testEnvironments[0].name);
+      });
+
+      it("shows all given environments as options", () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
+        const options = within(select).getAllByRole("option");
+
+        expect(options[0]).toHaveValue(testEnvironments[0].id);
+        expect(options[0]).toHaveTextContent(testEnvironments[0].name);
+        expect(options[1]).toHaveValue(testEnvironments[1].id);
+        expect(options[1]).toHaveTextContent(testEnvironments[1].name);
+      });
+
+      it("shows information about the amount of environments", () => {
+        const info = screen.getByText(
+          `${testEnvironments.length} Environments`
+        );
+
+        expect(info).toBeVisible();
+      });
+
+      it("shows a button to edit the topic", () => {
+        const button = screen.getByRole("button", { name: "Edit topic" });
+
+        expect(button).toBeEnabled();
+      });
+    });
+
+    describe("disables button to edit as long as data is updated", () => {
+      beforeAll(() => {
+        render(
+          <EntityDetailsHeader {...defaultTopicProps} entityUpdating={true} />
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows a button to edit the topic", () => {
+        const button = screen.getByRole("button", { name: "Edit topic" });
+
+        expect(button).toBeDisabled();
+      });
+    });
+
+    describe("handles user selecting an environment", () => {
+      beforeEach(() => {
+        render(<EntityDetailsHeader {...defaultTopicProps} />);
+      });
+
+      afterEach(() => {
+        jest.resetAllMocks();
+        cleanup();
+      });
+
+      it('sets the environment id for environment "TST"', async () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
+
+        await user.selectOptions(select, "TST");
+
+        expect(mockSetEnvironmentId).toHaveBeenCalledWith("2");
+      });
+
+      it('sets the environment id for environment "DEV"', async () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
+
+        await user.selectOptions(select, "DEV");
+
+        expect(mockSetEnvironmentId).toHaveBeenCalledWith("1");
+      });
     });
   });
 
-  describe("handles a non existent topic", () => {
-    beforeAll(() => {
-      render(
-        <EntityDetailsHeader {...defaultTopicProps} entityExists={false} />
-      );
-    });
+  describe("handles header for details view for connector", () => {
+    const user = userEvent.setup();
 
-    afterAll(cleanup);
-
-    it("shows no select element when topic does not exist", () => {
-      const select = screen.queryByRole("combobox");
-
-      expect(select).not.toBeInTheDocument();
-    });
-
-    it("shows the button to edit topic as disabled", () => {
-      const button = screen.getByRole("button", { name: "Edit topic" });
-
-      expect(button).toBeDisabled();
-    });
-
-    it("shows no information about amount of environments", () => {
-      const environmentAmountInfo = screen.queryByText("Environment", {
-        exact: false,
+    describe("handles loading state when environments are not yet given", () => {
+      beforeAll(() => {
+        render(
+          <EntityDetailsHeader
+            {...defaultConnectorProps}
+            environments={undefined}
+          />
+        );
       });
 
-      expect(environmentAmountInfo).not.toBeInTheDocument();
-    });
-  });
+      afterAll(cleanup);
 
-  describe("shows all necessary elements if topic exists", () => {
-    beforeAll(() => {
-      render(<EntityDetailsHeader {...defaultTopicProps} />);
-    });
+      it("shows a disabled select", () => {
+        const select = screen.getByRole("combobox");
 
-    afterAll(cleanup);
-
-    it("shows the topic name", () => {
-      const name = screen.getByRole("heading", {
-        name: defaultTopicProps.entity.name,
+        expect(select).toBeDisabled();
       });
 
-      expect(name).toBeVisible();
-    });
+      it("shows a placeholder 'Loading' for the select", () => {
+        const select = screen.getByRole("combobox");
 
-    it("shows a select element for environments", () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
+        expect(select).toHaveAttribute("placeholder", "Loading");
       });
 
-      expect(select).toBeEnabled();
+      it("shows no information about amount of environments", () => {
+        const environmentAmountInfo = screen.queryByText("Environment", {
+          exact: false,
+        });
+
+        expect(environmentAmountInfo).not.toBeInTheDocument();
+      });
     });
 
-    it("sets environmentId to be the first element from environments if it is undefined on load", () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
+    describe("handles a non existent connector", () => {
+      beforeAll(() => {
+        render(
+          <EntityDetailsHeader
+            {...defaultConnectorProps}
+            entityExists={false}
+          />
+        );
       });
 
-      expect(select).toHaveValue(testEnvironments[0].id);
-      expect(select).toHaveDisplayValue(testEnvironments[0].name);
-    });
+      afterAll(cleanup);
 
-    it("shows all given environments as options", () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
-      });
-      const options = within(select).getAllByRole("option");
+      it("shows no select element when connector does not exist", () => {
+        const select = screen.queryByRole("combobox");
 
-      expect(options[0]).toHaveValue(testEnvironments[0].id);
-      expect(options[0]).toHaveTextContent(testEnvironments[0].name);
-      expect(options[1]).toHaveValue(testEnvironments[1].id);
-      expect(options[1]).toHaveTextContent(testEnvironments[1].name);
-    });
-
-    it("shows information about the amount of environments", () => {
-      const info = screen.getByText(`${testEnvironments.length} Environments`);
-
-      expect(info).toBeVisible();
-    });
-
-    it("shows a button to edit the topic", () => {
-      const button = screen.getByRole("button", { name: "Edit topic" });
-
-      expect(button).toBeEnabled();
-    });
-  });
-
-  describe("handles user selecting an environment", () => {
-    beforeEach(() => {
-      render(<EntityDetailsHeader {...defaultTopicProps} />);
-    });
-
-    afterEach(() => {
-      jest.resetAllMocks();
-      cleanup();
-    });
-
-    it('sets the environment id for environment "TST"', async () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
+        expect(select).not.toBeInTheDocument();
       });
 
-      await user.selectOptions(select, "TST");
+      it("shows the button to edit connector as disabled", () => {
+        const button = screen.getByRole("button", { name: "Edit connector" });
 
-      expect(mockSetEnvironmentId).toHaveBeenCalledWith("2");
-    });
-
-    it('sets the environment id for environment "DEV"', async () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
+        expect(button).toBeDisabled();
       });
 
-      await user.selectOptions(select, "DEV");
+      it("shows no information about amount of environments", () => {
+        const environmentAmountInfo = screen.queryByText("Environment", {
+          exact: false,
+        });
 
-      expect(mockSetEnvironmentId).toHaveBeenCalledWith("1");
-    });
-  });
-});
-
-describe("EntityDetailsHeader (connector)", () => {
-  const user = userEvent.setup();
-
-  describe("handles loading state when environments are not yet given", () => {
-    beforeAll(() => {
-      render(
-        <EntityDetailsHeader
-          {...defaultConnectorProps}
-          environments={undefined}
-        />
-      );
+        expect(environmentAmountInfo).not.toBeInTheDocument();
+      });
     });
 
-    afterAll(cleanup);
-
-    it("shows a disabled select", () => {
-      const select = screen.getByRole("combobox");
-
-      expect(select).toBeDisabled();
-    });
-
-    it("shows a placeholder 'Loading' for the select", () => {
-      const select = screen.getByRole("combobox");
-
-      expect(select).toHaveAttribute("placeholder", "Loading");
-    });
-
-    it("shows no information about amount of environments", () => {
-      const environmentAmountInfo = screen.queryByText("Environment", {
-        exact: false,
+    describe("shows all necessary elements if connector exists", () => {
+      beforeAll(() => {
+        render(<EntityDetailsHeader {...defaultConnectorProps} />);
       });
 
-      expect(environmentAmountInfo).not.toBeInTheDocument();
-    });
-  });
+      afterAll(cleanup);
 
-  describe("handles a non existent connector", () => {
-    beforeAll(() => {
-      render(
-        <EntityDetailsHeader {...defaultConnectorProps} entityExists={false} />
-      );
-    });
+      it("shows the connector name", () => {
+        const name = screen.getByRole("heading", {
+          name: defaultConnectorProps.entity.name,
+        });
 
-    afterAll(cleanup);
-
-    it("shows no select element when connector does not exist", () => {
-      const select = screen.queryByRole("combobox");
-
-      expect(select).not.toBeInTheDocument();
-    });
-
-    it("shows the button to edit connector as disabled", () => {
-      const button = screen.getByRole("button", { name: "Edit connector" });
-
-      expect(button).toBeDisabled();
-    });
-
-    it("shows no information about amount of environments", () => {
-      const environmentAmountInfo = screen.queryByText("Environment", {
-        exact: false,
+        expect(name).toBeVisible();
       });
 
-      expect(environmentAmountInfo).not.toBeInTheDocument();
-    });
-  });
+      it("shows a select element for environments", () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
 
-  describe("shows all necessary elements if connector exists", () => {
-    beforeAll(() => {
-      render(<EntityDetailsHeader {...defaultConnectorProps} />);
-    });
-
-    afterAll(cleanup);
-
-    it("shows the connector name", () => {
-      const name = screen.getByRole("heading", {
-        name: defaultConnectorProps.entity.name,
+        expect(select).toBeEnabled();
       });
 
-      expect(name).toBeVisible();
-    });
+      it("sets environmentId to be the first element from environments if it is undefined on load", () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
 
-    it("shows a select element for environments", () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
+        expect(select).toHaveValue(testEnvironments[0].id);
+        expect(select).toHaveDisplayValue(testEnvironments[0].name);
       });
 
-      expect(select).toBeEnabled();
-    });
+      it("shows all given environments as options", () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
+        const options = within(select).getAllByRole("option");
 
-    it("sets environmentId to be the first element from environments if it is undefined on load", () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
+        expect(options[0]).toHaveValue(testEnvironments[0].id);
+        expect(options[0]).toHaveTextContent(testEnvironments[0].name);
+        expect(options[1]).toHaveValue(testEnvironments[1].id);
+        expect(options[1]).toHaveTextContent(testEnvironments[1].name);
       });
 
-      expect(select).toHaveValue(testEnvironments[0].id);
-      expect(select).toHaveDisplayValue(testEnvironments[0].name);
-    });
+      it("shows information about the amount of environments", () => {
+        const info = screen.getByText(
+          `${testEnvironments.length} Environments`
+        );
 
-    it("shows all given environments as options", () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
-      });
-      const options = within(select).getAllByRole("option");
-
-      expect(options[0]).toHaveValue(testEnvironments[0].id);
-      expect(options[0]).toHaveTextContent(testEnvironments[0].name);
-      expect(options[1]).toHaveValue(testEnvironments[1].id);
-      expect(options[1]).toHaveTextContent(testEnvironments[1].name);
-    });
-
-    it("shows information about the amount of environments", () => {
-      const info = screen.getByText(`${testEnvironments.length} Environments`);
-
-      expect(info).toBeVisible();
-    });
-
-    it("shows a button to edit the connector", () => {
-      const button = screen.getByRole("button", { name: "Edit connector" });
-
-      expect(button).toBeEnabled();
-    });
-  });
-
-  describe("handles user selecting an environment", () => {
-    beforeEach(() => {
-      render(<EntityDetailsHeader {...defaultConnectorProps} />);
-    });
-
-    afterEach(() => {
-      jest.resetAllMocks();
-      cleanup();
-    });
-
-    it('sets the environment id for environment "TST"', async () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
+        expect(info).toBeVisible();
       });
 
-      await user.selectOptions(select, "TST");
+      it("shows a button to edit the connector", () => {
+        const button = screen.getByRole("button", { name: "Edit connector" });
 
-      expect(mockSetEnvironmentId).toHaveBeenCalledWith("2");
+        expect(button).toBeEnabled();
+      });
     });
 
-    it('sets the environment id for environment "DEV"', async () => {
-      const select = screen.getByRole("combobox", {
-        name: "Select environment",
+    describe("disables button to edit as long as data is updated", () => {
+      beforeAll(() => {
+        render(
+          <EntityDetailsHeader
+            {...defaultConnectorProps}
+            entityUpdating={true}
+          />
+        );
       });
 
-      await user.selectOptions(select, "DEV");
+      afterAll(cleanup);
 
-      expect(mockSetEnvironmentId).toHaveBeenCalledWith("1");
+      it("shows a button to edit the topic", () => {
+        const button = screen.getByRole("button", { name: "Edit connector" });
+
+        expect(button).toBeDisabled();
+      });
+    });
+
+    describe("handles user selecting an environment", () => {
+      beforeEach(() => {
+        render(<EntityDetailsHeader {...defaultConnectorProps} />);
+      });
+
+      afterEach(() => {
+        jest.resetAllMocks();
+        cleanup();
+      });
+
+      it('sets the environment id for environment "TST"', async () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
+
+        await user.selectOptions(select, "TST");
+
+        expect(mockSetEnvironmentId).toHaveBeenCalledWith("2");
+      });
+
+      it('sets the environment id for environment "DEV"', async () => {
+        const select = screen.getByRole("combobox", {
+          name: "Select environment",
+        });
+
+        await user.selectOptions(select, "DEV");
+
+        expect(mockSetEnvironmentId).toHaveBeenCalledWith("1");
+      });
     });
   });
 

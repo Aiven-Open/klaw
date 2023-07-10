@@ -5,12 +5,14 @@ import { ConnectorOverview, getConnectorOverview } from "src/domain/connector";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
 
-const mockUseParams = jest.fn();
 const mockMatches = jest.fn();
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useParams: () => mockUseParams(),
+  useParams: () =>
+    jest.fn().mockReturnValue({
+      connectornamesearch: testConnectorName,
+    }),
   useMatches: () => mockMatches(),
   Navigate: () => mockedNavigate(),
 }));
@@ -65,12 +67,6 @@ const testConnectorOverview: ConnectorOverview = {
 
 describe("ConnectorDetails", () => {
   beforeAll(() => {
-    mockGetConnectorOverview.mockResolvedValue(testConnectorOverview);
-
-    mockUseParams.mockReturnValue({
-      connectornamesearch: testConnectorName,
-    });
-
     mockedNavigate.mockImplementation(() => {
       return <div data-testid={"react-router-navigate"} />;
     });
@@ -78,6 +74,7 @@ describe("ConnectorDetails", () => {
 
   describe("fetches the connector overview based on connector name", () => {
     beforeAll(() => {
+      mockGetConnectorOverview.mockResolvedValue(testConnectorOverview);
       mockMatches.mockImplementation(() => [
         {
           id: "CONNECTOR_OVERVIEW_TAB_ENUM_overview",
@@ -128,7 +125,14 @@ describe("ConnectorDetails", () => {
   });
 
   describe("renders the correct tab navigation based on router match", () => {
-    afterEach(cleanup);
+    beforeEach(() => {
+      mockGetConnectorOverview.mockResolvedValue(testConnectorOverview);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
 
     it("shows the tablist with Overview as currently active panel", () => {
       mockMatches.mockImplementationOnce(() => [
@@ -170,7 +174,14 @@ describe("ConnectorDetails", () => {
   });
 
   describe("only renders header and tablist if route is matching defined tabs", () => {
-    afterEach(cleanup);
+    beforeEach(() => {
+      mockGetConnectorOverview.mockResolvedValue(testConnectorOverview);
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+      cleanup();
+    });
 
     it("does render content if the route matches an existing tab", () => {
       mockMatches.mockImplementation(() => [

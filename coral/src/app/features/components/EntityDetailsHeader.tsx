@@ -16,6 +16,7 @@ type TopicOverviewHeaderProps = {
   entityEditLink: string;
   showEditButton: boolean;
   entityExists: boolean;
+  entityUpdating: boolean;
   environments?: EnvironmentInfo[];
   environmentId?: string;
   setEnvironmentId: Dispatch<SetStateAction<string | undefined>>;
@@ -30,6 +31,7 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
     environmentId,
     setEnvironmentId,
     entityExists,
+    entityUpdating,
   } = props;
 
   const navigate = useNavigate();
@@ -100,7 +102,7 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
       </Box>
       {showEditButton && (
         <Button.Primary
-          disabled={!entityExists}
+          disabled={!entityExists || entityUpdating}
           onClick={() => navigate(entityEditLink)}
         >
           Edit {entity.type}

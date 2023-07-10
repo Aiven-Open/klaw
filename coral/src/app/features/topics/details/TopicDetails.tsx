@@ -13,8 +13,8 @@ import {
   TopicOverviewTabEnum,
   isTopicsOverviewTabEnum,
 } from "src/app/router_utils";
-import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
 import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
+import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
 
 type TopicOverviewProps = {
   topicName: string;
@@ -100,6 +100,7 @@ function TopicDetails(props: TopicOverviewProps) {
           topicData?.topicInfo.showEditTopic &&
             !topicData?.topicInfo.hasOpenTopicRequest
         )}
+        entityUpdating={topicIsRefetching}
         environments={topicData?.availableEnvironments}
         environmentId={environmentId}
         setEnvironmentId={setEnvironmentId}
