@@ -1096,6 +1096,8 @@ export type components = {
       hasOpenACLRequest: boolean;
       hasACL: boolean;
       hasSchema: boolean;
+      /** Format: int32 */
+      clusterId: number;
       topicOwner?: boolean;
       highestEnv?: boolean;
     };
