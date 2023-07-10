@@ -8,6 +8,9 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.PromotionStatusType;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.SchemaDetailsPerEnv;
 import io.aiven.klaw.model.response.SchemaOverview;
@@ -186,6 +189,7 @@ public class SchemaOverviewService extends BaseOverviewService {
 
             // Set Promotion Details
             processSchemaPromotionDetails(
+                topicNameSearch,
                 schemaOverview,
                 tenantId,
                 schemaEnv,
@@ -262,7 +266,7 @@ public class SchemaOverviewService extends BaseOverviewService {
         }
         log.debug("Updated topic {} schemaId, compatibility and schema.", topicNameSearch);
         // Save that back into the DB
-        if (saveChanges != null && saveChanges) {
+        if (saveChanges != null) {
           manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(topicSchemaVersionsInDb);
         }
       }
@@ -285,7 +289,11 @@ public class SchemaOverviewService extends BaseOverviewService {
   }
 
   private void processSchemaPromotionDetails(
-      SchemaOverview schemaOverview, int tenantId, Env schemaEnv, List<String> kafkaEnvIds) {
+      String topicNameSearch,
+      SchemaOverview schemaOverview,
+      int tenantId,
+      Env schemaEnv,
+      List<String> kafkaEnvIds) {
     log.debug("SchemaEnv Id {} KafkaEnvIds {}", schemaEnv.getId(), kafkaEnvIds);
     PromotionStatus promotionDetails = new PromotionStatus();
     String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
@@ -300,12 +308,15 @@ public class SchemaOverviewService extends BaseOverviewService {
       PromotionStatus searchOverviewPromotionDetails = new PromotionStatus();
       schemaOverview.setSchemaPromotionDetails(searchOverviewPromotionDetails);
     }
-    PromotionStatus existingPromoDetails = promotionDetails;
+
     // verify if topic exists in target env
     if (!verifyIfTopicExistsInTargetSchemaEnv(kafkaEnvIds, promotionDetails, tenantId)) {
-      promotionDetails.setStatus(NO_PROMOTION);
+      promotionDetails.setStatus(PromotionStatusType.NO_PROMOTION);
+    } else if (isSchemaPromoteRequestOpen(
+        topicNameSearch, promotionDetails.getTargetEnvId(), tenantId)) {
+      promotionDetails.setStatus(PromotionStatusType.REQUEST_OPEN);
     }
-    schemaOverview.setSchemaPromotionDetails(existingPromoDetails);
+    schemaOverview.setSchemaPromotionDetails(promotionDetails);
   }
 
   private boolean verifyIfTopicExistsInTargetSchemaEnv(
@@ -321,5 +332,21 @@ public class SchemaOverviewService extends BaseOverviewService {
 
     String kafkaEnvId = promotedEnv.getId();
     return kafkaEnvIds.contains(kafkaEnvId) && promotedEnv.getAssociatedEnv() != null;
+  }
+
+  private boolean isSchemaPromoteRequestOpen(String topicName, String envId, int tenantId) {
+    return manageDatabase
+        .getAssociatedSchemaEnvIdFromTopicId(envId, tenantId)
+        .filter(
+            s ->
+                manageDatabase
+                    .getHandleDbRequests()
+                    .existsSchemaRequest(
+                        topicName,
+                        RequestStatus.CREATED.value,
+                        RequestOperationType.CREATE.value,
+                        s,
+                        tenantId))
+        .isPresent();
   }
 }

@@ -29,6 +29,7 @@ const testTopicInfo: KlawApiModel<"TopicOverviewInfo"> = {
   teamname: "Ospo",
   teamId: 1003,
   envId: "1",
+  clusterId: 6,
   showEditTopic: true,
   showDeleteTopic: true,
   topicDeletable: true,
@@ -51,7 +52,7 @@ const testTopicOverview: TopicOverview = {
   aclInfoList: [],
   topicHistoryList: [],
   availableEnvironments: [],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
 

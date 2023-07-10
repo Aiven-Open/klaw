@@ -2,37 +2,43 @@ import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { TopicOverview } from "src/domain/topic";
+
+const promotionDetailForPromote: TopicOverview["topicPromotionDetails"] = {
+  status: "SUCCESS",
+  targetEnv: "TST",
+  sourceEnv: "DEV",
+  targetEnvId: "2",
+  topicName: "topic-hello",
+};
 
 const promoteProps = {
   isTopicOwner: true,
-  topicPromotionDetails: {
-    status: "success",
-    targetEnv: "TST",
-    sourceEnv: "DEV",
-    targetEnvId: "2",
-    topicName: "topic-hello",
-  },
+  topicPromotionDetails: promotionDetailForPromote,
   hasOpenRequest: false,
 };
 
+const promotionDetailForSee: TopicOverview["topicPromotionDetails"] = {
+  status: "SUCCESS",
+  targetEnv: "TST",
+  sourceEnv: "DEV",
+  targetEnvId: "2",
+  topicName: "topic-hello",
+};
 const seeProps = {
   isTopicOwner: false,
-  topicPromotionDetails: {
-    status: "success",
-    targetEnv: "TST",
-    sourceEnv: "DEV",
-    targetEnvId: "2",
-    topicName: "topic-hello",
-  },
+  topicPromotionDetails: promotionDetailForSee,
   hasOpenRequest: true,
+};
+
+const promotionDetailForNoPromotion: TopicOverview["topicPromotionDetails"] = {
+  status: "NO_PROMOTION",
+  topicName: "SchemaTest",
 };
 
 const nullProps = {
   isTopicOwner: false,
-  topicPromotionDetails: {
-    status: "NO_PROMOTION",
-    topicName: "SchemaTest",
-  },
+  topicPromotionDetails: promotionDetailForNoPromotion,
   hasOpenRequest: false,
 };
 
