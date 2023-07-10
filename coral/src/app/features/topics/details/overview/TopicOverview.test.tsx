@@ -1,11 +1,22 @@
 import { TopicOverview } from "src/app/features/topics/details/overview/TopicOverview";
-
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import {
+  ClusterDetails as ClusterDetailsType,
+  getClusterDetails,
+} from "src/domain/cluster";
+import { RenderResult } from "@testing-library/react";
+import { getDefinitionList } from "src/services/test-utils/custom-queries";
 
 const mockedUseTopicDetails = jest.fn();
 jest.mock("src/app/features/topics/details/TopicDetails", () => ({
   useTopicDetails: () => mockedUseTopicDetails(),
 }));
+
+jest.mock("src/domain/cluster/cluster-api.ts");
+
+const mockGetClusterDetails = getClusterDetails as jest.MockedFunction<
+  typeof getClusterDetails
+>;
 
 const mockUseTopicDetailsDataWithPromotion = {
   topicName: "aivendemotopic",
@@ -203,27 +214,66 @@ const mockUseTopicDetailsDataWithoutPromotion = {
     ],
   },
 };
+const mockClusterDetails: ClusterDetailsType = {
+  allPageNos: [],
+  bootstrapServers: "kafka-112233aa-dev-sandbeach.aivencloud.com:12345",
+  clusterId: 999,
+  clusterName: "DEV",
+  clusterType: "Kafka",
+  kafkaFlavor: "Aiven for Kafka",
+  protocol: "SSL",
+  showDeleteCluster: false,
+  totalNoPages: "2",
+};
 
 describe("TopicOverview (with promotion banner)", () => {
-  it("renders correct DOM according to data from useTopicDetails ", () => {
-    mockedUseTopicDetails.mockReturnValue(mockUseTopicDetailsDataWithPromotion);
-    const result = customRender(<TopicOverview />, {
-      memoryRouter: true,
-      queryClient: true,
-    });
-    expect(result).toMatchSnapshot();
-  });
-});
+  let component: RenderResult;
+  describe("with promotion banner", () => {
+    beforeAll(() => {
+      mockedUseTopicDetails.mockReturnValue(
+        mockUseTopicDetailsDataWithPromotion
+      );
+      mockGetClusterDetails.mockResolvedValue(mockClusterDetails);
 
-describe("TopicOverview (without promotion banner)", () => {
-  it("renders correct DOM according to data from useTopicDetails ", () => {
-    mockedUseTopicDetails.mockReturnValue(
-      mockUseTopicDetailsDataWithoutPromotion
-    );
-    const result = customRender(<TopicOverview />, {
-      memoryRouter: true,
-      queryClient: true,
+      component = customRender(<TopicOverview />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
     });
-    expect(result).toMatchSnapshot();
+
+    it("renders correct DOM according to data from useTopicDetails and getClusterDetails", () => {
+      expect(screen).toMatchSnapshot();
+    });
+
+    it("renders cluster details", () => {
+      const clusterDefinitionList = getDefinitionList(component);
+
+      expect(clusterDefinitionList).toBeVisible();
+    });
+  });
+
+  describe("without promotion banner", () => {
+    let component: RenderResult;
+    beforeAll(() => {
+      mockedUseTopicDetails.mockReturnValue(
+        mockUseTopicDetailsDataWithoutPromotion
+      );
+      mockGetClusterDetails.mockResolvedValue(mockClusterDetails);
+
+      component = customRender(<TopicOverview />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
+    });
+
+    it("renders correct DOM according to data from useTopicDetails and getClusterDetails", () => {
+      expect(screen).toMatchSnapshot();
+    });
+
+    it("renders cluster details", () => {
+      const clusterDefinitionList = getDefinitionList(component);
+
+      expect(clusterDefinitionList).toBeVisible();
+    });
   });
 });
