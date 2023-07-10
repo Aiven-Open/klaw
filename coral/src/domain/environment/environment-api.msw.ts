@@ -60,16 +60,9 @@ function mockGetClusterInfoFromEnv({
   );
 }
 
-const getMockedResponseGetClusterInfoFromEnv = (
-  isAivenCluster: boolean
-): KlawApiResponse<"getClusterInfoFromEnv"> => ({
-  aivenCluster: isAivenCluster,
-});
-
 export {
   mockgetAllEnvironmentsForTopicAndAcl,
   mockgetEnvironmentsForTopicRequest,
   mockedEnvironmentResponse,
   mockGetClusterInfoFromEnv,
-  getMockedResponseGetClusterInfoFromEnv,
 };
