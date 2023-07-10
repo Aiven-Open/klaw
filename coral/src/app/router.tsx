@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
+import { ConnectorOverview } from "src/app/features/connectors/details/overview/ConnectorOverview";
 import Layout from "src/app/layout/Layout";
 import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
 import ApprovalsPage from "src/app/pages/approvals";
@@ -122,7 +123,7 @@ const routes: Array<RouteObject> = [
             path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
               ConnectorOverviewTabEnum.OVERVIEW
             ],
-            element: <div>OVERVIEW</div>,
+            element: <ConnectorOverview />,
             id: ConnectorOverviewTabEnum.OVERVIEW,
           },
           {
