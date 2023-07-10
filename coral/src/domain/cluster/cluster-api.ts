@@ -16,4 +16,12 @@ const getClusterInfoFromEnvironment = async ({
   );
 };
 
-export { getClusterInfoFromEnvironment };
+function getClusterDetails(clusterId: string) {
+  const params = new URLSearchParams({ clusterId });
+  return api.get<KlawApiResponse<"getClusterDetails">>(
+    API_PATHS.getClusterInfoFromEnv,
+    params
+  );
+}
+
+export { getClusterInfoFromEnvironment, getClusterDetails };

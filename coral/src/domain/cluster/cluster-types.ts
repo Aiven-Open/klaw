@@ -2,4 +2,6 @@ import { KlawApiModel } from "types/utils";
 
 type ClusterInfoFromEnvironment = KlawApiModel<"ClusterInfo">;
 
-export type { ClusterInfoFromEnvironment };
+type ClusterDetails = KlawApiModel<"KwClustersModelResponse">;
+
+export type { ClusterInfoFromEnvironment, ClusterDetails };

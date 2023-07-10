@@ -1,5 +1,11 @@
-import { getClusterInfoFromEnvironment } from "src/domain/cluster/cluster-api";
-import { ClusterInfoFromEnvironment } from "src/domain/cluster/cluster-types";
+import {
+  getClusterDetails,
+  getClusterInfoFromEnvironment,
+} from "src/domain/cluster/cluster-api";
+import {
+  ClusterInfoFromEnvironment,
+  ClusterDetails,
+} from "src/domain/cluster/cluster-types";
 
-export { getClusterInfoFromEnvironment };
-export type { ClusterInfoFromEnvironment };
+export { getClusterInfoFromEnvironment, getClusterDetails };
+export type { ClusterInfoFromEnvironment, ClusterDetails };
