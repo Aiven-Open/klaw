@@ -11,6 +11,9 @@ import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const TOPIC_NAME = "test-topic-name";
+const ENV_ID = "1";
+const WRONG_TOPIC_NAME = "does-not-exist";
+const WRONG_ENV_ID = "9999";
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -305,7 +308,7 @@ describe("<TopicEditRequest />", () => {
         {
           queryClient: true,
           memoryRouter: true,
-          customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=1`,
+          customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=${ENV_ID}`,
         }
       );
     });
@@ -404,7 +407,7 @@ describe("<TopicEditRequest />", () => {
         {
           queryClient: true,
           memoryRouter: true,
-          customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=1`,
+          customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=${ENV_ID}`,
         }
       );
     });
@@ -503,6 +506,150 @@ describe("<TopicEditRequest />", () => {
         message: "Topic update request successfully created",
         position: "bottom-left",
         variant: "default",
+      });
+    });
+  });
+
+  describe("shows an alert message when new topic update request was not successful", () => {
+    beforeEach(() => {
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(mockEnvironments);
+      mockGetTopicDetailsPerEnv.mockResolvedValue(mockTopicDetails);
+      mockgGetTopicAdvancedConfigOptions.mockResolvedValue(
+        mockTransformedGetTopicAdvancedConfigOptions
+      );
+
+      customRender(
+        <Routes>
+          <Route
+            path="/topic/:topicName/request-update"
+            element={
+              <AquariumContext>
+                <TopicEditRequest />
+              </AquariumContext>
+            }
+          />
+        </Routes>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+          customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=${ENV_ID}`,
+        }
+      );
+    });
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("render an alert when server rejects update request", async () => {
+      mockEditTopic.mockRejectedValue({
+        success: false,
+        message: "Failure. A topic request already exists.",
+      });
+
+      await waitFor(() => expect(screen.getByRole("alert")).toBeVisible());
+    });
+  });
+
+  describe("correctly redirects and warn on navigation when topic does not exist", () => {
+    beforeEach(() => {
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(mockEnvironments);
+      mockGetTopicDetailsPerEnv.mockResolvedValue({ topicExists: false });
+      mockgGetTopicAdvancedConfigOptions.mockResolvedValue(
+        mockTransformedGetTopicAdvancedConfigOptions
+      );
+
+      customRender(
+        <Routes>
+          <Route
+            path="/topic/:topicName/request-update"
+            element={
+              <AquariumContext>
+                <TopicEditRequest />
+              </AquariumContext>
+            }
+          />
+        </Routes>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+          customRoutePath: `/topic/${WRONG_TOPIC_NAME}/request-update?env=${ENV_ID}`,
+        }
+      );
+    });
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("redirects user to browse topics page", async () => {
+      await waitFor(() => {
+        expect(mockedUsedNavigate).toHaveBeenCalledWith("/topics", {
+          replace: true,
+        });
+      });
+    });
+
+    it("shows a notification that topic name does not exist", async () => {
+      await waitFor(() => {
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: `No topic was found with name ${WRONG_TOPIC_NAME}`,
+          position: "bottom-left",
+          variant: "danger",
+        });
+      });
+    });
+  });
+
+  describe("correctly redirects and warn on navigation  when environment does not exist", () => {
+    beforeEach(() => {
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(mockEnvironments);
+      mockGetTopicDetailsPerEnv.mockResolvedValue({ topicExists: false });
+      mockgGetTopicAdvancedConfigOptions.mockResolvedValue(
+        mockTransformedGetTopicAdvancedConfigOptions
+      );
+
+      customRender(
+        <Routes>
+          <Route
+            path="/topic/:topicName/request-update"
+            element={
+              <AquariumContext>
+                <TopicEditRequest />
+              </AquariumContext>
+            }
+          />
+        </Routes>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+          customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=${WRONG_ENV_ID}`,
+        }
+      );
+    });
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("redirects user to topic overview page", async () => {
+      await waitFor(() => {
+        expect(mockedUsedNavigate).toHaveBeenCalledWith(
+          `/topic/${TOPIC_NAME}`,
+          {
+            replace: true,
+          }
+        );
+      });
+    });
+
+    it("shows a notification that topic name does not exist", async () => {
+      await waitFor(() => {
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: `No environment was found with ID ${WRONG_ENV_ID}`,
+          position: "bottom-left",
+          variant: "danger",
+        });
       });
     });
   });

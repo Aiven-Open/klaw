@@ -150,7 +150,6 @@ function TopicEditRequest() {
   const {
     mutateAsync: edit,
     isLoading: editIsLoading,
-    isError: editIsError,
     error: editError,
   } = useMutation(editTopic, {
     onSuccess: () => {
@@ -198,7 +197,7 @@ function TopicEditRequest() {
           Do you want to cancel this request? The data added will be lost.
         </Dialog>
       )}
-      {editIsError && (
+      {editError !== undefined && (
         <Box marginBottom={"l1"} role="alert">
           <Alert type="error">{parseErrorMsg(editError)}</Alert>
         </Box>
