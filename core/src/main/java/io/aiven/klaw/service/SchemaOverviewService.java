@@ -267,7 +267,7 @@ public class SchemaOverviewService extends BaseOverviewService {
         }
         log.debug("Updated topic {} schemaId, compatibility and schema.", topicNameSearch);
         // Save that back into the DB
-        if (saveChanges != null && saveChanges) {
+        if (saveChanges != null) {
           manageDatabase.getHandleDbRequests().insertIntoMessageSchemaSOT(topicSchemaVersionsInDb);
         }
       }
@@ -309,7 +309,7 @@ public class SchemaOverviewService extends BaseOverviewService {
       PromotionStatus searchOverviewPromotionDetails = new PromotionStatus();
       schemaOverview.setSchemaPromotionDetails(searchOverviewPromotionDetails);
     }
-    PromotionStatus existingPromoDetails = promotionDetails;
+
     // verify if topic exists in target env
     if (!verifyIfTopicExistsInTargetSchemaEnv(kafkaEnvIds, promotionDetails, tenantId)) {
       promotionDetails.setStatus(PromotionStatusType.NO_PROMOTION);
@@ -317,7 +317,7 @@ public class SchemaOverviewService extends BaseOverviewService {
         topicNameSearch, promotionDetails.getTargetEnvId(), tenantId)) {
       promotionDetails.setStatus(PromotionStatusType.REQUEST_OPEN);
     }
-    schemaOverview.setSchemaPromotionDetails(existingPromoDetails);
+    schemaOverview.setSchemaPromotionDetails(promotionDetails);
   }
 
   private boolean verifyIfTopicExistsInTargetSchemaEnv(
@@ -336,17 +336,13 @@ public class SchemaOverviewService extends BaseOverviewService {
   }
 
   private boolean isSchemaPromoteRequestOpen(String topicName, String envId, int tenantId) {
-    Optional<String> schemaEnvId =
-        manageDatabase.getAssociatedSchemaEnvIdFromTopicId(envId, tenantId);
-    return schemaEnvId.isPresent()
-        ? manageDatabase
+    return manageDatabase.getAssociatedSchemaEnvIdFromTopicId(envId, tenantId).filter(s -> manageDatabase
             .getHandleDbRequests()
             .existsSchemaRequest(
-                topicName,
-                RequestStatus.CREATED.value,
-                RequestOperationType.CREATE.value,
-                schemaEnvId.get(),
-                tenantId)
-        : false;
+                    topicName,
+                    RequestStatus.CREATED.value,
+                    RequestOperationType.CREATE.value,
+                    s,
+                    tenantId)).isPresent();
   }
 }
