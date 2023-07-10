@@ -417,21 +417,21 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
     }
 
     $scope.cancelSaveDocs = function() {
-        $scope.topicDocumentation = $scope.tmpTopicDocumentation;
+        $scope.connectorDocumentation = $scope.tmpconnectorDocumentation;
         $scope.addDocsVar = false;
     }
 
     $scope.saveDocs = function(){
 
-            if($scope.topicDocumentation == null || $scope.topicDocumentation.length==0)
+            if($scope.connectorDocumentation == null || $scope.connectorDocumentation.length==0)
                 {
                     $scope.alertnote = "Please add some documentation related to connector.";
                     $scope.showAlertToast();
                     return;
                 }else
                 {
-                    $scope.topicDocumentation = $scope.topicDocumentation.trim();
-                    if($scope.topicDocumentation.length==0)
+                    $scope.connectorDocumentation = $scope.connectorDocumentation.trim();
+                    if($scope.connectorDocumentation.length==0)
                     {
                         $scope.alertnote = "Please add some documentation related to topic.";
                         $scope.showAlertToast();
@@ -440,9 +440,9 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                 }
 
             var serviceInput = {};
-            serviceInput['connectorId'] = $scope.topicIdForDocumentation;
+            serviceInput['connectorId'] = $scope.connectorIdForDocumentation;
             serviceInput['connectorName'] = $scope.topicSelectedParam;
-            serviceInput['documentation'] = $scope.topicDocumentation;
+            serviceInput['documentation'] = $scope.connectorDocumentation;
 
             swal({
                         title: "Are you sure?",
@@ -470,8 +470,8 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                              showConfirmButton: false
                                          });
                                          $scope.addDocsVar = false;
-                                         $scope.tmpTopicDocumentation = $scope.topicDocumentation;
-                                         document.getElementById("topicDocId").innerHTML = $scope.topicDocumentation;
+                                         $scope.tmpconnectorDocumentation = $scope.connectorDocumentation;
+                                         document.getElementById("topicDocId").innerHTML = $scope.connectorDocumentation;
                                     }
                                     else{
                                             $scope.alertTopicDelete = "Documentation Update Request : "+output.message;
@@ -539,10 +539,10 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
 
                 $scope.topicHistoryList = output.topicHistoryList;
 
-            	$scope.topicDocumentation = output.topicDocumentation;
-            	$scope.tmpTopicDocumentation = output.topicDocumentation;
-            	$scope.topicIdForDocumentation = output.topicIdForDocumentation;
-            	document.getElementById("topicDocId").innerHTML = output.topicDocumentation;
+            	$scope.connectorDocumentation = output.connectorDocumentation;
+            	$scope.tmpconnectorDocumentation = output.connectorDocumentation;
+            	$scope.connectorIdForDocumentation = output.connectorIdForDocumentation;
+            	document.getElementById("topicDocId").innerHTML = output.connectorDocumentation;
 		    }
 		    else
 		        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/kafkaConnectors";
