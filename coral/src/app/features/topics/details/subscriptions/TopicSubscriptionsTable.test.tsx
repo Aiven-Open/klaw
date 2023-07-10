@@ -48,6 +48,7 @@ const mockUserSubs: AclOverviewInfo[] = [
     kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
   },
 ];
+
 const mockedPrefixedSubs: AclOverviewInfo[] = [
   {
     req_no: "1063",
@@ -63,6 +64,7 @@ const mockedPrefixedSubs: AclOverviewInfo[] = [
     acl_ssl: "CN=myhosttest,OU=IS,OU=OU,OU=Services,O=Org",
   },
 ];
+
 const mockedTransactionalSubs: AclOverviewInfo[] = [
   {
     req_no: "1064",
@@ -125,6 +127,7 @@ describe("TopicSubscriptionsTable.tsx", () => {
     it("renders empty state when passed empty data", () => {
       render(
         <TopicSubscriptionsTable
+          isUpdating={false}
           onDelete={mockOnDelete}
           onDetails={mockOnDetails}
           filteredData={[]}
@@ -138,52 +141,203 @@ describe("TopicSubscriptionsTable.tsx", () => {
     });
   });
 
-  describe("should render correct columns according to the type of subscription passed", () => {
-    afterEach(cleanup);
-    it("renders correct columns for User subscriptions", () => {
-      render(
-        <TopicSubscriptionsTable
-          onDelete={mockOnDelete}
-          onDetails={mockOnDetails}
-          filteredData={mockUserSubs}
-          selectedSubs="aclInfoList"
-        />
-      );
-      const columns = userSubsColumnNames.map((name) =>
-        screen.getByRole("columnheader", { name })
-      );
-      expect(columns).toHaveLength(userSubsColumnNames.length);
+  describe("should render correct columns and rows according to the type of subscription passed", () => {
+    describe("renders correct data for User subscriptions", () => {
+      beforeAll(() => {
+        render(
+          <TopicSubscriptionsTable
+            isUpdating={false}
+            onDelete={mockOnDelete}
+            onDetails={mockOnDetails}
+            filteredData={mockUserSubs}
+            selectedSubs="aclInfoList"
+          />
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("renders correct columns", () => {
+        const columns = userSubsColumnNames.map((name) =>
+          screen.getByRole("columnheader", { name })
+        );
+        expect(columns).toHaveLength(userSubsColumnNames.length);
+      });
+
+      it("renders all rows", () => {
+        const rows = screen.getAllByRole("row");
+
+        expect(rows).toHaveLength(mockUserSubs.length + 1);
+      });
+
+      it("renders the filtered data as row content", () => {
+        const firstRow = mockUserSubs[0];
+        const rowContent = `${
+          firstRow.acl_ssl
+        } * ${firstRow.topictype.toUpperCase()} ${
+          firstRow.teamname
+        } Details Delete`;
+
+        const firstContentRow = screen.getByRole("row", { name: rowContent });
+
+        expect(firstContentRow).toBeVisible();
+      });
     });
 
-    it("renders correct columns for Prefixed subscriptions", () => {
-      render(
-        <TopicSubscriptionsTable
-          onDelete={mockOnDelete}
-          onDetails={mockOnDetails}
-          filteredData={mockedPrefixedSubs}
-          selectedSubs="prefixedAclInfoList"
-        />
-      );
-      const columns = prefixedSubsColumnNames.map((name) =>
-        screen.getByRole("columnheader", { name })
-      );
-      expect(columns).toHaveLength(prefixedSubsColumnNames.length);
+    describe("renders correct data for Prefixed subscriptions", () => {
+      beforeAll(() => {
+        render(
+          <TopicSubscriptionsTable
+            isUpdating={false}
+            onDelete={mockOnDelete}
+            onDetails={mockOnDetails}
+            filteredData={mockedPrefixedSubs}
+            selectedSubs="prefixedAclInfoList"
+          />
+        );
+      });
+      afterAll(cleanup);
+
+      it("renders correct columns", () => {
+        const columns = prefixedSubsColumnNames.map((name) =>
+          screen.getByRole("columnheader", { name })
+        );
+        expect(columns).toHaveLength(prefixedSubsColumnNames.length);
+      });
+
+      it("renders all rows", () => {
+        const rows = screen.getAllByRole("row");
+
+        expect(rows).toHaveLength(mockedPrefixedSubs.length + 1);
+      });
+
+      it("renders the filtered data as row content", () => {
+        const firstRow = mockedPrefixedSubs[0];
+        const rowContent = `${firstRow.topicname} ${
+          firstRow.acl_ssl
+        } * ${firstRow.topictype.toUpperCase()} ${
+          firstRow.teamname
+        } Details Delete`;
+
+        const firstContentRow = screen.getByRole("row", { name: rowContent });
+
+        expect(firstContentRow).toBeVisible();
+      });
     });
 
-    it("renders correct columns for Transactional subscriptions", () => {
-      render(
-        <TopicSubscriptionsTable
-          onDelete={mockOnDelete}
-          onDetails={mockOnDetails}
-          filteredData={mockedTransactionalSubs}
-          selectedSubs="transactionalAclInfoList"
-        />
-      );
+    describe("renders correct data for Transactional subscriptions", () => {
+      beforeAll(() => {
+        render(
+          <TopicSubscriptionsTable
+            isUpdating={false}
+            onDelete={mockOnDelete}
+            onDetails={mockOnDetails}
+            filteredData={mockedTransactionalSubs}
+            selectedSubs="transactionalAclInfoList"
+          />
+        );
+      });
+      afterAll(cleanup);
 
-      const columns = transactionalSubsColumnNames.map((name) =>
-        screen.getByRole("columnheader", { name })
-      );
-      expect(columns).toHaveLength(transactionalSubsColumnNames.length);
+      it("renders correct columns", () => {
+        const columns = transactionalSubsColumnNames.map((name) =>
+          screen.getByRole("columnheader", { name })
+        );
+        expect(columns).toHaveLength(transactionalSubsColumnNames.length);
+      });
+
+      it("renders all rows", () => {
+        const rows = screen.getAllByRole("row");
+
+        expect(rows).toHaveLength(mockedTransactionalSubs.length + 1);
+      });
+
+      it("renders the filtered data as row content", () => {
+        const firstRow = mockedTransactionalSubs[0];
+        const rowContent = `${firstRow.transactionalId} ${firstRow.acl_ssl} ${
+          firstRow.acl_ip
+        } ${firstRow.topictype.toUpperCase()} ${
+          firstRow.teamname
+        } Details Delete`;
+
+        const firstContentRow = screen.getByRole("row", { name: rowContent });
+
+        expect(firstContentRow).toBeVisible();
+      });
+    });
+
+    describe("renders loading information when existing data is being updated", () => {
+      beforeAll(() => {
+        render(
+          <TopicSubscriptionsTable
+            isUpdating={true}
+            onDelete={mockOnDelete}
+            onDetails={mockOnDetails}
+            filteredData={mockUserSubs}
+            selectedSubs="aclInfoList"
+          />
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("renders correct columns for User subscriptions", () => {
+        const columns = userSubsColumnNames.map((name) =>
+          screen.getByRole("columnheader", { name })
+        );
+
+        expect(columns).toHaveLength(userSubsColumnNames.length);
+      });
+
+      it("renders all rows", () => {
+        const rows = screen.getAllByRole("row");
+
+        expect(rows).toHaveLength(mockUserSubs.length + 1);
+      });
+
+      it("renders no content in rows other then header row", () => {
+        const rows = screen.getAllByRole("row");
+
+        expect(rows[1]).toHaveTextContent("");
+        expect(rows[2]).toHaveTextContent("");
+        expect(rows[3]).toHaveTextContent("");
+      });
+    });
+
+    describe("renders loading information when former empty data is being updated", () => {
+      beforeAll(() => {
+        render(
+          <TopicSubscriptionsTable
+            isUpdating={true}
+            onDelete={mockOnDelete}
+            onDetails={mockOnDetails}
+            filteredData={[]}
+            selectedSubs="aclInfoList"
+          />
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("renders correct columns for User subscriptions", () => {
+        const columns = userSubsColumnNames.map((name) =>
+          screen.getByRole("columnheader", { name })
+        );
+
+        expect(columns).toHaveLength(userSubsColumnNames.length);
+      });
+
+      it("renders header and a empty loading rows", () => {
+        const rows = screen.getAllByRole("row");
+
+        expect(rows).toHaveLength(2);
+      });
+
+      it("renders no content in rows other then header row", () => {
+        const rows = screen.getAllByRole("row");
+
+        expect(rows[1]).toHaveTextContent("");
+      });
     });
   });
 
@@ -191,6 +345,7 @@ describe("TopicSubscriptionsTable.tsx", () => {
     beforeEach(() =>
       render(
         <TopicSubscriptionsTable
+          isUpdating={false}
           onDelete={mockOnDelete}
           onDetails={mockOnDetails}
           filteredData={mockUserSubs}

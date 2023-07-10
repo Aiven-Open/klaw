@@ -8,6 +8,7 @@ import {
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import infoIcon from "@aivenio/aquarium/dist/src/icons/infoSign";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
+import { LoadingTable } from "src/app/features/components/layouts/LoadingTable";
 
 type SubscriptionOptions =
   | "aclInfoList"
@@ -15,6 +16,7 @@ type SubscriptionOptions =
   | "transactionalAclInfoList";
 
 interface TopicSubscriptionsTableProps {
+  isUpdating: boolean;
   selectedSubs: SubscriptionOptions;
   filteredData: AclOverviewInfo[];
   onDelete: (req_no: string) => void;
@@ -202,15 +204,34 @@ export const TopicSubscriptionsTable = ({
   filteredData,
   onDelete,
   onDetails,
+  isUpdating,
 }: TopicSubscriptionsTableProps) => {
   const rows = getRows(selectedSubs, filteredData);
   const columns = getColumns(selectedSubs, onDelete, onDetails);
+  const loadingColumns = columns.map((col) => {
+    return {
+      headerName: col.headerName,
+      width: col.width,
+      headerVisible: col.headerInvisible,
+    };
+  });
 
-  return rows.length === 0 ? (
-    <EmptyState title="No subscriptions">
-      No subscription matched your criteria.
-    </EmptyState>
-  ) : (
+  if (isUpdating) {
+    const loadingRowLength = rows.length === 0 ? 1 : rows.length;
+    return (
+      <LoadingTable rowLength={loadingRowLength} columns={loadingColumns} />
+    );
+  }
+
+  if (rows.length === 0) {
+    return (
+      <EmptyState title="No subscriptions">
+        No subscription matched your criteria.
+      </EmptyState>
+    );
+  }
+
+  return (
     <DataTable
       ariaLabel={"Topic subscriptions"}
       columns={columns}

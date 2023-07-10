@@ -53,6 +53,7 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: topicIsError,
     error: topicError,
     isLoading: topicIsLoading,
+    isRefetching: topicIsRefetching,
   } = useQuery(["topic-overview", topicName, environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
   });
@@ -62,6 +63,7 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: schemaIsError,
     error: schemaError,
     isLoading: schemaIsLoading,
+    isRefetching: schemaIsRefetching,
   } = useQuery(["schema-overview", topicName, environmentId, schemaVersion], {
     queryFn: () => {
       if (environmentId !== undefined) {
@@ -111,7 +113,9 @@ function TopicDetails(props: TopicOverviewProps) {
         // ...when a user selects schema version
         setSchemaVersion={setSchemaVersion}
         topicOverview={topicData}
+        topicOverviewIsRefetching={topicIsRefetching}
         topicSchemas={schemaData}
+        topicSchemasIsRefetching={schemaIsRefetching}
       />
     </div>
   );
@@ -122,8 +126,10 @@ function useTopicDetails() {
     environmentId: string;
     setSchemaVersion: (id: number) => void;
     topicOverview: TopicOverview;
+    topicOverviewIsRefetching: boolean;
     topicName: string;
     topicSchemas: TopicSchemaOverview;
+    topicSchemasIsRefetching: boolean;
   }>();
 }
 

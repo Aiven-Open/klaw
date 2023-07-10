@@ -55,7 +55,10 @@ function MainNavigation() {
             icon={dataflow02}
             to={Routes.CONNECTORS}
             linkText={"Connectors"}
-            active={pathname.startsWith(Routes.CONNECTORS)}
+            active={
+              pathname.startsWith(Routes.CONNECTORS) ||
+              pathname.startsWith("/connector")
+            }
           />
         </li>
         <li>
