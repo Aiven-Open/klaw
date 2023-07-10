@@ -471,7 +471,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                          });
                                          $scope.addDocsVar = false;
                                          $scope.tmpconnectorDocumentation = $scope.connectorDocumentation;
-                                         document.getElementById("topicDocId").innerHTML = $scope.connectorDocumentation;
+                                         document.getElementById("connectorDocId").innerHTML = $scope.connectorDocumentation;
                                     }
                                     else{
                                             $scope.alertTopicDelete = "Documentation Update Request : "+output.message;
@@ -542,7 +542,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
             	$scope.connectorDocumentation = output.connectorDocumentation;
             	$scope.tmpconnectorDocumentation = output.connectorDocumentation;
             	$scope.connectorIdForDocumentation = output.connectorIdForDocumentation;
-            	document.getElementById("topicDocId").innerHTML = output.connectorDocumentation;
+            	document.getElementById("connectorDocId").innerHTML = output.connectorDocumentation;
 		    }
 		    else
 		        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/kafkaConnectors";
