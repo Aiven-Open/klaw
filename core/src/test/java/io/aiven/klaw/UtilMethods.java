@@ -2,6 +2,7 @@ package io.aiven.klaw;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.aiven.klaw.constants.TestConstants;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.ActivityLog;
@@ -17,6 +18,10 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.*;
+import io.aiven.klaw.model.charts.ChartsJsOverview;
+import io.aiven.klaw.model.charts.Options;
+import io.aiven.klaw.model.charts.TeamOverview;
+import io.aiven.klaw.model.charts.Title;
 import io.aiven.klaw.model.cluster.SchemaInfoOfTopic;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
@@ -66,8 +71,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpHeaders;
 
 @Slf4j
@@ -1071,5 +1080,61 @@ public class UtilMethods {
     kwTenantsList.add(kwTenants);
 
     return kwTenantsList;
+  }
+
+  public static TeamOverview getDummyTeamOverview() {
+    TeamOverview teamOverview = new TeamOverview();
+    teamOverview.setProducerAclsPerTeamsOverview(getDummyChartJsOverview("Producer Acls"));
+    teamOverview.setConsumerAclsPerTeamsOverview(getDummyChartJsOverview("Consumer Acls"));
+    teamOverview.setTopicsPerEnvOverview(getDummyChartJsOverview("Topics Per Env"));
+    teamOverview.setPartitionsPerEnvOverview(getDummyChartJsOverview("Partitions Per Env"));
+    teamOverview.setActivityLogOverview(getDummyChartJsOverview("Activity Log"));
+    teamOverview.setAclsPerEnvOverview(getDummyChartJsOverview("Acls Per Env"));
+    teamOverview.setTopicsPerTeamsOverview(getDummyChartJsOverview("Topic Per Teams"));
+
+    return teamOverview;
+  }
+
+  public static ChartsJsOverview getDummyChartJsOverview (String reportTitle) {
+    ChartsJsOverview chartsJsOverview = new ChartsJsOverview();
+    chartsJsOverview.setXAxisLabel(TestConstants.X_AXIS_LABEL);
+    chartsJsOverview.setYAxisLabel(TestConstants.Y_AXIS_LABEL);
+    chartsJsOverview.setData(List.of(1, 2, 3, 4));
+    chartsJsOverview.setLabels(List.of("Label 1", "Label 2", "Label 3", "Label 4"));
+    chartsJsOverview.setTitleForReport(reportTitle);
+    Options options = new Options();
+    Title title = new Title();
+    options.setTitle(title);
+    chartsJsOverview.setOptions(options);
+
+    return chartsJsOverview;
+  }
+
+  public static Topic getDummyTopic() {
+    Topic topic = new Topic();
+    topic.setEnvironment(TestConstants.ENV_ID);
+    topic.setTopicname(TestConstants.TOPIC_NAME);
+    return topic;
+  }
+
+  public static Acl getDummyAcl() {
+    Acl acl = new Acl();
+    acl.setEnvironment(TestConstants.ENV_ID);
+    acl.setTopicname(TestConstants.TOPIC_NAME);
+    acl.setConsumergroup(TestConstants.CONSUMER_GROUP);
+    return acl;
+  }
+
+  public static <K, V> List<Map<K, V>> convertImmutableToMutable(List<Map<K, V>> immutableList) {
+    return immutableList.stream()
+            .map(HashMap::new)
+            .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  public static <T> void assertEqualsList(List<T> actual, List<T> expected) {
+    Assertions.assertEquals(actual.size(), expected.size());
+
+    IntStream.range(0, actual.size())
+            .forEach(i -> Assertions.assertEquals(actual.get(i), expected.get(i)));
   }
 }
