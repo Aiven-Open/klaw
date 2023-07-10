@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -336,13 +335,18 @@ public class SchemaOverviewService extends BaseOverviewService {
   }
 
   private boolean isSchemaPromoteRequestOpen(String topicName, String envId, int tenantId) {
-    return manageDatabase.getAssociatedSchemaEnvIdFromTopicId(envId, tenantId).filter(s -> manageDatabase
-            .getHandleDbRequests()
-            .existsSchemaRequest(
-                    topicName,
-                    RequestStatus.CREATED.value,
-                    RequestOperationType.CREATE.value,
-                    s,
-                    tenantId)).isPresent();
+    return manageDatabase
+        .getAssociatedSchemaEnvIdFromTopicId(envId, tenantId)
+        .filter(
+            s ->
+                manageDatabase
+                    .getHandleDbRequests()
+                    .existsSchemaRequest(
+                        topicName,
+                        RequestStatus.CREATED.value,
+                        RequestOperationType.CREATE.value,
+                        s,
+                        tenantId))
+        .isPresent();
   }
 }
