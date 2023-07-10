@@ -1881,6 +1881,7 @@ public class SelectDataJdbc {
       String requestOperationType,
       String env,
       int tenantId) {
+
     return schemaRequestRepo
         .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(
             tenantId, env, requestStatus, requestOperationType, topicName);

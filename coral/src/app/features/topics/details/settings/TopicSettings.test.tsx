@@ -52,7 +52,7 @@ const testTopicOverview: TopicOverview = {
   aclInfoList: [],
   topicHistoryList: [],
   availableEnvironments: [],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
 

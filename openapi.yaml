@@ -6861,7 +6861,8 @@
       "PromotionStatus" : {
         "properties" : {
           "status" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "SUCCESS", "NOT_AUTHORIZED", "REQUEST_OPEN", "NO_PROMOTION", "FAILURE" ]
           },
           "sourceEnv" : {
             "type" : "string"

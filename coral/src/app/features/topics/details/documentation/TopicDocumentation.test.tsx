@@ -28,7 +28,7 @@ const testTopicOverview: TopicOverview = {
   prefixAclsExists: false,
   schemaExists: false,
   txnAclsExists: false,
-  topicPromotionDetails: { status: "" },
+  topicPromotionDetails: { status: "NO_PROMOTION" },
   topicIdForDocumentation: 99999,
   topicInfo: {
     topicName: "documentation-test-topic",

@@ -20,6 +20,7 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
@@ -547,7 +548,8 @@ public class KafkaConnectControllerServiceTest {
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, null);
 
     assertThat(response.getConnectorInfoList()).hasSize(3);
-    assertThat(response.getPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(response.getPromotionDetails().get("status"))
+        .isEqualTo(PromotionStatusType.NO_PROMOTION.value);
     assertThat(response.getAvailableEnvironments()).hasSize(3);
   }
 
@@ -591,7 +593,8 @@ public class KafkaConnectControllerServiceTest {
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, null);
 
     assertThat(response.getConnectorInfoList()).hasSize(3);
-    assertThat(response.getPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(response.getPromotionDetails().get("status"))
+        .isEqualTo(PromotionStatusType.NO_PROMOTION.value);
     assertThat(response.getAvailableEnvironments()).hasSize(3);
   }
 
@@ -623,7 +626,8 @@ public class KafkaConnectControllerServiceTest {
 
     assertThat(response.getConnectorInfoList()).hasSize(1);
     assertThat(response.getConnectorInfoList().get(0).getConnectorId()).isEqualTo(1);
-    assertThat(response.getPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(response.getPromotionDetails().get("status"))
+        .isEqualTo(PromotionStatusType.NO_PROMOTION.value);
     assertThat(response.getAvailableEnvironments()).hasSize(3);
   }
 
@@ -688,7 +692,8 @@ public class KafkaConnectControllerServiceTest {
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "0");
 
     assertThat(response.getConnectorInfoList()).hasSize(1);
-    assertThat(response.getPromotionDetails().get("status")).isEqualTo(NO_PROMOTION);
+    assertThat(response.getPromotionDetails().get("status"))
+        .isEqualTo(PromotionStatusType.NO_PROMOTION.value);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
