@@ -13,6 +13,7 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
     teamname: "Ospo",
     teamId: 1003,
     envId: "1",
+    clusterId: 5,
     showEditTopic: true,
     showDeleteTopic: false,
     topicDeletable: false,
@@ -62,7 +63,7 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
       name: "TST",
     },
   ],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
 
@@ -78,6 +79,7 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
     teamname: "Ospo",
     teamId: 1003,
     envId: "1",
+    clusterId: 3,
     showEditTopic: true,
     showDeleteTopic: false,
     topicDeletable: false,
@@ -112,7 +114,7 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
       name: "TST",
     },
   ],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
 

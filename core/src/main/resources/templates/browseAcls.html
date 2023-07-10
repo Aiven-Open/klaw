@@ -554,7 +554,7 @@
 								</table>
 							</div>
 
-							<div ng-show="topicPromotionDetails.status ==='success'">
+							<div ng-show="topicPromotionDetails.status ==='SUCCESS'">
 								<table width="100%" class="table color-table success-table">
 									<tr>
 										<td width="25%">
@@ -585,7 +585,7 @@
 										<td width="5%"></td>
 										<td width="20%" align="right">
 												<a href="requestTopics?topicname={{topicSelectedParam}}&targetEnvId={{topicPromotionDetails.targetEnvId}}&targetEnvName={{topicPromotionDetails.targetEnv}}&sourceEnvId={{topicPromotionDetails.sourceEnv}}&requestType=promote">
-													<button ng-show="topicPromotionDetails.status =='success' && firstPromote == 'false'"
+													<button ng-show="topicPromotionDetails.status =='SUCCESS' && firstPromote == 'false'"
 																type="button"
 																class="btn btn-rounded btn-block btn-outline-info">
 															Promote to {{topicPromotionDetails.targetEnv}}
@@ -935,7 +935,7 @@
 										</tr>
 										<tr>
 											<td width="100%%" >
-												<div ng-show="schemaPromotionDetails.status ==='success' ">
+												<div ng-show="schemaPromotionDetails.status ==='SUCCESS' ">
 													<table width="100%" class="table color-table success-table">
 														<tr>
 															<td width="25%">
@@ -966,13 +966,13 @@
 															</td>
 															<td width="5%"></td>
 															<td width="20%" align="right">
-																<button ng-show="schemaPromotionDetails.status =='success'  && firstSchemaPromote !== 'true'"
+																<button ng-show="schemaPromotionDetails.status =='SUCCESS'  && firstSchemaPromote !== 'true'"
 																		type="button"
 																		ng-click="onFirstSchemaPromote(schemaDetails)"
 																		class="btn btn-rounded btn-block btn-outline-info">
 																	Promote to {{schemaPromotionDetails.targetEnv}}
 																</button>
-																<button ng-show="schemaPromotionDetails.status =='success' && firstSchemaPromote == 'true' "
+																<button ng-show="schemaPromotionDetails.status =='SUCCESS' && firstSchemaPromote == 'true' "
 																		type="button"
 																		ng-click="onFinalSchemaPromote(schemaPromotionDetails.sourceEnv,schemaPromotionDetails.targetEnvId)"
 																		class="btn btn-rounded btn-block btn-outline-info">

@@ -77,6 +77,7 @@ const testTopicOverview: TopicOverview = {
     teamname: "Ospo",
     teamId: 1003,
     envId: "1",
+    clusterId: 4,
     showEditTopic: true,
     showDeleteTopic: false,
     topicDeletable: false,
@@ -187,7 +188,7 @@ const testTopicOverview: TopicOverview = {
       name: "TST",
     },
   ],
-  topicPromotionDetails: { status: "STATUS" },
+  topicPromotionDetails: { status: "SUCCESS" },
   topicIdForDocumentation: 1,
 };
 

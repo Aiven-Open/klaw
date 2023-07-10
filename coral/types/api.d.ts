@@ -1041,7 +1041,8 @@ export type components = {
       transactionalId?: string;
     };
     PromotionStatus: {
-      status: string;
+      /** @enum {string} */
+      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
       sourceEnv?: string;
       targetEnv?: string;
       targetEnvId?: string;
@@ -1095,6 +1096,8 @@ export type components = {
       hasOpenACLRequest: boolean;
       hasACL: boolean;
       hasSchema: boolean;
+      /** Format: int32 */
+      clusterId: number;
       topicOwner?: boolean;
       highestEnv?: boolean;
     };

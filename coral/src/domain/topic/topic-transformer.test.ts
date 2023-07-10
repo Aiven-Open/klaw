@@ -206,6 +206,7 @@ describe("topic-transformer.ts", () => {
             teamname: "TEAM",
             teamId: 3,
             envId: "4",
+            clusterId: 6,
             showEditTopic: false,
             showDeleteTopic: false,
             topicDeletable: false,
@@ -220,7 +221,7 @@ describe("topic-transformer.ts", () => {
           },
         ],
         topicPromotionDetails: {
-          status: "test",
+          status: "SUCCESS",
         },
         availableEnvironments: [],
         topicIdForDocumentation: 1,
@@ -239,6 +240,7 @@ describe("topic-transformer.ts", () => {
         topicInfo: {
           envId: "4",
           envName: "DEV",
+          clusterId: 6,
           hasOpenTopicRequest: false,
           hasOpenACLRequest: false,
           highestEnv: true,
@@ -256,7 +258,7 @@ describe("topic-transformer.ts", () => {
           description: "my description",
         },
         topicPromotionDetails: {
-          status: "test",
+          status: "SUCCESS",
         },
         txnAclsExists: false,
       };
@@ -278,6 +280,7 @@ describe("topic-transformer.ts", () => {
             teamname: "TEAM",
             teamId: 3,
             envId: "4",
+            clusterId: 6,
             showEditTopic: false,
             showDeleteTopic: false,
             topicDeletable: false,
@@ -292,7 +295,7 @@ describe("topic-transformer.ts", () => {
           },
         ],
         topicPromotionDetails: {
-          status: "test",
+          status: "SUCCESS",
         },
         availableEnvironments: [],
         topicIdForDocumentation: 1,
@@ -365,6 +368,7 @@ describe("topic-transformer.ts", () => {
         topicInfo: {
           envId: "4",
           envName: "DEV",
+          clusterId: 6,
           hasOpenTopicRequest: false,
           hasOpenACLRequest: false,
           highestEnv: true,
@@ -382,7 +386,7 @@ describe("topic-transformer.ts", () => {
           description: "my description",
         },
         topicPromotionDetails: {
-          status: "test",
+          status: "SUCCESS",
         },
         txnAclsExists: false,
         aclInfoList: [
