@@ -26,6 +26,7 @@ import SelectOrNumberInput from "src/app/features/topics/request/components/Sele
 import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import formSchema from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { generateTopicNameDescription } from "src/app/features/topics/request/utils";
+import { Routes } from "src/app/router_utils";
 import { Environment } from "src/domain/environment";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment/environment-api";
 import {
@@ -46,25 +47,30 @@ function TopicEditRequest() {
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
-  const { data: environments } = useQuery<Environment[], HTTPError>(
-    ["getEnvironmentsForTopicRequest"],
+  const { data: environments, isFetched: environmentIsFetched } = useQuery<
+    Environment[],
+    HTTPError
+  >(
+    ["getAllEnvironmentsForTopicAndAcl", env],
+    getAllEnvironmentsForTopicAndAcl,
     {
-      queryFn: () => getAllEnvironmentsForTopicAndAcl(),
+      select: (environments) => environments?.filter(({ id }) => id === env),
     }
   );
 
-  const { data: topicDetailsForSourceEnv } = useQuery<
-    TopicDetailsPerEnv,
-    HTTPError
-  >(["getTopicDetailsPerEnv", topicName, env], {
-    queryFn: () =>
-      getTopicDetailsPerEnv({
-        topicname: topicName || "",
-        envSelected: env || "",
-      }),
-  });
-
-  const currentEnvironment = environments?.find(({ id }) => id === env);
+  const { data: topicDetailsForEnv, isFetched: topicDetailsForEnvIsFetched } =
+    useQuery<TopicDetailsPerEnv, HTTPError>(
+      ["getTopicDetailsPerEnv", topicName, env],
+      {
+        queryFn: () =>
+          getTopicDetailsPerEnv({
+            topicname: topicName || "",
+            envSelected: env || "",
+          }),
+      }
+    );
+  const currentEnvironment =
+    environments === undefined ? undefined : environments[0];
 
   const form = useForm<Schema>({
     schema: formSchema,
@@ -79,33 +85,67 @@ function TopicEditRequest() {
     },
   });
 
+  // Handle errors when environment or topic does not exist
   useEffect(() => {
+    if (environmentIsFetched && currentEnvironment === undefined) {
+      navigate(`/topic/${topicName}`, { replace: true });
+      toast({
+        message: `No environment was found with ID ${env}`,
+        position: "bottom-left",
+        variant: "danger",
+      });
+      return;
+    }
     if (
-      currentEnvironment !== undefined &&
-      topicDetailsForSourceEnv !== undefined
+      environmentIsFetched &&
+      topicDetailsForEnvIsFetched &&
+      !topicDetailsForEnv?.topicExists
     ) {
-      const defaultAdvancedTopicConfiguration = topicDetailsForSourceEnv
-        .topicContents?.advancedTopicConfiguration
+      navigate(Routes.TOPICS, { replace: true });
+      toast({
+        message: `No topic was found with name ${topicName}`,
+        position: "bottom-left",
+        variant: "danger",
+      });
+      return;
+    }
+  }, [
+    environmentIsFetched,
+    currentEnvironment,
+    topicDetailsForEnvIsFetched,
+    topicDetailsForEnv,
+  ]);
+
+  // Initialize form with default values
+  useEffect(() => {
+    if (topicDetailsForEnvIsFetched && topicDetailsForEnv?.topicExists) {
+      const defaultAdvancedTopicConfiguration = topicDetailsForEnv.topicContents
+        ?.advancedTopicConfiguration
         ? JSON.stringify(
-            topicDetailsForSourceEnv.topicContents?.advancedTopicConfiguration
+            topicDetailsForEnv.topicContents?.advancedTopicConfiguration
           )
         : "{\n}";
-
       form.reset({
         environment: currentEnvironment,
         topicpartitions: String(
-          topicDetailsForSourceEnv.topicContents?.noOfPartitions
+          topicDetailsForEnv.topicContents?.noOfPartitions
         ),
         replicationfactor: String(
-          topicDetailsForSourceEnv.topicContents?.noOfReplicas
+          topicDetailsForEnv.topicContents?.noOfReplicas
         ),
         topicname: topicName,
         remarks: "",
-        description: topicDetailsForSourceEnv.topicContents?.description || "",
+        description: topicDetailsForEnv.topicContents?.description || "",
         advancedConfiguration: defaultAdvancedTopicConfiguration,
       });
     }
-  }, [currentEnvironment, topicDetailsForSourceEnv]);
+  }, [
+    environmentIsFetched,
+    topicDetailsForEnvIsFetched,
+    currentEnvironment,
+    topicDetailsForEnv,
+    topicName,
+  ]);
 
   const {
     mutateAsync: edit,
