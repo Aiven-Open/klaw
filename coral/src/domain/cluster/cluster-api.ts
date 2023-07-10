@@ -19,7 +19,7 @@ const getClusterInfoFromEnvironment = async ({
 function getClusterDetails(clusterId: string) {
   const params = new URLSearchParams({ clusterId });
   return api.get<KlawApiResponse<"getClusterDetails">>(
-    API_PATHS.getClusterInfoFromEnv,
+    API_PATHS.getClusterDetails,
     params
   );
 }
