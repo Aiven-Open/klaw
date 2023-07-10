@@ -283,42 +283,38 @@ const mockTransformedGetTopicAdvancedConfigOptions = [
 ];
 
 describe("<TopicEditRequest />", () => {
-  beforeAll(() => {
-    mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(mockEnvironments);
-    mockGetTopicDetailsPerEnv.mockResolvedValue(mockTopicDetails);
-    mockgGetTopicAdvancedConfigOptions.mockResolvedValue(
-      mockTransformedGetTopicAdvancedConfigOptions
-    );
-
-    customRender(
-      <Routes>
-        <Route
-          path="/topic/:topicName/request-update"
-          element={
-            <AquariumContext>
-              <TopicEditRequest />
-            </AquariumContext>
-          }
-        />
-      </Routes>,
-      {
-        queryClient: true,
-        memoryRouter: true,
-        customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=1`,
-      }
-    );
-  });
-
-  afterEach(() => {
-    mockedUsedNavigate.mockClear();
-  });
-
-  afterAll(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
   describe("Renders all fields with correct default values and disabled states", () => {
+    beforeEach(() => {
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(mockEnvironments);
+      mockGetTopicDetailsPerEnv.mockResolvedValue(mockTopicDetails);
+      mockgGetTopicAdvancedConfigOptions.mockResolvedValue(
+        mockTransformedGetTopicAdvancedConfigOptions
+      );
+
+      customRender(
+        <Routes>
+          <Route
+            path="/topic/:topicName/request-update"
+            element={
+              <AquariumContext>
+                <TopicEditRequest />
+              </AquariumContext>
+            }
+          />
+        </Routes>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+          customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=1`,
+        }
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
     it("shows a disabled select element for 'Environment' with correct default value", async () => {
       const select = await screen.findByRole("combobox", {
         name: "Environment *",
@@ -359,8 +355,10 @@ describe("<TopicEditRequest />", () => {
       const mockedAdvancedConfig = screen.getByTestId("advancedConfiguration");
 
       expect(mockedAdvancedConfig).toBeEnabled();
-      expect(mockedAdvancedConfig).toHaveDisplayValue(
-        JSON.stringify({ "cleanup.policy": "compact" })
+      await waitFor(() =>
+        expect(mockedAdvancedConfig).toHaveDisplayValue(
+          JSON.stringify({ "cleanup.policy": "compact" })
+        )
       );
     });
 
@@ -371,7 +369,7 @@ describe("<TopicEditRequest />", () => {
       const description = mockTopicDetails.topicContents?.description as string;
 
       expect(input).toBeRequired();
-      expect(input).toHaveDisplayValue(description);
+      await waitFor(() => expect(input).toHaveDisplayValue(description));
     });
 
     it("shows an enabled text input element for 'Message for approval'", async () => {
@@ -385,6 +383,36 @@ describe("<TopicEditRequest />", () => {
   });
 
   describe("enables user to create a new topic update request", () => {
+    beforeEach(() => {
+      mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(mockEnvironments);
+      mockGetTopicDetailsPerEnv.mockResolvedValue(mockTopicDetails);
+      mockgGetTopicAdvancedConfigOptions.mockResolvedValue(
+        mockTransformedGetTopicAdvancedConfigOptions
+      );
+
+      customRender(
+        <Routes>
+          <Route
+            path="/topic/:topicName/request-update"
+            element={
+              <AquariumContext>
+                <TopicEditRequest />
+              </AquariumContext>
+            }
+          />
+        </Routes>,
+        {
+          queryClient: true,
+          memoryRouter: true,
+          customRoutePath: `/topic/${TOPIC_NAME}/request-update?env=1`,
+        }
+      );
+    });
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
     it("shows a notification and does not submit when user has not changed topic data", async () => {
       await userEvent.click(
         screen.getByRole("button", { name: "Submit update request" })
@@ -403,6 +431,12 @@ describe("<TopicEditRequest />", () => {
       const description = screen.getByRole("textbox", {
         name: "Description *",
       });
+
+      await waitFor(() =>
+        expect(description).toHaveDisplayValue(
+          mockTopicDetails.topicContents.description
+        )
+      );
 
       await userEvent.clear(description);
 
