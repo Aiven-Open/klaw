@@ -20,8 +20,7 @@ const TopicPromotionBanner = ({
 
   const showRequestPromotionBanner =
     isTopicOwner &&
-    status !== "NO_PROMOTION" &&
-    status !== "NOT_AUTHORIZED" &&
+    status === "SUCCESS" &&
     targetEnv !== undefined &&
     sourceEnv !== undefined &&
     targetEnvId !== undefined;
