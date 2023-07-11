@@ -44,17 +44,6 @@ function ClusterDetails({ clusterDetails, isUpdating }: ClusterDetailsProps) {
       <div aria-hidden={isUpdating}>
         <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
           <DefinitionBlock
-            term={"Cluster name"}
-            definition={clusterDetails?.clusterName}
-            isUpdating={isUpdating}
-          />
-          <DefinitionBlock
-            term={"Cluster id"}
-            definition={clusterDetails?.clusterId}
-            isUpdating={isUpdating}
-          />
-
-          <DefinitionBlock
             term={"Bootstrap server"}
             definition={clusterDetails?.bootstrapServers}
             isUpdating={isUpdating}
@@ -62,6 +51,17 @@ function ClusterDetails({ clusterDetails, isUpdating }: ClusterDetailsProps) {
           <DefinitionBlock
             term={"Protocol"}
             definition={clusterDetails?.protocol}
+            isUpdating={isUpdating}
+          />
+
+          <DefinitionBlock
+            term={"Cluster name"}
+            definition={clusterDetails?.clusterName}
+            isUpdating={isUpdating}
+          />
+          <DefinitionBlock
+            term={"Cluster id"}
+            definition={clusterDetails?.clusterId}
             isUpdating={isUpdating}
           />
 
