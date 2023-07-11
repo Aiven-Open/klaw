@@ -13,6 +13,6 @@ public class ConnectorOverview {
   Map<String, String> promotionDetails;
   @NotNull boolean connectorExists;
   @NotNull private List<EnvIdInfo> availableEnvironments;
-  String topicDocumentation;
-  Integer topicIdForDocumentation;
+  String connectorDocumentation;
+  @NotNull Integer connectorIdForDocumentation;
 }
