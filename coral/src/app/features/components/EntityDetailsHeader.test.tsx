@@ -1,8 +1,8 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { EnvironmentInfo } from "src/domain/environment";
 import { within } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
+import { EnvironmentInfo } from "src/domain/environment";
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -27,6 +27,7 @@ const mockSetEnvironmentId = jest.fn();
 const defaultTopicProps = {
   entity: testTopic,
   entityEditLink: "/hello/topic",
+  showEditButton: true,
   environments: testEnvironments,
   environmentId: undefined,
   setEnvironmentId: mockSetEnvironmentId,
@@ -37,6 +38,7 @@ const defaultTopicProps = {
 const defaultConnectorProps = {
   entity: testConnector,
   entityEditLink: "/hello/connector",
+  showEditButton: true,
   environments: testEnvironments,
   environmentId: undefined,
   setEnvironmentId: mockSetEnvironmentId,
@@ -394,6 +396,31 @@ describe("EntityDetailsHeader", () => {
 
         expect(mockSetEnvironmentId).toHaveBeenCalledWith("1");
       });
+    });
+  });
+
+  describe("correctly hides Edit button", () => {
+    it("hides Edit button for Topic", async () => {
+      render(
+        <EntityDetailsHeader {...defaultTopicProps} showEditButton={false} />
+      );
+
+      const button = screen.queryByRole("button", { name: "Edit topic" });
+
+      expect(button).not.toBeInTheDocument();
+    });
+
+    it("hides Edit button for Connector", async () => {
+      render(
+        <EntityDetailsHeader
+          {...defaultConnectorProps}
+          showEditButton={false}
+        />
+      );
+
+      const button = screen.queryByRole("button", { name: "Edit connector" });
+
+      expect(button).not.toBeInTheDocument();
     });
   });
 });

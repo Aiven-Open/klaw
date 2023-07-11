@@ -1,6 +1,7 @@
 import { Banner, Box, Button, GridItem } from "@aivenio/aquarium";
 import { TopicOverview } from "src/domain/topic";
 import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
+import { useNavigate } from "react-router-dom";
 
 interface TopicPromotionBannerProps {
   topicPromotionDetails: TopicOverview["topicPromotionDetails"];
@@ -13,6 +14,7 @@ const TopicPromotionBanner = ({
   topicPromotionDetails,
   hasOpenRequest,
 }: TopicPromotionBannerProps) => {
+  const navigate = useNavigate();
   const { status, targetEnv, sourceEnv, targetEnvId, topicName } =
     topicPromotionDetails;
 
@@ -32,11 +34,15 @@ const TopicPromotionBanner = ({
             This schema has not yet been promoted to the {targetEnv}{" "}
             environment.
           </Box>
-          <Button.ExternalLink
-            href={`/topic/${topicName}/request-promotion?sourceEnv=${sourceEnv}&targetEnv=${targetEnvId}`}
+          <Button.Primary
+            onClick={() =>
+              navigate(
+                `/topic/${topicName}/request-promotion?sourceEnv=${sourceEnv}&targetEnv=${targetEnvId}`
+              )
+            }
           >
             Promote
-          </Button.ExternalLink>
+          </Button.Primary>
         </Banner>
       </GridItem>
     );
@@ -49,11 +55,15 @@ const TopicPromotionBanner = ({
           <Box element={"p"} marginBottom={"l1"}>
             There is an open request for {topicName}.
           </Box>
-          <Button.ExternalLink
-            href={`/requests/topics?search=${topicName}&status=CREATED&page=1`}
+          <Button.Primary
+            onClick={() =>
+              navigate(
+                `/requests/topics?search=${topicName}&status=CREATED&page=1`
+              )
+            }
           >
             See the request
-          </Button.ExternalLink>
+          </Button.Primary>
         </Banner>
       </GridItem>
     );
