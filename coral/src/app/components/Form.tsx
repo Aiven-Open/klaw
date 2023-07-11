@@ -354,12 +354,6 @@ function _MultiSelect<T extends FieldValues, FieldValue>({
             }}
             valid={error === undefined}
             helperText={error}
-            // If we do not explicitly pass value to the component
-            // It will not display values stored in the form object
-            // If they are set before the component is rendered
-            // This is because we are rendering BaseMultiSelect without a Controller
-            // But its value still needs to be controlled
-            // value={form.getValues(name)}
           />
         );
       }}
