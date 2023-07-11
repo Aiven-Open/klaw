@@ -5,8 +5,10 @@ import { BasePage } from "src/app/layout/page/BasePage";
 import { Box, Icon } from "@aivenio/aquarium";
 import loading from "@aivenio/aquarium/icons/loading";
 
-// for now, we don't do Authentication on Corals side,
-// so we only have a AuthUser in the context
+/** We don't do Authentication on Corals side
+ * at the moment, so we only have a AuthUser
+ * in the context
+ * */
 const AuthContext = createContext<AuthUser | undefined>(undefined);
 
 const useAuthContext = () => useContext(AuthContext);
