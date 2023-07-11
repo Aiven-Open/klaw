@@ -1057,8 +1057,8 @@ public class KafkaConnectControllerService {
         connectorInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, conn.getTeamId()));
 
         if (Objects.equals(syncCluster, conn.getEnvironment())) {
-          connectorOverview.setTopicDocumentation(conn.getDocumentation());
-          connectorOverview.setTopicIdForDocumentation(conn.getConnectorId());
+          connectorOverview.setConnectorDocumentation(conn.getDocumentation());
+          connectorOverview.setConnectorIdForDocumentation(conn.getConnectorId());
         }
 
         if (conn.getHistory() != null) {
@@ -1074,9 +1074,9 @@ public class KafkaConnectControllerService {
       }
     }
 
-    if (connectorOverview.getTopicIdForDocumentation() == null) {
-      connectorOverview.setTopicDocumentation(connectors.get(0).getDocumentation());
-      connectorOverview.setTopicIdForDocumentation(connectors.get(0).getConnectorId());
+    if (connectorOverview.getConnectorIdForDocumentation() == null) {
+      connectorOverview.setConnectorDocumentation(connectors.get(0).getDocumentation());
+      connectorOverview.setConnectorIdForDocumentation(connectors.get(0).getConnectorId());
     }
 
     connectorOverview.setTopicHistoryList(connectorHistoryList);
