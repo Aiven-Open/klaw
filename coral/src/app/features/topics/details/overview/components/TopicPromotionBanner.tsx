@@ -22,10 +22,54 @@ const TopicPromotionBanner = ({
     isTopicOwner &&
     status !== "NO_PROMOTION" &&
     status !== "NOT_AUTHORIZED" &&
-    !hasOpenRequest &&
     targetEnv !== undefined &&
     sourceEnv !== undefined &&
     targetEnvId !== undefined;
+
+  // hasOpenTopicRequest is true for any request open on the current topic in the current environment (source environment)
+  if (hasOpenRequest) {
+    return (
+      <GridItem colSpan={"span-2"}>
+        <Banner image={illustration} layout="vertical" title={""}>
+          <Box element={"p"} marginBottom={"l1"}>
+            There is an open request for {topicName}.
+          </Box>
+          <Button.Primary
+            onClick={() =>
+              navigate(
+                `/requests/topics?search=${topicName}&status=CREATED&page=1`
+              )
+            }
+          >
+            See the request
+          </Button.Primary>
+        </Banner>
+      </GridItem>
+    );
+  }
+
+  // status is "REQUEST_OPEN" when there is a promotion request open on a topic in the target environment for promotion,
+  // ie not the current topic + source environment
+  if (status === "REQUEST_OPEN") {
+    return (
+      <GridItem colSpan={"span-2"}>
+        <Banner image={illustration} layout="vertical" title={""}>
+          <Box element={"p"} marginBottom={"l1"}>
+            There is already an open promotion request for {topicName}.
+          </Box>
+          <Button.Primary
+            onClick={() =>
+              navigate(
+                `/requests/topics?search=${topicName}&requestType=PROMOTE&status=CREATED&page=1`
+              )
+            }
+          >
+            See the request
+          </Button.Primary>
+        </Banner>
+      </GridItem>
+    );
+  }
 
   if (showRequestPromotionBanner) {
     return (
@@ -43,27 +87,6 @@ const TopicPromotionBanner = ({
             }
           >
             Promote
-          </Button.Primary>
-        </Banner>
-      </GridItem>
-    );
-  }
-
-  if (hasOpenRequest) {
-    return (
-      <GridItem colSpan={"span-2"}>
-        <Banner image={illustration} layout="vertical" title={""}>
-          <Box element={"p"} marginBottom={"l1"}>
-            There is an open request for {topicName}.
-          </Box>
-          <Button.Primary
-            onClick={() =>
-              navigate(
-                `/requests/topics?search=${topicName}&status=CREATED&page=1`
-              )
-            }
-          >
-            See the request
           </Button.Primary>
         </Banner>
       </GridItem>
