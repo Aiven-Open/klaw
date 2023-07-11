@@ -14,7 +14,9 @@ import { EnvironmentInfo } from "src/domain/environment";
 type TopicOverviewHeaderProps = {
   entity: { name: string; type: "connector" | "topic" };
   entityEditLink: string;
+  showEditButton: boolean;
   entityExists: boolean;
+  entityUpdating: boolean;
   environments?: EnvironmentInfo[];
   environmentId?: string;
   setEnvironmentId: Dispatch<SetStateAction<string | undefined>>;
@@ -23,11 +25,13 @@ type TopicOverviewHeaderProps = {
 function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
   const {
     entity,
+    showEditButton,
     entityEditLink,
     environments,
     environmentId,
     setEnvironmentId,
     entityExists,
+    entityUpdating,
   } = props;
 
   const navigate = useNavigate();
@@ -96,12 +100,14 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
           </Box>
         )}
       </Box>
-      <Button.Primary
-        disabled={!entityExists}
-        onClick={() => navigate(entityEditLink)}
-      >
-        Edit {entity.type}
-      </Button.Primary>
+      {showEditButton && (
+        <Button.Primary
+          disabled={!entityExists || entityUpdating}
+          onClick={() => navigate(entityEditLink)}
+        >
+          Edit {entity.type}
+        </Button.Primary>
+      )}
     </Box>
   );
 }

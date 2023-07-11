@@ -27,6 +27,7 @@ const environmentParams = z.object({
   applyRegex: z.boolean().optional(),
   topicPrefix: z.array(z.string()).optional(),
   topicSuffix: z.array(z.string()).optional(),
+  topicRegex: z.array(z.string()).optional(),
 });
 
 const environmentField: z.ZodType<Environment> = z.object({

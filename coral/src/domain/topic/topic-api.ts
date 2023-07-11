@@ -144,6 +144,29 @@ const promoteTopic = (
   >(API_PATHS.createTopicsCreateRequest, payload);
 };
 
+// @TODO this should use the createTopicsCreateRequest`endpoint, but it does not handle the UPDATE type yet
+// Update when backend changes are merged to handle UPDATE with createTopicsCreateRequest
+const editTopic = (
+  data: Schema
+): Promise<KlawApiResponse<"createTopicsUpdateRequest">> => {
+  const payload: KlawApiRequest<"createTopicsUpdateRequest"> = {
+    description: data.description,
+    environment: data.environment.id,
+    remarks: data.remarks,
+    topicname: data.topicname,
+    replicationfactor: data.replicationfactor,
+    topicpartitions: parseInt(data.topicpartitions, 10),
+    advancedTopicConfigEntries: transformAdvancedConfigEntries(
+      data.advancedConfiguration
+    ),
+    requestOperationType: "UPDATE",
+  };
+  return api.post<
+    KlawApiResponse<"createTopicsUpdateRequest">,
+    KlawApiRequest<"createTopicsUpdateRequest">
+  >(API_PATHS.createTopicsUpdateRequest, payload);
+};
+
 const getTopicRequestsForApprover = (
   params: KlawApiRequestQueryParameters<"getTopicRequestsForApprover">
 ): Promise<TopicRequestApiResponse> => {
@@ -344,6 +367,7 @@ export {
   declineTopicRequest,
   deleteTopic,
   deleteTopicRequest,
+  editTopic,
   getSchemaOfTopic,
   getTopicAdvancedConfigOptions,
   getTopicDetailsPerEnv,

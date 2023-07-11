@@ -54,7 +54,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     error: connectorError,
     isLoading: connectorIsLoading,
     isRefetching: connectorIsRefetching,
-  } = useQuery(["topic-overview", connectorName, environmentId], {
+  } = useQuery(["connector-overview", connectorName, environmentId], {
     queryFn: () =>
       getConnectorOverview({
         connectornamesearch: connectorName,
@@ -82,12 +82,14 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
       <EntityDetailsHeader
         entity={{ name: connectorName, type: "connector" }}
         entityExists={Boolean(connectorData?.connectorExists)}
+        entityUpdating={connectorIsRefetching}
         entityEditLink={
           "/connector/connectorName=SchemaTest&env=${connectorOverview.availableEnvironments[0].id}&requestType=edit"
         }
         environments={connectorData?.availableEnvironments}
         environmentId={environmentId}
         setEnvironmentId={setEnvironmentId}
+        showEditButton={Boolean(connectorData?.connectorInfo.showEditConnector)}
       />
 
       <ConnectorOverviewResourcesTabs
