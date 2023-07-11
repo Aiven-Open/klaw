@@ -54,7 +54,10 @@ function TopicOverview() {
         <TopicPromotionBanner
           topicPromotionDetails={topicPromotionDetails}
           isTopicOwner={topicOwner}
-          hasOpenRequest={hasOpenTopicRequest}
+          hasOpenRequest={
+            hasOpenTopicRequest ||
+            topicPromotionDetails.status === "REQUEST_OPEN"
+          }
         />
       )}
 
