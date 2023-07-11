@@ -4,6 +4,7 @@ import static io.aiven.klaw.model.enums.AuthenticationType.ACTIVE_DIRECTORY;
 import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import static io.aiven.klaw.model.enums.AuthenticationType.LDAP;
 
+import io.aiven.klaw.constants.UriConstants;
 import io.aiven.klaw.service.UiControllerLoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,7 +48,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("index.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.INDEX_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/index", method = RequestMethod.GET)
@@ -56,7 +57,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("index.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.INDEX_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
@@ -75,11 +76,11 @@ public class TemplateMapController {
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
     if (ssoEnabled.equals("true")) {
-      return "oauthLogin";
+      return UriConstants.OAUTH_LOGIN;
     }
     if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
-      return checkAuth("loginSaas.html", request, response, abstractAuthenticationToken);
-    return "login.html";
+      return checkAuth(UriConstants.LOGIN_SAAS_PAGE, request, response, abstractAuthenticationToken);
+    return UriConstants.LOGIN_PAGE;
   }
 
   @RequestMapping(value = "/forgotPassword", method = RequestMethod.GET)
@@ -88,7 +89,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("forgotPassword.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.FORGOT_PASSWORD_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/register", method = RequestMethod.GET)
@@ -101,13 +102,13 @@ public class TemplateMapController {
         || ACTIVE_DIRECTORY.value.equals(authenticationType)
         || "true".equals(ssoEnabled)) {
       if (SAAS.equals(kwInstallationType)) {
-        return checkAuth("registerSaas.html", request, response, abstractAuthenticationToken);
+        return checkAuth(UriConstants.REGISTER_SAAS_PAGE, request, response, abstractAuthenticationToken);
       } else {
-        return checkAuth("registerLdap.html", request, response, abstractAuthenticationToken);
+        return checkAuth(UriConstants.REGISTER_LDAP_PAGE, request, response, abstractAuthenticationToken);
       }
     } else if (authenticationType.equals(DATABASE.value) && kwInstallationType.equals(SAAS))
-      return checkAuth("registerSaas.html", request, response, abstractAuthenticationToken);
-    else return checkAuth("register.html", request, response, abstractAuthenticationToken);
+      return checkAuth(UriConstants.REGISTER_SAAS_PAGE, request, response, abstractAuthenticationToken);
+    else return checkAuth(UriConstants.REGISTER_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/registrationReview", method = RequestMethod.GET)
@@ -119,7 +120,7 @@ public class TemplateMapController {
     if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
       return checkAuth(
           "registrationReviewSaas.html", request, response, abstractAuthenticationToken);
-    return checkAuth("registrationReview.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.REGISTRATION_REVIEW_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/feedback", method = RequestMethod.GET)
@@ -128,7 +129,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("feedback.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.FEEDBACK_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/newADUser", method = RequestMethod.GET)
@@ -137,7 +138,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return "newADUser.html";
+    return UriConstants.NEW_AD_USER_PAGE;
   }
 
   @RequestMapping(value = "/home", method = RequestMethod.GET)
@@ -146,7 +147,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("home.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.HOME_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/terms", method = RequestMethod.GET)
@@ -155,7 +156,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("terms.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.TERMS_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addUser", method = RequestMethod.GET)
@@ -184,7 +185,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("userActivation.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.USER_ACTIVATION, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/helpwizard", method = RequestMethod.GET)
@@ -355,7 +356,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("tenantInfo.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.TENANT_INFO_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/changePwd", method = RequestMethod.GET)
@@ -365,7 +366,7 @@ public class TemplateMapController {
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
     if (LDAP.value.equals(authenticationType) || ACTIVE_DIRECTORY.value.equals(authenticationType))
-      return checkAuth("index", request, response, abstractAuthenticationToken);
+      return checkAuth(UriConstants.INDEX, request, response, abstractAuthenticationToken);
     else return checkAuth("changePwd.html", request, response, abstractAuthenticationToken);
   }
 
@@ -636,7 +637,7 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("tenants.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.TENANTS_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/addTenant", method = RequestMethod.GET)
@@ -663,6 +664,6 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth("index.html", request, response, abstractAuthenticationToken);
+    return checkAuth(UriConstants.INDEX_PAGE, request, response, abstractAuthenticationToken);
   }
 }
