@@ -106,12 +106,12 @@ export const Form = <T extends FieldValues = FieldValues>({
   );
 };
 
-//
-// <PasswordInput>
-// This not part of Aiven core implementation but an input
-// custom for Klaw use cases. It's exactly the same as <TextInput>
-// with the only difference being the type (password) to have
-// a more secure way for users to enter password (input obscured)
+/** <PasswordInput>
+ * This not part of Aiven core implementation but an input
+ * custom for Klaw use cases. It's exactly the same as <TextInput>
+ * with the only difference being the type (password) to have
+ * a more secure way for users to enter password (input obscured)
+ */
 function _PasswordInput<T extends FieldValues>({
   name,
   formContext: form,
@@ -354,12 +354,6 @@ function _MultiSelect<T extends FieldValues, FieldValue>({
             }}
             valid={error === undefined}
             helperText={error}
-            // If we do not explicitly pass value to the component
-            // It will not display values stored in the form object
-            // If they are set before the component is rendered
-            // This is because we are rendering BaseMultiSelect without a Controller
-            // But its value still needs to be controlled
-            // value={form.getValues(name)}
           />
         );
       }}

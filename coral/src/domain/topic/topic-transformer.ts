@@ -8,7 +8,6 @@ import { KlawApiResponse } from "types/utils";
 import omit from "lodash/omit";
 import { createMarkdown } from "src/domain/helper/documentation-helper";
 
-// @TODO check zod for this!
 function transformTopicApiResponse(
   apiResponse: KlawApiResponse<"getTopics">
 ): TopicApiResponse {
