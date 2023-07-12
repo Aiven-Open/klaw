@@ -40,6 +40,10 @@ const testServiceAccountData = {
   accountFound: true,
 };
 
+const notOwnerTestServiceAccountData = {
+  accountFound: false,
+};
+
 const testOffsetsData = {
   topicPartitionId: "0",
   currentOffset: "0",
@@ -61,6 +65,7 @@ const testSelectedSubAiven: AclOverviewInfo = {
   showDeleteAcl: true,
   kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
 };
+
 const testSelectedSubNonAiven: AclOverviewInfo = {
   req_no: "1006",
   acl_ip: "0.0.0.0",
@@ -76,6 +81,21 @@ const testSelectedSubNonAiven: AclOverviewInfo = {
   kafkaFlavorType: "APACHE_KAFKA",
 };
 
+const testNotOwnerSelectedSubAiven: AclOverviewInfo = {
+  req_no: "1006",
+  acl_ssl: "Not Authorized to see this",
+  topicname: "aivtopic3",
+  topictype: "Producer",
+  consumergroup: "-na-",
+  environment: "1",
+  environmentName: "DEV",
+  teamname: "Ospo",
+  teamid: 1003,
+  aclPatternType: "LITERAL",
+  showDeleteAcl: true,
+  kafkaFlavorType: "AIVEN_FOR_APACHE_KAFKA",
+};
+
 const defaultPropsAiven = {
   closeDetailsModal: mockCloseDetailsModal,
   isAivenCluster: true,
@@ -87,6 +107,13 @@ const defaultPropsNonAiven = {
   closeDetailsModal: mockCloseDetailsModal,
   isAivenCluster: false,
   selectedSubscription: testSelectedSubNonAiven,
+  offsetsData: testOffsetsData,
+};
+
+const defaultPropsNotOwnerAiven = {
+  closeDetailsModal: mockCloseDetailsModal,
+  isAivenCluster: true,
+  selectedSubscription: testNotOwnerSelectedSubAiven,
   offsetsData: testOffsetsData,
 };
 
@@ -109,6 +136,7 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
 
   afterEach(() => {
     cleanup();
+    jest.clearAllMocks();
   });
 
   it("should render correct data in details modal (Aiven)", async () => {
@@ -214,5 +242,64 @@ describe("TopicSubscriptionsDetailsModal.tsx", () => {
     expect(
       screen.queryByText("Service account password")
     ).not.toBeInTheDocument();
+  });
+
+  it("should render correct data in details modal (Aiven consumer, non owner user)", async () => {
+    mockGetAivenServiceAccountDetails.mockResolvedValue(
+      notOwnerTestServiceAccountData
+    );
+
+    customRender(
+      <TopicSubscriptionsDetailsModal {...defaultPropsNotOwnerAiven} />,
+      {
+        queryClient: true,
+      }
+    );
+
+    await waitForElementToBeRemoved(screen.getByTestId("pw-skeleton"));
+
+    expect(findTerm("Environment")).toBeVisible();
+    expect(
+      findDefinition(
+        defaultPropsNotOwnerAiven.selectedSubscription.environmentName
+      )
+    ).toBeVisible();
+
+    expect(findTerm("Subscription type")).toBeVisible();
+    expect(
+      findDefinition(
+        defaultPropsNotOwnerAiven.selectedSubscription.topictype.toUpperCase()
+      )
+    ).toBeVisible();
+
+    expect(findTerm("Pattern type")).toBeVisible();
+    expect(
+      findDefinition(
+        defaultPropsNotOwnerAiven.selectedSubscription.aclPatternType
+      )
+    ).toBeVisible();
+
+    expect(findTerm("Topic name")).toBeVisible();
+    expect(
+      findDefinition(defaultPropsNotOwnerAiven.selectedSubscription.topicname)
+    ).toBeVisible();
+
+    expect(findTerm("Consumer group")).toBeVisible();
+    expect(
+      findDefinition(
+        defaultPropsNotOwnerAiven.selectedSubscription.consumergroup
+      )
+    ).toBeVisible();
+
+    expect(findTerm("IP or Service account based")).toBeVisible();
+    expect(findDefinition("Service account")).toBeVisible();
+
+    expect(findTerm("Service account")).toBeVisible();
+    expect(
+      findDefinition(defaultPropsNotOwnerAiven.selectedSubscription.acl_ssl)
+    ).toBeVisible();
+
+    expect(findTerm("Service account password")).toBeVisible();
+    expect(findDefinition("Not authorized to see this.")).toBeVisible();
   });
 });
