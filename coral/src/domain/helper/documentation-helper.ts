@@ -31,6 +31,18 @@ type MarkdownString = Awaited<ReturnType<typeof createMarkdown>>;
 // transformation errors that otherwise can't be determined
 const documentationTransformError =
   "6e6c85af-71b4-4021-b7fe-bf99c81f2c6aZ-d3841163-ba74-4db4-b874-35b973d2a80e-32e866bd-99d0-4a64-ac15-5b73104ab0ff";
+
+/** There can be edge cases where transforming `stringifiedHtml` from backend
+ * into a markdown string causes an error. To be able to handle that error
+ * gracefully while still getting `topicOverview` but also show our users
+ * helpful information, we set the value of `documentationTransformError`
+ * as property for topicOverview.topicDocumentation. If topicDocumentation
+ * matches this string, we know that there was an error and can inform the user.
+ */
+function documentationTransformationError(documentation: MarkdownStringBrand) {
+  return documentation === documentationTransformError;
+}
+
 // `createMarkdown` is used to transform documentation on the api response
 //  for example on TopicOverview. The `topicDocumentation` is a html string
 //  that we transform to markdown.
@@ -55,9 +67,6 @@ async function createMarkdown(stringifiedHtml: string) {
   }
 }
 
-function documentationTransformationError(documentation: MarkdownStringBrand) {
-  return documentation === documentationTransformError;
-}
 // The type MarkdownString does provide us a bit of type safety against slips,
 // in case someone tries to pass a (not properly sanitized) html string
 // to updateTopicDocumentation
@@ -85,6 +94,7 @@ async function createStringifiedHtml(markdownString: string) {
 
       return String(result) as StringifiedHtmlBrand;
     } catch (error) {
+      // Throw specific error to show clear information to users
       throw Error(
         "Something went wrong while transforming the documentation into the right format to save."
       );
