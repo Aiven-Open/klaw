@@ -42,7 +42,9 @@ function TopicDocumentation() {
           setEditMode(false);
         });
       },
-      onError: () => setEditMode(false),
+      onError: () => {
+        setSaving(false);
+      },
     }
   );
 

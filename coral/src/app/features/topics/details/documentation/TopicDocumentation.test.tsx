@@ -284,10 +284,17 @@ describe("TopicDocumentation", () => {
   });
 
   describe("enables user to update documentation", () => {
+    const existingDocumentation = "# Hello" as TopicDocumentationMarkdown;
     const userInput = "**Hello world**";
 
     beforeEach(() => {
-      mockUseTopicDetails.mockReturnValue(mockTopicDetails);
+      mockUseTopicDetails.mockReturnValue({
+        ...mockTopicDetails,
+        topicOverview: {
+          ...mockTopicDetails.topicOverview,
+          topicDocumentation: existingDocumentation,
+        },
+      });
       mockUpdateTopicDocumentation.mockResolvedValue({
         success: true,
         message: "",
@@ -306,11 +313,11 @@ describe("TopicDocumentation", () => {
     });
 
     it("enables user to cancel editing the documentation", async () => {
-      const addButton = screen.getByRole("button", {
-        name: "Add documentation",
+      const editButton = screen.getByRole("button", {
+        name: "Edit documentation",
       });
 
-      await user.click(addButton);
+      await user.click(editButton);
 
       const markdownEditor = screen.getByRole("textbox", {
         name: "Markdown editor",
@@ -326,18 +333,16 @@ describe("TopicDocumentation", () => {
       expect(mockUpdateTopicDocumentation).not.toHaveBeenCalled();
       expect(markdownEditor).not.toBeInTheDocument();
 
-      const noDocumentation = screen.getByRole("heading", {
-        name: "No documentation",
-      });
-      expect(noDocumentation).toBeVisible();
+      const previewMode = screen.getByTestId("react-markdown-mock");
+      expect(previewMode).toBeVisible();
     });
 
     it("saves documentation when user clicks button", async () => {
-      const addButton = screen.getByRole("button", {
-        name: "Add documentation",
+      const editButton = screen.getByRole("button", {
+        name: "Edit documentation",
       });
 
-      await user.click(addButton);
+      await user.click(editButton);
 
       const markdownEditor = screen.getByRole("textbox", {
         name: "Markdown editor",
@@ -353,7 +358,97 @@ describe("TopicDocumentation", () => {
       expect(mockUpdateTopicDocumentation).toHaveBeenCalledWith({
         topicName: "documentation-test-topic",
         topicIdForDocumentation: 99999,
-        topicDocumentation: userInput,
+        topicDocumentation: existingDocumentation + userInput,
+      });
+    });
+
+    it("shows preview mode after successful update", async () => {
+      const editDocumentation = screen.getByRole("button", {
+        name: "Edit documentation",
+      });
+
+      await user.click(editDocumentation);
+
+      const markdownEditor = screen.getByRole("textbox", {
+        name: "Markdown editor",
+      });
+      await user.type(markdownEditor, userInput);
+
+      const saveButton = screen.getByRole("button", {
+        name: "Save documentation",
+      });
+
+      await user.click(saveButton);
+
+      const markdownView = await screen.findByTestId("react-markdown-mock");
+      expect(markdownEditor).not.toBeVisible();
+      expect(markdownView).toBeVisible();
+    });
+  });
+
+  describe("handles errors with updating documentation", () => {
+    const existingDocumentation = "# Hello" as TopicDocumentationMarkdown;
+    const userInput = "**Hello world**";
+
+    const originalConsoleError = console.error;
+    beforeEach(() => {
+      console.error = jest.fn();
+      mockUseTopicDetails.mockReturnValue({
+        ...mockTopicDetails,
+        topicOverview: {
+          ...mockTopicDetails.topicOverview,
+          topicDocumentation: existingDocumentation,
+        },
+      });
+      mockUpdateTopicDocumentation.mockRejectedValue({
+        success: false,
+        message: "this is error",
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicDocumentation />
+        </AquariumContext>,
+        { queryClient: true }
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("shows errors without saving documentation when user clicks button", async () => {
+      const editButton = screen.getByRole("button", {
+        name: "Edit documentation",
+      });
+
+      await user.click(editButton);
+
+      const markdownEditor = screen.getByRole("textbox", {
+        name: "Markdown editor",
+      });
+      await user.type(markdownEditor, userInput);
+
+      const saveButton = screen.getByRole("button", {
+        name: "Save documentation",
+      });
+
+      await user.click(saveButton);
+
+      const error = screen.getByRole("alert");
+      expect(error).toBeVisible();
+      expect(error).toHaveTextContent(
+        "The documentation could not be saved, there was an error"
+      );
+
+      const previewMode = screen.queryByTestId("react-markdown-mock");
+      expect(markdownEditor).toBeVisible();
+      expect(previewMode).not.toBeInTheDocument();
+      expect(console.error).toHaveBeenCalledWith({
+        success: false,
+        message: "this is error",
       });
     });
   });
