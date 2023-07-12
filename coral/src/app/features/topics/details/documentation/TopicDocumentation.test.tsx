@@ -23,6 +23,12 @@ const mockUpdateTopicDocumentation =
     typeof updateTopicDocumentation
   >;
 
+const mockDocumentationTransformationError = jest.fn();
+jest.mock("src/domain/helper/documentation-helper", () => ({
+  documentationTransformationError: () =>
+    mockDocumentationTransformationError(),
+}));
+
 const testTopicOverview: TopicOverview = {
   availableEnvironments: [],
   prefixAclsExists: false,
@@ -383,6 +389,50 @@ describe("TopicDocumentation", () => {
       const markdownView = await screen.findByTestId("react-markdown-mock");
       expect(markdownEditor).not.toBeVisible();
       expect(markdownView).toBeVisible();
+    });
+  });
+
+  describe("handles errors when transforming documentation intro correct markdown from backend", () => {
+    const originalConsoleError = console.error;
+    beforeEach(() => {
+      console.error = jest.fn();
+      mockDocumentationTransformationError.mockReturnValue(true);
+      mockUseTopicDetails.mockReturnValue({
+        ...mockTopicDetails,
+        topicOverview: {
+          ...mockTopicDetails.topicOverview,
+          topicDocumentation:
+            "an error will happen" as TopicDocumentationMarkdown,
+        },
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicDocumentation />
+        </AquariumContext>,
+        { queryClient: true }
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("shows error informing user that something went wrong instead of preview and buttons", async () => {
+      const errorInformation = screen.getByRole("alert");
+
+      expect(errorInformation).toBeVisible();
+      expect(errorInformation).toHaveTextContent(
+        "Something went wrong while trying to transform the documentation into the right format."
+      );
+
+      const previewMode = screen.queryByTestId("react-markdown-mock");
+      const button = screen.queryByRole("button");
+
+      expect(previewMode).not.toBeInTheDocument();
+      expect(button).not.toBeInTheDocument();
     });
   });
 

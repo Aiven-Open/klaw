@@ -27,6 +27,10 @@ type MarkdownStringBrand = string & {
 
 type MarkdownString = Awaited<ReturnType<typeof createMarkdown>>;
 
+// very unique string to be able to identify documentation
+// transformation errors that otherwise can't be determined
+const documentationTransformError =
+  "6e6c85af-71b4-4021-b7fe-bf99c81f2c6aZ-d3841163-ba74-4db4-b874-35b973d2a80e-32e866bd-99d0-4a64-ac15-5b73104ab0ff";
 // `createMarkdown` is used to transform documentation on the api response
 //  for example on TopicOverview. The `topicDocumentation` is a html string
 //  that we transform to markdown.
@@ -34,18 +38,26 @@ async function createMarkdown(stringifiedHtml: string) {
   // see: https://unifiedjs.com/learn/recipe/remark-html/#how-to-turn-html-into-markdown
   // we're also using rehypeSanitize to sanitize the HTML
   if (unified) {
-    const result = await unified()
-      .use(rehypeParse)
-      .use(rehypeSanitize)
-      .use(rehypeRemark)
-      .use(remarkStringify)
-      .process(stringifiedHtml);
-    return String(result) as MarkdownStringBrand;
+    try {
+      const result = await unified()
+        .use(rehypeParse)
+        .use(rehypeSanitize)
+        .use(rehypeRemark)
+        .use(remarkStringify)
+        .process(stringifiedHtml);
+      return String(result) as MarkdownStringBrand;
+    } catch (error) {
+      console.error(error);
+      return documentationTransformError as MarkdownStringBrand;
+    }
   } else {
     return "" as MarkdownStringBrand;
   }
 }
 
+function documentationTransformationError(documentation: MarkdownStringBrand) {
+  return documentation === documentationTransformError;
+}
 // The type MarkdownString does provide us a bit of type safety against slips,
 // in case someone tries to pass a (not properly sanitized) html string
 // to updateTopicDocumentation
@@ -63,18 +75,28 @@ async function createStringifiedHtml(markdownString: string) {
   if (unified) {
     // see: https://unifiedjs.com/learn/recipe/remark-html/#how-to-turn-markdown-into-html
     // we're also using rehypeSanitize to sanitize the HTML
-    const result = await unified()
-      .use(remarkParse)
-      .use(remarkRehype)
-      .use(rehypeSanitize)
-      .use(rehypeStringify)
-      .process(markdownString);
+    try {
+      const result = await unified()
+        .use(remarkParse)
+        .use(remarkRehype)
+        .use(rehypeSanitize)
+        .use(rehypeStringify)
+        .process(markdownString);
 
-    return String(result) as StringifiedHtmlBrand;
+      return String(result) as StringifiedHtmlBrand;
+    } catch (error) {
+      throw Error(
+        "Something went wrong while transforming the documentation into the right format to save."
+      );
+    }
   } else {
     return "" as StringifiedHtmlBrand;
   }
 }
 
-export { createMarkdown, createStringifiedHtml };
+export {
+  createMarkdown,
+  createStringifiedHtml,
+  documentationTransformationError,
+};
 export type { MarkdownString, StringifiedHtml };
