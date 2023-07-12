@@ -1,4 +1,4 @@
-import { Box, Grid, Skeleton, StatusChip, Typography } from "@aivenio/aquarium";
+import { Box, Grid, Skeleton, Typography } from "@aivenio/aquarium";
 import React from "react";
 import { ClusterDetails as ClusterDetailsType } from "src/domain/cluster";
 
@@ -55,39 +55,21 @@ function ClusterDetails({ clusterDetails, isUpdating }: ClusterDetailsProps) {
           />
 
           <DefinitionBlock
-            term={"Cluster name"}
-            definition={clusterDetails?.clusterName}
-            isUpdating={isUpdating}
-          />
-          <DefinitionBlock
-            term={"Cluster id"}
-            definition={clusterDetails?.clusterId}
-            isUpdating={isUpdating}
-          />
-
-          <DefinitionBlock
-            term={"Type"}
-            definition={
-              <StatusChip
-                status={"info"}
-                text={clusterDetails?.clusterType || ""}
-              />
-            }
-            isUpdating={isUpdating}
-          />
-          <DefinitionBlock
             term={"Kafka flavor"}
             definition={clusterDetails?.kafkaFlavor}
             isUpdating={isUpdating}
           />
+          <DefinitionBlock
+            term={"Rest API"}
+            definition={clusterDetails?.associatedServers || "Not applicable"}
+            isUpdating={isUpdating}
+          />
 
-          {clusterDetails?.associatedServers !== undefined && (
-            <DefinitionBlock
-              term={"Rest API"}
-              definition={clusterDetails?.associatedServers}
-              isUpdating={isUpdating}
-            />
-          )}
+          <DefinitionBlock
+            term={"Cluster name"}
+            definition={clusterDetails?.clusterName}
+            isUpdating={isUpdating}
+          />
         </Grid>
       </div>
     </>

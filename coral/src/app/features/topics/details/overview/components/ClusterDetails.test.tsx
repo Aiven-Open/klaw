@@ -38,24 +38,6 @@ describe("ClusterDetails", () => {
       expect(definitionList).toBeVisible();
     });
 
-    it('shows one definition for "Cluster name"', () => {
-      const term = getByTermInList(definitionList, "Cluster name");
-      const definition = getAllDefinitions(definitionList, "Cluster name");
-
-      expect(term).toBeVisible();
-      expect(definition[0]).toHaveTextContent(testClusterDetails.clusterName);
-    });
-
-    it('shows one definition for "Cluster id"', () => {
-      const term = getByTermInList(definitionList, "Cluster id");
-      const definition = getAllDefinitions(definitionList, "Cluster id");
-
-      expect(term).toBeVisible();
-      expect(definition[0]).toHaveTextContent(
-        String(testClusterDetails.clusterId)
-      );
-    });
-
     it('shows one definition for "Bootstrap server"', () => {
       const term = getByTermInList(definitionList, "Bootstrap server");
       const definition = getAllDefinitions(definitionList, "Bootstrap server");
@@ -66,13 +48,13 @@ describe("ClusterDetails", () => {
       );
     });
 
-    it('shows one definition for "Type"', () => {
-      const term = getByTermInList(definitionList, "Type");
-      const definition = getAllDefinitions(definitionList, "Type");
+    it('shows one definition for "Protocol"', () => {
+      const term = getByTermInList(definitionList, "Protocol");
+      const definition = getAllDefinitions(definitionList, "Protocol");
 
       expect(term).toBeVisible();
       expect(definition[0]).toHaveTextContent(
-        String(testClusterDetails.clusterType)
+        String(testClusterDetails.protocol)
       );
     });
 
@@ -84,6 +66,22 @@ describe("ClusterDetails", () => {
       expect(definition[0]).toHaveTextContent(
         String(testClusterDetails.kafkaFlavor)
       );
+    });
+
+    it('shows one placeholder definition for optional "Rest API" when value not set', () => {
+      const term = getByTermInList(definitionList, "Rest API");
+      const definition = getAllDefinitions(definitionList, "Rest API");
+
+      expect(term).toBeVisible();
+      expect(definition[0]).toHaveTextContent("Not applicable");
+    });
+
+    it('shows one definition for "Cluster name"', () => {
+      const term = getByTermInList(definitionList, "Cluster name");
+      const definition = getAllDefinitions(definitionList, "Cluster name");
+
+      expect(term).toBeVisible();
+      expect(definition[0]).toHaveTextContent(testClusterDetails.clusterName);
     });
   });
 
