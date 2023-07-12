@@ -150,7 +150,7 @@ function TopicEditRequest() {
   const {
     mutateAsync: edit,
     isLoading: editIsLoading,
-    error: editIsError,
+    isError: editIsError,
     error: editError,
   } = useMutation(editTopic, {
     onSuccess: () => {
