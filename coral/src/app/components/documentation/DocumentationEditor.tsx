@@ -72,54 +72,56 @@ function DocumentationEditor({
       </Box.Flex>
 
       {viewMode === "edit" && (
-        <div className={classes.markdownEditor}>
-          <Box
-            borderColor={"grey-20"}
-            borderWidth={"1px"}
-            borderRadius={"2px"}
-            marginBottom={"2"}
-            className={classes.markdownSyntaxHighlight}
-          >
-            <label
-              className={"visually-hidden"}
-              htmlFor={"markdown-editor-textarea"}
+        <>
+          <div className={classes.markdownEditor}>
+            <Box
+              borderColor={"grey-20"}
+              borderWidth={"1px"}
+              borderRadius={"2px"}
+              marginBottom={"2"}
+              className={classes.markdownSyntaxHighlight}
             >
-              Markdown editor
-            </label>
-            {/* The <textarea> is the element that takes and handles user */}
-            {/* input and is accessible by assistive technology. It is presented */}
-            {/* as not visible via the custom css styles (see css module) */}
-            <textarea
-              id={"markdown-editor-textarea"}
-              aria-describedby={"editor-markdown-description"}
-              value={text}
-              onChange={(event) => setText(event?.target?.value)}
-              className={classes.markdownTextarea}
-              disabled={isSaving}
-            />
-            {/* The <SyntaxHighlighter> is showing the current value of the */}
-            {/* <textarea> as an improved visual feedback for users. It is */}
-            {/* hidden from assitive technology so this does not get the */}
-            {/* same information twice */}
-            <div aria-hidden={"true"}>
-              <SyntaxHighlighter
-                language={"markdown"}
-                PreTag="div"
-                style={a11yLight}
-                wrapLongLines={true}
-                customStyle={{ minHeight: "35vh" }}
+              <label
+                className={"visually-hidden"}
+                htmlFor={"markdown-editor-textarea"}
               >
-                {text}
-              </SyntaxHighlighter>
-            </div>
-          </Box>
+                Markdown editor
+              </label>
+              {/* The <textarea> is the element that takes and handles user */}
+              {/* input and is accessible by assistive technology. It is presented */}
+              {/* as not visible via the custom css styles (see css module) */}
+              <textarea
+                id={"markdown-editor-textarea"}
+                aria-describedby={"editor-markdown-description"}
+                value={text}
+                onChange={(event) => setText(event?.target?.value)}
+                className={classes.markdownTextarea}
+                disabled={isSaving}
+              />
+              {/* The <SyntaxHighlighter> is showing the current value of the */}
+              {/* <textarea> as an improved visual feedback for users. It is */}
+              {/* hidden from assitive technology so this does not get the */}
+              {/* same information twice */}
+              <div aria-hidden={"true"}>
+                <SyntaxHighlighter
+                  language={"markdown"}
+                  PreTag="div"
+                  style={a11yLight}
+                  wrapLongLines={true}
+                  customStyle={{ minHeight: "35vh" }}
+                >
+                  {text}
+                </SyntaxHighlighter>
+              </div>
+            </Box>
+          </div>
           <Box.Flex justifyContent={"end"}>
             <Typography.SmallStrong id={"editor-markdown-description"}>
               We are supporting markdown following the{" "}
               <a href={"https://commonmark.org/help/"}>CommonMark</a> standard.
             </Typography.SmallStrong>
           </Box.Flex>
-        </div>
+        </>
       )}
 
       {viewMode === "preview" && <DocumentationView markdownString={text} />}
