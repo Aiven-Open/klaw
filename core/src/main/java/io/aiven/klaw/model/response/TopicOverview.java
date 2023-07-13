@@ -1,6 +1,6 @@
 package io.aiven.klaw.model.response;
 
-import io.aiven.klaw.model.TopicHistory;
+import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -12,7 +12,7 @@ public class TopicOverview extends ResourceOverviewAttributes {
   private List<AclOverviewInfo> aclInfoList;
   private List<AclOverviewInfo> prefixedAclInfoList;
   private List<AclOverviewInfo> transactionalAclInfoList;
-  private List<TopicHistory> topicHistoryList;
+  private List<ResourceHistory> topicHistoryList;
   @NotNull private PromotionStatus topicPromotionDetails;
   @NotNull private List<EnvIdInfo> availableEnvironments;
 

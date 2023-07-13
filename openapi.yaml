@@ -6882,7 +6882,7 @@
         },
         "required" : [ "status" ]
       },
-      "TopicHistory" : {
+      "ResourceHistory" : {
         "properties" : {
           "environmentName" : {
             "type" : "string"
@@ -6949,7 +6949,7 @@
           "topicHistoryList" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/TopicHistory"
+              "$ref" : "#/components/schemas/ResourceHistory"
             }
           },
           "topicPromotionDetails" : {
@@ -7936,10 +7936,10 @@
               "$ref" : "#/components/schemas/KafkaConnectorModelResponse"
             }
           },
-          "topicHistoryList" : {
+          "connectorHistoryList" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/components/schemas/TopicHistory"
+              "$ref" : "#/components/schemas/ResourceHistory"
             }
           },
           "promotionDetails" : {
