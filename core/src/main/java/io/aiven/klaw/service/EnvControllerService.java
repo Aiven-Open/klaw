@@ -96,7 +96,7 @@ public class EnvControllerService {
             kwClusters.getKafkaFlavor(),
             tenantId);
 
-    env.setEnvStatus(status.value);
+    env.setEnvStatus(status);
     manageDatabase.getHandleDbRequests().addNewEnv(env);
   }
 }

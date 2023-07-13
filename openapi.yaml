@@ -6650,11 +6650,12 @@
           "result" : {
             "type" : "string"
           },
-          "envstatus" : {
-            "type" : "string"
+          "envStatus" : {
+            "type" : "string",
+            "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
           }
         },
-        "required" : [ "envstatus", "result" ]
+        "required" : [ "envStatus", "result" ]
       },
       "TopicsCountPerEnv" : {
         "properties" : {
@@ -7485,7 +7486,8 @@
             "type" : "string"
           },
           "envStatus" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
           },
           "otherParams" : {
             "type" : "string"

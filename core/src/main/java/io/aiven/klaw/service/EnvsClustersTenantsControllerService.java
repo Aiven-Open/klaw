@@ -1350,12 +1350,12 @@ public class EnvsClustersTenantsControllerService {
       status = ClusterStatus.OFFLINE;
       log.error("Error from getUpdateEnvStatus ", e);
     }
-    env.setEnvStatus(status.value);
+    env.setEnvStatus(status);
     manageDatabase.getHandleDbRequests().addNewEnv(env);
     manageDatabase.loadEnvMapForOneTenant(tenantId);
 
     envUpdatedStatus.setResult(ApiResultStatus.SUCCESS.value);
-    envUpdatedStatus.setEnvstatus(status.value);
+    envUpdatedStatus.setEnvStatus(status);
 
     return envUpdatedStatus;
   }

@@ -1,6 +1,7 @@
 package io.aiven.klaw.model.response;
 
 import io.aiven.klaw.dao.EnvTag;
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -28,7 +29,7 @@ public class EnvModelResponse implements Serializable {
 
   @NotNull private String clusterName;
 
-  @NotNull private String envStatus;
+  @NotNull private ClusterStatus envStatus;
 
   @NotNull private String otherParams;
 
