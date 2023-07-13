@@ -1,5 +1,5 @@
 import { EmptyState, EmptyStateLayout } from "@aivenio/aquarium";
-import illustration from "src/app/images/topic-details-documentation-illustration.svg";
+import illustration from "src/app/images/documentation-illustration.svg";
 
 type NoDocumentationBannerProps = {
   addDocumentation: () => void;
