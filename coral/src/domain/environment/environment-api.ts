@@ -3,7 +3,7 @@ import { Environment } from "src/domain/environment/environment-types";
 import api, { API_PATHS } from "src/services/api";
 import { KlawApiResponse } from "types/utils";
 
-// For each entity, there should be two GET endpoints for environments:
+//  For each entity, there should be two GET endpoints for environments:
 // - one gets *all* environments for that entity: used for browsing (list tables, Approval tables and My requests tables)
 // - one gets environments *filtered according to the admin's rules*: used for creating requests (forms)
 

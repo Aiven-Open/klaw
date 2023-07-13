@@ -1,4 +1,4 @@
-/* TEMP browser reset and general vars
+/** TEMP browser reset and general vars
  * until we can consume that from the DS
 */
 
@@ -17,9 +17,6 @@
 
 body {
   margin: 0;
-  /*@TODO check with design, it is supposed*/
-  /*  to be grey-60 but that does not meet*/
-  /*  accessibility standards*/
   /*represents grey-70*/
   color: var(--body-text-color);
   -webkit-text-size-adjust: 100%;
