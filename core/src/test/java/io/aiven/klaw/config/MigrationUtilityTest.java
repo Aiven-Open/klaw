@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.Set;
+import liquibase.integration.spring.SpringLiquibase;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -40,6 +41,8 @@ class MigrationUtilityTest {
 
   @Mock private DataVersionRepo versionRepo;
 
+  @Mock private SpringLiquibase liquibase;
+
   private static final String KLAW_VERSION = "2.2.0";
 
   private static final String PACKAGE_TO_SCAN = "io.aiven.klaw.dao.test";
@@ -60,6 +63,7 @@ class MigrationUtilityTest {
     ReflectionTestUtils.setField(utility, "currentKlawVersion", KLAW_VERSION);
     ReflectionTestUtils.setField(utility, "context", context);
     ReflectionTestUtils.setField(utility, "packageToScan", PACKAGE_TO_SCAN);
+    ReflectionTestUtils.setField(utility, "liquibase", liquibase);
   }
 
   @Test

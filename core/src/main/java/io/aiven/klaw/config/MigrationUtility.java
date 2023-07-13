@@ -9,11 +9,17 @@ import io.aiven.klaw.error.KlawDataMigrationException;
 import io.aiven.klaw.repository.DataVersionRepo;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import liquibase.integration.spring.SpringLiquibase;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.apache.commons.lang3.tuple.Pair;
@@ -29,6 +35,10 @@ import org.springframework.context.annotation.Configuration;
 public class MigrationUtility {
 
   public static final int SUPPORTED_KLAW_VERSION_NUMBER_SYSTEM = 3;
+  public static final String QUERY_DATEEXECUTED_FROM_DATABASECHANGELOG =
+      "SELECT DATEEXECUTED FROM %s";
+  public static final int ALLOWED_TIME_BETWEEN_DB_UPDATES_TO_BE_FIRST_INSTALL = 1;
+  public static final String DATA_VERSION_DEFAULT = "0.0.0";
 
   @Value("${klaw.data.migration.packageToScan:io.aiven.klaw.dao.migration}")
   private String packageToScan;
@@ -40,19 +50,32 @@ public class MigrationUtility {
 
   @Autowired private ApplicationContext context;
 
+  @Autowired private SpringLiquibase liquibase;
+
+  private boolean isCleanInstall;
+
   @SchedulerLock(
       name = "TaskScheduler_MigrationUtility",
       lockAtLeastFor = "${klaw.shedlock.lockAtLeastFor:PT30M}",
       lockAtMostFor = "${klaw.shedlock.lockAtMostFor:PT60M}")
   public void startMigration() throws Exception {
+
     // Find the latest version in DB
-    String latestDataVersion = getLatestDataVersion();
-    if (!isVersionGreaterThenCurrentVersion(latestDataVersion, currentKlawVersion)) {
+    String latestDataVersion = getLatestDataVersionOrDefault(getLatestDataVersion());
+    if (latestDataVersion.equals(DATA_VERSION_DEFAULT) && isNewInstall()) {
+      log.info(
+          "This is a new install and no data migration is required. Setting Klaw Version to {}",
+          currentKlawVersion);
+      updateDataVersionInDB(currentKlawVersion, 0);
+      return;
+    } else if (!isVersionGreaterThenCurrentVersion(latestDataVersion, currentKlawVersion)) {
       log.info(
           "Current Data Version {} is greater than the Klaw version {}, no action needed.",
           latestDataVersion,
           currentKlawVersion);
       return;
+      // This else if is only called when there is a new install of Klaw or an update from a version
+      // pre Migration Utility.
     }
 
     // Find all DataMigration annotated classes.// Migrate each one
@@ -66,27 +89,32 @@ public class MigrationUtility {
     executeMigrationInstructions(orderedMapOfMigrationInstructions);
 
     // Update the database with the version if there was no
-    String postMigrationDataVersion = getLatestDataVersion();
-    if (!isVersionGreaterThenCurrentVersion(postMigrationDataVersion, currentKlawVersion)) {
-      updateDataVersionInDB(currentKlawVersion);
+    DataVersion postMigrationDataVersion = getLatestDataVersion();
+    if (!isVersionGreaterThenCurrentVersion(
+        postMigrationDataVersion.getVersion(), currentKlawVersion)) {
+      updateDataVersionInDB(currentKlawVersion, postMigrationDataVersion.getChangeId());
     }
   }
 
-  private String getLatestDataVersion() {
-    DataVersion latestDataVersion = versionRepo.findTopByOrderByIdDesc();
+  private String getLatestDataVersionOrDefault(DataVersion latestDataVersion) {
     if (latestDataVersion == null || latestDataVersion.getVersion() == null) {
       // If there is no data version we assume a clean system
-      return "0.0.0";
+      return DATA_VERSION_DEFAULT;
     } else {
       return latestDataVersion.getVersion();
     }
   }
 
-  private void updateDataVersionInDB(String version) {
+  private DataVersion getLatestDataVersion() {
+    return versionRepo.findTopByOrderByIdDesc();
+  }
+
+  private void updateDataVersionInDB(String version, int changeId) {
     DataVersion latestDataVersion = new DataVersion();
     latestDataVersion.setVersion(currentKlawVersion);
     latestDataVersion.setExecutedAt(Timestamp.from(Instant.now()));
     latestDataVersion.setComplete(true);
+    latestDataVersion.setChangeId(changeId);
     versionRepo.save(latestDataVersion);
   }
 
@@ -147,7 +175,7 @@ public class MigrationUtility {
                 String.format(MIGRATION_ERR_101, runner.getCanonicalName()));
           } else {
             // update table that this version completed.
-            updateDataVersionInDB(orderedMapOfMigrationInstructions.get(value).getLeft());
+            updateDataVersionInDB(orderedMapOfMigrationInstructions.get(value).getLeft(), value);
           }
         }
       }
@@ -199,5 +227,60 @@ public class MigrationUtility {
     }
 
     return false;
+  }
+
+  /***
+   * isNewInstall Checks the liquibase DatabaseChangeLog Table It checks if all the tables were created at the same time (by default all tables are created within an hour of each other)
+   *
+   * @return true if all tables are created at the same time, false if the database tables were created over a longer period of time.
+   */
+  private boolean isNewInstall() {
+    try {
+      if (liquibase.getDataSource() != null) {
+        ResultSet results = getLiquibaseDatabaseChangeLogExecutionTimes();
+        LocalDateTime earliestTime = null, latestTime = null;
+
+        while (results.next()) {
+          LocalDateTime executionTime = results.getTimestamp(1).toLocalDateTime();
+
+          earliestTime = isExecutionTimeBeforeCurrentEarliestTime(earliestTime, executionTime);
+          latestTime = isExecutionTimeAfterCurrentLatestTime(latestTime, executionTime);
+        }
+        return earliestTime.plus(1, ChronoUnit.HOURS).isAfter(latestTime);
+      }
+    } catch (Exception e) {
+      log.error(
+          "Exception thrown trying to get Execution Times fr database change log: ",
+          e.getMessage());
+    }
+    return false;
+  }
+
+  private ResultSet getLiquibaseDatabaseChangeLogExecutionTimes() throws SQLException {
+    PreparedStatement prepared =
+        liquibase
+            .getDataSource()
+            .getConnection()
+            .prepareStatement(
+                String.format(
+                    QUERY_DATEEXECUTED_FROM_DATABASECHANGELOG,
+                    liquibase.getDatabaseChangeLogTable()));
+    return prepared.executeQuery();
+  }
+
+  private LocalDateTime isExecutionTimeBeforeCurrentEarliestTime(
+      LocalDateTime earliestTime, LocalDateTime executionTime) {
+    if (earliestTime == null || earliestTime.isAfter(executionTime)) {
+      return executionTime;
+    }
+    return earliestTime;
+  }
+
+  private LocalDateTime isExecutionTimeAfterCurrentLatestTime(
+      LocalDateTime latestTime, LocalDateTime executionTime) {
+    if (latestTime == null || latestTime.isBefore(executionTime)) {
+      return executionTime;
+    }
+    return latestTime;
   }
 }
