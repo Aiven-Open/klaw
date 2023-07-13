@@ -10,6 +10,7 @@ import {
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
+import { isDocumentationTransformationError } from "src/domain/helper/documentation-helper";
 
 function TopicDocumentation() {
   const queryClient = useQueryClient();
@@ -42,7 +43,9 @@ function TopicDocumentation() {
           setEditMode(false);
         });
       },
-      onError: () => setEditMode(false),
+      onError: () => {
+        setSaving(false);
+      },
     }
   );
 
@@ -90,6 +93,20 @@ function TopicDocumentation() {
       <>
         <PageHeader title={"Documentation"} />
         <NoDocumentationBanner addDocumentation={() => setEditMode(true)} />
+      </>
+    );
+  }
+
+  if (isDocumentationTransformationError(topicOverview.topicDocumentation)) {
+    return (
+      <>
+        <PageHeader title={"Documentation"} />
+        <Box role="alert">
+          <Alert type="error">
+            Something went wrong while trying to transform the documentation
+            into the right format.
+          </Alert>
+        </Box>
       </>
     );
   }
