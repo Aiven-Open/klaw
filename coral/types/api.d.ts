@@ -1049,7 +1049,7 @@ export type components = {
       topicName?: string;
       error?: string;
     };
-    TopicHistory: {
+    ResourceHistory: {
       environmentName: string;
       teamName: string;
       requestedBy: string;
@@ -1067,7 +1067,7 @@ export type components = {
       aclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       prefixedAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       transactionalAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
-      topicHistoryList?: (components["schemas"]["TopicHistory"])[];
+      topicHistoryList?: (components["schemas"]["ResourceHistory"])[];
       topicPromotionDetails: components["schemas"]["PromotionStatus"];
       availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       topicDocumentation?: string;
@@ -1417,7 +1417,7 @@ export type components = {
     };
     ConnectorOverview: {
       connectorInfoList: (components["schemas"]["KafkaConnectorModelResponse"])[];
-      topicHistoryList?: (components["schemas"]["TopicHistory"])[];
+      connectorHistoryList?: (components["schemas"]["ResourceHistory"])[];
       promotionDetails?: {
         [key: string]: string | undefined;
       };

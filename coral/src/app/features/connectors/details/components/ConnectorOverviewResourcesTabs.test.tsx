@@ -45,7 +45,7 @@ const testConnectorOverview: ConnectorOverview = {
       '{\n  "connector.class" : "io.confluent.connect.storage.tools.SchemaSourceConnector",\n  "tasks.max" : "1",\n  "name" : "my-connector",\n  "topic" : "testtopic",\n  "topics.regex" : "*"\n}',
     environmentName: "DEV",
   },
-  topicHistoryList: [],
+  connectorHistoryList: [],
   promotionDetails: {
     sourceEnv: "4",
     connectorName: testConnectorName,
