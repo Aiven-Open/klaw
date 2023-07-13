@@ -8019,7 +8019,8 @@
             }
           },
           "clusterStatus" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
           },
           "associatedServers" : {
             "type" : "string"
@@ -8034,7 +8035,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "allPageNos", "bootstrapServers", "clusterId", "clusterName", "clusterType", "kafkaFlavor", "protocol", "showDeleteCluster", "totalNoPages" ]
+        "required" : [ "allPageNos", "bootstrapServers", "clusterId", "clusterName", "clusterStatus", "clusterType", "kafkaFlavor", "protocol", "showDeleteCluster", "totalNoPages" ]
       },
       "ClusterInfo" : {
         "properties" : {

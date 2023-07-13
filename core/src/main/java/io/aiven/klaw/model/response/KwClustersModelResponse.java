@@ -1,5 +1,6 @@
 package io.aiven.klaw.model.response;
 
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -31,7 +32,7 @@ public class KwClustersModelResponse implements Serializable {
 
   @NotNull private List<String> allPageNos;
 
-  private String clusterStatus;
+  @NotNull private ClusterStatus clusterStatus;
 
   private String associatedServers;
 

@@ -4,6 +4,7 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +82,7 @@ public class EnvControllerService {
   }
 
   private void updateEnvStatusPerEnv(Integer tenantId, Env env) throws KlawException {
-    String status;
+    ClusterStatus status;
     KwClusters kwClusters =
         manageDatabase
             .getClusters(KafkaClustersType.of(env.getType()), tenantId)
@@ -95,7 +96,7 @@ public class EnvControllerService {
             kwClusters.getKafkaFlavor(),
             tenantId);
 
-    env.setEnvStatus(status);
+    env.setEnvStatus(status.value);
     manageDatabase.getHandleDbRequests().addNewEnv(env);
   }
 }

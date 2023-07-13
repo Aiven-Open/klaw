@@ -163,14 +163,14 @@ public class ClusterApiService {
 
       ResponseEntity<ClusterStatus> resultBody =
           getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
-      return Objects.requireNonNull(resultBody.getBody()).value;
+      return Objects.requireNonNull(resultBody.getBody().value);
     } catch (Exception e) {
       log.error("Error from getClusterApiStatus ", e);
       return ClusterStatus.OFFLINE.value;
     }
   }
 
-  String getKafkaClusterStatus(
+  ClusterStatus getKafkaClusterStatus(
       String bootstrapHost,
       KafkaSupportedProtocol protocol,
       String clusterIdentification,
@@ -196,10 +196,10 @@ public class ClusterApiService {
 
       ResponseEntity<ClusterStatus> resultBody =
           getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
-      return Objects.requireNonNull(resultBody.getBody()).value;
+      return Objects.requireNonNull(resultBody.getBody());
     } catch (Exception e) {
       log.error("Error from getKafkaClusterStatus ", e);
-      return ClusterStatus.NOT_KNOWN.value;
+      return ClusterStatus.NOT_KNOWN;
     }
   }
 

@@ -1446,7 +1446,8 @@ export type components = {
       showDeleteCluster: boolean;
       totalNoPages: string;
       allPageNos: (string)[];
-      clusterStatus?: string;
+      /** @enum {string} */
+      clusterStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       associatedServers?: string;
       projectName?: string;
       serviceName?: string;
