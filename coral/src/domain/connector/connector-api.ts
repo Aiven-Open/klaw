@@ -4,6 +4,11 @@ import {
   transformConnectorOverviewResponse,
   transformConnectorRequestApiResponse,
 } from "src/domain/connector/connector-transformer";
+import { ConnectorDocumentationMarkdown } from "src/domain/connector/connector-types";
+import {
+  StringifiedHtml,
+  createStringifiedHtml,
+} from "src/domain/helper/documentation-helper";
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
@@ -146,14 +151,59 @@ const createConnectorRequest = (
 
 type GetConnectorOverviewParams =
   KlawApiRequestQueryParameters<"getConnectorOverview">;
-const getConnectorOverview = (params: GetConnectorOverviewParams) => {
+const getConnectorOverview = ({
+  connectornamesearch,
+  environmentId,
+}: GetConnectorOverviewParams) => {
+  const queryParams = convertQueryValuesToString({
+    connectornamesearch,
+    ...(environmentId && { environmentId }),
+  });
+
   return api
     .get<KlawApiResponse<"getConnectorOverview">>(
       API_PATHS.getConnectorOverview,
-      new URLSearchParams(params)
+      new URLSearchParams(queryParams)
     )
     .then(transformConnectorOverviewResponse);
 };
+
+type UpdateConnectorDocumentation = {
+  connectorName: string;
+  connectorIdForDocumentation: number;
+  connectorDocumentation: ConnectorDocumentationMarkdown;
+};
+async function updateConnectorDocumentation({
+  connectorName,
+  connectorIdForDocumentation,
+  connectorDocumentation,
+}: UpdateConnectorDocumentation) {
+  const stringifiedHtml = await createStringifiedHtml(connectorDocumentation);
+
+  // @ TODO
+  // KlawApiRequest<"saveConnectorDocumentation"> currently
+  // lists too many props as required, only the three we're
+  // passing are needed and used in Angular, too.
+  // BE is working on that. We still need to use our
+  // own typing for stringifiedHtml to make sure we
+  // get a certain type safety up until this point
+  const requestBody: {
+    connectorName: string;
+    connectorid: number;
+    documentation: StringifiedHtml;
+  } = {
+    connectorName,
+    connectorid: connectorIdForDocumentation,
+    documentation: stringifiedHtml,
+  };
+
+  return api.post<
+    KlawApiResponse<"saveConnectorDocumentation">,
+    KlawApiRequest<"saveConnectorDocumentation">
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+  >(API_PATHS.saveConnectorDocumentation, requestBody);
+}
 
 export {
   approveConnectorRequest,
@@ -164,4 +214,5 @@ export {
   getConnectorRequests,
   getConnectorRequestsForApprover,
   getConnectors,
+  updateConnectorDocumentation,
 };

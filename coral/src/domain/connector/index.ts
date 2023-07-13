@@ -7,9 +7,11 @@ import {
   getConnectorRequests,
   getConnectorRequestsForApprover,
   getConnectors,
+  updateConnectorDocumentation,
 } from "src/domain/connector/connector-api";
 import {
   Connector,
+  ConnectorDocumentationMarkdown,
   ConnectorOverview,
   ConnectorRequest,
   ConnectorRequestsForApprover,
@@ -25,6 +27,7 @@ export {
   getConnectorRequests,
   getConnectorRequestsForApprover,
   getConnectors,
+  updateConnectorDocumentation,
 };
 
 export type {
@@ -33,4 +36,5 @@ export type {
   ConnectorRequest,
   ConnectorRequestsForApprover,
   CreateConnectorRequestPayload,
+  ConnectorDocumentationMarkdown,
 };
