@@ -62,7 +62,7 @@ const testConnectorOverview: ConnectorOverview = {
       name: "ACC",
     },
   ],
-  topicIdForDocumentation: 1003,
+  connectorIdForDocumentation: 1003,
 };
 
 describe("ConnectorDetails", () => {

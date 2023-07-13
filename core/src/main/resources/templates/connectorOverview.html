@@ -600,12 +600,12 @@
 							<div class="tab-content">
 								<div class="tab-pane active  p-3" id="docs" role="tabpanel">
 
-									<div ng-show="topicDocumentation == null" class="ribbon-wrapper card">
+									<div ng-show="connectorDocumentation == null" class="ribbon-wrapper card">
 										<div class="ribbon ribbon-warning">Notification</div>
 										<p class="ribbon-content">No documentaion available !!</p>
 									</div>
 
-									<div ng-show="topicDocumentation == null && addDocsVar != 'true'" class="row button-group">
+									<div ng-show="connectorDocumentation == null && addDocsVar != 'true'" class="row button-group">
 										<div ng-show="connectorOverview.teamName == teamname" class="col-lg-2 col-md-4">
 											<button type="button" ng-click="addDocs();"
 													class="btn waves-effect waves-light btn-block btn-secondary">Add Documentation</button>
@@ -615,7 +615,7 @@
 									<div ng-show="addDocsVar == 'true'">
 										<div class="form-group">
 
-											<div text-angular ng-model="topicDocumentation"></div>
+											<div text-angular ng-model="connectorDocumentation"></div>
 
 										</div>
 
@@ -627,9 +627,9 @@
 
 									</div>
 
-									<div ng-show="tmpTopicDocumentation != null  && addDocsVar != 'true'">
-										<!-- Display topic documentation -->
-										<div id="topicDocId" markdown=1></div>
+									<div ng-show="tmpconnectorDocumentation != null  && addDocsVar != 'true'">
+										<!-- Display connector documentation -->
+										<div id="connectorDocId" markdown=1></div>
 
 										<div ng-show="connectorOverview.teamName == teamname" class="form-actions">
 											<button ng-click="updateDocs();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>

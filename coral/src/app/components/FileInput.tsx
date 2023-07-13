@@ -9,11 +9,11 @@ import { ResolveIntersectionTypes } from "types/utils";
 type FileInputProps = ResolveIntersectionTypes<
   InputHTMLAttributes<HTMLInputElement> & {
     valid: boolean;
-    // labelText is where the important information for
-    // visual and AT users is transported!
+    /** labelText is needed to transport important
+     * information to visual and AT users */
     labelText: string;
-    // buttonText is not conveyed to e.g. screen reader
-    // users, treat is as more decorative text
+    /** buttonText is not conveyed to e.g. screen reader
+     * users, treat is as more decorative text */
     buttonText: string;
     helperText: string;
     noFileText: string;

@@ -34,8 +34,6 @@ const mockGetEnvironments =
 const filterByEnvironmentLabel = "Filter by Environment";
 const filterByTeamLabel = "Filter by team";
 
-// @TODO find better location / handling for mocks
-// depends on how we proceed
 const mockedGetTopicsResponseSinglePage: TopicApiResponse =
   mockedResponseTransformed;
 const mockedGetTopicsResponseMultiplePages: TopicApiResponse =

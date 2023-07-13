@@ -1423,9 +1423,9 @@ export type components = {
       };
       connectorExists: boolean;
       availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
-      topicDocumentation?: string;
+      connectorDocumentation?: string;
       /** Format: int32 */
-      topicIdForDocumentation?: number;
+      connectorIdForDocumentation: number;
     };
     ConnectorOverviewPerEnv: {
       connectorExists?: boolean;

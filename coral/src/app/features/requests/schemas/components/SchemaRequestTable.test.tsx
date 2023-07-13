@@ -123,8 +123,6 @@ describe("SchemaRequestTable", () => {
     });
 
     schemaRequests.forEach((request) => {
-      //@TODO buttons don't have discernible names right now
-      // should be fixed for accessibility
       it(`shows a button to show the detailed schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", {
           name: "Schema requests, page 1 of 10",
@@ -138,8 +136,6 @@ describe("SchemaRequestTable", () => {
     });
 
     deletableRequests.forEach((request) => {
-      //@TODO buttons don't have discernible names right now
-      // should be fixed for accessibility
       it(`shows a button to delete schema request for topic name ${request.topicname}`, () => {
         const table = screen.getByRole("table", {
           name: "Schema requests, page 1 of 10",

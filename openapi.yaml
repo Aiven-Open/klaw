@@ -7957,15 +7957,15 @@
               "$ref" : "#/components/schemas/EnvIdInfo"
             }
           },
-          "topicDocumentation" : {
+          "connectorDocumentation" : {
             "type" : "string"
           },
-          "topicIdForDocumentation" : {
+          "connectorIdForDocumentation" : {
             "type" : "integer",
             "format" : "int32"
           }
         },
-        "required" : [ "availableEnvironments", "connectorExists", "connectorInfoList" ]
+        "required" : [ "availableEnvironments", "connectorExists", "connectorIdForDocumentation", "connectorInfoList" ]
       },
       "ConnectorOverviewPerEnv" : {
         "properties" : {
