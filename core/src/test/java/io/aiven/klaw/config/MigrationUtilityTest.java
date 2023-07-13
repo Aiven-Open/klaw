@@ -96,6 +96,7 @@ class MigrationUtilityTest {
         .thenReturn(new String[] {"migrationTestData2x1x0", "migrationTestData2x2x0"});
     when(context.getBean(eq("migrationTestData2x1x0"))).thenReturn(m1);
     when(context.getBean(eq("migrationTestData2x2x0"))).thenReturn(m2);
+    when(versionRepo.findTopByOrderByIdDesc()).thenReturn(null);
 
     ReflectionTestUtils.setField(m1, "success", true);
     ReflectionTestUtils.setField(m2, "success", true);

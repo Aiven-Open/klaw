@@ -91,7 +91,7 @@ public class MigrationUtility {
     // Update the database with the version if there was no
     DataVersion postMigrationDataVersion = getLatestDataVersion();
     if (!isVersionGreaterThenCurrentVersion(
-        postMigrationDataVersion.getVersion(), currentKlawVersion)) {
+        getLatestDataVersionOrDefault(postMigrationDataVersion), currentKlawVersion)) {
       updateDataVersionInDB(currentKlawVersion, postMigrationDataVersion.getChangeId());
     }
   }
