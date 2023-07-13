@@ -1,3 +1,4 @@
+import { Context as AquariumContext } from "@aivenio/aquarium";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { updateTeam, getTeamsOfUser } from "src/domain/team/team-api";
 import { cleanup, screen, within } from "@testing-library/react";
@@ -5,6 +6,7 @@ import { SwitchTeamsDropdown } from "src/app/features/team-info/SwitchTeamsDropd
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
 import { KlawApiResponse } from "types/utils";
 import userEvent from "@testing-library/user-event";
+import { KlawApiError } from "src/services/api";
 
 jest.mock("src/domain/team/team-api.ts");
 
@@ -12,6 +14,12 @@ const mockGetTeamsOfUser = getTeamsOfUser as jest.MockedFunction<
   typeof getTeamsOfUser
 >;
 const mockUpdateTeam = updateTeam as jest.MockedFunction<typeof updateTeam>;
+
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
 
 const testUsername = "testuser";
 const testCurrentTeam = "awesome team";
@@ -42,6 +50,18 @@ describe("SwitchTeamsDropdown", () => {
     beforeAll(() => {
       mockGetTeamsOfUser.mockResolvedValue([]);
       mockUpdateTeam.mockImplementation(jest.fn());
+
+      customRender(
+        <AquariumContext>
+          <SwitchTeamsDropdown
+            userName={testUsername}
+            currentTeam={testCurrentTeam}
+          />
+        </AquariumContext>,
+        {
+          queryClient: true,
+        }
+      );
     });
     afterAll(() => {
       cleanup();
@@ -49,16 +69,6 @@ describe("SwitchTeamsDropdown", () => {
     });
 
     it("shows the current team as text", async () => {
-      customRender(
-        <SwitchTeamsDropdown
-          userName={testUsername}
-          currentTeam={testCurrentTeam}
-        />,
-        {
-          queryClient: true,
-        }
-      );
-
       const loading = screen.getByTestId("teams-loading");
 
       await waitForElementToBeRemoved(loading);
@@ -77,10 +87,12 @@ describe("SwitchTeamsDropdown", () => {
       mockUpdateTeam.mockImplementation(jest.fn());
 
       customRender(
-        <SwitchTeamsDropdown
-          userName={testUsername}
-          currentTeam={testCurrentTeam}
-        />,
+        <AquariumContext>
+          <SwitchTeamsDropdown
+            userName={testUsername}
+            currentTeam={testCurrentTeam}
+          />
+        </AquariumContext>,
         {
           queryClient: true,
         }
@@ -128,10 +140,12 @@ describe("SwitchTeamsDropdown", () => {
       mockUpdateTeam.mockImplementation(mockUpdateTeamFn);
 
       customRender(
-        <SwitchTeamsDropdown
-          userName={testUsername}
-          currentTeam={testCurrentTeam}
-        />,
+        <AquariumContext>
+          <SwitchTeamsDropdown
+            userName={testUsername}
+            currentTeam={testCurrentTeam}
+          />
+        </AquariumContext>,
         {
           queryClient: true,
         }
@@ -219,7 +233,7 @@ describe("SwitchTeamsDropdown", () => {
       expect(mockUpdateTeamFn).not.toHaveBeenCalled();
     });
 
-    it('changes teams when user clicks "cancel"', async () => {
+    it('changes teams when user clicks "Change team"', async () => {
       const button = screen.getByRole("button", { name: "Change your team" });
       await userEvent.click(button);
       const menu = screen.getByRole("menu", { name: "Change your team" });
@@ -240,6 +254,69 @@ describe("SwitchTeamsDropdown", () => {
 
       expect(dialog).not.toBeVisible();
       expect(mockUpdateTeamFn).toHaveBeenCalled();
+    });
+  });
+
+  describe("handles an error while switching teams", () => {
+    const mockError: KlawApiError = {
+      message: "Sorry this is an error",
+      success: false,
+    };
+
+    const originalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetTeamsOfUser.mockResolvedValue(testTeams);
+      mockUpdateTeam.mockRejectedValue(mockError);
+
+      customRender(
+        <AquariumContext>
+          <SwitchTeamsDropdown
+            userName={testUsername}
+            currentTeam={testCurrentTeam}
+          />
+        </AquariumContext>,
+        {
+          queryClient: true,
+        }
+      );
+
+      await waitForElementToBeRemoved(screen.getByTestId("teams-loading"));
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("shows a toast notification with an error when changing teams fails", async () => {
+      const button = screen.getByRole("button", { name: "Change your team" });
+      await userEvent.click(button);
+      const menu = screen.getByRole("menu", { name: "Change your team" });
+      const newTeamItem = within(menu).getByRole("menuitem", {
+        name: testTeams[1].teamname,
+      });
+
+      await userEvent.click(newTeamItem);
+
+      const dialog = screen.getByRole("dialog");
+      expect(dialog).toBeVisible();
+
+      const confirm = within(dialog).getByRole("button", {
+        name: "Change team",
+      });
+
+      await userEvent.click(confirm);
+
+      expect(dialog).not.toBeVisible();
+      expect(mockUpdateTeam).toHaveBeenCalled();
+      expect(mockedUseToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: `Error while switching teams. ${mockError.message}`,
+        })
+      );
+      expect(console.error).toHaveBeenCalledWith(mockError);
     });
   });
 });
