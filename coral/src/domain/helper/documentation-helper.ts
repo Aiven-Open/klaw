@@ -27,6 +27,24 @@ type MarkdownStringBrand = string & {
 
 type MarkdownString = Awaited<ReturnType<typeof createMarkdown>>;
 
+// very unique string to be able to identify documentation
+// transformation errors that otherwise can't be determined
+const DOCUMENTATION_TRANSFORM_ERROR =
+  "6e6c85af-71b4-4021-b7fe-bf99c81f2c6aZ-d3841163-ba74-4db4-b874-35b973d2a80e-32e866bd-99d0-4a64-ac15-5b73104ab0ff";
+
+/** There can be edge cases where transforming `stringifiedHtml` from backend
+ * into a markdown string causes an error. To be able to handle that error
+ * gracefully while still getting `topicOverview` but also show our users
+ * helpful information, we set the value of `isDocumentationTransformationError`
+ * as property for topicOverview.topicDocumentation. If topicDocumentation
+ * matches this string, we know that there was an error and can inform the user.
+ */
+function isDocumentationTransformationError(
+  documentation: MarkdownStringBrand
+) {
+  return documentation === DOCUMENTATION_TRANSFORM_ERROR;
+}
+
 // `createMarkdown` is used to transform documentation on the api response
 //  for example on TopicOverview. The `topicDocumentation` is a html string
 //  that we transform to markdown.
@@ -34,13 +52,18 @@ async function createMarkdown(stringifiedHtml: string) {
   // see: https://unifiedjs.com/learn/recipe/remark-html/#how-to-turn-html-into-markdown
   // we're also using rehypeSanitize to sanitize the HTML
   if (unified) {
-    const result = await unified()
-      .use(rehypeParse)
-      .use(rehypeSanitize)
-      .use(rehypeRemark)
-      .use(remarkStringify)
-      .process(stringifiedHtml);
-    return String(result) as MarkdownStringBrand;
+    try {
+      const result = await unified()
+        .use(rehypeParse)
+        .use(rehypeSanitize)
+        .use(rehypeRemark)
+        .use(remarkStringify)
+        .process(stringifiedHtml);
+      return String(result) as MarkdownStringBrand;
+    } catch (error) {
+      console.error(error);
+      return DOCUMENTATION_TRANSFORM_ERROR as MarkdownStringBrand;
+    }
   } else {
     return "" as MarkdownStringBrand;
   }
@@ -63,18 +86,29 @@ async function createStringifiedHtml(markdownString: string) {
   if (unified) {
     // see: https://unifiedjs.com/learn/recipe/remark-html/#how-to-turn-markdown-into-html
     // we're also using rehypeSanitize to sanitize the HTML
-    const result = await unified()
-      .use(remarkParse)
-      .use(remarkRehype)
-      .use(rehypeSanitize)
-      .use(rehypeStringify)
-      .process(markdownString);
+    try {
+      const result = await unified()
+        .use(remarkParse)
+        .use(remarkRehype)
+        .use(rehypeSanitize)
+        .use(rehypeStringify)
+        .process(markdownString);
 
-    return String(result) as StringifiedHtmlBrand;
+      return String(result) as StringifiedHtmlBrand;
+    } catch (error) {
+      // Throw specific error to show clear information to users
+      throw Error(
+        "Something went wrong while transforming the documentation into the right format to save."
+      );
+    }
   } else {
     return "" as StringifiedHtmlBrand;
   }
 }
 
-export { createMarkdown, createStringifiedHtml };
+export {
+  createMarkdown,
+  createStringifiedHtml,
+  isDocumentationTransformationError,
+};
 export type { MarkdownString, StringifiedHtml };
