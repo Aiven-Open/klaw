@@ -23,10 +23,10 @@ const mockUpdateTopicDocumentation =
     typeof updateTopicDocumentation
   >;
 
-const mockDocumentationTransformationError = jest.fn();
+const mockIsDocumentationTransformationError = jest.fn();
 jest.mock("src/domain/helper/documentation-helper", () => ({
-  documentationTransformationError: () =>
-    mockDocumentationTransformationError(),
+  isDocumentationTransformationError: () =>
+    mockIsDocumentationTransformationError(),
 }));
 
 const testTopicOverview: TopicOverview = {
@@ -396,7 +396,7 @@ describe("TopicDocumentation", () => {
     const originalConsoleError = console.error;
     beforeEach(() => {
       console.error = jest.fn();
-      mockDocumentationTransformationError.mockReturnValue(true);
+      mockIsDocumentationTransformationError.mockReturnValue(true);
       mockUseTopicDetails.mockReturnValue({
         ...mockTopicDetails,
         topicOverview: {

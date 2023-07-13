@@ -10,7 +10,7 @@ import {
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
-import { documentationTransformationError } from "src/domain/helper/documentation-helper";
+import { isDocumentationTransformationError } from "src/domain/helper/documentation-helper";
 
 function TopicDocumentation() {
   const queryClient = useQueryClient();
@@ -97,7 +97,7 @@ function TopicDocumentation() {
     );
   }
 
-  if (documentationTransformationError(topicOverview.topicDocumentation)) {
+  if (isDocumentationTransformationError(topicOverview.topicDocumentation)) {
     return (
       <>
         <PageHeader title={"Documentation"} />
