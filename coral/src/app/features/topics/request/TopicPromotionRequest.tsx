@@ -25,6 +25,7 @@ import SelectOrNumberInput from "src/app/features/topics/request/components/Sele
 import type { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
 import formSchema from "src/app/features/topics/request/form-schemas/topic-request-form";
 import { generateTopicNameDescription } from "src/app/features/topics/request/utils";
+import { Routes } from "src/app/router_utils";
 import { Environment } from "src/domain/environment";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment/environment-api";
 import {
@@ -46,25 +47,29 @@ function TopicPromotionRequest() {
 
   const [cancelDialogVisible, setCancelDialogVisible] = useState(false);
 
-  const { data: environments } = useQuery<Environment[], HTTPError>(
-    ["getEnvironmentsForTopicRequest"],
+  const { data: environments, isFetched: environmentsIsFetched } = useQuery<
+    Environment[],
+    HTTPError
+  >(["getEnvironmentsForTopicRequest"], {
+    queryFn: () => getAllEnvironmentsForTopicAndAcl(),
+  });
+
+  const {
+    data: topicDetailsForSourceEnv,
+    isFetched: topicDetailsForSourceEnvIsFetched,
+  } = useQuery<TopicDetailsPerEnv, HTTPError>(
+    ["getTopicDetailsPerEnv", topicName, sourceEnv],
     {
-      queryFn: () => getAllEnvironmentsForTopicAndAcl(),
+      queryFn: () =>
+        getTopicDetailsPerEnv({
+          topicname: topicName || "",
+          envSelected: sourceEnv || "",
+        }),
     }
   );
 
-  const { data: topicDetailsForSourceEnv } = useQuery<
-    TopicDetailsPerEnv,
-    HTTPError
-  >(["getTopicDetailsPerEnv", topicName, sourceEnv], {
-    queryFn: () =>
-      getTopicDetailsPerEnv({
-        topicname: topicName || "",
-        envSelected: sourceEnv || "",
-      }),
-  });
-
   const targetEnvironment = environments?.find(({ id }) => id === targetEnv);
+  const sourceEnvironment = environments?.find(({ id }) => id === sourceEnv);
 
   const form = useForm<Schema>({
     schema: formSchema,
@@ -79,40 +84,64 @@ function TopicPromotionRequest() {
     },
   });
 
+  // Handle errors when environment or topic does not exist
+  useEffect(() => {
+    if (environmentsIsFetched && targetEnvironment === undefined) {
+      navigate(`/topic/${topicName}`, { replace: true });
+      toast({
+        message: `No target environment was found with ID ${targetEnv}`,
+        position: "bottom-left",
+        variant: "danger",
+      });
+      return;
+    }
+    if (environmentsIsFetched && sourceEnvironment === undefined) {
+      navigate(`/topic/${topicName}`, { replace: true });
+      toast({
+        message: `No source environment was found with ID ${sourceEnv}`,
+        position: "bottom-left",
+        variant: "danger",
+      });
+      return;
+    }
+    if (
+      environmentsIsFetched &&
+      topicDetailsForSourceEnvIsFetched &&
+      !topicDetailsForSourceEnv?.topicExists
+    ) {
+      navigate(Routes.TOPICS, { replace: true });
+      toast({
+        message: `No topic was found with name ${topicName}`,
+        position: "bottom-left",
+        variant: "danger",
+      });
+      return;
+    }
+  }, [
+    environmentsIsFetched,
+    targetEnvironment,
+    topicDetailsForSourceEnvIsFetched,
+    topicDetailsForSourceEnv,
+  ]);
+
   useEffect(() => {
     if (
       targetEnvironment !== undefined &&
       targetEnvironment.params !== undefined &&
-      topicDetailsForSourceEnv !== undefined
+      topicDetailsForSourceEnv !== undefined &&
+      topicDetailsForSourceEnv.topicContents !== undefined
     ) {
-      form.setValue("environment", targetEnvironment);
-      form.setValue(
-        "topicpartitions",
-        String(targetEnvironment?.params.defaultPartitions)
-      );
-      form.setValue(
-        "replicationfactor",
-        String(targetEnvironment?.params.defaultRepFactor)
-      );
-
-      if (topicDetailsForSourceEnv.topicContents?.description !== undefined) {
-        form.setValue(
-          "description",
-          topicDetailsForSourceEnv.topicContents.description
-        );
-      }
-
-      if (
-        topicDetailsForSourceEnv.topicContents?.advancedTopicConfiguration !==
-        undefined
-      ) {
-        form.setValue(
-          "advancedConfiguration",
-          JSON.stringify(
-            topicDetailsForSourceEnv.topicContents.advancedTopicConfiguration
-          )
-        );
-      }
+      form.reset({
+        environment: targetEnvironment,
+        topicpartitions: String(targetEnvironment?.params.defaultPartitions),
+        replicationfactor: String(targetEnvironment?.params.defaultRepFactor),
+        topicname: topicName,
+        remarks: "",
+        description: topicDetailsForSourceEnv.topicContents.description,
+        advancedConfiguration: JSON.stringify(
+          topicDetailsForSourceEnv.topicContents.advancedTopicConfiguration
+        ),
+      });
     }
   }, [targetEnvironment, topicDetailsForSourceEnv]);
 
