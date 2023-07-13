@@ -9,6 +9,7 @@ import { transformEnvironmentApiResponse } from "src/domain/environment/environm
 import { editTopic, getTopicDetailsPerEnv } from "src/domain/topic";
 import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import * as ReactQuery from "@tanstack/react-query";
 
 const TOPIC_NAME = "test-topic-name";
 const ENV_ID = "1";
@@ -42,6 +43,14 @@ const mockGetAllEnvironmentsForTopicAndAcl =
   getAllEnvironmentsForTopicAndAcl as jest.MockedFunction<
     typeof getAllEnvironmentsForTopicAndAcl
   >;
+
+const mockError = {
+  isError: true,
+  error: {
+    success: false,
+    message: "Failure. Not authorized to request topic for this environment.",
+  },
+};
 
 const mockEnvironments = transformEnvironmentApiResponse(
   mockedEnvironmentResponse
@@ -318,6 +327,10 @@ describe("<TopicEditRequest />", () => {
       jest.clearAllMocks();
     });
 
+    it("does not show an error", async () => {
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    });
+
     it("shows a disabled select element for 'Environment' with correct default value", async () => {
       const select = await screen.findByRole("combobox", {
         name: "Environment *",
@@ -517,6 +530,9 @@ describe("<TopicEditRequest />", () => {
       mockgGetTopicAdvancedConfigOptions.mockResolvedValue(
         mockTransformedGetTopicAdvancedConfigOptions
       );
+      jest
+        .spyOn(ReactQuery, "useMutation")
+        .mockImplementation(jest.fn().mockReturnValue(mockError));
 
       customRender(
         <Routes>
@@ -536,18 +552,18 @@ describe("<TopicEditRequest />", () => {
         }
       );
     });
+
     afterEach(() => {
       cleanup();
       jest.clearAllMocks();
     });
 
     it("render an alert when server rejects update request", async () => {
-      mockEditTopic.mockRejectedValue({
-        success: false,
-        message: "Failure. A topic request already exists.",
-      });
-
-      await waitFor(() => expect(screen.getByRole("alert")).toBeVisible());
+      await waitFor(() =>
+        expect(screen.getByRole("alert")).toHaveTextContent(
+          mockError.error.message
+        )
+      );
     });
   });
 
@@ -601,7 +617,7 @@ describe("<TopicEditRequest />", () => {
     });
   });
 
-  describe("correctly redirects and warn on navigation  when environment does not exist", () => {
+  describe("correctly redirects and warn on navigation when environment does not exist", () => {
     beforeEach(() => {
       mockGetAllEnvironmentsForTopicAndAcl.mockResolvedValue(mockEnvironments);
       mockGetTopicDetailsPerEnv.mockResolvedValue({ topicExists: false });
