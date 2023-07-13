@@ -1,8 +1,15 @@
-import { Box, Button, DropdownMenu, Skeleton } from "@aivenio/aquarium";
+import {
+  Box,
+  Button,
+  DropdownMenu,
+  Skeleton,
+  useToast,
+} from "@aivenio/aquarium";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTeamsOfUser, updateTeam } from "src/domain/team/team-api";
 import { Dialog } from "src/app/components/Dialog";
 import { useState } from "react";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 type SwitchTeamsDropdownProps = {
   userName: string;
@@ -14,6 +21,7 @@ function SwitchTeamsDropdown({
   currentTeam,
 }: SwitchTeamsDropdownProps) {
   const queryClient = useQueryClient();
+  const toast = useToast();
 
   const [modal, setModal] = useState<{
     open: boolean;
@@ -30,10 +38,18 @@ function SwitchTeamsDropdown({
     {
       onSuccess: async () => {
         await queryClient.refetchQueries();
+        toast({
+          message: "Team changed successfully.",
+          variant: "default",
+          position: "bottom-left",
+        });
       },
       onError(error: Error) {
-        //@ TODO error notification when we have toasts!
-        console.error(error);
+        toast({
+          message: `Error while switching teams. ${parseErrorMsg(error)}`,
+          variant: "danger",
+          position: "bottom-left",
+        });
       },
       onSettled() {
         setModal({ open: false, newTeamId: null });
