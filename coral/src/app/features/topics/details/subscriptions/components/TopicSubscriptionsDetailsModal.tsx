@@ -211,7 +211,7 @@ const TopicSubscriptionsDetailsModal = ({
               </Typography.SmallStrong>
               {serviceAccountDataLoaded ? (
                 <Typography.Default htmlTag="dd">
-                  {serviceAccountData.password}
+                  {serviceAccountData.password || "Not authorized to see this."}
                 </Typography.Default>
               ) : (
                 <div data-testid={"pw-skeleton"}>
