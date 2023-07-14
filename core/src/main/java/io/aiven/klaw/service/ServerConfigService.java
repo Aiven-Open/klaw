@@ -24,6 +24,7 @@ import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.model.TenantConfig;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.MetadataOperationType;
 import io.aiven.klaw.model.enums.PermissionType;
@@ -565,17 +566,20 @@ public class ServerConfigService {
   public ConnectivityStatus testClusterApiConnection(String clusterApiUrl) throws KlawException {
     ConnectivityStatus connectivityStatus = new ConnectivityStatus();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    String clusterApiStatus = clusterApiService.getClusterApiStatus(clusterApiUrl, true, tenantId);
-    if ("ONLINE".equals(clusterApiStatus)) {
-      clusterApiStatus = ApiResultStatus.SUCCESS.value;
+    ClusterStatus clusterApiStatus =
+        clusterApiService.getClusterApiStatus(clusterApiUrl, true, tenantId);
+
+    String apiResultStatus = "";
+    if (ClusterStatus.ONLINE.equals(clusterApiStatus)) {
+      apiResultStatus = ApiResultStatus.SUCCESS.value;
       KwPropertiesModel kwPropertiesModel = new KwPropertiesModel();
       kwPropertiesModel.setKwKey(CLUSTER_CONN_URL_KEY);
       kwPropertiesModel.setKwValue(clusterApiUrl);
       updateKwCustomProperty(kwPropertiesModel);
     } else {
-      clusterApiStatus = ApiResultStatus.FAILURE.value;
+      apiResultStatus = ApiResultStatus.FAILURE.value;
     }
-    connectivityStatus.setConnectionStatus(clusterApiStatus);
+    connectivityStatus.setConnectionStatus(apiResultStatus);
     return connectivityStatus;
   }
 

@@ -141,7 +141,7 @@ app.controller("envsCtrl", function($scope, $http, $location, $window) {
 
                     swal({
                          title: "",
-                         text: "Current Status: "+output.envstatus,
+                         text: "Current Status: "+output.envStatus,
                          timer: 2000,
                          showConfirmButton: false
                      });
