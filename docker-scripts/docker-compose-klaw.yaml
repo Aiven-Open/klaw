@@ -3,24 +3,28 @@ version: '3'
 services:
   klaw-core:
     image: klaw-core:latest
+    container_name: klaw-core
     environment:
       KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==
       SPRING_DATASOURCE_URL: "jdbc:h2:file:/klaw/klawprodb;DB_CLOSE_ON_EXIT=FALSE;DB_CLOSE_DELAY=-1;MODE=MySQL;CASE_INSENSITIVE_IDENTIFIERS=TRUE;"
-    network_mode: "host"
     volumes:
       - "klaw_data:/klaw"
     extra_hosts:
       - "moby:127.0.0.1"
-  
+    ports:
+      - 9097:9097
+
   klaw-cluster-api:
     image: klaw-cluster-api:latest
-    network_mode: "host"
+    container_name: klaw-cluster-api
     environment:
       KLAW_CLUSTERAPI_ACCESS_BASE64_SECRET: dGhpcyBpcyBhIHNlY3JldCB0byBhY2Nlc3MgY2x1c3RlcmFwaQ==
     volumes:
       - "klaw_data:/klaw"
     extra_hosts:
       - "moby:127.0.0.1"
+    ports:
+      - 9343:9343
 volumes:
   klaw_data:
     driver: local
