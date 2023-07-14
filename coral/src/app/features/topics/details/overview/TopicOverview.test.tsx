@@ -224,6 +224,7 @@ const mockClusterDetails: ClusterDetailsType = {
   protocol: "SSL",
   showDeleteCluster: false,
   totalNoPages: "2",
+  clusterStatus: "NOT_KNOWN",
 };
 
 describe("TopicOverview (with promotion banner)", () => {

@@ -17,6 +17,7 @@ const testClusterDetails: ClusterDetailsType = {
   protocol: "SSL",
   showDeleteCluster: false,
   totalNoPages: "2",
+  clusterStatus: "NOT_KNOWN",
 };
 
 describe("ClusterDetails", () => {
