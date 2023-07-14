@@ -24,6 +24,7 @@ import io.aiven.klaw.model.KwPropertiesModel;
 import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -408,7 +409,7 @@ public class TopicAclControllerIT {
   public void approveTopic() throws Exception {
     String topicName = TopicAclControllerIT.topicName + topicId1;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
-        .thenReturn("ONLINE");
+        .thenReturn(ClusterStatus.ONLINE);
     ApiResponse apiResponse =
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
 
@@ -1014,7 +1015,7 @@ public class TopicAclControllerIT {
     // approve the topic
     String topicName = TopicAclControllerIT.topicName + topicID;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
-        .thenReturn("ONLINE");
+        .thenReturn(ClusterStatus.ONLINE);
     ApiResponse apiResponse =
         ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
 

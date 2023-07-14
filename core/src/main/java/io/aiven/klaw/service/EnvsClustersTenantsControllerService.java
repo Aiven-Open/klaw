@@ -33,6 +33,7 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
@@ -1331,7 +1332,7 @@ public class EnvsClustersTenantsControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
     Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envId, tenantId);
 
-    String status;
+    ClusterStatus status;
     try {
       KwClusters kwClusters =
           manageDatabase
@@ -1346,7 +1347,7 @@ public class EnvsClustersTenantsControllerService {
               kwClusters.getKafkaFlavor(),
               tenantId);
     } catch (Exception e) {
-      status = "OFFLINE";
+      status = ClusterStatus.OFFLINE;
       log.error("Error from getUpdateEnvStatus ", e);
     }
     env.setEnvStatus(status);
@@ -1354,7 +1355,7 @@ public class EnvsClustersTenantsControllerService {
     manageDatabase.loadEnvMapForOneTenant(tenantId);
 
     envUpdatedStatus.setResult(ApiResultStatus.SUCCESS.value);
-    envUpdatedStatus.setEnvstatus(status);
+    envUpdatedStatus.setEnvStatus(status);
 
     return envUpdatedStatus;
   }

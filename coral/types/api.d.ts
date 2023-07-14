@@ -968,7 +968,8 @@ export type components = {
     };
     EnvUpdatedStatus: {
       result: string;
-      envstatus: string;
+      /** @enum {string} */
+      envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -1257,7 +1258,8 @@ export type components = {
       clusterId: number;
       tenantName: string;
       clusterName: string;
-      envStatus: string;
+      /** @enum {string} */
+      envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;
@@ -1446,7 +1448,8 @@ export type components = {
       showDeleteCluster: boolean;
       totalNoPages: string;
       allPageNos: (string)[];
-      clusterStatus?: string;
+      /** @enum {string} */
+      clusterStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       associatedServers?: string;
       projectName?: string;
       serviceName?: string;
