@@ -1,15 +1,16 @@
 import { Alert, Box, PageHeader, Skeleton, useToast } from "@aivenio/aquarium";
-import { NoDocumentationBanner } from "src/app/features/connectors/details/documentation/components/NoDocumentationBanner";
-import { useConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
-import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
+import { DocumentationView } from "src/app/components/documentation/DocumentationView";
+import { useConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
+import { NoDocumentationBanner } from "src/app/features/connectors/details/documentation/components/NoDocumentationBanner";
 import {
   ConnectorDocumentationMarkdown,
   updateConnectorDocumentation,
 } from "src/domain/connector";
+import { isDocumentationTransformationError } from "src/domain/helper/documentation-helper";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
-import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 
 function ConnectorDocumentation() {
   const queryClient = useQueryClient();
@@ -43,7 +44,9 @@ function ConnectorDocumentation() {
           setEditMode(false);
         });
       },
-      onError: () => setEditMode(false),
+      onError: () => {
+        setSaving(false);
+      },
     }
   );
 
@@ -91,6 +94,22 @@ function ConnectorDocumentation() {
       <>
         <PageHeader title={"Documentation"} />
         <NoDocumentationBanner addDocumentation={() => setEditMode(true)} />
+      </>
+    );
+  }
+
+  if (
+    isDocumentationTransformationError(connectorOverview.connectorDocumentation)
+  ) {
+    return (
+      <>
+        <PageHeader title={"Documentation"} />
+        <Box role="alert">
+          <Alert type="error">
+            Something went wrong while trying to transform the documentation
+            into the right format.
+          </Alert>
+        </Box>
       </>
     );
   }
