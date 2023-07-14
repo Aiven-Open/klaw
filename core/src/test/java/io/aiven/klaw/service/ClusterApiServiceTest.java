@@ -111,13 +111,14 @@ public class ClusterApiServiceTest {
         new ResponseEntity<>(ClusterStatus.ONLINE, HttpStatus.OK);
     when(restTemplate.exchange(anyString(), eq(HttpMethod.GET), any(), eq(ClusterStatus.class)))
         .thenReturn(response);
-    String result = clusterApiService.getClusterApiStatus("/topics/getApiStatus", false, 1);
-    assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
+    ClusterStatus resultGetClusterApiStatus =
+        clusterApiService.getClusterApiStatus("/topics/getApiStatus", false, 1);
+    assertThat(resultGetClusterApiStatus).isEqualTo(ClusterStatus.ONLINE);
 
-    result =
+    ClusterStatus resultGetClusterStatus =
         clusterApiService.getKafkaClusterStatus(
             "", KafkaSupportedProtocol.PLAINTEXT, "", "", "", 1);
-    assertThat(result).isEqualTo(ClusterStatus.ONLINE.value);
+    assertThat(resultGetClusterStatus).isEqualTo(ClusterStatus.ONLINE);
   }
 
   @Test
@@ -128,13 +129,14 @@ public class ClusterApiServiceTest {
             Mockito.anyString(), eq(HttpMethod.GET), Mockito.any(), eq(String.class)))
         .thenThrow(new RuntimeException("error"));
 
-    String result = clusterApiService.getClusterApiStatus("", false, 1);
-    assertThat(result).isEqualTo("OFFLINE");
+    ClusterStatus resultGetClusterApiStatus = clusterApiService.getClusterApiStatus("", false, 1);
+    assertThat(resultGetClusterApiStatus).isEqualTo(ClusterStatus.OFFLINE);
 
-    result =
+    ClusterStatus resultGetKafkaClusterStatus =
         clusterApiService.getKafkaClusterStatus(
             "", KafkaSupportedProtocol.PLAINTEXT, "", "", "", 1);
-    assertThat(result).isEqualTo("NOT_KNOWN");
+
+    assertThat(resultGetKafkaClusterStatus).isEqualTo(ClusterStatus.NOT_KNOWN);
   }
 
   @Test

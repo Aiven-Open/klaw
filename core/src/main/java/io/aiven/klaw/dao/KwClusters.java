@@ -1,5 +1,6 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,7 +50,8 @@ public class KwClusters implements Serializable {
   private String publicKey;
 
   @Column(name = "cstatus")
-  private String clusterStatus;
+  @Enumerated(EnumType.STRING)
+  private ClusterStatus clusterStatus;
 
   @Column(name = "projectname")
   private String projectName;

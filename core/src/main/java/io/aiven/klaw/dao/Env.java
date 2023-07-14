@@ -2,10 +2,13 @@ package io.aiven.klaw.dao;
 
 import io.aiven.klaw.helpers.EnvParamsConverter;
 import io.aiven.klaw.helpers.EnvTagConverter;
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.response.EnvParams;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
@@ -49,7 +52,8 @@ public class Env implements Serializable {
   private String envExists;
 
   @Column(name = "envstatus")
-  private String envStatus;
+  @Enumerated(EnumType.STRING)
+  private ClusterStatus envStatus;
 
   @Convert(converter = EnvTagConverter.class)
   @Column(name = "associatedenv")
