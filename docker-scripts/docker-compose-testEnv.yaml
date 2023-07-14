@@ -1,5 +1,5 @@
 ---
-version: "2"
+version: "3"
 
 services:
   zookeeper:
@@ -26,6 +26,8 @@ services:
   schema-registry:
     image: bitnami/schema-registry:latest
     container_name: klaw-schema-registry
+    environment:
+      - SCHEMA_REGISTRY_KAFKA_BROKERS=PLAINTEXT://klaw-kafka:9092
     ports:
       - 8081:8081
 volumes:
