@@ -61,7 +61,9 @@ public class MigrationUtility {
   public void startMigration() throws Exception {
 
     // Find the latest version in DB
-    String latestDataVersion = getLatestDataVersionOrDefault(getLatestDataVersion());
+    DataVersion currentDataVersion = getLatestDataVersion();
+
+    String latestDataVersion = getLatestDataVersionOrDefault(currentDataVersion);
     if (latestDataVersion.equals(DATA_VERSION_DEFAULT) && isNewInstall()) {
       log.info(
           "This is a new install and no data migration is required. Setting Klaw Version to {}",
@@ -83,7 +85,8 @@ public class MigrationUtility {
         new Reflections(new ConfigurationBuilder().forPackages(packageToScan));
     Set<Class<?>> classes = reflections.getTypesAnnotatedWith(DataMigration.class);
     SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions =
-        orderApplicableMigrationInstructions(latestDataVersion, classes);
+        orderApplicableMigrationInstructions(
+            latestDataVersion, getLatestOrderExecuted(currentDataVersion), classes);
 
     // execute the migration
     executeMigrationInstructions(orderedMapOfMigrationInstructions);
@@ -94,6 +97,12 @@ public class MigrationUtility {
         getLatestDataVersionOrDefault(postMigrationDataVersion), currentKlawVersion)) {
       updateDataVersionInDB(currentKlawVersion, postMigrationDataVersion.getChangeId());
     }
+  }
+
+  private static int getLatestOrderExecuted(DataVersion currentDataVersion) {
+    return (currentDataVersion == null || currentDataVersion.getChangeId() == null)
+        ? -1
+        : currentDataVersion.getChangeId();
   }
 
   private String getLatestDataVersionOrDefault(DataVersion latestDataVersion) {
@@ -127,7 +136,7 @@ public class MigrationUtility {
    * @return A sorted map that has removed any unnecessary instructions and ordered the rest.
    */
   private SortedMap<Integer, Pair<String, Class<?>>> orderApplicableMigrationInstructions(
-      String currentDataVersion, Set<Class<?>> classes) {
+      String currentDataVersion, int currentLatestOrder, Set<Class<?>> classes) {
     SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions = new TreeMap<>();
     log.info("Classes discovered {}, number of classes {}", classes, classes.size());
     // order the Migration classes and remove any instructions from previous releases that have
@@ -135,7 +144,8 @@ public class MigrationUtility {
     classes.forEach(
         migrate -> {
           DataMigration migration = migrate.getAnnotation(DataMigration.class);
-          if (isVersionGreaterThenCurrentVersion(currentDataVersion, migration.version())) {
+          if (isVersionGreaterThenCurrentVersion(currentDataVersion, migration.version())
+              && migration.order() > currentLatestOrder) {
             // successfully run data migration.
             Pair<String, Class<?>> pair = Pair.of(migration.version(), migrate);
 
