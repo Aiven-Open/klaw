@@ -9,8 +9,8 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicConfigurationRequest;
-import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.PromotionStatusType;
@@ -86,7 +86,7 @@ public class TopicOverviewService extends BaseOverviewService {
     }
 
     List<TopicOverviewInfo> topicInfoList = new ArrayList<>();
-    List<TopicHistory> topicHistoryList = new ArrayList<>();
+    List<ResourceHistory> topicHistoryList = new ArrayList<>();
     enrichTopicOverview(
         tenantId, topics, topicOverview, syncCluster, topicInfoList, topicHistoryList, topicName);
     List<AclOverviewInfo> aclInfo = new ArrayList<>();
@@ -234,9 +234,9 @@ public class TopicOverviewService extends BaseOverviewService {
       TopicOverview topicOverview,
       String syncCluster,
       List<TopicOverviewInfo> topicInfoList,
-      List<TopicHistory> topicHistoryList,
+      List<ResourceHistory> topicHistoryList,
       String topicName) {
-    ArrayList<TopicHistory> topicHistoryFromTopic;
+    ArrayList<ResourceHistory> topicHistoryFromTopic;
     for (Topic topic : topics) {
       TopicOverviewInfo topicInfo = new TopicOverviewInfo();
       topicInfo.setTopicName(topicName);

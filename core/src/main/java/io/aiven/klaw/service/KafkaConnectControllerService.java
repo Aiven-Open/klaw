@@ -28,7 +28,7 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ConnectorConfig;
-import io.aiven.klaw.model.TopicHistory;
+import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
@@ -77,7 +77,7 @@ public class KafkaConnectControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
-  public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
+  public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
   @Autowired private CommonUtilsService commonUtilsService;
 
@@ -600,19 +600,20 @@ public class KafkaConnectControllerService {
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
-    String updateTopicReqStatus;
+    String updateConnectorReqStatus;
     if (RequestOperationType.CLAIM.value.equals(connectorRequest.getRequestOperationType())) {
-      List<KwKafkaConnector> allTopics =
+      List<KwKafkaConnector> allConnectors =
           getConnectorsFromName(connectorRequest.getConnectorName(), tenantId);
-      for (KwKafkaConnector allTopic : allTopics) {
-        allTopic.setTeamId(
+      for (KwKafkaConnector connector : allConnectors) {
+        connector.setTeamId(
             connectorRequest.getTeamId()); // for claim reqs, team stored in approving Team
-        allTopic.setExistingConnector(true);
+        connector.setExistingConnector(true);
       }
 
-      updateTopicReqStatus = dbHandle.addToSyncConnectors(allTopics);
-      if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus)) {
-        updateTopicReqStatus = dbHandle.updateConnectorRequestStatus(connectorRequest, userDetails);
+      updateConnectorReqStatus = dbHandle.addToSyncConnectors(allConnectors);
+      if (ApiResultStatus.SUCCESS.value.equals(updateConnectorReqStatus)) {
+        updateConnectorReqStatus =
+            dbHandle.updateConnectorRequestStatus(connectorRequest, userDetails);
       }
     } else {
       Env envSelected =
@@ -629,7 +630,7 @@ public class KafkaConnectControllerService {
       if (RequestOperationType.UPDATE.value.equals(
           connectorRequest.getRequestOperationType())) // only config
       {
-        updateTopicReqStatus =
+        updateConnectorReqStatus =
             clusterApiService.approveConnectorRequests(
                 connectorRequest.getConnectorName(),
                 protocol,
@@ -640,7 +641,7 @@ public class KafkaConnectControllerService {
                 tenantId);
       } else {
 
-        updateTopicReqStatus =
+        updateConnectorReqStatus =
             clusterApiService.approveConnectorRequests(
                 connectorRequest.getConnectorName(),
                 protocol,
@@ -651,9 +652,9 @@ public class KafkaConnectControllerService {
                 tenantId);
       }
 
-      if (Objects.equals(updateTopicReqStatus, ApiResultStatus.SUCCESS.value)) {
+      if (Objects.equals(updateConnectorReqStatus, ApiResultStatus.SUCCESS.value)) {
         setConnectorHistory(connectorRequest, userDetails, tenantId);
-        updateTopicReqStatus = dbHandle.updateConnectorRequest(connectorRequest, userDetails);
+        updateConnectorReqStatus = dbHandle.updateConnectorRequest(connectorRequest, userDetails);
         mailService.sendMail(
             connectorRequest.getConnectorName(),
             null,
@@ -668,8 +669,8 @@ public class KafkaConnectControllerService {
     }
 
     return ApiResponse.builder()
-        .success(ApiResultStatus.SUCCESS.value.equalsIgnoreCase(updateTopicReqStatus))
-        .message(updateTopicReqStatus)
+        .success(ApiResultStatus.SUCCESS.value.equalsIgnoreCase(updateConnectorReqStatus))
+        .message(updateConnectorReqStatus)
         .build();
   }
 
@@ -677,38 +678,39 @@ public class KafkaConnectControllerService {
       KafkaConnectorRequest connectorRequest, String userName, int tenantId) {
     try {
       AtomicReference<String> existingHistory = new AtomicReference<>("");
-      List<TopicHistory> existingTopicHistory;
-      List<TopicHistory> topicHistoryList = new ArrayList<>();
+      List<ResourceHistory> existingConnectorHistory;
+      List<ResourceHistory> connectorHistoryList = new ArrayList<>();
 
       if (RequestOperationType.UPDATE.value.equals(connectorRequest.getRequestOperationType())) {
-        List<KwKafkaConnector> existingTopicList =
+        List<KwKafkaConnector> existingConnectorList =
             getConnectorsFromName(connectorRequest.getConnectorName(), tenantId);
-        existingTopicList.stream()
+        existingConnectorList.stream()
             .filter(
-                topic -> Objects.equals(topic.getEnvironment(), connectorRequest.getEnvironment()))
+                connector ->
+                    Objects.equals(connector.getEnvironment(), connectorRequest.getEnvironment()))
             .findFirst()
             .ifPresent(a -> existingHistory.set(a.getHistory()));
-        existingTopicHistory = OBJECT_MAPPER.readValue(existingHistory.get(), VALUE_TYPE_REF);
-        topicHistoryList.addAll(existingTopicHistory);
+        existingConnectorHistory = OBJECT_MAPPER.readValue(existingHistory.get(), VALUE_TYPE_REF);
+        connectorHistoryList.addAll(existingConnectorHistory);
       }
 
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
 
-      TopicHistory topicHistory = new TopicHistory();
-      topicHistory.setTeamName(
+      ResourceHistory connectorHistory = new ResourceHistory();
+      connectorHistory.setTeamName(
           manageDatabase.getTeamNameFromTeamId(tenantId, connectorRequest.getTeamId()));
-      topicHistory.setEnvironmentName(
+      connectorHistory.setEnvironmentName(
           getKafkaConnectEnvDetails(connectorRequest.getEnvironment()).getName());
-      topicHistory.setRequestedBy(connectorRequest.getRequestor());
-      topicHistory.setRequestedTime(simpleDateFormat.format(connectorRequest.getRequesttime()));
-      topicHistory.setApprovedBy(userName);
-      topicHistory.setApprovedTime(simpleDateFormat.format(new Date()));
-      topicHistory.setRemarks("Connector " + connectorRequest.getRequestOperationType());
-      topicHistoryList.add(topicHistory);
+      connectorHistory.setRequestedBy(connectorRequest.getRequestor());
+      connectorHistory.setRequestedTime(simpleDateFormat.format(connectorRequest.getRequesttime()));
+      connectorHistory.setApprovedBy(userName);
+      connectorHistory.setApprovedTime(simpleDateFormat.format(new Date()));
+      connectorHistory.setRemarks("Connector " + connectorRequest.getRequestOperationType());
+      connectorHistoryList.add(connectorHistory);
 
-      connectorRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(topicHistoryList));
+      connectorRequest.setHistory(OBJECT_MAPPER.writer().writeValueAsString(connectorHistoryList));
     } catch (Exception e) {
-      log.error("setTopicDocs ", e);
+      log.error("setConnectorHistory Docs ", e);
     }
   }
 
@@ -780,12 +782,12 @@ public class KafkaConnectControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     KafkaConnectorRequest kafkaConnectorRequest = new KafkaConnectorRequest();
-    List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);
+    List<KwKafkaConnector> connectors = getConnectorsFromName(connectorName, tenantId);
 
     Integer userTeamId = commonUtilsService.getTeamId(userDetails);
-    if (topics != null
-        && topics.size() > 0
-        && !Objects.equals(topics.get(0).getTeamId(), userTeamId)) {
+    if (connectors != null
+        && connectors.size() > 0
+        && !Objects.equals(connectors.get(0).getTeamId(), userTeamId)) {
       return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_114).build();
     }
 
@@ -796,11 +798,12 @@ public class KafkaConnectControllerService {
     kafkaConnectorRequest.setRequestOperationType(RequestOperationType.DELETE.value);
     kafkaConnectorRequest.setTenantId(tenantId);
 
-    Optional<KwKafkaConnector> topicOb =
+    Optional<KwKafkaConnector> connectorOptional =
         getConnectorsFromName(connectorName, tenantId).stream()
             .filter(
-                topic ->
-                    Objects.equals(topic.getEnvironment(), kafkaConnectorRequest.getEnvironment()))
+                connector ->
+                    Objects.equals(
+                        connector.getEnvironment(), kafkaConnectorRequest.getEnvironment()))
             .findFirst();
 
     if (manageDatabase
@@ -815,9 +818,9 @@ public class KafkaConnectControllerService {
       return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_115).build();
     }
 
-    if (topicOb.isPresent()) {
+    if (connectorOptional.isPresent()) {
 
-      kafkaConnectorRequest.setConnectorConfig(topicOb.get().getConnectorConfig());
+      kafkaConnectorRequest.setConnectorConfig(connectorOptional.get().getConnectorConfig());
       mailService.sendMail(
           kafkaConnectorRequest.getConnectorName(),
           null,
@@ -884,7 +887,7 @@ public class KafkaConnectControllerService {
     log.debug("getConnectorRequests page {} requestsType {}", pageNo, requestsType);
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    List<KafkaConnectorRequest> topicReqs =
+    List<KafkaConnectorRequest> kafkaConnectorRequests =
         manageDatabase
             .getHandleDbRequests()
             .getAllConnectorRequests(
@@ -896,11 +899,11 @@ public class KafkaConnectControllerService {
                 tenantId,
                 isMyRequest);
 
-    topicReqs = filterByTenantAndOrder(userDetails, topicReqs, order);
+    kafkaConnectorRequests = filterByTenantAndOrder(userDetails, kafkaConnectorRequests, order);
 
-    topicReqs = getConnectorRequestsPaged(topicReqs, pageNo, currentPage);
+    kafkaConnectorRequests = getConnectorRequestsPaged(kafkaConnectorRequests, pageNo, currentPage);
 
-    return getConnectorRequestModels(topicReqs);
+    return getConnectorRequestModels(kafkaConnectorRequests);
   }
 
   private List<KafkaConnectorRequest> filterByTenantAndOrder(
@@ -937,11 +940,11 @@ public class KafkaConnectControllerService {
       return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_117).build();
     }
 
-    List<KwKafkaConnector> topics = getConnectorsFromName(connectorName, tenantId);
-    Integer topicOwnerTeam = topics.get(0).getTeamId();
-    Optional<UserInfo> topicOwnerContact =
+    List<KwKafkaConnector> connectors = getConnectorsFromName(connectorName, tenantId);
+    Integer connectorOwnerTeam = connectors.get(0).getTeamId();
+    Optional<UserInfo> connectorOwnerContact =
         manageDatabase.getHandleDbRequests().getAllUsersInfo(tenantId).stream()
-            .filter(user -> Objects.equals(user.getTeamId(), topicOwnerTeam))
+            .filter(user -> Objects.equals(user.getTeamId(), connectorOwnerTeam))
             .findFirst();
 
     Integer userTeamId = commonUtilsService.getTeamId(userDetails);
@@ -950,17 +953,17 @@ public class KafkaConnectControllerService {
     connectorRequest.setTeamId(userTeamId);
     connectorRequest.setEnvironment(envId);
     connectorRequest.setConnectorName(connectorName);
-    connectorRequest.setConnectorConfig(topics.get(0).getConnectorConfig());
+    connectorRequest.setConnectorConfig(connectors.get(0).getConnectorConfig());
     connectorRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
-    connectorRequest.setApprovingTeamId("" + topicOwnerTeam);
+    connectorRequest.setApprovingTeamId("" + connectorOwnerTeam);
     connectorRequest.setRemarks(KAFKA_CONNECT_ERR_118);
     connectorRequest.setTenantId(tenantId);
 
     String approverName = null;
     Integer approverTeamId = null;
-    if (topicOwnerContact.isPresent()) {
-      approverName = topicOwnerContact.get().getUsername();
-      approverTeamId = topicOwnerContact.get().getTeamId();
+    if (connectorOwnerContact.isPresent()) {
+      approverName = connectorOwnerContact.get().getUsername();
+      approverTeamId = connectorOwnerContact.get().getTeamId();
     }
     mailService.sendMail(
         connectorRequest.getConnectorName(),
@@ -1037,12 +1040,12 @@ public class KafkaConnectControllerService {
       reqconnsEnvs = requestconnsEnvs.split(",");
       reqconnsEnvsList = new ArrayList<>(Arrays.asList(reqconnsEnvs));
     } catch (Exception e) {
-      log.error("Error in getting req topic envs", e);
+      log.error("Error in getting req Connector envs", e);
     }
 
     List<KafkaConnectorModelResponse> connectorInfoList = new ArrayList<>();
-    ArrayList<TopicHistory> connectorHistory;
-    List<TopicHistory> connectorHistoryList = new ArrayList<>();
+    ArrayList<ResourceHistory> connectorHistory;
+    List<ResourceHistory> connectorHistoryList = new ArrayList<>();
 
     for (KwKafkaConnector conn : connectors) {
       if (StringUtils.isEmpty(envId) || conn.getEnvironment().equals(envId)) {
@@ -1066,7 +1069,7 @@ public class KafkaConnectControllerService {
             connectorHistory = OBJECT_MAPPER.readValue(conn.getHistory(), VALUE_TYPE_REF);
             connectorHistoryList.addAll(connectorHistory);
           } catch (JsonProcessingException e) {
-            log.error("Unable to parse topicHistory", e);
+            log.error("Unable to parse connectorHistory", e);
           }
         }
 
@@ -1079,7 +1082,7 @@ public class KafkaConnectControllerService {
       connectorOverview.setConnectorIdForDocumentation(connectors.get(0).getConnectorId());
     }
 
-    connectorOverview.setTopicHistoryList(connectorHistoryList);
+    connectorOverview.setConnectorHistoryList(connectorHistoryList);
     // TODO is this needed can we just grab this from the connectors above? circa line 1019
     List<KwKafkaConnector> connectorsSearchList =
         manageDatabase.getHandleDbRequests().getConnectorsFromName(connectorNamesearch, tenantId);
