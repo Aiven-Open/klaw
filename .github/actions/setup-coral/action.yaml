@@ -1,7 +1,6 @@
 name: Coral setup and install dependencies
-description:
-  This action installs node and pnpm in the correct version. 
-  It installs all needed dependencies and handles the pnpm store for caching. 
+description: This action installs node and pnpm in the correct version.
+  It installs all needed dependencies and handles the pnpm store for caching.
   Node version and pnpm version should not be changed.
 
 runs:
@@ -19,7 +18,7 @@ runs:
         echo "PNPM_VERSION=$PNPM_VERSION" >> $GITHUB_OUTPUT
 
     - name: Setup node.js
-      uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+      uses: actions/setup-node@e33196f7422957bea03ed53f6fbb155025ffc7b8 # v3.6.0
       with:
         node-version: ${{ steps.versions.outputs.NODE_VERSION }}
 
