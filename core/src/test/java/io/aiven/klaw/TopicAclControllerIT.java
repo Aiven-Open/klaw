@@ -21,7 +21,7 @@ import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwPropertiesModel;
-import io.aiven.klaw.model.TopicHistory;
+import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -1321,7 +1321,7 @@ public class TopicAclControllerIT {
 
     TopicOverview response = OBJECT_MAPPER.readValue(res, TopicOverview.class);
     assertThat(response.getTopicHistoryList())
-        .extracting(TopicHistory::getRemarks)
+        .extracting(ResourceHistory::getRemarks)
         .containsExactlyInAnyOrder(
             "TOPIC Create", "ACL Create Consumer - User:*", "SCHEMA Create Version : 1");
   }

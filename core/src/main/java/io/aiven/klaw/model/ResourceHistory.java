@@ -5,7 +5,7 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class TopicHistory implements Serializable {
+public class ResourceHistory implements Serializable {
   @NotNull private String environmentName;
 
   @NotNull private String teamName;

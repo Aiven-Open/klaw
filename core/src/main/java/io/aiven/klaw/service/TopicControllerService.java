@@ -34,11 +34,11 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicBaseConfig;
 import io.aiven.klaw.model.TopicConfigEntry;
 import io.aiven.klaw.model.TopicConfiguration;
 import io.aiven.klaw.model.TopicConfigurationRequest;
-import io.aiven.klaw.model.TopicHistory;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
@@ -840,7 +840,7 @@ public class TopicControllerService {
   }
 
   private void saveToTopicHistory(String userName, int tenantId, TopicRequest topicRequest) {
-    List<TopicHistory> topicHistoryList =
+    List<ResourceHistory> topicHistoryList =
         commonUtilsService.saveTopicHistory(
             topicRequest.getRequestOperationType(),
             topicRequest.getTopicname(),
