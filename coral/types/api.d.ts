@@ -968,7 +968,8 @@ export type components = {
     };
     EnvUpdatedStatus: {
       result: string;
-      envstatus: string;
+      /** @enum {string} */
+      envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -1049,7 +1050,7 @@ export type components = {
       topicName?: string;
       error?: string;
     };
-    TopicHistory: {
+    ResourceHistory: {
       environmentName: string;
       teamName: string;
       requestedBy: string;
@@ -1067,7 +1068,7 @@ export type components = {
       aclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       prefixedAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       transactionalAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
-      topicHistoryList?: (components["schemas"]["TopicHistory"])[];
+      topicHistoryList?: (components["schemas"]["ResourceHistory"])[];
       topicPromotionDetails: components["schemas"]["PromotionStatus"];
       availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       topicDocumentation?: string;
@@ -1257,7 +1258,8 @@ export type components = {
       clusterId: number;
       tenantName: string;
       clusterName: string;
-      envStatus: string;
+      /** @enum {string} */
+      envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;
@@ -1417,7 +1419,7 @@ export type components = {
     };
     ConnectorOverview: {
       connectorInfoList: (components["schemas"]["KafkaConnectorModelResponse"])[];
-      topicHistoryList?: (components["schemas"]["TopicHistory"])[];
+      connectorHistoryList?: (components["schemas"]["ResourceHistory"])[];
       promotionDetails?: {
         [key: string]: string | undefined;
       };
@@ -1446,7 +1448,8 @@ export type components = {
       showDeleteCluster: boolean;
       totalNoPages: string;
       allPageNos: (string)[];
-      clusterStatus?: string;
+      /** @enum {string} */
+      clusterStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
       associatedServers?: string;
       projectName?: string;
       serviceName?: string;

@@ -14,7 +14,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.KwTenantConfigModel;
-import io.aiven.klaw.model.TopicHistory;
+import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
 import io.aiven.klaw.model.charts.Options;
 import io.aiven.klaw.model.charts.Title;
@@ -77,7 +77,8 @@ public class CommonUtilsService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-  public static final TypeReference<List<TopicHistory>> VALUE_TYPE_REF = new TypeReference<>() {};
+  public static final TypeReference<List<ResourceHistory>> VALUE_TYPE_REF =
+      new TypeReference<>() {};
 
   @Value("${klaw.enable.authorization.ad:false}")
   private boolean enableUserAuthorizationFromAD;
@@ -716,7 +717,7 @@ public class CommonUtilsService {
     return subTopicsList;
   }
 
-  public List<TopicHistory> saveTopicHistory(
+  public List<ResourceHistory> saveTopicHistory(
       String requestOperationType,
       String topicName,
       String topicEnvironment,
@@ -727,10 +728,10 @@ public class CommonUtilsService {
       int tenantId,
       String entityType,
       String remarks) {
-    List<TopicHistory> topicHistoryList = new ArrayList<>();
+    List<ResourceHistory> topicHistoryList = new ArrayList<>();
     try {
       AtomicReference<String> existingHistory = new AtomicReference<>("");
-      List<TopicHistory> existingTopicHistory;
+      List<ResourceHistory> existingTopicHistory;
       List<Topic> existingTopicList = new ArrayList<>();
       // topic requests (not create) or any acl/schema requests
       if ((!RequestOperationType.CREATE.value.equals(requestOperationType)
@@ -752,7 +753,7 @@ public class CommonUtilsService {
 
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
 
-      TopicHistory topicHistory = new TopicHistory();
+      ResourceHistory topicHistory = new ResourceHistory();
       topicHistory.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, ownerTeamId));
       topicHistory.setEnvironmentName(getEnvDetails(topicEnvironment, tenantId).getName());
       topicHistory.setRequestedBy(requestor);

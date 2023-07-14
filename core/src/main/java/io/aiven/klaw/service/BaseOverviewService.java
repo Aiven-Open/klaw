@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.model.TopicHistory;
+import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
 import io.aiven.klaw.model.enums.AclGroupBy;
 import io.aiven.klaw.model.enums.AclType;
@@ -44,7 +44,7 @@ public abstract class BaseOverviewService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
-  public static final TypeReference<ArrayList<TopicHistory>> VALUE_TYPE_REF =
+  public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
   private static final String MASKED_FOR_SECURITY = BASE_OVERVIEW_101;
 

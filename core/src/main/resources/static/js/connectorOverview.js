@@ -537,7 +537,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
             	}
             	$scope.promotionDetails = output.promotionDetails;
 
-                $scope.topicHistoryList = output.topicHistoryList;
+                $scope.connectorHistoryList = output.connectorHistoryList;
 
             	$scope.connectorDocumentation = output.connectorDocumentation;
             	$scope.tmpconnectorDocumentation = output.connectorDocumentation;

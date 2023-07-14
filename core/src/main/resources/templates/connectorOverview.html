@@ -640,12 +640,12 @@
 								</div>
 								<div class="tab-pane  p-3" id="history" role="tabpanel">
 
-									<div ng-show="topicHistoryList.length == 0" class="ribbon-wrapper card">
+									<div ng-show=" connectorHistoryList.length == 0" class="ribbon-wrapper card">
 										<div class="ribbon ribbon-warning">Notification</div>
 										<p class="ribbon-content">No history available !!</p>
 									</div>
 
-									<table class="table table-hover color-table success-table" ng-show="topicHistoryList.length != 0">
+									<table class="table table-hover color-table success-table" ng-show=" connectorHistoryList.length != 0">
 										<thead><tr>
 											<th align="left" width="14%">Team</th>
 											<th align="left" width="14%">Environment</th>
@@ -657,7 +657,7 @@
 										</tr>
 										</thead>
 										<tbody>
-										<tr ng-repeat="topicHistory in topicHistoryList">
+										<tr ng-repeat="topicHistory in  connectorHistoryList">
 											<td>{{ topicHistory.teamName }}</td>
 											<td><span class="badge badge-info">{{ topicHistory.environmentName }}</span></td>
 											<td>{{ topicHistory.requestedBy }}</td>

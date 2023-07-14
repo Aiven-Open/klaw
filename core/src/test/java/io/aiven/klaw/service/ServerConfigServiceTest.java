@@ -22,6 +22,7 @@ import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.model.TenantConfig;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.response.KwPropertiesResponse;
 import java.util.Arrays;
@@ -448,7 +449,7 @@ public class ServerConfigServiceTest {
     env.setTenantId(101);
     env.setId(envId);
     env.setType(envType); // kafka,schemaregistry
-    env.setEnvStatus("NOT_KNOWN");
+    env.setEnvStatus(ClusterStatus.NOT_KNOWN);
     env.setEnvExists("true");
     env.setClusterId(clusterId);
 
