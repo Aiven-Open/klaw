@@ -148,7 +148,8 @@ public class ClusterApiService {
     }
   }
 
-  public String getClusterApiStatus(String clusterApiUrl, boolean testConnection, int tenantId) {
+  public ClusterStatus getClusterApiStatus(
+      String clusterApiUrl, boolean testConnection, int tenantId) {
     log.info(
         "getClusterApiStatus clusterApiUrl {} testConnection{}", clusterApiUrl, testConnection);
     getClusterApiProperties(tenantId);
@@ -163,10 +164,10 @@ public class ClusterApiService {
 
       ResponseEntity<ClusterStatus> resultBody =
           getRestTemplate().exchange(uri, HttpMethod.GET, getHttpEntity(), ClusterStatus.class);
-      return Objects.requireNonNull(resultBody.getBody().value);
+      return Objects.requireNonNull(resultBody.getBody());
     } catch (Exception e) {
       log.error("Error from getClusterApiStatus ", e);
-      return ClusterStatus.OFFLINE.value;
+      return ClusterStatus.OFFLINE;
     }
   }
 
