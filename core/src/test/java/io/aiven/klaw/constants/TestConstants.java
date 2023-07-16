@@ -27,9 +27,9 @@ public class TestConstants {
   public static final String REGISTRATION_ID = "REGISTRATION_ID";
   public static final List<Map<String, String>> TOPICS_COUNT_BY_ENV_ID =
       List.of(
-              Map.of(
-                      MapConstants.CLUSTER_KEY, ENV_ID,
-                      MapConstants.TOPICS_COUNT_KEY, TOPICS_COUNT));
+          Map.of(
+              MapConstants.CLUSTER_KEY, ENV_ID,
+              MapConstants.TOPICS_COUNT_KEY, TOPICS_COUNT));
   public static final List<Map<String, String>> ACLS_COUNT_BY_ENV_ID =
       List.of(
           Map.of(

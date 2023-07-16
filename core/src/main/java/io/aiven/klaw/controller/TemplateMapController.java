@@ -79,7 +79,8 @@ public class TemplateMapController {
       return UriConstants.OAUTH_LOGIN;
     }
     if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
-      return checkAuth(UriConstants.LOGIN_SAAS_PAGE, request, response, abstractAuthenticationToken);
+      return checkAuth(
+          UriConstants.LOGIN_SAAS_PAGE, request, response, abstractAuthenticationToken);
     return UriConstants.LOGIN_PAGE;
   }
 
@@ -89,7 +90,8 @@ public class TemplateMapController {
       HttpServletRequest request,
       HttpServletResponse response,
       AbstractAuthenticationToken abstractAuthenticationToken) {
-    return checkAuth(UriConstants.FORGOT_PASSWORD_PAGE, request, response, abstractAuthenticationToken);
+    return checkAuth(
+        UriConstants.FORGOT_PASSWORD_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/register", method = RequestMethod.GET)
@@ -102,13 +104,17 @@ public class TemplateMapController {
         || ACTIVE_DIRECTORY.value.equals(authenticationType)
         || "true".equals(ssoEnabled)) {
       if (SAAS.equals(kwInstallationType)) {
-        return checkAuth(UriConstants.REGISTER_SAAS_PAGE, request, response, abstractAuthenticationToken);
+        return checkAuth(
+            UriConstants.REGISTER_SAAS_PAGE, request, response, abstractAuthenticationToken);
       } else {
-        return checkAuth(UriConstants.REGISTER_LDAP_PAGE, request, response, abstractAuthenticationToken);
+        return checkAuth(
+            UriConstants.REGISTER_LDAP_PAGE, request, response, abstractAuthenticationToken);
       }
     } else if (authenticationType.equals(DATABASE.value) && kwInstallationType.equals(SAAS))
-      return checkAuth(UriConstants.REGISTER_SAAS_PAGE, request, response, abstractAuthenticationToken);
-    else return checkAuth(UriConstants.REGISTER_PAGE, request, response, abstractAuthenticationToken);
+      return checkAuth(
+          UriConstants.REGISTER_SAAS_PAGE, request, response, abstractAuthenticationToken);
+    else
+      return checkAuth(UriConstants.REGISTER_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/registrationReview", method = RequestMethod.GET)
@@ -120,7 +126,8 @@ public class TemplateMapController {
     if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType))
       return checkAuth(
           "registrationReviewSaas.html", request, response, abstractAuthenticationToken);
-    return checkAuth(UriConstants.REGISTRATION_REVIEW_PAGE, request, response, abstractAuthenticationToken);
+    return checkAuth(
+        UriConstants.REGISTRATION_REVIEW_PAGE, request, response, abstractAuthenticationToken);
   }
 
   @RequestMapping(value = "/feedback", method = RequestMethod.GET)

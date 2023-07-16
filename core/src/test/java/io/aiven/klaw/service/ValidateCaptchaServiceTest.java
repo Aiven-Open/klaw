@@ -18,45 +18,56 @@ import org.springframework.web.client.RestTemplate;
 @ExtendWith(MockitoExtension.class)
 class ValidateCaptchaServiceTest {
 
-    @Mock private RestTemplateBuilder templateBuilder;
-    @Mock private RestTemplate template;
-    private ValidateCaptchaService validateCaptchaService;
+  @Mock private RestTemplateBuilder templateBuilder;
+  @Mock private RestTemplate template;
+  private ValidateCaptchaService validateCaptchaService;
 
-    @BeforeEach
-    public void setUp (){
-        Mockito.when(templateBuilder.build()).thenReturn(template);
-        validateCaptchaService = new ValidateCaptchaService(templateBuilder);
-        ReflectionTestUtils.setField(validateCaptchaService, "validateRecaptcha", true);
-        ReflectionTestUtils.setField(validateCaptchaService, "recaptchaEndpoint", "https://www.google.com/recaptcha/api/siteverify");
-        ReflectionTestUtils.setField(validateCaptchaService, "recaptchaSecret", "secret");
-    }
+  @BeforeEach
+  public void setUp() {
+    Mockito.when(templateBuilder.build()).thenReturn(template);
+    validateCaptchaService = new ValidateCaptchaService(templateBuilder);
+    ReflectionTestUtils.setField(validateCaptchaService, "validateRecaptcha", true);
+    ReflectionTestUtils.setField(
+        validateCaptchaService,
+        "recaptchaEndpoint",
+        "https://www.google.com/recaptcha/api/siteverify");
+    ReflectionTestUtils.setField(validateCaptchaService, "recaptchaSecret", "secret");
+  }
 
-    @Test
-    public void validateCaptcha() {
-        CaptchaResponse response = new CaptchaResponse();
-        response.setSuccess(true);
+  @Test
+  public void validateCaptcha() {
+    CaptchaResponse response = new CaptchaResponse();
+    response.setSuccess(true);
 
-        Mockito.when(template.postForObject(ArgumentMatchers.anyString(), ArgumentMatchers.anyMap(), ArgumentMatchers.eq(CaptchaResponse.class)))
-                .thenReturn(response);
+    Mockito.when(
+            template.postForObject(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyMap(),
+                ArgumentMatchers.eq(CaptchaResponse.class)))
+        .thenReturn(response);
 
-        Assertions.assertTrue(validateCaptchaService.validateCaptcha(TestConstants.CAPTCHA_RESPONSE));
-    }
+    Assertions.assertTrue(validateCaptchaService.validateCaptcha(TestConstants.CAPTCHA_RESPONSE));
+  }
 
-    @Test
-    public void validateCaptcha_Failure() {
-        CaptchaResponse response = new CaptchaResponse();
-        response.setSuccess(true);
+  @Test
+  public void validateCaptcha_Failure() {
+    CaptchaResponse response = new CaptchaResponse();
+    response.setSuccess(true);
 
-        Mockito.when(template.postForObject(ArgumentMatchers.anyString(), ArgumentMatchers.anyMap(), ArgumentMatchers.eq(CaptchaResponse.class)))
-                .thenThrow(new RestClientException(""));
+    Mockito.when(
+            template.postForObject(
+                ArgumentMatchers.anyString(),
+                ArgumentMatchers.anyMap(),
+                ArgumentMatchers.eq(CaptchaResponse.class)))
+        .thenThrow(new RestClientException(""));
 
-        Assertions.assertFalse(validateCaptchaService.validateCaptcha(TestConstants.CAPTCHA_RESPONSE));
-    }
+    Assertions.assertFalse(validateCaptchaService.validateCaptcha(TestConstants.CAPTCHA_RESPONSE));
+  }
 
-    @Test
-    public void validateCaptcha_ValidationDisabled() {
-        ReflectionTestUtils.setField(validateCaptchaService, "validateRecaptcha", false);
+  @Test
+  public void validateCaptcha_ValidationDisabled() {
+    ReflectionTestUtils.setField(validateCaptchaService, "validateRecaptcha", false);
 
-        Assertions.assertTrue(validateCaptchaService.validateCaptcha(TestConstants.CAPTCHA_RESPONSE));
-    }
+    Assertions.assertTrue(validateCaptchaService.validateCaptcha(TestConstants.CAPTCHA_RESPONSE));
+  }
 }

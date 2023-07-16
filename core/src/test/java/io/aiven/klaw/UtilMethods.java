@@ -73,7 +73,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.junit.jupiter.api.Assertions;
@@ -1095,7 +1094,7 @@ public class UtilMethods {
     return teamOverview;
   }
 
-  public static ChartsJsOverview getDummyChartJsOverview (String reportTitle) {
+  public static ChartsJsOverview getDummyChartJsOverview(String reportTitle) {
     ChartsJsOverview chartsJsOverview = new ChartsJsOverview();
     chartsJsOverview.setXAxisLabel(TestConstants.X_AXIS_LABEL);
     chartsJsOverview.setYAxisLabel(TestConstants.Y_AXIS_LABEL);
@@ -1127,14 +1126,14 @@ public class UtilMethods {
 
   public static <K, V> List<Map<K, V>> convertImmutableToMutable(List<Map<K, V>> immutableList) {
     return immutableList.stream()
-            .map(HashMap::new)
-            .collect(Collectors.toCollection(ArrayList::new));
+        .map(HashMap::new)
+        .collect(Collectors.toCollection(ArrayList::new));
   }
 
   public static <T> void assertEqualsList(List<T> actual, List<T> expected) {
     Assertions.assertEquals(actual.size(), expected.size());
 
     IntStream.range(0, actual.size())
-            .forEach(i -> Assertions.assertEquals(actual.get(i), expected.get(i)));
+        .forEach(i -> Assertions.assertEquals(actual.get(i), expected.get(i)));
   }
 }

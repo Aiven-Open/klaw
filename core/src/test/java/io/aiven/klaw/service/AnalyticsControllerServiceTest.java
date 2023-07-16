@@ -18,21 +18,17 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.KwConstants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.charts.ChartsJsOverview;
-import io.aiven.klaw.model.charts.Options;
 import io.aiven.klaw.model.charts.TeamOverview;
-import io.aiven.klaw.model.charts.Title;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.AclsCountPerEnv;
 import io.aiven.klaw.model.response.TopicsCountPerEnv;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -604,17 +600,22 @@ class AnalyticsControllerServiceTest {
     Mockito.doReturn(listTeamsOverview).when(analyticsControllerService).getTeamsOverview(null);
     Mockito.when(commonUtilsService.getEnvsFromUserId(any()))
         .thenReturn(Set.of(TestConstants.ENV_ID));
-    Mockito.doReturn(TestConstants.ENV_NAME).when(analyticsControllerService).getEnvName(TestConstants.ENV_ID);
+    Mockito.doReturn(TestConstants.ENV_NAME)
+        .when(analyticsControllerService)
+        .getEnvName(TestConstants.ENV_ID);
     Mockito.when(
             commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.ALL_TEAMS_REPORTS)))
         .thenReturn(true);
     Mockito.when(commonUtilsService.getTeamId(TestConstants.USERNAME))
-            .thenReturn(TestConstants.TEAM_ID);
+        .thenReturn(TestConstants.TEAM_ID);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
-    Mockito.when(handleDbRequestsJdbc.getTopicsforTeam(TestConstants.TEAM_ID, TestConstants.TENANT_ID))
-            .thenReturn(List.of(topic));
-    Mockito.when(handleDbRequestsJdbc.getConsumerGroupsforTeam(TestConstants.TEAM_ID, TestConstants.TENANT_ID))
-            .thenReturn(List.of(acl));
+    Mockito.when(
+            handleDbRequestsJdbc.getTopicsforTeam(TestConstants.TEAM_ID, TestConstants.TENANT_ID))
+        .thenReturn(List.of(topic));
+    Mockito.when(
+            handleDbRequestsJdbc.getConsumerGroupsforTeam(
+                TestConstants.TEAM_ID, TestConstants.TENANT_ID))
+        .thenReturn(List.of(acl));
 
     File actual = analyticsControllerService.generateReport();
     Assertions.assertNotNull(actual);
@@ -631,23 +632,25 @@ class AnalyticsControllerServiceTest {
     loginMock();
     Mockito.when(commonUtilsService.getCurrentUserName()).thenReturn(TestConstants.USERNAME);
     Mockito.when(commonUtilsService.getTenantId(TestConstants.USERNAME))
-            .thenReturn(TestConstants.TENANT_ID);
+        .thenReturn(TestConstants.TENANT_ID);
     Mockito.when(
-                    manageDatabase.getKwPropertyValue(
-                            KwConstants.KW_REPORTS_TMP_LOCATION_KEY, TestConstants.TENANT_ID))
-            .thenReturn(TestConstants.KW_REPORTS_LOCATION);
+            manageDatabase.getKwPropertyValue(
+                KwConstants.KW_REPORTS_TMP_LOCATION_KEY, TestConstants.TENANT_ID))
+        .thenReturn(TestConstants.KW_REPORTS_LOCATION);
     Mockito.doReturn(listTeamsOverview).when(analyticsControllerService).getTeamsOverview(null);
     Mockito.when(commonUtilsService.getEnvsFromUserId(any()))
-            .thenReturn(Set.of(TestConstants.ENV_ID));
-    Mockito.doReturn(TestConstants.ENV_NAME).when(analyticsControllerService).getEnvName(TestConstants.ENV_ID);
+        .thenReturn(Set.of(TestConstants.ENV_ID));
+    Mockito.doReturn(TestConstants.ENV_NAME)
+        .when(analyticsControllerService)
+        .getEnvName(TestConstants.ENV_ID);
     Mockito.when(
-                    commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.ALL_TEAMS_REPORTS)))
-            .thenReturn(false);
+            commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.ALL_TEAMS_REPORTS)))
+        .thenReturn(false);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getAllTopics(TestConstants.TENANT_ID))
-            .thenReturn(List.of(topic));
+        .thenReturn(List.of(topic));
     Mockito.when(handleDbRequestsJdbc.getAllConsumerGroups(TestConstants.TENANT_ID))
-            .thenReturn(List.of(acl));
+        .thenReturn(List.of(acl));
 
     File actual = analyticsControllerService.generateReport();
     Assertions.assertNotNull(actual);

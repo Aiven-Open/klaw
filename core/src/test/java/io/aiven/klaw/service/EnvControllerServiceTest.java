@@ -23,51 +23,57 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class EnvControllerServiceTest {
-    @Mock private ClusterApiService clusterApiService;
-    @Mock private ManageDatabase manageDatabase;
-    @Mock private HandleDbRequestsJdbc handleDbRequestsJdbc;
+  @Mock private ClusterApiService clusterApiService;
+  @Mock private ManageDatabase manageDatabase;
+  @Mock private HandleDbRequestsJdbc handleDbRequestsJdbc;
 
-    @InjectMocks private EnvControllerService envControllerService;
+  @InjectMocks private EnvControllerService envControllerService;
 
-    @Test
-    void loadTenantActiveStatus() {
-        KwTenants kwTenants = new KwTenants();
-        kwTenants.setTenantId(TestConstants.TENANT_ID);
-        kwTenants.setTenantName(TestConstants.TENANT_NAME);
-        kwTenants.setLicenseExpiry(new Timestamp(System.currentTimeMillis() - 1000L));
+  @Test
+  void loadTenantActiveStatus() {
+    KwTenants kwTenants = new KwTenants();
+    kwTenants.setTenantId(TestConstants.TENANT_ID);
+    kwTenants.setTenantName(TestConstants.TENANT_NAME);
+    kwTenants.setLicenseExpiry(new Timestamp(System.currentTimeMillis() - 1000L));
 
-        Mockito.when(manageDatabase.getTenantMap()).thenReturn(Map.of(TestConstants.TENANT_ID, TestConstants.TENANT_NAME));
-        Mockito.when(manageDatabase.getTenantFullConfig(TestConstants.TENANT_ID)).thenReturn(kwTenants);
-        Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
+    Mockito.when(manageDatabase.getTenantMap())
+        .thenReturn(Map.of(TestConstants.TENANT_ID, TestConstants.TENANT_NAME));
+    Mockito.when(manageDatabase.getTenantFullConfig(TestConstants.TENANT_ID)).thenReturn(kwTenants);
+    Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
 
-        envControllerService.loadTenantActiveStatus();
+    envControllerService.loadTenantActiveStatus();
 
-        Mockito.verify(handleDbRequestsJdbc).setTenantActivestatus(TestConstants.TENANT_ID, false);
-        Mockito.verify(manageDatabase).loadOneTenant(TestConstants.TENANT_ID);
+    Mockito.verify(handleDbRequestsJdbc).setTenantActivestatus(TestConstants.TENANT_ID, false);
+    Mockito.verify(manageDatabase).loadOneTenant(TestConstants.TENANT_ID);
+  }
 
-    }
+  @Test
+  void loadEnvsWithStatus() {
+    Env env = new Env();
+    env.setType(KafkaClustersType.ALL.value);
+    env.setClusterId(TestConstants.CLUSTER_ID);
+    KwClusters kwClusters = new KwClusters();
 
-    @Test
-    void loadEnvsWithStatus() {
-        Env env = new Env();
-        env.setType(KafkaClustersType.ALL.value);
-        env.setClusterId(TestConstants.CLUSTER_ID);
-        KwClusters kwClusters = new KwClusters();
+    Mockito.when(manageDatabase.getTenantMap())
+        .thenReturn(Map.of(TestConstants.TENANT_ID, TestConstants.TENANT_NAME));
+    Mockito.when(manageDatabase.getKafkaEnvListAllTenants(TestConstants.TENANT_ID))
+        .thenReturn(List.of(env));
+    Mockito.when(manageDatabase.getSchemaRegEnvList(TestConstants.TENANT_ID))
+        .thenReturn(List.of(env));
+    Mockito.when(manageDatabase.getKafkaConnectEnvList(TestConstants.TENANT_ID))
+        .thenReturn(List.of(env));
+    Mockito.when(manageDatabase.getClusters(KafkaClustersType.ALL, TestConstants.TENANT_ID))
+        .thenReturn(Map.of(TestConstants.CLUSTER_ID, kwClusters));
+    Mockito.when(
+            clusterApiService.getKafkaClusterStatus(any(), any(), any(), any(), any(), anyInt()))
+        .thenReturn(TestConstants.ENV_STATUS);
+    Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
 
-        Mockito.when(manageDatabase.getTenantMap()).thenReturn(Map.of(TestConstants.TENANT_ID, TestConstants.TENANT_NAME));
-        Mockito.when(manageDatabase.getKafkaEnvListAllTenants(TestConstants.TENANT_ID)).thenReturn(List.of(env));
-        Mockito.when(manageDatabase.getSchemaRegEnvList(TestConstants.TENANT_ID)).thenReturn(List.of(env));
-        Mockito.when(manageDatabase.getKafkaConnectEnvList(TestConstants.TENANT_ID)).thenReturn(List.of(env));
-        Mockito.when(manageDatabase.getClusters(KafkaClustersType.ALL, TestConstants.TENANT_ID))
-                .thenReturn(Map.of(TestConstants.CLUSTER_ID, kwClusters));
-        Mockito.when(clusterApiService.getKafkaClusterStatus(any(), any(), any(), any(), any(), anyInt()))
-                        .thenReturn(TestConstants.ENV_STATUS);
-        Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
+    envControllerService.loadEnvsWithStatus();
 
-        envControllerService.loadEnvsWithStatus();
-
-        Mockito.verify(handleDbRequestsJdbc, Mockito.times(3)).addNewEnv(env);
-        Mockito.verify(manageDatabase, Mockito.times(3)).loadEnvMapForOneTenant(TestConstants.TENANT_ID);
-        Assertions.assertEquals(env.getEnvStatus(), TestConstants.ENV_STATUS);
-    }
+    Mockito.verify(handleDbRequestsJdbc, Mockito.times(3)).addNewEnv(env);
+    Mockito.verify(manageDatabase, Mockito.times(3))
+        .loadEnvMapForOneTenant(TestConstants.TENANT_ID);
+    Assertions.assertEquals(env.getEnvStatus(), TestConstants.ENV_STATUS);
+  }
 }

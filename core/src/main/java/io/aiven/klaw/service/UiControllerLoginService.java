@@ -305,7 +305,9 @@ public class UiControllerLoginService {
         if ("PENDING_ACTIVATION".equals(existingRegistrationId)) {
           return UriConstants.REDIRECT + UriConstants.REGISTRATION_REVIEW;
         } else {
-          return UriConstants.REDIRECT + UriConstants.REGISTER_USER_REGISTRATION_ID + existingRegistrationId;
+          return UriConstants.REDIRECT
+              + UriConstants.REGISTER_USER_REGISTRATION_ID
+              + existingRegistrationId;
         }
       } else {
         String randomId = UUID.randomUUID().toString();

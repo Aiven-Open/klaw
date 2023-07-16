@@ -246,8 +246,9 @@ class UiControllerLoginServiceTest {
     HttpServletResponse response = new Response();
 
     loginMock();
-      Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
-      Mockito.when(defaultOAuth2User.getAttributes()).thenReturn(Map.of("name", TestConstants.USERNAME));
+    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    Mockito.when(defaultOAuth2User.getAttributes())
+        .thenReturn(Map.of("name", TestConstants.USERNAME));
     Mockito.when(defaultOAuth2User.getAuthorities())
         .thenReturn(
             (Collection)
@@ -280,8 +281,9 @@ class UiControllerLoginServiceTest {
     HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
     loginMock();
-      Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
-      Mockito.when(defaultOAuth2User.getAttributes()).thenReturn(Map.of("name", TestConstants.USERNAME));
+    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    Mockito.when(defaultOAuth2User.getAttributes())
+        .thenReturn(Map.of("name", TestConstants.USERNAME));
     Mockito.when(defaultOAuth2User.getAuthorities())
         .thenReturn(
             (Collection)
@@ -308,8 +310,9 @@ class UiControllerLoginServiceTest {
     HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
     loginMock();
-      Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
-      Mockito.when(defaultOAuth2User.getAttributes()).thenReturn(Map.of("name", TestConstants.USERNAME));
+    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    Mockito.when(defaultOAuth2User.getAttributes())
+        .thenReturn(Map.of("name", TestConstants.USERNAME));
     Mockito.when(defaultOAuth2User.getAuthorities()).thenReturn(List.of());
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(null);
@@ -336,8 +339,8 @@ class UiControllerLoginServiceTest {
     userInfo.setRole(RolesType.SUPERADMIN.name());
 
     loginMock();
-      Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
-      Mockito.when(userDetails.getUsername()).thenReturn(TestConstants.USERNAME);
+    Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
+    Mockito.when(userDetails.getUsername()).thenReturn(TestConstants.USERNAME);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getUsersInfo(TestConstants.USERNAME)).thenReturn(userInfo);
     Mockito.when(commonUtilsService.getTenantId(TestConstants.USERNAME))
@@ -352,60 +355,54 @@ class UiControllerLoginServiceTest {
     Assertions.assertEquals(UriConstants.TENANTS_PAGE, actual);
   }
 
-    @ParameterizedTest
-    @CsvSource({
-            UriConstants.REGISTER + ", true",
-            UriConstants.REGISTRATION_REVIEW_PAGE + ", true",
-            UriConstants.FORGOT_PASSWORD + ", true",
-            UriConstants.FORGOT_PASSWORD_PAGE + ", true",
-            UriConstants.REGISTER + ", false",
-            UriConstants.REGISTRATION_REVIEW_PAGE + ", false",
-            UriConstants.FORGOT_PASSWORD + ", false",
-            UriConstants.FORGOT_PASSWORD_PAGE + ", false"
-    })
-    public void checkAuth(String url, String ssoEnabled) {
-        ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", ssoEnabled);
-        AbstractAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(
-                        TestConstants.USERNAME,
-                        TestConstants.PASSWORD,
-                        List.of(new SimpleGrantedAuthority("role")));
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        UserInfo userInfo = new UserInfo();
-        userInfo.setRole(RolesType.SUPERADMIN.name());
+  @ParameterizedTest
+  @CsvSource({
+    UriConstants.REGISTER + ", true",
+    UriConstants.REGISTRATION_REVIEW_PAGE + ", true",
+    UriConstants.FORGOT_PASSWORD + ", true",
+    UriConstants.FORGOT_PASSWORD_PAGE + ", true",
+    UriConstants.REGISTER + ", false",
+    UriConstants.REGISTRATION_REVIEW_PAGE + ", false",
+    UriConstants.FORGOT_PASSWORD + ", false",
+    UriConstants.FORGOT_PASSWORD_PAGE + ", false"
+  })
+  public void checkAuth(String url, String ssoEnabled) {
+    ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", ssoEnabled);
+    AbstractAuthenticationToken authenticationToken =
+        new UsernamePasswordAuthenticationToken(
+            TestConstants.USERNAME,
+            TestConstants.PASSWORD,
+            List.of(new SimpleGrantedAuthority("role")));
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+    UserInfo userInfo = new UserInfo();
+    userInfo.setRole(RolesType.SUPERADMIN.name());
 
-        loginMock();
-        Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
-        Mockito.when(userDetails.getUsername()).thenReturn(TestConstants.USERNAME);
+    loginMock();
+    Mockito.when(authentication.getPrincipal()).thenReturn(userDetails);
+    Mockito.when(userDetails.getUsername()).thenReturn(TestConstants.USERNAME);
 
-        String actual =
-                uiControllerLoginService.checkAuth(
-                        url, request, response, authenticationToken);
-        Assertions.assertEquals(url, actual);
-    }
+    String actual = uiControllerLoginService.checkAuth(url, request, response, authenticationToken);
+    Assertions.assertEquals(url, actual);
+  }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"true", "false"})
-    public void checkAuth_OAuth2AuthenticationToken(String ssoEnabled) {
-        ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", ssoEnabled);
-        ReflectionTestUtils.setField(uiControllerLoginService, "authenticationType", "ad");
-        AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
-        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
-        UserInfo userInfo = new UserInfo();
-        userInfo.setRole(RolesType.SUPERADMIN.name());
+  @ParameterizedTest
+  @ValueSource(strings = {"true", "false"})
+  public void checkAuth_OAuth2AuthenticationToken(String ssoEnabled) {
+    ReflectionTestUtils.setField(uiControllerLoginService, "ssoEnabled", ssoEnabled);
+    ReflectionTestUtils.setField(uiControllerLoginService, "authenticationType", "ad");
+    AbstractAuthenticationToken authenticationToken = Mockito.mock(OAuth2AuthenticationToken.class);
+    HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+    HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
+    UserInfo userInfo = new UserInfo();
+    userInfo.setRole(RolesType.SUPERADMIN.name());
 
-        loginMock();
-        Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
-        Mockito.doReturn("")
-                .when(uiControllerLoginService)
-                .checkAnonymousLogin("", authenticationToken, response, null);
-        String actual =
-                uiControllerLoginService.checkAuth(
-                        "", request, response, authenticationToken);
-        Assertions.assertEquals("", actual);
-    }
-
-
+    loginMock();
+    Mockito.when(authentication.getPrincipal()).thenReturn(defaultOAuth2User);
+    Mockito.doReturn("")
+        .when(uiControllerLoginService)
+        .checkAnonymousLogin("", authenticationToken, response, null);
+    String actual = uiControllerLoginService.checkAuth("", request, response, authenticationToken);
+    Assertions.assertEquals("", actual);
+  }
 }
