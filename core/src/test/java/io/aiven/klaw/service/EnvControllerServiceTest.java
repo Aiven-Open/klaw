@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwTenants;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
+import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import java.sql.Timestamp;
 import java.util.List;
@@ -66,7 +67,7 @@ class EnvControllerServiceTest {
         .thenReturn(Map.of(TestConstants.CLUSTER_ID, kwClusters));
     Mockito.when(
             clusterApiService.getKafkaClusterStatus(any(), any(), any(), any(), any(), anyInt()))
-        .thenReturn(TestConstants.ENV_STATUS);
+        .thenReturn(ClusterStatus.ONLINE);
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
 
     envControllerService.loadEnvsWithStatus();
@@ -74,6 +75,6 @@ class EnvControllerServiceTest {
     Mockito.verify(handleDbRequestsJdbc, Mockito.times(3)).addNewEnv(env);
     Mockito.verify(manageDatabase, Mockito.times(3))
         .loadEnvMapForOneTenant(TestConstants.TENANT_ID);
-    Assertions.assertEquals(env.getEnvStatus(), TestConstants.ENV_STATUS);
+    Assertions.assertEquals(env.getEnvStatus(), ClusterStatus.ONLINE);
   }
 }
