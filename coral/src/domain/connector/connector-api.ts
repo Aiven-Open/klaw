@@ -4,6 +4,8 @@ import {
   transformConnectorOverviewResponse,
   transformConnectorRequestApiResponse,
 } from "src/domain/connector/connector-transformer";
+import { ConnectorDocumentationMarkdown } from "src/domain/connector/connector-types";
+import { createStringifiedHtml } from "src/domain/helper/documentation-helper";
 import {
   RequestVerdictApproval,
   RequestVerdictDecline,
@@ -146,14 +148,44 @@ const createConnectorRequest = (
 
 type GetConnectorOverviewParams =
   KlawApiRequestQueryParameters<"getConnectorOverview">;
-const getConnectorOverview = (params: GetConnectorOverviewParams) => {
+const getConnectorOverview = ({
+  connectornamesearch,
+  environmentId,
+}: GetConnectorOverviewParams) => {
+  const queryParams = convertQueryValuesToString({
+    connectornamesearch,
+    ...(environmentId && { environmentId }),
+  });
+
   return api
     .get<KlawApiResponse<"getConnectorOverview">>(
       API_PATHS.getConnectorOverview,
-      new URLSearchParams(params)
+      new URLSearchParams(queryParams)
     )
     .then(transformConnectorOverviewResponse);
 };
+
+type UpdateConnectorDocumentation = {
+  connectorName: string;
+  connectorIdForDocumentation: number;
+  connectorDocumentation: ConnectorDocumentationMarkdown;
+};
+async function updateConnectorDocumentation({
+  connectorName,
+  connectorIdForDocumentation,
+  connectorDocumentation,
+}: UpdateConnectorDocumentation) {
+  const stringifiedHtml = await createStringifiedHtml(connectorDocumentation);
+
+  return api.post<
+    KlawApiResponse<"saveConnectorDocumentation">,
+    KlawApiRequest<"saveConnectorDocumentation">
+  >(API_PATHS.saveConnectorDocumentation, {
+    connectorName,
+    connectorId: connectorIdForDocumentation,
+    documentation: stringifiedHtml,
+  });
+}
 
 export {
   approveConnectorRequest,
@@ -164,4 +196,5 @@ export {
   getConnectorRequests,
   getConnectorRequestsForApprover,
   getConnectors,
+  updateConnectorDocumentation,
 };

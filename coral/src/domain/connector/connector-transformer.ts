@@ -5,6 +5,7 @@ import {
 } from "src/domain/connector/connector-types";
 import { KlawApiResponse } from "types/utils";
 import omit from "lodash/omit";
+import { createMarkdown } from "src/domain/helper/documentation-helper";
 
 const transformConnectorApiResponse = (
   data: KlawApiResponse<"getConnectors">
@@ -40,12 +41,26 @@ const transformConnectorRequestApiResponse = (
   };
 };
 
-function transformConnectorOverviewResponse(
+async function transformConnectorOverviewResponse(
   apiResponse: KlawApiResponse<"getConnectorOverview">
-): ConnectorOverview {
+): Promise<ConnectorOverview> {
+  // while we save documentation in stringified html to be
+  // backwards compatible with the Angular app for now,
+  // we're planing to migrate to pure Markdown at some
+  // point and don't want stringfied html to bleed into
+  // an area outside from `/domain`
+
+  let documentation;
+  if (
+    apiResponse.connectorDocumentation &&
+    apiResponse.connectorDocumentation.trim().length > 0
+  ) {
+    documentation = await createMarkdown(apiResponse.connectorDocumentation);
+  }
   return {
     ...omit(apiResponse, ["connectorInfoList"]),
     connectorInfo: apiResponse.connectorInfoList[0],
+    connectorDocumentation: documentation,
   };
 }
 

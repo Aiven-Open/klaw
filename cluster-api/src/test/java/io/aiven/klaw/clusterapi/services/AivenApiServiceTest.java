@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -333,5 +334,30 @@ public class AivenApiServiceTest {
         assertThatThrownBy(() -> aivenApiService.deleteAcls(clusterAclRequest));
     exception.isInstanceOf(Exception.class);
     exception.hasMessage("Error in deleting acls ");
+  }
+
+  @Test
+  public void deleteAclsTestFailure404() throws Exception {
+    ClusterAclRequest clusterAclRequest =
+        ClusterAclRequest.builder()
+            .aivenAclKey("4322342")
+            .projectName("testproject")
+            .serviceName("serviceName")
+            .build();
+    String aclsUrl =
+        ACLS_BASE_URL
+            + clusterAclRequest.getProjectName()
+            + "/service/"
+            + clusterAclRequest.getServiceName()
+            + "/acl/"
+            + clusterAclRequest.getAivenAclKey();
+    when(restTemplate.exchange(
+            eq(aclsUrl), eq(HttpMethod.DELETE), any(HttpEntity.class), any(Class.class)))
+        .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+    String actual = aivenApiService.deleteAcls(clusterAclRequest);
+    String expected = ApiResultStatus.SUCCESS.value;
+
+    assertThat(actual).isEqualTo(expected);
   }
 }
