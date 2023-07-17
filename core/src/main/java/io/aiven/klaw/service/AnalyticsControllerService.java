@@ -9,6 +9,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.ANALYTICS_106;
 import static io.aiven.klaw.error.KlawErrorMessages.ANALYTICS_107;
 
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.constants.MapConstants;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
@@ -94,13 +95,14 @@ public class AnalyticsControllerService {
             aclsPerEnvList.stream()
                 .filter(
                     mapObj ->
-                        allowedEnvIdList.contains(mapObj.get("cluster"))
-                            && Objects.equals(mapObj.get("cluster"), sourceEnvSelected))
+                        allowedEnvIdList.contains(mapObj.get(MapConstants.CLUSTER_KEY))
+                            && Objects.equals(
+                                mapObj.get(MapConstants.CLUSTER_KEY), sourceEnvSelected))
                 .collect(Collectors.toList());
 
         if (aclsPerEnvList.size() == 1) {
           aclsCountPerEnv.setStatus(ApiResultStatus.SUCCESS.value);
-          aclsCountPerEnv.setAclsCount(aclsPerEnvList.get(0).get("aclscount"));
+          aclsCountPerEnv.setAclsCount(aclsPerEnvList.get(0).get(MapConstants.ACLS_COUNT_KEY));
         }
       } catch (Exception e) {
         log.error("No environments/clusters found.", e);
@@ -125,13 +127,15 @@ public class AnalyticsControllerService {
             topicsCountList.stream()
                 .filter(
                     mapObj ->
-                        allowedEnvIdSet.contains(mapObj.get("cluster"))
-                            && Objects.equals(mapObj.get("cluster"), sourceEnvSelected))
+                        allowedEnvIdSet.contains(mapObj.get(MapConstants.CLUSTER_KEY))
+                            && Objects.equals(
+                                mapObj.get(MapConstants.CLUSTER_KEY), sourceEnvSelected))
                 .collect(Collectors.toList());
 
         if (topicsCountList.size() == 1) {
           topicsCountPerEnv.setStatus(ApiResultStatus.SUCCESS.value);
-          topicsCountPerEnv.setTopicsCount(topicsCountList.get(0).get("topicscount"));
+          topicsCountPerEnv.setTopicsCount(
+              topicsCountList.get(0).get(MapConstants.TOPICS_COUNT_KEY));
         }
       }
     } catch (Exception e) {
@@ -154,7 +158,13 @@ public class AnalyticsControllerService {
     }
 
     return commonUtilsService.getChartsJsOverview(
-        producerAclsPerTeamList, title, "aclscount", "teamid", "Teams", "Producer Acls", tenantId);
+        producerAclsPerTeamList,
+        title,
+        MapConstants.ACLS_COUNT_KEY,
+        "teamid",
+        "Teams",
+        "Producer Acls",
+        tenantId);
   }
 
   public ChartsJsOverview getConsumerAclsTeamsOverview(Integer teamId, Integer tenantId) {
@@ -171,7 +181,13 @@ public class AnalyticsControllerService {
     }
 
     return commonUtilsService.getChartsJsOverview(
-        consumerAclsPerTeamList, title, "aclscount", "teamid", "Teams", "Consumer Acls", tenantId);
+        consumerAclsPerTeamList,
+        title,
+        MapConstants.ACLS_COUNT_KEY,
+        "teamid",
+        "Teams",
+        "Consumer Acls",
+        tenantId);
   }
 
   public ChartsJsOverview getTopicsTeamsOverview(Integer teamId, Integer tenantId) {
@@ -186,7 +202,7 @@ public class AnalyticsControllerService {
     }
 
     return commonUtilsService.getChartsJsOverview(
-        teamCountList, title, "topicscount", "teamid", "Teams", "Topics", tenantId);
+        teamCountList, title, MapConstants.TOPICS_COUNT_KEY, "teamid", "Teams", "Topics", tenantId);
   }
 
   public ChartsJsOverview getTopicsEnvOverview(Integer tenantId, PermissionType permissionType) {
@@ -200,10 +216,12 @@ public class AnalyticsControllerService {
       if (teamCountList != null) {
         teamCountList =
             teamCountList.stream()
-                .filter(mapObj -> allowedEnvIdSet.contains(mapObj.get("cluster")))
+                .filter(mapObj -> allowedEnvIdSet.contains(mapObj.get(MapConstants.CLUSTER_KEY)))
                 .collect(Collectors.toList());
         teamCountList.forEach(
-            hashMap -> hashMap.put("cluster", getEnvName(hashMap.get("cluster"))));
+            hashMap ->
+                hashMap.put(
+                    MapConstants.CLUSTER_KEY, getEnvName(hashMap.get(MapConstants.CLUSTER_KEY))));
       }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
@@ -211,7 +229,13 @@ public class AnalyticsControllerService {
     }
 
     return commonUtilsService.getChartsJsOverview(
-        teamCountList, ANALYTICS_104, "topicscount", "cluster", "Clusters", "Topics", tenantId);
+        teamCountList,
+        ANALYTICS_104,
+        MapConstants.TOPICS_COUNT_KEY,
+        MapConstants.CLUSTER_KEY,
+        "Clusters",
+        "Topics",
+        tenantId);
   }
 
   public ChartsJsOverview getTopicsPerTeamEnvOverview(int tenantId) {
@@ -227,7 +251,13 @@ public class AnalyticsControllerService {
         "Topics per cluster (" + manageDatabase.getTeamNameFromTeamId(tenantId, userTeamId) + ")";
 
     return commonUtilsService.getChartsJsOverview(
-        teamCountList, title, "topicscount", "cluster", "Clusters", "Topics", tenantId);
+        teamCountList,
+        title,
+        MapConstants.TOPICS_COUNT_KEY,
+        MapConstants.CLUSTER_KEY,
+        "Clusters",
+        "Topics",
+        tenantId);
   }
 
   public ChartsJsOverview getPartitionsEnvOverview(Integer teamId, Integer tenantId) {
@@ -245,10 +275,12 @@ public class AnalyticsControllerService {
       if (partitionsCountList != null) {
         partitionsCountList =
             partitionsCountList.stream()
-                .filter(mapObj -> allowedEnvIdList.contains(mapObj.get("cluster")))
+                .filter(mapObj -> allowedEnvIdList.contains(mapObj.get(MapConstants.CLUSTER_KEY)))
                 .collect(Collectors.toList());
         partitionsCountList.forEach(
-            hashMap -> hashMap.put("cluster", getEnvName(hashMap.get("cluster"))));
+            hashMap ->
+                hashMap.put(
+                    MapConstants.CLUSTER_KEY, getEnvName(hashMap.get(MapConstants.CLUSTER_KEY))));
       }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
@@ -259,7 +291,7 @@ public class AnalyticsControllerService {
         partitionsCountList,
         title,
         "partitionscount",
-        "cluster",
+        MapConstants.CLUSTER_KEY,
         "Clusters",
         "Partitions",
         tenantId);
@@ -280,10 +312,12 @@ public class AnalyticsControllerService {
       if (aclsPerEnvList != null) {
         aclsPerEnvList =
             aclsPerEnvList.stream()
-                .filter(mapObj -> allowedEnvIdList.contains(mapObj.get("cluster")))
+                .filter(mapObj -> allowedEnvIdList.contains(mapObj.get(MapConstants.CLUSTER_KEY)))
                 .collect(Collectors.toList());
         aclsPerEnvList.forEach(
-            hashMap -> hashMap.put("cluster", getEnvName(hashMap.get("cluster"))));
+            hashMap ->
+                hashMap.put(
+                    MapConstants.CLUSTER_KEY, getEnvName(hashMap.get(MapConstants.CLUSTER_KEY))));
       }
     } catch (Exception e) {
       log.error("No environments/clusters found.", e);
@@ -291,10 +325,16 @@ public class AnalyticsControllerService {
     }
 
     return commonUtilsService.getChartsJsOverview(
-        aclsPerEnvList, title, "aclscount", "cluster", "Clusters", "Acls", tenantId);
+        aclsPerEnvList,
+        title,
+        MapConstants.ACLS_COUNT_KEY,
+        MapConstants.CLUSTER_KEY,
+        "Clusters",
+        "Acls",
+        tenantId);
   }
 
-  private ChartsJsOverview getActivityLogOverview(Integer teamId, Integer tenantId) {
+  public ChartsJsOverview getActivityLogOverview(Integer teamId, Integer tenantId) {
     int numberOfDays = 30;
     List<Map<String, String>> activityCountList;
     String title = ANALYTICS_107;
@@ -397,11 +437,7 @@ public class AnalyticsControllerService {
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dataPattern);
 
     File zipFile =
-        new File(
-            manageDatabase.getKwPropertyValue(KwConstants.KW_REPORTS_TMP_LOCATION_KEY, tenantId)
-                + "KwReport"
-                + simpleDateFormat.format(new Date())
-                + ".zip");
+        new File(kwReportsLocation + "KwReport" + simpleDateFormat.format(new Date()) + ".zip");
     ZipOutputStream zipOutputStream = null;
     try {
       zipOutputStream = new ZipOutputStream(new FileOutputStream(zipFile));
