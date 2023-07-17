@@ -8,6 +8,7 @@ import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.constants.UriConstants;
 import io.aiven.klaw.dao.RegisterUserInfo;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.helpers.HandleDbRequests;
@@ -65,11 +66,6 @@ public class UiControllerLoginService {
   @Autowired(required = false)
   private OAuth2AuthorizedClientService authorizedClientService;
 
-  private static final String defaultPage = "login.html";
-  private static final String defaultPageSaas = "loginSaas.html";
-  private static final String indexPage = "index.html";
-  private static final String oauthLoginPage = "oauthLogin";
-
   public String getReturningPage(String uri, String userName) {
     try {
       if (userName != null) {
@@ -79,57 +75,57 @@ public class UiControllerLoginService {
         if (userInfo == null) {
           SecurityContextHolder.getContext().setAuthentication(null);
           if (SAAS.equals(kwInstallationType)) {
-            return "registerSaas.html";
+            return UriConstants.REGISTER_SAAS_PAGE;
           }
 
           if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
-            return "registerLdap.html";
+            return UriConstants.REGISTER_LDAP_PAGE;
           }
-          return "register.html";
+          return UriConstants.REGISTER_PAGE;
         }
 
         if (SAAS.equals(kwInstallationType)) {
           int tenantId = commonUtilsService.getTenantId(userName);
           if (!"true".equals(manageDatabase.getTenantFullConfig(tenantId).getIsActive())) {
-            return "tenantInfo.html";
+            return UriConstants.TENANT_INFO_PAGE;
           }
         }
 
         log.debug("Authenticated user : {}", userName);
-        if ("login.html".equals(uri)
-            || "loginSaas.html".equals(uri)
-            || "home.html".equals(uri)
-            || "register.html".equals(uri)
-            || uri.contains("registrationReview")
-            || uri.contains("userActivation")
-            || "forgotPassword.html".equals(uri)
-            || "newADUser.html".equals(uri)) {
-          return indexPage;
+        if (UriConstants.LOGIN_PAGE.equals(uri)
+            || UriConstants.LOGIN_SAAS_PAGE.equals(uri)
+            || UriConstants.HOME_PAGE.equals(uri)
+            || UriConstants.REGISTER_PAGE.equals(uri)
+            || uri.contains(UriConstants.REGISTRATION_REVIEW)
+            || uri.contains(UriConstants.USER_ACTIVATION)
+            || UriConstants.FORGOT_PASSWORD_PAGE.equals(uri)
+            || UriConstants.NEW_AD_USER_PAGE.equals(uri)) {
+          return UriConstants.INDEX_PAGE;
         }
         return uri;
       }
       if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType)) {
-        return defaultPageSaas;
+        return UriConstants.DEFAULT_PAGE_SAAS;
       } else {
-        return defaultPage;
+        return UriConstants.DEFAULT_PAGE;
       }
     } catch (Exception e) {
       log.error("Exception:", e);
-      if ("login.html".equals(uri)
-          || "register.html".equals(uri)
-          || "registerSaas.html".equals(uri)
-          || "registerLdap.html".equals(uri)
-          || uri.contains("registrationReview")
-          || uri.contains("userActivation")
-          || "forgotPassword.html".equals(uri)
-          || "newADUser.html".equals(uri)
-          || "terms.html".equals(uri)
-          || "feedback.html".equals(uri)) return uri;
+      if (UriConstants.LOGIN_PAGE.equals(uri)
+          || UriConstants.REGISTER_PAGE.equals(uri)
+          || UriConstants.REGISTER_SAAS_PAGE.equals(uri)
+          || UriConstants.REGISTER_LDAP_PAGE.equals(uri)
+          || uri.contains(UriConstants.REGISTRATION_REVIEW)
+          || uri.contains(UriConstants.USER_ACTIVATION)
+          || UriConstants.FORGOT_PASSWORD_PAGE.equals(uri)
+          || UriConstants.NEW_AD_USER_PAGE.equals(uri)
+          || UriConstants.TERMS_PAGE.equals(uri)
+          || UriConstants.FEEDBACK_PAGE.equals(uri)) return uri;
 
       if (DATABASE.value.equals(authenticationType) && SAAS.equals(kwInstallationType)) {
-        return defaultPageSaas;
+        return UriConstants.DEFAULT_PAGE_SAAS;
       } else {
-        return defaultPage;
+        return UriConstants.DEFAULT_PAGE;
       }
     }
   }
@@ -169,7 +165,7 @@ public class UiControllerLoginService {
               getRoleFromTokenAuthorities(authorities, userName, klawRoles, response);
           if (!roleValidationPair.getLeft()) {
             sendResponse(response, roleValidationPair);
-            return oauthLoginPage;
+            return UriConstants.OAUTH_LOGIN;
           }
         }
       }
@@ -179,7 +175,7 @@ public class UiControllerLoginService {
     if (abstractAuthenticationToken.isAuthenticated()) {
       return uri;
     } else {
-      return oauthLoginPage;
+      return UriConstants.OAUTH_LOGIN;
     }
   }
 
@@ -188,7 +184,7 @@ public class UiControllerLoginService {
       HttpServletResponse response, Pair<Boolean, String> validationPair) {
     try {
       // Display error to the user based on error code
-      response.sendRedirect("login?errorCode=" + validationPair.getRight());
+      response.sendRedirect(UriConstants.LOGIN_ERROR_CODE + validationPair.getRight());
     } catch (IOException ex) {
       log.error("Ignore error from response redirect !");
     }
@@ -259,35 +255,35 @@ public class UiControllerLoginService {
               .getUsername();
     }
 
-    if ("tenants.html".equals(uri)) {
+    if (UriConstants.TENANTS_PAGE.equals(uri)) {
       if (SUPERADMIN
               .name()
               .equals(manageDatabase.getHandleDbRequests().getUsersInfo(userName).getRole())
           && commonUtilsService.getTenantId(userName) == DEFAULT_TENANT_ID) {
         return getReturningPage(uri, userName);
       } else {
-        uri = "index";
+        uri = UriConstants.INDEX;
       }
     }
 
     if ("true".equals(ssoEnabled)) {
-      if (uri.contains("register")
-          || uri.equals("registrationReview.html")
-          || uri.equals("forgotPassword")
-          || uri.equals("forgotPassword.html")) {
+      if (uri.contains(UriConstants.REGISTER)
+          || uri.equals(UriConstants.REGISTRATION_REVIEW_PAGE)
+          || uri.equals(UriConstants.FORGOT_PASSWORD)
+          || uri.equals(UriConstants.FORGOT_PASSWORD_PAGE)) {
         return uri;
       } else {
         if (abstractAuthenticationToken instanceof OAuth2AuthenticationToken) {
           return checkAnonymousLogin(uri, abstractAuthenticationToken, response, userName);
         } else {
-          return oauthLoginPage;
+          return UriConstants.OAUTH_LOGIN;
         }
       }
     } else {
-      if (uri.contains("register")
-          || uri.equals("registrationReview.html")
-          || uri.equals("forgotPassword")
-          || uri.equals("forgotPassword.html")) {
+      if (uri.contains(UriConstants.REGISTER)
+          || uri.equals(UriConstants.REGISTRATION_REVIEW_PAGE)
+          || uri.equals(UriConstants.FORGOT_PASSWORD)
+          || uri.equals(UriConstants.FORGOT_PASSWORD_PAGE)) {
         return uri;
       } else {
         if (ACTIVE_DIRECTORY.value.equals(authenticationType)) {
@@ -307,9 +303,11 @@ public class UiControllerLoginService {
 
       if (existingRegistrationId != null) {
         if ("PENDING_ACTIVATION".equals(existingRegistrationId)) {
-          return "redirect:" + "registrationReview";
+          return UriConstants.REDIRECT + UriConstants.REGISTRATION_REVIEW;
         } else {
-          return "redirect:" + "register?userRegistrationId=" + existingRegistrationId;
+          return UriConstants.REDIRECT
+              + UriConstants.REGISTER_USER_REGISTRATION_ID
+              + existingRegistrationId;
         }
       } else {
         String randomId = UUID.randomUUID().toString();
@@ -337,12 +335,12 @@ public class UiControllerLoginService {
 
         String result = manageDatabase.getHandleDbRequests().registerUserForAD(registerUserInfo);
         if (result.equals(ApiResultStatus.SUCCESS.value))
-          return "redirect:" + "register?userRegistrationId=" + randomId;
+          return UriConstants.REDIRECT + UriConstants.REGISTER_USER_REGISTRATION_ID + randomId;
         else return "";
       }
     } catch (Exception e) {
       log.error("Unable to find mail/name fields.", e);
-      return "registerLdap.html";
+      return UriConstants.REGISTER_LDAP_PAGE;
     }
   }
 }
