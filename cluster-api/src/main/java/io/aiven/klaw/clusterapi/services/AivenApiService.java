@@ -25,6 +25,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -254,6 +255,11 @@ public class AivenApiService {
       restTemplate.exchange(uri, HttpMethod.DELETE, request, Object.class);
     } catch (Exception e) {
       log.error("Exception:", e);
+      if (e instanceof HttpClientErrorException) {
+        if (((HttpClientErrorException) e).getStatusCode() == HttpStatus.NOT_FOUND) {
+          return ApiResultStatus.SUCCESS.value;
+        }
+      }
       throw new Exception("Error in deleting acls " + e.getMessage());
     }
 

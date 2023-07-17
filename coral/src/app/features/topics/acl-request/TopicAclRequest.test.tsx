@@ -6,7 +6,6 @@ import { Route, Routes } from "react-router-dom";
 import TopicAclRequest from "src/app/features/topics/acl-request/TopicAclRequest";
 import { mockCreateAclRequest } from "src/domain/acl/acl-api-msw";
 import {
-  getMockedResponseGetClusterInfoFromEnv,
   mockGetClusterInfoFromEnv,
   mockgetAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment/environment-api.msw";
@@ -20,6 +19,7 @@ import {
 import api from "src/services/api";
 import { server } from "src/services/test-utils/api-mocks/server";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { getMockedResponseGetClusterInfoFromEnvironment } from "src/domain/cluster/cluster-api.msw";
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -69,7 +69,7 @@ const dataSetup = ({ isAivenCluster }: { isAivenCluster: boolean }) => {
   });
   mockGetClusterInfoFromEnv({
     mswInstance: server,
-    response: getMockedResponseGetClusterInfoFromEnv(isAivenCluster),
+    response: getMockedResponseGetClusterInfoFromEnvironment(isAivenCluster),
   });
 };
 

@@ -17,7 +17,7 @@ function NoDocumentationBanner({
         onClick: addDocumentation,
       }}
     >
-      You can add documentation for your topic.
+      You can add documentation for your connector.
     </EmptyState>
   );
 }

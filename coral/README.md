@@ -54,13 +54,13 @@ Please see our documentation: [Development with remote API](docs/development-wit
 If you want to run Coral without an API, you can do that, too.
 In this case, you'll have to mock the responses for api calls you need. This can be done by returning a resolved (or rejected) `Promise` instead of executing the API call during development. Please remember removing the mock before opening a PR for review :)
 
-Example: mocking the response for `getClusterInfo`:
-- go the [`src/domain/environment/environment-api.ts`](./src/domain/environment/environment-api.ts)
+Example: mocking the response for `getClusterInfoFromEnvironment`:
+- go the [`src/domain/cluster/cluster-api.ts`](./src/domain/cluster/cluster-api.ts)
 - check the return type of the function (`KlawApiResponse<"getClusterInfoFromEnv">`) in our api definition to create the right object
 - return a promise with your mock instead of calling the endpoint and comment out the actual endpoint call:
 
 ```typescript
-const getClusterInfo = async ({
+const getClusterInfoFromEnvironment = async ({
   envSelected,
   envType,
   }: {

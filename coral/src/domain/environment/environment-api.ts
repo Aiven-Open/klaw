@@ -46,24 +46,9 @@ const getAllEnvironmentsForConnector = (): Promise<Environment[]> => {
     .then(transformEnvironmentApiResponse);
 };
 
-const getClusterInfo = async ({
-  envSelected,
-  envType,
-}: {
-  envSelected: string;
-  envType: Environment["type"];
-}): Promise<KlawApiResponse<"getClusterInfoFromEnv">> => {
-  const params = new URLSearchParams({ envSelected, envType });
-  return api.get<KlawApiResponse<"getClusterInfoFromEnv">>(
-    API_PATHS.getClusterInfoFromEnv,
-    params
-  );
-};
-
 export {
   getAllEnvironmentsForTopicAndAcl,
   getEnvironmentsForTopicRequest,
-  getClusterInfo,
   getAllEnvironmentsForSchema,
   getEnvironmentsForSchemaRequest,
   getAllEnvironmentsForConnector,
