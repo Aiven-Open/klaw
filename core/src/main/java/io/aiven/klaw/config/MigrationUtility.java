@@ -37,7 +37,6 @@ public class MigrationUtility {
   public static final int SUPPORTED_KLAW_VERSION_NUMBER_SYSTEM = 3;
   public static final String QUERY_DATEEXECUTED_FROM_DATABASECHANGELOG =
       "SELECT DATEEXECUTED FROM %s";
-  public static final int ALLOWED_TIME_BETWEEN_DB_UPDATES_TO_BE_FIRST_INSTALL = 1;
   public static final String DATA_VERSION_DEFAULT = "0.0.0";
 
   @Value("${klaw.data.migration.packageToScan:io.aiven.klaw.dao.migration}")
@@ -55,8 +54,6 @@ public class MigrationUtility {
 
   @Autowired private SpringLiquibase liquibase;
 
-  private boolean isCleanInstall;
-
   @SchedulerLock(
       name = "TaskScheduler_MigrationUtility",
       lockAtLeastFor = "${klaw.shedlock.lockAtLeastFor:PT30M}",
@@ -67,11 +64,16 @@ public class MigrationUtility {
     DataVersion currentDataVersion = getLatestDataVersion();
 
     String latestDataVersion = getLatestDataVersionOrDefault(currentDataVersion);
+    // Find all DataMigration annotated classes.// Migrate each one
+    SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions =
+        getAllDataMigrationClasses(currentDataVersion, latestDataVersion);
     if (latestDataVersion.equals(DATA_VERSION_DEFAULT) && isNewInstall()) {
       log.info(
           "This is a new install and no data migration is required. Setting Klaw Version to {}",
           currentKlawVersion);
-      updateDataVersionInDB(currentKlawVersion, 0);
+
+      // Need to find latest
+      updateDataVersionInDB(currentKlawVersion, orderedMapOfMigrationInstructions.lastKey());
       return;
     } else if (!isVersionGreaterThenCurrentVersion(latestDataVersion, currentKlawVersion)) {
       log.info(
@@ -83,14 +85,6 @@ public class MigrationUtility {
       // pre Migration Utility.
     }
 
-    // Find all DataMigration annotated classes.// Migrate each one
-    Reflections reflections =
-        new Reflections(new ConfigurationBuilder().forPackages(packageToScan));
-    Set<Class<?>> classes = reflections.getTypesAnnotatedWith(DataMigration.class);
-    SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions =
-        orderApplicableMigrationInstructions(
-            latestDataVersion, getLatestOrderExecuted(currentDataVersion), classes);
-
     // execute the migration
     executeMigrationInstructions(orderedMapOfMigrationInstructions);
 
@@ -100,6 +94,17 @@ public class MigrationUtility {
         getLatestDataVersionOrDefault(postMigrationDataVersion), currentKlawVersion)) {
       updateDataVersionInDB(currentKlawVersion, postMigrationDataVersion.getChangeId());
     }
+  }
+
+  private SortedMap<Integer, Pair<String, Class<?>>> getAllDataMigrationClasses(
+      DataVersion currentDataVersion, String latestDataVersion) {
+    Reflections reflections =
+        new Reflections(new ConfigurationBuilder().forPackages(packageToScan));
+    Set<Class<?>> classes = reflections.getTypesAnnotatedWith(DataMigration.class);
+    SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions =
+        orderApplicableMigrationInstructions(
+            latestDataVersion, getLatestOrderExecuted(currentDataVersion), classes);
+    return orderedMapOfMigrationInstructions;
   }
 
   private static int getLatestOrderExecuted(DataVersion currentDataVersion) {
@@ -123,7 +128,7 @@ public class MigrationUtility {
 
   private void updateDataVersionInDB(String version, int changeId) {
     DataVersion latestDataVersion = new DataVersion();
-    latestDataVersion.setVersion(currentKlawVersion);
+    latestDataVersion.setVersion(version);
     latestDataVersion.setExecutedAt(Timestamp.from(Instant.now()));
     latestDataVersion.setComplete(true);
     latestDataVersion.setChangeId(changeId);
@@ -261,14 +266,16 @@ public class MigrationUtility {
           earliestTime = isExecutionTimeBeforeCurrentEarliestTime(earliestTime, executionTime);
           latestTime = isExecutionTimeAfterCurrentLatestTime(latestTime, executionTime);
         }
+
         return earliestTime
             .plus(allowedTimeBetweenTableInstall, ChronoUnit.HOURS)
             .isAfter(latestTime);
       }
     } catch (Exception e) {
       log.error(
-          "Exception thrown trying to get Execution Times fr database change log: ",
+          "Exception thrown trying to get Execution Times from database change log: ",
           e.getMessage());
+      throw new RuntimeException("Unable to determine when database was installed.", e);
     }
     return false;
   }

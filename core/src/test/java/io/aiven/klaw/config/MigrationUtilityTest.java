@@ -1,6 +1,7 @@
 package io.aiven.klaw.config;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
@@ -235,6 +236,54 @@ class MigrationUtilityTest {
 
     utility.startMigration();
     verify(versionRepo, times(1)).save(dataVersionCaptor.capture());
+  }
+
+  @Test
+  public void UnableToQueryDB_ThrowException() throws Exception {
+    when(versionRepo.findTopByOrderByIdDesc()).thenReturn(null);
+    when(liquibase.getDataSource()).thenReturn(dataSource);
+    when(dataSource.getConnection()).thenReturn(connection);
+    when(connection.prepareStatement(any())).thenReturn(preparedStatement);
+    when(preparedStatement.executeQuery()).thenReturn(set);
+    when(context.getBeanNamesForAnnotation(eq(DataMigration.class)))
+        .thenReturn(new String[] {"migrationTestData2x1x0", "migrationTestData2x2x0"});
+    when(context.getBean(eq("migrationTestData2x1x0"))).thenReturn(m1);
+    when(context.getBean(eq("migrationTestData2x2x0"))).thenReturn(m2);
+    when(set.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
+    // All the timestamps are within an hour
+    when(set.getTimestamp(1)).thenReturn(null);
+
+    assertThatExceptionOfType(RuntimeException.class)
+        .isThrownBy(
+            () -> {
+              utility.startMigration();
+            });
+  }
+
+  @Test
+  public void OnAFreshInstall_MakeSureTheOrderIsSetInTheVersionDB() throws Exception {
+    when(versionRepo.findTopByOrderByIdDesc()).thenReturn(null);
+    when(liquibase.getDataSource()).thenReturn(dataSource);
+    when(dataSource.getConnection()).thenReturn(connection);
+    when(connection.prepareStatement(any())).thenReturn(preparedStatement);
+    when(preparedStatement.executeQuery()).thenReturn(set);
+    when(context.getBeanNamesForAnnotation(eq(DataMigration.class)))
+        .thenReturn(new String[] {"migrationTestData2x1x0", "migrationTestData2x2x0"});
+    when(context.getBean(eq("migrationTestData2x1x0"))).thenReturn(m1);
+    when(context.getBean(eq("migrationTestData2x2x0"))).thenReturn(m2);
+    when(set.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
+    // All the timestamps are within an hour
+    when(set.getTimestamp(1)).thenReturn(new Timestamp(System.currentTimeMillis()));
+
+    ReflectionTestUtils.setField(m1, "success", true);
+    ReflectionTestUtils.setField(m2, "success", true);
+
+    utility.startMigration();
+    verify(context, times(0)).getBean(eq("migrationTestData2x1x0"));
+    verify(context, times(0)).getBean(eq("migrationTestData2x2x0"));
+    verify(versionRepo, times(1)).save(dataVersionCaptor.capture());
+    assertThat(dataVersionCaptor.getValue().getVersion()).isEqualTo("2.2.0");
+    assertThat(dataVersionCaptor.getValue().getChangeId()).isEqualTo(1);
   }
 
   private DataVersion getDataVersion(String version, int changeId) {
