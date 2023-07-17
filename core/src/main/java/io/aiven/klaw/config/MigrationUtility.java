@@ -46,6 +46,9 @@ public class MigrationUtility {
   @Value("${klaw.version}")
   private String currentKlawVersion;
 
+  @Value("${klaw.db.hoursFor.tableCreation:1}")
+  private Integer allowedTimeBetweenTableInstall;
+
   @Autowired private DataVersionRepo versionRepo;
 
   @Autowired private ApplicationContext context;
@@ -239,10 +242,12 @@ public class MigrationUtility {
     return false;
   }
 
-  /***
-   * isNewInstall Checks the liquibase DatabaseChangeLog Table It checks if all the tables were created at the same time (by default all tables are created within an hour of each other)
+  /**
+   * isNewInstall Checks the liquibase DatabaseChangeLog Table It checks if all the tables were
+   * created at the same time (by default all tables are created within an hour of each other)
    *
-   * @return true if all tables are created at the same time, false if the database tables were created over a longer period of time.
+   * @return true if all tables are created at the same time, false if the database tables were
+   *     created over a longer period of time.
    */
   private boolean isNewInstall() {
     try {
@@ -256,7 +261,9 @@ public class MigrationUtility {
           earliestTime = isExecutionTimeBeforeCurrentEarliestTime(earliestTime, executionTime);
           latestTime = isExecutionTimeAfterCurrentLatestTime(latestTime, executionTime);
         }
-        return earliestTime.plus(1, ChronoUnit.HOURS).isAfter(latestTime);
+        return earliestTime
+            .plus(allowedTimeBetweenTableInstall, ChronoUnit.HOURS)
+            .isAfter(latestTime);
       }
     } catch (Exception e) {
       log.error(
