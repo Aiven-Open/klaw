@@ -1,3 +1,4 @@
+import { MarkdownString } from "src/domain/helper/documentation-helper";
 import {
   KlawApiModel,
   KlawApiRequest,
@@ -9,6 +10,8 @@ type Connector = KlawApiModel<"KafkaConnectorModelResponse">;
 type ConnectorApiResponse = ResolveIntersectionTypes<Paginated<Connector[]>>;
 
 type ConnectorRequest = KlawApiModel<"KafkaConnectorRequestsResponseModel">;
+
+type ConnectorDocumentationMarkdown = MarkdownString;
 
 type ConnectorRequestsForApprover = ResolveIntersectionTypes<
   Paginated<ConnectorRequest[]>
@@ -28,14 +31,16 @@ type ConnectorOverview = ResolveIntersectionTypes<
     // there is only ever one entry in this list, and we want to access
     // it accordingly, that's why we transform it to connectorInfo instead
     connectorInfo: KlawApiModel<"KafkaConnectorModelResponse">;
+    connectorDocumentation?: ConnectorDocumentationMarkdown;
   }
 >;
 
 export type {
   Connector,
   ConnectorApiResponse,
+  ConnectorDocumentationMarkdown,
+  ConnectorOverview,
   ConnectorRequest,
   ConnectorRequestsForApprover,
   CreateConnectorRequestPayload,
-  ConnectorOverview,
 };
