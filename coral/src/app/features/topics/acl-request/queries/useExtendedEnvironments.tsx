@@ -3,8 +3,8 @@ import {
   Environment,
   getAllEnvironmentsForTopicAndAcl,
 } from "src/domain/environment";
-import { getClusterInfo } from "src/domain/environment/environment-api";
 import { getTopicNames } from "src/domain/topic";
+import { getClusterInfoFromEnvironment } from "src/domain/cluster";
 
 interface ExtendedEnvironment extends Environment {
   isAivenCluster: boolean;
@@ -22,7 +22,7 @@ const getExtensionData = ({ envId, envType }: GetExtensionDataParams) => {
       envSelected: envId,
       onlyMyTeamTopics: false,
     }),
-    getClusterInfo({
+    getClusterInfoFromEnvironment({
       envType,
       envSelected: envId as string,
     }),
