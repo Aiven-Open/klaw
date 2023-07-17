@@ -1,4 +1,5 @@
 import { createBrowserRouter, RouteObject } from "react-router-dom";
+import { ConnectorHistory } from "src/app/features/connectors/details/history/ConnectorHistory";
 import { ConnectorOverview } from "src/app/features/connectors/details/overview/ConnectorOverview";
 import Layout from "src/app/layout/Layout";
 import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
@@ -138,7 +139,7 @@ const routes: Array<RouteObject> = [
             path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
               ConnectorOverviewTabEnum.HISTORY
             ],
-            element: <div>HISTORY</div>,
+            element: <ConnectorHistory />,
             id: ConnectorOverviewTabEnum.HISTORY,
           },
         ],
