@@ -262,6 +262,10 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
   }
 
+  public void initialiseDefaultEntitySequencesForTenant(int tenantId) {
+    setDefaultEntitySequencesForTenant(tenantId);
+  }
+
   private void setDefaultEntitySequencesForTenant(int tenantId) {
     Integer lastId = handleDbRequests.getNextClusterId(tenantId);
     if (lastId == null) {
