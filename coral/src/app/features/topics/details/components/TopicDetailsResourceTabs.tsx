@@ -87,7 +87,7 @@ function TopicOverviewResourcesTabs({
     },
   ];
 
-  function renderTabContent() {
+  const renderTabContent = () => {
     if (isError) {
       return (
         <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
@@ -135,36 +135,36 @@ function TopicOverviewResourcesTabs({
         />
       </div>
     );
-  }
+  };
 
-  return (
-    <div>
-      <Tabs
-        value={currentTab}
-        onChange={(resourceTypeId) => navigateToTab(navigate, resourceTypeId)}
-      >
-        {tabsMap.map((tab) => {
-          return (
-            <Tabs.Tab
-              title={tab.title}
-              value={tab.topicOverviewTabEnum}
-              aria-label={tab.title}
-              key={tab.title}
-            >
-              {currentTab === tab.topicOverviewTabEnum && (
-                <div>
-                  <PreviewBanner
-                    linkTarget={`/topicOverview?topicname=${topicName}`}
-                  />
-                  {renderTabContent()}
-                </div>
-              )}
-            </Tabs.Tab>
-          );
-        })}
-      </Tabs>
-    </div>
+  const TopicTabs = () => (
+    <Tabs
+      value={currentTab}
+      onChange={(resourceTypeId) => navigateToTab(navigate, resourceTypeId)}
+    >
+      {tabsMap.map((tab) => {
+        return (
+          <Tabs.Tab
+            title={tab.title}
+            value={tab.topicOverviewTabEnum}
+            aria-label={tab.title}
+            key={tab.title}
+          >
+            {currentTab === tab.topicOverviewTabEnum && (
+              <div>
+                <PreviewBanner
+                  linkTarget={`/topicOverview?topicname=${topicName}`}
+                />
+                {renderTabContent()}
+              </div>
+            )}
+          </Tabs.Tab>
+        );
+      })}
+    </Tabs>
   );
+
+  return <TopicTabs />;
 }
 
 export { TopicOverviewResourcesTabs };
