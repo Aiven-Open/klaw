@@ -143,6 +143,13 @@ const routes: Array<RouteObject> = [
             element: <ConnectorHistory />,
             id: ConnectorOverviewTabEnum.HISTORY,
           },
+          {
+            path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
+              ConnectorOverviewTabEnum.SETTINGS
+            ],
+            element: <div>Settings</div>,
+            id: ConnectorOverviewTabEnum.SETTINGS,
+          },
         ],
       }),
       {
