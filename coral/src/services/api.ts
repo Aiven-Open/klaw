@@ -33,13 +33,11 @@ const CONTENT_TYPE_JSON = "application/json" as const;
 
 const API_BASE_URL = getHTTPBaseAPIUrl();
 
-const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
+const API_PATHS = {
   restartConnector: "/connector/restart",
   getConnectorsToManage: "/getConnectorsToManage",
   resetCacheClusterApi: "/schemas/resetCache",
   updateSyncSchemas: "/schemas",
-  getSchemaOfTopicFromSource:
-    "/schemas/source/{source}/kafkaEnv/{kafkaEnvId}/topic/{topicName}/schemaVersion/{schemaVersion}",
   getSchemasOfEnvironment: "/schemas",
   validateSchema: "/validate/schema",
   updateUserTeamFromSwitchTeams: "/user/updateTeam",
@@ -105,7 +103,6 @@ const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
   addNewTeam: "/addNewTeam",
   addNewEnv: "/addNewEnv",
   addNewCluster: "/addNewCluster",
-  getSwitchTeams: "/user/{userId}/switchTeamsList",
   testClusterApiConnection: "/testClusterApiConnection",
   shutdownApp: "/shutdownContext",
   showUsers: "/showUserList",
@@ -191,7 +188,37 @@ const API_PATHS: { [key in keyof ApiOperations]: keyof ApiPaths } = {
   getAclRequests: "/getAclRequests",
   getAclRequestsForApprover: "/getAclRequestsForApprover",
   getAclCommand: "/getAclCommands",
-};
+} satisfies {
+  [key in keyof Omit<
+    ApiOperations,
+    "getSchemaOfTopicFromSource" | "getSwitchTeams"
+  >]: keyof ApiPaths;
+}
+
+type GetSchemaOfTopicFromSource = (params: {
+  source: string;
+  kafkaEnvId: string;
+  topicName: string;
+  schemaVersion: string;
+}) => keyof ApiPaths;
+type GetSwitchTeams = (params: { userId: string }) => keyof ApiPaths;
+
+const DYNAMIC_API_PATHS = {
+  getSchemaOfTopicFromSource: ({
+    source,
+    kafkaEnvId,
+    topicName,
+    schemaVersion,
+  }: Parameters<GetSchemaOfTopicFromSource>[0]) =>
+    `/schemas/source/${source}/kafkaEnv/${kafkaEnvId}/topic/${topicName}/schemaVersion/${schemaVersion}` as keyof ApiPaths,
+  getSwitchTeams: ({ userId }: Parameters<GetSwitchTeams>[0]) =>
+    `/user/${userId}/switchTeamsList` as keyof ApiPaths,
+} satisfies {
+  [key in keyof Pick<
+    ApiOperations,
+    "getSchemaOfTopicFromSource" | "getSwitchTeams"
+  >]: GetSchemaOfTopicFromSource | GetSwitchTeams;
+}
 
 type Params = URLSearchParams;
 
@@ -519,6 +546,7 @@ export default {
 export type { HTTPError, KlawApiResponse, KlawApiError };
 export {
   API_PATHS,
+  DYNAMIC_API_PATHS,
   HTTPMethod,
   isUnauthorizedError,
   isServerError,
