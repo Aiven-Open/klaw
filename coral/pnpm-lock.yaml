@@ -39,7 +39,7 @@ specifiers:
   monaco-editor: ^0.37.1
   msw: ^0.47.4
   openapi-typescript: ^6.2.0
-  prettier: ^2.7.1
+  prettier: ^3.0.0
   react: ^18.2.0
   react-dom: ^18.2.0
   react-hook-form: ^7.43.9
@@ -120,7 +120,7 @@ devDependencies:
   lodash: 4.17.21
   msw: 0.47.4_typescript@5.0.4
   openapi-typescript: 6.2.0
-  prettier: 2.7.1
+  prettier: 3.0.0
   react-test-renderer: 18.2.0_react@18.2.0
   rollup-plugin-visualizer: 5.9.0
   ts-jest: 29.1.0_tobmchb5uviuq5lwsinkw5fvje
@@ -7492,9 +7492,10 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier/2.7.1:
-    resolution: {integrity: sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==}
-    engines: {node: '>=10.13.0'}
+  /prettier/3.0.0:
+    resolution: {integrity: sha512-zBf5eHpwHOGPC47h0zrPyNn+eAEIdEzfywMoYn2XPi0P44Zp0tSq64rq0xAREh4auw2cJZHo9QUob+NqCQky4g==}
+    engines: {node: '>=14'}
+    hasBin: true
     dev: true
 
   /pretty-format/27.5.1:
