@@ -193,7 +193,7 @@ const API_PATHS = {
     ApiOperations,
     "getSchemaOfTopicFromSource" | "getSwitchTeams"
   >]: keyof ApiPaths;
-}
+};
 
 type GetSchemaOfTopicFromSource = (params: {
   source: string;
@@ -218,7 +218,7 @@ const DYNAMIC_API_PATHS = {
     ApiOperations,
     "getSchemaOfTopicFromSource" | "getSwitchTeams"
   >]: GetSchemaOfTopicFromSource | GetSwitchTeams;
-}
+};
 
 type Params = URLSearchParams;
 
