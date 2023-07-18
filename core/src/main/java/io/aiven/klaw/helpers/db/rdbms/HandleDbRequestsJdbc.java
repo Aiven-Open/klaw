@@ -1003,6 +1003,26 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public Integer getNextClusterId(int tenantId) {
+    return jdbcSelectHelper.getNextClusterId(tenantId);
+  }
+
+  @Override
+  public Integer getNextEnvId(int tenantId) {
+    return jdbcSelectHelper.getNextEnvId(tenantId);
+  }
+
+  @Override
+  public Integer getNextTeamId(int tenantId) {
+    return jdbcSelectHelper.getNextTeamId(tenantId);
+  }
+
+  @Override
+  public void insertIntoKwEntitySequence(String entityName, int maxId, int tenantId) {
+    jdbcInsertHelper.insertIntoKwEntitySequence(entityName, maxId, tenantId);
+  }
+
+  @Override
   public List<KwKafkaConnector> getAllConnectors() {
     return jdbcSelectHelper.getAllConnectors();
   }

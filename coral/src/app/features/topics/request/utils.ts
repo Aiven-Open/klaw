@@ -11,13 +11,16 @@ function transformAdvancedConfigEntries(
   const asObject = JSON.parse(formData);
   return Object.entries(asObject)
     .map(([key, value]) => ({ configKey: key, configValue: value }))
-    .reduce((acc, { configKey, configValue }) => {
-      const valueAsString = coerceToString(configValue);
-      if (isString(valueAsString)) {
-        return acc.concat([{ configKey, configValue: valueAsString }]);
-      }
-      return acc;
-    }, [] as { configKey: string; configValue: string }[]);
+    .reduce(
+      (acc, { configKey, configValue }) => {
+        const valueAsString = coerceToString(configValue);
+        if (isString(valueAsString)) {
+          return acc.concat([{ configKey, configValue: valueAsString }]);
+        }
+        return acc;
+      },
+      [] as { configKey: string; configValue: string }[]
+    );
 }
 
 function coerceToString(value: unknown): string | undefined {

@@ -322,6 +322,14 @@ public interface HandleDbRequests {
 
   String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 
+  Integer getNextClusterId(int tenantId);
+
+  Integer getNextEnvId(int tenantId);
+
+  Integer getNextTeamId(int tenantId);
+
+  void insertIntoKwEntitySequence(String entityName, int maxId, int tenantId);
+
   String updateTopicRequestStatus(TopicRequest topicRequest, String approver);
 
   String updateConnectorRequestStatus(KafkaConnectorRequest topicRequest, String approver);

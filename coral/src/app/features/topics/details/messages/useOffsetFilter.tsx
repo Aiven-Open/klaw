@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
 const offsets = ["5", "25", "50"] as const;
-type Offset = typeof offsets[number];
+type Offset = (typeof offsets)[number];
 
 const NAME = "offset";
-const defaultOffset: typeof offsets[0] = "5";
+const defaultOffset: (typeof offsets)[0] = "5";
 
 function isOffset(offset: string | null): offset is Offset {
   return Boolean(offset && offsets.includes(offset as Offset));

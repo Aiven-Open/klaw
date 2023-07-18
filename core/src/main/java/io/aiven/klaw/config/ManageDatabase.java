@@ -19,6 +19,7 @@ import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.TenantConfig;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.EnvModel;
@@ -181,6 +182,8 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
           defaultDataService.getDefaultTenant(KwConstants.DEFAULT_TENANT_ID));
     }
 
+    setDefaultEntitySequencesForTenant(KwConstants.DEFAULT_TENANT_ID);
+
     // add teams
     String infraTeam = "INFRATEAM", stagingTeam = "STAGINGTEAM";
     Team team1 = handleDbRequests.getTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID);
@@ -257,6 +260,38 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       handleDbRequests.insertProductDetails(
           defaultDataService.getProductDetails(productName, kwVersion));
     }
+  }
+
+  public void initialiseDefaultEntitySequencesForTenant(int tenantId) {
+    setDefaultEntitySequencesForTenant(tenantId);
+  }
+
+  private void setDefaultEntitySequencesForTenant(int tenantId) {
+    Integer lastId = handleDbRequests.getNextClusterId(tenantId);
+    if (lastId == null) {
+      lastId = getNextId(1, lastId);
+      handleDbRequests.insertIntoKwEntitySequence(EntityType.CLUSTER.name(), lastId, tenantId);
+    }
+
+    lastId = handleDbRequests.getNextEnvId(tenantId);
+    if (lastId == null) {
+      lastId = getNextId(1, lastId);
+      handleDbRequests.insertIntoKwEntitySequence(EntityType.ENVIRONMENT.name(), lastId, tenantId);
+    }
+    lastId = handleDbRequests.getNextTeamId(tenantId);
+    if (lastId == null) {
+      lastId = getNextId(1001, lastId);
+      handleDbRequests.insertIntoKwEntitySequence(EntityType.TEAM.name(), lastId, tenantId);
+    }
+  }
+
+  private static Integer getNextId(int defaultStartingSequence, Integer nextId) {
+    if (nextId == null) {
+      nextId = defaultStartingSequence;
+    } else {
+      nextId = nextId + 1;
+    }
+    return nextId;
   }
 
   // verify if there is atleast one user with superadmin access in default tenant
