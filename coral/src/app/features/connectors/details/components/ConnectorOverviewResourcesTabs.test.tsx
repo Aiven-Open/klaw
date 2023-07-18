@@ -43,7 +43,7 @@ const testConnectorOverview: ConnectorOverview = {
     connectorDeletable: true,
     hasOpenRequest: false,
     highestEnv: false,
-    connectorOwner:false,
+    connectorOwner: false,
     connectorConfig:
       '{\n  "connector.class" : "io.confluent.connect.storage.tools.SchemaSourceConnector",\n  "tasks.max" : "1",\n  "name" : "my-connector",\n  "topic" : "testtopic",\n  "topics.regex" : "*"\n}',
     environmentName: "DEV",
