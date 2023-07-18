@@ -79,6 +79,7 @@ public class KafkaConnectControllerService {
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
+  public static final String PASSWORD_KEY = "password";
   @Autowired private CommonUtilsService commonUtilsService;
 
   @Autowired ClusterApiService clusterApiService;
@@ -107,6 +108,8 @@ public class KafkaConnectControllerService {
           && connectorRequestModel.getConnectorConfig().trim().length() > 0) {
         JsonNode jsonNode =
             OBJECT_MAPPER.readTree(connectorRequestModel.getConnectorConfig().trim());
+        updateJsonNode("encrypt", jsonNode);
+
         if (!jsonNode.has("tasks.max")) {
           return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_101).build();
         } else if (!jsonNode.has("connector.class")) {
@@ -545,6 +548,8 @@ public class KafkaConnectControllerService {
 
     try {
       JsonNode jsonNode = OBJECT_MAPPER.readTree(connectorRequest.getConnectorConfig());
+      updateJsonNode("decrypt", jsonNode);
+
       ObjectNode objectNode = (ObjectNode) jsonNode;
       connectorConfig.setConfig(objectNode);
 
@@ -552,6 +557,42 @@ public class KafkaConnectControllerService {
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
       return e.toString();
+    }
+  }
+
+  void updateJsonNode(String encType, JsonNode jsonNode) {
+    List<String> sensitiveKeys = new ArrayList<>();
+    jsonNode
+        .fieldNames()
+        .forEachRemaining(
+            key -> {
+              if (key.contains(PASSWORD_KEY)) {
+                sensitiveKeys.add(key);
+              }
+            });
+    try {
+      for (String sensitiveKey : sensitiveKeys) {
+        if (encType.equals("decrypt")) {
+          ((ObjectNode) jsonNode)
+              .put(
+                  sensitiveKey,
+                  commonUtilsService
+                      .getJasyptEncryptor()
+                      .decrypt(jsonNode.get(sensitiveKey).asText()));
+        } else if (encType.equals("encrypt")) {
+          {
+            ((ObjectNode) jsonNode)
+                .put(
+                    sensitiveKey,
+                    commonUtilsService
+                        .getJasyptEncryptor()
+                        .encrypt(jsonNode.get(sensitiveKey).asText()));
+          }
+        }
+      }
+    } catch (Exception e) {
+      // existing requests where passwords are not encrypted
+      log.error("Ignore errors during decryption");
     }
   }
 
@@ -1330,8 +1371,7 @@ public class KafkaConnectControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
-    List<UserInfo> userList =
-        manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(userTeamId, tenantId);
+    List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
     for (KafkaConnectorRequest connectorRequest : topicsList) {
       kafkaConnectorRequestModel = new KafkaConnectorRequestsResponseModel();
@@ -1353,9 +1393,8 @@ public class KafkaConnectControllerService {
           if (!connectors.isEmpty()) {
             kafkaConnectorRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
-                    manageDatabase
-                        .getHandleDbRequests()
-                        .getAllUsersInfoForTeam(connectors.get(0).getTeamId(), tenantId),
+                    manageDatabase.getUsersPerTeamAndTenant(
+                        connectors.get(0).getTeamId(), tenantId),
                     manageDatabase.getTeamNameFromTeamId(tenantId, connectors.get(0).getTeamId()),
                     approverRoles,
                     kafkaConnectorRequestModel.getRequestor()));

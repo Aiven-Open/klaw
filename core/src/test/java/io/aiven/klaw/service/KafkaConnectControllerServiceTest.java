@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
+import static io.aiven.klaw.service.KafkaConnectControllerService.OBJECT_MAPPER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -10,6 +11,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
@@ -34,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -78,6 +82,8 @@ public class KafkaConnectControllerServiceTest {
   @Mock Map<Integer, KwTenantConfigModel> tenantConfig;
 
   @Mock KwTenantConfigModel tenantConfigModel;
+
+  @Mock BasicTextEncryptor basicTextEncryptor;
 
   @Captor ArgumentCaptor<KafkaConnectorRequest> kafkaConnectorRequest;
 
@@ -129,6 +135,9 @@ public class KafkaConnectControllerServiceTest {
     when(handleDbRequests.getConnectorsFromName(anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
     when(handleDbRequests.requestForConnector(any())).thenReturn(resultMap);
+    when(commonUtilsService.getJasyptEncryptor()).thenReturn(basicTextEncryptor);
+    String encryptedText = "encryptedText";
+    when(basicTextEncryptor.encrypt(any())).thenReturn(encryptedText);
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(getConnectRequestModel());
@@ -697,6 +706,28 @@ public class KafkaConnectControllerServiceTest {
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
+  @Test
+  @Order(16)
+  public void updateJsonNodeTestEncryptAndDecrypt() throws JsonProcessingException {
+    JsonNode jsonNode = OBJECT_MAPPER.readTree(getValidConnConfig().trim());
+    when(commonUtilsService.getJasyptEncryptor()).thenReturn(basicTextEncryptor);
+    String encryptedText = "encryptedText";
+    when(basicTextEncryptor.encrypt(any())).thenReturn(encryptedText);
+    kafkaConnectControllerService.updateJsonNode("encrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo(encryptedText);
+
+    String decryptedText = "testpwd";
+    when(basicTextEncryptor.decrypt(any())).thenReturn(decryptedText);
+    kafkaConnectControllerService.updateJsonNode("decrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo(decryptedText);
+
+    jsonNode = OBJECT_MAPPER.readTree(getValidConnConfig().trim());
+    when(basicTextEncryptor.decrypt(any()))
+        .thenThrow(new RuntimeException("NotSupportedOperation"));
+    kafkaConnectControllerService.updateJsonNode("decrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo(decryptedText);
+  }
+
   private List<KwKafkaConnector> generateKafkaConnectors(int number) {
     List<KwKafkaConnector> connectors = new ArrayList<>();
     for (int i = 0; i < number; i++) {
@@ -765,6 +796,7 @@ public class KafkaConnectControllerServiceTest {
         + "    \"name\": \"testconn\",\n"
         + "    \"topics\":\"testtopic\",\n"
         + "    \"tasks.max\": \"1\",\n"
+        + "    \"connector.password\":\"testpwd\",\n"
         + "    \"connector.class\": \"io.confluent.connect.storage.tools.SchemaSourceConnector\"\n"
         + "}";
   }

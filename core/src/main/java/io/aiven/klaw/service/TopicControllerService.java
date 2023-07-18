@@ -586,8 +586,7 @@ public class TopicControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("TOPICS", tenantId);
-    List<UserInfo> userList =
-        manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(userTeamId, tenantId);
+    List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
     for (TopicRequest topicReq : topicsList) {
       topicRequestModel = new TopicRequestsResponseModel();
@@ -609,9 +608,7 @@ public class TopicControllerService {
           if (!topics.isEmpty()) {
             topicRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
-                    manageDatabase
-                        .getHandleDbRequests()
-                        .getAllUsersInfoForTeam(topics.get(0).getTeamId(), tenantId),
+                    manageDatabase.getUsersPerTeamAndTenant(topics.get(0).getTeamId(), tenantId),
                     manageDatabase.getTeamNameFromTeamId(tenantId, topics.get(0).getTeamId()),
                     approverRoles,
                     topicRequestModel.getRequestor()));

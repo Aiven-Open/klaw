@@ -110,6 +110,8 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   private static Map<Integer, List<Topic>> topicsPerTenant = new HashMap<>();
 
+  private static Map<Integer, Map<Integer, List<UserInfo>>> usersPerTeamAndTenant = new HashMap<>();
+
   private static List<String> reqStatusList;
 
   @Autowired private DefaultDataService defaultDataService;
@@ -538,7 +540,19 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
       allUsers = handleDbRequests.getAllUsersInfo(tenantId);
       usersPerTenant.put(tenantId, allUsers);
       allUsersAllTenants.addAll(allUsers);
+
+      List<Team> allTeams = handleDbRequests.getAllTeams(tenantId);
+      Map<Integer, List<UserInfo>> innerMap = new HashMap<>();
+      for (Team team : allTeams) {
+        innerMap.put(
+            team.getTeamId(), handleDbRequests.getAllUsersInfoForTeam(team.getTeamId(), tenantId));
+      }
+      usersPerTeamAndTenant.put(tenantId, innerMap);
     }
+  }
+
+  public List<UserInfo> getUsersPerTeamAndTenant(Integer teamId, Integer tenantId) {
+    return usersPerTeamAndTenant.get(tenantId).get(teamId);
   }
 
   public void loadTopicsForAllTenants() {
