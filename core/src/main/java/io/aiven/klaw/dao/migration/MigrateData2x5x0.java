@@ -1,9 +1,8 @@
 package io.aiven.klaw.dao.migration;
 
+import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.KwTenants;
-import io.aiven.klaw.helpers.db.rdbms.InsertDataJdbc;
 import io.aiven.klaw.helpers.db.rdbms.SelectDataJdbc;
-import io.aiven.klaw.model.enums.EntityType;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +15,13 @@ public class MigrateData2x5x0 {
 
   @Autowired private SelectDataJdbc selectDataJdbc;
 
-  @Autowired private InsertDataJdbc insertDataJdbc;
+  @Autowired private ManageDatabase manageDatabase;
 
   public MigrateData2x5x0() {}
 
-  public MigrateData2x5x0(SelectDataJdbc selectDataJdbc, InsertDataJdbc insertDataJdbc) {
+  public MigrateData2x5x0(SelectDataJdbc selectDataJdbc, ManageDatabase manageDatabase) {
     this.selectDataJdbc = selectDataJdbc;
-    this.insertDataJdbc = insertDataJdbc;
+    this.manageDatabase = manageDatabase;
   }
 
   @MigrationRunner()
@@ -38,18 +37,8 @@ public class MigrateData2x5x0 {
     }
 
     for (KwTenants kwTenants : tenantsList) {
-      int tenantId = kwTenants.getTenantId();
-      Integer lastId = selectDataJdbc.getNextClusterId(tenantId);
-      lastId = getNextId(1, lastId);
-      insertDataJdbc.insertIntoKwEntitySequence(EntityType.CLUSTER.name(), lastId, tenantId);
-
-      lastId = selectDataJdbc.getNextEnvId(tenantId);
-      lastId = getNextId(1, lastId);
-      insertDataJdbc.insertIntoKwEntitySequence(EntityType.ENVIRONMENT.name(), lastId, tenantId);
-
-      lastId = selectDataJdbc.getNextTeamId(tenantId);
-      lastId = getNextId(1001, lastId);
-      insertDataJdbc.insertIntoKwEntitySequence(EntityType.TEAM.name(), lastId, tenantId);
+      // initialise for every tenant, this is an idempotent class so will only ever change it once.
+      manageDatabase.initialiseDefaultEntitySequencesForTenant(kwTenants.getTenantId());
     }
 
     return true;

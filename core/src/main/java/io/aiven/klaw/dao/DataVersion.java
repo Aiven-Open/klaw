@@ -33,4 +33,7 @@ public class DataVersion implements Serializable {
 
   @Column(name = "complete")
   private boolean complete;
+
+  @Column(name = "changeid")
+  private Integer changeId;
 }
