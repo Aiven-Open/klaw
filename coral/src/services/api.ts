@@ -456,7 +456,7 @@ function handleResponse<TResponse extends SomeObject>(
 
 function withPayloadAndVerb<
   TResponse extends SomeObject,
-  TBody extends SomeObject | URLSearchParams
+  TBody extends SomeObject | URLSearchParams,
 >(
   method: HTTPMethod.POST | HTTPMethod.PUT | HTTPMethod.PATCH,
   pathname: keyof ApiPaths,
@@ -483,7 +483,7 @@ const get = <T extends SomeObject>(pathname: keyof ApiPaths, params?: Params) =>
 
 const post = <
   TResponse extends SomeObject,
-  TBody extends SomeObject | URLSearchParams | never
+  TBody extends SomeObject | URLSearchParams | never,
 >(
   pathname: keyof ApiPaths,
   data?: TBody
