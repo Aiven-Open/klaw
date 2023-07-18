@@ -17,6 +17,16 @@ public interface KwKafkaConnectorRequestsRepo
   List<KafkaConnectorRequest> findAllByRequestStatusAndConnectorNameAndEnvironmentAndTenantId(
       String connectorStatus, String connectorName, String envId, int tenantId);
 
+  boolean existsByTenantIdAndEnvironmentAndRequestStatusAndConnectorName(
+      int tenantId, String environment, String requestStatus, String connectorName);
+
+  boolean existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndConnectorName(
+      int tenantId,
+      String environment,
+      String requestStatus,
+      String requestOperationType,
+      String connectorName);
+
   List<KafkaConnectorRequest> findAllByTenantId(int tenantId);
 
   @Query(

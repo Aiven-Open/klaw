@@ -7034,10 +7034,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },
@@ -7418,6 +7418,9 @@
           "connectorDeletable" : {
             "type" : "boolean"
           },
+          "hasOpenRequest" : {
+            "type" : "boolean"
+          },
           "allPageNos" : {
             "type" : "array",
             "items" : {
@@ -7456,9 +7459,15 @@
           },
           "description" : {
             "type" : "string"
+          },
+          "connectorOwner" : {
+            "type" : "boolean"
+          },
+          "highestEnv" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorStatus", "environmentId", "failedTasks", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorStatus", "environmentId", "failedTasks", "hasOpenRequest", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {

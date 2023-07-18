@@ -354,6 +354,23 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsConnectorRequest(
+      String connectorName, String requestStatus, String env, int tenantId) {
+    return jdbcSelectHelper.existsConnectorRequest(connectorName, requestStatus, env, tenantId);
+  }
+
+  @Override
+  public boolean existsConnectorRequest(
+      String connectorName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId) {
+    return jdbcSelectHelper.existsConnectorRequest(
+        connectorName, requestStatus, requestOperationType, env, tenantId);
+  }
+
+  @Override
   public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
     return jdbcSelectHelper.existsSchemaForTopic(topicName, env, tenantId);
   }

@@ -31,6 +31,12 @@ public class KafkaConnectorModelResponse {
 
   @NotNull private boolean connectorDeletable;
 
+  @NotNull private boolean isConnectorOwner;
+
+  @NotNull private boolean isHighestEnv;
+
+  @NotNull private boolean hasOpenRequest;
+
   private List<String> allPageNos;
 
   private String totalNoPages;
