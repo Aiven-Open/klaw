@@ -1181,7 +1181,6 @@ public class KafkaConnectControllerService {
   }
 
   private boolean checkIsHighestEnv(String envId, List<EnvIdInfo> availableEnvs) {
-    log.info(" list: {} id: {}", availableEnvs, envId);
     if (availableEnvs != null && !availableEnvs.isEmpty()) {
       return Objects.equals(availableEnvs.get(availableEnvs.size() - 1).getId(), envId);
     } else {
