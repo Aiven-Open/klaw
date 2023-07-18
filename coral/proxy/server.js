@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 
+// eslint-disable-next-line no-undef
 const http = require("http");
 // eslint-disable-next-line no-undef
 const httpProxy = require("http-proxy");
