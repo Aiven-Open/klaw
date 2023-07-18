@@ -1333,11 +1333,12 @@ public class EnvsClustersTenantsControllerService {
     Env env = manageDatabase.getHandleDbRequests().getEnvDetails(envId, tenantId);
 
     ClusterStatus status;
+    KwClusters kwClusters = null;
+    kwClusters =
+        manageDatabase
+            .getClusters(KafkaClustersType.of(env.getType()), tenantId)
+            .get(env.getClusterId());
     try {
-      KwClusters kwClusters =
-          manageDatabase
-              .getClusters(KafkaClustersType.of(env.getType()), tenantId)
-              .get(env.getClusterId());
       status =
           clusterApiService.getKafkaClusterStatus(
               kwClusters.getBootstrapServers(),
@@ -1346,11 +1347,14 @@ public class EnvsClustersTenantsControllerService {
               env.getType(),
               kwClusters.getKafkaFlavor(),
               tenantId);
+
     } catch (Exception e) {
       status = ClusterStatus.OFFLINE;
       log.error("Error from getUpdateEnvStatus ", e);
     }
     env.setEnvStatus(status);
+    kwClusters.setClusterStatus(status);
+    manageDatabase.getHandleDbRequests().addNewCluster(kwClusters);
     manageDatabase.getHandleDbRequests().addNewEnv(env);
     manageDatabase.loadEnvMapForOneTenant(tenantId);
 

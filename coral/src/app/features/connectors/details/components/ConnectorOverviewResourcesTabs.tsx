@@ -111,34 +111,34 @@ function ConnectorOverviewResourcesTabs({
     );
   }
 
-  return (
-    <div>
-      <Tabs
-        value={currentTab}
-        onChange={(resourceTypeId) => navigateToTab(navigate, resourceTypeId)}
-      >
-        {tabsMap.map((tab) => {
-          return (
-            <Tabs.Tab
-              title={tab.title}
-              value={tab.connectorOverviewTabEnum}
-              aria-label={tab.title}
-              key={tab.title}
-            >
-              {currentTab === tab.connectorOverviewTabEnum && (
-                <div>
-                  <PreviewBanner
-                    linkTarget={`/connectorOverview?connectorName=${connectorName}`}
-                  />
-                  {renderTabContent()}
-                </div>
-              )}
-            </Tabs.Tab>
-          );
-        })}
-      </Tabs>
-    </div>
+  const ConnectorTabs = () => (
+    <Tabs
+      value={currentTab}
+      onChange={(resourceTypeId) => navigateToTab(navigate, resourceTypeId)}
+    >
+      {tabsMap.map((tab) => {
+        return (
+          <Tabs.Tab
+            title={tab.title}
+            value={tab.connectorOverviewTabEnum}
+            aria-label={tab.title}
+            key={tab.title}
+          >
+            {currentTab === tab.connectorOverviewTabEnum && (
+              <div>
+                <PreviewBanner
+                  linkTarget={`/connectorOverview?connectorName=${connectorName}`}
+                />
+                {renderTabContent()}
+              </div>
+            )}
+          </Tabs.Tab>
+        );
+      })}
+    </Tabs>
   );
+
+  return <ConnectorTabs />;
 }
 
 export { ConnectorOverviewResourcesTabs };
