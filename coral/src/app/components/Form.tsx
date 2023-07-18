@@ -588,7 +588,7 @@ function parseFieldErrorMessage<T extends FieldValues>(
 //
 function _ComplexNativeSelect<
   T extends FieldValues,
-  FieldValue extends string | OptionType
+  FieldValue extends string | OptionType,
 >({
   name,
   formContext: form,
@@ -633,7 +633,7 @@ const ComplexNativeSelectMemo = memo(
 // eslint-disable-next-line import/exports-last,import/group-exports
 export const ComplexNativeSelect = <
   T extends FieldValues,
-  FieldValue extends string | OptionType
+  FieldValue extends string | OptionType,
 >(
   props: FormInputProps<T> &
     Omit<BaseComplexNativeSelectProps<FieldValue>, "value" | "onBlur">
