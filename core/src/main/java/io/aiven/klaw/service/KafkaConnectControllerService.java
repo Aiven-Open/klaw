@@ -437,12 +437,7 @@ public class KafkaConnectControllerService {
   }
 
   private boolean isConnectorRequestOpen(int tenantId, String connectorName, String environment) {
-    log.info(
-        "Name: {} status: {} env: {} tenantId: {}",
-        connectorName,
-        RequestStatus.CREATED.value,
-        environment,
-        tenantId);
+
     return manageDatabase
         .getHandleDbRequests()
         .existsConnectorRequest(connectorName, RequestStatus.CREATED.value, environment, tenantId);
