@@ -774,7 +774,7 @@ export type components = {
     };
     KafkaConnectorDeleteRequestModel: {
       connectorName: string;
-      env: string;
+      envId: string;
     };
     TopicClaimRequestModel: {
       topicName: string;
