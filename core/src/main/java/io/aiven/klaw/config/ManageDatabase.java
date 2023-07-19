@@ -447,7 +447,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   public String getTeamNameFromTeamId(int tenantId, int teamId) {
     return teamIdAndNamePerTenant
         .getOrDefault(tenantId, Collections.emptyMap())
-        .getOrDefault(teamId, ""); // empty string in case of unknown team
+        .getOrDefault(teamId, "UNKNOWN-TEAM"); // empty string in case of unknown team
   }
 
   public Map<Integer, List<String>> getEnvsOfTenantsMap() {

@@ -446,6 +446,7 @@ public class AnalyticsControllerService {
     }
 
     String actualFileName;
+    List<File> reportFilesOfTenants = new ArrayList<>();
     for (TeamOverview totalOverview : totalOverviewList) {
       if (totalOverview.getTenantName() != null) {
         actualFileName = "Klaw-" + totalOverview.getTenantName() + ".xlsx";
@@ -455,6 +456,7 @@ public class AnalyticsControllerService {
 
       String fileName = kwReportsLocation + actualFileName;
       File reportFile = new File(fileName);
+      reportFilesOfTenants.add(reportFile);
 
       XSSFWorkbook workbook = new XSSFWorkbook();
 
@@ -479,6 +481,10 @@ public class AnalyticsControllerService {
     try {
       if (zipOutputStream != null) {
         zipOutputStream.close();
+        // delete xlsx report file after writing to zip file.
+        for (File reportFilesOfTenant : reportFilesOfTenants) {
+          reportFilesOfTenant.delete();
+        }
       }
     } catch (IOException e) {
       log.error("Exception:", e);
