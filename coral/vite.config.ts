@@ -67,7 +67,7 @@ function getServerHTTPSConfig(
  * Use $VITE_PROXY_TARGET or Klaw API development default (http://localhost:9097)
  */
 function getProxyTarget(environment: Record<string, string>): string {
-  const origin = environment.VITE_PROXY_TARGET ?? "http://localhost:1337";
+  const origin = environment.VITE_PROXY_TARGET ?? "http://localhost:9097";
   return `${new URL(origin).origin}`;
 }
 
@@ -81,7 +81,6 @@ function getProxyTarget(environment: Record<string, string>): string {
 function getServerProxyConfig(
   environment: Record<string, string>
 ): Record<string, string | ProxyOptions> | undefined {
-
   const LEGACY_LOGIN_RESOURCES = [
     "/login",
     "/lib/angular.min.js",
@@ -124,7 +123,7 @@ function getPlugins(environment: Record<string, string>): PluginOption[] {
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const environment = loadEnv(mode, process.cwd(), "");
-  const usesNodeProxy = mode === "local-api"
+  const usesNodeProxy = mode === "local-api";
 
   return {
     plugins: getPlugins(environment),
@@ -193,6 +192,9 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    base: process.env.NODE_ENV === 'production' ? '/__vite_base__/' : '/coral/'
+    // By setting the base to /coral for nodeProxy mode
+    // we get the same behaviour as on production mode
+    // were coral is deployed in directory `/coral`
+    base: usesNodeProxy ? "/coral/" : "/",
   };
 });
