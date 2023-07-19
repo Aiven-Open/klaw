@@ -14,7 +14,7 @@ const coralConfig = {
   name: "coral",
   localPort: ports.coral,
   rules: {
-    "/coral/(.*)$": "/coral/$1",
+    "/coral/(.*)$": "/coral/$1"
   },
 };
 
@@ -23,14 +23,12 @@ const klawCoreConfig = {
   localPort: ports.klawCore,
   rules: {
     "/api/(.*)$": "/api/$1",
-    "/login/(.*)$": "/login/$1",
     "/(.*)": "/$1",
   },
 };
 
 // eslint-disable-next-line no-undef
 module.exports = {
-  mainEntryPoint: `http://localhost:${ports.proxy}/coral/`,
   proxyConfigurations: [proxyConfig, coralConfig, klawCoreConfig],
   proxyPort: ports.proxy,
   // eslint-disable-next-line no-undef

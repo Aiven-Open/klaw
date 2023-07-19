@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DOCKER_FLAG=""
-MODE=start
+MODE=""
 TEST_ENV=false
 VERBOSE=false
 
@@ -44,17 +44,22 @@ parseArguments() {
 
 checkDockerMode() {
   if [ "$MODE" = "start" ]; then
-    DOCKER_FLAG="--all"
+    DOCKER_FLAG="--dev-env"
   elif [ "$MODE" = "restart" ]; then # if -a=null
-    DOCKER_FLAG="--deploy"
+    DOCKER_FLAG="--dev-env-deploy"
   else
-    echo "invalid flag: $MODE"
+    echo -e "\n\n⚠️ Please set a flag for mode:"
+    echo "- --mode=start for build and deploy"
+    echo "- --mode=restart for deploy"
+    echo -e "\n"
     exit 1
 fi
 }
 
 startDocker() {
   DOCKER_COMMAND="docker-scripts/klaw-docker.sh"
+  DOCKER_TEST_ENV_FLAG="--dev-kafka-env"
+
   # Check if core is running on localhost:9097
   check_port 9097 "core" || {
     sh ../../$DOCKER_COMMAND $DOCKER_FLAG
@@ -68,17 +73,17 @@ startDocker() {
   if [ "$TEST_ENV" = true ]; then
     # Check if zookeeper is running on localhost:2181
     check_port 2181 "zookeeper" || {
-      sh ../../$DOCKER_COMMAND --testEnv
+      sh ../../$DOCKER_COMMAND $DOCKER_TEST_ENV_FLAG
     }
 
     # Check if klaw-kafka is running on localhost:9092
     check_port 9092 "klaw-kafka" || {
-      sh ../../$DOCKER_COMMAND --testEnv
+      sh ../../$DOCKER_COMMAND $DOCKER_TEST_ENV_FLAG
     }
 
     # Check if klaw-schema-registry is running on localhost:8081
     check_port 8081 "klaw-schema-registry" || {
-      sh ../../$DOCKER_COMMAND --testEnv
+      sh ../../$DOCKER_COMMAND $DOCKER_TEST_ENV_FLAG
     }
   fi
 }
@@ -87,9 +92,9 @@ startProxyServer() {
   echo -e "\n\n 🎬 Starting proxy server..."
 
   if [ "$VERBOSE" = true ]; then
-    VERBOSE=true npm-run-all -l -p proxy start-coral
+    VERBOSE=true npm-run-all -l -p _internal_use_proxy _internal_use_start-coral
   else
-    pnpm npm-run-all -l -p proxy start-coral
+    pnpm npm-run-all -l -p _internal_use_proxy _internal_use_start-coral
   fi
 }
 

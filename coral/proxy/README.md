@@ -17,13 +17,15 @@ All scripts need to be run in this directory!
 
 🙋‍♀️ **Your local development will always be available at [http://localhost:1337](http://localhost:1337)**
 
-**⚠️ LOGIN REDIRECT NOT WORKING**
+**⚠️ AUTHENTICATION AND LOGIN REDIRECT NOT WORKING**
 
-At the moment, our proxy does not handle the redirect from backend for authenticating the user. 
+At the moment, our proxy does **not** handle the redirect from backend for authenticating the user. 
 
-- If you access `https:localhost:1337` without being currently authorized, you will be redirected to the login page on port `:9097`. After a successful login, please go back to `https:localhost:1337`.
+- If you access `https:localhost:1337` without being currently authorized, you will be redirected to the login page on port `:9097`. After a successful login, please go back to `https:localhost:1337`. 
 
-- If you experience trouble with api calls while using `https:localhost:1337`, your authorization may have expired. Please go to `http://localhost:9097/login` to log in again. After a successful login, please go back to `https:localhost:1337`.
+- If you experience trouble with api calls while using `https:localhost:1337`(*), your authorization may have expired. Please go to `http://localhost:9097/login` to log in again. After a successful login, please go back to `https:localhost:1337`.
+
+(*) You'll see requests to `http://localhost:1337/api/getAuth` returning `302`, followed right after with calls to `http://localhost:9097/login` causing an error: "Access to fetch at 'http://localhost:9097/login' (redirected from 'http://localhost:1337/api/getAuth') from origin 'http://localhost:1337' has been blocked by CORS policy"
 
 ## Commands and flags
 
@@ -54,7 +56,7 @@ Checks if Klaw core and Klaw cluster-api are running in the right ports in your 
 
 
 ### ➡️ additional `--verbose` flag
-Adding this flag to any of the mentioned commands will run the proxy in verbose mode. We will print all requests that are handled in the terminal. This is very noisy, so not enabled by default. It can be a great way to debug in case something is not working like expecting.
+Adding this flag to any of the mentioned commands will run the proxy in "verbose" mode. We will print **all** requests that are handled in the terminal. This is very noisy, so not enabled by default. It can be a great way to debug in case something is not working like expecting.
 
 
 

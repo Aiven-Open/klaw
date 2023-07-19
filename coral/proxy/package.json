@@ -3,8 +3,8 @@
   "description": "Small proxy to run coral in development mode with a local Klaw instance.",
   "main": "proxy.js",
   "scripts": {
-    "proxy": "pnpm exec nodemon server.js",
-    "start-coral": "cd .. && pnpm vite --mode=local-api",
+    "_internal_use_proxy": "pnpm exec nodemon server.js",
+    "_internal_use_start-coral": "cd .. && pnpm vite --mode=local-api",
     "dev": "./start-proxy-environment.sh",
     "dev:start": "pnpm dev --mode=start",
     "dev:restart": "pnpm dev --mode=restart",

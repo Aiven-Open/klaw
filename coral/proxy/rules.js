@@ -40,16 +40,29 @@ function printRulesAsTable(rules) {
   }
 }
 
+
+// we don't want every request to be printed,
+// so we're filtering certain ones out
+// this list can be extended as we see fit
+// running the scripts with --verbose
+// will log all requests to help debugging
+const locationsToFilterOut = [
+  // Angular Klaw
+  "/assets/",
+  "/lib/",
+  "/js/",
+
+  //vite HMR
+  "/coral/@vite/client",
+  "/coral/@react-refresh",
+
+  // Coral app
+  "/coral/node_modules",
+  "/coral/src/",
+  "/coral/favicon.png",
+]
 function isPrintableRequest(request) {
-  return (
-    !request.includes("@fs") &&
-    !request.includes("/node_modules/") &&
-    !request.includes("/src/") &&
-    !request.includes("/@vite/client") &&
-    !request.includes("/@react-refresh") &&
-    !request.includes("/favicon.png") &&
-    !request.includes("/assets/")
-  );
+  return !locationsToFilterOut.some(location => request.startsWith(location))
 }
 
 // eslint-disable-next-line no-undef
