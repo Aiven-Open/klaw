@@ -2,7 +2,6 @@ const ports = {
   proxy: 1337,
   klawCore: 9097,
   coral: 5173,
-  catchAll: 4444,
 };
 
 const proxyConfig = {
