@@ -5,6 +5,12 @@ const ports = {
   catchAll: 4444,
 };
 
+const proxyConfig = {
+  name: "proxy",
+  localPort: ports.proxy,
+  rules: {},
+};
+
 const coralConfig = {
   name: "coral",
   localPort: ports.coral,
@@ -26,7 +32,7 @@ const klawCoreConfig = {
 // eslint-disable-next-line no-undef
 module.exports = {
   mainEntryPoint: `http://localhost:${ports.proxy}/coral/`,
-  proxyConfigurations: [coralConfig, klawCoreConfig],
+  proxyConfigurations: [proxyConfig, coralConfig, klawCoreConfig],
   proxyPort: ports.proxy,
   // eslint-disable-next-line no-undef
   verboseMode: process.env.VERBOSE === "true",

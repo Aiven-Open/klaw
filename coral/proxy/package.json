@@ -4,12 +4,12 @@
   "main": "proxy.js",
   "scripts": {
     "proxy": "pnpm exec nodemon server.js",
-    "start-klaw-docker": "./start-docker.sh",
     "start-coral": "cd .. && pnpm vite --mode=local-api",
-    "dev": "pnpm start-klaw-docker && npm-run-all -l -p proxy start-coral",
-    "dev-with-test-env": "pnpm start-klaw-docker --testEnv && npm-run-all -l -p proxy start-coral",
-    "dev-verbose": "VERBOSE=true pnpm dev",
-    "dev-verbose-with-test-env": "VERBOSE=true pnpm dev-with-test-env"
+    "dev": "./start-proxy-environment.sh",
+    "dev:start": "./start-proxy-environment.sh --mode=start",
+    "dev:restart": "./start-proxy-environment.sh --mode=restart",
+    "dev:start:testEnv": "./start-proxy-environment.sh --mode=start --testEnv=true",
+    "dev:restart:testEnv": "./start-proxy-environment.sh --mode=restart --testEnv=true"
   },
   "dependencies": {
     "http-proxy": "^1.18.1",
