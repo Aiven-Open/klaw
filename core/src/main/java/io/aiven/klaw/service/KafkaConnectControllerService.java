@@ -63,7 +63,9 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -79,6 +81,10 @@ public class KafkaConnectControllerService {
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
+
+  @Value("${klaw.connect.sensitive.fields:password}")
+  private String kafkaConnectorSensitiveFields;
+
   @Autowired private CommonUtilsService commonUtilsService;
 
   @Autowired ClusterApiService clusterApiService;
@@ -107,6 +113,8 @@ public class KafkaConnectControllerService {
           && connectorRequestModel.getConnectorConfig().trim().length() > 0) {
         JsonNode jsonNode =
             OBJECT_MAPPER.readTree(connectorRequestModel.getConnectorConfig().trim());
+        updateJsonNode("encrypt", jsonNode);
+
         if (!jsonNode.has("tasks.max")) {
           return ApiResponse.builder().success(false).message(KAFKA_CONNECT_ERR_101).build();
         } else if (!jsonNode.has("connector.class")) {
@@ -572,6 +580,8 @@ public class KafkaConnectControllerService {
 
     try {
       JsonNode jsonNode = OBJECT_MAPPER.readTree(connectorRequest.getConnectorConfig());
+      updateJsonNode("decrypt", jsonNode);
+
       ObjectNode objectNode = (ObjectNode) jsonNode;
       connectorConfig.setConfig(objectNode);
 
@@ -579,6 +589,38 @@ public class KafkaConnectControllerService {
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
       return e.toString();
+    }
+  }
+
+  void updateJsonNode(String encType, JsonNode jsonNode) {
+    List<String> sensitiveKeys = new ArrayList<>();
+    String[] defaultSensitiveFieldsList = kafkaConnectorSensitiveFields.split(",");
+    jsonNode
+        .fieldNames()
+        .forEachRemaining(
+            key -> {
+              for (String sensitiveField : defaultSensitiveFieldsList) {
+                if (key.toLowerCase().contains(sensitiveField.toLowerCase())) {
+                  sensitiveKeys.add(key);
+                }
+              }
+            });
+    try {
+      BasicTextEncryptor jasyptEncryptor = commonUtilsService.getJasyptEncryptor();
+      for (String sensitiveKey : sensitiveKeys) {
+        if (encType.equals("decrypt")) {
+          ((ObjectNode) jsonNode)
+              .put(sensitiveKey, jasyptEncryptor.decrypt(jsonNode.get(sensitiveKey).asText()));
+        } else if (encType.equals("encrypt")) {
+          {
+            ((ObjectNode) jsonNode)
+                .put(sensitiveKey, jasyptEncryptor.encrypt(jsonNode.get(sensitiveKey).asText()));
+          }
+        }
+      }
+    } catch (Exception e) {
+      // existing requests where passwords are not encrypted
+      log.error("Ignore errors during decryption");
     }
   }
 
@@ -1380,8 +1422,7 @@ public class KafkaConnectControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
-    List<UserInfo> userList =
-        manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(userTeamId, tenantId);
+    List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
     for (KafkaConnectorRequest connectorRequest : topicsList) {
       kafkaConnectorRequestModel = new KafkaConnectorRequestsResponseModel();
@@ -1403,9 +1444,8 @@ public class KafkaConnectControllerService {
           if (!connectors.isEmpty()) {
             kafkaConnectorRequestModel.setApprovingTeamDetails(
                 updateApproverInfo(
-                    manageDatabase
-                        .getHandleDbRequests()
-                        .getAllUsersInfoForTeam(connectors.get(0).getTeamId(), tenantId),
+                    manageDatabase.getUsersPerTeamAndTenant(
+                        connectors.get(0).getTeamId(), tenantId),
                     manageDatabase.getTeamNameFromTeamId(tenantId, connectors.get(0).getTeamId()),
                     approverRoles,
                     kafkaConnectorRequestModel.getRequestor()));
