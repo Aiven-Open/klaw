@@ -7,5 +7,5 @@ import lombok.Data;
 public class KafkaConnectorDeleteRequestModel {
 
   @NotNull private String connectorName;
-  @NotNull private String env;
+  @NotNull private String envId;
 }

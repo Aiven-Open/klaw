@@ -116,7 +116,7 @@ public class KafkaConnectController {
       throws KlawException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.createConnectorDeleteRequest(
-            deleteRequestModel.getConnectorName(), deleteRequestModel.getEnv()),
+            deleteRequestModel.getConnectorName(), deleteRequestModel.getEnvId()),
         HttpStatus.OK);
   }
 

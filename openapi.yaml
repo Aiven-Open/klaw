@@ -6059,11 +6059,11 @@
           "connectorName" : {
             "type" : "string"
           },
-          "env" : {
+          "envId" : {
             "type" : "string"
           }
         },
-        "required" : [ "connectorName", "env" ]
+        "required" : [ "connectorName", "envId" ]
       },
       "TopicClaimRequestModel" : {
         "properties" : {

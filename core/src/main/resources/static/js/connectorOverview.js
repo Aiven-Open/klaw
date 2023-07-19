@@ -251,7 +251,7 @@ app.controller("connectorOverviewCtrl", function($scope, $http, $location, $wind
                                 url: "createConnectorDeleteRequest",
                                 headers : { 'Content-Type' : 'application/json' },
                                 data: {'connectorName' : $scope.topicSelectedParam,
-                                                           'env' : env},
+                                                           'envId' : env},
                             }).success(function(output) {
 
                                 if(output.success){
