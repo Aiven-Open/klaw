@@ -732,6 +732,88 @@ public class KafkaConnectControllerServiceTest {
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
+  @Test
+  @Order(17)
+  public void getConnectorOverview_WithRequestsOpen() throws KlawException {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("0,1,2");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
+        .thenReturn(true);
+
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
+
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isTrue();
+    assertThat(response.getPromotionDetails().get("status"))
+        .isEqualTo(PromotionStatusType.SUCCESS.value);
+    assertThat(response.getAvailableEnvironments()).hasSize(2);
+  }
+
+  @Test
+  @Order(18)
+  public void getConnectorOverview_WithNoRequestsOpen() throws KlawException {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("0,1,2");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
+        .thenReturn(false);
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
+
+    assertThat(response.getConnectorInfoList().get(0).isHighestEnv()).isTrue();
+    assertThat(response.getConnectorInfoList().get(0).isConnectorOwner()).isTrue();
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isFalse();
+    assertThat(response.getPromotionDetails().get("status"))
+        .isEqualTo(PromotionStatusType.SUCCESS.value);
+    assertThat(response.getAvailableEnvironments()).hasSize(2);
+  }
+
   private List<KwKafkaConnector> generateKafkaConnectors(int number) {
     List<KwKafkaConnector> connectors = new ArrayList<>();
     for (int i = 0; i < number; i++) {

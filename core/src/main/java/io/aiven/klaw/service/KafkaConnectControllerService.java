@@ -426,7 +426,7 @@ public class KafkaConnectControllerService {
       UserInfo user,
       KafkaConnectorModelResponse connectorInfo,
       KwKafkaConnector connectorSOT) {
-    connectorInfo.setConnectorOwner(connectorSOT.getTeamId() == user.getTeamId());
+    connectorInfo.setConnectorOwner(Objects.equals(connectorSOT.getTeamId(), user.getTeamId()));
 
     connectorInfo.setHighestEnv(
         checkIsHighestEnv(connectorInfo.getEnvironmentId(), connectorInfo.getEnvironmentsList()));
@@ -1157,12 +1157,14 @@ public class KafkaConnectControllerService {
 
       // Check if request open && set the highestEnv
       connectorInfoList.forEach(
-          info -> {
-            info.setHasOpenRequest(
-                isConnectorRequestOpen(tenantId, info.getConnectorName(), info.getEnvironmentId()));
-            info.setHighestEnv(
+          connectorInfo -> {
+            connectorInfo.setHasOpenRequest(
+                isConnectorRequestOpen(
+                    tenantId, connectorInfo.getConnectorName(), connectorInfo.getEnvironmentId()));
+            connectorInfo.setHighestEnv(
                 checkIsHighestEnv(
-                    info.getEnvironmentId(), connectorOverview.getAvailableEnvironments()));
+                    connectorInfo.getEnvironmentId(),
+                    connectorOverview.getAvailableEnvironments()));
           });
 
     } catch (Exception e) {
