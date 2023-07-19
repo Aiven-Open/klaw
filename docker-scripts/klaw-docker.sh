@@ -59,8 +59,10 @@ usage () {
         echo "$0 --testEnv will deploy a local instance of kafka at localhost:9092 to use with klaw."
         echo "$0 --all will bulid all Klaw binaries, create Klaw docker images and deploy Klaw locally."
         echo "$0 --destroy will tear down containers running in docker."
-        echo "$0 --dev-env will build and deploya docker image that will run on windows mac or linux for development."
+        echo "$0 --dev-env will build and deploy a docker image that will run on windows mac or linux for development."
+        echo "$0 --dev-env-deploy will deploy without building again a docker image that will run on windows mac or linux for development."
         echo "$0 --dev-kafka-env will deploy a kafka and schema registry on windows, mac or linux"
+
 
 
 }
@@ -95,6 +97,10 @@ case $COMMAND in
 		;;
   --dev-env)
     build
+    deployDeveloperEnv
+    shift
+    ;;
+  --dev-env-deploy)
     deployDeveloperEnv
     shift
     ;;
