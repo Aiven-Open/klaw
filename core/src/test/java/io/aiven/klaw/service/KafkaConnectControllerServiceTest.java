@@ -58,8 +58,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class KafkaConnectControllerServiceTest {
-
-  public static final String NO_PROMOTION = "NO_PROMOTION";
   public static final String USERNAME = "kwusera";
   public static final String CONNECTOR_NAME = "conn1";
   public static final int TENANT_ID = 101;
@@ -97,6 +95,8 @@ public class KafkaConnectControllerServiceTest {
     env.setName("DEV");
     ReflectionTestUtils.setField(kafkaConnectControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(kafkaConnectControllerService, "mailService", mailService);
+    ReflectionTestUtils.setField(
+        kafkaConnectControllerService, "kafkaConnectorSensitiveFields", "password,username");
     ReflectionTestUtils.setField(
         kafkaConnectControllerService, "commonUtilsService", commonUtilsService);
     ReflectionTestUtils.setField(
@@ -715,17 +715,45 @@ public class KafkaConnectControllerServiceTest {
     when(basicTextEncryptor.encrypt(any())).thenReturn(encryptedText);
     kafkaConnectControllerService.updateJsonNode("encrypt", jsonNode);
     assertThat(jsonNode.get("connector.password").asText()).isEqualTo(encryptedText);
+    assertThat(jsonNode.get("jdbc.username").asText()).isEqualTo(encryptedText);
+    verify(basicTextEncryptor, times(2)).encrypt(any());
 
-    String decryptedText = "testpwd";
+    String decryptedText = "decryptedText";
     when(basicTextEncryptor.decrypt(any())).thenReturn(decryptedText);
     kafkaConnectControllerService.updateJsonNode("decrypt", jsonNode);
     assertThat(jsonNode.get("connector.password").asText()).isEqualTo(decryptedText);
+    assertThat(jsonNode.get("jdbc.username").asText()).isEqualTo(decryptedText);
+    verify(basicTextEncryptor, times(2)).decrypt(any());
 
     jsonNode = OBJECT_MAPPER.readTree(getValidConnConfig().trim());
     when(basicTextEncryptor.decrypt(any()))
         .thenThrow(new RuntimeException("NotSupportedOperation"));
     kafkaConnectControllerService.updateJsonNode("decrypt", jsonNode);
-    assertThat(jsonNode.get("connector.password").asText()).isEqualTo(decryptedText);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo("testpwd");
+  }
+
+  @Test
+  @Order(17)
+  public void updateJsonNodeTestEncryptAndDecryptNoKeyMatches() throws JsonProcessingException {
+    ReflectionTestUtils.setField(
+        kafkaConnectControllerService, "kafkaConnectorSensitiveFields", "fielddoesnotexist");
+
+    JsonNode jsonNode = OBJECT_MAPPER.readTree(getValidConnConfig().trim());
+    when(commonUtilsService.getJasyptEncryptor()).thenReturn(basicTextEncryptor);
+    String encryptedText = "encryptedText";
+    when(basicTextEncryptor.encrypt(any())).thenReturn(encryptedText);
+    kafkaConnectControllerService.updateJsonNode("encrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo("testpwd");
+    assertThat(jsonNode.get("jdbc.username").asText()).isEqualTo("testuser");
+
+    String decryptedText = "decryptedText";
+    when(basicTextEncryptor.decrypt(any())).thenReturn(decryptedText);
+    kafkaConnectControllerService.updateJsonNode("decrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo("testpwd");
+    assertThat(jsonNode.get("jdbc.username").asText()).isEqualTo("testuser");
+
+    verify(basicTextEncryptor, times(0)).encrypt(any());
+    verify(basicTextEncryptor, times(0)).decrypt(any());
   }
 
   private List<KwKafkaConnector> generateKafkaConnectors(int number) {
@@ -797,6 +825,7 @@ public class KafkaConnectControllerServiceTest {
         + "    \"topics\":\"testtopic\",\n"
         + "    \"tasks.max\": \"1\",\n"
         + "    \"connector.password\":\"testpwd\",\n"
+        + "    \"jdbc.username\":\"testuser\",\n"
         + "    \"connector.class\": \"io.confluent.connect.storage.tools.SchemaSourceConnector\"\n"
         + "}";
   }

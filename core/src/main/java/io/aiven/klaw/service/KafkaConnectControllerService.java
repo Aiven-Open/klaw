@@ -63,7 +63,9 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -79,7 +81,10 @@ public class KafkaConnectControllerService {
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
   public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
-  public static final String PASSWORD_KEY = "password";
+
+  @Value("${klaw.connect.sensitive.fields:password}")
+  private String kafkaConnectorSensitiveFields;
+
   @Autowired private CommonUtilsService commonUtilsService;
 
   @Autowired ClusterApiService clusterApiService;
@@ -562,31 +567,27 @@ public class KafkaConnectControllerService {
 
   void updateJsonNode(String encType, JsonNode jsonNode) {
     List<String> sensitiveKeys = new ArrayList<>();
+    String[] defaultSensitiveFieldsList = kafkaConnectorSensitiveFields.split(",");
     jsonNode
         .fieldNames()
         .forEachRemaining(
             key -> {
-              if (key.contains(PASSWORD_KEY)) {
-                sensitiveKeys.add(key);
+              for (String sensitiveField : defaultSensitiveFieldsList) {
+                if (key.toLowerCase().contains(sensitiveField.toLowerCase())) {
+                  sensitiveKeys.add(key);
+                }
               }
             });
     try {
+      BasicTextEncryptor jasyptEncryptor = commonUtilsService.getJasyptEncryptor();
       for (String sensitiveKey : sensitiveKeys) {
         if (encType.equals("decrypt")) {
           ((ObjectNode) jsonNode)
-              .put(
-                  sensitiveKey,
-                  commonUtilsService
-                      .getJasyptEncryptor()
-                      .decrypt(jsonNode.get(sensitiveKey).asText()));
+              .put(sensitiveKey, jasyptEncryptor.decrypt(jsonNode.get(sensitiveKey).asText()));
         } else if (encType.equals("encrypt")) {
           {
             ((ObjectNode) jsonNode)
-                .put(
-                    sensitiveKey,
-                    commonUtilsService
-                        .getJasyptEncryptor()
-                        .encrypt(jsonNode.get(sensitiveKey).asText()));
+                .put(sensitiveKey, jasyptEncryptor.encrypt(jsonNode.get(sensitiveKey).asText()));
           }
         }
       }
