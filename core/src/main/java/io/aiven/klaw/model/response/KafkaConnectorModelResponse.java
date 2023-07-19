@@ -31,9 +31,9 @@ public class KafkaConnectorModelResponse {
 
   @NotNull private boolean connectorDeletable;
 
-  @NotNull private boolean isConnectorOwner;
+  @NotNull private boolean connectorOwner;
 
-  @NotNull private boolean isHighestEnv;
+  @NotNull private boolean highestEnv;
 
   @NotNull private boolean hasOpenRequest;
 

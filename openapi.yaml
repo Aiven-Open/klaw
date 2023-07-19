@@ -7418,6 +7418,12 @@
           "connectorDeletable" : {
             "type" : "boolean"
           },
+          "connectorOwner" : {
+            "type" : "boolean"
+          },
+          "highestEnv" : {
+            "type" : "boolean"
+          },
           "hasOpenRequest" : {
             "type" : "boolean"
           },
@@ -7459,15 +7465,9 @@
           },
           "description" : {
             "type" : "string"
-          },
-          "connectorOwner" : {
-            "type" : "boolean"
-          },
-          "highestEnv" : {
-            "type" : "boolean"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorStatus", "environmentId", "failedTasks", "hasOpenRequest", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorOwner", "connectorStatus", "environmentId", "failedTasks", "hasOpenRequest", "highestEnv", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {
