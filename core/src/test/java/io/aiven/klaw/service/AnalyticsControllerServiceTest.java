@@ -78,7 +78,6 @@ class AnalyticsControllerServiceTest {
   @Test
   public void getEnvName_NoEnvNameFound() {
     Mockito.when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(List.of());
-
     String actual = analyticsControllerService.getEnvName(TestConstants.ENV_ID);
 
     assertNull(actual);
@@ -619,6 +618,7 @@ class AnalyticsControllerServiceTest {
 
     File actual = analyticsControllerService.generateReport();
     Assertions.assertNotNull(actual);
+    actual.deleteOnExit();
   }
 
   @Test
@@ -654,5 +654,6 @@ class AnalyticsControllerServiceTest {
 
     File actual = analyticsControllerService.generateReport();
     Assertions.assertNotNull(actual);
+    actual.deleteOnExit();
   }
 }
