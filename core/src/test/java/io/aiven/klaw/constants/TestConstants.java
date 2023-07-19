@@ -1,5 +1,6 @@
 package io.aiven.klaw.constants;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -12,7 +13,7 @@ public class TestConstants {
   public static final String TOPICS_COUNT = "TOPICS_COUNT";
   public static final int TENANT_ID = 1;
   public static final String TEAM_NAME = "TEAM_NAME";
-  public static final String KW_REPORTS_LOCATION = "KW_REPORTS_LOCATION";
+  public static final String KW_REPORTS_LOCATION = File.separator + "target";
   public static final int TEAM_ID = 1;
   public static final String X_AXIS_LABEL = "X_AXIS_LABEL";
   public static final String Y_AXIS_LABEL = "Y_AXIS_LABEL";

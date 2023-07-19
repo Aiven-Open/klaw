@@ -155,6 +155,16 @@ public interface HandleDbRequests {
       String env,
       int tenantId);
 
+  boolean existsConnectorRequest(
+      String connectorName, String requestStatus, String env, int tenantId);
+
+  boolean existsConnectorRequest(
+      String connectorName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId);
+
   boolean existsSchemaForTopic(String topicName, String env, int tenantId);
 
   List<AclRequests> getAllAclRequests(
