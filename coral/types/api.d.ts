@@ -1237,6 +1237,8 @@ export type components = {
       showEditConnector: boolean;
       showDeleteConnector: boolean;
       connectorDeletable: boolean;
+      connectorOwner: boolean;
+      highestEnv: boolean;
       hasOpenRequest: boolean;
       allPageNos?: (string)[];
       totalNoPages?: string;
@@ -1248,8 +1250,6 @@ export type components = {
       remarks?: string;
       documentation?: string;
       description?: string;
-      connectorOwner?: boolean;
-      highestEnv?: boolean;
     };
     EnvModelResponse: {
       id: string;
