@@ -1127,7 +1127,7 @@ public class KafkaConnectControllerService {
         connectorInfo.setEnvironmentId(conn.getEnvironment());
         connectorInfo.setConnectorConfig(conn.getConnectorConfig());
         connectorInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, conn.getTeamId()));
-
+        connectorInfo.setTeamId(conn.getTeamId());
         if (Objects.equals(syncCluster, conn.getEnvironment())) {
           connectorOverview.setConnectorDocumentation(conn.getDocumentation());
           connectorOverview.setConnectorIdForDocumentation(conn.getConnectorId());
