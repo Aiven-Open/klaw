@@ -2,6 +2,7 @@ import {
   approveConnectorRequest,
   createConnectorRequest,
   declineConnectorRequest,
+  deleteConnector,
   deleteConnectorRequest,
   getConnectorOverview,
   getConnectorRequests,
@@ -22,19 +23,19 @@ export {
   approveConnectorRequest,
   createConnectorRequest,
   declineConnectorRequest,
+  deleteConnector,
   deleteConnectorRequest,
   getConnectorOverview,
   getConnectorRequests,
   getConnectorRequestsForApprover,
   getConnectors,
-  updateConnectorDocumentation,
+  updateConnectorDocumentation
 };
 
-export type {
-  Connector,
-  ConnectorOverview,
-  ConnectorRequest,
-  ConnectorRequestsForApprover,
-  CreateConnectorRequestPayload,
-  ConnectorDocumentationMarkdown,
-};
+  export type {
+    Connector, ConnectorDocumentationMarkdown, ConnectorOverview,
+    ConnectorRequest,
+    ConnectorRequestsForApprover,
+    CreateConnectorRequestPayload,
+  };
+
