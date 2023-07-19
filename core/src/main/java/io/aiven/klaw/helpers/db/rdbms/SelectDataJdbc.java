@@ -1904,6 +1904,24 @@ public class SelectDataJdbc {
             tenantId, env, requestStatus, requestOperationType, topicName);
   }
 
+  public boolean existsConnectorRequest(
+      String connectorName, String requestStatus, String env, int tenantId) {
+    return kafkaConnectorRequestsRepo
+        .existsByTenantIdAndEnvironmentAndRequestStatusAndConnectorName(
+            tenantId, env, requestStatus, connectorName);
+  }
+
+  public boolean existsConnectorRequest(
+      String connectorName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId) {
+    return kafkaConnectorRequestsRepo
+        .existsByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndConnectorName(
+            tenantId, env, requestStatus, requestOperationType, connectorName);
+  }
+
   public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
     return messageSchemaRepo.existsByTenantIdAndTopicnameAndEnvironment(tenantId, topicName, env);
   }

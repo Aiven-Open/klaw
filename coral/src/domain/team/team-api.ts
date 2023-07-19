@@ -1,4 +1,4 @@
-import api, { API_PATHS } from "src/services/api";
+import api, { API_PATHS, DYNAMIC_API_PATHS } from "src/services/api";
 import { KlawApiRequest, KlawApiResponse } from "types/utils";
 
 const getTeams = () => {
@@ -31,11 +31,7 @@ const updateTeam = ({
 
 const getTeamsOfUser = ({ userName }: { userName: string }) => {
   return api.get<KlawApiResponse<"getSwitchTeams">>(
-    // API_PATH does not cover arguments,
-    // follow up ticket: https://github.com/aiven/klaw/issues/1021
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    `/user/${userName}/switchTeamsList`
+    DYNAMIC_API_PATHS.getSwitchTeams({ userId: userName })
   );
 };
 

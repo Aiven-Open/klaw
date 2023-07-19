@@ -1099,8 +1099,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      topicOwner?: boolean;
       highestEnv?: boolean;
+      topicOwner?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1237,6 +1237,9 @@ export type components = {
       showEditConnector: boolean;
       showDeleteConnector: boolean;
       connectorDeletable: boolean;
+      connectorOwner: boolean;
+      highestEnv: boolean;
+      hasOpenRequest: boolean;
       allPageNos?: (string)[];
       totalNoPages?: string;
       currentPage?: string;
