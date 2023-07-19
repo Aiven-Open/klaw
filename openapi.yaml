@@ -1801,21 +1801,16 @@
       "post" : {
         "tags" : [ "kafka-connect-controller" ],
         "operationId" : "createConnectorDeleteRequest",
-        "parameters" : [ {
-          "name" : "connectorName",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "env",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/KafkaConnectorDeleteRequestModel"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -6058,6 +6053,17 @@
           }
         },
         "required" : [ "connectorConfig", "connectorName", "description", "environment", "requestOperationType" ]
+      },
+      "KafkaConnectorDeleteRequestModel" : {
+        "properties" : {
+          "connectorName" : {
+            "type" : "string"
+          },
+          "envId" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "connectorName", "envId" ]
       },
       "TopicClaimRequestModel" : {
         "properties" : {
