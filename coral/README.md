@@ -43,12 +43,18 @@
 - run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
 - run `pnpm install`
 - to start development mode, run:
-  - `pnpm dev`sto start the frontend app for development in development mode **with remote API**
+  - `pnpm dev` to start the frontend app for development in development mode **with remote API**
   - `pnpm dev-without-remote-api` to start the frontend app in development mode **without** api
+  - go to our new [`/proxy`](proxy/README.md) to use the frontend app in development mode with a local instance of Klaw as api (this is still a work in progess)
 
 ℹ️ **Using a remote API**
 We recommend doing coral development with a remote API.
 Please see our documentation: [Development with remote API](docs/development-with-remote-api.md).
+
+ℹ️ **Using the local-API mode**
+This is still a work in progress, but expect for a few inconveniences works already pretty well! 
+
+Please see our documentation: [Development with local Klaw](docs/development-with-local-klaw.md).
 
 ℹ️ **Developing without remote API**
 If you want to run Coral without an API, you can do that, too.

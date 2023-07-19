@@ -14,11 +14,11 @@ With the mode `local-api` we can run Klaw in a docker container. This can be use
 
 ## Run development server with local-api mode
 
-ℹ️ environment settings are located in the file [`.env.local-api`](/coral/.env.local-api).
+ℹ️ environment settings are located in the file [`.env.local-api`](../../coral/.env.local-api).
 
-- go to directory [`proxy`](/coral/proxy)
+- go to directory [`proxy`](../../coral/proxy)
 - in `/proxy`, run `pnpm dev:start` 
-  - check out the [documentation](/coral/proxy/README.md) for more scripts and information when to use them.
+  - check out the [documentation](../../coral/proxy/README.md) for more scripts and information when to use them.
 - ❗️ the proxy runs on [`http://localhost:1337`](http://localhost:1337)
   - Currently, the correct redirect for login and authentication is not working. To authenticate yourself:
     - Go to your [local Klaw](http://localhost:9097/login)

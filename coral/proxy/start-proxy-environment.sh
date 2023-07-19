@@ -57,38 +57,28 @@ startDocker() {
   DOCKER_COMMAND="docker-scripts/klaw-docker.sh"
   # Check if core is running on localhost:9097
   check_port 9097 "core" || {
-    cd ../../
-    "$DOCKER_COMMAND $DOCKER_FLAG"
-    exit
+    sh ../../$DOCKER_COMMAND $DOCKER_FLAG
   }
 
   # Check if cluster-api is running on localhost:9343
   check_port 9343 "cluster-api" || {
-    cd ../../
-    "$DOCKER_COMMAND $DOCKER_FLAG"
-    exit
+    sh ../../$DOCKER_COMMAND $DOCKER_FLAG
   }
 
   if [ "$TEST_ENV" = true ]; then
     # Check if zookeeper is running on localhost:2181
     check_port 2181 "zookeeper" || {
-      cd ../../
-      "$DOCKER_COMMAND" --testEnv
-      exit
+      sh ../../$DOCKER_COMMAND --testEnv
     }
 
     # Check if klaw-kafka is running on localhost:9092
     check_port 9092 "klaw-kafka" || {
-      cd ../../
-      "$DOCKER_COMMAND" --testEnv
-      exit
+      sh ../../$DOCKER_COMMAND --testEnv
     }
 
     # Check if klaw-schema-registry is running on localhost:8081
     check_port 8081 "klaw-schema-registry" || {
-      cd ../../
-      "$DOCKER_COMMAND" --testEnv
-      exit
+      sh ../../$DOCKER_COMMAND --testEnv
     }
   fi
 }
