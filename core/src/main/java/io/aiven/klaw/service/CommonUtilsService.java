@@ -428,7 +428,7 @@ public class CommonUtilsService {
     }
   }
 
-  private BasicTextEncryptor getJasyptEncryptor() {
+  public BasicTextEncryptor getJasyptEncryptor() {
     BasicTextEncryptor textEncryptor = new BasicTextEncryptor();
     textEncryptor.setPasswordCharArray(encryptorSecretKey.toCharArray());
 

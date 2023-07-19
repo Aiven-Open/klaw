@@ -107,8 +107,7 @@ public class SchemaRegistryControllerService {
     }
 
     Integer userTeamId = commonUtilsService.getTeamId(userName);
-    List<UserInfo> userList =
-        manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(userTeamId, tenantId);
+    List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
     List<String> approverRoles =
         rolesPermissionsControllerService.getApproverRoles("CONNECTORS", tenantId);
