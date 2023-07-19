@@ -772,6 +772,10 @@ export type components = {
       teamId?: number;
       otherParams?: string;
     };
+    KafkaConnectorDeleteRequestModel: {
+      connectorName: string;
+      env: string;
+    };
     TopicClaimRequestModel: {
       topicName: string;
       env: string;
@@ -2547,10 +2551,9 @@ export type operations = {
     };
   };
   createConnectorDeleteRequest: {
-    parameters: {
-      query: {
-        connectorName: string;
-        env: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KafkaConnectorDeleteRequestModel"];
       };
     };
     responses: {
