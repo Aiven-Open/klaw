@@ -2,6 +2,7 @@ import { createBrowserRouter, RouteObject } from "react-router-dom";
 import { ConnectorDocumentation } from "src/app/features/connectors/details/documentation/ConnectorDocumentation";
 import { ConnectorHistory } from "src/app/features/connectors/details/history/ConnectorHistory";
 import { ConnectorOverview } from "src/app/features/connectors/details/overview/ConnectorOverview";
+import { ConnectorSettings } from "src/app/features/connectors/details/settings/ConnectorSettings";
 import Layout from "src/app/layout/Layout";
 import LayoutWithoutNav from "src/app/layout/LayoutWithoutNav";
 import ApprovalsPage from "src/app/pages/approvals";
@@ -147,7 +148,7 @@ const routes: Array<RouteObject> = [
             path: CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH[
               ConnectorOverviewTabEnum.SETTINGS
             ],
-            element: <div>Settings</div>,
+            element: <ConnectorSettings />,
             id: ConnectorOverviewTabEnum.SETTINGS,
           },
         ],
