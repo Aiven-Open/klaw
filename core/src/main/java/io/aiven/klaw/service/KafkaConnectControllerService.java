@@ -1127,7 +1127,7 @@ public class KafkaConnectControllerService {
         connectorInfo.setEnvironmentId(conn.getEnvironment());
         connectorInfo.setConnectorConfig(conn.getConnectorConfig());
         connectorInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, conn.getTeamId()));
-
+        connectorInfo.setTeamId(conn.getTeamId());
         if (Objects.equals(syncCluster, conn.getEnvironment())) {
           connectorOverview.setConnectorDocumentation(conn.getDocumentation());
           connectorOverview.setConnectorIdForDocumentation(conn.getConnectorId());
@@ -1188,7 +1188,6 @@ public class KafkaConnectControllerService {
           KafkaConnectorModelResponse lastItem =
               connectorInfoList.get(connectorInfoList.size() - 1);
           lastItem.setConnectorDeletable(true);
-          lastItem.setShowDeleteConnector(true);
         }
 
       } else {
@@ -1207,6 +1206,12 @@ public class KafkaConnectControllerService {
                 checkIsHighestEnv(
                     connectorInfo.getEnvironmentId(),
                     connectorOverview.getAvailableEnvironments()));
+            connectorInfo.setConnectorOwner(
+                Objects.equals(connectorInfo.getTeamId(), loggedInUserTeam));
+            connectorInfo.setShowDeleteConnector(
+                connectorInfo.isConnectorOwner()
+                    && connectorInfo.isHighestEnv()
+                    && !connectorInfo.isHasOpenRequest());
           });
 
     } catch (Exception e) {
