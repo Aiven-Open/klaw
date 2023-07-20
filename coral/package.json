@@ -20,7 +20,7 @@
     "lint": "prettier --check src && eslint .",
     "lint-staged": "lint-staged",
     "preview": "vite build --mode remote-api && vite preview --mode remote-api",
-    "reformat": "prettier --write src",
+    "reformat": "prettier --write src proxy",
     "test": "jest",
     "test-ci": "jest --ci",
     "test-dev": "jest --watch",
@@ -30,7 +30,7 @@
     "add-precommit": "git config --local core.hooksPath .githooks/"
   },
   "lint-staged": {
-    "**/*.ts?(x)": [
+    "**/*.{ts,tsx,js}": [
       "prettier --check",
       "eslint"
     ],
