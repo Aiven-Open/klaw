@@ -162,7 +162,7 @@ function ConnectorSettings() {
                     </Typography.DefaultStrong>
                   ) : (
                     <>
-                      You can not create a delete request for this connector:{" "}
+                      You can not create a delete request for this connector:
                       <br />
                       {getDeleteDisabledInformation()}
                     </>

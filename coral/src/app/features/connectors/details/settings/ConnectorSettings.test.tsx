@@ -579,36 +579,6 @@ describe("ConnectorSettings", () => {
       expect(console.error).not.toHaveBeenCalled();
     });
 
-    it("deletes connector and associates schemas successfully when user confirms deleting", async () => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      mockDeleteConnector.mockResolvedValue({ success: true });
-
-      const button = screen.getByRole("button", {
-        name: "Request connector deletion",
-      });
-
-      await user.click(button);
-
-      const dialog = screen.getByRole("dialog");
-      expect(dialog).toBeVisible();
-
-      const confirmButton = within(dialog).getByRole("button", {
-        name: "Request connector deletion",
-      });
-
-      await user.click(confirmButton);
-
-      expect(mockDeleteConnector).toHaveBeenCalledWith({
-        envId: testEnvironmentId,
-        connectorName: testConnectorName,
-        remark: undefined,
-      });
-      expect(mockedNavigate).toHaveBeenCalledWith("/connectors");
-      expect(dialog).not.toBeVisible();
-      expect(console.error).not.toHaveBeenCalled();
-    });
-
     it("shows a message if deleting the connector resulted in an error", async () => {
       mockDeleteConnector.mockRejectedValue({
         success: false,

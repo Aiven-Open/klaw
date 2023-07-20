@@ -29,13 +29,14 @@ export {
   getConnectorRequests,
   getConnectorRequestsForApprover,
   getConnectors,
-  updateConnectorDocumentation
+  updateConnectorDocumentation,
 };
 
-  export type {
-    Connector, ConnectorDocumentationMarkdown, ConnectorOverview,
-    ConnectorRequest,
-    ConnectorRequestsForApprover,
-    CreateConnectorRequestPayload,
-  };
-
+export type {
+  Connector,
+  ConnectorDocumentationMarkdown,
+  ConnectorOverview,
+  ConnectorRequest,
+  ConnectorRequestsForApprover,
+  CreateConnectorRequestPayload,
+};
