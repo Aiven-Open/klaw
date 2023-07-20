@@ -9,7 +9,6 @@ We're running a small node-proxy to enable a convenient way of developing Coral 
 - Coral is set up - [Installation coral](../README.md)
 - Docker is installed - [Get Docker](https://docs.docker.com/get-docker/)
 - in this directory, run `pnpm install`
-- Vite mode for local api is created - [See documentation](../docs/development-with-local-klaw.md)
 
 All scripts need to be run in this directory!
 
@@ -27,32 +26,68 @@ At the moment, our proxy does **not** handle the redirect from backend for authe
 
 ## Commands and flags
 
-`pnpm dev` is our base command. It can be run with different flags. We provided different commands for each flag, too.
+`pnpm dev` is our base command. It can be run with different flags. We provided alias commands for each flag, too, to make them more convenient to use.
 
-### ➡️ `pnpm dev --mode=start` or `pnpm dev:start`
+### ➡️ `pnpm dev:start`
+
+This is the alias for `pnpm dev --mode=start`.
 
 Checks if Klaw core and Klaw cluster-api are running in the right ports in your docker container. If they are not, it will run a build and deploy job.
 
-**Use `mode=start` when:**
+**Use `pnpm dev:start` when:**
 
 - you run the docker container for the first time
-- there where changes in `/core` or `/cluster-api`, where you want a new build to run against the most current version
+- there are changes in `/core` or `/cluster-api`, where you want a new build to run against the most current version
 
-### ➡️ `pnpm dev --mode=restart` or `pnpm dev:restart`
+### ➡️ `pnpm dev:restart`
+
+This is the alias for `pnpm dev --mode=restart`.
 
 Checks if Klaw core and Klaw cluster-api are running in the right ports in your docker container. If they are not, it will trigger a new deploy, which will restart your container.
 
-**Use `mode=restart` when:**
+**Use `pnpm dev:restart` when:**
 
 - you have a current version Klaw already in your container that you only want to restart
 
-### ➡️ `pnpm dev --mode=[start|restart] --testEnv=true` or `pnpm:[start|restart]:testEnv`
+### ➡️ `pnpm:[start|restart]:testEnv`
+
+This is the alias for `pnpm dev --mode=[start|restart] --testEnv=true`.
 
 Runs the `pnpm dev` command with the mode flag start or restart and an additional flag "testEnv". When `--testEnv=true` is set, we additionally check and, if necessary, setup a test environment for klaw (zookeeper, kafka, schema-registry).
 
-**Use `mode=restart` when:**
+**Use `pnpm:[start|restart]:testEnv` when:**
 
 - you want to go through whole workflows, like for example requesting and approving a topic
+
+### ➡️ `pnpm dev:stop`
+
+This is the alias for `pnpm dev --mode=stop`.
+
+This will stop all our docker containers. You can also do that in the Docker Dashboard if you're using a desktop app.
+
+Note: You don't need to stop containers before you run `pnpm dev:start` for a new build.
+
+**Use `pnpm dev:stop` when:**
+
+You don't need the api anymore and want to stop the containers, and you probably don't need a new state next time you want to work with them again. You can start them up again next time with `pnpm dev:restart`.
+
+### ➡️ `pnpm dev:destroy`
+
+This is the alias for `pnpm dev --mode=destroy`.
+
+This will stop and teardown all our docker containers. You can also do that in the Docker Dashboard if you're using a desktop app.
+
+Note: You don't need to destroy containers before you run `pnpm dev:start` for a new build.
+
+**Use `pnpm dev:destroy` when:**
+
+- You don't need the api anymore and want to stop the containers, and you probably will need to use a new build next time anyway.
+
+### ➡️ `pnpm setup`
+
+This is the alias for `pnpm dev --mode=all --testEnv=true`.
+
+This will build Klaw, the cluster-api and all test environment for klaw (zookeeper, kafka, schema-registry). You usually won't need that script, it is a convenient shortcut for the first setup.
 
 ### ➡️ additional `--verbose` flag
 
@@ -62,16 +97,13 @@ Adding this flag to any of the mentioned commands will run the proxy in "verbose
 
 ### These scripts are used by other scripts
 
-- `pnpm proxy` starts the proxy. It will automatically restart on changes.
-- `pnpm start-coral` starts coral in development environment in local-api mode with HMR
-- `pnpm dev` runs the script `start-proxy-environment.sh`
-
-- `pnpm start-klaw-docker` runs a script that checks if core and cluster api are running on the expected ports. If not, it will run the docker script: [klaw-docker.sh --all](../../docker-scripts/klaw-docker.sh).
-  - if the flag `--testEnv` is set here, we will also run the docker script [klaw-docker.sh --testEnv](../../docker-scripts/klaw-docker.sh).
+- `_internal_use_proxy` starts the proxy. It will automatically restart on changes.
+- `_internal_use_start-coral` starts coral in development environment in local-api mode with HMR
+- `pnpm dev` runs the script `start-proxy-environment.sh` and is the base for all our `dev:` scripts. You _can_ use it with additional flags, but there is no need to.
 
 ### Files
 
 - [`config.js`](config.js) contains all configuration for routes and our local ports.
 - [`rules.js`](rules.js) util functions for handling rules defined in config.
 - [`server.js`](server.js) set up and start of server as well as printing jobs.
-- [`start-proxy-environment.sh`](start-proxy-environment.sh) is responsible for parsing the flags, running the correct docker scripts dependent on flags and start the proxy (running `pnpm proxy`) as well as coral (running `pnpm start-coral`).
+- [`start-proxy-environment.sh`](start-proxy-environment.sh) is responsible for parsing the flags, running the correct docker scripts dependent on flags and start the proxy (running `pnpm _internal_use_proxy`) as well as coral (running `pnpm _internal_use_start-coral`).

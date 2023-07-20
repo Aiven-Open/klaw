@@ -6,7 +6,7 @@
 
 - [About](#about)
 - [Installation and usage](#installation-and-usage)
-- [Usage: How to run Coral inside the Klaw application](#usage-how-to-run-coral-inside-the-klaw-application)
+  - [Usage: How to run Coral inside the Klaw application](#usage-how-to-run-coral-inside-the-klaw-application)
   - [Usage: How to run Coral in development](#usage-how-to-run-coral-in-development)
     - [Scripts used and what they execute](#scripts-used-and-what-they-execute)
 - [Tech stack](#tech-stack)
@@ -22,77 +22,74 @@
 
 ## Installation and usage
 
+### Basic setup
+
+This is the setup you every time. 
+
 ** ℹRequirements**
+
 - [node](https://nodejs.org/en/) needs to be installed <br/> 
     -> see [nvmrc](.nvmrc) or the `engines` definition in [package.json](package.json) for version).
 - Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm. 
 
-### Usage: How to run Coral inside the Klaw application
-
 1. navigate to this directory
 2. run `pnpm install`
-3. go to the root directory and follow the [instructions on how to run Klaw](../README.md#Install)
-
-➡️ Based on Springboot [application properties](https://github.com/aiven/klaw/blob/main/core/src/main/resources/application.properties#L5) configuration: 
-- Klaw will run in `https://localhost:9097` if TLS is enabled
-- Klaw will run in `http://localhost:9097` if TLS is not enabled
+3. run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
 
 ### Usage: How to run Coral in development
 
-- navigate to this directory
-- run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
-- run `pnpm install`
-- to start development mode, run:
-  - `pnpm dev` to start the frontend app for development in development mode **with remote API**
-  - `pnpm dev-without-remote-api` to start the frontend app in development mode **without** api
-  - go to our new [`/proxy`](proxy/README.md) to use the frontend app in development mode with a local instance of Klaw as api (this is still a work in progess)
+You have different ways of working on Coral in the development process:
 
-ℹ️ **Using a remote API**
-We recommend doing coral development with a remote API.
-Please see our documentation: [Development with remote API](docs/development-with-remote-api.md).
+#### Local development _without_ connecting an api
 
-ℹ️ **Using the local-API mode**
-This is still a work in progress, but expect for a few inconveniences works already pretty well! 
+Note: We don't recommend using this way, except in a few cases. Development against a real Klaw API will yield in better developer confidence of the functionality and developer experience compared to using a mocked API. 
 
-Please see our documentation: [Development with local Klaw](docs/development-with-local-klaw.md).
+#####  What it does
+This will run the vite development. Coral will run, but there is no API that it can consume. You will have to add a mocked response for authentication to be able to see the UI. In case you need data to work with, you'll have to mock API responses. 
 
-ℹ️ **Developing without remote API**
-If you want to run Coral without an API, you can do that, too.
-In this case, you'll have to mock the responses for api calls you need. This can be done by returning a resolved (or rejected) `Promise` instead of executing the API call during development. Please remember removing the mock before opening a PR for review :)
+##### When you want to use this
+- You want to do small changes on areas that are not dealing with data from the API.
+- You're want to do a small task first without having to setup a remote-api or docker.
 
-Example: mocking the response for `getClusterInfoFromEnvironment`:
-- go the [`src/domain/cluster/cluster-api.ts`](./src/domain/cluster/cluster-api.ts)
-- check the return type of the function (`KlawApiResponse<"getClusterInfoFromEnv">`) in our api definition to create the right object
-- return a promise with your mock instead of calling the endpoint and comment out the actual endpoint call:
+##### How to do it
 
-```typescript
-const getClusterInfoFromEnvironment = async ({
-  envSelected,
-  envType,
-  }: {
-  envSelected: string;
-  envType: Environment["type"];
-}): Promise<KlawApiResponse<"getClusterInfoFromEnv">> => {
+- Please follow our [Development without API guide](./docs/development-witout-api.md)
 
-  const mock: KlawApiResponse<"getClusterInfoFromEnv"> = {
-    aivenCluster: true,
-  };
 
-  return Promise.resolve(mock);
+#### Local development with remote API
 
-  // const params = new URLSearchParams({ envSelected, envType });
-  // return api.get<KlawApiResponse<"getClusterInfoFromEnv">>(
-  //   API_PATHS.getClusterInfoFromEnv,
-  //   params
-  // );
-};
+#####  What it does
+This will run the vite development. It will use a external address as API source. For this, you need to have Klaw deployed to be able to use it as API. The remote API can be a shared staging server, or even a production system.
 
-```
+##### When you want to use this
+- You have access to a deployed Klaw and only want to do Frontend changes.
+- You don't want to deal with setting up docker and running it locally.
+
+##### How to do it
+
+- Please follow our [Development with remote API guide](./docs/development-with-remote-api.md)
+
+
+#### Local development with local API
+
+Note: This is still a work in progress, but expect for a few inconveniences works already pretty well!
+
+#####  What it does
+This will run a proxy server. It will serve Coral in vite development mode and Klaw from a local docker container. The local Klaw will be used as API for Coral. With this, we want to enable contributors to have the better developer experience and confidence without the need to have a deployed Klaw running and use this as remote API.
+
+##### When you want to use this
+- You have don't have access to a deployed Klaw or don't want to use that.
+- You want to be able to change backend and APIs for Coral and work with them, without them having to be deployed somehwere first.
+
+##### How to do it
+
+- Please follow our [Development with local API guide](./docs/development-with-local-klaw.md)
+
+
+## Scripts used and what they execute
 
 ℹ️ You can see all our scripts in the [`package.json`](package.json).
 You can also run `pnpm` in your console to get a list of all available scripts.
-
-#### Scripts used and what they execute
 
 - `build`: builds the frontend app for production
 - `dev`: starts the frontend app for development in development mode **with remote API**
@@ -106,6 +103,29 @@ You can also run `pnpm` in your console to get a list of all available scripts.
 - `tsc`: runs the TypeScript compiler
 
 ℹ️ We are using a custom hook path for enabling pre-commit hooks. This path is set in the local git config when running `pnpm install`. See script `pnpm:devPreinstall`.
+
+
+### Usage: Running Coral inside the Klaw application
+
+####  What it does
+Builds the Klaw application locally, including the Coral frontend build in it.
+
+#### When you want to use this
+You can see how your local state of Coral will look and behave like in the build product. This can be useful for manual testing and exploring.
+
+#### How to
+
+1. navigate to this directory
+2. run `pnpm install`
+3. go to the root directory and follow the [instructions on how to run Klaw](../README.md#Install)
+
+➡️ Based on Springboot [application properties](https://github.com/aiven/klaw/blob/main/core/src/main/resources/application.properties#L5) configuration:
+
+- Klaw will run in `https://localhost:9097` if TLS is enabled
+- Klaw will run in `http://localhost:9097` if TLS is not enabled
+
+
+
 
 ## Tech stack
 

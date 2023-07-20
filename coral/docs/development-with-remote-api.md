@@ -1,9 +1,26 @@
 # Development with remote API
 
-Development against a real Klaw API will yield in better developer confidence of the functionality and developer experience compared to using a mocked API. The remote API can be a shared staging server, or even a production system. All command below are expected to be run in the `coral` directory.
+## Basic setup
+
+** ℹRequirements**
+
+- [node](https://nodejs.org/en/) needs to be installed <br/>
+  -> see [nvmrc](.nvmrc) or the `engines` definition in [package.json](package.json) for version).
+- Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm.
+
+1. navigate to `/coral`
+2. run `pnpm install`
+3. run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
+4. Run development:
+   4.1. If you have not setup a remote API mode, please follow [First setup](../docs/development-with-remote-api.
+   md#first-setup)
+   4.2. If you already have a setup, run `pnpm dev`
+
+## First setup for remote API
 
 ## Create new vite mode for remote API development
 Start by creating a new [vite mode](https://vitejs.dev/guide/env-and-mode.html) called `.env.remote-api`. The easiest way is to create one is to run the commend below. Note, that you need to replace the `[KLAW API ORIGIN]` placeholder value with your Klaw API server origin.
+
 ```
 cat << EOF > .env.remote-api
 NODE_ENV=development
@@ -14,9 +31,9 @@ VITE_SERVER_CERTIFICATE_KEY_PATH=".cert/localhost.key"
 EOF
 ```
 
-## Set up self-signed certificate [required when API runs on HTTPS]
+## Set up self-signed certificate (required when API runs on HTTPS)
 
-Let's Encrypt [instructions](https://letsencrypt.org/docs/certificates-for-localhost/#making-and-trusting-your-own-certificates) for setting up self-signed certificates for local development. 
+You can use Let's Encrypt [instructions](https://letsencrypt.org/docs/certificates-for-localhost/#making-and-trusting-your-own-certificates) for setting up self-signed certificates for local development. 
 
 ```
 openssl req -x509 -out .cert/localhost.crt -keyout .cert/localhost.key \
@@ -25,10 +42,11 @@ openssl req -x509 -out .cert/localhost.crt -keyout .cert/localhost.key \
     printf "[dn]\nCN=localhost\n[req]\ndistinguished_name = dn\n[EXT]\nsubjectAltName=DNS:localhost,IP:127.0.0.1\nkeyUsage=digitalSignature\nextendedKeyUsage=serverAuth")
 ```
 
-Install `.cert/localhost.crt` in your list of locally trusted roots. You can find  
+Install `.cert/localhost.crt` in your list of locally trusted roots. This is different dependent on your OS, you can look up a current way to do this online. Keep in mind that dependent on your OS and browser, you may have to refresh that certificate from time to time.    
+
 
 ## Run development server with remote-api mode
 
 - `pnpm run dev`
 - login to Klaw with your credentials on `<YOUR_LOCALHOST>:5173/login`
-💡currently coral does not redirect you to the login if your access expires. If you're getting related errors from your API, please login again!  
+
