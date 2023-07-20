@@ -362,8 +362,16 @@ const getTopicDetailsPerEnv = (
   );
 };
 
+const claimTopic = (payload: KlawApiModel<"TopicClaimRequestModel">) => {
+  return api.post<
+    KlawApiResponse<"createClaimTopicRequest">,
+    KlawApiModel<"TopicClaimRequestModel">
+  >(API_PATHS.createClaimTopicRequest, payload);
+};
+
 export {
   approveTopicRequest,
+  claimTopic,
   declineTopicRequest,
   deleteTopic,
   deleteTopicRequest,
