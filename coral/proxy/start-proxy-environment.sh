@@ -47,10 +47,16 @@ checkDockerMode() {
     DOCKER_FLAG="--dev-env"
   elif [ "$MODE" = "restart" ]; then # if -a=null
     DOCKER_FLAG="--dev-env-deploy"
+  elif [ "$MODE" = "stop" ]; then # if -a=null
+    DOCKER_FLAG="--stop"
+  elif [ "$MODE" = "destroy" ]; then # if -a=null
+    DOCKER_FLAG="--destroy"
   else
     echo -e "\n\n⚠️ Please set a flag for mode:"
     echo "- --mode=start for build and deploy"
     echo "- --mode=restart for deploy"
+    echo "- --mode=stop for stopping containers"
+    echo "- --mode=destroy for stopping and removing containers"
     echo -e "\n"
     exit 1
 fi
@@ -59,6 +65,17 @@ fi
 startDocker() {
   DOCKER_COMMAND="docker-scripts/klaw-docker.sh"
   DOCKER_TEST_ENV_FLAG="--dev-kafka-env"
+
+  if [ "$DOCKER_FLAG" = --destroy ]; then
+    sh ../../$DOCKER_COMMAND $DOCKER_FLAG
+    exit 0
+  fi
+
+  if [ "$DOCKER_FLAG" = --stop ]; then
+    sh ../../$DOCKER_COMMAND $DOCKER_FLAG
+    exit 0
+  fi
+
 
   # Check if core is running on localhost:9097
   check_port 9097 "core" || {
