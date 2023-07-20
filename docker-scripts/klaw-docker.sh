@@ -39,16 +39,25 @@ destroy() {
   docker-compose -f docker-scripts/docker-compose-testEnv-v2.yaml down
 }
 
+stop() {
+  echo "Stopping..."
+  docker-compose -f docker-scripts/docker-compose-klaw.yaml stop
+  docker-compose -f docker-scripts/docker-compose-testEnv.yaml stop
+  docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml stop
+  docker-compose -f docker-scripts/docker-compose-testEnv-v2.yaml stop
+}
+
 deployDeveloperEnv() {
-  	echo `pwd`
-  	echo "Deploy developer Klaw"
-  	docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml up -d
+  echo `pwd`
+  echo "Deploy developer Klaw"
+  docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml up -d
 }
 
 deployDeveloperTestEnv() {
   echo "Deploy developer Kafka"
   docker-compose -f docker-scripts/docker-compose-testEnv-v2.yaml up -d
 }
+
 
 set echo off
 usage () {
@@ -95,6 +104,10 @@ case $COMMAND in
 		destroy
 		shift
 		;;
+  --stop)
+    stop
+    shift
+    ;;
   --dev-env)
     build
     deployDeveloperEnv
