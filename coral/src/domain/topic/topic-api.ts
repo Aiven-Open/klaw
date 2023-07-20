@@ -271,8 +271,8 @@ const deleteTopicRequest = ({
 };
 
 const deleteTopic = (params: DeleteTopicPayload) => {
-  // KlawApiModel<"TopicDeleteRequestModel"> represents the TopicDeleteRequestModel
-  // without "remark" - it's currently not implemented in the API
+  // DeleteTopicPayload represents the KlawApiModel<"TopicDeleteRequestModel">
+  // with "remark" added. "remark" is currently not implemented in the API
   // and will be added later. We 're already preparing
   // our UI and code for that.
   const payload: KlawApiModel<"TopicDeleteRequestModel"> = {
