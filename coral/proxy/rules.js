@@ -40,7 +40,6 @@ function printRulesAsTable(rules) {
   }
 }
 
-
 // we don't want every request to be printed,
 // so we're filtering certain ones out
 // this list can be extended as we see fit
@@ -60,9 +59,9 @@ const locationsToFilterOut = [
   "/coral/node_modules",
   "/coral/src/",
   "/coral/favicon.png",
-]
+];
 function isPrintableRequest(request) {
-  return !locationsToFilterOut.some(location => request.startsWith(location))
+  return !locationsToFilterOut.some((location) => request.startsWith(location));
 }
 
 // eslint-disable-next-line no-undef

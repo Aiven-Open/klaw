@@ -14,7 +14,7 @@ const coralConfig = {
   name: "coral",
   localPort: ports.coral,
   rules: {
-    "/coral/(.*)$": "/coral/$1"
+    "/coral/(.*)$": "/coral/$1",
   },
 };
 
