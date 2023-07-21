@@ -65,9 +65,11 @@ type AclOverviewInfo = KlawApiModel<"AclOverviewInfo">;
 
 type TopicSchemaOverview = KlawApiModel<"SchemaOverview">;
 
-// "remark" is currently not implemented in the API
-// and will be added later. We're already preparing
-// our UI and code for that.
+/**
+ * "remark" is currently not implemented in the API
+ * and will be added later. We're already preparing
+ * our UI and code for that.
+ **/
 type DeleteTopicPayload = ResolveIntersectionTypes<
   KlawApiModel<"TopicDeleteRequestModel"> & {
     remark?: string;
