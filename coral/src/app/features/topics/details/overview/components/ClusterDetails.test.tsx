@@ -84,6 +84,24 @@ describe("ClusterDetails", () => {
       expect(term).toBeVisible();
       expect(definition[0]).toHaveTextContent(testClusterDetails.clusterName);
     });
+
+    it('shows a status definition for "Cluster status"', () => {
+      const term = getByTermInList(definitionList, "Cluster status");
+      const definition = getAllDefinitions(definitionList, "Cluster status");
+
+      expect(term).toBeVisible();
+      expect(definition[0]).toHaveTextContent(testClusterDetails.clusterStatus);
+    });
+
+    it('shows text information definition related to the "Cluster status"', () => {
+      const term = getByTermInList(definitionList, "Cluster status");
+      const definition = getAllDefinitions(definitionList, "Cluster status");
+
+      expect(term).toBeVisible();
+      expect(definition[1]).toHaveTextContent(
+        "Status is updated every hour. Contact your administrator to get a more current state."
+      );
+    });
   });
 
   describe("shows additional content dependent on props", () => {
