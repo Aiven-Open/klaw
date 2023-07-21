@@ -1,4 +1,11 @@
-import { Box, Grid, Skeleton, Typography } from "@aivenio/aquarium";
+import {
+  Box,
+  ChipStatus,
+  Grid,
+  Skeleton,
+  StatusChip,
+  Typography,
+} from "@aivenio/aquarium";
 import React from "react";
 import { ClusterDetails as ClusterDetailsType } from "src/domain/cluster";
 
@@ -6,10 +13,12 @@ function DefinitionBlock({
   term,
   definition,
   isUpdating,
+  information,
 }: {
   term: string;
   definition?: React.ReactNode | string;
   isUpdating: boolean;
+  information?: string;
 }) {
   return (
     <Box.Flex flexDirection={"column"}>
@@ -20,8 +29,25 @@ function DefinitionBlock({
       <Typography.Small htmlTag={"dd"}>
         {isUpdating ? <Skeleton /> : definition}
       </Typography.Small>
+      {!isUpdating && information && (
+        <Box marginTop={"2"} component={"dd"}>
+          <Typography.Caption>{information}</Typography.Caption>
+        </Box>
+      )}
     </Box.Flex>
   );
+}
+
+function getChipStatus(
+  status?: ClusterDetailsType["clusterStatus"]
+): ChipStatus {
+  if (status === "ONLINE") {
+    return "success";
+  }
+  if (status === "OFFLINE") {
+    return "danger";
+  }
+  return "neutral";
 }
 
 type ClusterDetailsProps = {
@@ -69,6 +95,22 @@ function ClusterDetails({ clusterDetails, isUpdating }: ClusterDetailsProps) {
             term={"Cluster name"}
             definition={clusterDetails?.clusterName}
             isUpdating={isUpdating}
+          />
+
+          <DefinitionBlock
+            term={"Cluster status"}
+            definition={
+              <StatusChip
+                text={clusterDetails?.clusterStatus || "NOT_KNOWN"}
+                status={getChipStatus(
+                  clusterDetails?.clusterStatus || "NOT_KNOWN"
+                )}
+              />
+            }
+            isUpdating={isUpdating}
+            information={
+              "Status is updated every hour. Contact your administrator to get a more current state."
+            }
           />
         </Grid>
       </div>
