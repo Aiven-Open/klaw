@@ -6,6 +6,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.requests.KafkaConnectorDeleteRequestModel;
 import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
@@ -111,10 +112,11 @@ public class KafkaConnectController {
       value = "/createConnectorDeleteRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createConnectorDeleteRequest(
-      @RequestParam("connectorName") String topicName, @RequestParam("env") String envId)
+      @RequestBody @Valid KafkaConnectorDeleteRequestModel deleteRequestModel)
       throws KlawException {
     return new ResponseEntity<>(
-        kafkaConnectControllerService.createConnectorDeleteRequest(topicName, envId),
+        kafkaConnectControllerService.createConnectorDeleteRequest(
+            deleteRequestModel.getConnectorName(), deleteRequestModel.getEnvId()),
         HttpStatus.OK);
   }
 

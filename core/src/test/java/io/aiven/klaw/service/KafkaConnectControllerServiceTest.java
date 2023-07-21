@@ -1,6 +1,7 @@
 package io.aiven.klaw.service;
 
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
+import static io.aiven.klaw.service.KafkaConnectControllerService.OBJECT_MAPPER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -10,6 +11,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
@@ -34,6 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jasypt.util.text.BasicTextEncryptor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -54,8 +58,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 @ExtendWith(SpringExtension.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class KafkaConnectControllerServiceTest {
-
-  public static final String NO_PROMOTION = "NO_PROMOTION";
   public static final String USERNAME = "kwusera";
   public static final String CONNECTOR_NAME = "conn1";
   public static final int TENANT_ID = 101;
@@ -79,6 +81,8 @@ public class KafkaConnectControllerServiceTest {
 
   @Mock KwTenantConfigModel tenantConfigModel;
 
+  @Mock BasicTextEncryptor basicTextEncryptor;
+
   @Captor ArgumentCaptor<KafkaConnectorRequest> kafkaConnectorRequest;
 
   private Env env;
@@ -91,6 +95,8 @@ public class KafkaConnectControllerServiceTest {
     env.setName("DEV");
     ReflectionTestUtils.setField(kafkaConnectControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(kafkaConnectControllerService, "mailService", mailService);
+    ReflectionTestUtils.setField(
+        kafkaConnectControllerService, "kafkaConnectorSensitiveFields", "password,username");
     ReflectionTestUtils.setField(
         kafkaConnectControllerService, "commonUtilsService", commonUtilsService);
     ReflectionTestUtils.setField(
@@ -129,6 +135,9 @@ public class KafkaConnectControllerServiceTest {
     when(handleDbRequests.getConnectorsFromName(anyString(), anyInt()))
         .thenReturn(Collections.emptyList());
     when(handleDbRequests.requestForConnector(any())).thenReturn(resultMap);
+    when(commonUtilsService.getJasyptEncryptor()).thenReturn(basicTextEncryptor);
+    String encryptedText = "encryptedText";
+    when(basicTextEncryptor.encrypt(any())).thenReturn(encryptedText);
 
     ApiResponse apiResponse =
         kafkaConnectControllerService.createConnectorRequest(getConnectRequestModel());
@@ -697,6 +706,173 @@ public class KafkaConnectControllerServiceTest {
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
 
+  @Test
+  @Order(16)
+  public void updateJsonNodeTestEncryptAndDecrypt() throws JsonProcessingException {
+    JsonNode jsonNode = OBJECT_MAPPER.readTree(getValidConnConfig().trim());
+    when(commonUtilsService.getJasyptEncryptor()).thenReturn(basicTextEncryptor);
+    String encryptedText = "encryptedText";
+    when(basicTextEncryptor.encrypt(any())).thenReturn(encryptedText);
+    kafkaConnectControllerService.updateJsonNode("encrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo(encryptedText);
+    assertThat(jsonNode.get("jdbc.username").asText()).isEqualTo(encryptedText);
+    verify(basicTextEncryptor, times(2)).encrypt(any());
+
+    String decryptedText = "decryptedText";
+    when(basicTextEncryptor.decrypt(any())).thenReturn(decryptedText);
+    kafkaConnectControllerService.updateJsonNode("decrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo(decryptedText);
+    assertThat(jsonNode.get("jdbc.username").asText()).isEqualTo(decryptedText);
+    verify(basicTextEncryptor, times(2)).decrypt(any());
+
+    jsonNode = OBJECT_MAPPER.readTree(getValidConnConfig().trim());
+    when(basicTextEncryptor.decrypt(any()))
+        .thenThrow(new RuntimeException("NotSupportedOperation"));
+    kafkaConnectControllerService.updateJsonNode("decrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo("testpwd");
+  }
+
+  @Test
+  @Order(17)
+  public void updateJsonNodeTestEncryptAndDecryptNoKeyMatches() throws JsonProcessingException {
+    ReflectionTestUtils.setField(
+        kafkaConnectControllerService, "kafkaConnectorSensitiveFields", "fielddoesnotexist");
+
+    JsonNode jsonNode = OBJECT_MAPPER.readTree(getValidConnConfig().trim());
+    when(commonUtilsService.getJasyptEncryptor()).thenReturn(basicTextEncryptor);
+    String encryptedText = "encryptedText";
+    when(basicTextEncryptor.encrypt(any())).thenReturn(encryptedText);
+    kafkaConnectControllerService.updateJsonNode("encrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo("testpwd");
+    assertThat(jsonNode.get("jdbc.username").asText()).isEqualTo("testuser");
+
+    String decryptedText = "decryptedText";
+    when(basicTextEncryptor.decrypt(any())).thenReturn(decryptedText);
+    kafkaConnectControllerService.updateJsonNode("decrypt", jsonNode);
+    assertThat(jsonNode.get("connector.password").asText()).isEqualTo("testpwd");
+    assertThat(jsonNode.get("jdbc.username").asText()).isEqualTo("testuser");
+
+    verify(basicTextEncryptor, times(0)).encrypt(any());
+    verify(basicTextEncryptor, times(0)).decrypt(any());
+  }
+
+  @Test
+  @Order(18)
+  public void getConnectorOverview_WithHighestEnvAndConnectorOwnerSet() throws KlawException {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("0,1,2");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
+
+    assertThat(response.getConnectorInfoList().get(0).isHighestEnv()).isTrue();
+    assertThat(response.getConnectorInfoList().get(0).isConnectorOwner()).isTrue();
+    assertThat(response.getPromotionDetails().get("status"))
+        .isEqualTo(PromotionStatusType.SUCCESS.value);
+    assertThat(response.getAvailableEnvironments()).hasSize(2);
+  }
+
+  @Test
+  @Order(19)
+  public void getConnectorOverview_WithRequestsOpen() throws KlawException {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("0,1,2");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
+        .thenReturn(true);
+
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
+
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isTrue();
+    assertThat(response.getPromotionDetails().get("status"))
+        .isEqualTo(PromotionStatusType.SUCCESS.value);
+    assertThat(response.getAvailableEnvironments()).hasSize(2);
+  }
+
+  @Test
+  @Order(20)
+  public void getConnectorOverview_WithNoRequestsOpen() throws KlawException {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+    when(commonUtilsService.getEnvProperty(
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+        .thenReturn("0,1,2,3");
+    when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
+        .thenReturn("0,1,2");
+    when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
+        .thenReturn(generateEnvironments());
+    when(manageDatabase
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
+        .thenReturn(false);
+    ConnectorOverview response =
+        kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
+
+    assertThat(response.getConnectorInfoList().get(0).isHighestEnv()).isTrue();
+    assertThat(response.getConnectorInfoList().get(0).isConnectorOwner()).isTrue();
+    assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isFalse();
+    assertThat(response.getPromotionDetails().get("status"))
+        .isEqualTo(PromotionStatusType.SUCCESS.value);
+    assertThat(response.getAvailableEnvironments()).hasSize(2);
+  }
+
   private List<KwKafkaConnector> generateKafkaConnectors(int number) {
     List<KwKafkaConnector> connectors = new ArrayList<>();
     for (int i = 0; i < number; i++) {
@@ -765,6 +941,8 @@ public class KafkaConnectControllerServiceTest {
         + "    \"name\": \"testconn\",\n"
         + "    \"topics\":\"testtopic\",\n"
         + "    \"tasks.max\": \"1\",\n"
+        + "    \"connector.password\":\"testpwd\",\n"
+        + "    \"jdbc.username\":\"testuser\",\n"
         + "    \"connector.class\": \"io.confluent.connect.storage.tools.SchemaSourceConnector\"\n"
         + "}";
   }

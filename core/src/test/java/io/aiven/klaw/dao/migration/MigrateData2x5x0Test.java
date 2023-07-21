@@ -8,9 +8,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
-import io.aiven.klaw.helpers.db.rdbms.InsertDataJdbc;
+import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.helpers.db.rdbms.SelectDataJdbc;
-import io.aiven.klaw.model.enums.EntityType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,13 +23,13 @@ class MigrateData2x5x0Test {
 
   @Mock private SelectDataJdbc selectDataJdbc;
 
-  @Mock private InsertDataJdbc insertDataJdbc;
+  @Mock private ManageDatabase manageDatabase;
 
   private UtilMethods utilMethods;
 
   @BeforeEach
   public void setUp() {
-    migrateData2x5x0 = new MigrateData2x5x0(selectDataJdbc, insertDataJdbc);
+    migrateData2x5x0 = new MigrateData2x5x0(selectDataJdbc, manageDatabase);
     utilMethods = new UtilMethods();
   }
 
@@ -43,12 +42,7 @@ class MigrateData2x5x0Test {
     when(selectDataJdbc.getNextTeamId(anyInt())).thenReturn(null);
 
     boolean success = migrateData2x5x0.migrate();
-    verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(1), eq(101));
-    verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(1), eq(101));
-    verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1001), eq(101));
+    verify(manageDatabase, times(1)).initialiseDefaultEntitySequencesForTenant(eq(101));
     assertThat(success).isTrue();
   }
 
@@ -61,12 +55,7 @@ class MigrateData2x5x0Test {
     when(selectDataJdbc.getNextTeamId(anyInt())).thenReturn(1003);
 
     boolean success = migrateData2x5x0.migrate();
-    verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(2), eq(101));
-    verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(3), eq(101));
-    verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1004), eq(101));
+    verify(manageDatabase, times(1)).initialiseDefaultEntitySequencesForTenant(eq(101));
     assertThat(success).isTrue();
   }
 
@@ -79,12 +68,7 @@ class MigrateData2x5x0Test {
     when(selectDataJdbc.getNextTeamId(anyInt())).thenReturn(1003);
 
     boolean success = migrateData2x5x0.migrate();
-    verify(insertDataJdbc, times(0))
-        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(2), eq(101));
-    verify(insertDataJdbc, times(0))
-        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(3), eq(101));
-    verify(insertDataJdbc, times(0))
-        .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1004), eq(101));
+    verify(manageDatabase, times(0)).initialiseDefaultEntitySequencesForTenant(eq(101));
     assertThat(success).isTrue();
   }
 
@@ -98,12 +82,7 @@ class MigrateData2x5x0Test {
     when(selectDataJdbc.getNextTeamId(anyInt())).thenReturn(1003);
 
     boolean success = migrateData2x5x0.migrate();
-    verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.CLUSTER.name()), eq(2), eq(101));
-    verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.ENVIRONMENT.name()), eq(3), eq(101));
-    verify(insertDataJdbc, times(1))
-        .insertIntoKwEntitySequence(eq(EntityType.TEAM.name()), eq(1004), eq(101));
+    verify(manageDatabase, times(1)).initialiseDefaultEntitySequencesForTenant(eq(101));
     assertThat(success).isTrue();
   }
 }

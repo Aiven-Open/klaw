@@ -772,6 +772,10 @@ export type components = {
       teamId?: number;
       otherParams?: string;
     };
+    KafkaConnectorDeleteRequestModel: {
+      connectorName: string;
+      envId: string;
+    };
     TopicClaimRequestModel: {
       topicName: string;
       env: string;
@@ -1237,6 +1241,9 @@ export type components = {
       showEditConnector: boolean;
       showDeleteConnector: boolean;
       connectorDeletable: boolean;
+      connectorOwner: boolean;
+      highestEnv: boolean;
+      hasOpenRequest: boolean;
       allPageNos?: (string)[];
       totalNoPages?: string;
       currentPage?: string;
@@ -2544,10 +2551,9 @@ export type operations = {
     };
   };
   createConnectorDeleteRequest: {
-    parameters: {
-      query: {
-        connectorName: string;
-        env: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["KafkaConnectorDeleteRequestModel"];
       };
     };
     responses: {

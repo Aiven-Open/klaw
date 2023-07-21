@@ -155,6 +155,16 @@ public interface HandleDbRequests {
       String env,
       int tenantId);
 
+  boolean existsConnectorRequest(
+      String connectorName, String requestStatus, String env, int tenantId);
+
+  boolean existsConnectorRequest(
+      String connectorName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId);
+
   boolean existsSchemaForTopic(String topicName, String env, int tenantId);
 
   List<AclRequests> getAllAclRequests(
@@ -311,6 +321,14 @@ public interface HandleDbRequests {
   String updateTopicRequest(TopicRequest topicRequest, String approver);
 
   String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
+
+  Integer getNextClusterId(int tenantId);
+
+  Integer getNextEnvId(int tenantId);
+
+  Integer getNextTeamId(int tenantId);
+
+  void insertIntoKwEntitySequence(String entityName, int maxId, int tenantId);
 
   String updateTopicRequestStatus(TopicRequest topicRequest, String approver);
 

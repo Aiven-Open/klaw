@@ -97,6 +97,8 @@ public class EnvControllerService {
             tenantId);
 
     env.setEnvStatus(status);
+    kwClusters.setClusterStatus(status);
+    manageDatabase.getHandleDbRequests().addNewCluster(kwClusters);
     manageDatabase.getHandleDbRequests().addNewEnv(env);
   }
 }

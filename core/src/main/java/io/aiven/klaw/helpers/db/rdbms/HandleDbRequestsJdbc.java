@@ -354,6 +354,23 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsConnectorRequest(
+      String connectorName, String requestStatus, String env, int tenantId) {
+    return jdbcSelectHelper.existsConnectorRequest(connectorName, requestStatus, env, tenantId);
+  }
+
+  @Override
+  public boolean existsConnectorRequest(
+      String connectorName,
+      String requestStatus,
+      String requestOperationType,
+      String env,
+      int tenantId) {
+    return jdbcSelectHelper.existsConnectorRequest(
+        connectorName, requestStatus, requestOperationType, env, tenantId);
+  }
+
+  @Override
   public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
     return jdbcSelectHelper.existsSchemaForTopic(topicName, env, tenantId);
   }
@@ -983,6 +1000,26 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public List<KafkaConnectorRequest> getAllConnectorRequests() {
     return jdbcSelectHelper.getAllConnectorRequests();
+  }
+
+  @Override
+  public Integer getNextClusterId(int tenantId) {
+    return jdbcSelectHelper.getNextClusterId(tenantId);
+  }
+
+  @Override
+  public Integer getNextEnvId(int tenantId) {
+    return jdbcSelectHelper.getNextEnvId(tenantId);
+  }
+
+  @Override
+  public Integer getNextTeamId(int tenantId) {
+    return jdbcSelectHelper.getNextTeamId(tenantId);
+  }
+
+  @Override
+  public void insertIntoKwEntitySequence(String entityName, int maxId, int tenantId) {
+    jdbcInsertHelper.insertIntoKwEntitySequence(entityName, maxId, tenantId);
   }
 
   @Override
