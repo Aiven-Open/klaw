@@ -182,12 +182,12 @@ function TopicDetailsSchema() {
         isTopicOwner &&
         promotionStatus !== "NO_PROMOTION" && (
           <Banner image={illustration} layout="vertical" title={""}>
-            <Box element={"p"} marginBottom={"l1"}>
+            <Box component={"p"} marginBottom={"l1"}>
               This schema has not yet been promoted to the {targetEnv}{" "}
               environment.
             </Box>
             {errorMessage.length > 0 && (
-              <Box element={"p"} marginBottom={"l1"}>
+              <Box component={"p"} marginBottom={"l1"}>
                 <Alert type="error">{errorMessage}</Alert>
               </Box>
             )}
