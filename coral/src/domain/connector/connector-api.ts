@@ -4,7 +4,10 @@ import {
   transformConnectorOverviewResponse,
   transformConnectorRequestApiResponse,
 } from "src/domain/connector/connector-transformer";
-import { ConnectorDocumentationMarkdown } from "src/domain/connector/connector-types";
+import {
+  ConnectorDocumentationMarkdown,
+  DeleteConnectorPayload,
+} from "src/domain/connector/connector-types";
 import { createStringifiedHtml } from "src/domain/helper/documentation-helper";
 import {
   RequestVerdictApproval,
@@ -14,6 +17,7 @@ import {
 import api, { API_PATHS } from "src/services/api";
 import { convertQueryValuesToString } from "src/services/api-helper";
 import {
+  KlawApiModel,
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
@@ -187,10 +191,26 @@ async function updateConnectorDocumentation({
   });
 }
 
+async function deleteConnector({
+  connectorName,
+  envId,
+}: DeleteConnectorPayload) {
+  // We exclude 'remark' from the payload, as it is not yet implemented
+  const payloadWithoutRemark = {
+    connectorName,
+    envId,
+  };
+  return api.post<
+    KlawApiResponse<"createConnectorDeleteRequest">,
+    KlawApiModel<"KafkaConnectorDeleteRequestModel">
+  >(API_PATHS.createConnectorDeleteRequest, payloadWithoutRemark);
+}
+
 export {
   approveConnectorRequest,
   createConnectorRequest,
   declineConnectorRequest,
+  deleteConnector,
   deleteConnectorRequest,
   getConnectorOverview,
   getConnectorRequests,

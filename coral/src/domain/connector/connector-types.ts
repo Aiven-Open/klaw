@@ -35,6 +35,17 @@ type ConnectorOverview = ResolveIntersectionTypes<
   }
 >;
 
+/**
+ * "remark" is currently not implemented in the API
+ * and will be added later. We're already preparing
+ * our UI and code for that.
+ **/
+type DeleteConnectorPayload = ResolveIntersectionTypes<
+  KlawApiModel<"KafkaConnectorDeleteRequestModel"> & {
+    remark?: string;
+  }
+>;
+
 export type {
   Connector,
   ConnectorApiResponse,
@@ -43,4 +54,5 @@ export type {
   ConnectorRequest,
   ConnectorRequestsForApprover,
   CreateConnectorRequestPayload,
+  DeleteConnectorPayload,
 };

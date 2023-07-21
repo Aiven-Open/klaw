@@ -62,6 +62,10 @@ function ConnectorOverviewResourcesTabs({
       connectorOverviewTabEnum: ConnectorOverviewTabEnum.HISTORY,
       title: "History",
     },
+    {
+      connectorOverviewTabEnum: ConnectorOverviewTabEnum.SETTINGS,
+      title: "Settings",
+    },
   ];
 
   function renderTabContent() {
