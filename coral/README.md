@@ -9,7 +9,7 @@
 * [Installation and usage](#installation-and-usage)
   + [Basic setup](#basic-setup)
   + [Usage: How to run Coral in development](#usage-how-to-run-coral-in-development)
-    - [Local development _without_ connecting an api](#local-development-_without_-connecting-an-api)
+    - [Local development _without_ connecting an api](#local-development-without-connecting-an-api)
       * [What it does](#what-it-does)
       * [When you want to use this](#when-you-want-to-use-this)
       * [How to do it](#how-to-do-it)

@@ -14,7 +14,7 @@
 ** ℹRequirements**
 
 - [node](https://nodejs.org/en/) needs to be installed <br/>
-  -> see [nvmrc](.nvmrc) or the `engines` definition in [package.json](package.json) for version).
+  -> see [nvmrc](../.nvmrc) or the `engines` definition in [package.json](../package.json) for version).
 - Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm.
 
 1. navigate to `/coral`
