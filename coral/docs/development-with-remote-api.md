@@ -1,5 +1,14 @@
 # Development with remote API
 
+## Table of content
+
+* [Basic setup](#basic-setup)
+* [First setup for remote API](#first-setup-for-remote-api)
+    + [1. Create new vite mode for remote API development](#1-create-new-vite-mode-for-remote-api-development)
+    + [2. Set up self-signed certificate (required when API runs on HTTPS)](#2-set-up-self-signed-certificate-required-when-api-runs-on-https)
+* [How to run it](#how-to-run-it)
+
+
 ## Basic setup
 
 ** ℹRequirements**
@@ -18,7 +27,7 @@
 
 ## First setup for remote API
 
-## Create new vite mode for remote API development
+### 1. Create new vite mode for remote API development
 Start by creating a new [vite mode](https://vitejs.dev/guide/env-and-mode.html) called `.env.remote-api`. The easiest way is to create one is to run the commend below. Note, that you need to replace the `[KLAW API ORIGIN]` placeholder value with your Klaw API server origin.
 
 ```
@@ -31,7 +40,7 @@ VITE_SERVER_CERTIFICATE_KEY_PATH=".cert/localhost.key"
 EOF
 ```
 
-## Set up self-signed certificate (required when API runs on HTTPS)
+### 2. Set up self-signed certificate (required when API runs on HTTPS)
 
 You can use Let's Encrypt [instructions](https://letsencrypt.org/docs/certificates-for-localhost/#making-and-trusting-your-own-certificates) for setting up self-signed certificates for local development. 
 
@@ -45,7 +54,9 @@ openssl req -x509 -out .cert/localhost.crt -keyout .cert/localhost.key \
 Install `.cert/localhost.crt` in your list of locally trusted roots. This is different dependent on your OS, you can look up a current way to do this online. Keep in mind that dependent on your OS and browser, you may have to refresh that certificate from time to time.    
 
 
-## Run development server with remote-api mode
+## How to run it
+
+If all requirements are met, and you've done your first setup:
 
 - `pnpm run dev`
 - login to Klaw with your credentials on `<YOUR_LOCALHOST>:5173/login`

@@ -4,17 +4,36 @@
 
 ## Table of content
 
-- [About](#about)
-- [Installation and usage](#installation-and-usage)
-  - [Usage: How to run Coral inside the Klaw application](#usage-how-to-run-coral-inside-the-klaw-application)
-  - [Usage: How to run Coral in development](#usage-how-to-run-coral-in-development)
-    - [Scripts used and what they execute](#scripts-used-and-what-they-execute)
-- [Tech stack](#tech-stack)
-  - [App development](#app-development)
-  - [Testing](#testing)
-  - [Linting and code formatting](#linting-and-code-formatting)
-- [Styling](#styling)
-- [Documentation](#documentation)
+
+* [About](#about)
+* [Installation and usage](#installation-and-usage)
+  + [Basic setup](#basic-setup)
+  + [Usage: How to run Coral in development](#usage-how-to-run-coral-in-development)
+    - [Local development _without_ connecting an api](#local-development-_without_-connecting-an-api)
+      * [What it does](#what-it-does)
+      * [When you want to use this](#when-you-want-to-use-this)
+      * [How to do it](#how-to-do-it)
+    - [Local development with remote API](#local-development-with-remote-api)
+      * [What it does](#what-it-does-1)
+      * [When you want to use this](#when-you-want-to-use-this-1)
+      * [How to do it](#how-to-do-it-1)
+    - [Local development with local API](#local-development-with-local-api)
+      * [What it does](#what-it-does-2)
+      * [When you want to use this](#when-you-want-to-use-this-2)
+      * [How to do it](#how-to-do-it-2)
+  - [Checking build: Run Coral inside the Klaw application](#checking-build-run-coral-inside-the-klaw-application)
+    * [What it does](#what-it-does-3)
+    * [When you want to use this](#when-you-want-to-use-this-3)
+    * [How to](#how-to)
+* [Scripts used and what they execute](#scripts-used-and-what-they-execute)
+* [Tech stack](#tech-stack)
+  + [App development](#app-development)
+  + [Testing](#testing)
+  + [Linting and code formatting](#linting-and-code-formatting)
+* [Styling](#styling)
+  + [Custom styles](#custom-styles)
+    - [💁‍♀️ Special custom styles](#-special-custom-styles)
+* [Documentation](#documentation)
 
 ## About
 
@@ -85,27 +104,7 @@ This will run a proxy server. It will serve Coral in vite development mode and K
 
 - Please follow our [Development with local API guide](./docs/development-with-local-klaw.md)
 
-
-## Scripts used and what they execute
-
-ℹ️ You can see all our scripts in the [`package.json`](package.json).
-You can also run `pnpm` in your console to get a list of all available scripts.
-
-- `build`: builds the frontend app for production
-- `dev`: starts the frontend app for development in development mode **with remote API**
-- `dev-without-api` starts the frontend app in development mode **without** api
-- `lint`: runs a code format check and if no error is found, lints the code.
-  - the linting script does not mutate your code. See [Linting and code formatting](#linting-and-code-formatting) for more info.
-- `preview`: builds a preview production build _locally_
-- `reformat`: runs the code formatter (prettier) and reformat all code
-- `test-dev`: runs all test tests related to changed files in a watch mode
-- `test`: runs all tests one time
-- `tsc`: runs the TypeScript compiler
-
-ℹ️ We are using a custom hook path for enabling pre-commit hooks. This path is set in the local git config when running `pnpm install`. See script `pnpm:devPreinstall`.
-
-
-### Usage: Running Coral inside the Klaw application
+### Checking build: Run Coral inside the Klaw application
 
 ####  What it does
 Builds the Klaw application locally, including the Coral frontend build in it.
@@ -125,6 +124,23 @@ You can see how your local state of Coral will look and behave like in the build
 - Klaw will run in `http://localhost:9097` if TLS is not enabled
 
 
+## Scripts used and what they execute
+
+ℹ️ You can see all our scripts in the [`package.json`](package.json).
+You can also run `pnpm` in your console to get a list of all available scripts.
+
+- `build`: builds the frontend app for production
+- `dev`: starts the frontend app for development in development mode **with remote API**
+- `dev-without-api` starts the frontend app in development mode **without** api
+- `lint`: runs a code format check and if no error is found, lints the code.
+  - the linting script does not mutate your code. See [Linting and code formatting](#linting-and-code-formatting) for more info.
+- `preview`: builds a preview production build _locally_
+- `reformat`: runs the code formatter (prettier) and reformat all code
+- `test-dev`: runs all test tests related to changed files in a watch mode
+- `test`: runs all tests one time
+- `tsc`: runs the TypeScript compiler
+
+ℹ️ We are using a custom hook path for enabling pre-commit hooks. This path is set in the local git config when running `pnpm install`. See script `pnpm:devPreinstall`.
 
 
 ## Tech stack

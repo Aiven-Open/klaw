@@ -1,4 +1,11 @@
-# Development with local Klaw
+# Development without API
+
+## Table of content
+
+* [Basic setup](#basic-setup)
+  + [Necessary API mock for `getAuth`](#necessary-api-mock-for-getauth)
+* [How to run it](#how-to-run-it)
+  + [Mocking API responses general](#mocking-api-responses-general)
 
 ## Basic setup
 
@@ -13,9 +20,9 @@
 3. run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
 4. [add api mock for `getAuth`](../docs/development-witout-api.md#necessary-api-mock-for-getauth)
 5. run `pnpm dev-without-remote-api` to start the development mode.
+6. [Add mock for getAuth](#necessary-api-mock-for-getauth)
 
-
-## Necessary API mock for `getAuth`
+### Necessary API mock for `getAuth`
 
 Coral is only accessible for authenticated users. Without API, the call to `/getAuth` that gets the user, you'll only see a loading animation. 
 
@@ -39,7 +46,15 @@ function getAuth(): Promise<AuthUser> {
 ```
 🙇  Please remember removing the mock before opening a PR for review :)
 
-## Mocking API responses general
+
+## How to run it
+
+If all requirements are met, and you've done your first setup:
+
+- `pnpm dev-without-api`
+- [mocking the APIs you need](#mocking-api-responses-general)
+
+### Mocking API responses general
 If you want to work on UI that needs data from an enpdoint, you can mock the responses during the development process. This can be done by returning a resolved (or rejected) `Promise` instead of executing the API call during development. 
 
 **Example: mocking the response for `getClusterInfoFromEnvironment`:**

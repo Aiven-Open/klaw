@@ -1,6 +1,23 @@
-# Development with local node proxy
+# Development proxy server
 
 We're running a small node-proxy to enable a convenient way of developing Coral locally without the need to connect a remote api.
+
+
+## Table of content
+
+* [Installation](#installation)
+* [Commands and flags](#commands-and-flags)
+    + [➡️ `pnpm dev:start`](#-pnpm-devstart)
+    + [➡️ `pnpm dev:restart`](#-pnpm-devrestart)
+    + [➡️ `pnpm:[start|restart]:testEnv`](#-pnpmstartrestarttestenv)
+    + [➡️ `pnpm dev:stop`](#-pnpm-devstop)
+    + [➡️ `pnpm dev:destroy`](#-pnpm-devdestroy)
+    + [➡️ `pnpm setup`](#-pnpm-setup)
+    + [➡️ additional `--verbose` flag](#-additional---verbose-flag)
+* [How it works](#how-it-works)
+    + [These scripts are used by other scripts](#these-scripts-are-used-by-other-scripts)
+    + [Files](#files)
+      
 
 ## Installation
 
@@ -53,7 +70,7 @@ Checks if Klaw core and Klaw cluster-api are running in the right ports in your 
 
 This is the alias for `pnpm dev --mode=[start|restart] --testEnv=true`.
 
-Runs the `pnpm dev` command with the mode flag start or restart and an additional flag "testEnv". When `--testEnv=true` is set, we additionally check and, if necessary, setup a test environment for klaw (zookeeper, kafka, schema-registry).
+Runs the `pnpm dev` command with the mode flag start or restart and an additional flag "testEnv". When `--testEnv=true` is set, we additionally check and, if necessary, setup a sandbox environment for klaw (zookeeper, kafka, schema-registry). Note: The files for the sandbox environment are large.
 
 **Use `pnpm:[start|restart]:testEnv` when:**
 
@@ -87,7 +104,7 @@ Note: You don't need to destroy containers before you run `pnpm dev:start` for a
 
 This is the alias for `pnpm dev --mode=all --testEnv=true`.
 
-This will build Klaw, the cluster-api and all test environment for klaw (zookeeper, kafka, schema-registry). You usually won't need that script, it is a convenient shortcut for the first setup.
+This will build Klaw, the cluster-api and a sandbox environment for klaw (container for zookeeper, kafka, schema-registry). You usually won't need that script, it is a convenient shortcut for the first setup.
 
 ### ➡️ additional `--verbose` flag
 
