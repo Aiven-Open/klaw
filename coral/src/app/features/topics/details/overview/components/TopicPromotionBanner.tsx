@@ -30,7 +30,7 @@ const TopicPromotionBanner = ({
     return (
       <GridItem colSpan={"span-2"}>
         <Banner image={illustration} layout="vertical" title={""}>
-          <Box element={"p"} marginBottom={"l1"}>
+          <Box component={"p"} marginBottom={"l1"}>
             There is an open request for {topicName}.
           </Box>
           <Button.Primary
@@ -53,7 +53,7 @@ const TopicPromotionBanner = ({
     return (
       <GridItem colSpan={"span-2"}>
         <Banner image={illustration} layout="vertical" title={""}>
-          <Box element={"p"} marginBottom={"l1"}>
+          <Box component={"p"} marginBottom={"l1"}>
             There is already an open promotion request for {topicName}.
           </Box>
           <Button.Primary
@@ -74,7 +74,7 @@ const TopicPromotionBanner = ({
     return (
       <GridItem colSpan={"span-2"}>
         <Banner image={illustration} layout="vertical" title={""}>
-          <Box element={"p"} marginBottom={"l1"}>
+          <Box component={"p"} marginBottom={"l1"}>
             This schema has not yet been promoted to the {targetEnv}{" "}
             environment.
           </Box>
