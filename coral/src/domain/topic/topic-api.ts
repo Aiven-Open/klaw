@@ -21,6 +21,7 @@ import {
   NoContent,
   TopicAdvancedConfigurationOptions,
   TopicApiResponse,
+  TopicClaimPayload,
   TopicDocumentationMarkdown,
   TopicMessages,
   TopicOverview,
@@ -362,7 +363,12 @@ const getTopicDetailsPerEnv = (
   );
 };
 
-const claimTopic = (payload: KlawApiModel<"TopicClaimRequestModel">) => {
+const claimTopic = (params: TopicClaimPayload) => {
+  const payload: KlawApiModel<"TopicClaimRequestModel"> = {
+    env: params.env,
+    topicName: params.topicName,
+  };
+
   return api.post<
     KlawApiResponse<"createClaimTopicRequest">,
     KlawApiModel<"TopicClaimRequestModel">
