@@ -31,20 +31,37 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
    6.2. If you already have a setup, run `pnmv dev:[start|restart]`
     - check out the [documentation](../../coral/proxy/README.md) for more scripts and information when to use them.
     - the proxy runs on [`http://localhost:1337`](http://localhost:1337)
-  - ❗️ The correct redirect for login and authentication is **not** working yet. To authenticate yourself:
-    - Go to your [local Klaw](http://localhost:9097/login)
-    - Login with your credentials
-    - After you've been sucessfully logged in, go back to the proxy -> [`http://localhost:1337`](http://localhost:1337)
+  - ❗️ **The correct redirect for login and authentication is **not** working yet.** To authenticate yourself see [ Login and authentication]
+    
+
+#### Login and authentication
+
+The correct redirect for login and authentication is **not** working yet.**
+
+##### Login 
+
+- Go to your [local Klaw](http://localhost:9097/login)
+- Login with your credentials
+- After you've been sucessfully logged in, go back to the proxy -> [`http://localhost:1337`](http://localhost:1337)
+
+![gif showing the three steps described above](assets/login.gif)
+
+##### Authentication expired
+Related to that the proxy currently also does not redirect you to the login if your access expires. If you're getting related errors from your API, please login again like described above 🙏
+
+![gif showing a redirect error. Pressing the reload button of the browser while the authentication has expired. We see a loading spinner that does not stop. The network tab shows a successful call to `getAuth` and a failed call to `login`. The console shows an error log "Access to fetch at localhost:9097/login from origin http:localhost:1337 has been blocked by CORS policy.](assets/expired1.gif)
 
 
-### 🙋Potential browser problem
+![gif showing a redirect error. Pressing the link to the topic details shows the page with a loading spinner running for some time. Then an error is show on the page with the error message "Failed to fetch." The network tab shows a successful calls to `getTopicOverview` and `getSchemaOfTopic` and failed calls to `login`. The console shows an error log "Access to fetch at localhost:9097/login from origin http:localhost:1337 has been blocked by CORS policy.](assets/expired2.gif)
+
+
+#### 🙋Potential browser problem
 **The proxy and Klaw are running with `http`. Your browser may show you an error (SSL connection error), because it tries to automatically upgrade to https, without making an http request for security. You have to allow `localhost` to be accessed via http explicitly.** 
 
 ℹ️ When you're done, you can run either: 
 - `pnpm dev:stop` to stop all containers in docker (enables a fast restart) 
 - `pnpm dev:destroy` to tear down all containers in docker (you'll have to run `pnpm setup` or `pnpm:start` again next time you want to use them, so they get build again)
 
-💡currently the proxy also does not redirect you to the login if your access expires. If you're getting related errors from your API, please login again like described 🙏
 
 
 ## First setup
