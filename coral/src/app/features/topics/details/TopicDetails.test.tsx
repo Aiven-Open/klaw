@@ -181,10 +181,9 @@ describe("TopicDetails", () => {
   });
 
   describe("fetches the topic overview based on topic name", () => {
-    beforeEach(() => {
-      mockGetTopicOverview.mockResolvedValue(testTopicOverview);
-    });
     beforeAll(() => {
+      mockGetTopicOverview.mockResolvedValue(testTopicOverview);
+
       mockMatches.mockImplementation(() => [
         {
           id: "TOPIC_OVERVIEW_TAB_ENUM_overview",
