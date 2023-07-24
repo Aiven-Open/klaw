@@ -8,7 +8,7 @@
 * [Installation and usage](#installation-and-usage)
   + [First setup](#first-setup)
   + [Usage: How to run Coral in development](#usage-how-to-run-coral-in-development)
-    - [Local development _without_ connecting an api](#local-development-_without_-connecting-an-api)
+    - [Local development _without_ connecting an api](#local-development-without-connecting-an-api)
       * [What it does](#what-it-does)
       * [When you want to use this](#when-you-want-to-use-this)
       * [How to do it](#how-to-do-it)
@@ -20,7 +20,7 @@
       * [What it does](#what-it-does-2)
       * [When you want to use this](#when-you-want-to-use-this-2)
       * [How to do it](#how-to-do-it-2)
-  + [Checking build: Run Coral inside the Klaw application](#checking-build-run-coral-inside-the-klaw-application)
+  + [Build for deployment](#build-for-deployment)
     - [What it does](#what-it-does-3)
     - [When you want to use this](#when-you-want-to-use-this-3)
     - [How to](#how-to)
@@ -104,7 +104,7 @@ This will run a small node proxy server. It will serve Coral via vite developmen
 
 - Please follow our [Development with local API guide](./docs/development-with-local-klaw.md)
 
-### Checking build: Run Coral inside the Klaw application
+### Build for deployment
 
 ####  What it does
 Builds the Klaw application locally, bundling the Coral frontend with it.
