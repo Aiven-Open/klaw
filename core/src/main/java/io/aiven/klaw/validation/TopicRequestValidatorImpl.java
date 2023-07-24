@@ -149,7 +149,7 @@ public class TopicRequestValidatorImpl
     if (!validateTopicConfigParameters(topicRequestModel, constraintValidatorContext)) return false;
 
     // Verify if topic request already exists
-    if (topics != null) {
+    if (topics != null && topicRequestModel.getTopicId() == null) {
       if (!topicControllerService.getExistingTopicRequests(topicRequestModel, tenantId).isEmpty()) {
         updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_110);
         return false;

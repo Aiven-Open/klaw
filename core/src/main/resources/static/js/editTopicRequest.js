@@ -68,6 +68,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                             if($scope.envTopicMap.defaultPartitions === $scope.addTopic.topicpartitions){
                                 $scope.addTopic.topicpartitions = $scope.envTopicMap.defaultPartitions + " (default)"
                             }
+                            $scope.checkPartitionAndRepFactorWarnings();
                         }).error(
                             function(error)
                             {
@@ -99,53 +100,6 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
             }
 
         }
-
-        $scope.submitEditTopicRequest = function(envSelected, topicSelected) {
-            $http({
-                method: "GET",
-                url: "getTopicDetailsPerEnv",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'envSelected' : envSelected,  'topicname' : topicSelected }
-            }).success(function(output) {
-                if(output.topicExists){
-                    $scope.requestTitle = "Topic Edit Request";
-                    $scope.requestType = "EditTopic";
-                    $scope.requestButton = "Submit Update";
-                    $scope.topicIdForEdit = output.topicId;
-
-                    $scope.oldtopicpartitions = output.topicContents.noOfPartitions;
-                    $scope.addTopic.topicpartitions = '' + output.topicContents.noOfPartitions;
-                    $scope.addTopic.replicationfactor = '' + output.topicContents.noOfReplicas;
-                    $scope.addTopic.advancedTopicConfiguration = output.topicContents.advancedTopicConfiguration
-                    if($scope.envTopicMap.defaultPartitions === $scope.addTopic.topicpartitions)
-                        $scope.addTopic.topicpartitions = $scope.addTopic.topicpartitions + " (default)"
-                    if($scope.envTopicMap.defaultRepFactor === $scope.addTopic.replicationfactor)
-                        $scope.addTopic.replicationfactor = $scope.addTopic.replicationfactor + " (default)"
-                    $scope.addTopic.description = output.topicContents.description;
-
-                    for (let m in $scope.addTopic.advancedTopicConfiguration){
-                        $scope.topicConfigsSelectedDropdown.push(m);
-                        $scope.topicConfigsSelected.push(output.topicContents.advancedTopicConfiguration[m]);
-                        $scope.propertyInfoLink.push(apacheKafkaTopicConfigsUrl + m);
-                    }
-                }
-                else{
-                    swal({
-                        title: "",
-                        text: "Topic Edit Request : " + output.error,
-                        showConfirmButton: true
-                    }).then(function(isConfirm){
-                        $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/topicOverview?topicname=" + topicSelected;
-                    });
-                }
-            }).error(
-                function(error)
-                {
-                    $scope.alert = error;
-                }
-            );
-        }
-
 
         $scope.checkPartitionAndRepFactorWarnings = function() {
 
@@ -200,14 +154,14 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                     );
                 }
 
-        $scope.addTopic = function() {
+        $scope.submitEditTopicRequest = function() {
 
             var serviceInput = {};
 
             $scope.alert = null;
             $scope.alertnote = null;
 
-            if(!$scope.addTopic.envName || $scope.addTopic.envName === "")
+            if(!$scope.addTopic.environment || $scope.addTopic.environment === "")
             {
                 $scope.alertnote = "Please select an environment.";
                 $scope.showAlertToast();
@@ -304,7 +258,8 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                 }
             }
 
-            serviceInput['environment'] = $scope.addTopic.envName;
+            serviceInput['topicId'] = $scope.addTopic.topicid;
+            serviceInput['environment'] = $scope.addTopic.environment;
             serviceInput['topicname'] = $scope.addTopic.topicname;
             serviceInput['topicpartitions'] = tmpTopicPartitions;
             serviceInput['replicationfactor'] = tmpTopicRepFactor;
@@ -312,18 +267,12 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
             serviceInput['remarks'] = $scope.addTopic.remarks;
             serviceInput['description'] = $scope.addTopic.description;
             serviceInput['advancedTopicConfigEntries'] = advancedTopicConfigEntries;
-            if($scope.requestType === 'CreateTopic'){
+            serviceInput['requestOperationType'] = $scope.addTopic.requestOperationType;
+            if($scope.addTopic.requestOperationType === 'CREATE' || $scope.addTopic.requestOperationType === 'PROMOTE'){
                 serviceInput['requestOperationType'] = 'CREATE';
                 $scope.httpCreateTopicReq(serviceInput);
             }
-           else if($scope.requestType === 'PromoteTopic'){
-                serviceInput['requestOperationType'] = 'PROMOTE';
-                $scope.httpCreateTopicReq(serviceInput);
-            }
             else{
-                serviceInput['requestOperationType'] = 'UPDATE';
-                serviceInput['otherParams'] = $scope.topicIdForEdit;
-
                 if($scope.addTopic.topicpartitions < $scope.oldtopicpartitions) {
                      swal({
                              title: "Are you sure?",
@@ -349,8 +298,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                         $scope.httpCreateUpdateTopicReq(serviceInput);
                     }
             }
-
-        };
+        }
 
         $scope.httpCreateTopicReq = function(serviceInput){
             $http({
@@ -429,9 +377,9 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                 );
             }
 
-        $scope.topicConfigsSelected = [""];
-        $scope.propertyInfoLink = [""];
-        $scope.topicConfigsSelectedDropdown = [""];
+        $scope.topicConfigsSelected = [];
+        $scope.propertyInfoLink = [];
+        $scope.topicConfigsSelectedDropdown = [];
         $scope.topicConfigsSelectedLength = $scope.topicConfigsSelected.length;
 
         $scope.canShowInfo = function(indexOfRec){
@@ -497,7 +445,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                         $scope.topicConfigsSelected.push($scope.addTopic.advancedTopicConfigEntries[m].configValue);
                         $scope.propertyInfoLink.push(apacheKafkaTopicConfigsUrl + m);
                     }
-
+                    $scope.topicConfigsSelectedLength = $scope.topicConfigsSelected.length;
                 }else{
                     $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/index";
                 }

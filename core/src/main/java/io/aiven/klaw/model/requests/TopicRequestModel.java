@@ -38,4 +38,6 @@ public class TopicRequestModel extends BaseRequestModel implements Serializable 
   private Boolean deleteAssociatedSchema;
 
   private String otherParams;
+
+  private Integer topicId;
 }

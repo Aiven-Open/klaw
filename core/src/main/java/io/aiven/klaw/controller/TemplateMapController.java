@@ -332,10 +332,10 @@ public class TemplateMapController {
 
   @RequestMapping(value = "/editTopicRequest", method = RequestMethod.GET)
   public String editTopicRequest(
-          ModelMap model,
-          HttpServletRequest request,
-          HttpServletResponse response,
-          AbstractAuthenticationToken abstractAuthenticationToken) {
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     return checkAuth("editTopicRequest.html", request, response, abstractAuthenticationToken);
   }
 

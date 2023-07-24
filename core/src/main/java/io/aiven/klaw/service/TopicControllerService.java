@@ -128,7 +128,15 @@ public class TopicControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequestDao = new TopicRequest();
-    copyProperties(topicRequestReq, topicRequestDao);
+
+    if (topicRequestReq.getTopicId() != null) {
+      topicRequestDao =
+              manageDatabase.getHandleDbRequests().getTopicRequestsForTopic(topicRequestReq.getTopicId(), commonUtilsService.getTenantId(userName));
+      topicRequestDao.setTopicpartitions(topicRequestReq.getTopicpartitions());
+      topicRequestDao.setReplicationfactor(topicRequestReq.getReplicationfactor());
+    }else {
+      copyProperties(topicRequestReq, topicRequestDao);
+    }
     topicRequestDao.setRequestOperationType(topicRequestReq.getRequestOperationType().value);
 
     mapAdvancedTopicConfiguration(topicRequestReq, topicRequestDao);
@@ -1062,22 +1070,20 @@ public class TopicControllerService {
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     TopicRequest topicRequest =
-            manageDatabase
-                    .getHandleDbRequests()
-                    .getTopicRequestsForTopic(topicReqId, tenantId);
-    if(!topicRequest.getRequestor().equals(userName)){
+        manageDatabase.getHandleDbRequests().getTopicRequestsForTopic(topicReqId, tenantId);
+    if (!topicRequest.getRequestor().equals(userName)) {
       return null;
-    }else{
+    } else {
       TopicRequestsResponseModel topicRequestModel = new TopicRequestsResponseModel();
       copyProperties(topicRequest, topicRequestModel);
       topicRequestModel.setRequestStatus(RequestStatus.of(topicRequest.getRequestStatus()));
       topicRequestModel.setRequestOperationType(
-              RequestOperationType.of(topicRequest.getRequestOperationType()));
+          RequestOperationType.of(topicRequest.getRequestOperationType()));
 
       validateAndCopyTopicConfigs(topicRequest, topicRequestModel);
 
       topicRequestModel.setTeamname(
-              manageDatabase.getTeamNameFromTeamId(tenantId, topicRequest.getTeamId()));
+          manageDatabase.getTeamNameFromTeamId(tenantId, topicRequest.getTeamId()));
 
       return topicRequestModel;
     }
