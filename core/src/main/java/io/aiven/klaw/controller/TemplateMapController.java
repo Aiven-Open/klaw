@@ -330,6 +330,15 @@ public class TemplateMapController {
     return checkAuth("requestTopics.html", request, response, abstractAuthenticationToken);
   }
 
+  @RequestMapping(value = "/editTopicRequest", method = RequestMethod.GET)
+  public String editTopicRequest(
+          ModelMap model,
+          HttpServletRequest request,
+          HttpServletResponse response,
+          AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("editTopicRequest.html", request, response, abstractAuthenticationToken);
+  }
+
   @RequestMapping(value = "/requestConnector", method = RequestMethod.GET)
   public String requestConnector(
       ModelMap model,

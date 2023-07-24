@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-
-<html ng-app="myRequestsApp" ng-controller="myRequestsCtrl">
+<html lang="en">
+<html ng-app="editTopicRequestApp" ng-controller="editTopicRequestCtrl">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,7 +20,7 @@
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-	<title>My Topic Requests | Kafka Self-service Topic Management Portal</title>
+	<title>Request Topic | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
 	<!--
@@ -30,15 +30,14 @@
 		  -->
 	<!-- Custom CSS -->
 	<link href="assets/css/style.css" rel="stylesheet">
-	<link href="assets/css/custom.css" rel="stylesheet">
 	<!-- You can change the theme colors from here -->
 	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
 	<link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
-	<script src="js/myRequests.js"></script>
-
+	<script src="js/editTopicRequest.js"></script>
+	<link rel="stylesheet" href="assets/css/custom.css" />
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -48,11 +47,6 @@
 
 	<![endif]-->
 </head>
-<style>
-	.demo-checkbox label, .demo-radio-button label {
-  min-width: 15px;
-  margin-bottom: 20px; }
-</style>
 
 <body class="fix-header card-no-border logo-center" ng-init="getAuth();">
 <!-- ============================================================== -->
@@ -88,9 +82,17 @@
 				<!-- toggle and nav items -->
 				<!-- ============================================================== -->
 				<ul class="navbar-nav mr-auto mt-md-0">
+					<!-- This is  -->
 
+					<!-- ============================================================== -->
+					<!-- Search -->
+					<!-- ============================================================== -->
 					<a href="index"><img class="header-logo" src="assets/images/klaw_logo.png"/></a>
+
 				</ul>
+				<!-- ============================================================== -->
+				<!-- User profile and search -->
+				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
 					<li class="nav-item d-none d-md-block search-box"> <a
 							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
@@ -101,12 +103,12 @@
 							href="javascript:void(0)" ng-click="refreshPage()"><i class="mdi mdi-reload"></i></a>
 					</li>
 					<li ng-if="dashboardDetails.approveAtleastOneRequest=='Authorized'" class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
+						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
-								class="mdi mdi-email"></i>
+								class="mdi mdi-message"></i>
 							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
 						</a>
-						<div  class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
+						<div class="dropdown-menu dropdown-menu-right mailbox scale-up">
 							<ul>
 								<li>
 									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
@@ -425,17 +427,14 @@
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid" ng-init="getMyTopicRequests(1, false);getRequestStatuses();">
+		<div class="container-fluid">
 			<div class="row page-titles">
 			</div>
-
-			<!-- Row -->
-
 			<div class="row" ng-if="dashboardDetails.coralEnabled === 'true'">
 				<div class="ribbon-wrapper card col-lg-6 col-md-6 col-xlg-2 col-xs-6">
 					<div class="ribbon ribbon-success">New user interface available</div>
 					<p class="ribbon-content">
-						Check out the new interface for <a href="coral/requests/topics">My team's requests.</a>
+						Check out the new interface for <a href="coral/topics/request">topic request.</a>
 					</p>
 				</div>
 			</div>
@@ -454,176 +453,177 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-show="topicRequests.length == 0">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">No requests found !! </p>
-					</div>
-				</div>
-			</div>
-			<!-- Row -->
+			<div class="row" ng-init="getEnvs();getTopicConfigs();loadEditTopicInfo();">
+				<div class="col-lg-12">
+					<div class="card card-outline-success">
+						<div class="card-body">
+							<form id="form">
+								<div class="form-body">
 
-			<table width="100%"><tr>
-				<td align="left" width="65%"><h4 class="card-title">My Team Topic Requests</h4></td>
-				<td align="right" width="20%">
-					<div class="form-group has-success">
-						<label class="text-success">Filter on Status</label>
-						<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
-								ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
-
-						</select>
-					</div>
-				</td>
-				<td align="right" width="15%">
-					<a href="requestTopics">
-						<button type="button"
-								class="btn waves-effect waves-light btn-rounded btn-sm btn-secondary">Request a Topic</button>
-					</a>
-				</td>
-			</tr>
-			</table>
-
-			<hr size="1" color="black">
-
-			<div ng-repeat="topicRequest in topicRequests">
-
-				<div class="row" ng-show="topicRequest.topicname != null">
-
-					<div class="col-md-12">
-						<div class="card">
-
-							<div class="card-body">
-								<div>
-									<table width="100%">
-										<tr>
-											<td align="left">
-												<h3 class="card-title">Topic : {{ topicRequest.topicname }}</h3>
-											</td>
-											<td ng-show="topicRequest.requestStatus == 'CREATED'" align="right">
-												<button type="button" ng-click="deleteTopicRequest(topicRequest.topicid);" class="btn btn-danger btn-circle">
-													<i class="fa fa-times"></i>
-												</button>
-											</td>
-											<td ng-show="topicRequest.requestStatus == 'CREATED' && topicRequest.requestor === userlogged &&
-														topicRequest.requestOperationType != 'DELETE'" align="right">
-												<a href="editTopicRequest?topicRequestId={{ topicRequest.topicid }}">
-														<i class="fa fa-edit"></i>
-												</a>
-											</td>
-										</tr>
+									<table class="table color-table success-table" width="100%"><tr>
+										<td align="left"><h3 class="card-title">{{ requestTitle }}</h3>
+										</td>
+										<td align="right">
+											<a href="browseTopics">
+												<i class="fas fa-arrow-alt-circle-left"></i>
+												<button type="button"
+														class="btn waves-effect waves-light btn-rounded btn-outline-info">Back to Topics</button>
+											</a>
+										</td></tr>
 									</table>
-								</div>
-								<hr size="1" color="black">
-								<div class="d-flex flex-row">
 
-									<div class="p-2 border-right" style="width:12%" ng-show="topicRequest.requestOperationType != 'CLAIM'">
-										<h6 class="text-primary">Environment</h6><b>
-										<span class="badge badge-warning">{{ topicRequest.environmentName }}</span>
-									</b>
+									<hr size="1" color="black">
+
+									<!--/row-->
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Select Environment</label>
+												<select ng-show="addTopic.requestOperationType == 'CREATE'" required class="form-control custom-select"
+														ng-model="addTopic.environment"
+														ng-change="getEnvTopicPartitions(addTopic.environment)"
+														ng-options="env.id as env.name for env in allenvs">
+													<option value="" selected="selected">
+														Select Environment</option>
+												</select>
+												<select ng-show="addTopic.requestOperationType == 'UPDATE' || addTopic.requestOperationType == 'PROMOTE'" disabled required class="form-control custom-select"
+														ng-model="addTopic.environment"
+														ng-options="env.id as env.name for env in allenvs">
+													<option value="" selected="selected">
+														Select Environment</option>
+												</select>
+
+											</div>
+										</div>
+										<!--/span-->
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Topic name</label>
+												<input ng-show="addTopic.requestOperationType == 'CREATE'" type="text" class="form-control" ng-model="addTopic.topicname" required>
+												<input ng-show="addTopic.requestOperationType == 'UPDATE' || addTopic.requestOperationType == 'PROMOTE' || addTopic.requestOperationType == 'DELETE'"
+													   disabled type="text" class="form-control" ng-model="addTopic.topicname" required>
+											</div>
+										</div>
+										<!--/span-->
 									</div>
-									<div class="p-2 border-right" style="width:10%">
-										<h6 class="text-primary">Requestor</h6><b>{{ topicRequest.requestor }}</b>
-									</div>
-									<div class="p-2 border-right" style="width:10%" ng-show="topicRequest.requestOperationType != 'CLAIM'">
-										<h6 class="text-primary">Partitions</h6><b>{{ topicRequest.topicpartitions }}</b>
-									</div>
-									<div class="p-2 border-right" style="width:13%" ng-show="topicRequest.requestOperationType != 'CLAIM'">
-										<h6 class="text-primary">Replication Factor</h6><b>{{ topicRequest.replicationfactor }}</b>
-									</div>
-									<div class="p-2 border-right" style="width:15%">
-										<h6 class="text-primary">Team</h6><b>{{ topicRequest.teamname }}</b>
+									<!--/row-->
+									<div class="row">
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Topic Partitions</label>
+												<select class="form-control custom-select"
+														required
+														ng-model="addTopic.topicpartitions"
+														ng-change="checkPartitionAndRepFactorWarnings()"
+														ng-options="partitions as partitions for partitions in envTopicMap.partitionsList">
+													<option value="" selected="selected">
+														Select Partitions</option>
+												</select>
+												<span ng-show="partitionWarn!=='' ">{{partitionWarn}}</span>
+											</div>
+										</div>
+										<!--/span-->
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Topic Replication factor</label>
+												<select class="form-control custom-select"
+														required
+														ng-model="addTopic.replicationfactor"
+														ng-change="checkPartitionAndRepFactorWarnings()"
+														ng-options="rf as rf for rf in envTopicMap.replicationFactorList">
+													<option value="" selected="selected">
+														Select Replication factor</option>
+												</select>
+												<span ng-show="repFactorWarn!=='' ">{{repFactorWarn}}</span>
+											</div>
+										</div>
+										<!--/span-->
 									</div>
 
-									<div ng-show="topicRequest.requestStatus == 'CREATED'" class="p-2 border-right" style="width:10%">
-										<h6 class="text-primary">Status</h6><b>
-										<span class="badge badge-success">{{ topicRequest.requestStatus }}</span></b>
-									</div>
-									<div ng-show="topicRequest.requestStatus != 'CREATED'" class="p-2 border-right" style="width:10%">
-										<h6 class="text-primary">Status</h6><b>
-										<span class="badge badge-info">{{ topicRequest.requestStatus }}</span></b>
-									</div>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Advanced Topic Configuration</label>
 
-									<div ng-show="topicRequest.requestOperationType == 'CREATE'" class="p-2 border-right" style="width:12%">
-										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-info">{{ topicRequest.requestOperationType }} Topic</span></b>
-									</div>
-									<div ng-show="topicRequest.requestOperationType == 'PROMOTE'" class="p-2 border-right" style="width:12%">
-										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-info">{{ topicRequest.requestOperationType }} Topic</span></b>
-									</div>
-									<div ng-show="topicRequest.requestOperationType == 'UPDATE'" class="p-2 border-right" style="width:12%">
-										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-primary">{{ topicRequest.requestOperationType }} Topic</span></b>
-									</div>
-									<div ng-show="topicRequest.requestOperationType == 'DELETE'" class="p-2 border-right" style="width:12%">
-										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-danger">{{ topicRequest.requestOperationType }} Topic</span></b>
-									</div>
-									<div ng-show="topicRequest.requestOperationType == 'CLAIM'" class="p-2 border-right" style="width:12%">
-										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-secondary">{{ topicRequest.requestOperationType }} Topic</span></b>
-									</div>
+												<table>
+													<tr valign="top" ng-repeat="oneTopicConfig in topicConfigsSelected track by $index">
+														<td width="45%">
+															<select class="form-control custom-select"
+																	required
+																	ng-model="topicConfigsSelectedDropdown[$index]" name="topicConfigsSelectedDropdown[$index]"
+																	ng-change="updateLink($index)"
+																	ng-options="value as value for (keys, value) in topicConfigs">
+																<option value="" selected="selected">
+																	Select Config</option>
+															</select>
+														</td>
+														<td>
+															<input ng-show="propertyInfoLink[$index] != ''" ng-model="topicConfigsSelected[$index]" name="topicConfigsSelected[$index]"
+																   type="text" placeholder="" class="form-control">
+														</td>
+														<td>
+															<a ng-show="propertyInfoLink[$index] != ''" href="{{ propertyInfoLink[$index] }}" ng-model="topicConfigsSelectedLink[$index]" target="_blank">
+																<button type="button" class="btn btn-outline-info  mb-2">
+																	<i class="ti-info"></i>
+																</button>
+															</a>
+														</td>
+														<td ng-show="topicConfigsSelectedLength-1 == $index && propertyInfoLink[$index] != ''">
+															<button type="button" class="btn btn-info  mb-2" ng-click="addConfigRecord($index);">
+																<i class="ti-plus"></i>
+															</button>
+														</td>
+														<td ng-show="topicConfigsSelectedLength > 1">
+															<button type="button" class="btn btn-info  mb-2" ng-click="removeConfigRecord($index);">
+																<i class="ti-minus"></i>
+															</button>
+														</td>
+													</tr>
+												</table>
 
-									<div class="p-2" style="width:15%">
-										<h6 class="text-primary">Date Requested</h6><b>{{ topicRequest.requesttimestring }}</b>
-									</div>
+												<small class="form-control-feedback">Check the info icon for possible values.</small>
 
-								</div>
-								<br>
-								<div class="d-flex flex-row">
-									<div class="p-2" style="width:25%">
-										<h6 class="text-primary">Other Topic Configs</h6>
-										<div ng-repeat="topicConfig in topicRequest.advancedTopicConfigEntries">
-											<span>{{ topicConfig.configKey }}:{{ topicConfig.configValue }}</span>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Topic Description</label>
+												<input  ng-show="addTopic.requestOperationType == 'CREATE'" class="form-control" maxlength="75" placeholder="This topic is for .."
+													   ng-model="addTopic.description">
+												<input  ng-show="addTopic.requestOperationType == 'UPDATE' ||
+												 addTopic.requestOperationType == 'PROMOTE'" class="form-control" maxlength="75" placeholder="This topic is for .."
+														disabled ng-model="addTopic.description">
+											</div>
 										</div>
 									</div>
 
-									<div ng-show="topicRequest.requestOperationType == 'DELETE'" class="p-2 border-left" style="width:20%">
-										<h6 class="text-primary">Delete Associated Schema</h6>
-										<b>{{ topicRequest.deleteAssociatedSchema }}</b>
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Remarks</label>
+												<input class="form-control" maxlength="75" placeholder="Any specific comments"
+													   ng-model="addTopic.remarks">
+											</div>
+										</div>
+										<div class="col-md-6">
+										</div>
 									</div>
 
-									<div class="p-2 border-left" style="width:20%">
-										<h6 class="text-primary">Description</h6><b>{{ topicRequest.description }}</b>
-									</div>
+									<!--/row-->
 
-									<div class="p-2 border-left" style="width:20%">
-										<h6 class="text-primary">Remarks</h6><b>
-										{{ topicRequest.remarks }}</b>
-									</div>
-									<div class="p-2 border-left" style="width:10%" ng-show="topicRequest.requestStatus == 'APPROVED'">
-										<h6 class="text-primary">Approver</h6><b>
-										<span class="badge badge-info">{{ topicRequest.approver }}</span></b>
-									</div>
-									<div ng-show="topicRequest.requestStatus != 'APPROVED'" class="p-2 border-left" style="width:10%;align:center;">
-										<h6 class="text-primary">Approving Info</h6>
-										<a class="mytooltip" href="javascript:void(0)">
-											<i class="fas fa-users"></i>
-											<span class="tooltip-content3">{{ topicRequest.approvingTeamDetails}}</span>
-										</a>
-									</div>
 								</div>
-
-
-							</div>
+								<div id="alertbar">{{ alertnote }}</div>
+								<div class="form-actions">
+									<button ng-click="addTopic();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
+										{{ requestButton }}</button>
+									<button type="button" ng-click="cancelRequest();" class="btn btn-outline-inverse">Cancel</button>
+								</div>
+							</form>
 						</div>
 					</div>
-
 				</div>
-
-
-			</div>
-
-			<div class="dataTables_paginate paging_simple_numbers"  ng-show="topicRequests.length>0">
-				<ul class="pagination">
-					<li class="paginate_button page-item active" disabled>
-						<a href="#" class="page-link">Pages</a>
-					</li>
-					<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
-						<a href="#" class="page-link" ng-click="getMyTopicRequests(allPages, false)">{{allPages}}</a>
-					</li>
-				</ul>
 			</div>
 
 		</div>
@@ -633,7 +633,9 @@
 		<footer class="footer">
 			<a href="https://klaw-project.io">klaw-project.io</a>
 		</footer>
-
+		<!-- ============================================================== -->
+		<!-- End footer -->
+		<!-- ============================================================== -->
 	</div>
 	<!-- ============================================================== -->
 	<!-- End Page wrapper  -->
@@ -664,9 +666,8 @@
 <script src="assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
 -->
 <!-- Chart JS -->
-<script src="assets/plugins/gauge/gauge.min.js"></script>
-<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
 <!-- <script src="assets/js/widget-data.js"></script> -->
+<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
 </body>
 
 </html>

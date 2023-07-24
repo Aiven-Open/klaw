@@ -1058,6 +1058,31 @@ public class TopicControllerService {
     return TopicConfiguration.getTopicConfigurations();
   }
 
+  public TopicRequestsResponseModel getTopicRequest(Integer topicReqId) {
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+    TopicRequest topicRequest =
+            manageDatabase
+                    .getHandleDbRequests()
+                    .getTopicRequestsForTopic(topicReqId, tenantId);
+    if(!topicRequest.getRequestor().equals(userName)){
+      return null;
+    }else{
+      TopicRequestsResponseModel topicRequestModel = new TopicRequestsResponseModel();
+      copyProperties(topicRequest, topicRequestModel);
+      topicRequestModel.setRequestStatus(RequestStatus.of(topicRequest.getRequestStatus()));
+      topicRequestModel.setRequestOperationType(
+              RequestOperationType.of(topicRequest.getRequestOperationType()));
+
+      validateAndCopyTopicConfigs(topicRequest, topicRequestModel);
+
+      topicRequestModel.setTeamname(
+              manageDatabase.getTeamNameFromTeamId(tenantId, topicRequest.getTeamId()));
+
+      return topicRequestModel;
+    }
+  }
+
   static class TopicNameComparator implements Comparator<Topic> {
     @Override
     public int compare(Topic topic1, Topic topic2) {

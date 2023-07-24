@@ -126,6 +126,22 @@ public class TopicController {
         HttpStatus.OK);
   }
 
+  /**
+   * @param topicReqId requestId of topic
+   * @return Topic Request details
+   */
+  @RequestMapping(
+          value = "/getTopicRequest",
+          method = RequestMethod.GET,
+          produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<TopicRequestsResponseModel> getTopicRequest(
+          @RequestParam(value = "topicReqId") Integer topicReqId) {
+    return new ResponseEntity<>(
+            topicControllerService.getTopicRequest(
+                    topicReqId),
+            HttpStatus.OK);
+  }
+
   @RequestMapping(
       value = "/getTopicTeam",
       method = RequestMethod.GET,
