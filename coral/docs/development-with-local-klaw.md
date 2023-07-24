@@ -29,11 +29,14 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 3. Run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
 4. Go to directory [`coral/proxy`](../../coral/proxy)
 5. Run `pnpm install` there, too
-6. Install Docker - [Get Docker](https://docs.docker.com/get-docker/)
-7. Go to to directory [`coral/proxy`](../../coral/proxy)
+6. Install and run Docker - [Get Docker](https://docs.docker.com/get-docker/)
+7. Go to directory [`coral/proxy`](../../coral/proxy)
 8. Run `pnpm install` if you haven't already
 9. Run `ppm setup`
-   `pnpm setup` will build and deploy your docker container for Klaw core, cluster api and a test environment for klaw (zookeeper, kafka, schema-registry).
+   `pnpm setup` will build and deploy your docker container for:
+    - Klaw core: the main API Coral interacts with
+    - Klaw cluster api: the API interacting with the Kafka clusters managed by Klaw
+    - Kafka, zoo-keeper, schema-registry: a basic Kafka setup
 10. Run `pnmv dev:[start|restart]`
     - check out the [documentation](../../coral/proxy/README.md) for more scripts and information when to use them.
     - the proxy runs on [`http://localhost:1337`](http://localhost:1337)

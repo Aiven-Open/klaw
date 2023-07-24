@@ -53,7 +53,7 @@ Checks if Klaw core and Klaw cluster-api are running in the right ports in your 
 
 **Use `pnpm dev:start` when:**
 
-- you run the docker container for the first time
+- you run the docker containers for the first time
 - there are changes in `/core` or `/cluster-api`, where you want a new build to run against the most current version
 
 ### ➡️ `pnpm dev:restart`
