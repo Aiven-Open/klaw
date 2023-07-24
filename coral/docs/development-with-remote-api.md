@@ -2,14 +2,13 @@
 
 ## Table of content
 
-* [Basic setup](#basic-setup)
 * [First setup for remote API](#first-setup-for-remote-api)
-    + [1. Create new vite mode for remote API development](#1-create-new-vite-mode-for-remote-api-development)
-    + [2. Set up self-signed certificate (required when API runs on HTTPS)](#2-set-up-self-signed-certificate-required-when-api-runs-on-https)
-* [How to run it](#how-to-run-it)
+    + [Create new vite mode for remote API development](#create-new-vite-mode-for-remote-api-development)
+    + [Set up self-signed certificate (required when API runs on HTTPS)](#set-up-self-signed-certificate-required-when-api-runs-on-https)
+* [How to run the project](#how-to-run-the-project)
 
 
-## Basic setup
+## First setup for remote API
 
 ** ℹRequirements**
 
@@ -24,10 +23,10 @@
    4.1. If you have not setup a remote API mode, please follow [First setup](../docs/development-with-remote-api.
    md#first-setup)
    4.2. If you already have a setup, run `pnpm dev`
+5. [Create new vite mode for remote API development](#create-new-vite-mode-for-remote-api-development)
+6. When your API runs on `https`: [Set up self-signed certificate](#set-up-self-signed-certificate-required-when-api-runs-on-https)
 
-## First setup for remote API
-
-### 1. Create new vite mode for remote API development
+### Create new vite mode for remote API development
 Start by creating a new [vite mode](https://vitejs.dev/guide/env-and-mode.html) called `.env.remote-api`. The easiest way is to create one is to run the commend below. Note, that you need to replace the `[KLAW API ORIGIN]` placeholder value with your Klaw API server origin.
 
 ```
@@ -40,7 +39,7 @@ VITE_SERVER_CERTIFICATE_KEY_PATH=".cert/localhost.key"
 EOF
 ```
 
-### 2. Set up self-signed certificate (required when API runs on HTTPS)
+### Set up self-signed certificate (required when API runs on HTTPS)
 
 You can use Let's Encrypt [instructions](https://letsencrypt.org/docs/certificates-for-localhost/#making-and-trusting-your-own-certificates) for setting up self-signed certificates for local development. 
 
@@ -54,7 +53,7 @@ openssl req -x509 -out .cert/localhost.crt -keyout .cert/localhost.key \
 Install `.cert/localhost.crt` in your list of locally trusted roots. This is different dependent on your OS, you can look up a current way to do this online. Keep in mind that dependent on your OS and browser, you may have to refresh that certificate from time to time.    
 
 
-## How to run it
+## How to run the project
 
 If all requirements are met, and you've done your first setup:
 

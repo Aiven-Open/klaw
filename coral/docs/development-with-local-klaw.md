@@ -6,12 +6,15 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 
 ## Table of content
 
-* [Basic setup](#basic-setup)
 * [First setup](#first-setup)
-* [How to run it](#how-to-run-it)
++ [Note to login and authentication](#note-to-login-and-authentication)
+    * [Login ](#login)
+    * [Authentication expired](#authentication-expired)
+    - [🙋Potential browser problem](#potential-browser-problem)
+* [How to run the project](#how-to-run-the-project)
 
  
-## Basic setup
+## First setup
 
 ℹ️ environment settings are located in the file [`.env.local-api`](../../coral/.env.local-api).
 
@@ -21,20 +24,33 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
   -> see [nvmrc](../.nvmrc) or the `engines` definition in [package.json](../package.json) for version).
 - Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm.
 
-1. navigate to [`/coral`](../../coral)
-2. run `pnpm install`
-3. run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
-4. go to directory [`coral/proxy`](../../coral/proxy)
-5. run `pnpm install` there, too
-6. Run development:
-   6.1. If you have not setup the docker environments, please follow [First setup]()
-   6.2. If you already have a setup, run `pnmv dev:[start|restart]`
+1. Navigate to [`/coral`](../../coral)
+2. Run `pnpm install`
+3. Run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
+4. Go to directory [`coral/proxy`](../../coral/proxy)
+5. Run `pnpm install` there, too
+6. Install Docker - [Get Docker](https://docs.docker.com/get-docker/)
+7. Go to to directory [`coral/proxy`](../../coral/proxy)
+8. Run `pnpm install` if you haven't already
+9. Run `ppm setup`
+   `pnpm setup` will build and deploy your docker container for Klaw core, cluster api and a test environment for klaw (zookeeper, kafka, schema-registry).
+10. Run `pnmv dev:[start|restart]`
     - check out the [documentation](../../coral/proxy/README.md) for more scripts and information when to use them.
     - the proxy runs on [`http://localhost:1337`](http://localhost:1337)
-  - ❗️ **The correct redirect for login and authentication is **not** working yet.** To authenticate yourself see [ Login and authentication]
-    
+    - Login - ❗️The correct redirect for login and authentication is **not** working in the proxy yet. To login:
+        - Go to your [local Klaw](http://localhost:9097/login)
+        - Login as superadmin with: `superadmin`, password `kwsuperadmin123$$` (see [application.properties](../../core/src/main/resources/application.properties))
+        - Go back to the [proxy](http://localhost:1337)
+11. As superadmin, create one ore more users [proxy](http://localhost:1337/users)
+   "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating the user views in Coral first, so you'll need to login to Coral with a "user" account to have access to all functionality.
+12. As superadmin, add a cluster and environment - you can follow our [official documentation](https://www.klaw-project.io/docs/getstarted)
+13. Bootstrap server for Kafka cluster is `http://klaw-kafka:9092`, which is running in your docker
+14. Bootstrap server SchemaRegistry is `klaw-schema-registry:8081`, which is running in your docker.
+15. In [settings](`http://localhost:1337/serverConfig`), add the Cluster api `http://klaw-cluster-api:9343`, which is running in your docker. You can test the connection, using the button.
+16. You are good to go! 🎉
 
-#### Login and authentication
+
+### Note to login and authentication
 
 The correct redirect for login and authentication is **not** working yet.**
 
@@ -63,27 +79,7 @@ Related to that the proxy currently also does not redirect you to the login if y
 - `pnpm dev:destroy` to tear down all containers in docker (you'll have to run `pnpm setup` or `pnpm:start` again next time you want to use them, so they get build again)
 
 
-
-## First setup
-
-1. Install Docker - [Get Docker](https://docs.docker.com/get-docker/)
-2. Go to to directory [`coral/proxy`](../../coral/proxy)
-3. run `pnpm install` if you haven't already
-4. Run `ppm setup`
-   `pnpm setup` will build and deploy your docker container for Klaw core, cluster api and a test environment for klaw (zookeeper, kafka, schema-registry).
-5. ❗️Login - The correct redirect for login and authentication is **not** working in the proxy yet. To login:
-    - Go to your [local Klaw](http://localhost:9097/login)
-    - Login as superadmin with: `superadmin`, password `kwsuperadmin123$$` (see [application.properties](../../core/src/main/resources/application.properties))
-    - Go back to the [proxy](http://localhost:1337) 
-6. As superadmin, create one ore more users [proxy](http://localhost:1337/users)
-    "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating the user views in Coral first, so you'll need to login to Coral with a "user" account to have access to all functionality.  
-7. As superadmin, add a cluster and environment - you can follow our [official documentation](https://www.klaw-project.io/docs/getstarted)
-8. Bootstrap server for Kafka cluster is `http://klaw-kafka:9092`, which is running in your docker
-9. Bootstrap server SchemaRegistry is `klaw-schema-registry:8081`, which is running in your docker.
-10. In [settings](`http://localhost:1337/serverConfig`), add the Cluster api `http://klaw-cluster-api:9343`, which is running in your docker. You can test the connection, using the button.
-11. You are good to go! 🎉
-
-## How to run it
+## How to run the project
 
 If all requirements are met, and you've done your first setup, these are the scripts you can use in the directory `/proxy`:
 

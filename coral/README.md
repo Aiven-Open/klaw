@@ -4,12 +4,11 @@
 
 ## Table of content
 
-
 * [About](#about)
 * [Installation and usage](#installation-and-usage)
-  + [Basic setup](#basic-setup)
+  + [First setup](#first-setup)
   + [Usage: How to run Coral in development](#usage-how-to-run-coral-in-development)
-    - [Local development _without_ connecting an api](#local-development-without-connecting-an-api)
+    - [Local development _without_ connecting an api](#local-development-_without_-connecting-an-api)
       * [What it does](#what-it-does)
       * [When you want to use this](#when-you-want-to-use-this)
       * [How to do it](#how-to-do-it)
@@ -21,10 +20,10 @@
       * [What it does](#what-it-does-2)
       * [When you want to use this](#when-you-want-to-use-this-2)
       * [How to do it](#how-to-do-it-2)
-  - [Checking build: Run Coral inside the Klaw application](#checking-build-run-coral-inside-the-klaw-application)
-    * [What it does](#what-it-does-3)
-    * [When you want to use this](#when-you-want-to-use-this-3)
-    * [How to](#how-to)
+  + [Checking build: Run Coral inside the Klaw application](#checking-build-run-coral-inside-the-klaw-application)
+    - [What it does](#what-it-does-3)
+    - [When you want to use this](#when-you-want-to-use-this-3)
+    - [How to](#how-to)
 * [Scripts used and what they execute](#scripts-used-and-what-they-execute)
 * [Tech stack](#tech-stack)
   + [App development](#app-development)
@@ -35,15 +34,16 @@
     - [💁‍♀️ Special custom styles](#-special-custom-styles)
 * [Documentation](#documentation)
 
+
 ## About
 
 `/coral` contains a React app. It's the rewrite of the existing Klaw frontend.
 
 ## Installation and usage
 
-### Basic setup
+### First setup
 
-This is the setup you every time. 
+This is the setup you every time. You can find the different ways how to run the local development process below. 
 
 ** ℹRequirements**
 

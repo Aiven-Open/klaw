@@ -2,12 +2,13 @@
 
 ## Table of content
 
-* [Basic setup](#basic-setup)
+* [First setup](#first-setup)
   + [Necessary API mock for `getAuth`](#necessary-api-mock-for-getauth)
-* [How to run it](#how-to-run-it)
+* [How to run the project](#how-to-run-the-project)
   + [Mocking API responses general](#mocking-api-responses-general)
 
-## Basic setup
+
+## First setup
 
 ** ℹRequirements**
 
@@ -47,7 +48,7 @@ function getAuth(): Promise<AuthUser> {
 🙇  Please remember removing the mock before opening a PR for review :)
 
 
-## How to run it
+## How to run the project
 
 If all requirements are met, and you've done your first setup:
 
