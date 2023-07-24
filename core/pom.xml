@@ -32,7 +32,7 @@
         <node.version>v18.12.1</node.version>
         <npm.version>8.19.2</npm.version>
         <pnpm.version>7.14.0</pnpm.version>
-        <shedlock.version>5.5.0</shedlock.version>
+        <shedlock.version>5.6.0</shedlock.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
         <springdoc-openapi-ui.version>2.1.0</springdoc-openapi-ui.version>
