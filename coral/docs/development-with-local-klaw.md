@@ -7,7 +7,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 ## Table of content
 
 * [First setup](#first-setup)
-+ [Note to login and authentication](#note-to-login-and-authentication)
++ [Note on login and authentication](#note-to-login-and-authentication)
     * [Login ](#login)
     * [Authentication expired](#authentication-expired)
     - [🙋Potential browser problem](#potential-browser-problem)
@@ -29,7 +29,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 3. Run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
 4. Go to directory [`coral/proxy`](../../coral/proxy)
 5. Run `pnpm install` there, too
-6. Install and run Docker - [Get Docker](https://docs.docker.com/get-docker/)
+6. Install and run Docker: [Get Docker](https://docs.docker.com/get-docker/)
 7. Go to directory [`coral/proxy`](../../coral/proxy)
 8. Run `pnpm install` if you haven't already
 9. Run `ppm setup`
@@ -40,7 +40,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 10. Run `pnmv dev:[start|restart]`
     - check out the [documentation](../../coral/proxy/README.md) for more scripts and information when to use them.
     - the proxy runs on [`http://localhost:1337`](http://localhost:1337)
-    - Login - ❗️The correct redirect for login and authentication is **not** working in the proxy yet. To login:
+    - Login (❗️The correct redirect for login and authentication is **not** working in the proxy yet):
         - Go to your [local Klaw](http://localhost:9097/login)
         - Login as superadmin with: `superadmin`, password `kwsuperadmin123$$` (see [application.properties](../../core/src/main/resources/application.properties))
         - Go back to the [proxy](http://localhost:1337)
@@ -53,7 +53,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 16. You are good to go! 🎉
 
 
-### Note to login and authentication
+### Note on login and authentication
 
 The correct redirect for login and authentication is **not** working yet.**
 
