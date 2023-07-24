@@ -1,6 +1,6 @@
 # Development proxy server
 
-We're running a small node-proxy to enable a convenient way of developing Coral locally without the need to connect a remote api.
+We're running a proxy server to enable a convenient way of developing Coral locally without the need to connect a remote api.
 
 
 ## Table of content
@@ -114,8 +114,8 @@ Adding this flag to any of the mentioned commands will run the proxy in "verbose
 
 ### These scripts are used by other scripts
 
-- `_internal_use_proxy` starts the proxy. It will automatically restart on changes.
-- `_internal_use_start-coral` starts coral in development environment in local-api mode with HMR
+- `_internal_use_proxy` starts the proxy.
+- `_internal_use_start-coral` starts a vite local development server for Coral.
 - `pnpm dev` runs the script `start-proxy-environment.sh` and is the base for all our `dev:` scripts. You _can_ use it with additional flags, but there is no need to.
 
 ### Files

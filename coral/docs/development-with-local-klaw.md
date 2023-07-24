@@ -1,4 +1,4 @@
-# Development with local Klaw
+# Development with local Klaw API
 
 ℹ️ The proxy is a work in progress.
 
@@ -24,11 +24,11 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 1. navigate to [`/coral`](../../coral)
 2. run `pnpm install`
 3. run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
-- go to directory [`coral/proxy`](../../coral/proxy)
-- run `pnpm install` there, too
-4. Run development:
-   4.1. If you have not setup the docker environments, please follow [First setup]()
-   4.2. If you already have a setup, run `pnmv dev:[start|restart]`
+4. go to directory [`coral/proxy`](../../coral/proxy)
+5. run `pnpm install` there, too
+6. Run development:
+   6.1. If you have not setup the docker environments, please follow [First setup]()
+   6.2. If you already have a setup, run `pnmv dev:[start|restart]`
     - check out the [documentation](../../coral/proxy/README.md) for more scripts and information when to use them.
     - the proxy runs on [`http://localhost:1337`](http://localhost:1337)
   - ❗️ The correct redirect for login and authentication is **not** working yet. To authenticate yourself:
@@ -36,7 +36,9 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
     - Login with your credentials
     - After you've been sucessfully logged in, go back to the proxy -> [`http://localhost:1337`](http://localhost:1337)
 
-🙋 The proxy and Klaw are running with `http`. Your browser may show you an error (SSL connection error), because it tries to automatically upgrade to https, without making an http request for security. You have to allow `localhost` to be accessed via http explicitly. 
+
+### 🙋Potential browser problem
+**The proxy and Klaw are running with `http`. Your browser may show you an error (SSL connection error), because it tries to automatically upgrade to https, without making an http request for security. You have to allow `localhost` to be accessed via http explicitly.** 
 
 ℹ️ When you're done, you can run either: 
 - `pnpm dev:stop` to stop all containers in docker (enables a fast restart) 
@@ -68,11 +70,11 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 
 If all requirements are met, and you've done your first setup, these are the scripts you can use in the directory `/proxy`:
 
-- `pnpm dev:start` to build and start your docker container for klaw and cluster api
-- `pnpm dev:start:testEnv` to build and start your docker container for klaw and cluster api as well as a sandbox with zookeeper, kafka and a schema-registry (note: these files are large!)
-- `pnpm dev:restart` to restart you container
-- `pnpm dev:restart:testEnv` to restart you container including sandbox
-- `pnpm:stop` to stop your running containers
-- `pnpm:destroy` to stop and teardown your running containers (will require you to run :start the next time again)
+- `pnpm dev:start` to build and start your docker container for klaw and cluster api. This runs tests and build for Klaw, which takes some time.
+- `pnpm dev:start:testEnv` to build and start your docker container for klaw and cluster api as well as a sandbox with zookeeper, kafka and a schema-registry (note: these files are large!). Same as above, this will run tests and do a new build.
+- `pnpm dev:restart` to restart you container. Used when you already have build Klaw in a container and there are now changes. It restarts the container without new build.
+- `pnpm dev:restart:testEnv` to restart you container including sandbox. Same as above, this will not do a new build.
+- `pnpm:stop` to stop your running containers.
+- `pnpm:destroy` to stop and teardown your running containers (will require you to run :start the next time again).
 
 - Please check out the [proxy README](../proxy/README.md) for more detailed information and a deeper breakdown of all available scripts.
