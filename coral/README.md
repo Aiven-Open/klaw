@@ -64,7 +64,8 @@ You have different ways of working on Coral in the development process:
 Note: We don't recommend using this way, except in a few cases. Development against a real Klaw API will yield in better developer confidence of the functionality and developer experience compared to using a mocked API. 
 
 #####  What it does
-This will run the vite development server. Coral will run, but there is no API that it can consume. You will have to add a mocked response for authentication to be able to see the UI. In case you need data to work with, you'll have to mock API responses. 
+This will run the Vite development server. Coral will run, but there is no API that it can consume. You will have to 
+add a mocked response for authentication to be able to see the UI. In case you need data to work with, you'll have to mock API responses. 
 
 ##### When you want to use this
 - You want to do small changes on areas that are not dealing with data from the API.
@@ -78,7 +79,8 @@ This will run the vite development server. Coral will run, but there is no API t
 #### Local development with remote API
 
 #####  What it does
-This will run the vite development. It will use a external address as API source. For this, you need to have Klaw deployed to be able to connect to its API. The remote API can be a shared staging server, or even a production system.
+This will run the Vite development. It will use a external address as API source. For this, you need to have Klaw 
+deployed to be able to connect to its API. The remote API can be a shared staging server, or even a production system.
 
 ##### When you want to use this
 - You have access to a deployed instance of Klaw and only want to do Frontend changes.
@@ -94,11 +96,13 @@ This will run the vite development. It will use a external address as API source
 ⚠️ Note: This is still a work in progress, but should already allow Frontend developer to access a full development environment without needing to connect to a remote API.
 
 #####  What it does
-This will run a small node proxy server. It will serve Coral via vite development server locally and Klaw from a docker container, which will act as the remote API. With this, we want to enable contributors to have the better developer experience and confidence without the need to have a deployed instance of Klaw running and use this as remote API.
+This will run a small node proxy server. It will serve Coral via Vite development server locally and Klaw from a docker 
+container, which will act as the remote API. With this, we want to enable contributors to have the better developer experience and confidence without the need to have a deployed instance of Klaw running and use this as remote API.
 
 ##### When you want to use this
 - You have don't have access to a deployed instance of Klaw or don't want to use that.
-- You want a local environment for Klaw while also benefiting from the vite development server (with hot module replacement)
+- You want a local environment for Klaw while also benefiting from the Vite development server (with hot module 
+  replacement)
 
 ##### How to do it
 

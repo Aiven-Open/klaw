@@ -23,11 +23,12 @@
    4.1. If you have not setup a remote API mode, please follow [First setup](../docs/development-with-remote-api.
    md#first-setup)
    4.2. If you already have a setup, run `pnpm dev`
-5. [Create new vite mode for remote API development](#create-new-vite-mode-for-remote-api-development)
+5. [Create new Vite mode for remote API development](#create-new-vite-mode-for-remote-api-development)
 6. When your API runs on `https`: [Set up self-signed certificate](#set-up-self-signed-certificate-required-when-api-runs-on-https)
 
-### Create new vite mode for remote API development
-Start by creating a new [vite mode](https://vitejs.dev/guide/env-and-mode.html) called `.env.remote-api`. The easiest way is to create one is to run the commend below. Note, that you need to replace the `[KLAW API ORIGIN]` placeholder value with your Klaw API server origin.
+### Create new Vite mode for remote API development
+Start by creating a new [Vite mode](https://vitejs.dev/guide/env-and-mode.html) called `.env.remote-api`. The easiest 
+way is to create one is to run the commend below. Note, that you need to replace the `[KLAW API ORIGIN]` placeholder value with your Klaw API server origin.
 
 ```
 cat << EOF > .env.remote-api
