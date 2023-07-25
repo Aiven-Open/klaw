@@ -48,7 +48,7 @@ The more information an issue includes, the better! For example:
 - On your fork, [create a branch](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/making-changes-in-a-branch/managing-branches#creating-a-branch) named after the issue you're working on.
 - 🧑‍💻 Make all of your changes. You may find detailed documentation about how to set up a local development environment in our documentation:
   - [for `coral` development](coral/docs/README.md)
-  - [for `core` development]()
+  - [for `core` or `cluster-api` development](README.md#install)
 - For your commits, please see our [Guideline commit messages](#guideline-commit-messages).
 - Prefer making small and self-contained commits. It helps doing reviews. 
 - Check if it would be helpful to update documentation related to your change. If yes, please do so 🤗!
