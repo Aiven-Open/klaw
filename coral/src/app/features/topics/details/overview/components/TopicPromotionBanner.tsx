@@ -5,21 +5,24 @@ import { PromotionBanner } from "src/app/features/topics/details/components/Prom
 interface TopicPromotionBannerProps {
   topicPromotionDetails: TopicOverview["topicPromotionDetails"];
   hasOpenRequest: boolean;
+  topicName: string;
 }
 
 const TopicPromotionBanner = ({
   topicPromotionDetails,
   hasOpenRequest,
+  topicName,
 }: TopicPromotionBannerProps) => {
   return (
     <div data-testid={"topic-promotion-banner"}>
       <PromotionBanner
+        topicName={topicName}
         promotionDetails={topicPromotionDetails}
         hasOpenRequest={hasOpenRequest}
         type={"topic"}
         promoteElement={
           <Button.ExternalLink
-            href={`/topic/${topicPromotionDetails.topicName}/request-promotion?sourceEnv=${topicPromotionDetails.sourceEnv}&targetEnv=${topicPromotionDetails.targetEnvId}`}
+            href={`/topic/${topicName}/request-promotion?sourceEnv=${topicPromotionDetails.sourceEnv}&targetEnv=${topicPromotionDetails.targetEnvId}`}
           >
             Promote
           </Button.ExternalLink>

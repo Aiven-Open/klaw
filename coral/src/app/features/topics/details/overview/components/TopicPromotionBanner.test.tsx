@@ -7,12 +7,12 @@ const promotionDetailForPromote: TopicOverview["topicPromotionDetails"] = {
   targetEnv: "TST",
   sourceEnv: "DEV",
   targetEnvId: "2",
-  topicName: "topic-hello",
 };
 
 const promoteProps = {
   topicPromotionDetails: promotionDetailForPromote,
   hasOpenRequest: false,
+  topicName: "topic-hello",
 };
 
 const promotionDetailForSeeOpenRequest: TopicOverview["topicPromotionDetails"] =
@@ -21,12 +21,12 @@ const promotionDetailForSeeOpenRequest: TopicOverview["topicPromotionDetails"] =
     targetEnv: "TST",
     sourceEnv: "DEV",
     targetEnvId: "2",
-    topicName: "topic-hello",
   };
 
 const seeOpenRequestProps = {
   topicPromotionDetails: promotionDetailForSeeOpenRequest,
   hasOpenRequest: true,
+  topicName: "topic-hello",
 };
 
 const promotionDetailForSeeOpenPromotionRequest: TopicOverview["topicPromotionDetails"] =
@@ -35,22 +35,22 @@ const promotionDetailForSeeOpenPromotionRequest: TopicOverview["topicPromotionDe
     targetEnv: "TST",
     sourceEnv: "DEV",
     targetEnvId: "2",
-    topicName: "topic-hello",
   };
 
 const seeOpenPromotionRequestProps = {
   topicPromotionDetails: promotionDetailForSeeOpenPromotionRequest,
   hasOpenRequest: false,
+  topicName: "topic-hello",
 };
 
 const promotionDetailForNoPromotion: TopicOverview["topicPromotionDetails"] = {
   status: "NO_PROMOTION",
-  topicName: "SchemaTest",
 };
 
 const nullProps = {
   topicPromotionDetails: promotionDetailForNoPromotion,
   hasOpenRequest: false,
+  topicName: "topic-hello",
 };
 
 const mockedNavigate = jest.fn();
@@ -72,7 +72,7 @@ describe("TopicPromotionBanner", () => {
     expect(link).toBeEnabled();
     expect(link).toHaveAttribute(
       "href",
-      `/topic/${promoteProps.topicPromotionDetails.topicName}/request-promotion?sourceEnv=${promoteProps.topicPromotionDetails.sourceEnv}&targetEnv=${promoteProps.topicPromotionDetails.targetEnvId}`
+      `/topic/${promoteProps.topicName}/request-promotion?sourceEnv=${promoteProps.topicPromotionDetails.sourceEnv}&targetEnv=${promoteProps.topicPromotionDetails.targetEnvId}`
     );
   });
 
@@ -86,7 +86,7 @@ describe("TopicPromotionBanner", () => {
     expect(link).toBeEnabled();
     expect(link).toHaveAttribute(
       "href",
-      `/requests/topics?search=${promoteProps.topicPromotionDetails.topicName}&status=CREATED&page=1`
+      `/requests/topics?search=${promoteProps.topicName}&status=CREATED&page=1`
     );
   });
 
@@ -100,7 +100,7 @@ describe("TopicPromotionBanner", () => {
     expect(link).toBeEnabled();
     expect(link).toHaveAttribute(
       "href",
-      `/requests/topics?search=${promoteProps.topicPromotionDetails.topicName}&requestType=PROMOTE&status=CREATED&page=1`
+      `/requests/topics?search=${promoteProps.topicName}&requestType=PROMOTE&status=CREATED&page=1`
     );
   });
 

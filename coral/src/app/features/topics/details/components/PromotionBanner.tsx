@@ -4,6 +4,11 @@ import { ReactElement } from "react";
 import { KlawApiModel } from "types/utils";
 
 interface PromotionBannerProps {
+  // `topicName` is only optional on
+  // KlawApiModel<"PromotionStatus">
+  // so we can't rely on it to be part of
+  // the promotionDetails
+  topicName: string;
   promotionDetails: KlawApiModel<"PromotionStatus">;
   type: "schema" | "topic";
   promoteElement: ReactElement;
@@ -15,9 +20,9 @@ const PromotionBanner = ({
   hasOpenRequest,
   type,
   promoteElement,
+  topicName,
 }: PromotionBannerProps) => {
-  const { status, sourceEnv, targetEnv, topicName, targetEnvId } =
-    promotionDetails;
+  const { status, sourceEnv, targetEnv, targetEnvId } = promotionDetails;
 
   // if any of these is not true,
   // the entity cannot be promoted

@@ -7,8 +7,9 @@ const promotionDetails: KlawApiModel<"PromotionStatus"> = {
   targetEnv: "TST",
   sourceEnv: "DEV",
   targetEnvId: "2",
-  topicName: "my-test-topic",
 };
+const testTopicName = "my-test-topic";
+
 describe("PromotionBanner", () => {
   describe("does not show a promotion banner at all dependent on promotion details", () => {
     afterEach(cleanup);
@@ -16,6 +17,7 @@ describe("PromotionBanner", () => {
     it("returns null if status is NOT_AUTHORIZED", () => {
       const { container } = render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "NOT_AUTHORIZED" }}
           type={"schema"}
           promoteElement={<></>}
@@ -29,6 +31,7 @@ describe("PromotionBanner", () => {
     it("returns null if status is NO_PROMOTION", () => {
       const { container } = render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "NO_PROMOTION" }}
           type={"schema"}
           promoteElement={<></>}
@@ -42,6 +45,7 @@ describe("PromotionBanner", () => {
     it("returns null if status is FAILURE", () => {
       const { container } = render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "FAILURE" }}
           type={"schema"}
           promoteElement={<></>}
@@ -55,6 +59,7 @@ describe("PromotionBanner", () => {
     it("returns null if targetEnv is undefined", () => {
       const { container } = render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={{ ...promotionDetails, targetEnv: undefined }}
           type={"schema"}
           promoteElement={<></>}
@@ -68,6 +73,7 @@ describe("PromotionBanner", () => {
     it("returns null if sourceEnv is undefined", () => {
       const { container } = render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={{ ...promotionDetails, sourceEnv: undefined }}
           type={"schema"}
           promoteElement={<></>}
@@ -81,20 +87,8 @@ describe("PromotionBanner", () => {
     it("returns null if targetEnvId is undefined", () => {
       const { container } = render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={{ ...promotionDetails, targetEnvId: undefined }}
-          type={"schema"}
-          promoteElement={<></>}
-          hasOpenRequest={false}
-        />
-      );
-
-      expect(container).toBeEmptyDOMElement();
-    });
-
-    it("returns null if topicName is undefined", () => {
-      const { container } = render(
-        <PromotionBanner
-          promotionDetails={{ ...promotionDetails, topicName: undefined }}
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
@@ -109,6 +103,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={promotionDetails}
           type={"schema"}
           promoteElement={<></>}
@@ -121,7 +116,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is an open request for ${promotionDetails.topicName}.`
+        `There is an open request for ${testTopicName}.`
       );
 
       expect(information).toBeVisible();
@@ -142,6 +137,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={promotionDetails}
           type={"topic"}
           promoteElement={<></>}
@@ -154,7 +150,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is an open request for ${promotionDetails.topicName}.`
+        `There is an open request for ${testTopicName}.`
       );
 
       expect(information).toBeVisible();
@@ -175,6 +171,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
           type={"schema"}
           promoteElement={<></>}
@@ -187,7 +184,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is already an open promotion request for ${promotionDetails.topicName}.`
+        `There is already an open promotion request for ${testTopicName}.`
       );
 
       expect(information).toBeVisible();
@@ -208,6 +205,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
           type={"topic"}
           promoteElement={<></>}
@@ -220,7 +218,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is already an open promotion request for ${promotionDetails.topicName}.`
+        `There is already an open promotion request for ${testTopicName}.`
       );
 
       expect(information).toBeVisible();
@@ -242,6 +240,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={promotionDetails}
           type={"schema"}
           promoteElement={promoteElement}
@@ -274,6 +273,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
+          topicName={testTopicName}
           promotionDetails={promotionDetails}
           type={"topic"}
           promoteElement={promoteElement}

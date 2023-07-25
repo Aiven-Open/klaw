@@ -72,6 +72,7 @@ function TopicOverview() {
 
       {!topicOverviewIsRefetching && topicOwner && (
         <TopicPromotionBanner
+          topicName={topicName}
           topicPromotionDetails={topicPromotionDetails}
           hasOpenRequest={hasOpenTopicRequest}
         />
