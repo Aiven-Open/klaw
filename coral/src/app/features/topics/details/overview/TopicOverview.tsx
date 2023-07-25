@@ -70,10 +70,9 @@ function TopicOverview() {
         </Card>
       </GridItem>
 
-      {!topicOverviewIsRefetching && (
+      {!topicOverviewIsRefetching && topicOwner && (
         <TopicPromotionBanner
           topicPromotionDetails={topicPromotionDetails}
-          isTopicOwner={topicOwner}
           hasOpenRequest={hasOpenTopicRequest}
         />
       )}
