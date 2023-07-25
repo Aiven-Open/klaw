@@ -34,7 +34,7 @@ way is to create one is to run the commend below. Note, that you need to replace
 cat << EOF > .env.remote-api
 NODE_ENV=development
 VITE_PROXY_TARGET=[KLAW API ORIGIN]
-VITE_API_BASE_URL=https://127.0.0.1:5173/api
+VITE_API_BASE_URL=https://localhost:5173/api
 VITE_SERVER_CERTIFICATE_PATH=".cert/localhost.crt"
 VITE_SERVER_CERTIFICATE_KEY_PATH=".cert/localhost.key"
 EOF
