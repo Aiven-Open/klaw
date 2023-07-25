@@ -46,7 +46,9 @@ The more information an issue includes, the better! For example:
 - If you have the rights: set yourself as an assignee and add the __in progress__ label.
 - [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Klaw repository.
 - On your fork, [create a branch](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/making-changes-in-a-branch/managing-branches#creating-a-branch) named after the issue you're working on.
-- Make all of your changes 🧑‍💻
+- 🧑‍💻 Make all of your changes. You may find detailed documentation about how to set up a local development environment in our documentation:
+  - [for `coral` development](coral/docs/README.md)
+  - [for `core` development]()
 - For your commits, please see our [Guideline commit messages](#guideline-commit-messages).
 - Prefer making small and self-contained commits. It helps doing reviews. 
 - Check if it would be helpful to update documentation related to your change. If yes, please do so 🤗!
@@ -131,7 +133,12 @@ __4. Keep a clear git history in mind__
 
 ## How to merge a pull request
 
-Pull request are merged by the maintainer that approved after review. An pull request author should never merge themself, even if they are maintainer. 
+A pull request author should never merge themsel. Pull requests are reviewed by one or more maintainer(s). Once all comments are addressed, the reviewer(s) approve the pull request, and merge it to the `main` branch.
+
+The checklist for a pull request to be merged is as follow:
+- reviewed and approved by a maintainer
+- GitHub actions all green
+- pull request branch up to date with `main` branch
 
 ### Squash and merge
 
