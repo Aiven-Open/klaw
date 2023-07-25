@@ -10,7 +10,7 @@
 
 ## First setup for remote API
 
-**ℹ️Requirements**
+**⚠️ Requirements**
 
 - [node](https://nodejs.org/en/) needs to be installed. See [nvmrc](../.nvmrc) or the `engines` definition in [package.json](../package.json) for version.
 - Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm.
