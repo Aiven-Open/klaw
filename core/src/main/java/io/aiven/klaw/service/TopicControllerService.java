@@ -15,6 +15,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_111;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_112;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_113;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -129,7 +130,30 @@ public class TopicControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequestDao = new TopicRequest();
-    copyProperties(topicRequestReq, topicRequestDao);
+
+    // Editing a topic request
+    if (topicRequestReq.getRequestId() != null) {
+      topicRequestDao =
+          getTopicRequestFromTopicId(
+              topicRequestReq.getRequestId(), commonUtilsService.getTenantId(userName));
+
+      // check if the topic request owned by the logged-in user
+      if (!topicRequestDao.getRequestor().equals(userName)) {
+        return ApiResponse.builder().success(false).message(TOPICS_VLD_ERR_121).build();
+      }
+
+      topicRequestDao.setTopicpartitions(topicRequestReq.getTopicpartitions());
+      topicRequestDao.setReplicationfactor(topicRequestReq.getReplicationfactor());
+
+      if (topicRequestDao.getRequestOperationType().equals(RequestOperationType.CREATE.value)) {
+        topicRequestDao.setTopicname(topicRequestReq.getTopicname());
+        topicRequestDao.setEnvironment(topicRequestReq.getEnvironment());
+        topicRequestDao.setDescription(topicRequestReq.getDescription());
+        topicRequestDao.setRemarks(topicRequestReq.getRemarks());
+      }
+    } else {
+      copyProperties(topicRequestReq, topicRequestDao);
+    }
     topicRequestDao.setRequestOperationType(topicRequestReq.getRequestOperationType().value);
 
     mapAdvancedTopicConfiguration(topicRequestReq, topicRequestDao);
@@ -715,10 +739,7 @@ public class TopicControllerService {
 
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
-    TopicRequest topicRequest =
-        manageDatabase
-            .getHandleDbRequests()
-            .getTopicRequestsForTopic(Integer.parseInt(topicId), tenantId);
+    TopicRequest topicRequest = getTopicRequestFromTopicId(Integer.parseInt(topicId), tenantId);
 
     ApiResponse validationResponse = validateTopicRequest(topicRequest, userName);
     if (!validationResponse.isSuccess()) {
@@ -1038,6 +1059,33 @@ public class TopicControllerService {
 
   public Map<String, String> getAdvancedTopicConfigs() {
     return TopicConfiguration.getTopicConfigurations();
+  }
+
+  public TopicRequestsResponseModel getTopicRequest(Integer topicReqId) {
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+    TopicRequest topicRequest = getTopicRequestFromTopicId(topicReqId, tenantId);
+    if (topicRequest == null) {
+      return null;
+    } else {
+      TopicRequestsResponseModel topicRequestModel = new TopicRequestsResponseModel();
+      copyProperties(topicRequest, topicRequestModel);
+      topicRequestModel.setRequestStatus(RequestStatus.of(topicRequest.getRequestStatus()));
+      topicRequestModel.setRequestOperationType(
+          RequestOperationType.of(topicRequest.getRequestOperationType()));
+      topicRequestModel.setEnvironmentName(getEnvDetails(topicRequest.getEnvironment()).getName());
+
+      validateAndCopyTopicConfigs(topicRequest, topicRequestModel);
+
+      topicRequestModel.setTeamname(
+          manageDatabase.getTeamNameFromTeamId(tenantId, topicRequest.getTeamId()));
+
+      return topicRequestModel;
+    }
+  }
+
+  public TopicRequest getTopicRequestFromTopicId(Integer topicReqId, int tenantId) {
+    return manageDatabase.getHandleDbRequests().getTopicRequestsForTopic(topicReqId, tenantId);
   }
 
   static class TopicNameComparator implements Comparator<Topic> {
