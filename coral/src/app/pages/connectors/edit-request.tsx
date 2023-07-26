@@ -1,4 +1,5 @@
 import { PageHeader } from "@aivenio/aquarium";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PreviewBanner from "src/app/components/PreviewBanner";
 
@@ -6,10 +7,11 @@ const RequestConnectorEdit = () => {
   const navigate = useNavigate();
   const { connectorName } = useParams();
 
-  if (connectorName === undefined) {
-    navigate(-1);
-    return <></>;
-  }
+  useEffect(() => {
+    if (connectorName === undefined) {
+      navigate(-1);
+    }
+  }, []);
 
   return (
     <>
