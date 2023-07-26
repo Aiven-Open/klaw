@@ -33,6 +33,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicBaseConfig;
@@ -637,11 +638,11 @@ public class TopicControllerService {
 
   private void validateAndCopyTopicConfigs(
       TopicRequest topicReq, TopicRequestsResponseModel topicRequestModel) {
-    try {
+
       if (topicReq.getJsonParams() != null) {
         List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
         TopicConfigurationRequest topicConfigurationRequest =
-            OBJECT_MAPPER.readValue(topicReq.getJsonParams(), TopicConfigurationRequest.class);
+            UtilMethods.createTopicConfigurationRequestFromJson(topicReq.getJsonParams(), OBJECT_MAPPER);
         for (Map.Entry<String, String> entry :
             topicConfigurationRequest.getAdvancedTopicConfiguration().entrySet()) {
           topicConfigEntryList.add(
@@ -652,10 +653,7 @@ public class TopicControllerService {
         }
         topicRequestModel.setAdvancedTopicConfigEntries(topicConfigEntryList);
       }
-    } catch (JsonProcessingException e) {
-      // ignore this error while retrieving the requests
-      log.error("Error in parsing topic configs ", e);
-    }
+
   }
 
   private String updateApproverInfo(
@@ -767,19 +765,7 @@ public class TopicControllerService {
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userName);
       }
     } else {
-      Map<String, String> topicConfig = null;
-      try {
-        if (null != topicRequest.getJsonParams()) {
-          topicConfig =
-              OBJECT_MAPPER
-                  .readValue(topicRequest.getJsonParams(), TopicConfigurationRequest.class)
-                  .getAdvancedTopicConfiguration();
-        }
-      } catch (JsonProcessingException e) {
-        // ignore this error while executing the req. should have been raised earlier in the
-        // process.
-        log.error("Error in parsing topic config ", e);
-      }
+      Map<String, String> topicConfig = UtilMethods.createAdvancedConfigFromJson(topicRequest.getJsonParams(),OBJECT_MAPPER);
       updateTopicReqStatus =
           invokeClusterApiForTopicRequest(userName, tenantId, topicRequest, dbHandle, topicConfig);
     }
@@ -1028,15 +1014,12 @@ public class TopicControllerService {
 
         String topicJsonParams = topicOptional.get().getJsonParams();
         if (topicJsonParams != null) {
-          TopicConfigurationRequest topicConfigurationRequest;
-          try {
+          TopicConfigurationRequest
             topicConfigurationRequest =
-                OBJECT_MAPPER.readValue(topicJsonParams, TopicConfigurationRequest.class);
+                UtilMethods.createTopicConfigurationRequestFromJson(topicJsonParams, OBJECT_MAPPER);
             topicInfo.setAdvancedTopicConfiguration(
                 topicConfigurationRequest.getAdvancedTopicConfiguration());
-          } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-          }
+
         }
 
         Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
