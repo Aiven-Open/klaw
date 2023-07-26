@@ -333,8 +333,11 @@ public class TopicOverviewService extends BaseOverviewService {
         PromotionStatus promotionStatus = new PromotionStatus();
         promotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
         topicOverview.setTopicPromotionDetails(promotionStatus);
-        if(topicInfoList.size()>0){
-          topicInfoList.get(0).setHasOpenClaimRequest(isClaimTopicRequestOpen(topicNameSearch, environmentId, tenantId));
+        if (topicInfoList.size() > 0) {
+          topicInfoList
+              .get(0)
+              .setHasOpenClaimRequest(
+                  isClaimTopicRequestOpen(topicNameSearch, environmentId, tenantId));
         }
       }
     } catch (Exception e) {

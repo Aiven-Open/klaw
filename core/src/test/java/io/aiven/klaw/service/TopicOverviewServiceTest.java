@@ -511,7 +511,7 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasACL()).isFalse(); // topic hasAcl
 
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenSchemaRequest())
-            .isTrue(); // topic hasAcl
+        .isTrue(); // topic hasAcl
 
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest())
         .isFalse(); // topic hasAcl
@@ -701,8 +701,6 @@ public class TopicOverviewServiceTest {
         .isEqualTo(PromotionStatusType.NO_PROMOTION);
   }
 
-
-
   @Test
   @Order(15)
   public void getTopicOverviewWithNoAcls_OpenClaimRequest() {
@@ -711,66 +709,69 @@ public class TopicOverviewServiceTest {
     stubUserInfo();
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-            .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
+        .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
     when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
-            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     when(manageDatabase.getAllEnvList(anyInt()))
-            .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
 
     when(manageDatabase.getAssociatedSchemaEnvIdFromTopicId(eq("1"), eq(101)))
-            .thenReturn(Optional.of("3"));
+        .thenReturn(Optional.of("3"));
 
     TopicOverview topicOverview =
-            topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+        topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
     assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(3);
     assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
     assertThat(topicOverview.getTopicPromotionDetails().getStatus())
-            .isEqualTo(PromotionStatusType.NO_PROMOTION);
+        .isEqualTo(PromotionStatusType.NO_PROMOTION);
     assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
-            .isTrue(); // topic can be deleted
+        .isTrue(); // topic can be deleted
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
-            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
     assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
     assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
     assertThat(topicOverview.getTopicPromotionDetails().getStatus())
-            .isEqualTo(PromotionStatusType.SUCCESS);
+        .isEqualTo(PromotionStatusType.SUCCESS);
 
     when(handleDbRequests.existsSchemaRequest(
             eq(TESTTOPIC), eq(RequestStatus.CREATED.value), eq("3"), eq(101)))
-            .thenReturn(false);
+        .thenReturn(false);
     when(manageDatabase.getClusters(any(KafkaClustersType.class), anyInt()))
-            .thenReturn(kwClustersHashMap);
+        .thenReturn(kwClustersHashMap);
     when(handleDbRequests.existsSchemaRequest(
             eq(TESTTOPIC), eq(RequestStatus.CREATED.value), eq("3"), eq(101)))
-            .thenReturn(false);
+        .thenReturn(false);
     when(handleDbRequests.existsTopicRequest(
-            eq(TESTTOPIC), eq(RequestStatus.CREATED.value),eq(RequestOperationType.CLAIM.value), eq("1"), eq(101)))
-            .thenReturn(true);
+            eq(TESTTOPIC),
+            eq(RequestStatus.CREATED.value),
+            eq(RequestOperationType.CLAIM.value),
+            eq("1"),
+            eq(101)))
+        .thenReturn(true);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
 
     assertThat(topicOverview.getTopicInfoList().get(0).isHasACL()).isFalse(); // topic hasAcl
 
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenClaimRequest())
-            .isTrue();
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenClaimRequest()).isTrue();
 
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest())
-            .isFalse(); // topic hasAcl
+        .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
-            .isFalse(); // topic hasAcl
+        .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest()).isTrue(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
   }
@@ -784,42 +785,46 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getTeamId(eq(TEAM_ID))).thenReturn(99);
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
-            .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
+        .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
     when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
     when(manageDatabase.getAllEnvList(anyInt()))
-            .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+        .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
 
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
-            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 3));
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
-            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
-            .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
+        .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     when(handleDbRequests.existsTopicRequest(
-            eq(TESTTOPIC), eq(RequestStatus.CREATED.value),eq(RequestOperationType.CLAIM.value), eq("1"), eq(101)))
-            .thenReturn(true);
+            eq(TESTTOPIC),
+            eq(RequestStatus.CREATED.value),
+            eq(RequestOperationType.CLAIM.value),
+            eq("1"),
+            eq(101)))
+        .thenReturn(true);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
-    TopicOverview topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
+    TopicOverview topicOverview =
+        topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
 
-
-    verify(handleDbRequests, times(0)).existsTopicRequest(any(),any(),any(),anyInt());
-    verify(handleDbRequests, times(0)).existsAclRequest(any(),any(),any(),anyInt());
-    verify(handleDbRequests, times(0)).existsSchemaRequest(any(),any(),any(),anyInt());
+    verify(handleDbRequests, times(0)).existsTopicRequest(any(), any(), any(), anyInt());
+    verify(handleDbRequests, times(0)).existsAclRequest(any(), any(), any(), anyInt());
+    verify(handleDbRequests, times(0)).existsSchemaRequest(any(), any(), any(), anyInt());
     assertThat(topicOverview.getTopicInfoList().get(0).isHasACL()).isFalse(); // topic hasAcl
 
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenClaimRequest())
-            .isTrue();
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenClaimRequest()).isTrue();
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest())
-            .isFalse(); // topic hasAcl
+        .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
-            .isFalse(); // topic hasAcl
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest()).isFalse(); // topic hasAcl
+        .isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
+        .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
   }
 
