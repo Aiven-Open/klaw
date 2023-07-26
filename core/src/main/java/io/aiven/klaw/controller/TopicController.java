@@ -135,7 +135,7 @@ public class TopicController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<TopicRequestsResponseModel> getTopicRequest(
-      @RequestParam(value = "topicReqId") Integer topicReqId) {
+      @Valid @RequestParam(value = "topicReqId") Integer topicReqId) {
     return new ResponseEntity<>(topicControllerService.getTopicRequest(topicReqId), HttpStatus.OK);
   }
 

@@ -1,5 +1,7 @@
 package io.aiven.klaw;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_122;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -261,6 +263,86 @@ public class TopicRequestValidatorImplIT {
 
   @Test
   @Order(9)
+  public void isValidTestVerifyIfTopicRequestAlreadyExistsAndIsEditRequest() {
+    int tenantId = 101;
+    Topic topic = utilMethods.getTopic("testtopic");
+    topic.setTeamId(1001);
+
+    TopicCreateRequestModel editTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
+    editTopicRequest.setRequestor("superadmin");
+    editTopicRequest.setTopicId(1010);
+    TopicRequest topicRequest = utilMethods.getTopicRequest(1001);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(topicControllerService.getUserName()).thenReturn("superadmin");
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(topicControllerService.getEnvDetails(anyString()))
+        .thenReturn(utilMethods.getEnvLists().get(0));
+    when(topicControllerService.getExistingTopicRequests(editTopicRequest, tenantId))
+        .thenReturn(List.of(topicRequest));
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(editTopicRequest);
+    assertThat(violations).hasSize(0);
+  }
+
+  @Test
+  @Order(10)
+  public void isValidTestVerifyIfEditTopicRequestEditedByOwnerOfRequest() {
+    int tenantId = 101;
+    Topic topic = utilMethods.getTopic("testtopic");
+    topic.setTeamId(1001);
+
+    TopicCreateRequestModel editTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
+    editTopicRequest.setTopicId(1010);
+    TopicRequest topicRequest = utilMethods.getTopicRequest(1001);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(topicControllerService.getUserName()).thenReturn("superadmin");
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(topicControllerService.getEnvDetails(anyString()))
+        .thenReturn(utilMethods.getEnvLists().get(0));
+    when(topicControllerService.getExistingTopicRequests(editTopicRequest, tenantId))
+        .thenReturn(List.of(topicRequest));
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(editTopicRequest);
+    assertThat(violations).hasSize(1);
+    assertThat(violations.toString()).contains(TOPICS_VLD_ERR_121);
+  }
+
+  @Test
+  @Order(11)
+  public void submitEditTopicRequestForDeleteTypeFailure() {
+    int tenantId = 101;
+    Topic topic = utilMethods.getTopic("testtopic");
+    topic.setTeamId(1001);
+
+    TopicCreateRequestModel editTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
+    editTopicRequest.setTopicId(1010);
+    editTopicRequest.setRequestor("superadmin");
+    editTopicRequest.setRequestOperationType(RequestOperationType.DELETE);
+    TopicRequest topicRequest = utilMethods.getTopicRequest(1001);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(topicControllerService.getUserName()).thenReturn("superadmin");
+    when(commonUtilsService.getEnvsFromUserId(any())).thenReturn(Set.of("1"));
+    when(commonUtilsService.getTenantId(any())).thenReturn(tenantId);
+    when(topicControllerService.getEnvDetails(anyString()))
+        .thenReturn(utilMethods.getEnvLists().get(0));
+    when(topicControllerService.getExistingTopicRequests(editTopicRequest, tenantId))
+        .thenReturn(List.of(topicRequest));
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
+
+    Set<ConstraintViolation<TopicCreateRequestModel>> violations =
+        validator.validate(editTopicRequest);
+    assertThat(violations).hasSize(1);
+    assertThat(violations.toString()).contains(TOPICS_VLD_ERR_122);
+  }
+
+  @Test
+  @Order(12)
   public void isValidTestVerifyIfTopicAlreadyExists() {
     int tenantId = 101;
     Topic topic = utilMethods.getTopic("testtopic1001");
@@ -288,7 +370,7 @@ public class TopicRequestValidatorImplIT {
   }
 
   @Test
-  @Order(10)
+  @Order(13)
   public void isValidUpdateRequestTestNotAuthorizedUser() {
     TopicUpdateRequestModel addTopicRequest = utilMethods.getTopicUpdateRequestModel(1001);
     when(commonUtilsService.isNotAuthorizedUser(any(), eq(PermissionType.REQUEST_EDIT_TOPICS)))

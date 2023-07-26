@@ -358,7 +358,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                 }
 
         $scope.cancelRequest = function() {
-            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/browseTopics";
+            $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests";
         }
 
         $scope.getEnvs = function() {
@@ -428,7 +428,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                 params: {'topicReqId' : topicReqId}
             }).success(function(output) {
                 $scope.topicRequestDetail = output;
-                if(output != null){
+                if(output != null && output !== ''){
                     $scope.addTopic = $scope.topicRequestDetail;
                     if($scope.addTopic.requestOperationType === 'CREATE'){
                         $scope.requestTitle = "Topic Create Request";
@@ -440,14 +440,21 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                     }
                     $scope.getEnvTopicPartitions($scope.addTopic.environment);
 
-                    for (let m in $scope.addTopic.advancedTopicConfigEntries){
-                        $scope.topicConfigsSelectedDropdown.push($scope.addTopic.advancedTopicConfigEntries[m].configKey);
-                        $scope.topicConfigsSelected.push($scope.addTopic.advancedTopicConfigEntries[m].configValue);
-                        $scope.propertyInfoLink.push(apacheKafkaTopicConfigsUrl + m);
+                    if($scope.addTopic.advancedTopicConfigEntries.length > 0){
+                        for (let m in $scope.addTopic.advancedTopicConfigEntries){
+                            $scope.topicConfigsSelectedDropdown.push($scope.addTopic.advancedTopicConfigEntries[m].configKey);
+                            $scope.topicConfigsSelected.push($scope.addTopic.advancedTopicConfigEntries[m].configValue);
+                            $scope.propertyInfoLink.push(apacheKafkaTopicConfigsUrl + m);
+                        }
+                    }
+                    else{
+                        $scope.addConfigRecord(0);
                     }
                     $scope.topicConfigsSelectedLength = $scope.topicConfigsSelected.length;
                 }else{
-                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/index";
+                    $scope.alertnote = "Request not found.";
+                    $scope.showAlertToast();
+                    $window.location.href = $window.location.origin;
                 }
 
             }).error(

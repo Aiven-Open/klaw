@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version" : "2.4.0"
+    "version" : "2.5.0"
   },
   "externalDocs" : {
     "description" : "Klaw documentation",
@@ -2825,6 +2825,33 @@
         }
       }
     },
+    "/getTopicRequest" : {
+      "get" : {
+        "tags" : [ "topic-controller" ],
+        "operationId" : "getTopicRequest",
+        "parameters" : [ {
+          "name" : "topicReqId",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TopicRequestsResponseModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/getTopicOverview" : {
       "get" : {
         "tags" : [ "acl-controller" ],
@@ -5406,6 +5433,10 @@
           },
           "otherParams" : {
             "type" : "string"
+          },
+          "topicId" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         },
         "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
@@ -5989,6 +6020,10 @@
           },
           "otherParams" : {
             "type" : "string"
+          },
+          "topicId" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         },
         "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
@@ -7040,10 +7075,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },

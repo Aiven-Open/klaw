@@ -129,12 +129,23 @@ public class TopicControllerService {
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequestDao = new TopicRequest();
 
+    // Editing a topic request
     if (topicRequestReq.getTopicId() != null) {
       topicRequestDao =
-              manageDatabase.getHandleDbRequests().getTopicRequestsForTopic(topicRequestReq.getTopicId(), commonUtilsService.getTenantId(userName));
+          manageDatabase
+              .getHandleDbRequests()
+              .getTopicRequestsForTopic(
+                  topicRequestReq.getTopicId(), commonUtilsService.getTenantId(userName));
       topicRequestDao.setTopicpartitions(topicRequestReq.getTopicpartitions());
       topicRequestDao.setReplicationfactor(topicRequestReq.getReplicationfactor());
-    }else {
+
+      if (topicRequestDao.getRequestOperationType().equals(RequestOperationType.CREATE.value)) {
+        topicRequestDao.setTopicname(topicRequestReq.getTopicname());
+        topicRequestDao.setEnvironment(topicRequestReq.getEnvironment());
+        topicRequestDao.setDescription(topicRequestReq.getDescription());
+        topicRequestDao.setRemarks(topicRequestReq.getRemarks());
+      }
+    } else {
       copyProperties(topicRequestReq, topicRequestDao);
     }
     topicRequestDao.setRequestOperationType(topicRequestReq.getRequestOperationType().value);
@@ -1071,7 +1082,7 @@ public class TopicControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
     TopicRequest topicRequest =
         manageDatabase.getHandleDbRequests().getTopicRequestsForTopic(topicReqId, tenantId);
-    if (!topicRequest.getRequestor().equals(userName)) {
+    if (topicRequest == null) {
       return null;
     } else {
       TopicRequestsResponseModel topicRequestModel = new TopicRequestsResponseModel();
@@ -1079,6 +1090,7 @@ public class TopicControllerService {
       topicRequestModel.setRequestStatus(RequestStatus.of(topicRequest.getRequestStatus()));
       topicRequestModel.setRequestOperationType(
           RequestOperationType.of(topicRequest.getRequestOperationType()));
+      topicRequestModel.setEnvironmentName(getEnvDetails(topicRequest.getEnvironment()).getName());
 
       validateAndCopyTopicConfigs(topicRequest, topicRequestModel);
 

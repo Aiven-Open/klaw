@@ -486,12 +486,14 @@
 													<option value="" selected="selected">
 														Select Environment</option>
 												</select>
-												<select ng-show="addTopic.requestOperationType == 'UPDATE' || addTopic.requestOperationType == 'PROMOTE'" disabled required class="form-control custom-select"
+												<select ng-show="addTopic.requestOperationType == 'UPDATE'" disabled required class="form-control custom-select"
 														ng-model="addTopic.environment"
 														ng-options="env.id as env.name for env in allenvs">
 													<option value="" selected="selected">
 														Select Environment</option>
 												</select>
+												<input disabled ng-show="addTopic.requestOperationType == 'PROMOTE'"  name="addTopic.envName"
+													   type="text" value="{{addTopic.environmentName}}" class="form-control">
 
 											</div>
 										</div>

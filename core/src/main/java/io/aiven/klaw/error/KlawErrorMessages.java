@@ -383,6 +383,11 @@ public class KlawErrorMessages {
   public static final String TOPICS_VLD_ERR_120 =
       "Topic Suffix and Topic Prefix overlap there is a requirement for %s characters minimum to be unique between the prefix and suffix.";
 
+  public static final String TOPICS_VLD_ERR_121 =
+      "Failure. You are not authorized to edit the request owned by a different user.";
+
+  public static final String TOPICS_VLD_ERR_122 = "Failure. This topic request cannot be edited.";
+
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";
 
