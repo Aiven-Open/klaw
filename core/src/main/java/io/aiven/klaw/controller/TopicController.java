@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -124,6 +125,19 @@ public class TopicController {
             order,
             isMyRequest),
         HttpStatus.OK);
+  }
+
+  /**
+   * @param topicReqId requestId of topic
+   * @return Topic Request details
+   */
+  @RequestMapping(
+      value = "/topic/request/{topicReqId}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<TopicRequestsResponseModel> getTopicRequest(
+      @PathVariable Integer topicReqId) {
+    return new ResponseEntity<>(topicControllerService.getTopicRequest(topicReqId), HttpStatus.OK);
   }
 
   @RequestMapping(
