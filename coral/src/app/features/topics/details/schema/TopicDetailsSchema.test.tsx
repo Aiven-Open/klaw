@@ -5,6 +5,12 @@ import userEvent from "@testing-library/user-event";
 import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicSchemaOverview } from "src/domain/topic";
+import { promoteSchemaRequest } from "src/domain/schema-request";
+
+jest.mock("src/domain/schema-request/schema-request-api.ts");
+const mockPromoteSchemaRequest = promoteSchemaRequest as jest.MockedFunction<
+  typeof promoteSchemaRequest
+>;
 
 const mockedUseTopicDetails = jest.fn();
 jest.mock("src/app/features/topics/details/TopicDetails", () => ({
@@ -68,8 +74,14 @@ const noPromotion_testTopicSchemas = {
 };
 
 describe("TopicDetailsSchema", () => {
+  const user = userEvent.setup();
+
   describe("renders right view for topic owner", () => {
     beforeAll(() => {
+      mockPromoteSchemaRequest.mockResolvedValue({
+        success: true,
+        message: "",
+      });
       mockedUseTopicDetails.mockReturnValue({
         topicOverviewIsRefetching: false,
         topicSchemasIsRefetching: false,
@@ -123,7 +135,9 @@ describe("TopicDetailsSchema", () => {
     });
 
     it("shows a link to request a new schema version", () => {
-      const link = screen.getByRole("link", { name: "Request a new version" });
+      const link = screen.getByRole("link", {
+        name: "Request a new version",
+      });
 
       // schemaDetailsPerEnv could be undefined based on its type,
       // but it's always defined for the test here
@@ -161,12 +175,19 @@ describe("TopicDetailsSchema", () => {
     });
 
     it("shows information about schema promotion", () => {
-      const banner = screen.getByText("This schema has not yet been promoted", {
-        exact: false,
+      const promotionBanner = screen.getByTestId("schema-promotion-banner");
+      const infoText = within(promotionBanner).getByText(
+        "This schema has not yet been promoted",
+        {
+          exact: false,
+        }
+      );
+      const button = within(promotionBanner).getByRole("button", {
+        name: "Promote",
       });
-      const button = screen.getByRole("button", { name: "Promote" });
 
-      expect(banner).toBeVisible();
+      expect(promotionBanner).toBeVisible();
+      expect(infoText).toBeVisible();
       expect(button).toBeEnabled();
     });
 
@@ -198,6 +219,38 @@ describe("TopicDetailsSchema", () => {
 
       expect(previewEditor).toBeVisible();
     });
+  });
+
+  describe("enables topic owner to change the version of a schema", () => {
+    beforeEach(() => {
+      mockPromoteSchemaRequest.mockResolvedValue({
+        success: true,
+        message: "",
+      });
+      mockedUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
+        topicName: testTopicName,
+        environmentId: testEnvironmentId,
+        topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+        topicOverview: { topicInfo: { topicOwner: true } },
+      });
+      customRender(
+        <AquariumContext>
+          <TopicDetailsSchema />
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+    });
+
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
 
     it("allows changing the version of the schema", async () => {
       const select = screen.getByRole("combobox", { name: "Select version" });
@@ -206,6 +259,97 @@ describe("TopicDetailsSchema", () => {
       expect(select).toHaveValue("2");
 
       expect(mockSetSchemaVersion).toHaveBeenCalledWith(2);
+    });
+  });
+
+  describe("enables topic owner to promote a schema", () => {
+    const originalConsoleError = console.error;
+
+    beforeEach(() => {
+      console.error = jest.fn();
+
+      mockedUseTopicDetails.mockReturnValue({
+        topicOverviewIsRefetching: false,
+        topicSchemasIsRefetching: false,
+        topicName: testTopicName,
+        environmentId: testEnvironmentId,
+        topicSchemas: testTopicSchemas,
+        setSchemaVersion: mockSetSchemaVersion,
+        topicOverview: { topicInfo: { topicOwner: true } },
+      });
+
+      customRender(
+        <AquariumContext>
+          <TopicDetailsSchema />
+        </AquariumContext>,
+        {
+          memoryRouter: true,
+          queryClient: true,
+        }
+      );
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      cleanup();
+      jest.clearAllMocks();
+    });
+
+    it("sends an update schema request", async () => {
+      mockPromoteSchemaRequest.mockResolvedValue({
+        success: true,
+        message: "",
+      });
+
+      const buttonPromote = screen.getByRole("button", { name: "Promote" });
+
+      await user.click(buttonPromote);
+
+      const modal = screen.getByRole("dialog");
+      const buttonRequest = within(modal).getByRole("button", {
+        name: "Request schema promotion",
+      });
+
+      await user.click(buttonRequest);
+
+      expect(mockPromoteSchemaRequest).toHaveBeenCalledWith({
+        forceRegister: false,
+        remarks: "",
+        schemaVersion: "3",
+        sourceEnvironment: "1",
+        targetEnvironment: "2",
+        topicName: "topic-name",
+      });
+
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("shows an error if promotion did fail", async () => {
+      mockPromoteSchemaRequest.mockRejectedValue({
+        success: false,
+        message: "Oh no",
+      });
+
+      const buttonPromote = screen.getByRole("button", { name: "Promote" });
+
+      await user.click(buttonPromote);
+
+      const modal = screen.getByRole("dialog");
+      const buttonRequest = within(modal).getByRole("button", {
+        name: "Request schema promotion",
+      });
+
+      await user.click(buttonRequest);
+
+      const alert = screen.getByRole("alert");
+      const errorMessage = within(alert).getByText("Oh no");
+
+      expect(alert).toBeVisible();
+      expect(errorMessage).toBeVisible();
+      expect(console.error).toHaveBeenCalledWith({
+        success: false,
+        message: "Oh no",
+      });
     });
   });
 
@@ -316,7 +460,7 @@ describe("TopicDetailsSchema", () => {
     });
   });
 
-  describe("renders right view for user that is not topic owner)", () => {
+  describe("renders right view for user that is not topic owner", () => {
     beforeAll(() => {
       mockedUseTopicDetails.mockReturnValue({
         topicOverviewIsRefetching: false,
@@ -352,15 +496,10 @@ describe("TopicDetailsSchema", () => {
     });
 
     it("does not show information about schema promotion", () => {
-      const banner = screen.queryByText(
-        "This schema has not yet been promoted",
-        {
-          exact: false,
-        }
-      );
+      const promotionBanner = screen.queryByTestId("schema-promotion-banner");
       const button = screen.queryByRole("button", { name: "Promote" });
 
-      expect(banner).not.toBeInTheDocument();
+      expect(promotionBanner).not.toBeInTheDocument();
       expect(button).not.toBeInTheDocument();
     });
 

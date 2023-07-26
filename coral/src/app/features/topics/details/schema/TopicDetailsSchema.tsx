@@ -1,6 +1,5 @@
 import {
   Alert,
-  Banner,
   Box,
   Button,
   EmptyState,
@@ -28,7 +27,7 @@ import {
 } from "src/domain/schema-request";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
+import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 
 function TopicDetailsSchema() {
   const navigate = useNavigate();
@@ -48,13 +47,14 @@ function TopicDetailsSchema() {
     useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const toast = useToast();
+
+  const { targetEnvId, sourceEnv, targetEnv } = schemaPromotionDetails;
   const isTopicOwner = topicOverview.topicInfo.topicOwner;
   const noSchema =
     allSchemaVersions.length === 0 ||
     schemaDetailsPerEnv === undefined ||
     schemaPromotionDetails === undefined;
-
-  const toast = useToast();
 
   const { mutate: promoteSchema, isLoading: promoteSchemaIsLoading } =
     useMutation(
@@ -65,8 +65,6 @@ function TopicDetailsSchema() {
         if (noSchema) {
           throw new Error("No schema available");
         }
-
-        const { targetEnvId, sourceEnv } = schemaPromotionDetails;
 
         if (targetEnvId === undefined || sourceEnv === undefined) {
           throw new Error("No promotion details available");
@@ -113,8 +111,6 @@ function TopicDetailsSchema() {
       </>
     );
   }
-
-  const { targetEnv, status: promotionStatus } = schemaPromotionDetails;
 
   return (
     <>
@@ -178,28 +174,30 @@ function TopicDetailsSchema() {
         )}
       </Box>
 
-      {!topicSchemasIsRefetching &&
-        isTopicOwner &&
-        promotionStatus !== "NO_PROMOTION" && (
-          <Banner image={illustration} layout="vertical" title={""}>
-            <Box component={"p"} marginBottom={"l1"}>
-              This schema has not yet been promoted to the {targetEnv}{" "}
-              environment.
+      {!topicSchemasIsRefetching && isTopicOwner && (
+        <>
+          {errorMessage.length > 0 && (
+            <Box marginBottom={"l1"} role={"alert"}>
+              <Alert type="error">{errorMessage}</Alert>
             </Box>
-            {errorMessage.length > 0 && (
-              <Box component={"p"} marginBottom={"l1"}>
-                <Alert type="error">{errorMessage}</Alert>
-              </Box>
-            )}
-            <Button.Primary
-              onClick={() =>
-                setShowSchemaPromotionModal(!showSchemaPromotionModal)
-              }
-            >
-              Promote
-            </Button.Primary>
-          </Banner>
-        )}
+          )}
+          <SchemaPromotionBanner
+            schemaPromotionDetails={schemaPromotionDetails}
+            // @TODO backend will implement this property
+            // we show an descriptive error if a promotion
+            // is not possible because there is an open
+            // schema request, this is "only" for showing
+            // that information and preventing user from even
+            // trying to promote
+            hasOpenSchemaRequest={false}
+            topicName={topicName}
+            setShowSchemaPromotionModal={() =>
+              setShowSchemaPromotionModal(!showSchemaPromotionModal)
+            }
+          />
+        </>
+      )}
+
       <SchemaStats
         isLoading={topicSchemasIsRefetching}
         version={schemaDetailsPerEnv.version}
