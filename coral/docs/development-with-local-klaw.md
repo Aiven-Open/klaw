@@ -16,13 +16,14 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
  
 ## First setup
 
-ℹ️ environment settings are located in the file [`.env.local-api`](../../coral/.env.local-api).
+ℹ️ Environment settings are located in the file [`.env.local-api`](../../coral/.env.local-api).
 
-** ℹRequirements**
+**⚠️ Requirements**
 
-- [node](https://nodejs.org/en/) needs to be installed <br/>
-  -> see [nvmrc](../.nvmrc) or the `engines` definition in [package.json](../package.json) for version).
+- [node](https://nodejs.org/en/) needs to be installed. See [nvmrc](../.nvmrc) or the `engines` definition in [package.json](../package.json) for version.
 - Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm.
+
+**Step by step**
 
 1. Navigate to [`/coral`](../../coral)
 2. Run `pnpm install`
@@ -32,8 +33,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 6. Install and run Docker: [Get Docker](https://docs.docker.com/get-docker/)
 7. Go to directory [`coral/proxy`](../../coral/proxy)
 8. Run `pnpm install` if you haven't already
-9. Run `ppm setup`
-   `pnpm setup` will build and deploy your docker container for:
+9. Run `pnpm setup` to build and deploy your docker container for:
     - Klaw core: the main API Coral interacts with
     - Klaw cluster api: the API interacting with the Kafka clusters managed by Klaw
     - Kafka, zoo-keeper, schema-registry: a basic Kafka setup
@@ -55,7 +55,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 
 ### Note on login and authentication
 
-The correct redirect for login and authentication is **not** working yet.**
+The correct redirect for login and authentication is **not** working yet.
 
 ##### Login 
 
