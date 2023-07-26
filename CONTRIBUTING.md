@@ -8,16 +8,26 @@ Please read through this document before submitting any issues or pull requests.
 
 ## Content
 
-- [❤️ Code of Conduct](#-code-of-conduct)
-- [Opening an issue](#opening-an-issue)
-- [How to work on an issue](#how-to-work-on-an-issue)
-- [How to make a pull request](#how-to-make-a-pull-request)
-  - [Developer Certificate of Origin](#developer-certificate-of-origin)
-  - [When is your pull request ready to be merged?](#-when-is-your-pull-request-ready-to-be-merged)
-- [How to merge a pull request](#how-to-merge-a-pull-request)
-- [Guideline commit messages](#guideline-commit-messages)
-  - [ℹ️ Semantic prefixes for commit messages](#-semantic-prefixes-for-commit-messages)
-  - [✍️ Writing a great commit message](#-writing-a-great-commit-message)
+- [Contributing Guidelines](#contributing-guidelines)
+  - [Content](#content)
+  - [❤️ Code of Conduct](#️-code-of-conduct)
+  - [Opening an issue](#opening-an-issue)
+  - [How to work on an issue](#how-to-work-on-an-issue)
+  - [How to make a pull request](#how-to-make-a-pull-request)
+    - [Developer Certificate of Origin](#developer-certificate-of-origin)
+      - [How to sign off commits](#how-to-sign-off-commits)
+      - [How to fix not signed off commits after the fact](#how-to-fix-not-signed-off-commits-after-the-fact)
+    - [✅ When is your pull request ready to be merged?](#-when-is-your-pull-request-ready-to-be-merged)
+  - [How to merge a pull request](#how-to-merge-a-pull-request)
+    - [Squash and merge](#squash-and-merge)
+  - [Guideline commit messages](#guideline-commit-messages)
+    - [ℹ️ Semantic prefixes for commit messages](#ℹ️-semantic-prefixes-for-commit-messages)
+    - [✍️ Writing a great commit message](#️-writing-a-great-commit-message)
+      - [1. Add a short description as the first line](#1-add-a-short-description-as-the-first-line)
+      - [2. Use the "imperative mood" in the first line](#2-use-the-imperative-mood-in-the-first-line)
+      - [3. Separate your description with a new line from the body](#3-separate-your-description-with-a-new-line-from-the-body)
+      - [4. Use an optional body to explain why not how.](#4-use-an-optional-body-to-explain-why-not-how)
+      - [5. Wrap your body at 72 characters](#5-wrap-your-body-at-72-characters)
 
 ## ❤️ Code of Conduct
 
@@ -46,7 +56,9 @@ The more information an issue includes, the better! For example:
 - If you have the rights: set yourself as an assignee and add the __in progress__ label.
 - [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the Klaw repository.
 - On your fork, [create a branch](https://docs.github.com/en/desktop/contributing-and-collaborating-using-github-desktop/making-changes-in-a-branch/managing-branches#creating-a-branch) named after the issue you're working on.
-- Make all of your changes 🧑‍💻
+- 🧑‍💻 Make all of your changes. You may find detailed documentation about how to set up a local development environment in our documentation:
+  - [for `coral` development](coral/docs/README.md#installation-and-usage)
+  - [for `core` or `cluster-api` development](README.md#install)
 - For your commits, please see our [Guideline commit messages](#guideline-commit-messages).
 - Prefer making small and self-contained commits. It helps doing reviews. 
 - Check if it would be helpful to update documentation related to your change. If yes, please do so 🤗!
@@ -129,9 +141,21 @@ __4. Keep a clear git history in mind__
 - Your commit messages should follow our [guideline](#guideline-commit-messages).
 - If you add changes after a review, don't force push in your existing PR, but add new commits. That way, reviewers can pick up the review again.
 
-## How to merge a pull request
+## Review process and merging a pull request
 
-Pull request are merged by the maintainer that approved after review. An pull request author should never merge themself, even if they are maintainer. 
+A pull request author should never merge themselves. Pull requests are reviewed and merged by one or more maintainer(s). 
+
+The review process goes as follow:
+- One or more maintainer(s) will carefully read the description and the code of the pull request
+- Comments may be left on specific parts of the code, or on the pull request as a whole. We strive to always be empathetic and helpful in our reviews. The comments may be questions about technical choices, observations about possible improvements, clarification of some of the project's conventions, or compliments on beautiful code.
+- Comments may be blocking. In these cases, the pull request will not be approved until the comments are addressed. "Addressing" a comment can mean explaining your approach and getting agreement from the reviewer, or implementing the suggested change and pushing a subsequent commit (we appreciate linking to the commit in an answer to the comment). 
+- Once all comments have been addressed and resolved, one or more maintainer will approve the pull request. This action means "this code should be part of Klaw".
+- The pull request will then be merged into the `main` branch by a maintainer, usually one of the reviewers.
+
+In summary, the checklist for a pull request to be merged is as follow:
+- Reviewed and approved by one or more maintainer(s)
+- GitHub actions all green
+- Pull request branch up to date with `main` branch
 
 ### Squash and merge
 
