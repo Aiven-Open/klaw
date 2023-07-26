@@ -50,6 +50,7 @@
       }
     },
     "/user/updateTeam" : {
+                           
       "post" : {
         "tags" : [ "users-teams-controller" ],
         "operationId" : "updateUserTeamFromSwitchTeams",
