@@ -74,7 +74,7 @@ function TopicOverview() {
         <TopicPromotionBanner
           topicName={topicName}
           topicPromotionDetails={topicPromotionDetails}
-          hasOpenRequest={hasOpenTopicRequest}
+          hasOpenTopicRequest={hasOpenTopicRequest}
         />
       )}
 

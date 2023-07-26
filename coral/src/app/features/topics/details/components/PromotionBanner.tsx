@@ -44,7 +44,7 @@ const PromotionBanner = ({
       <GridItem colSpan={"span-2"}>
         <Banner image={illustration} layout="vertical" title={""}>
           <Box component={"p"} marginBottom={"l1"}>
-            There is an open request for {topicName}.
+            There is an open {type} request for {topicName}.
           </Box>
           <Button.ExternalLink
             href={`/requests/${type}s?search=${topicName}&status=CREATED&page=1`}

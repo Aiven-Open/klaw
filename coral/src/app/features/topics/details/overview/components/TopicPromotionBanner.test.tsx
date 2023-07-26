@@ -11,7 +11,7 @@ const promotionDetailForPromote: TopicOverview["topicPromotionDetails"] = {
 
 const promoteProps = {
   topicPromotionDetails: promotionDetailForPromote,
-  hasOpenRequest: false,
+  hasOpenTopicRequest: false,
   topicName: "topic-hello",
 };
 
@@ -25,7 +25,7 @@ const promotionDetailForSeeOpenRequest: TopicOverview["topicPromotionDetails"] =
 
 const seeOpenRequestProps = {
   topicPromotionDetails: promotionDetailForSeeOpenRequest,
-  hasOpenRequest: true,
+  hasOpenTopicRequest: true,
   topicName: "topic-hello",
 };
 
@@ -39,7 +39,7 @@ const promotionDetailForSeeOpenPromotionRequest: TopicOverview["topicPromotionDe
 
 const seeOpenPromotionRequestProps = {
   topicPromotionDetails: promotionDetailForSeeOpenPromotionRequest,
-  hasOpenRequest: false,
+  hasOpenTopicRequest: false,
   topicName: "topic-hello",
 };
 
@@ -49,7 +49,7 @@ const promotionDetailForNoPromotion: TopicOverview["topicPromotionDetails"] = {
 
 const nullProps = {
   topicPromotionDetails: promotionDetailForNoPromotion,
-  hasOpenRequest: false,
+  hasOpenTopicRequest: false,
   topicName: "topic-hello",
 };
 

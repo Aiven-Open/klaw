@@ -4,13 +4,17 @@ import { PromotionBanner } from "src/app/features/topics/details/components/Prom
 
 interface TopicPromotionBannerProps {
   topicPromotionDetails: TopicOverview["topicPromotionDetails"];
-  hasOpenRequest: boolean;
+  /** In case there is an open request for this topic
+   * it can't be promoted, and we want to show that
+   * information to the user.
+   */
+  hasOpenTopicRequest: boolean;
   topicName: string;
 }
 
 const TopicPromotionBanner = ({
   topicPromotionDetails,
-  hasOpenRequest,
+  hasOpenTopicRequest,
   topicName,
 }: TopicPromotionBannerProps) => {
   return (
@@ -18,7 +22,7 @@ const TopicPromotionBanner = ({
       <PromotionBanner
         topicName={topicName}
         promotionDetails={topicPromotionDetails}
-        hasOpenRequest={hasOpenRequest}
+        hasOpenRequest={hasOpenTopicRequest}
         type={"topic"}
         promoteElement={
           <Button.ExternalLink

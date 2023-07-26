@@ -116,7 +116,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is an open request for ${testTopicName}.`
+        `There is an open schema request for ${testTopicName}.`
       );
 
       expect(information).toBeVisible();
@@ -150,7 +150,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is an open request for ${testTopicName}.`
+        `There is an open topic request for ${testTopicName}.`
       );
 
       expect(information).toBeVisible();
