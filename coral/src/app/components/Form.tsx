@@ -15,7 +15,7 @@ import {
   TextareaProps as BaseTextareaProps,
   Option,
   OptionType,
-  PrimaryButton,
+  Button,
 } from "@aivenio/aquarium";
 import { zodResolver } from "@hookform/resolvers/zod";
 import get from "lodash/get";
@@ -125,7 +125,7 @@ function _PasswordInput<T extends FieldValues>({
       type="password"
       {...form.register(name)}
       valid={error ? false : undefined}
-      error={error}
+      helperText={error}
     />
   );
 }
@@ -158,7 +158,7 @@ function _TextInput<T extends FieldValues>({
       type="text"
       {...form.register(name)}
       valid={error ? false : undefined}
-      error={error}
+      helperText={error}
     />
   );
 }
@@ -190,7 +190,7 @@ function _NumberInput<T extends FieldValues>({
       type="number"
       {...form.register(name)}
       valid={error === undefined}
-      error={error}
+      helperText={error}
     />
   );
 }
@@ -226,7 +226,7 @@ function _Textarea<T extends FieldValues>({
       {...props}
       {...form.register(name)}
       valid={error === undefined}
-      error={error}
+      helperText={error}
     />
   );
 }
@@ -247,7 +247,6 @@ Textarea.Skeleton = BaseTextarea.Skeleton;
 //
 function _MultiInput<T extends FieldValues>({
   name,
-  helperText,
   formContext: form,
   ...props
 }: BaseMultiInputProps<T> & FormInputProps<T> & FormRegisterProps<T>) {
@@ -298,11 +297,8 @@ function _MultiInput<T extends FieldValues>({
 
               return isCurrentItemValid;
             }}
-            error={error}
             helperText={
-              itemsErrors !== undefined
-                ? itemErrorsAccumulatedMessages
-                : helperText
+              itemsErrors !== undefined ? itemErrorsAccumulatedMessages : error
             }
           />
         );
@@ -452,14 +448,14 @@ export const NativeSelect = <T extends FieldValues>(
 
 NativeSelect.Skeleton = BaseNativeSelect.Skeleton;
 
-type ButtonProps = React.ComponentProps<typeof PrimaryButton>;
+type ButtonProps = React.ComponentProps<typeof Button.Primary>;
 function _SubmitButton<T extends FieldValues>({
   formContext: {
     formState: { isSubmitting },
   },
   ...props
 }: ButtonProps & FormRegisterProps<T>) {
-  return <PrimaryButton {...props} loading={isSubmitting} type="submit" />;
+  return <Button.Primary {...props} loading={isSubmitting} type="submit" />;
 }
 
 const SubmitButtonMemo = memo(
@@ -526,7 +522,7 @@ function _RadioButtonGroup<T extends FieldValues>({
                 shouldDirty: true,
               });
             }}
-            error={error?.message}
+            helperText={error?.message}
             valid={error === undefined}
           />
         );

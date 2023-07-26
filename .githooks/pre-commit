@@ -1,13 +1,49 @@
-#!/bin/sh
+#!/bin/bash
 
 FRONTEND_ROOT="coral"
+PROXY_ROOT="coral/proxy"
 
 GIT_ROOT=$(git rev-parse --show-toplevel)
 STAGED_FILES=$(git diff --staged --name-only)
 
-if echo "$STAGED_FILES" | grep -q -e "$FRONTEND_ROOT";
-then
+for file in $STAGED_FILES; do
+    if echo "$file" | grep -q -e "$FRONTEND_ROOT"; then
+        CHANGED_FILE_IN_CORAL_DIR=true
+        if ! echo "$file" | grep -q -e "$PROXY_ROOT"; then
+            # If a file is found in the coral directory but not in the proxy directory,
+            # we set CHANGED_FILES_ONLY_IN_PROXY_DIR to true and break the loop
+            CHANGED_FILES_ONLY_IN_PROXY_DIR=false
+            break
+        fi
+    fi
+done
+
+# Execute lint-staged and tsc jobs regardless of the files' location
+if [ "$CHANGED_FILE_IN_CORAL_DIR" = true ]; then
     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" lint-staged
+    if [ $? -ne 0 ]; then
+        echo -e '\n\n🙋 Check "lint-staged" failed.'
+        echo -e '   Canceling the commit process.'
+        echo -e '   Please fix and try again!\n\n'
+        exit 1
+    fi
+fi
+
+# Execute the test job only if there are files in the "coral" directory that are not in the "coral/proxy" directory
+if [ "$CHANGED_FILE_IN_CORAL_DIR" = true ] && [ "$CHANGED_FILES_ONLY_IN_PROXY_DIR" = false ]; then
     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" tsc
+    if [ $? -ne 0 ]; then
+        echo -e '\n\n🙋 Check "tsc" failed.'
+        echo -e '   Canceling the commit process.'
+        echo -e '   Please fix and try again!\n\n'
+        exit 1
+    fi
+
     pnpm --prefix="$GIT_ROOT"/"$FRONTEND_ROOT" test --bail
+    if [ $? -ne 0 ]; then
+        echo -e '\n\n🙋 Check "test" failed.'
+        echo -e '   Canceling the commit process.'
+        echo -e '   Please fix and try again!\n\n'
+        exit 1
+    fi
 fi
