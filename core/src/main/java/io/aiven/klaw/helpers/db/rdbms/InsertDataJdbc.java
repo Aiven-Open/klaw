@@ -86,7 +86,12 @@ public class InsertDataJdbc {
     log.debug("insertIntoRequestTopic {}", topicRequest);
 
     Map<String, String> hashMap = new HashMap<>();
-    Integer topicId = getNextTopicRequestId("TOPIC_REQ_ID", topicRequest.getTenantId());
+    Integer topicId;
+    if (topicRequest.getTopicid() == null) {
+      topicId = getNextTopicRequestId("TOPIC_REQ_ID", topicRequest.getTenantId());
+    } else {
+      topicId = topicRequest.getTopicid();
+    }
     hashMap.put("topicId", "" + topicId);
 
     topicRequest.setTopicid(topicId);
