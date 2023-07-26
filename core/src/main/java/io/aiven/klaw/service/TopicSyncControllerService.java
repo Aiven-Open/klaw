@@ -575,7 +575,7 @@ public class TopicSyncControllerService {
               topicFound.getNoOfPartitions(),
               topicFound.getNoOfReplicas(),
               syncBackTopics.getTargetEnv(),
-                  UtilMethods.createAdvancedConfigFromJson(topicFound.getJsonParams(),mapper),
+              UtilMethods.createAdvancedConfigFromJson(topicFound.getJsonParams(), mapper),
               tenantId,
               false);
 

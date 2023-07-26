@@ -639,21 +639,21 @@ public class TopicControllerService {
   private void validateAndCopyTopicConfigs(
       TopicRequest topicReq, TopicRequestsResponseModel topicRequestModel) {
 
-      if (topicReq.getJsonParams() != null) {
-        List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
-        TopicConfigurationRequest topicConfigurationRequest =
-            UtilMethods.createTopicConfigurationRequestFromJson(topicReq.getJsonParams(), OBJECT_MAPPER);
-        for (Map.Entry<String, String> entry :
-            topicConfigurationRequest.getAdvancedTopicConfiguration().entrySet()) {
-          topicConfigEntryList.add(
-              TopicConfigEntry.builder()
-                  .configKey(entry.getKey())
-                  .configValue(entry.getValue())
-                  .build());
-        }
-        topicRequestModel.setAdvancedTopicConfigEntries(topicConfigEntryList);
+    if (topicReq.getJsonParams() != null) {
+      List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
+      TopicConfigurationRequest topicConfigurationRequest =
+          UtilMethods.createTopicConfigurationRequestFromJson(
+              topicReq.getJsonParams(), OBJECT_MAPPER);
+      for (Map.Entry<String, String> entry :
+          topicConfigurationRequest.getAdvancedTopicConfiguration().entrySet()) {
+        topicConfigEntryList.add(
+            TopicConfigEntry.builder()
+                .configKey(entry.getKey())
+                .configValue(entry.getValue())
+                .build());
       }
-
+      topicRequestModel.setAdvancedTopicConfigEntries(topicConfigEntryList);
+    }
   }
 
   private String updateApproverInfo(
@@ -765,7 +765,8 @@ public class TopicControllerService {
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userName);
       }
     } else {
-      Map<String, String> topicConfig = UtilMethods.createAdvancedConfigFromJson(topicRequest.getJsonParams(),OBJECT_MAPPER);
+      Map<String, String> topicConfig =
+          UtilMethods.createAdvancedConfigFromJson(topicRequest.getJsonParams(), OBJECT_MAPPER);
       updateTopicReqStatus =
           invokeClusterApiForTopicRequest(userName, tenantId, topicRequest, dbHandle, topicConfig);
     }
@@ -1014,12 +1015,10 @@ public class TopicControllerService {
 
         String topicJsonParams = topicOptional.get().getJsonParams();
         if (topicJsonParams != null) {
-          TopicConfigurationRequest
-            topicConfigurationRequest =
-                UtilMethods.createTopicConfigurationRequestFromJson(topicJsonParams, OBJECT_MAPPER);
-            topicInfo.setAdvancedTopicConfiguration(
-                topicConfigurationRequest.getAdvancedTopicConfiguration());
-
+          TopicConfigurationRequest topicConfigurationRequest =
+              UtilMethods.createTopicConfigurationRequestFromJson(topicJsonParams, OBJECT_MAPPER);
+          topicInfo.setAdvancedTopicConfiguration(
+              topicConfigurationRequest.getAdvancedTopicConfiguration());
         }
 
         Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
