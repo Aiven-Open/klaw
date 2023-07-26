@@ -389,9 +389,8 @@ public class TopicAclControllerIT {
   @Order(9)
   public void editTopicRequest() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId1);
-    addTopicRequest.setTopicId(1001);
+    addTopicRequest.setRequestId(1001);
     addTopicRequest.setTopicpartitions(2);
-    addTopicRequest.setRequestor(user1);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     String response =
         mvc.perform(
@@ -415,10 +414,9 @@ public class TopicAclControllerIT {
   public void queryTopicRequestFromId() throws Exception {
     String res =
         mvc.perform(
-                MockMvcRequestBuilders.get("/getTopicRequest")
+                MockMvcRequestBuilders.get("/topic/request/1001")
                     .with(user(user3).password(PASSWORD))
                     .contentType(MediaType.APPLICATION_JSON)
-                    .param("topicReqId", "1001")
                     .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk())
             .andReturn()
@@ -464,9 +462,8 @@ public class TopicAclControllerIT {
   @Order(12)
   public void editAlreadyApprovedTopicRequestFailure() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(topicId1);
-    addTopicRequest.setTopicId(1001);
+    addTopicRequest.setRequestId(1001);
     addTopicRequest.setTopicpartitions(2);
-    addTopicRequest.setRequestor(user1);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
     String response =
         mvc.perform(

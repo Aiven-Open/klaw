@@ -59,7 +59,7 @@ public class TopicRequestValidatorImpl
       // Verify if topic request type is Create/Promote
       if (RequestOperationType.CREATE != topicRequestModel.getRequestOperationType()
           && RequestOperationType.PROMOTE != topicRequestModel.getRequestOperationType()
-          && topicRequestModel.getTopicId() == null) {
+          && topicRequestModel.getRequestId() == null) {
         updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_101);
         return false;
       }
@@ -132,17 +132,12 @@ public class TopicRequestValidatorImpl
     if (!validateTopicConfigParameters(topicRequestModel, constraintValidatorContext)) return false;
 
     // Verify if topic request already exists
-    if (topics != null && topicRequestModel.getTopicId() == null) {
+    if (topics != null && topicRequestModel.getRequestId() == null) {
       if (!topicControllerService.getExistingTopicRequests(topicRequestModel, tenantId).isEmpty()) {
         updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_110);
         return false;
       }
     } else {
-      // make sure editor of the topic request is the logged-in user
-      if (!topicRequestModel.getRequestor().equals(userName)) {
-        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_121);
-        return false;
-      }
       // Editing an existing topic request of type DELETE/CLAIM is not possible.
       if (topicRequestModel.getRequestOperationType().equals(RequestOperationType.CLAIM)
           || topicRequestModel.getRequestOperationType().equals(RequestOperationType.DELETE)) {
@@ -152,7 +147,7 @@ public class TopicRequestValidatorImpl
 
       // only requests in created state can be edited
       if (!topicControllerService
-          .getTopicRequestFromTopicId(topicRequestModel.getTopicId(), tenantId)
+          .getTopicRequestFromTopicId(topicRequestModel.getRequestId(), tenantId)
           .getRequestStatus()
           .equals(RequestStatus.CREATED.value)) {
         updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_123);

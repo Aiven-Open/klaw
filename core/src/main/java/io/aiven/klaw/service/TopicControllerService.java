@@ -15,6 +15,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_111;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_112;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_113;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -130,12 +131,16 @@ public class TopicControllerService {
     TopicRequest topicRequestDao = new TopicRequest();
 
     // Editing a topic request
-    if (topicRequestReq.getTopicId() != null) {
+    if (topicRequestReq.getRequestId() != null) {
       topicRequestDao =
-          manageDatabase
-              .getHandleDbRequests()
-              .getTopicRequestsForTopic(
-                  topicRequestReq.getTopicId(), commonUtilsService.getTenantId(userName));
+          getTopicRequestFromTopicId(
+              topicRequestReq.getRequestId(), commonUtilsService.getTenantId(userName));
+
+      // check if the topic request owned by the logged-in user
+      if (!topicRequestDao.getRequestor().equals(userName)) {
+        return ApiResponse.builder().success(false).message(TOPICS_VLD_ERR_121).build();
+      }
+
       topicRequestDao.setTopicpartitions(topicRequestReq.getTopicpartitions());
       topicRequestDao.setReplicationfactor(topicRequestReq.getReplicationfactor());
 

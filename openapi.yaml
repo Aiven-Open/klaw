@@ -2163,6 +2163,33 @@
         }
       }
     },
+    "/topic/request/{topicReqId}" : {
+      "get" : {
+        "tags" : [ "topic-controller" ],
+        "operationId" : "getTopicRequest",
+        "parameters" : [ {
+          "name" : "topicReqId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TopicRequestsResponseModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/testClusterApiConnection" : {
       "get" : {
         "tags" : [ "server-config-controller" ],
@@ -2818,33 +2845,6 @@
                   "items" : {
                     "$ref" : "#/components/schemas/TopicRequestsResponseModel"
                   }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/getTopicRequest" : {
-      "get" : {
-        "tags" : [ "topic-controller" ],
-        "operationId" : "getTopicRequest",
-        "parameters" : [ {
-          "name" : "topicReqId",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/TopicRequestsResponseModel"
                 }
               }
             }
@@ -5275,6 +5275,10 @@
           "requestor" : {
             "type" : "string"
           },
+          "requestId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "topicname" : {
             "type" : "string",
             "pattern" : "^[a-zA-Z0-9._-]{3,}$"
@@ -5400,6 +5404,10 @@
           "requestor" : {
             "type" : "string"
           },
+          "requestId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "topicname" : {
             "type" : "string",
             "pattern" : "^[a-zA-Z0-9._-]{3,}$"
@@ -5433,10 +5441,6 @@
           },
           "otherParams" : {
             "type" : "string"
-          },
-          "topicId" : {
-            "type" : "integer",
-            "format" : "int32"
           }
         },
         "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
@@ -5987,6 +5991,10 @@
           "requestor" : {
             "type" : "string"
           },
+          "requestId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "topicname" : {
             "type" : "string",
             "pattern" : "^[a-zA-Z0-9._-]{3,}$"
@@ -6020,10 +6028,6 @@
           },
           "otherParams" : {
             "type" : "string"
-          },
-          "topicId" : {
-            "type" : "integer",
-            "format" : "int32"
           }
         },
         "required" : [ "description", "environment", "replicationfactor", "requestOperationType", "topicname", "topicpartitions" ]
@@ -6067,6 +6071,10 @@
           },
           "requestor" : {
             "type" : "string"
+          },
+          "requestId" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "connectorName" : {
             "type" : "string",
@@ -6128,6 +6136,10 @@
           },
           "requestor" : {
             "type" : "string"
+          },
+          "requestId" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "topicname" : {
             "type" : "string",
@@ -6437,6 +6449,117 @@
         },
         "required" : [ "contactperson", "showDeleteTeam", "teamId", "teamname", "teamphone", "tenantId", "tenantName" ]
       },
+      "TopicRequestsResponseModel" : {
+        "properties" : {
+          "environment" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teamname" : {
+            "type" : "string"
+          },
+          "requestOperationType" : {
+            "type" : "string",
+            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
+          },
+          "requestStatus" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          },
+          "requesttime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "requesttimestring" : {
+            "type" : "string"
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "approvingTeamDetails" : {
+            "type" : "string"
+          },
+          "approver" : {
+            "type" : "string"
+          },
+          "approvingtime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "topicname" : {
+            "type" : "string"
+          },
+          "topicpartitions" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "replicationfactor" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "topicid" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "deleteAssociatedSchema" : {
+            "type" : "boolean"
+          },
+          "advancedTopicConfigEntries" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TopicConfigEntry"
+            }
+          },
+          "approvingTeamId" : {
+            "type" : "string"
+          },
+          "sequence" : {
+            "type" : "string"
+          },
+          "possibleTeams" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "deletable" : {
+            "type" : "boolean"
+          },
+          "editable" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "advancedTopicConfigEntries", "allPageNos", "approvingTeamDetails", "currentPage", "deleteAssociatedSchema", "description", "environment", "environmentName", "replicationfactor", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicid", "topicname", "topicpartitions", "totalNoPages" ]
+      },
       "ConnectivityStatus" : {
         "properties" : {
           "clusterType" : {
@@ -6726,117 +6849,6 @@
         },
         "required" : [ "status" ]
       },
-      "TopicRequestsResponseModel" : {
-        "properties" : {
-          "environment" : {
-            "type" : "string"
-          },
-          "environmentName" : {
-            "type" : "string"
-          },
-          "requestor" : {
-            "type" : "string"
-          },
-          "teamId" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "teamname" : {
-            "type" : "string"
-          },
-          "requestOperationType" : {
-            "type" : "string",
-            "enum" : [ "CREATE", "UPDATE", "PROMOTE", "CLAIM", "DELETE" ]
-          },
-          "requestStatus" : {
-            "type" : "string",
-            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
-          },
-          "requesttime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "requesttimestring" : {
-            "type" : "string"
-          },
-          "currentPage" : {
-            "type" : "string"
-          },
-          "totalNoPages" : {
-            "type" : "string"
-          },
-          "allPageNos" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "approvingTeamDetails" : {
-            "type" : "string"
-          },
-          "approver" : {
-            "type" : "string"
-          },
-          "approvingtime" : {
-            "type" : "string",
-            "format" : "date-time"
-          },
-          "remarks" : {
-            "type" : "string"
-          },
-          "appname" : {
-            "type" : "string"
-          },
-          "otherParams" : {
-            "type" : "string"
-          },
-          "topicname" : {
-            "type" : "string"
-          },
-          "topicpartitions" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "replicationfactor" : {
-            "type" : "string"
-          },
-          "description" : {
-            "type" : "string"
-          },
-          "topicid" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "deleteAssociatedSchema" : {
-            "type" : "boolean"
-          },
-          "advancedTopicConfigEntries" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TopicConfigEntry"
-            }
-          },
-          "approvingTeamId" : {
-            "type" : "string"
-          },
-          "sequence" : {
-            "type" : "string"
-          },
-          "possibleTeams" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "deletable" : {
-            "type" : "boolean"
-          },
-          "editable" : {
-            "type" : "boolean"
-          }
-        },
-        "required" : [ "advancedTopicConfigEntries", "allPageNos", "approvingTeamDetails", "currentPage", "deleteAssociatedSchema", "description", "environment", "environmentName", "replicationfactor", "requestOperationType", "requestStatus", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicid", "topicname", "topicpartitions", "totalNoPages" ]
-      },
       "AclOverviewInfo" : {
         "properties" : {
           "req_no" : {
@@ -7075,10 +7087,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },

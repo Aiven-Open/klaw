@@ -258,7 +258,7 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                 }
             }
 
-            serviceInput['topicId'] = $scope.addTopic.topicid;
+            serviceInput['requestId'] = $scope.addTopic.topicid;
             serviceInput['environment'] = $scope.addTopic.environment;
             serviceInput['topicname'] = $scope.addTopic.topicname;
             serviceInput['topicpartitions'] = tmpTopicPartitions;
@@ -423,9 +423,8 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
         $scope.getMyTopicRequestDetail = function(topicReqId) {
             $http({
                 method: "GET",
-                url: "getTopicRequest",
-                headers : { 'Content-Type' : 'application/json' },
-                params: {'topicReqId' : topicReqId}
+                url: "topic/request/" + topicReqId,
+                headers : { 'Content-Type' : 'application/json' }
             }).success(function(output) {
                 $scope.topicRequestDetail = output;
                 if(output != null && output !== ''){
