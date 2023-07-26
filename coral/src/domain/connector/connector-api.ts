@@ -150,7 +150,7 @@ const createConnectorRequest = (
   });
 };
 
-const editConnectorRequest = (
+const editConnector = (
   connectorPayload: Omit<
     KlawApiRequest<"createConnectorRequest">,
     "requestOperationType"
@@ -227,7 +227,7 @@ export {
   declineConnectorRequest,
   deleteConnector,
   deleteConnectorRequest,
-  editConnectorRequest,
+  editConnector,
   getConnectorOverview,
   getConnectorRequests,
   getConnectorRequestsForApprover,
