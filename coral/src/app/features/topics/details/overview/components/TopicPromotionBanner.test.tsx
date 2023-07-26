@@ -53,12 +53,6 @@ const nullProps = {
   topicName: "topic-hello",
 };
 
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedNavigate,
-}));
-
 describe("TopicPromotionBanner", () => {
   afterEach(cleanup);
 
