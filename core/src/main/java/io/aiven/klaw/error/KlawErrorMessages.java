@@ -388,6 +388,9 @@ public class KlawErrorMessages {
 
   public static final String TOPICS_VLD_ERR_122 = "Failure. This topic request cannot be edited.";
 
+  public static final String TOPICS_VLD_ERR_123 =
+      "Failure. This topic request cannot be edited, as it's not in CREATED state.";
+
   // Topic overview service
   public static final String TOPIC_OVW_ERR_101 = "Topic does not exist in any environment.";
 

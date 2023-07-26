@@ -15,6 +15,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicCreateRequestModel;
 import io.aiven.klaw.model.requests.TopicUpdateRequestModel;
 import io.aiven.klaw.model.response.EnvParams;
@@ -280,6 +281,10 @@ public class TopicRequestValidatorImplIT {
         .thenReturn(utilMethods.getEnvLists().get(0));
     when(topicControllerService.getExistingTopicRequests(editTopicRequest, tenantId))
         .thenReturn(List.of(topicRequest));
+    TopicRequest topicRequest1 = List.of(topicRequest).get(0);
+    topicRequest1.setRequestStatus(RequestStatus.CREATED.value);
+    when(topicControllerService.getTopicRequestFromTopicId(editTopicRequest.getTopicId(), tenantId))
+        .thenReturn(topicRequest1);
     when(commonUtilsService.getTeamId(anyString())).thenReturn(101);
 
     Set<ConstraintViolation<TopicCreateRequestModel>> violations =

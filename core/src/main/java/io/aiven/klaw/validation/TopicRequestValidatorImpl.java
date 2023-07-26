@@ -7,6 +7,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.CommonUtilsService;
@@ -146,6 +147,15 @@ public class TopicRequestValidatorImpl
       if (topicRequestModel.getRequestOperationType().equals(RequestOperationType.CLAIM)
           || topicRequestModel.getRequestOperationType().equals(RequestOperationType.DELETE)) {
         updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_122);
+        return false;
+      }
+
+      // only requests in created state can be edited
+      if (!topicControllerService
+          .getTopicRequestFromTopicId(topicRequestModel.getTopicId(), tenantId)
+          .getRequestStatus()
+          .equals(RequestStatus.CREATED.value)) {
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_123);
         return false;
       }
     }
