@@ -566,7 +566,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   public void addTopicToCache(int tenantId, Topic topic) {
-    log.info("addTopicToCache {} {}", tenantId, topic);
+    log.debug("addTopicToCache {} {}", tenantId, topic);
     // If the topic does not already exist in the cache simply add it.
     if (!topicsPerTenant.get(tenantId).contains(topic)) {
       topicsPerTenant.get(tenantId).add(topic);
