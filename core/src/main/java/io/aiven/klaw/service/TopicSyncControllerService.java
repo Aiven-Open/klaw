@@ -13,6 +13,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_SYNC_ERR_108;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
@@ -22,6 +23,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
@@ -68,6 +70,8 @@ public class TopicSyncControllerService {
   @Autowired private MailUtils mailService;
 
   @Autowired private CommonUtilsService commonUtilsService;
+
+  @Autowired private ObjectMapper mapper;
 
   private int topicCounter = 0;
 
@@ -571,7 +575,7 @@ public class TopicSyncControllerService {
               topicFound.getNoOfPartitions(),
               topicFound.getNoOfReplicas(),
               syncBackTopics.getTargetEnv(),
-              null,
+              UtilMethods.createAdvancedConfigFromJson(topicFound.getJsonParams(), mapper),
               tenantId,
               false);
 

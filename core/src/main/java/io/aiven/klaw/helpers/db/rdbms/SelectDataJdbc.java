@@ -1904,6 +1904,12 @@ public class SelectDataJdbc {
             tenantId, env, requestStatus, requestOperationType, topicName);
   }
 
+  public boolean existsClaimTopicRequest(
+      String topicName, String requestStatus, String requestOperationType, int tenantId) {
+    return topicRequestsRepo.existsByTenantIdAndRequestStatusAndRequestOperationTypeAndTopicname(
+        tenantId, requestStatus, requestOperationType, topicName);
+  }
+
   public boolean existsConnectorRequest(
       String connectorName, String requestStatus, String env, int tenantId) {
     return kafkaConnectorRequestsRepo

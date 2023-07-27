@@ -1,5 +1,838 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`TopicOverview (with promotion banner) with promotion banner renders correct DOM according to data from useTopicDetails and getClusterDetails 1`] = `Screen {}`;
+exports[`TopicOverview with promotion banner renders correct DOM according to data from useTopicDetails and getClusterDetails 1`] = `
+<div>
+  <div
+    style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; gap: 24px;"
+  >
+    <div
+      style="grid-column: span 2 / span 2;"
+    >
+      <div
+        class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+      >
+        <div
+          class="flex flex-col gap-4"
+        >
+          <div
+            class="typography-default-strong text-black"
+          >
+            Topic details
+          </div>
+          <div
+            class="typography-caption text-grey-70"
+          >
+            <div
+              style="display: flex; gap: 160px;"
+            >
+              <div
+                style="display: flex; justify-content: space-around; flex-direction: column;"
+              >
+                <div
+                  class="typography-heading text-grey-80"
+                >
+                  1
+                </div>
+                <div
+                  class="typography-small text-grey-50"
+                >
+                  Replicas
+                </div>
+              </div>
+              <div
+                style="display: flex; justify-content: space-around; flex-direction: column;"
+              >
+                <div
+                  class="typography-heading text-grey-80"
+                >
+                  1
+                </div>
+                <div
+                  class="typography-small text-grey-50"
+                >
+                  Partitions
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      style="grid-column: span 2 / span 2;"
+    >
+      <div
+        data-testid="topic-promotion-banner"
+      >
+        <div
+          class="Aquarium-Banner rounded flex justify-between gap-7 flex-nowrap p-6 bg-grey-0"
+        >
+          <div
+            class="flex w-full flex-col"
+          >
+            <div
+              class="typography-subheading text-grey-100 whitespace-nowrap mb-3"
+            />
+            <div
+              class="typography-default text-grey-90 flex-grow"
+            >
+              <div
+                style="display: flex; flex-direction: column; gap: 16px;"
+              >
+                <p
+                  style="margin-bottom: 16px;"
+                >
+                  This 
+                  topic
+                   has not yet been promoted to the 
+                  TST
+                   environment.
+                </p>
+              </div>
+              <button
+                class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+              >
+                Promote
+              </button>
+            </div>
+          </div>
+          <div
+            style="display: inline-flex; align-items: center; margin: -24px -24px -24px 0px;"
+          >
+            <img
+              class="bg-cover object-cover w-full"
+              src="[object Object]"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      style="grid-column: span 2 / span 2;"
+    >
+      <div
+        class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+      >
+        <div
+          class="flex flex-col gap-4"
+        >
+          <div
+            class="typography-default-strong text-black"
+          >
+            Cluster details
+          </div>
+          <div
+            class="typography-caption text-grey-70"
+          >
+            <div
+              class="visually-hidden"
+            >
+              Cluster details are updating
+            </div>
+            <div
+              aria-hidden="true"
+            >
+              <dl
+                style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 24px;"
+              >
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Bootstrap server
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Protocol
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Kafka flavor
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Rest API
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Cluster name
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Cluster status
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+    >
+      <div
+        class="flex flex-col gap-4"
+      >
+        <div
+          class="typography-default-strong text-black"
+        >
+          Subscriptions
+        </div>
+        <div
+          class="typography-caption text-grey-70"
+        >
+          <div
+            style="display: flex; gap: 160px;"
+          >
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-80"
+              >
+                1
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                Producers
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-80"
+              >
+                0
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                Consumers
+              </div>
+            </div>
+          </div>
+          <div
+            style="display: flex; flex-direction: row; padding-top: 24px; gap: 32px;"
+          >
+            <a
+              href="/topic/aivendemotopic/subscribe?env=1"
+            >
+              <button
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+              >
+                <div
+                  style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
+                >
+                  <span
+                    class="children:inline-block inline-flex justify-center items-center"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="Aquarium-InlineIcon"
+                      height="20px"
+                      preserveAspectRatio="xMidYMid meet"
+                      role="img"
+                      style="vertical-align: -0.125em;"
+                      viewBox="0 0 22 22"
+                      width="20px"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                    >
+                      <path
+                        d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                      />
+                    </svg>
+                  </span>
+                  <div>
+                    <div
+                      class="typography-small-strong text-primary-80"
+                    >
+                      Request new subscription
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </a>
+            <a
+              href="/topic/aivendemotopic/subscriptions"
+            >
+              <button
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+              >
+                <div
+                  class="typography-small-strong text-primary-80"
+                >
+                  See subscriptions
+                </div>
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+    >
+      <div
+        class="flex flex-col gap-4"
+      >
+        <div
+          class="typography-default-strong text-black"
+        >
+          Schemas
+        </div>
+        <div
+          class="typography-caption text-grey-70"
+        >
+          <div
+            style="display: flex; justify-content: space-around; flex-direction: column;"
+          >
+            <div
+              class="typography-heading text-grey-80"
+            >
+              1
+            </div>
+            <div
+              class="typography-small text-grey-50"
+            >
+              Schemas
+            </div>
+          </div>
+          <div
+            style="display: flex; flex-direction: row; padding-top: 24px; gap: 32px;"
+          >
+            <a
+              href="/topic/aivendemotopic/request-schema"
+            >
+              <button
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+              >
+                <div
+                  style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
+                >
+                  <span
+                    class="children:inline-block inline-flex justify-center items-center"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="Aquarium-InlineIcon"
+                      height="20px"
+                      preserveAspectRatio="xMidYMid meet"
+                      role="img"
+                      style="vertical-align: -0.125em;"
+                      viewBox="0 0 22 22"
+                      width="20px"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                    >
+                      <path
+                        d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                      />
+                    </svg>
+                  </span>
+                  <div>
+                    <div
+                      class="typography-small-strong text-primary-80"
+                    >
+                      Request new schema
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </a>
+            <a
+              href="/topic/aivendemotopic/schema"
+            >
+              <button
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+              >
+                <div
+                  class="typography-small-strong text-primary-80"
+                >
+                  See schema
+                </div>
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
 
-exports[`TopicOverview (with promotion banner) without promotion banner renders correct DOM according to data from useTopicDetails and getClusterDetails 1`] = `Screen {}`;
+exports[`TopicOverview without promotion banner renders correct DOM according to data from useTopicDetails and getClusterDetails 1`] = `
+<div>
+  <div
+    style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto; gap: 24px;"
+  >
+    <div
+      style="grid-column: span 2 / span 2;"
+    >
+      <div
+        class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+      >
+        <div
+          class="flex flex-col gap-4"
+        >
+          <div
+            class="typography-default-strong text-black"
+          >
+            Topic details
+          </div>
+          <div
+            class="typography-caption text-grey-70"
+          >
+            <div
+              style="display: flex; gap: 160px;"
+            >
+              <div
+                style="display: flex; justify-content: space-around; flex-direction: column;"
+              >
+                <div
+                  class="typography-heading text-grey-80"
+                >
+                  1
+                </div>
+                <div
+                  class="typography-small text-grey-50"
+                >
+                  Replicas
+                </div>
+              </div>
+              <div
+                style="display: flex; justify-content: space-around; flex-direction: column;"
+              >
+                <div
+                  class="typography-heading text-grey-80"
+                >
+                  1
+                </div>
+                <div
+                  class="typography-small text-grey-50"
+                >
+                  Partitions
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      style="grid-column: span 2 / span 2;"
+    >
+      <div
+        class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+      >
+        <div
+          class="flex flex-col gap-4"
+        >
+          <div
+            class="typography-default-strong text-black"
+          >
+            Cluster details
+          </div>
+          <div
+            class="typography-caption text-grey-70"
+          >
+            <div
+              class="visually-hidden"
+            >
+              Cluster details are updating
+            </div>
+            <div
+              aria-hidden="true"
+            >
+              <dl
+                style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 24px;"
+              >
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Bootstrap server
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Protocol
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Kafka flavor
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Rest API
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Cluster name
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+                <div
+                  style="display: flex; flex-direction: column;"
+                >
+                  <dt
+                    class="inline-block mb-2 typography-small-strong text-grey-60"
+                  >
+                    Cluster status
+                  </dt>
+                  <dd
+                    class="typography-small text-grey-80"
+                  >
+                    <div
+                      class="Aquarium-Skeleton bg-grey-5 h-auto before:content-['_'] whitespace-pre origin-[0%_45%] scale-[0.55] block animate-pulse"
+                    />
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+    >
+      <div
+        class="flex flex-col gap-4"
+      >
+        <div
+          class="typography-default-strong text-black"
+        >
+          Subscriptions
+        </div>
+        <div
+          class="typography-caption text-grey-70"
+        >
+          <div
+            style="display: flex; gap: 160px;"
+          >
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-80"
+              >
+                1
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                Producers
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: space-around; flex-direction: column;"
+            >
+              <div
+                class="typography-heading text-grey-80"
+              >
+                0
+              </div>
+              <div
+                class="typography-small text-grey-50"
+              >
+                Consumers
+              </div>
+            </div>
+          </div>
+          <div
+            style="display: flex; flex-direction: row; padding-top: 24px; gap: 32px;"
+          >
+            <a
+              href="/topic/aivendemotopic/subscribe?env=1"
+            >
+              <button
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+              >
+                <div
+                  style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
+                >
+                  <span
+                    class="children:inline-block inline-flex justify-center items-center"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="Aquarium-InlineIcon"
+                      height="20px"
+                      preserveAspectRatio="xMidYMid meet"
+                      role="img"
+                      style="vertical-align: -0.125em;"
+                      viewBox="0 0 22 22"
+                      width="20px"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                    >
+                      <path
+                        d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                      />
+                    </svg>
+                  </span>
+                  <div>
+                    <div
+                      class="typography-small-strong text-primary-80"
+                    >
+                      Request new subscription
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </a>
+            <a
+              href="/topic/aivendemotopic/subscriptions"
+            >
+              <button
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+              >
+                <div
+                  class="typography-small-strong text-primary-80"
+                >
+                  See subscriptions
+                </div>
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="border-grey-5 border-[1px] rounded-[2px] relative p-5 flex flex-col gap-5 w-full Aquarium-Card"
+    >
+      <div
+        class="flex flex-col gap-4"
+      >
+        <div
+          class="typography-default-strong text-black"
+        >
+          Schemas
+        </div>
+        <div
+          class="typography-caption text-grey-70"
+        >
+          <div
+            style="display: flex; justify-content: space-around; flex-direction: column;"
+          >
+            <div
+              class="typography-heading text-grey-80"
+            >
+              1
+            </div>
+            <div
+              class="typography-small text-grey-50"
+            >
+              Schemas
+            </div>
+          </div>
+          <div
+            style="display: flex; flex-direction: row; padding-top: 24px; gap: 32px;"
+          >
+            <a
+              href="/topic/aivendemotopic/request-schema"
+            >
+              <button
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+              >
+                <div
+                  style="display: flex; justify-content: center; align-items: center; flex-direction: row; gap: 8px;"
+                >
+                  <span
+                    class="children:inline-block inline-flex justify-center items-center"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="Aquarium-InlineIcon"
+                      height="20px"
+                      preserveAspectRatio="xMidYMid meet"
+                      role="img"
+                      style="vertical-align: -0.125em;"
+                      viewBox="0 0 22 22"
+                      width="20px"
+                      xmlns="http://www.w3.org/2000/svg"
+                      xmlns:xlink="http://www.w3.org/1999/xlink"
+                    >
+                      <path
+                        d="M11 7.333v7.334M7.333 11h7.334m5.5 0a9.167 9.167 0 11-18.334 0 9.167 9.167 0 0118.334 0Z"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="1.5"
+                      />
+                    </svg>
+                  </span>
+                  <div>
+                    <div
+                      class="typography-small-strong text-primary-80"
+                    >
+                      Request new schema
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </a>
+            <a
+              href="/topic/aivendemotopic/schema"
+            >
+              <button
+                class="Aquarium-Button Aquarium-Button.Ghost text-primary-80 active:text-primary-70 focus-visible:text-grey-90 hover:text-primary-70 disabled:text-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 icon-stroke-2"
+              >
+                <div
+                  class="typography-small-strong text-primary-80"
+                >
+                  See schema
+                </div>
+              </button>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

@@ -1,21 +1,25 @@
-import { cleanup, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { cleanup, render, screen } from "@testing-library/react";
 import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
-import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicOverview } from "src/domain/topic";
+import userEvent from "@testing-library/user-event";
+
+const mockedNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedNavigate,
+}));
 
 const promotionDetailForPromote: TopicOverview["topicPromotionDetails"] = {
   status: "SUCCESS",
   targetEnv: "TST",
   sourceEnv: "DEV",
   targetEnvId: "2",
-  topicName: "topic-hello",
 };
 
 const promoteProps = {
-  isTopicOwner: true,
   topicPromotionDetails: promotionDetailForPromote,
-  hasOpenRequest: false,
+  hasOpenTopicRequest: false,
+  topicName: "topic-hello",
 };
 
 const promotionDetailForSeeOpenRequest: TopicOverview["topicPromotionDetails"] =
@@ -24,12 +28,12 @@ const promotionDetailForSeeOpenRequest: TopicOverview["topicPromotionDetails"] =
     targetEnv: "TST",
     sourceEnv: "DEV",
     targetEnvId: "2",
-    topicName: "topic-hello",
   };
+
 const seeOpenRequestProps = {
-  isTopicOwner: false,
   topicPromotionDetails: promotionDetailForSeeOpenRequest,
-  hasOpenRequest: true,
+  hasOpenTopicRequest: true,
+  topicName: "topic-hello",
 };
 
 const promotionDetailForSeeOpenPromotionRequest: TopicOverview["topicPromotionDetails"] =
@@ -38,95 +42,106 @@ const promotionDetailForSeeOpenPromotionRequest: TopicOverview["topicPromotionDe
     targetEnv: "TST",
     sourceEnv: "DEV",
     targetEnvId: "2",
-    topicName: "topic-hello",
   };
+
 const seeOpenPromotionRequestProps = {
-  isTopicOwner: false,
   topicPromotionDetails: promotionDetailForSeeOpenPromotionRequest,
-  hasOpenRequest: false,
+  hasOpenTopicRequest: false,
+  topicName: "topic-hello",
 };
 
 const promotionDetailForNoPromotion: TopicOverview["topicPromotionDetails"] = {
   status: "NO_PROMOTION",
-  topicName: "SchemaTest",
 };
 
 const nullProps = {
-  isTopicOwner: false,
   topicPromotionDetails: promotionDetailForNoPromotion,
-  hasOpenRequest: false,
+  hasOpenTopicRequest: false,
+  topicName: "topic-hello",
 };
 
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedNavigate,
-}));
+describe("TopicPromotionBanner", () => {
+  const user = userEvent.setup();
 
-describe("TopicPromotionBanner (with promotion banner)", () => {
-  afterEach(cleanup);
+  afterEach(() => {
+    jest.resetAllMocks();
+    cleanup();
+  });
 
-  it("renders correct banner (promote topic)", async () => {
-    customRender(<TopicPromotionBanner {...promoteProps} />, {
-      memoryRouter: true,
-    });
+  it("renders correct banner (promote topic)", () => {
+    render(<TopicPromotionBanner {...promoteProps} />);
 
     const button = screen.getByRole("button", {
       name: "Promote",
     });
 
     expect(button).toBeEnabled();
+  });
 
-    await userEvent.click(button);
+  it("enables navigating correctly (promote topic)", async () => {
+    render(<TopicPromotionBanner {...promoteProps} />);
+    const button = screen.getByRole("button", {
+      name: "Promote",
+    });
+
+    await user.click(button);
+
     expect(mockedNavigate).toHaveBeenCalledWith(
-      `/topic/${promoteProps.topicPromotionDetails.topicName}/request-promotion?sourceEnv=${promoteProps.topicPromotionDetails.sourceEnv}&targetEnv=${promoteProps.topicPromotionDetails.targetEnvId}`
+      `/topic/${promoteProps.topicName}/request-promotion?sourceEnv=${promoteProps.topicPromotionDetails.sourceEnv}&targetEnv=${promoteProps.topicPromotionDetails.targetEnvId}`
     );
   });
 
-  it("renders correct banner (see open request)", async () => {
-    customRender(<TopicPromotionBanner {...seeOpenRequestProps} />, {
-      memoryRouter: true,
-    });
+  it("renders correct banner (see open request)", () => {
+    render(<TopicPromotionBanner {...seeOpenRequestProps} />);
 
     const button = screen.getByRole("button", {
       name: "See the request",
     });
 
     expect(button).toBeEnabled();
+  });
 
-    await userEvent.click(button);
+  it("enables navigating correctly (see open request)", async () => {
+    render(<TopicPromotionBanner {...seeOpenRequestProps} />);
 
+    const button = screen.getByRole("button", {
+      name: "See the request",
+    });
+
+    await user.click(button);
     expect(mockedNavigate).toHaveBeenCalledWith(
-      `/requests/topics?search=${promoteProps.topicPromotionDetails.topicName}&status=CREATED&page=1`
+      `/requests/topics?search=${promoteProps.topicName}&status=CREATED&page=1`
     );
   });
 
-  it("renders correct banner (see open promotion request)", async () => {
-    customRender(<TopicPromotionBanner {...seeOpenPromotionRequestProps} />, {
-      memoryRouter: true,
-    });
+  it("renders correct banner (see open promotion request)", () => {
+    render(<TopicPromotionBanner {...seeOpenPromotionRequestProps} />);
 
     const button = screen.getByRole("button", {
       name: "See the request",
     });
 
     expect(button).toBeEnabled();
+  });
 
-    await userEvent.click(button);
+  it("enables navigating correctly (see open promotion request)", async () => {
+    render(<TopicPromotionBanner {...seeOpenPromotionRequestProps} />);
+
+    const button = screen.getByRole("button", {
+      name: "See the request",
+    });
+    await user.click(button);
 
     expect(mockedNavigate).toHaveBeenCalledWith(
-      `/requests/topics?search=${promoteProps.topicPromotionDetails.topicName}&requestType=PROMOTE&status=CREATED&page=1`
+      `/requests/topics?search=${promoteProps.topicName}&requestType=PROMOTE&status=CREATED&page=1`
     );
   });
 
-  it("renders nothing (status === 'NO_PROMOTION', status !== 'NOT_AUTHORIZED')", () => {
-    const { container } = customRender(
-      <TopicPromotionBanner {...nullProps} />,
-      {
-        memoryRouter: true,
-      }
-    );
+  it("renders nothing if status === 'NO_PROMOTION'", () => {
+    render(<TopicPromotionBanner {...nullProps} />);
 
-    expect(container).toBeEmptyDOMElement();
+    const wrapper = screen.getByTestId("topic-promotion-banner");
+
+    expect(wrapper).toBeEmptyDOMElement();
   });
 });
