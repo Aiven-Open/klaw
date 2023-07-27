@@ -87,7 +87,10 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         environments={connectorData?.availableEnvironments}
         environmentId={environmentId}
         setEnvironmentId={setEnvironmentId}
-        showEditButton={Boolean(connectorData?.connectorInfo.showEditConnector)}
+        showEditButton={Boolean(
+          connectorData?.connectorInfo.showEditConnector &&
+            !connectorData?.connectorInfo.hasOpenRequest
+        )}
       />
 
       <ConnectorOverviewResourcesTabs
