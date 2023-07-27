@@ -191,7 +191,7 @@ const API_PATHS = {
 } satisfies {
   [key in keyof Omit<
     ApiOperations,
-    "getSchemaOfTopicFromSource" | "getSwitchTeams"
+    "getSchemaOfTopicFromSource" | "getSwitchTeams" | "getTopicRequest"
   >]: keyof ApiPaths;
 };
 
@@ -202,6 +202,7 @@ type GetSchemaOfTopicFromSource = (params: {
   schemaVersion: string;
 }) => keyof ApiPaths;
 type GetSwitchTeams = (params: { userId: string }) => keyof ApiPaths;
+type GetTopicRequest = (params: { topicReqId: string }) => keyof ApiPaths;
 
 const DYNAMIC_API_PATHS = {
   getSchemaOfTopicFromSource: ({
@@ -213,11 +214,13 @@ const DYNAMIC_API_PATHS = {
     `/schemas/source/${source}/kafkaEnv/${kafkaEnvId}/topic/${topicName}/schemaVersion/${schemaVersion}` as keyof ApiPaths,
   getSwitchTeams: ({ userId }: Parameters<GetSwitchTeams>[0]) =>
     `/user/${userId}/switchTeamsList` as keyof ApiPaths,
+  getTopicRequest: ({ topicReqId }: Parameters<GetTopicRequest>[0]) =>
+    `/topic/request/${topicReqId}` as keyof ApiPaths,
 } satisfies {
   [key in keyof Pick<
     ApiOperations,
-    "getSchemaOfTopicFromSource" | "getSwitchTeams"
-  >]: GetSchemaOfTopicFromSource | GetSwitchTeams;
+    "getSchemaOfTopicFromSource" | "getSwitchTeams" | "getTopicRequest"
+  >]: GetSchemaOfTopicFromSource | GetSwitchTeams | GetTopicRequest;
 };
 
 type Params = URLSearchParams;
