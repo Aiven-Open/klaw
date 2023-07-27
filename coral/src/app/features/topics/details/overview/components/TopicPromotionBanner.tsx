@@ -1,98 +1,53 @@
-import { Banner, Box, Button, GridItem } from "@aivenio/aquarium";
+import { Button } from "@aivenio/aquarium";
 import { TopicOverview } from "src/domain/topic";
-import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
+import { PromotionBanner } from "src/app/features/topics/details/components/PromotionBanner";
 import { useNavigate } from "react-router-dom";
 
 interface TopicPromotionBannerProps {
   topicPromotionDetails: TopicOverview["topicPromotionDetails"];
-  hasOpenRequest: boolean;
-  isTopicOwner: boolean;
+  /** In case there is an open request for this topic
+   * it can't be promoted, and we want to show that
+   * information to the user.
+   */
+  hasOpenTopicRequest: boolean;
+  topicName: string;
 }
 
 const TopicPromotionBanner = ({
-  isTopicOwner,
   topicPromotionDetails,
-  hasOpenRequest,
+  hasOpenTopicRequest,
+  topicName,
 }: TopicPromotionBannerProps) => {
   const navigate = useNavigate();
-  const { status, targetEnv, sourceEnv, targetEnvId, topicName } =
-    topicPromotionDetails;
 
-  const showRequestPromotionBanner =
-    isTopicOwner &&
-    status === "SUCCESS" &&
-    targetEnv !== undefined &&
-    sourceEnv !== undefined &&
-    targetEnvId !== undefined;
-
-  // hasOpenTopicRequest is true for any request open on the current topic in the current environment (source environment)
-  if (hasOpenRequest) {
-    return (
-      <GridItem colSpan={"span-2"}>
-        <Banner image={illustration} layout="vertical" title={""}>
-          <Box component={"p"} marginBottom={"l1"}>
-            There is an open request for {topicName}.
-          </Box>
+  return (
+    <div data-testid={"topic-promotion-banner"}>
+      <PromotionBanner
+        entityName={topicName}
+        promotionDetails={topicPromotionDetails}
+        hasOpenRequest={hasOpenTopicRequest}
+        type={"topic"}
+        promoteElement={
+          //  @ TODO DS external link does not support
+          // internal links and we don't have a component
+          // from DS that supports that yet. We've to use a
+          // button that calls navigate() onClick to support
+          // routing in Coral
           <Button.Primary
             onClick={() =>
               navigate(
-                `/requests/topics?search=${topicName}&status=CREATED&page=1`
-              )
-            }
-          >
-            See the request
-          </Button.Primary>
-        </Banner>
-      </GridItem>
-    );
-  }
-
-  // status is "REQUEST_OPEN" when there is a promotion request open on a topic in the target environment for promotion,
-  // ie not the current topic + source environment
-  if (status === "REQUEST_OPEN") {
-    return (
-      <GridItem colSpan={"span-2"}>
-        <Banner image={illustration} layout="vertical" title={""}>
-          <Box component={"p"} marginBottom={"l1"}>
-            There is already an open promotion request for {topicName}.
-          </Box>
-          <Button.Primary
-            onClick={() =>
-              navigate(
-                `/requests/topics?search=${topicName}&requestType=PROMOTE&status=CREATED&page=1`
-              )
-            }
-          >
-            See the request
-          </Button.Primary>
-        </Banner>
-      </GridItem>
-    );
-  }
-
-  if (showRequestPromotionBanner) {
-    return (
-      <GridItem colSpan={"span-2"}>
-        <Banner image={illustration} layout="vertical" title={""}>
-          <Box component={"p"} marginBottom={"l1"}>
-            This schema has not yet been promoted to the {targetEnv}{" "}
-            environment.
-          </Box>
-          <Button.Primary
-            onClick={() =>
-              navigate(
-                `/topic/${topicName}/request-promotion?sourceEnv=${sourceEnv}&targetEnv=${targetEnvId}`
+                `/topic/${topicName}/request-promotion?sourceEnv=${topicPromotionDetails.sourceEnv}&targetEnv=${topicPromotionDetails.targetEnvId}`
               )
             }
           >
             Promote
           </Button.Primary>
-        </Banner>
-      </GridItem>
-    );
-  }
-
-  return null;
+        }
+        hasError={false}
+        errorMessage={""}
+      />
+    </div>
+  );
 };
 
 export { TopicPromotionBanner };
