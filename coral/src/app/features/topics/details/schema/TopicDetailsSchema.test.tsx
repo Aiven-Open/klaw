@@ -307,14 +307,10 @@ describe("TopicDetailsSchema", () => {
         expect(button).not.toBeInTheDocument();
       });
 
-      it("shows a link to see open schema requests", () => {
-        const link = screen.getByRole("link", { name: "See the request" });
+      it("shows a button to see open schema requests", () => {
+        const link = screen.getByRole("button", { name: "See the request" });
 
-        expect(link).toBeVisible();
-        expect(link).toHaveAttribute(
-          "href",
-          "/requests/schemas?search=topic-name&status=CREATED&page=1"
-        );
+        expect(link).toBeEnabled();
       });
     });
   });

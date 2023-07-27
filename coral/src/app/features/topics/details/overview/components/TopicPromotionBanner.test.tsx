@@ -1,6 +1,13 @@
 import { cleanup, render, screen } from "@testing-library/react";
 import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
 import { TopicOverview } from "src/domain/topic";
+import userEvent from "@testing-library/user-event";
+
+const mockedNavigate = jest.fn();
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockedNavigate,
+}));
 
 const promotionDetailForPromote: TopicOverview["topicPromotionDetails"] = {
   status: "SUCCESS",
@@ -54,18 +61,32 @@ const nullProps = {
 };
 
 describe("TopicPromotionBanner", () => {
-  afterEach(cleanup);
+  const user = userEvent.setup();
+
+  afterEach(() => {
+    jest.resetAllMocks();
+    cleanup();
+  });
 
   it("renders correct banner (promote topic)", () => {
     render(<TopicPromotionBanner {...promoteProps} />);
 
-    const link = screen.getByRole("link", {
+    const button = screen.getByRole("button", {
       name: "Promote",
     });
 
-    expect(link).toBeEnabled();
-    expect(link).toHaveAttribute(
-      "href",
+    expect(button).toBeEnabled();
+  });
+
+  it("enables navigating correctly (promote topic)", async () => {
+    render(<TopicPromotionBanner {...promoteProps} />);
+    const button = screen.getByRole("button", {
+      name: "Promote",
+    });
+
+    await user.click(button);
+
+    expect(mockedNavigate).toHaveBeenCalledWith(
       `/topic/${promoteProps.topicName}/request-promotion?sourceEnv=${promoteProps.topicPromotionDetails.sourceEnv}&targetEnv=${promoteProps.topicPromotionDetails.targetEnvId}`
     );
   });
@@ -73,13 +94,22 @@ describe("TopicPromotionBanner", () => {
   it("renders correct banner (see open request)", () => {
     render(<TopicPromotionBanner {...seeOpenRequestProps} />);
 
-    const link = screen.getByRole("link", {
+    const button = screen.getByRole("button", {
       name: "See the request",
     });
 
-    expect(link).toBeEnabled();
-    expect(link).toHaveAttribute(
-      "href",
+    expect(button).toBeEnabled();
+  });
+
+  it("enables navigating correctly (see open request)", async () => {
+    render(<TopicPromotionBanner {...seeOpenRequestProps} />);
+
+    const button = screen.getByRole("button", {
+      name: "See the request",
+    });
+
+    await user.click(button);
+    expect(mockedNavigate).toHaveBeenCalledWith(
       `/requests/topics?search=${promoteProps.topicName}&status=CREATED&page=1`
     );
   });
@@ -87,13 +117,22 @@ describe("TopicPromotionBanner", () => {
   it("renders correct banner (see open promotion request)", () => {
     render(<TopicPromotionBanner {...seeOpenPromotionRequestProps} />);
 
-    const link = screen.getByRole("link", {
+    const button = screen.getByRole("button", {
       name: "See the request",
     });
 
-    expect(link).toBeEnabled();
-    expect(link).toHaveAttribute(
-      "href",
+    expect(button).toBeEnabled();
+  });
+
+  it("enables navigating correctly (see open promotion request)", async () => {
+    render(<TopicPromotionBanner {...seeOpenPromotionRequestProps} />);
+
+    const button = screen.getByRole("button", {
+      name: "See the request",
+    });
+    await user.click(button);
+
+    expect(mockedNavigate).toHaveBeenCalledWith(
       `/requests/topics?search=${promoteProps.topicName}&requestType=PROMOTE&status=CREATED&page=1`
     );
   });

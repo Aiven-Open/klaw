@@ -85,12 +85,11 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
                 TST
                  environment.
               </p>
-              <a
+              <button
                 class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
-                href="/topic/aivendemotopic/request-promotion?sourceEnv=1&targetEnv=2"
               >
                 Promote
-              </a>
+              </button>
             </div>
           </div>
           <div
