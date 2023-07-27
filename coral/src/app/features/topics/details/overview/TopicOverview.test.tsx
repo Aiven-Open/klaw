@@ -4,8 +4,9 @@ import {
   ClusterDetails as ClusterDetailsType,
   getClusterDetails,
 } from "src/domain/cluster";
-import { RenderResult } from "@testing-library/react";
+import { cleanup, RenderResult, screen } from "@testing-library/react";
 import { getDefinitionList } from "src/services/test-utils/custom-queries";
+import { within } from "@testing-library/react/pure";
 
 const mockedUseTopicDetails = jest.fn();
 jest.mock("src/app/features/topics/details/TopicDetails", () => ({
@@ -35,6 +36,7 @@ const mockUseTopicDetailsDataWithPromotion = {
       showDeleteTopic: false,
       topicDeletable: false,
       envName: "DEV",
+      topicOwner: true,
     },
     aclInfoList: [
       {
@@ -116,6 +118,7 @@ const mockUseTopicDetailsDataWithPromotion = {
     ],
   },
 };
+
 const mockUseTopicDetailsDataWithoutPromotion = {
   topicName: "aivendemotopic",
   environmentId: "1",
@@ -227,9 +230,10 @@ const mockClusterDetails: ClusterDetailsType = {
   clusterStatus: "NOT_KNOWN",
 };
 
-describe("TopicOverview (with promotion banner)", () => {
-  let component: RenderResult;
+describe("TopicOverview", () => {
   describe("with promotion banner", () => {
+    let component: RenderResult;
+
     beforeAll(() => {
       mockedUseTopicDetails.mockReturnValue(
         mockUseTopicDetailsDataWithPromotion
@@ -242,8 +246,23 @@ describe("TopicOverview (with promotion banner)", () => {
       });
     });
 
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
     it("renders correct DOM according to data from useTopicDetails and getClusterDetails", () => {
-      expect(screen).toMatchSnapshot();
+      expect(component.container).toMatchSnapshot();
+    });
+
+    it("renders the topic promotion banner", () => {
+      const promotionBanner = screen.getByTestId("topic-promotion-banner");
+      const promotionInfo = within(promotionBanner).getByText(
+        "This topic has not yet been promoted to the TST environment."
+      );
+
+      expect(promotionBanner).toBeVisible();
+      expect(promotionInfo).toBeVisible();
     });
 
     it("renders cluster details", () => {
@@ -267,8 +286,19 @@ describe("TopicOverview (with promotion banner)", () => {
       });
     });
 
+    afterAll(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
+
     it("renders correct DOM according to data from useTopicDetails and getClusterDetails", () => {
-      expect(screen).toMatchSnapshot();
+      expect(component.container).toMatchSnapshot();
+    });
+
+    it("renders no topic promotion banner", () => {
+      const promotionBanner = screen.queryByTestId("topic-promotion-banner");
+
+      expect(promotionBanner).not.toBeInTheDocument();
     });
 
     it("renders cluster details", () => {

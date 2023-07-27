@@ -1,6 +1,4 @@
 import {
-  Alert,
-  Banner,
   Box,
   Button,
   EmptyState,
@@ -28,7 +26,7 @@ import {
 } from "src/domain/schema-request";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
-import illustration from "/src/app/images/topic-details-schema-Illustration.svg";
+import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 
 function TopicDetailsSchema() {
   const navigate = useNavigate();
@@ -48,13 +46,15 @@ function TopicDetailsSchema() {
     useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const isTopicOwner = topicOverview.topicInfo.topicOwner;
+  const toast = useToast();
+
+  const { topicOwner, hasOpenTopicRequest, hasOpenRequest, hasOpenACLRequest } =
+    topicOverview.topicInfo;
+  const isTopicOwner = topicOwner;
   const noSchema =
     allSchemaVersions.length === 0 ||
     schemaDetailsPerEnv === undefined ||
     schemaPromotionDetails === undefined;
-
-  const toast = useToast();
 
   const { mutate: promoteSchema, isLoading: promoteSchemaIsLoading } =
     useMutation(
@@ -66,15 +66,16 @@ function TopicDetailsSchema() {
           throw new Error("No schema available");
         }
 
-        const { targetEnvId, sourceEnv } = schemaPromotionDetails;
-
-        if (targetEnvId === undefined || sourceEnv === undefined) {
+        if (
+          schemaPromotionDetails.targetEnvId === undefined ||
+          schemaPromotionDetails.sourceEnv === undefined
+        ) {
           throw new Error("No promotion details available");
         }
 
         return promoteSchemaRequest({
-          targetEnvironment: targetEnvId,
-          sourceEnvironment: sourceEnv,
+          targetEnvironment: schemaPromotionDetails.targetEnvId,
+          sourceEnvironment: schemaPromotionDetails.sourceEnv,
           topicName,
           schemaVersion: String(schemaDetailsPerEnv.version),
           forceRegister,
@@ -114,25 +115,24 @@ function TopicDetailsSchema() {
     );
   }
 
-  const { targetEnv, status: promotionStatus } = schemaPromotionDetails;
-
   return (
     <>
-      {showSchemaPromotionModal && targetEnv !== undefined && (
-        <SchemaPromotionModal
-          isLoading={promoteSchemaIsLoading}
-          onSubmit={promoteSchema}
-          onClose={() => setShowSchemaPromotionModal(false)}
-          targetEnvironment={targetEnv}
-          version={schemaDetailsPerEnv.version}
-          // We only allow users to use the forceRegister option when the promotion request failed
-          // And the failure is because of a schema compatibility issue
-          showForceRegister={
-            errorMessage.length > 0 &&
-            errorMessage.includes("Schema is not compatible")
-          }
-        />
-      )}
+      {showSchemaPromotionModal &&
+        schemaPromotionDetails.targetEnv !== undefined && (
+          <SchemaPromotionModal
+            isLoading={promoteSchemaIsLoading}
+            onSubmit={promoteSchema}
+            onClose={() => setShowSchemaPromotionModal(false)}
+            targetEnvironment={schemaPromotionDetails.targetEnv}
+            version={schemaDetailsPerEnv.version}
+            // We only allow users to use the forceRegister option when the promotion request failed
+            // And the failure is because of a schema compatibility issue
+            showForceRegister={
+              errorMessage.length > 0 &&
+              errorMessage.includes("Schema is not compatible")
+            }
+          />
+        )}
       <PageHeader title="Schema" />
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} colGap={"l1"}>
@@ -178,28 +178,29 @@ function TopicDetailsSchema() {
         )}
       </Box>
 
-      {!topicSchemasIsRefetching &&
-        isTopicOwner &&
-        promotionStatus !== "NO_PROMOTION" && (
-          <Banner image={illustration} layout="vertical" title={""}>
-            <Box component={"p"} marginBottom={"l1"}>
-              This schema has not yet been promoted to the {targetEnv}{" "}
-              environment.
-            </Box>
-            {errorMessage.length > 0 && (
-              <Box component={"p"} marginBottom={"l1"}>
-                <Alert type="error">{errorMessage}</Alert>
-              </Box>
-            )}
-            <Button.Primary
-              onClick={() =>
-                setShowSchemaPromotionModal(!showSchemaPromotionModal)
-              }
-            >
-              Promote
-            </Button.Primary>
-          </Banner>
-        )}
+      {!topicSchemasIsRefetching && isTopicOwner && (
+        <SchemaPromotionBanner
+          schemaPromotionDetails={schemaPromotionDetails}
+          // @TODO backend will implement the property
+          // `hasOpenSchemaRequests`, should be updated
+          // here then, too
+          // until then: `hasOpenRequest` means there is an
+          // open request for topic, acl or schema
+          // if that's true but `hasOpenAclRequest` and
+          // `hasOpenTopicRequest` is false, the open
+          // request has to be a schema request
+          hasOpenSchemaRequest={
+            hasOpenRequest && !hasOpenACLRequest && !hasOpenTopicRequest
+          }
+          topicName={topicName}
+          setShowSchemaPromotionModal={() =>
+            setShowSchemaPromotionModal(!showSchemaPromotionModal)
+          }
+          hasError={errorMessage.length > 0}
+          errorMessage={errorMessage}
+        />
+      )}
+
       <SchemaStats
         isLoading={topicSchemasIsRefetching}
         version={schemaDetailsPerEnv.version}
