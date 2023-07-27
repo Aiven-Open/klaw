@@ -59,10 +59,10 @@ exports[`TopicOverview with promotion banner renders correct DOM according to da
       </div>
     </div>
     <div
-      data-testid="topic-promotion-banner"
+      style="grid-column: span 2 / span 2;"
     >
       <div
-        style="grid-column: span 2 / span 2;"
+        data-testid="topic-promotion-banner"
       >
         <div
           class="Aquarium-Banner rounded flex justify-between gap-7 flex-nowrap p-6 bg-grey-0"
