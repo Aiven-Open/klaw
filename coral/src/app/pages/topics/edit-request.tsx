@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import PreviewBanner from "src/app/components/PreviewBanner";
 import TopicEditRequest from "src/app/features/topics/request/TopicEditRequest";
 
-const RequestTopic = () => {
+const RequestTopicEdit = () => {
   const navigate = useNavigate();
   const { topicName } = useParams();
 
@@ -21,4 +21,4 @@ const RequestTopic = () => {
   );
 };
 
-export default RequestTopic;
+export default RequestTopicEdit;

@@ -10,7 +10,7 @@
       "name" : "Apache 2.0",
       "url" : "https://www.apache.org/licenses/LICENSE-2.0.html"
     },
-    "version" : "2.5.0"
+    "version" : "2.4.0"
   },
   "externalDocs" : {
     "description" : "Klaw documentation",
@@ -7077,6 +7077,12 @@
           "hasOpenACLRequest" : {
             "type" : "boolean"
           },
+          "hasOpenSchemaRequest" : {
+            "type" : "boolean"
+          },
+          "hasOpenClaimRequest" : {
+            "type" : "boolean"
+          },
           "hasACL" : {
             "type" : "boolean"
           },
@@ -7094,7 +7100,7 @@
             "type" : "boolean"
           }
         },
-        "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
+        "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenSchemaRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
       },
       "TopicBaseConfig" : {
         "properties" : {
