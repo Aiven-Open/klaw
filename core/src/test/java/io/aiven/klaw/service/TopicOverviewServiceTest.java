@@ -753,12 +753,8 @@ public class TopicOverviewServiceTest {
     when(handleDbRequests.existsSchemaRequest(
             eq(TESTTOPIC), eq(RequestStatus.CREATED.value), eq("3"), eq(101)))
         .thenReturn(false);
-    when(handleDbRequests.existsTopicRequest(
-            eq(TESTTOPIC),
-            eq(RequestStatus.CREATED.value),
-            eq(RequestOperationType.CLAIM.value),
-            eq("1"),
-            eq(101)))
+    when(handleDbRequests.existsClaimTopicRequest(
+            eq(TESTTOPIC), eq(RequestStatus.CREATED.value), eq(101)))
         .thenReturn(true);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 
@@ -801,12 +797,8 @@ public class TopicOverviewServiceTest {
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
-    when(handleDbRequests.existsTopicRequest(
-            eq(TESTTOPIC),
-            eq(RequestStatus.CREATED.value),
-            eq(RequestOperationType.CLAIM.value),
-            eq("1"),
-            eq(101)))
+    when(handleDbRequests.existsClaimTopicRequest(
+            eq(TESTTOPIC), eq(RequestStatus.CREATED.value), eq(101)))
         .thenReturn(true);
     when(kwClustersHashMap.get(anyInt())).thenReturn(kwClusters);
 

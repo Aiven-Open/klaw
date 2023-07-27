@@ -212,7 +212,7 @@ public class TopicOverviewService extends BaseOverviewService {
     topicInfo.setHasOpenACLRequest(isACLRequestOpen(topicName, envId, tenantId));
     topicInfo.setHasOpenTopicRequest(isTopicRequestOpen(topicName, envId, tenantId));
     topicInfo.setHasOpenSchemaRequest(isSchemaRequestOpen(topicName, envId, tenantId));
-    topicInfo.setHasOpenClaimRequest(isClaimTopicRequestOpen(topicName, envId, tenantId));
+    topicInfo.setHasOpenClaimRequest(isClaimTopicRequestOpen(topicName, tenantId));
     topicInfo.setHasOpenRequest(
         topicInfo.isHasOpenACLRequest()
             || topicInfo.isHasOpenSchemaRequest()
@@ -336,8 +336,7 @@ public class TopicOverviewService extends BaseOverviewService {
         if (topicInfoList.size() > 0) {
           topicInfoList
               .get(0)
-              .setHasOpenClaimRequest(
-                  isClaimTopicRequestOpen(topicNameSearch, environmentId, tenantId));
+              .setHasOpenClaimRequest(isClaimTopicRequestOpen(topicNameSearch, tenantId));
         }
       }
     } catch (Exception e) {
@@ -353,15 +352,10 @@ public class TopicOverviewService extends BaseOverviewService {
         .existsTopicRequest(topicName, RequestStatus.CREATED.value, environmentId, tenantId);
   }
 
-  private boolean isClaimTopicRequestOpen(String topicName, String environmentId, int tenantId) {
+  private boolean isClaimTopicRequestOpen(String topicName, int tenantId) {
     return manageDatabase
         .getHandleDbRequests()
-        .existsTopicRequest(
-            topicName,
-            RequestStatus.CREATED.value,
-            RequestOperationType.CLAIM.value,
-            environmentId,
-            tenantId);
+        .existsClaimTopicRequest(topicName, RequestStatus.CREATED.value, tenantId);
   }
 
   private boolean isTopicPromoteRequestOpen(String topicName, String environmentId, int tenantId) {

@@ -188,7 +188,7 @@ const API_PATHS = {
   getAclRequests: "/getAclRequests",
   getAclRequestsForApprover: "/getAclRequestsForApprover",
   getAclCommand: "/getAclCommands",
-  getTopicRequest: "/getTopicRequests",
+  getTopicRequest: "/getTopicRequest",
 } satisfies {
   [key in keyof Omit<
     ApiOperations,
