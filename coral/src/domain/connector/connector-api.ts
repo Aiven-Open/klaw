@@ -184,6 +184,15 @@ const getConnectorOverview = ({
     .then(transformConnectorOverviewResponse);
 };
 
+const getConnectorDetailsPerEnv = (
+  params: KlawApiRequestQueryParameters<"getConnectorDetailsPerEnv">
+) => {
+  return api.get<KlawApiResponse<"getConnectorDetailsPerEnv">>(
+    API_PATHS.getConnectorDetailsPerEnv,
+    new URLSearchParams(params)
+  );
+};
+
 type UpdateConnectorDocumentation = {
   connectorName: string;
   connectorIdForDocumentation: number;
@@ -228,6 +237,7 @@ export {
   deleteConnector,
   deleteConnectorRequest,
   editConnector,
+  getConnectorDetailsPerEnv,
   getConnectorOverview,
   getConnectorRequests,
   getConnectorRequestsForApprover,

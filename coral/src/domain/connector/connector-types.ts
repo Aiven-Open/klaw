@@ -46,9 +46,12 @@ type DeleteConnectorPayload = ResolveIntersectionTypes<
   }
 >;
 
+type ConnectorDetailsForEnv = KlawApiModel<"ConnectorOverviewPerEnv">;
+
 export type {
   Connector,
   ConnectorApiResponse,
+  ConnectorDetailsForEnv,
   ConnectorDocumentationMarkdown,
   ConnectorOverview,
   ConnectorRequest,
