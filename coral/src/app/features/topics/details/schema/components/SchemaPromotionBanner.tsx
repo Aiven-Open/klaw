@@ -11,6 +11,8 @@ interface SchemaPromotionBannerProps {
   hasOpenSchemaRequest: boolean;
   topicName: string;
   setShowSchemaPromotionModal: () => void;
+  hasError?: boolean;
+  errorMessage?: string;
 }
 
 const SchemaPromotionBanner = ({
@@ -18,6 +20,8 @@ const SchemaPromotionBanner = ({
   hasOpenSchemaRequest,
   topicName,
   setShowSchemaPromotionModal,
+  hasError = false,
+  errorMessage = "",
 }: SchemaPromotionBannerProps) => {
   return (
     <div data-testid={"schema-promotion-banner"}>
@@ -26,6 +30,8 @@ const SchemaPromotionBanner = ({
         promotionDetails={schemaPromotionDetails}
         hasOpenRequest={hasOpenSchemaRequest}
         type={"schema"}
+        hasError={hasError}
+        errorMessage={errorMessage}
         promoteElement={
           <Button.Primary onClick={setShowSchemaPromotionModal}>
             Promote

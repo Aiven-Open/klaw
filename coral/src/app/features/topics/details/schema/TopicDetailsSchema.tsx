@@ -1,5 +1,4 @@
 import {
-  Alert,
   Box,
   Button,
   EmptyState,
@@ -49,7 +48,6 @@ function TopicDetailsSchema() {
 
   const toast = useToast();
 
-  const { targetEnvId, sourceEnv, targetEnv } = schemaPromotionDetails;
   const { topicOwner, hasOpenTopicRequest, hasOpenRequest, hasOpenACLRequest } =
     topicOverview.topicInfo;
   const isTopicOwner = topicOwner;
@@ -68,13 +66,16 @@ function TopicDetailsSchema() {
           throw new Error("No schema available");
         }
 
-        if (targetEnvId === undefined || sourceEnv === undefined) {
+        if (
+          schemaPromotionDetails.targetEnvId === undefined ||
+          schemaPromotionDetails.sourceEnv === undefined
+        ) {
           throw new Error("No promotion details available");
         }
 
         return promoteSchemaRequest({
-          targetEnvironment: targetEnvId,
-          sourceEnvironment: sourceEnv,
+          targetEnvironment: schemaPromotionDetails.targetEnvId,
+          sourceEnvironment: schemaPromotionDetails.sourceEnv,
           topicName,
           schemaVersion: String(schemaDetailsPerEnv.version),
           forceRegister,
@@ -116,21 +117,22 @@ function TopicDetailsSchema() {
 
   return (
     <>
-      {showSchemaPromotionModal && targetEnv !== undefined && (
-        <SchemaPromotionModal
-          isLoading={promoteSchemaIsLoading}
-          onSubmit={promoteSchema}
-          onClose={() => setShowSchemaPromotionModal(false)}
-          targetEnvironment={targetEnv}
-          version={schemaDetailsPerEnv.version}
-          // We only allow users to use the forceRegister option when the promotion request failed
-          // And the failure is because of a schema compatibility issue
-          showForceRegister={
-            errorMessage.length > 0 &&
-            errorMessage.includes("Schema is not compatible")
-          }
-        />
-      )}
+      {showSchemaPromotionModal &&
+        schemaPromotionDetails.targetEnv !== undefined && (
+          <SchemaPromotionModal
+            isLoading={promoteSchemaIsLoading}
+            onSubmit={promoteSchema}
+            onClose={() => setShowSchemaPromotionModal(false)}
+            targetEnvironment={schemaPromotionDetails.targetEnv}
+            version={schemaDetailsPerEnv.version}
+            // We only allow users to use the forceRegister option when the promotion request failed
+            // And the failure is because of a schema compatibility issue
+            showForceRegister={
+              errorMessage.length > 0 &&
+              errorMessage.includes("Schema is not compatible")
+            }
+          />
+        )}
       <PageHeader title="Schema" />
       <Box display={"flex"} justifyContent={"space-between"}>
         <Box display={"flex"} colGap={"l1"}>
@@ -177,31 +179,26 @@ function TopicDetailsSchema() {
       </Box>
 
       {!topicSchemasIsRefetching && isTopicOwner && (
-        <>
-          {errorMessage.length > 0 && (
-            <Box marginBottom={"l1"} role={"alert"}>
-              <Alert type="error">{errorMessage}</Alert>
-            </Box>
-          )}
-          <SchemaPromotionBanner
-            schemaPromotionDetails={schemaPromotionDetails}
-            // @TODO backend will implement the property
-            // `hasOpenSchemaRequests`, should be updated
-            // here then, too
-            // until then: `hasOpenRequest` means there is an
-            // open request for topic, acl or schema
-            // if that's true but `hasOpenAclRequest` and
-            // `hasOpenTopicRequest` is false, the open
-            // request has to be a schema request
-            hasOpenSchemaRequest={
-              hasOpenRequest && !hasOpenACLRequest && !hasOpenTopicRequest
-            }
-            topicName={topicName}
-            setShowSchemaPromotionModal={() =>
-              setShowSchemaPromotionModal(!showSchemaPromotionModal)
-            }
-          />
-        </>
+        <SchemaPromotionBanner
+          schemaPromotionDetails={schemaPromotionDetails}
+          // @TODO backend will implement the property
+          // `hasOpenSchemaRequests`, should be updated
+          // here then, too
+          // until then: `hasOpenRequest` means there is an
+          // open request for topic, acl or schema
+          // if that's true but `hasOpenAclRequest` and
+          // `hasOpenTopicRequest` is false, the open
+          // request has to be a schema request
+          hasOpenSchemaRequest={
+            hasOpenRequest && !hasOpenACLRequest && !hasOpenTopicRequest
+          }
+          topicName={topicName}
+          setShowSchemaPromotionModal={() =>
+            setShowSchemaPromotionModal(!showSchemaPromotionModal)
+          }
+          hasError={errorMessage.length > 0}
+          errorMessage={errorMessage}
+        />
       )}
 
       <SchemaStats

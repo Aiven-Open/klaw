@@ -43,6 +43,8 @@ const TopicPromotionBanner = ({
             Promote
           </Button.Primary>
         }
+        hasError={false}
+        errorMessage={""}
       />
     </div>
   );

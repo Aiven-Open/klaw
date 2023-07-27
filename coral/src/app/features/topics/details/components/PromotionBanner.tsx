@@ -1,4 +1,4 @@
-import { Banner, Box, Button } from "@aivenio/aquarium";
+import { Alert, Banner, Box, Button, Spacing } from "@aivenio/aquarium";
 import illustration from "src/app/images/topic-details-schema-Illustration.svg";
 import { ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,8 @@ interface PromotionBannerProps {
   type: "schema" | "topic";
   promoteElement: ReactElement;
   hasOpenRequest: boolean;
+  hasError: boolean;
+  errorMessage: string;
 }
 
 const PromotionBanner = ({
@@ -22,10 +24,15 @@ const PromotionBanner = ({
   type,
   promoteElement,
   entityName,
+  hasError,
+  errorMessage,
 }: PromotionBannerProps) => {
   const { status, sourceEnv, targetEnv, targetEnvId } = promotionDetails;
   const navigate = useNavigate();
 
+  if (hasError && errorMessage.length === 0) {
+    console.error("Please pass a useful errorMessage for the user!");
+  }
   // if any of these is not true,
   // the entity cannot be promoted
   const isPromotable =
@@ -91,9 +98,19 @@ const PromotionBanner = ({
 
   return (
     <Banner image={illustration} layout="vertical" title={""}>
-      <Box component={"p"} marginBottom={"l1"}>
-        This {type} has not yet been promoted to the {targetEnv} environment.
-      </Box>
+      <Spacing gap={"l1"}>
+        {hasError && (
+          <div role="alert">
+            <Alert type="error">
+              {errorMessage.length > 0 ? errorMessage : "Unexpected error."}
+            </Alert>
+          </div>
+        )}
+
+        <Box component={"p"} marginBottom={"l1"}>
+          This {type} has not yet been promoted to the {targetEnv} environment.
+        </Box>
+      </Spacing>
       {promoteElement}
     </Banner>
   );

@@ -31,6 +31,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
 
@@ -45,6 +47,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
 
@@ -59,6 +63,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
 
@@ -73,6 +79,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
 
@@ -87,6 +95,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
 
@@ -101,6 +111,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
 
@@ -117,6 +129,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={true}
+          hasError={false}
+          errorMessage={""}
         />
       );
     });
@@ -147,6 +161,8 @@ describe("PromotionBanner", () => {
           type={"topic"}
           promoteElement={<></>}
           hasOpenRequest={true}
+          hasError={false}
+          errorMessage={""}
         />
       );
     });
@@ -177,6 +193,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
     });
@@ -207,6 +225,8 @@ describe("PromotionBanner", () => {
           type={"topic"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
     });
@@ -240,6 +260,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={promoteElement}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
     });
@@ -273,6 +295,8 @@ describe("PromotionBanner", () => {
           type={"topic"}
           promoteElement={promoteElement}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
     });
@@ -291,6 +315,61 @@ describe("PromotionBanner", () => {
       const promotionElement = screen.getByTestId("test-promote-element");
 
       expect(promotionElement).toBeVisible();
+    });
+  });
+
+  describe("handles error for promotion (type schema and topic)", () => {
+    const originalConsoleError = console.error;
+
+    beforeEach(() => {
+      console.error = jest.fn();
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("shows an alert with a given message", () => {
+      const testErrorMessage = "This is an error";
+      render(
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={true}
+          errorMessage={testErrorMessage}
+        />
+      );
+
+      const alert = screen.getByRole("alert");
+
+      expect(alert).toBeVisible();
+      expect(alert).toHaveTextContent(testErrorMessage);
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("logs error for developers and shows generic message if errorMessage is empty string", () => {
+      render(
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={true}
+          errorMessage={""}
+        />
+      );
+      const alert = screen.getByRole("alert");
+
+      expect(alert).toHaveTextContent("Unexpected error.");
+      expect(console.error).toHaveBeenCalledWith(
+        "Please pass a useful errorMessage for the user!"
+      );
     });
   });
 
@@ -315,6 +394,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={true}
+          hasError={false}
+          errorMessage={""}
         />
       );
       const button = screen.getByRole("button", { name: "See the request" });
@@ -334,6 +415,8 @@ describe("PromotionBanner", () => {
           type={"topic"}
           promoteElement={<></>}
           hasOpenRequest={true}
+          hasError={false}
+          errorMessage={""}
         />
       );
 
@@ -354,6 +437,8 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
 
@@ -374,6 +459,8 @@ describe("PromotionBanner", () => {
           type={"topic"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
         />
       );
 
