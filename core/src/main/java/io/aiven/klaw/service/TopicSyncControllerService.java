@@ -591,8 +591,11 @@ public class TopicSyncControllerService {
         }
       } else {
         logUpdateSyncBackTopics.add("Topic created " + topicFound.getTopicname());
-        if (!Objects.equals(syncBackTopics.getSourceEnv(), syncBackTopics.getTargetEnv()))
+        if (!Objects.equals(syncBackTopics.getSourceEnv(), syncBackTopics.getTargetEnv())) {
           createAndApproveTopicRequest(syncBackTopics, topicFound, tenantId);
+          topicFound.setEnvironment(syncBackTopics.getTargetEnv());
+          manageDatabase.addTopicToCache(tenantId, topicFound);
+        }
       }
     } catch (KlawException e) {
       log.error("Error in creating topic {}", topicFound, e);

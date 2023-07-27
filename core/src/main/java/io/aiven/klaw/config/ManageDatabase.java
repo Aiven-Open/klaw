@@ -565,6 +565,19 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     topicsPerTenant.put(tenantId, handleDbRequests.getAllTopics(tenantId));
   }
 
+  public void addTopicToCache(int tenantId, Topic topic) {
+    log.info("addTopicToCache {} {}", tenantId, topic);
+    // If the topic does not already exist in the cache simply add it.
+    if (!topicsPerTenant.get(tenantId).contains(topic)) {
+      topicsPerTenant.get(tenantId).add(topic);
+    } else {
+      // If the topic does exist in the cache remove it and then add it to get any updates or
+      // changes that may have been added wtihout getting duplication.
+      topicsPerTenant.get(tenantId).remove(topic);
+      topicsPerTenant.get(tenantId).add(topic);
+    }
+  }
+
   public List<Topic> getTopicsForTenant(int tenantId) {
     return topicsPerTenant.get(tenantId);
   }
