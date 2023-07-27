@@ -22,7 +22,7 @@ const SchemaPromotionBanner = ({
   return (
     <div data-testid={"schema-promotion-banner"}>
       <PromotionBanner
-        topicName={topicName}
+        entityName={topicName}
         promotionDetails={schemaPromotionDetails}
         hasOpenRequest={hasOpenSchemaRequest}
         type={"schema"}

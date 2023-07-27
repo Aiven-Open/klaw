@@ -26,7 +26,7 @@ describe("PromotionBanner", () => {
     it("returns null if status is NOT_AUTHORIZED", () => {
       const { container } = render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "NOT_AUTHORIZED" }}
           type={"schema"}
           promoteElement={<></>}
@@ -40,7 +40,7 @@ describe("PromotionBanner", () => {
     it("returns null if status is NO_PROMOTION", () => {
       const { container } = render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "NO_PROMOTION" }}
           type={"schema"}
           promoteElement={<></>}
@@ -54,7 +54,7 @@ describe("PromotionBanner", () => {
     it("returns null if status is FAILURE", () => {
       const { container } = render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "FAILURE" }}
           type={"schema"}
           promoteElement={<></>}
@@ -68,7 +68,7 @@ describe("PromotionBanner", () => {
     it("returns null if targetEnv is undefined", () => {
       const { container } = render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, targetEnv: undefined }}
           type={"schema"}
           promoteElement={<></>}
@@ -82,7 +82,7 @@ describe("PromotionBanner", () => {
     it("returns null if sourceEnv is undefined", () => {
       const { container } = render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, sourceEnv: undefined }}
           type={"schema"}
           promoteElement={<></>}
@@ -96,7 +96,7 @@ describe("PromotionBanner", () => {
     it("returns null if targetEnvId is undefined", () => {
       const { container } = render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, targetEnvId: undefined }}
           type={"schema"}
           promoteElement={<></>}
@@ -112,7 +112,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={promotionDetails}
           type={"schema"}
           promoteElement={<></>}
@@ -142,7 +142,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={promotionDetails}
           type={"topic"}
           promoteElement={<></>}
@@ -172,7 +172,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
           type={"schema"}
           promoteElement={<></>}
@@ -202,7 +202,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
           type={"topic"}
           promoteElement={<></>}
@@ -235,7 +235,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={promotionDetails}
           type={"schema"}
           promoteElement={promoteElement}
@@ -268,7 +268,7 @@ describe("PromotionBanner", () => {
     beforeAll(() => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={promotionDetails}
           type={"topic"}
           promoteElement={promoteElement}
@@ -310,7 +310,7 @@ describe("PromotionBanner", () => {
     it("handles navigating for entity with an open request (type schema)", async () => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={promotionDetails}
           type={"schema"}
           promoteElement={<></>}
@@ -329,7 +329,7 @@ describe("PromotionBanner", () => {
     it("handles navigating for entity with an open request (type topic)", async () => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={promotionDetails}
           type={"topic"}
           promoteElement={<></>}
@@ -349,7 +349,7 @@ describe("PromotionBanner", () => {
     it("handles navigating for entity with an open promotion request (type schema)", async () => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
           type={"schema"}
           promoteElement={<></>}
@@ -369,7 +369,7 @@ describe("PromotionBanner", () => {
     it("handles navigating for entity with an open promotion request (type topic)", async () => {
       render(
         <PromotionBanner
-          topicName={testTopicName}
+          entityName={testTopicName}
           promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
           type={"topic"}
           promoteElement={<></>}

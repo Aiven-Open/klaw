@@ -23,7 +23,7 @@ const TopicPromotionBanner = ({
   return (
     <div data-testid={"topic-promotion-banner"}>
       <PromotionBanner
-        topicName={topicName}
+        entityName={topicName}
         promotionDetails={topicPromotionDetails}
         hasOpenRequest={hasOpenTopicRequest}
         type={"topic"}

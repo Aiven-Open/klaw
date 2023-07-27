@@ -5,11 +5,11 @@ import { KlawApiModel } from "types/utils";
 import { useNavigate } from "react-router-dom";
 
 interface PromotionBannerProps {
-  // `topicName` is only optional on
+  // `entityName` is only optional on
   // KlawApiModel<"PromotionStatus">
   // so we can't rely on it to be part of
   // the promotionDetails
-  topicName: string;
+  entityName: string;
   promotionDetails: KlawApiModel<"PromotionStatus">;
   type: "schema" | "topic";
   promoteElement: ReactElement;
@@ -21,7 +21,7 @@ const PromotionBanner = ({
   hasOpenRequest,
   type,
   promoteElement,
-  topicName,
+  entityName,
 }: PromotionBannerProps) => {
   const { status, sourceEnv, targetEnv, targetEnvId } = promotionDetails;
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const PromotionBanner = ({
     targetEnv !== undefined &&
     sourceEnv !== undefined &&
     targetEnvId !== undefined &&
-    topicName !== undefined;
+    entityName !== undefined;
 
   const hasOpenPromotionRequest = status === "REQUEST_OPEN";
 
@@ -46,7 +46,7 @@ const PromotionBanner = ({
       <GridItem colSpan={"span-2"}>
         <Banner image={illustration} layout="vertical" title={""}>
           <Box component={"p"} marginBottom={"l1"}>
-            There is an open {type} request for {topicName}.
+            There is an open {type} request for {entityName}.
           </Box>
           {/*@ TODO DS external link does not support */}
           {/*  internal links and we don't have a component*/}
@@ -56,7 +56,7 @@ const PromotionBanner = ({
           <Button.Primary
             onClick={() =>
               navigate(
-                `/requests/${type}s?search=${topicName}&status=CREATED&page=1`
+                `/requests/${type}s?search=${entityName}&status=CREATED&page=1`
               )
             }
           >
@@ -72,7 +72,7 @@ const PromotionBanner = ({
       <GridItem colSpan={"span-2"}>
         <Banner image={illustration} layout="vertical" title={""}>
           <Box component={"p"} marginBottom={"l1"}>
-            There is already an open promotion request for {topicName}.
+            There is already an open promotion request for {entityName}.
           </Box>
           {/*@ TODO DS external link does not support */}
           {/*  internal links and we don't have a component*/}
@@ -82,7 +82,7 @@ const PromotionBanner = ({
           <Button.Primary
             onClick={() =>
               navigate(
-                `/requests/${type}s?search=${topicName}&requestType=PROMOTE&status=CREATED&page=1`
+                `/requests/${type}s?search=${entityName}&requestType=PROMOTE&status=CREATED&page=1`
               )
             }
           >
