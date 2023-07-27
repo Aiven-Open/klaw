@@ -225,6 +225,9 @@ export type paths = {
   "/user/{userId}/switchTeamsList": {
     get: operations["getSwitchTeams"];
   };
+  "/topic/request/{topicReqId}": {
+    get: operations["getTopicRequest"];
+  };
   "/testClusterApiConnection": {
     get: operations["testClusterApiConnection"];
   };
@@ -497,6 +500,8 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
+      /** Format: int32 */
+      requestId?: number;
       topicname: string;
       schemafull: string;
       schemaversion?: string;
@@ -538,6 +543,8 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
+      /** Format: int32 */
+      requestId?: number;
       topicname: string;
       /** Format: int32 */
       topicpartitions: number;
@@ -738,6 +745,8 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
+      /** Format: int32 */
+      requestId?: number;
       topicname: string;
       /** Format: int32 */
       topicpartitions: number;
@@ -765,6 +774,8 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
+      /** Format: int32 */
+      requestId?: number;
       connectorName: string;
       connectorConfig: string;
       description: string;
@@ -787,6 +798,8 @@ export type components = {
       appname?: string;
       remarks?: string;
       requestor?: string;
+      /** Format: int32 */
+      requestId?: number;
       topicname: string;
       consumergroup?: string;
       acl_ip?: (string)[];
@@ -885,6 +898,45 @@ export type components = {
       app?: string;
       teammail?: string;
       envList?: (string)[];
+    };
+    TopicRequestsResponseModel: {
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      topicname: string;
+      /** Format: int32 */
+      topicpartitions: number;
+      replicationfactor: string;
+      description: string;
+      /** Format: int32 */
+      topicid: number;
+      deleteAssociatedSchema: boolean;
+      advancedTopicConfigEntries: (components["schemas"]["TopicConfigEntry"])[];
+      approvingTeamId?: string;
+      sequence?: string;
+      possibleTeams?: (string)[];
+      deletable?: boolean;
+      editable?: boolean;
     };
     ConnectivityStatus: {
       clusterType?: string;
@@ -985,45 +1037,6 @@ export type components = {
       teamId?: number;
       error?: string;
       status: boolean;
-    };
-    TopicRequestsResponseModel: {
-      environment: string;
-      environmentName: string;
-      requestor: string;
-      /** Format: int32 */
-      teamId: number;
-      teamname: string;
-      /** @enum {string} */
-      requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
-      /** @enum {string} */
-      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-      /** Format: date-time */
-      requesttime: string;
-      requesttimestring: string;
-      currentPage: string;
-      totalNoPages: string;
-      allPageNos: (string)[];
-      approvingTeamDetails: string;
-      approver?: string;
-      /** Format: date-time */
-      approvingtime?: string;
-      remarks?: string;
-      appname?: string;
-      otherParams?: string;
-      topicname: string;
-      /** Format: int32 */
-      topicpartitions: number;
-      replicationfactor: string;
-      description: string;
-      /** Format: int32 */
-      topicid: number;
-      deleteAssociatedSchema: boolean;
-      advancedTopicConfigEntries: (components["schemas"]["TopicConfigEntry"])[];
-      approvingTeamId?: string;
-      sequence?: string;
-      possibleTeams?: (string)[];
-      deletable?: boolean;
-      editable?: boolean;
     };
     AclOverviewInfo: {
       req_no: string;
@@ -2744,6 +2757,21 @@ export type operations = {
       200: {
         content: {
           "application/json": (components["schemas"]["TeamModelResponse"])[];
+        };
+      };
+    };
+  };
+  getTopicRequest: {
+    parameters: {
+      path: {
+        topicReqId: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TopicRequestsResponseModel"];
         };
       };
     };
