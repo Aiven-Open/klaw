@@ -213,9 +213,9 @@ const DYNAMIC_API_PATHS = {
   }: Parameters<GetSchemaOfTopicFromSource>[0]) =>
     `/schemas/source/${source}/kafkaEnv/${kafkaEnvId}/topic/${topicName}/schemaVersion/${schemaVersion}` as keyof ApiPaths,
   getSwitchTeams: ({ userId }: Parameters<GetSwitchTeams>[0]) =>
-      `/user/${userId}/switchTeamsList` as keyof ApiPaths,
+    `/user/${userId}/switchTeamsList` as keyof ApiPaths,
   getTopicRequest: ({ topicReqId }: Parameters<GetTopicRequest>[0]) =>
-      `/topic/request/${topicReqId}` as keyof ApiPaths,
+    `/topic/request/${topicReqId}` as keyof ApiPaths,
 } satisfies {
   [key in keyof Pick<
     ApiOperations,
