@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -1506,6 +1507,39 @@ public class TopicControllerServiceTest {
     ApiResponse apiResponse1 = topicControllerService.approveTopicRequests(topicId + "");
     assertThat(apiResponse1.getMessage())
         .isEqualTo("Topic Status: success, TopicSchemaStatus: failure");
+  }
+
+  @Test
+  @Order(56)
+  public void editTopicRequestFailureRequestNotOwned()
+      throws KlawException, KlawNotAuthorizedException {
+    Map<String, String> resultMap = new HashMap<>();
+    resultMap.put("result", ApiResultStatus.SUCCESS.value);
+
+    when(manageDatabase.getTenantConfig()).thenReturn(tenantConfig);
+    when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
+    when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
+    stubUserInfo();
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
+    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
+        .thenReturn(Collections.singletonList("1"));
+    when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
+    when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
+
+    TopicRequest editTopicRequest = utilMethods.getTopicRequest(1001);
+    editTopicRequest.setTopicid(1001);
+    editTopicRequest.setTopicpartitions(2);
+    editTopicRequest.setRequestor("user");
+
+    when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt()))
+        .thenReturn(editTopicRequest);
+
+    TopicRequestModel topicRequestModel = getTopicWithDefaultConfigs();
+    topicRequestModel.setRequestId(101);
+    ApiResponse apiResponse = topicControllerService.createTopicsCreateRequest(topicRequestModel);
+    assertThat(apiResponse.getMessage()).isEqualTo(TOPICS_VLD_ERR_121);
+    assertThat(apiResponse.isSuccess()).isFalse();
   }
 
   private List<MessageSchema> getSchemas(int number) {

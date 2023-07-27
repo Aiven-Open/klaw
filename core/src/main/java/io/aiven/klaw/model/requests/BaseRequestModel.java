@@ -22,4 +22,7 @@ public class BaseRequestModel implements Serializable {
   private String remarks;
 
   private String requestor;
+
+  // this unique id is created after the request is made
+  private Integer requestId;
 }
