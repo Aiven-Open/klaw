@@ -12,6 +12,7 @@ import SchemaApprovalsPage from "src/app/pages/approvals/schemas";
 import TopicApprovalsPage from "src/app/pages/approvals/topics";
 import ConnectorsPage from "src/app/pages/connectors";
 import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
+import ConnectorEditRequest from "src/app/pages/connectors/edit-request";
 import RequestConnector from "src/app/pages/connectors/request";
 import NotFound from "src/app/pages/not-found";
 import RequestsPage from "src/app/pages/requests";
@@ -247,6 +248,12 @@ const routes: Array<RouteObject> = [
         element: <TopicEditRequestPage />,
         featureFlag: FeatureFlag.FEATURE_FLAG_EDIT_TOPIC,
         redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+      }),
+      createRouteBehindFeatureFlag({
+        path: Routes.CONNECTOR_EDIT_REQUEST,
+        element: <ConnectorEditRequest />,
+        featureFlag: FeatureFlag.FEATURE_FLAG_EDIT_CONNECTOR,
+        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
       }),
     ],
   },
