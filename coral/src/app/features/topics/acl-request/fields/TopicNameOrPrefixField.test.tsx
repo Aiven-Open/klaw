@@ -25,7 +25,7 @@ describe("TopicNameOrPrefixField", () => {
     onError.mockClear();
   });
 
-  it("renders a readonly field with information when no pattern type is chosen", () => {
+  it("renders a readOnly field with information when no pattern type is chosen", () => {
     const result = renderForm(
       <TopicNameOrPrefixField
         topicNames={mockedTopicNames}
@@ -65,7 +65,7 @@ describe("TopicNameOrPrefixField", () => {
     expect(options).toHaveLength(mockedTopicNames.length + 1);
   });
 
-  it("renders a readonly TopicNameField (producer form)", () => {
+  it("renders a readOnly TopicNameField (producer form)", () => {
     const result = renderForm(
       <TopicNameOrPrefixField
         topicNames={mockedTopicNames}
@@ -78,7 +78,9 @@ describe("TopicNameOrPrefixField", () => {
         onError,
       }
     );
-    const field = result.getByRole("combobox");
+    const field = result.getByRole("combobox", {
+      name: "Topic name (read-only)",
+    });
 
     expect(field).toBeVisible();
     expect(field).toBeDisabled();

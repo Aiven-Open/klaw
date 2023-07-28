@@ -105,24 +105,23 @@ describe("<ConnectorEditRequest />", () => {
     });
 
     describe("Renders readOnly fields with correct values", () => {
-      it("shows a readOnly required select element for 'Environment' with correct value", async () => {
+      it("shows a readOnly select element for 'Environment' with correct value", async () => {
         const select = await screen.findByRole("combobox", {
-          name: "Environment *",
+          name: "Environment (read-only)",
         });
+
         expect(select).toBeDisabled();
-        expect(select).toBeRequired();
         expect(select).toHaveAttribute("aria-readonly", "true");
         expect(select).toHaveDisplayValue(
           testConnectorDetailsPerEnvResponse.connectorContents.environmentName
         );
       });
 
-      it("shows a readOnly required input element for 'Connector name' with correct value", async () => {
+      it("shows a readOnly input element for 'Connector name' with correct value", async () => {
         const input = await screen.findByRole("textbox", {
-          name: "Connector name *",
+          name: "Connector name (read-only)",
         });
         expect(input).toHaveAttribute("readonly");
-        expect(input).toBeRequired();
         expect(input).toHaveDisplayValue(CONNECTOR_NAME);
       });
     });

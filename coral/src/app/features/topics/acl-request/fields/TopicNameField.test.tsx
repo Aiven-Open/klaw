@@ -1,4 +1,4 @@
-import { cleanup, screen } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import TopicNameField from "src/app/features/topics/acl-request/fields/TopicNameField";
 import { topicname } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
 import { renderForm } from "src/services/test-utils/render-form";
@@ -14,36 +14,37 @@ describe("TopicNameField", () => {
   const onSubmit = jest.fn();
   const onError = jest.fn();
 
-  beforeAll(() => {
-    renderForm(<TopicNameField topicNames={mockedTopicNames} />, {
-      schema,
-      onSubmit,
-      onError,
-    });
-  });
-
-  afterAll(() => {
+  afterEach(() => {
     cleanup();
     onSubmit.mockClear();
     onError.mockClear();
   });
 
-  it("renders NativeSelect component", () => {
-    const select = screen.getByRole("combobox");
+  it("renders a required NativeSelect component", () => {
+    renderForm(<TopicNameField topicNames={mockedTopicNames} />, {
+      schema,
+      onSubmit,
+      onError,
+    });
+    const select = screen.getByRole("combobox", { name: "Topic name *" });
 
-    expect(select).toBeVisible();
     expect(select).toBeEnabled();
+    expect(select).toBeRequired();
   });
 
   it("renders NativeSelect with a placeholder option", () => {
-    const options = screen.getAllByRole("option");
+    renderForm(<TopicNameField topicNames={mockedTopicNames} />, {
+      schema,
+      onSubmit,
+      onError,
+    });
+    const select = screen.getByRole("combobox", { name: "Topic name *" });
+    const options = within(select).getAllByRole("option");
 
     expect(options).toHaveLength(mockedTopicNames.length + 1);
   });
 
-  it("renders readonly NativeSelect when readOnly prop is true", () => {
-    cleanup();
-
+  it("renders a readOnly NativeSelect when readOnly prop is true", () => {
     renderForm(
       <TopicNameField topicNames={mockedTopicNames} readOnly={true} />,
       {
@@ -53,7 +54,9 @@ describe("TopicNameField", () => {
       }
     );
 
-    const select = screen.getByRole("combobox");
+    const select = screen.getByRole("combobox", {
+      name: "Topic name (read-only)",
+    });
 
     expect(select).toBeDisabled();
     expect(select).toHaveAttribute("aria-readonly", "true");

@@ -23,11 +23,15 @@ const TopicNameOrPrefixField = ({
   }
 
   return (
+    // This is not really a readOnly field but
+    // a placeholder until the user can select value
+    // from a list, so I didn't change the label
     <Input
       labelText="Topic name or prefix"
       defaultValue="Select environment and topic pattern type first"
       height={45}
       readOnly
+      required={true}
     />
   );
 };
