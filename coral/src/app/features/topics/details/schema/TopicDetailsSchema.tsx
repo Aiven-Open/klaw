@@ -48,8 +48,7 @@ function TopicDetailsSchema() {
 
   const toast = useToast();
 
-  const { topicOwner, hasOpenTopicRequest, hasOpenRequest, hasOpenACLRequest } =
-    topicOverview.topicInfo;
+  const { topicOwner, hasOpenSchemaRequest } = topicOverview.topicInfo;
   const isTopicOwner = topicOwner;
   const noSchema =
     allSchemaVersions.length === 0 ||
@@ -181,17 +180,7 @@ function TopicDetailsSchema() {
       {!topicSchemasIsRefetching && isTopicOwner && (
         <SchemaPromotionBanner
           schemaPromotionDetails={schemaPromotionDetails}
-          // @TODO backend will implement the property
-          // `hasOpenSchemaRequests`, should be updated
-          // here then, too
-          // until then: `hasOpenRequest` means there is an
-          // open request for topic, acl or schema
-          // if that's true but `hasOpenAclRequest` and
-          // `hasOpenTopicRequest` is false, the open
-          // request has to be a schema request
-          hasOpenSchemaRequest={
-            hasOpenRequest && !hasOpenACLRequest && !hasOpenTopicRequest
-          }
+          hasOpenSchemaRequest={hasOpenSchemaRequest}
           topicName={topicName}
           setShowSchemaPromotionModal={() =>
             setShowSchemaPromotionModal(!showSchemaPromotionModal)

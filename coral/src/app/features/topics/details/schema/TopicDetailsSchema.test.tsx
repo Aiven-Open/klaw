@@ -270,9 +270,7 @@ describe("TopicDetailsSchema", () => {
           topicOverview: {
             topicInfo: {
               topicOwner: true,
-              hasOpenTopicRequest: false,
-              hasOpenACLRequest: false,
-              hasOpenRequest: true,
+              hasOpenSchemaRequest: true,
             },
           },
         });
