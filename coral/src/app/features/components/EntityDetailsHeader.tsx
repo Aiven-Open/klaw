@@ -7,7 +7,6 @@ import {
 } from "@aivenio/aquarium";
 import database from "@aivenio/aquarium/dist/src/icons/database";
 import { Dispatch, SetStateAction } from "react";
-import { useNavigate } from "react-router-dom";
 import { EnvironmentInfo } from "src/domain/environment";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 
@@ -33,8 +32,6 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
     entityExists,
     entityUpdating,
   } = props;
-
-  const navigate = useNavigate();
 
   return (
     <Box

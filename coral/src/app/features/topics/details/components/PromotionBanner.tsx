@@ -1,7 +1,6 @@
-import { Alert, Banner, Box, Button, Spacing } from "@aivenio/aquarium";
+import { Alert, Banner, Box, Spacing } from "@aivenio/aquarium";
 import illustration from "src/app/images/topic-details-schema-Illustration.svg";
 import { ReactElement } from "react";
-import { useNavigate } from "react-router-dom";
 import { PromotionStatus } from "src/domain/promotion";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 
@@ -29,7 +28,6 @@ const PromotionBanner = ({
   errorMessage,
 }: PromotionBannerProps) => {
   const { status, sourceEnv, targetEnv, targetEnvId } = promotionDetails;
-  const navigate = useNavigate();
 
   if (hasError && errorMessage.length === 0) {
     console.error("Please pass a useful errorMessage for the user!");
