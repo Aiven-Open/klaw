@@ -104,13 +104,14 @@ describe("<ConnectorEditRequest />", () => {
       cleanup();
     });
 
-    describe("Renders disabled fields with correct values", () => {
-      it("shows a disabled required select element for 'Environment' with correct value", async () => {
+    describe("Renders readOnly fields with correct values", () => {
+      it("shows a readOnly required select element for 'Environment' with correct value", async () => {
         const select = await screen.findByRole("combobox", {
           name: "Environment *",
         });
         expect(select).toBeDisabled();
         expect(select).toBeRequired();
+        expect(select).toHaveAttribute("aria-readonly", "true");
         expect(select).toHaveDisplayValue(
           testConnectorDetailsPerEnvResponse.connectorContents.environmentName
         );
@@ -141,7 +142,7 @@ describe("<ConnectorEditRequest />", () => {
       });
     });
 
-    it("should render 'Description' with correct default value", async () => {
+    it("Renders 'Description' with correct default value", async () => {
       const connectorNameInput = screen.getByRole("textbox", {
         name: "Connector description *",
       });
@@ -152,7 +153,7 @@ describe("<ConnectorEditRequest />", () => {
       );
     });
 
-    it("should render 'Message for approval' with no default value", async () => {
+    it("Renders 'Message for approval' with no default value", async () => {
       const remarksInput = screen.getByRole("textbox", {
         name: "Message for approval",
       });
@@ -233,15 +234,14 @@ describe("<ConnectorEditRequest />", () => {
       });
 
       it("creates a new connector update request when input was valid", async () => {
-        await user.type(
-          screen.getByRole("textbox", {
-            name: "Connector description *",
-          }),
-          "hello"
-        );
-        await user.click(
-          screen.getByRole("button", { name: "Submit update request" })
-        );
+        const input = screen.getByRole("textbox", {
+          name: "Connector description *",
+        });
+        const button = screen.getByRole("button", {
+          name: "Submit update request",
+        });
+        await user.type(input, "hello");
+        await user.click(button);
 
         expect(editConnector).toHaveBeenCalledTimes(1);
         expect(editConnector).toHaveBeenCalledWith({
@@ -258,24 +258,22 @@ describe("<ConnectorEditRequest />", () => {
       });
 
       it("errors and does not create a new connector request when input was invalid", async () => {
-        await waitFor(() =>
-          expect(
-            screen.getByRole("textbox", { name: "Connector description *" })
-          ).toHaveDisplayValue("Connector description")
-        );
+        const input = screen.getByRole("textbox", {
+          name: "Connector description *",
+        });
 
+        await waitFor(() =>
+          expect(input).toHaveDisplayValue("Connector description")
+        );
         await user.clear(
           screen.getByRole("textbox", { name: "Connector description *" })
         );
 
-        expect(
-          screen.getByRole("textbox", { name: "Connector description *" })
-        ).toHaveDisplayValue("");
+        const button = screen.getByRole("button", {
+          name: "Submit update request",
+        });
 
-        await user.click(
-          screen.getByRole("button", { name: "Submit update request" })
-        );
-
+        await user.click(button);
         await waitFor(() =>
           expect(
             screen.getByText(
@@ -340,15 +338,13 @@ describe("<ConnectorEditRequest />", () => {
       const button = screen.getByRole("button", {
         name: "Cancel",
       });
+      const input = screen.getByRole("textbox", {
+        name: "Connector description *",
+      });
 
-      await user.type(
-        screen.getByRole("textbox", {
-          name: "Connector description *",
-        }),
-        "hello"
-      );
-
+      await user.type(input, "hello");
       await userEvent.click(button);
+
       const dialog = screen.getByRole("dialog");
 
       expect(dialog).toBeVisible();
@@ -361,20 +357,18 @@ describe("<ConnectorEditRequest />", () => {
     });
 
     it("brings the user back to the form when they do not cancel", async () => {
-      await user.type(
-        screen.getByRole("textbox", {
-          name: "Connector description *",
-        }),
-        "hello"
-      );
+      const input = screen.getByRole("textbox", {
+        name: "Connector description *",
+      });
 
       const button = screen.getByRole("button", {
         name: "Cancel",
       });
 
+      await user.type(input, "hello");
       await userEvent.click(button);
-      const dialog = screen.getByRole("dialog");
 
+      const dialog = screen.getByRole("dialog");
       const returnButton = screen.getByRole("button", {
         name: "Continue with request",
       });
@@ -382,17 +376,15 @@ describe("<ConnectorEditRequest />", () => {
       await userEvent.click(returnButton);
 
       expect(mockedUsedNavigate).not.toHaveBeenCalled();
-
       expect(dialog).not.toBeInTheDocument();
     });
 
     it("redirects user to previous page if they cancel the request", async () => {
-      await user.type(
-        screen.getByRole("textbox", {
-          name: "Connector description *",
-        }),
-        "hello"
-      );
+      const input = screen.getByRole("textbox", {
+        name: "Connector description *",
+      });
+
+      await user.type(input, "hello");
 
       const button = screen.getByRole("button", {
         name: "Cancel",
