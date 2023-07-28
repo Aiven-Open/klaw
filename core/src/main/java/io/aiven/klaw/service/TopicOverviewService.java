@@ -220,6 +220,15 @@ public class TopicOverviewService extends BaseOverviewService {
             || topicInfo.isHasOpenClaimRequest());
   }
 
+  private void setHasOpenRequestOnly(
+      TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
+    topicInfo.setHasOpenRequest(
+        isACLRequestOpen(topicName, envId, tenantId)
+            || isSchemaRequestOpen(topicName, envId, tenantId)
+            || isTopicRequestOpen(topicName, envId, tenantId)
+            || isClaimTopicRequestOpen(topicName, tenantId));
+  }
+
   private void setHasSchema(
       TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
     topicInfo.setHasSchema(commonUtilsService.existsSchemaForTopic(topicName, envId, tenantId));
@@ -337,6 +346,14 @@ public class TopicOverviewService extends BaseOverviewService {
           topicInfoList
               .get(0)
               .setHasOpenClaimRequest(isClaimTopicRequestOpen(topicNameSearch, tenantId));
+
+          if (topicInfoList.get(0).isHasOpenClaimRequest()) {
+            log.info("SET THIS THING TO TRUE");
+            topicInfoList.get(0).setHasOpenRequest(true);
+          } else {
+            // only make call to db if it is required.
+            setHasOpenRequestOnly(topicInfoList.get(0), topicNameSearch, environmentId, tenantId);
+          }
         }
       }
     } catch (Exception e) {
