@@ -348,7 +348,6 @@ public class TopicOverviewService extends BaseOverviewService {
               .setHasOpenClaimRequest(isClaimTopicRequestOpen(topicNameSearch, tenantId));
 
           if (topicInfoList.get(0).isHasOpenClaimRequest()) {
-            log.info("SET THIS THING TO TRUE");
             topicInfoList.get(0).setHasOpenRequest(true);
           } else {
             // only make call to db if it is required.
