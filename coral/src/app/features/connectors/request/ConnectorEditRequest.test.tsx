@@ -142,7 +142,7 @@ describe("<ConnectorEditRequest />", () => {
       });
     });
 
-    it("Renders 'Description' with correct default value", async () => {
+    it("Renders 'Connector description' with correct default value", async () => {
       const connectorNameInput = screen.getByRole("textbox", {
         name: "Connector description *",
       });

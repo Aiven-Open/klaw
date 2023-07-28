@@ -264,7 +264,7 @@ function TopicPromotionRequest() {
           <Box grow={1} width={"1/2"}>
             <Textarea<Schema>
               name="description"
-              labelText="Description"
+              labelText="Topic description"
               rows={5}
               required={true}
               readOnly
