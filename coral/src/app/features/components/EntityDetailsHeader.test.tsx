@@ -1,8 +1,9 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
 import userEvent from "@testing-library/user-event";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
 import { EnvironmentInfo } from "src/domain/environment";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -52,11 +53,12 @@ describe("EntityDetailsHeader", () => {
 
     describe("handles loading state when environments are not yet given", () => {
       beforeAll(() => {
-        render(
+        customRender(
           <EntityDetailsHeader
             {...defaultTopicProps}
             environments={undefined}
-          />
+          />,
+          { browserRouter: true }
         );
       });
 
@@ -85,8 +87,9 @@ describe("EntityDetailsHeader", () => {
 
     describe("handles a non existent topic", () => {
       beforeAll(() => {
-        render(
-          <EntityDetailsHeader {...defaultTopicProps} entityExists={false} />
+        customRender(
+          <EntityDetailsHeader {...defaultTopicProps} entityExists={false} />,
+          { browserRouter: true }
         );
       });
 
@@ -98,10 +101,10 @@ describe("EntityDetailsHeader", () => {
         expect(select).not.toBeInTheDocument();
       });
 
-      it("shows the button to edit topic as disabled", () => {
-        const button = screen.getByRole("button", { name: "Edit topic" });
+      it("shows the link to edit topic as disabled", () => {
+        const link = screen.getByRole("link", { name: "Edit topic" });
 
-        expect(button).toBeDisabled();
+        expect(link).toBeDisabled();
       });
 
       it("shows no information about amount of environments", () => {
@@ -115,7 +118,9 @@ describe("EntityDetailsHeader", () => {
 
     describe("shows all necessary elements if topic exists", () => {
       beforeAll(() => {
-        render(<EntityDetailsHeader {...defaultTopicProps} />);
+        customRender(<EntityDetailsHeader {...defaultTopicProps} />, {
+          browserRouter: true,
+        });
       });
 
       afterAll(cleanup);
@@ -165,32 +170,36 @@ describe("EntityDetailsHeader", () => {
         expect(info).toBeVisible();
       });
 
-      it("shows a button to edit the topic", () => {
-        const button = screen.getByRole("button", { name: "Edit topic" });
+      it("shows a link to edit the topic", () => {
+        const link = screen.getByRole("link", { name: "Edit topic" });
 
-        expect(button).toBeEnabled();
+        expect(link).toBeVisible();
+        expect(link).toHaveAttribute("href", defaultTopicProps.entityEditLink);
       });
     });
 
     describe("disables button to edit as long as data is updated", () => {
       beforeAll(() => {
-        render(
-          <EntityDetailsHeader {...defaultTopicProps} entityUpdating={true} />
+        customRender(
+          <EntityDetailsHeader {...defaultTopicProps} entityUpdating={true} />,
+          { browserRouter: true }
         );
       });
 
       afterAll(cleanup);
 
-      it("shows a button to edit the topic", () => {
-        const button = screen.getByRole("button", { name: "Edit topic" });
+      it("shows a link to edit the topic", () => {
+        const link = screen.getByRole("link", { name: "Edit topic" });
 
-        expect(button).toBeDisabled();
+        expect(link).toBeDisabled();
       });
     });
 
     describe("handles user selecting an environment", () => {
       beforeEach(() => {
-        render(<EntityDetailsHeader {...defaultTopicProps} />);
+        customRender(<EntityDetailsHeader {...defaultTopicProps} />, {
+          browserRouter: true,
+        });
       });
 
       afterEach(() => {
@@ -225,11 +234,12 @@ describe("EntityDetailsHeader", () => {
 
     describe("handles loading state when environments are not yet given", () => {
       beforeAll(() => {
-        render(
+        customRender(
           <EntityDetailsHeader
             {...defaultConnectorProps}
             environments={undefined}
-          />
+          />,
+          { browserRouter: true }
         );
       });
 
@@ -258,11 +268,12 @@ describe("EntityDetailsHeader", () => {
 
     describe("handles a non existent connector", () => {
       beforeAll(() => {
-        render(
+        customRender(
           <EntityDetailsHeader
             {...defaultConnectorProps}
             entityExists={false}
-          />
+          />,
+          { browserRouter: true }
         );
       });
 
@@ -274,10 +285,10 @@ describe("EntityDetailsHeader", () => {
         expect(select).not.toBeInTheDocument();
       });
 
-      it("shows the button to edit connector as disabled", () => {
-        const button = screen.getByRole("button", { name: "Edit connector" });
+      it("shows the link to edit connector as disabled", () => {
+        const link = screen.getByRole("link", { name: "Edit connector" });
 
-        expect(button).toBeDisabled();
+        expect(link).toBeDisabled();
       });
 
       it("shows no information about amount of environments", () => {
@@ -291,7 +302,9 @@ describe("EntityDetailsHeader", () => {
 
     describe("shows all necessary elements if connector exists", () => {
       beforeAll(() => {
-        render(<EntityDetailsHeader {...defaultConnectorProps} />);
+        customRender(<EntityDetailsHeader {...defaultConnectorProps} />, {
+          browserRouter: true,
+        });
       });
 
       afterAll(cleanup);
@@ -341,35 +354,42 @@ describe("EntityDetailsHeader", () => {
         expect(info).toBeVisible();
       });
 
-      it("shows a button to edit the connector", () => {
-        const button = screen.getByRole("button", { name: "Edit connector" });
+      it("shows a link to edit the connector", () => {
+        const link = screen.getByRole("link", { name: "Edit connector" });
 
-        expect(button).toBeEnabled();
+        expect(link).toBeVisible();
+        expect(link).toHaveAttribute(
+          "href",
+          defaultConnectorProps.entityEditLink
+        );
       });
     });
 
     describe("disables button to edit as long as data is updated", () => {
       beforeAll(() => {
-        render(
+        customRender(
           <EntityDetailsHeader
             {...defaultConnectorProps}
             entityUpdating={true}
-          />
+          />,
+          { browserRouter: true }
         );
       });
 
       afterAll(cleanup);
 
-      it("shows a button to edit the topic", () => {
-        const button = screen.getByRole("button", { name: "Edit connector" });
+      it("shows a disabled link to edit the topic", () => {
+        const link = screen.getByRole("link", { name: "Edit connector" });
 
-        expect(button).toBeDisabled();
+        expect(link).toBeDisabled();
       });
     });
 
     describe("handles user selecting an environment", () => {
       beforeEach(() => {
-        render(<EntityDetailsHeader {...defaultConnectorProps} />);
+        customRender(<EntityDetailsHeader {...defaultConnectorProps} />, {
+          browserRouter: true,
+        });
       });
 
       afterEach(() => {
@@ -401,8 +421,9 @@ describe("EntityDetailsHeader", () => {
 
   describe("correctly hides Edit button", () => {
     it("hides Edit button for Topic", async () => {
-      render(
-        <EntityDetailsHeader {...defaultTopicProps} showEditButton={false} />
+      customRender(
+        <EntityDetailsHeader {...defaultTopicProps} showEditButton={false} />,
+        { browserRouter: true }
       );
 
       const button = screen.queryByRole("button", { name: "Edit topic" });
@@ -411,11 +432,12 @@ describe("EntityDetailsHeader", () => {
     });
 
     it("hides Edit button for Connector", async () => {
-      render(
+      customRender(
         <EntityDetailsHeader
           {...defaultConnectorProps}
           showEditButton={false}
-        />
+        />,
+        { browserRouter: true }
       );
 
       const button = screen.queryByRole("button", { name: "Edit connector" });
