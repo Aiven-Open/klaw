@@ -570,11 +570,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     // If the topic does not already exist in the cache simply add it.
     if (!topicsPerTenant.get(tenantId).contains(topic)) {
       topicsPerTenant.get(tenantId).add(topic);
-    } else {
-      // If the topic does exist in the cache remove it and then add it to get any updates or
-      // changes that may have been added wtihout getting duplication.
-      topicsPerTenant.get(tenantId).remove(topic);
-      topicsPerTenant.get(tenantId).add(topic);
     }
   }
 

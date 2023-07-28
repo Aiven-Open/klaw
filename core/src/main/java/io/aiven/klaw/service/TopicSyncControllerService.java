@@ -597,8 +597,6 @@ public class TopicSyncControllerService {
         logUpdateSyncBackTopics.add("Topic created " + topicFound.getTopicname());
         if (!Objects.equals(syncBackTopics.getSourceEnv(), syncBackTopics.getTargetEnv())) {
           createAndApproveTopicRequest(syncBackTopics, topicFound, tenantId);
-          topicFound.setEnvironment(syncBackTopics.getTargetEnv());
-          manageDatabase.addTopicToCache(tenantId, topicFound);
         }
       }
     } catch (KlawException e) {
@@ -633,6 +631,12 @@ public class TopicSyncControllerService {
       if (createResult.get("topicId") != null) {
         topicRequest.setTopicid(Integer.parseInt(createResult.get("topicId")));
         manageDatabase.getHandleDbRequests().updateTopicRequest(topicRequest, getUserName());
+        // After creating and approving this topic creation add the new topicId and environment as
+        // they are the only differences between the versions.
+        // This prevents us from having to do a dip into the DB to get the newly created topic.
+        topicFound.setEnvironment(syncBackTopics.getTargetEnv());
+        topicFound.setTopicid(topicRequest.getTopicid());
+        manageDatabase.addTopicToCache(tenantId, topicFound);
       }
     }
   }
