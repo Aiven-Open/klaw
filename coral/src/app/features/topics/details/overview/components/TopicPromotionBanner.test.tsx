@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
 import { TopicOverview } from "src/domain/topic";
@@ -62,12 +61,9 @@ describe("TopicPromotionBanner", () => {
   });
 
   it("renders correct banner (promote topic)", () => {
-    customRender(
-      <AquariumContext>
-        <TopicPromotionBanner {...promoteProps} />
-      </AquariumContext>,
-      { browserRouter: true }
-    );
+    customRender(<TopicPromotionBanner {...promoteProps} />, {
+      browserRouter: true,
+    });
 
     const link = screen.getByRole("link", {
       name: "Promote",
@@ -81,12 +77,9 @@ describe("TopicPromotionBanner", () => {
   });
 
   it("renders correct banner (see open request)", () => {
-    customRender(
-      <AquariumContext>
-        <TopicPromotionBanner {...seeOpenRequestProps} />
-      </AquariumContext>,
-      { browserRouter: true }
-    );
+    customRender(<TopicPromotionBanner {...seeOpenRequestProps} />, {
+      browserRouter: true,
+    });
 
     const link = screen.getByRole("link", {
       name: "See the request",
@@ -100,12 +93,9 @@ describe("TopicPromotionBanner", () => {
   });
 
   it("renders correct banner (see open promotion request)", () => {
-    customRender(
-      <AquariumContext>
-        <TopicPromotionBanner {...seeOpenPromotionRequestProps} />
-      </AquariumContext>,
-      { browserRouter: true }
-    );
+    customRender(<TopicPromotionBanner {...seeOpenPromotionRequestProps} />, {
+      browserRouter: true,
+    });
 
     const link = screen.getByRole("link", {
       name: "See the request",
@@ -119,12 +109,9 @@ describe("TopicPromotionBanner", () => {
   });
 
   it("renders nothing if status === 'NO_PROMOTION'", () => {
-    customRender(
-      <AquariumContext>
-        <TopicPromotionBanner {...nullProps} />
-      </AquariumContext>,
-      { browserRouter: true }
-    );
+    customRender(<TopicPromotionBanner {...nullProps} />, {
+      browserRouter: true,
+    });
 
     const wrapper = screen.getByTestId("topic-promotion-banner");
 

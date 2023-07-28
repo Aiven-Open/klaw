@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { KlawApiModel } from "types/utils";
 import { cleanup, screen } from "@testing-library/react";
 import { PromotionBanner } from "src/app/features/topics/details/components/PromotionBanner";
@@ -18,169 +17,119 @@ describe("PromotionBanner", () => {
 
     it("returns null if status is NOT_AUTHORIZED", () => {
       const { container } = customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={{ ...promotionDetails, status: "NOT_AUTHORIZED" }}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={{ ...promotionDetails, status: "NOT_AUTHORIZED" }}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
 
-      // `container` is an empty <div> because
-      // we're using the render with wrapper
-      // so testing that there is only one child
-      // and that child is an empty DOM element
-      // confirms the right render result
-      expect(container.children).toHaveLength(1);
-      expect(container.children[0]).toBeEmptyDOMElement();
+      expect(container).toBeEmptyDOMElement();
     });
 
     it("returns null if status is NO_PROMOTION", () => {
       const { container } = customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={{ ...promotionDetails, status: "NO_PROMOTION" }}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={{ ...promotionDetails, status: "NO_PROMOTION" }}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
 
-      // `container` is an empty <div> because
-      // we're using the render with wrapper
-      // so testing that there is only one child
-      // and that child is an empty DOM element
-      // confirms the right render result
-      expect(container.children).toHaveLength(1);
-      expect(container.children[0]).toBeEmptyDOMElement();
+      expect(container).toBeEmptyDOMElement();
     });
 
     it("returns null if status is FAILURE", () => {
       const { container } = customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={{ ...promotionDetails, status: "FAILURE" }}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={{ ...promotionDetails, status: "FAILURE" }}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
 
-      // `container` is an empty <div> because
-      // we're using the render with wrapper
-      // so testing that there is only one child
-      // and that child is an empty DOM element
-      // confirms the right render result
-      expect(container.children).toHaveLength(1);
-      expect(container.children[0]).toBeEmptyDOMElement();
+      expect(container).toBeEmptyDOMElement();
     });
 
     it("returns null if targetEnv is undefined", () => {
       const { container } = customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={{ ...promotionDetails, targetEnv: undefined }}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={{ ...promotionDetails, targetEnv: undefined }}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
 
-      // `container` is an empty <div> because
-      // we're using the render with wrapper
-      // so testing that there is only one child
-      // and that child is an empty DOM element
-      // confirms the right render result
-      expect(container.children).toHaveLength(1);
-      expect(container.children[0]).toBeEmptyDOMElement();
+      expect(container).toBeEmptyDOMElement();
     });
 
     it("returns null if sourceEnv is undefined", () => {
       const { container } = customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={{ ...promotionDetails, sourceEnv: undefined }}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={{ ...promotionDetails, sourceEnv: undefined }}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
 
-      // `container` is an empty <div> because
-      // we're using the render with wrapper
-      // so testing that there is only one child
-      // and that child is an empty DOM element
-      // confirms the right render result
-      expect(container.children).toHaveLength(1);
-      expect(container.children[0]).toBeEmptyDOMElement();
+      expect(container).toBeEmptyDOMElement();
     });
 
     it("returns null if targetEnvId is undefined", () => {
       const { container } = customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={{ ...promotionDetails, targetEnvId: undefined }}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={{ ...promotionDetails, targetEnvId: undefined }}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
 
-      // `container` is an empty <div> because
-      // we're using the render with wrapper
-      // so testing that there is only one child
-      // and that child is an empty DOM element
-      // confirms the right render result
-      expect(container.children).toHaveLength(1);
-      expect(container.children[0]).toBeEmptyDOMElement();
+      expect(container).toBeEmptyDOMElement();
     });
   });
 
   describe("handles banner for entity with an open request (type schema)", () => {
     beforeAll(() => {
       customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={promotionDetails}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={true}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={true}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
     });
@@ -209,17 +158,15 @@ describe("PromotionBanner", () => {
   describe("handles banner for entity with an open request (type topic)", () => {
     beforeAll(() => {
       customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={promotionDetails}
-            type={"topic"}
-            promoteElement={<></>}
-            hasOpenRequest={true}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"topic"}
+          promoteElement={<></>}
+          hasOpenRequest={true}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
     });
@@ -248,17 +195,15 @@ describe("PromotionBanner", () => {
   describe("handles banner for entity with an open promotion request (type schema)", () => {
     beforeAll(() => {
       customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
     });
@@ -287,17 +232,15 @@ describe("PromotionBanner", () => {
   describe("handles banner for entity with an open promotion request (type topic)", () => {
     beforeAll(() => {
       customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
-            type={"topic"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
+          type={"topic"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
     });
@@ -329,17 +272,15 @@ describe("PromotionBanner", () => {
     const promoteElement = <div data-testid={"another-test-promote-element"} />;
     beforeAll(() => {
       customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={promotionDetails}
-            type={"schema"}
-            promoteElement={promoteElement}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"schema"}
+          promoteElement={promoteElement}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
     });
@@ -367,17 +308,15 @@ describe("PromotionBanner", () => {
     const promoteElement = <div data-testid={"test-promote-element"} />;
     beforeAll(() => {
       customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={promotionDetails}
-            type={"topic"}
-            promoteElement={promoteElement}
-            hasOpenRequest={false}
-            hasError={false}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"topic"}
+          promoteElement={promoteElement}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
     });
@@ -415,17 +354,15 @@ describe("PromotionBanner", () => {
     it("shows an alert with a given message", () => {
       const testErrorMessage = "This is an error";
       customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={promotionDetails}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={true}
-            errorMessage={testErrorMessage}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={true}
+          errorMessage={testErrorMessage}
+        />,
         { browserRouter: true }
       );
 
@@ -438,17 +375,15 @@ describe("PromotionBanner", () => {
 
     it("logs error for developers and shows generic message if errorMessage is empty string", () => {
       customRender(
-        <AquariumContext>
-          <PromotionBanner
-            entityName={testTopicName}
-            promotionDetails={promotionDetails}
-            type={"schema"}
-            promoteElement={<></>}
-            hasOpenRequest={false}
-            hasError={true}
-            errorMessage={""}
-          />
-        </AquariumContext>,
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasError={true}
+          errorMessage={""}
+        />,
         { browserRouter: true }
       );
       const alert = screen.getByRole("alert");

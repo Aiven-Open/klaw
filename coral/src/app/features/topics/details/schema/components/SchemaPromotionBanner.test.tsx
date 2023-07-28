@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { TopicSchemaOverview } from "src/domain/topic";
@@ -30,14 +29,12 @@ describe("SchemaPromotionBanner", () => {
 
   it("renders correct banner (promote schema)", () => {
     customRender(
-      <AquariumContext>
-        <SchemaPromotionBanner
-          schemaPromotionDetails={schemaPromotionDetailsBase}
-          topicName={"my-test-topic"}
-          setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
-          hasOpenSchemaRequest={false}
-        />
-      </AquariumContext>,
+      <SchemaPromotionBanner
+        schemaPromotionDetails={schemaPromotionDetailsBase}
+        topicName={"my-test-topic"}
+        setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
+        hasOpenSchemaRequest={false}
+      />,
       { browserRouter: true }
     );
 
@@ -50,14 +47,12 @@ describe("SchemaPromotionBanner", () => {
 
   it("enables user to promote a schema", async () => {
     customRender(
-      <AquariumContext>
-        <SchemaPromotionBanner
-          schemaPromotionDetails={schemaPromotionDetailsBase}
-          topicName={"my-test-topic"}
-          setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
-          hasOpenSchemaRequest={false}
-        />
-      </AquariumContext>,
+      <SchemaPromotionBanner
+        schemaPromotionDetails={schemaPromotionDetailsBase}
+        topicName={"my-test-topic"}
+        setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
+        hasOpenSchemaRequest={false}
+      />,
       { browserRouter: true }
     );
 
@@ -72,14 +67,12 @@ describe("SchemaPromotionBanner", () => {
 
   it("renders correct banner (see open request)", () => {
     customRender(
-      <AquariumContext>
-        <SchemaPromotionBanner
-          schemaPromotionDetails={schemaPromotionDetailsBase}
-          topicName={"my-test-topic"}
-          setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
-          hasOpenSchemaRequest={true}
-        />
-      </AquariumContext>,
+      <SchemaPromotionBanner
+        schemaPromotionDetails={schemaPromotionDetailsBase}
+        topicName={"my-test-topic"}
+        setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
+        hasOpenSchemaRequest={true}
+      />,
       { browserRouter: true }
     );
 
@@ -100,17 +93,15 @@ describe("SchemaPromotionBanner", () => {
 
   it("renders correct banner (see open promotion request)", () => {
     customRender(
-      <AquariumContext>
-        <SchemaPromotionBanner
-          schemaPromotionDetails={{
-            ...schemaPromotionDetailsBase,
-            status: "REQUEST_OPEN",
-          }}
-          topicName={"my-test-topic"}
-          setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
-          hasOpenSchemaRequest={false}
-        />
-      </AquariumContext>,
+      <SchemaPromotionBanner
+        schemaPromotionDetails={{
+          ...schemaPromotionDetailsBase,
+          status: "REQUEST_OPEN",
+        }}
+        topicName={"my-test-topic"}
+        setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
+        hasOpenSchemaRequest={false}
+      />,
       { browserRouter: true }
     );
 
@@ -131,17 +122,15 @@ describe("SchemaPromotionBanner", () => {
 
   it("renders nothing if status === 'NO_PROMOTION'", () => {
     customRender(
-      <AquariumContext>
-        <SchemaPromotionBanner
-          schemaPromotionDetails={{
-            ...schemaPromotionDetailsBase,
-            status: "NO_PROMOTION",
-          }}
-          topicName={"my-test-topic"}
-          setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
-          hasOpenSchemaRequest={false}
-        />
-      </AquariumContext>,
+      <SchemaPromotionBanner
+        schemaPromotionDetails={{
+          ...schemaPromotionDetailsBase,
+          status: "NO_PROMOTION",
+        }}
+        topicName={"my-test-topic"}
+        setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
+        hasOpenSchemaRequest={false}
+      />,
       { browserRouter: true }
     );
 
