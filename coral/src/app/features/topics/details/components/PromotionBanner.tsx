@@ -3,6 +3,7 @@ import illustration from "src/app/images/topic-details-schema-Illustration.svg";
 import { ReactElement } from "react";
 import { useNavigate } from "react-router-dom";
 import { PromotionStatus } from "src/domain/promotion";
+import { RequestOperationType } from "src/domain/requests/requests-types";
 
 interface PromotionBannerProps {
   // `entityName` is only optional on
@@ -73,6 +74,9 @@ const PromotionBanner = ({
   }
 
   if (hasOpenPromotionRequest) {
+    // Schema currently shows all types as "CREATE"
+    const requestType: RequestOperationType =
+      type === "topic" ? "PROMOTE" : "CREATE";
     return (
       <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
@@ -86,7 +90,7 @@ const PromotionBanner = ({
         <Button.Primary
           onClick={() =>
             navigate(
-              `/requests/${type}s?search=${entityName}&requestType=PROMOTE&status=CREATED&page=1`
+              `/requests/${type}s?search=${entityName}&requestType=${requestType}&status=CREATED&page=1`
             )
           }
         >
