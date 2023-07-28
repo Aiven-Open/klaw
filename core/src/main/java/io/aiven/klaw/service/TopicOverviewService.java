@@ -346,7 +346,6 @@ public class TopicOverviewService extends BaseOverviewService {
           topicInfoList
               .get(0)
               .setHasOpenClaimRequest(isClaimTopicRequestOpen(topicNameSearch, tenantId));
-
           if (topicInfoList.get(0).isHasOpenClaimRequest()) {
             topicInfoList.get(0).setHasOpenRequest(true);
           } else {
