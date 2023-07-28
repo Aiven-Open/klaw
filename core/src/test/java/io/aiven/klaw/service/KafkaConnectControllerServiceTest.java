@@ -3,6 +3,7 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
 import static io.aiven.klaw.service.KafkaConnectControllerService.OBJECT_MAPPER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -17,7 +18,9 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.KwKafkaConnector;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
@@ -871,6 +874,65 @@ public class KafkaConnectControllerServiceTest {
     assertThat(response.getPromotionDetails().get("status"))
         .isEqualTo(PromotionStatusType.SUCCESS.value);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
+  }
+
+  @Test
+  @Order(21)
+  public void getConnectorOverviewPerEnv_ConnectorDoesNotExist() {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+
+    when(manageDatabase.getHandleDbRequests().getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(0));
+
+    assertThatThrownBy(
+            () -> kafkaConnectControllerService.getConnectorDetailsPerEnv("1", CONNECTOR_NAME))
+        .isInstanceOf(KlawBadRequestException.class)
+        .hasMessage("Connector conn1 does not exist.");
+  }
+
+  @Test
+  @Order(22)
+  public void getConnectorOverviewPerEnv_ConnectorOwnedByDifferentTeam() {
+    // A promotion is available for the tst connector but we are checking for the dev one and that
+    // has already been promoted to tst.
+    Set<String> envListIds = new HashSet<>();
+    envListIds.add("DEV");
+    stubUserInfo();
+    when(commonUtilsService.getTenantId(any())).thenReturn(TENANT_ID);
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
+    when(commonUtilsService.getTeamId(eq(USERNAME))).thenReturn(8);
+    when(handleDbRequests.getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+    when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
+
+    when(manageDatabase.getHandleDbRequests().getConnectors(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+        .thenReturn(generateKafkaConnectors(2));
+
+    when(manageDatabase.getHandleDbRequests().getAllTeamsOfUsers(eq(USERNAME), eq(101)))
+        .thenReturn(List.of(createTeam("Natto", 23)));
+
+    assertThatThrownBy(
+            () -> kafkaConnectControllerService.getConnectorDetailsPerEnv("1", CONNECTOR_NAME))
+        .isInstanceOf(KlawBadRequestException.class)
+        .hasMessage("Sorry, your team does not own the connector !!");
+  }
+
+  private static Team createTeam(String teamName, int teamId) {
+    Team t = new Team();
+    t.setTeamId(teamId);
+    t.setTeammail(teamName + ".klaw@mailid");
+    t.setTeamname(teamName);
+    return t;
   }
 
   private List<KwKafkaConnector> generateKafkaConnectors(int number) {

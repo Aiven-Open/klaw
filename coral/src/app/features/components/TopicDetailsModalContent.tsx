@@ -82,7 +82,7 @@ const TopicDetailsModalContent = ({
       </GridItem>
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
-          <Label>Description</Label>
+          <Label>Topic description</Label>
           <dd>{description}</dd>
         </Flexbox>
       </GridItem>

@@ -1080,7 +1080,7 @@ describe("<TopicRequest />", () => {
       await user.clear(screen.getByLabelText("Topic name*"));
       await user.clear(screen.getByLabelText("Topic partitions*"));
       await user.clear(screen.getByLabelText("Replication factor*"));
-      await user.clear(screen.getByLabelText("Description*"));
+      await user.clear(screen.getByLabelText("Topic description*"));
 
       await user.type(
         screen.getByLabelText("Topic name*"),
@@ -1088,7 +1088,7 @@ describe("<TopicRequest />", () => {
       );
       await user.type(screen.getByLabelText("Topic partitions*"), "3{tab}");
       await user.type(screen.getByLabelText("Replication factor*"), "3{tab}");
-      await user.type(screen.getByLabelText("Description*"), "test{tab}");
+      await user.type(screen.getByLabelText("Topic description*"), "test{tab}");
     });
 
     afterEach(() => {
