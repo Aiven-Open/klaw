@@ -307,10 +307,10 @@ describe("TopicDetailsSchema", () => {
         expect(button).not.toBeInTheDocument();
       });
 
-      it("shows a button to see open schema requests", () => {
-        const link = screen.getByRole("button", { name: "See the request" });
+      it("shows a link to see open schema requests", () => {
+        const link = screen.getByRole("link", { name: "See the request" });
 
-        expect(link).toBeEnabled();
+        expect(link).toBeVisible();
       });
     });
   });
