@@ -1,0 +1,25 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`InternalLinkButton renders different styles based on selected Aquarium's Button props shows a primary button by default 1`] = `
+<div>
+  <a
+    class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+    href="/test/url"
+  >
+    My nice link
+  </a>
+  <div />
+</div>
+`;
+
+exports[`InternalLinkButton renders different styles based on selected Aquarium's Button props shows a secondary button based on props 1`] = `
+<div>
+  <a
+    class="Aquarium-Button Aquarium-Button.Secondary text-grey-60 bg-white ring-1 ring-grey-30 ring-inset active:bg-grey-5 active:ring-grey-50 active:text-grey-80 focus-visible:ring-2 focus-visible:ring-grey-50 focus-visible:text-grey-80 hover:ring-grey-50 hover:text-grey-80 disabled:text-grey-30 disabled:bg-grey-0 disabled:ring-grey-20 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+    href="/test/url"
+  >
+    My nice link
+  </a>
+  <div />
+</div>
+`;
