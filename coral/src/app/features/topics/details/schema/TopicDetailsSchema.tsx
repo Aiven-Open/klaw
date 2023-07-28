@@ -14,7 +14,7 @@ import {
 import add from "@aivenio/aquarium/icons/add";
 import gitNewBranch from "@aivenio/aquarium/icons/gitNewBranch";
 import MonacoEditor from "@monaco-editor/react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
@@ -29,7 +29,9 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 
 function TopicDetailsSchema() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
+
   const {
     topicName,
     topicSchemas: {
@@ -88,11 +90,13 @@ function TopicDetailsSchema() {
         },
         onSuccess: () => {
           setErrorMessage("");
-          setShowSchemaPromotionModal(false);
-          toast({
-            message: "Schema promotion request successfully sent",
-            position: "bottom-left",
-            variant: "default",
+          queryClient.refetchQueries(["schema-overview"]).then(() => {
+            setShowSchemaPromotionModal(false);
+            toast({
+              message: "Schema promotion request successfully sent",
+              position: "bottom-left",
+              variant: "default",
+            });
           });
         },
       }
