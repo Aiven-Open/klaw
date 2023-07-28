@@ -57,6 +57,8 @@ function ConnectorEditRequest() {
   const {
     data: connectorDetailsForEnv,
     isFetched: connectorDetailsForEnvIsFetched,
+    isError: connectorDetailsForEnvIsError,
+    error: connectorDetailsForEnvError,
   } = useQuery<ConnectorDetailsForEnv, HTTPError>(
     ["getConnectorDetailsPerEnv", connectorName, env],
     {
@@ -79,19 +81,37 @@ function ConnectorEditRequest() {
       });
       return;
     }
+
+    if (connectorDetailsForEnvIsError) {
+      navigate(Routes.CONNECTORS, { replace: true });
+      toast({
+        message: `Could not fetch ${connectorName}: ${parseErrorMsg(
+          connectorDetailsForEnvError
+        )}`,
+        position: "bottom-left",
+        variant: "danger",
+      });
+      return;
+    }
+
     if (
       connectorDetailsForEnvIsFetched &&
       !connectorDetailsForEnv?.connectorExists
     ) {
       navigate(Routes.CONNECTORS, { replace: true });
       toast({
-        message: `No topic was found with name ${connectorName}.`,
+        message: `No connector was found with name ${connectorName} in given environment ${env}.`,
         position: "bottom-left",
         variant: "danger",
       });
       return;
     }
-  }, [connectorDetailsForEnvIsFetched, connectorDetailsForEnv]);
+  }, [
+    connectorDetailsForEnvIsFetched,
+    connectorDetailsForEnv,
+    connectorDetailsForEnvIsError,
+    connectorDetailsForEnvError,
+  ]);
 
   // Initialize form with default values
   useEffect(() => {
