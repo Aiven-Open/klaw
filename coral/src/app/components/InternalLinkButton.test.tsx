@@ -54,4 +54,25 @@ describe("InternalLinkButton", () => {
       expect(container).toMatchSnapshot();
     });
   });
+
+  describe("renders a disabled link dependent on prop", () => {
+    beforeAll(() => {
+      customRender(
+        <InternalLinkButton to={testTo} disabled={true}>
+          {testText}
+        </InternalLinkButton>,
+        { browserRouter: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows a disabled link", () => {
+      const link = screen.getByRole("link", { name: testText });
+
+      expect(link).toBeDisabled();
+      expect(link).not.toHaveAttribute("href");
+      expect(link).toHaveAttribute("aria-disabled", "true");
+    });
+  });
 });
