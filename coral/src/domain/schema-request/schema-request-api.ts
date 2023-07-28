@@ -99,7 +99,9 @@ const getSchemaRequests = (
     ...(args.requestStatus && { requestStatus: args.requestStatus }),
     ...(args.search && args.search !== "" && { search: args.search }),
     ...(args.env && args.env !== "ALL" && { env: args.env }),
-    ...(args.operationType !== undefined && { env: args.operationType }),
+    ...(args.operationType !== undefined && {
+      operationType: args.operationType,
+    }),
     ...(args.isMyRequest && { isMyRequest: String(Boolean(args.isMyRequest)) }),
   };
 
