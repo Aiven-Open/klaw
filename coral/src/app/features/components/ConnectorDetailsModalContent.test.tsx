@@ -70,8 +70,8 @@ describe("ConnectorRequestDetailsModalContent", () => {
       expect(definition).toHaveTextContent(testRequest.connectorName);
     });
 
-    it("shows the Description", () => {
-      const term = findTerm("Description");
+    it("shows the Connector description", () => {
+      const term = findTerm("Connector description");
       const definition = findDefinition(term);
 
       expect(term).toBeVisible();
