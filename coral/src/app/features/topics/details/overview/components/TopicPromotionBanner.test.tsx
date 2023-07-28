@@ -1,13 +1,8 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { Context as AquariumContext } from "@aivenio/aquarium";
+import { cleanup, screen } from "@testing-library/react";
 import { TopicPromotionBanner } from "src/app/features/topics/details/overview/components/TopicPromotionBanner";
 import { TopicOverview } from "src/domain/topic";
-import userEvent from "@testing-library/user-event";
-
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedNavigate,
-}));
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const promotionDetailForPromote: TopicOverview["topicPromotionDetails"] = {
   status: "SUCCESS",
@@ -61,84 +56,75 @@ const nullProps = {
 };
 
 describe("TopicPromotionBanner", () => {
-  const user = userEvent.setup();
-
   afterEach(() => {
     jest.resetAllMocks();
     cleanup();
   });
 
   it("renders correct banner (promote topic)", () => {
-    render(<TopicPromotionBanner {...promoteProps} />);
+    customRender(
+      <AquariumContext>
+        <TopicPromotionBanner {...promoteProps} />
+      </AquariumContext>,
+      { browserRouter: true }
+    );
 
-    const button = screen.getByRole("button", {
+    const link = screen.getByRole("link", {
       name: "Promote",
     });
 
-    expect(button).toBeEnabled();
-  });
-
-  it("enables navigating correctly (promote topic)", async () => {
-    render(<TopicPromotionBanner {...promoteProps} />);
-    const button = screen.getByRole("button", {
-      name: "Promote",
-    });
-
-    await user.click(button);
-
-    expect(mockedNavigate).toHaveBeenCalledWith(
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute(
+      "href",
       `/topic/${promoteProps.topicName}/request-promotion?sourceEnv=${promoteProps.topicPromotionDetails.sourceEnv}&targetEnv=${promoteProps.topicPromotionDetails.targetEnvId}`
     );
   });
 
   it("renders correct banner (see open request)", () => {
-    render(<TopicPromotionBanner {...seeOpenRequestProps} />);
+    customRender(
+      <AquariumContext>
+        <TopicPromotionBanner {...seeOpenRequestProps} />
+      </AquariumContext>,
+      { browserRouter: true }
+    );
 
-    const button = screen.getByRole("button", {
+    const link = screen.getByRole("link", {
       name: "See the request",
     });
 
-    expect(button).toBeEnabled();
-  });
-
-  it("enables navigating correctly (see open request)", async () => {
-    render(<TopicPromotionBanner {...seeOpenRequestProps} />);
-
-    const button = screen.getByRole("button", {
-      name: "See the request",
-    });
-
-    await user.click(button);
-    expect(mockedNavigate).toHaveBeenCalledWith(
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute(
+      "href",
       `/requests/topics?search=${promoteProps.topicName}&status=CREATED&page=1`
     );
   });
 
   it("renders correct banner (see open promotion request)", () => {
-    render(<TopicPromotionBanner {...seeOpenPromotionRequestProps} />);
+    customRender(
+      <AquariumContext>
+        <TopicPromotionBanner {...seeOpenPromotionRequestProps} />
+      </AquariumContext>,
+      { browserRouter: true }
+    );
 
-    const button = screen.getByRole("button", {
+    const link = screen.getByRole("link", {
       name: "See the request",
     });
 
-    expect(button).toBeEnabled();
-  });
-
-  it("enables navigating correctly (see open promotion request)", async () => {
-    render(<TopicPromotionBanner {...seeOpenPromotionRequestProps} />);
-
-    const button = screen.getByRole("button", {
-      name: "See the request",
-    });
-    await user.click(button);
-
-    expect(mockedNavigate).toHaveBeenCalledWith(
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute(
+      "href",
       `/requests/topics?search=${promoteProps.topicName}&requestType=PROMOTE&status=CREATED&page=1`
     );
   });
 
   it("renders nothing if status === 'NO_PROMOTION'", () => {
-    render(<TopicPromotionBanner {...nullProps} />);
+    customRender(
+      <AquariumContext>
+        <TopicPromotionBanner {...nullProps} />
+      </AquariumContext>,
+      { browserRouter: true }
+    );
 
     const wrapper = screen.getByTestId("topic-promotion-banner");
 
