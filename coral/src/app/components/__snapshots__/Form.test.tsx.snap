@@ -13,9 +13,13 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
         id="input-1198-label"
       >
         <span
-          class="inline-flex items-center mb-2 typography-small-strong text-grey-60"
+          class="block mb-2"
         >
-          PasswordInput
+          <span
+            class="inline-flex items-center typography-small-strong text-grey-60"
+          >
+            PasswordInput
+          </span>
         </span>
         <span
           class="Aquarium-InputBase relative block"
@@ -35,7 +39,7 @@ exports[`Form <PasswordInput> should render <PasswordInput> 1`] = `
       </p>
     </div>
     <button
-      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-90 disabled:bg-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
       title="Submit"
       type="submit"
     />
@@ -56,9 +60,13 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
         id="input-27-label"
       >
         <span
-          class="inline-flex items-center mb-2 typography-small-strong text-grey-60"
+          class="block mb-2"
         >
-          TextInput
+          <span
+            class="inline-flex items-center typography-small-strong text-grey-60"
+          >
+            TextInput
+          </span>
         </span>
         <span
           class="Aquarium-InputBase relative block"
@@ -78,7 +86,7 @@ exports[`Form <TextInput> should render <TextInput> 1`] = `
       </p>
     </div>
     <button
-      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-70 disabled:bg-primary-5 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
+      class="Aquarium-Button Aquarium-Button.Primary text-white bg-primary-80 active:bg-primary-90 active:ring-0 focus-visible:ring-2 focus-visible:ring-primary-100 focus-visible:ring-inset hover:bg-primary-90 disabled:bg-primary-40 inline-block border-0 rounded-sm transition whitespace-nowrap focus:outline-none relative text-center typography-default-strong py-3 px-4 icon-stroke-2"
       title="Submit"
       type="submit"
     />
