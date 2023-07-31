@@ -52,7 +52,7 @@ describe("TopicSchema", () => {
     });
 
     it("shows a label like text for the preview", () => {
-      const fakeLabel = screen.getByText("Schema preview (read only)");
+      const fakeLabel = screen.getByText("Schema preview (read-only)");
       expect(fakeLabel).toBeVisible();
     });
 

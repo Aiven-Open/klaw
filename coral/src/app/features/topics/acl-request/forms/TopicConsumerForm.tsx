@@ -141,10 +141,14 @@ const TopicConsumerForm = ({
           <GridItem>
             {environment === undefined ? (
               <Input
+                // This is not really a readOnly field but
+                // a placeholder until the user can select value
+                // from a list, so I didn't change the label
                 labelText="Topic name"
                 defaultValue="Select environment first"
                 height={45}
                 readOnly
+                required={true}
               />
             ) : (
               <TopicNameField

@@ -46,6 +46,12 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const navigate = useNavigate();
   const toast = useToast();
 
+  const hasPresetTopicName = topicName !== undefined;
+  const hasPresetEnvironment =
+    presetEnvironment !== null &&
+    presetEnvironment !== undefined &&
+    presetEnvironment.length > 0;
+
   const form = useForm<TopicRequestFormSchema>({
     schema: topicRequestFormSchema,
     defaultValues: {
@@ -155,8 +161,11 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           ) : (
             <NativeSelect<TopicRequestFormSchema>
               name={"topicname"}
-              labelText={"Topic name"}
-              readOnly={topicName !== undefined}
+              labelText={
+                hasPresetTopicName ? "Topic name (read-only)" : "Topic name"
+              }
+              required={!hasPresetTopicName}
+              readOnly={hasPresetTopicName}
             >
               {topicNames.map((topic) => {
                 return (
@@ -167,7 +176,6 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               })}
             </NativeSelect>
           )}
-
           {environmentsIsLoading || environments === undefined ? (
             <div data-testid={"environments-select-loading"}>
               <NativeSelect.Skeleton />
@@ -175,10 +183,12 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           ) : (
             <NativeSelect<TopicRequestFormSchema>
               name={"environment"}
-              labelText={"Environment"}
+              labelText={
+                hasPresetEnvironment ? "Environment (read-only)" : "Environment"
+              }
               placeholder={"-- Please select --"}
-              readOnly={Boolean(presetEnvironment)}
-              required={true}
+              readOnly={hasPresetEnvironment}
+              required={!presetEnvironment}
             >
               {environments.map((env) => {
                 return (
@@ -189,17 +199,14 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
               })}
             </NativeSelect>
           )}
-
           <TopicSchema
             name={"schemafull"}
             required={!props.schemafullValueForTest}
           />
-
           <Textarea
             name={"remarks"}
             labelText={"Enter a message for approval"}
           />
-
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton>Submit request</SubmitButton>
             <Button

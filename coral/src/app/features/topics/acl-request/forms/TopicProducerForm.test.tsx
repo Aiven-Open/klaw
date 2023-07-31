@@ -520,15 +520,15 @@ describe("<TopicProducerForm isSubscription />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders required and disabled EnvironmentField", () => {
+    it("renders readOnly EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Environment *",
+        name: "Environment (read-only)",
       });
 
       expect(environmentField).toBeVisible();
       expect(environmentField).toBeDisabled();
-      expect(environmentField).toBeRequired();
       expect(environmentField).toHaveValue("1");
+      expect(environmentField).toHaveAttribute("aria-readonly", "true");
     });
 
     it("renders aclPatternType disabled field with Literal checked", () => {
@@ -544,9 +544,9 @@ describe("<TopicProducerForm isSubscription />", () => {
       expect(prefixedField).toBeDisabled();
     });
 
-    it("renders readonly Topic name field", () => {
+    it("renders readOnly Topic name field", () => {
       const topicNameField = screen.queryByRole("combobox", {
-        name: "Topic name *",
+        name: "Topic name (read-only)",
       });
       const prefixField = screen.queryByRole("textbox", {
         name: "Prefix",
@@ -657,13 +657,14 @@ describe("<TopicProducerForm isSubscription />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders disabled EnvironmentField with DEV selected", () => {
+    it("renders readOnly EnvironmentField with DEV selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Environment *",
+        name: "Environment (read-only)",
       });
 
       expect(environmentField).toBeVisible();
       expect(environmentField).toBeDisabled();
+      expect(environmentField).toHaveAttribute("aria-readonly", "true");
       expect(environmentField).toHaveDisplayValue("DEV");
     });
 
@@ -790,13 +791,14 @@ describe("<TopicProducerForm isSubscription />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders disabled EnvironmentField with TST selected", () => {
+    it("renders readOnly EnvironmentField with TST selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Environment *",
+        name: "Environment (read-only)",
       });
 
       expect(environmentField).toBeVisible();
       expect(environmentField).toBeDisabled();
+      expect(environmentField).toHaveAttribute("aria-readonly", "true");
       expect(environmentField).toHaveDisplayValue("TST");
     });
 
@@ -815,7 +817,7 @@ describe("<TopicProducerForm isSubscription />", () => {
 
     it("does not render TopicNameOrPrefixField", () => {
       const topicNameField = screen.queryByRole("combobox", {
-        name: "Topic name *",
+        name: "Topic name (read-only)",
       });
       const prefixField = screen.queryByRole("textbox", {
         name: "Prefix",
