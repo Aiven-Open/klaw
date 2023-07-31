@@ -1,4 +1,4 @@
-import { Box, Typography } from "@aivenio/aquarium";
+import { Box, Link, Typography } from "@aivenio/aquarium";
 
 const NotFound = () => {
   return (
@@ -13,7 +13,7 @@ const NotFound = () => {
         </Typography.LargeText>
 
         <Typography.MediumText>
-          <a href={"/index"}>Return to the old interface.</a>
+          <Link href={"/index"}>Return to the old interface.</Link>
         </Typography.MediumText>
       </Box>
     </>
