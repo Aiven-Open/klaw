@@ -1,8 +1,8 @@
-import { Alert, Banner, Box, Button, Spacing } from "@aivenio/aquarium";
+import { Alert, Banner, Box, Spacing } from "@aivenio/aquarium";
 import illustration from "src/app/images/topic-details-schema-Illustration.svg";
 import { ReactElement } from "react";
-import { useNavigate } from "react-router-dom";
 import { PromotionStatus } from "src/domain/promotion";
+import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 
 interface PromotionBannerProps {
   // `entityName` is only optional on
@@ -28,7 +28,6 @@ const PromotionBanner = ({
   errorMessage,
 }: PromotionBannerProps) => {
   const { status, sourceEnv, targetEnv, targetEnvId } = promotionDetails;
-  const navigate = useNavigate();
 
   if (hasError && errorMessage.length === 0) {
     console.error("Please pass a useful errorMessage for the user!");
@@ -54,20 +53,11 @@ const PromotionBanner = ({
         <Box component={"p"} marginBottom={"l1"}>
           There is an open {type} request for {entityName}.
         </Box>
-        {/*@ TODO DS external link does not support */}
-        {/*  internal links and we don't have a component*/}
-        {/*  from DS that supports that yet. We've to use a */}
-        {/*  button that calls navigate() onClick to support*/}
-        {/*  routing in Coral*/}
-        <Button.Primary
-          onClick={() =>
-            navigate(
-              `/requests/${type}s?search=${entityName}&status=CREATED&page=1`
-            )
-          }
+        <InternalLinkButton
+          to={`/requests/${type}s?search=${entityName}&status=CREATED&page=1`}
         >
           See the request
-        </Button.Primary>
+        </InternalLinkButton>
       </Banner>
     );
   }
@@ -78,20 +68,11 @@ const PromotionBanner = ({
         <Box component={"p"} marginBottom={"l1"}>
           There is already an open promotion request for {entityName}.
         </Box>
-        {/*@ TODO DS external link does not support */}
-        {/*  internal links and we don't have a component*/}
-        {/*  from DS that supports that yet. We've to use a */}
-        {/*  button that calls navigate() onClick to support*/}
-        {/*  routing in Coral*/}
-        <Button.Primary
-          onClick={() =>
-            navigate(
-              `/requests/${type}s?search=${entityName}&requestType=PROMOTE&status=CREATED&page=1`
-            )
-          }
+        <InternalLinkButton
+          to={`/requests/${type}s?search=${entityName}&requestType=PROMOTE&status=CREATED&page=1`}
         >
           See the request
-        </Button.Primary>
+        </InternalLinkButton>
       </Banner>
     );
   }
