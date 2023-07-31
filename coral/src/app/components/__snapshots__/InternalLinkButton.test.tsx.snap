@@ -8,7 +8,6 @@ exports[`InternalLinkButton renders different styles based on selected Aquarium'
   >
     My nice link
   </a>
-  <div />
 </div>
 `;
 
@@ -20,6 +19,5 @@ exports[`InternalLinkButton renders different styles based on selected Aquarium'
   >
     My nice link
   </a>
-  <div />
 </div>
 `;

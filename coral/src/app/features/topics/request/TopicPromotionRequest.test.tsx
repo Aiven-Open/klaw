@@ -376,9 +376,9 @@ describe("<TopicPromotionRequest />", () => {
       );
     });
 
-    it("shows a readOnly text input element for 'Description' with correct default value", async () => {
+    it("shows a readOnly text input element for 'Topic description' with correct default value", async () => {
       const input = await screen.findByRole("textbox", {
-        name: "Description (read-only)",
+        name: "Topic description (read-only)",
       });
       const description = mockTopicDetails.topicContents?.description as string;
 
