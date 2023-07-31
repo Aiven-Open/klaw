@@ -100,7 +100,7 @@ app.controller("requestConnectorCtrl", function($scope, $http, $location, $windo
                 }).error(
                     function(error)
                     {
-                        $scope.alert = error;
+                        $scope.alert = error.message;
                     }
                 );
         }
