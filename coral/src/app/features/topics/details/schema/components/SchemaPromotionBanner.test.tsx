@@ -1,14 +1,8 @@
 import { cleanup, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { TopicSchemaOverview } from "src/domain/topic";
-import userEvent from "@testing-library/user-event";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedNavigate,
-}));
 
 const schemaPromotionDetailsBase: TopicSchemaOverview["schemaPromotionDetails"] =
   {
@@ -115,7 +109,7 @@ describe("SchemaPromotionBanner", () => {
     expect(linkSeeRequest).toBeVisible();
     expect(linkSeeRequest).toHaveAttribute(
       "href",
-      "/requests/schemas?search=my-test-topic&requestType=PROMOTE&status=CREATED&page=1"
+      "/requests/schemas?search=my-test-topic&requestType=CREATE&status=CREATED&page=1"
     );
     expect(buttonPromote).not.toBeInTheDocument();
   });

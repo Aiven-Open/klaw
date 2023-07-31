@@ -1,7 +1,7 @@
-import { KlawApiModel } from "types/utils";
 import { cleanup, screen } from "@testing-library/react";
 import { PromotionBanner } from "src/app/features/topics/details/components/PromotionBanner";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { KlawApiModel } from "types/utils";
 
 const promotionDetails: KlawApiModel<"PromotionStatus"> = {
   status: "SUCCESS",
@@ -224,7 +224,7 @@ describe("PromotionBanner", () => {
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
-        "/requests/schemas?search=my-test-topic&requestType=PROMOTE&status=CREATED&page=1"
+        "/requests/schemas?search=my-test-topic&requestType=CREATE&status=CREATED&page=1"
       );
     });
   });

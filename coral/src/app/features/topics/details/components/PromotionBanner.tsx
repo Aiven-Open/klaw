@@ -1,8 +1,9 @@
 import { Alert, Banner, Box, Spacing } from "@aivenio/aquarium";
-import illustration from "src/app/images/topic-details-schema-Illustration.svg";
 import { ReactElement } from "react";
-import { PromotionStatus } from "src/domain/promotion";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
+import illustration from "src/app/images/topic-details-schema-Illustration.svg";
+import { PromotionStatus } from "src/domain/promotion";
+import { RequestOperationType } from "src/domain/requests/requests-types";
 
 interface PromotionBannerProps {
   // `entityName` is only optional on
@@ -63,13 +64,16 @@ const PromotionBanner = ({
   }
 
   if (hasOpenPromotionRequest) {
+    // Schema currently shows all types as "CREATE"
+    const requestType: RequestOperationType =
+      type === "topic" ? "PROMOTE" : "CREATE";
     return (
       <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
           There is already an open promotion request for {entityName}.
         </Box>
         <InternalLinkButton
-          to={`/requests/${type}s?search=${entityName}&requestType=PROMOTE&status=CREATED&page=1`}
+          to={`/requests/${type}s?search=${entityName}&requestType=${requestType}&status=CREATED&page=1`}
         >
           See the request
         </InternalLinkButton>
