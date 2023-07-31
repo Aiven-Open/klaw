@@ -189,8 +189,7 @@ function ConnectorEditRequest() {
           {environmentName !== undefined ? (
             <NativeSelect
               name="environment"
-              labelText={"Environment"}
-              required
+              labelText={"Environment (read-only)"}
               readOnly
             >
               <Option key={environmentName} value={environmentName}>
@@ -202,8 +201,7 @@ function ConnectorEditRequest() {
           )}
           <TextInput<ConnectorRequestFormSchema>
             name={"connectorName"}
-            labelText={"Connector name"}
-            required
+            labelText={"Connector name (read-only)"}
             readOnly
           />
 

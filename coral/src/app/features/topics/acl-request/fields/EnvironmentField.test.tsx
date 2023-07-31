@@ -58,6 +58,24 @@ describe("EnvironmentField", () => {
     expect(select).toBeRequired();
   });
 
+  it("renders a readOnly NativeSelect component", () => {
+    renderForm(
+      <EnvironmentField environments={mockedEnvironments} readOnly={true} />,
+      {
+        schema,
+        onSubmit,
+        onError,
+      }
+    );
+    const select = screen.getByRole("combobox", {
+      name: "Environment (read-only)",
+    });
+
+    expect(select).toBeVisible();
+    expect(select).toBeDisabled();
+    expect(select).toHaveAttribute("aria-readonly", "true");
+  });
+
   it("renders NativeSelect with a placeholder option", () => {
     renderForm(<EnvironmentField environments={mockedEnvironments} />, {
       schema,

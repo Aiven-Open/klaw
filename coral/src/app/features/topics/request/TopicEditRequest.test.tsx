@@ -331,21 +331,20 @@ describe("<TopicEditRequest />", () => {
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
 
-    it("shows a disabled select element for 'Environment' with correct default value", async () => {
+    it("shows a readOnly select element for 'Environment' with correct default value", async () => {
       const select = await screen.findByRole("combobox", {
-        name: "Environment *",
+        name: "Environment (read-only)",
       });
       expect(select).toBeDisabled();
-      expect(select).toBeRequired();
+      expect(select).toHaveAttribute("aria-readonly", "true");
       expect(select).toHaveDisplayValue("DEV");
     });
 
     it("shows a readOnly text input element for 'Topic name' with correct default value", async () => {
       const input = await screen.findByRole("textbox", {
-        name: "Topic name *",
+        name: "Topic name (read-only)",
       });
       expect(input).toHaveAttribute("readonly");
-      expect(input).toBeRequired();
       expect(input).toHaveDisplayValue(TOPIC_NAME);
     });
 

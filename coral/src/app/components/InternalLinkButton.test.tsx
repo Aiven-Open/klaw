@@ -1,4 +1,3 @@
-import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen } from "@testing-library/react";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
@@ -12,9 +11,7 @@ describe("InternalLinkButton", () => {
   describe("renders all necessary elements", () => {
     beforeAll(() => {
       customRender(
-        <AquariumContext>
-          <InternalLinkButton to={testTo}>{testText}</InternalLinkButton>
-        </AquariumContext>,
+        <InternalLinkButton to={testTo}>{testText}</InternalLinkButton>,
         { browserRouter: true }
       );
     });
@@ -39,9 +36,7 @@ describe("InternalLinkButton", () => {
 
     it("shows a primary button by default", () => {
       const { container } = customRender(
-        <AquariumContext>
-          <InternalLinkButton to={testTo}>{testText}</InternalLinkButton>
-        </AquariumContext>,
+        <InternalLinkButton to={testTo}>{testText}</InternalLinkButton>,
         { browserRouter: true }
       );
 
@@ -50,15 +45,34 @@ describe("InternalLinkButton", () => {
 
     it("shows a secondary button based on props", () => {
       const { container } = customRender(
-        <AquariumContext>
-          <InternalLinkButton to={testTo} kind={"secondary"}>
-            {testText}
-          </InternalLinkButton>
-        </AquariumContext>,
+        <InternalLinkButton to={testTo} kind={"secondary"}>
+          {testText}
+        </InternalLinkButton>,
         { browserRouter: true }
       );
 
       expect(container).toMatchSnapshot();
+    });
+  });
+
+  describe("renders a disabled link dependent on prop", () => {
+    beforeAll(() => {
+      customRender(
+        <InternalLinkButton to={testTo} disabled={true}>
+          {testText}
+        </InternalLinkButton>,
+        { browserRouter: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows a disabled link", () => {
+      const link = screen.getByRole("link", { name: testText });
+
+      expect(link).toBeDisabled();
+      expect(link).not.toHaveAttribute("href");
+      expect(link).toHaveAttribute("aria-disabled", "true");
     });
   });
 });

@@ -1,13 +1,8 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { TopicSchemaOverview } from "src/domain/topic";
-import userEvent from "@testing-library/user-event";
-
-const mockedNavigate = jest.fn();
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => mockedNavigate,
-}));
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const schemaPromotionDetailsBase: TopicSchemaOverview["schemaPromotionDetails"] =
   {
@@ -27,13 +22,14 @@ describe("SchemaPromotionBanner", () => {
   });
 
   it("renders correct banner (promote schema)", () => {
-    render(
+    customRender(
       <SchemaPromotionBanner
         schemaPromotionDetails={schemaPromotionDetailsBase}
         topicName={"my-test-topic"}
         setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
         hasOpenSchemaRequest={false}
-      />
+      />,
+      { browserRouter: true }
     );
 
     const button = screen.getByRole("button", {
@@ -44,13 +40,14 @@ describe("SchemaPromotionBanner", () => {
   });
 
   it("enables user to promote a schema", async () => {
-    render(
+    customRender(
       <SchemaPromotionBanner
         schemaPromotionDetails={schemaPromotionDetailsBase}
         topicName={"my-test-topic"}
         setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
         hasOpenSchemaRequest={false}
-      />
+      />,
+      { browserRouter: true }
     );
 
     const button = screen.getByRole("button", {
@@ -63,49 +60,33 @@ describe("SchemaPromotionBanner", () => {
   });
 
   it("renders correct banner (see open request)", () => {
-    render(
+    customRender(
       <SchemaPromotionBanner
         schemaPromotionDetails={schemaPromotionDetailsBase}
         topicName={"my-test-topic"}
         setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
         hasOpenSchemaRequest={true}
-      />
+      />,
+      { browserRouter: true }
     );
 
     const buttonPromote = screen.queryByRole("button", {
       name: "Promote",
     });
-    const buttonSeeRequest = screen.getByRole("button", {
+    const linkSeeRequest = screen.getByRole("link", {
       name: "See the request",
     });
 
-    expect(buttonSeeRequest).toBeEnabled();
-    expect(buttonPromote).not.toBeInTheDocument();
-  });
-
-  it("enables navigating correctly (see open request)", async () => {
-    render(
-      <SchemaPromotionBanner
-        schemaPromotionDetails={schemaPromotionDetailsBase}
-        topicName={"my-test-topic"}
-        setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
-        hasOpenSchemaRequest={true}
-      />
-    );
-
-    const button = screen.getByRole("button", {
-      name: "See the request",
-    });
-
-    await user.click(button);
-
-    expect(mockedNavigate).toHaveBeenCalledWith(
+    expect(linkSeeRequest).toBeVisible();
+    expect(linkSeeRequest).toHaveAttribute(
+      "href",
       `/requests/schemas?search=my-test-topic&status=CREATED&page=1`
     );
+    expect(buttonPromote).not.toBeInTheDocument();
   });
 
   it("renders correct banner (see open promotion request)", () => {
-    render(
+    customRender(
       <SchemaPromotionBanner
         schemaPromotionDetails={{
           ...schemaPromotionDetailsBase,
@@ -114,46 +95,27 @@ describe("SchemaPromotionBanner", () => {
         topicName={"my-test-topic"}
         setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
         hasOpenSchemaRequest={false}
-      />
+      />,
+      { browserRouter: true }
     );
 
     const buttonPromote = screen.queryByRole("button", {
       name: "Promote",
     });
-    const buttonSeeRequest = screen.getByRole("button", {
+    const linkSeeRequest = screen.getByRole("link", {
       name: "See the request",
     });
 
-    expect(buttonSeeRequest).toBeEnabled();
+    expect(linkSeeRequest).toBeVisible();
+    expect(linkSeeRequest).toHaveAttribute(
+      "href",
+      "/requests/schemas?search=my-test-topic&requestType=CREATE&status=CREATED&page=1"
+    );
     expect(buttonPromote).not.toBeInTheDocument();
   });
 
-  it("enables navigating correctly (see open promotion request)", async () => {
-    render(
-      <SchemaPromotionBanner
-        schemaPromotionDetails={{
-          ...schemaPromotionDetailsBase,
-          status: "REQUEST_OPEN",
-        }}
-        topicName={"my-test-topic"}
-        setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
-        hasOpenSchemaRequest={false}
-      />
-    );
-
-    const button = screen.getByRole("button", {
-      name: "See the request",
-    });
-
-    await user.click(button);
-
-    expect(mockedNavigate).toHaveBeenCalledWith(
-      `/requests/schemas?search=my-test-topic&requestType=CREATE&status=CREATED&page=1`
-    );
-  });
-
   it("renders nothing if status === 'NO_PROMOTION'", () => {
-    render(
+    customRender(
       <SchemaPromotionBanner
         schemaPromotionDetails={{
           ...schemaPromotionDetailsBase,
@@ -162,7 +124,8 @@ describe("SchemaPromotionBanner", () => {
         topicName={"my-test-topic"}
         setShowSchemaPromotionModal={mockSetShowSchemaPromotionModal}
         hasOpenSchemaRequest={false}
-      />
+      />,
+      { browserRouter: true }
     );
 
     const wrapper = screen.getByTestId("schema-promotion-banner");
