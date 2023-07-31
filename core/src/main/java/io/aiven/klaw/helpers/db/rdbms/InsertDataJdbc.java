@@ -159,7 +159,7 @@ public class InsertDataJdbc {
     return hashMap;
   }
 
-  public synchronized DBSaveResponse<Topic> insertIntoTopicSOT(List<Topic> topics) {
+  public synchronized CRUDResponse<Topic> insertIntoTopicSOT(List<Topic> topics) {
     topics.forEach(
         topic -> {
           log.debug("insertIntoTopicSOT {}", topic.getTopicname());
@@ -175,7 +175,7 @@ public class InsertDataJdbc {
           topicRepo.save(topic);
         });
 
-    return DBSaveResponse.<Topic>builder()
+    return CRUDResponse.<Topic>builder()
         .resultStatus(ApiResultStatus.SUCCESS.value)
         .entities(topics)
         .build();

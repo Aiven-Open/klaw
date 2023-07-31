@@ -12,7 +12,7 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.DBSaveResponse;
+import io.aiven.klaw.dao.CRUDResponse;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
@@ -201,7 +201,7 @@ public class TopicSyncControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.addToSynctopics(any()))
         .thenReturn(
-            DBSaveResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
 
     ApiResponse result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
@@ -285,7 +285,7 @@ public class TopicSyncControllerServiceTest {
                 "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
     when(handleDbRequests.updateTopicRequest(any(), any()))
         .thenReturn(
-            DBSaveResponse.<Topic>builder()
+            CRUDResponse.<Topic>builder()
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());
@@ -333,7 +333,7 @@ public class TopicSyncControllerServiceTest {
         .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value));
     when(handleDbRequests.updateTopicRequest(any(), any()))
         .thenReturn(
-            DBSaveResponse.<Topic>builder()
+            CRUDResponse.<Topic>builder()
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());
@@ -385,7 +385,7 @@ public class TopicSyncControllerServiceTest {
                 "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
     when(handleDbRequests.updateTopicRequest(any(), any()))
         .thenReturn(
-            DBSaveResponse.<Topic>builder()
+            CRUDResponse.<Topic>builder()
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());
@@ -433,7 +433,7 @@ public class TopicSyncControllerServiceTest {
         .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value));
     when(handleDbRequests.updateTopicRequest(any(), any()))
         .thenReturn(
-            DBSaveResponse.<Topic>builder()
+            CRUDResponse.<Topic>builder()
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());
@@ -483,7 +483,7 @@ public class TopicSyncControllerServiceTest {
             new KlawException("Could not approve topic request. Please contact Administrator."));
     when(handleDbRequests.updateTopicRequest(any(), any()))
         .thenReturn(
-            DBSaveResponse.<Topic>builder()
+            CRUDResponse.<Topic>builder()
                 .resultStatus(ApiResultStatus.SUCCESS.value)
                 .entities(List.of(new Topic()))
                 .build());

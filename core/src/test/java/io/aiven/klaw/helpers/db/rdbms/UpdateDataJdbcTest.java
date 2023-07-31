@@ -8,7 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
-import io.aiven.klaw.dao.DBSaveResponse;
+import io.aiven.klaw.dao.CRUDResponse;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwKafkaConnector;
@@ -106,12 +106,12 @@ public class UpdateDataJdbcTest {
     String requestOperationType = "Update";
     when(insertDataJdbcHelper.insertIntoTopicSOT(any()))
         .thenReturn(
-            DBSaveResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     TopicRequest req = utilMethods.getTopicRequest(1001);
     req.setOtherParams("1001");
     req.setRequestOperationType(requestOperationType);
-    DBSaveResponse<Topic> result = updateData.updateTopicRequest(req, "uiuser2");
+    CRUDResponse<Topic> result = updateData.updateTopicRequest(req, "uiuser2");
     assertThat(result.getResultStatus()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(topicRepo, times(1)).save(any());
   }
@@ -122,7 +122,7 @@ public class UpdateDataJdbcTest {
     String requestOperationType = "Delete";
     when(insertDataJdbcHelper.insertIntoTopicSOT(any()))
         .thenReturn(
-            DBSaveResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     when(selectDataJdbcHelper.selectEnvDetails(anyString(), anyInt())).thenReturn(kafkaEnv);
     EnvTag envTag = new EnvTag();
@@ -130,12 +130,12 @@ public class UpdateDataJdbcTest {
     when(kafkaEnv.getAssociatedEnv()).thenReturn(envTag);
     when(deleteDataJdbcHelper.deleteTopics(any(Topic.class)))
         .thenReturn(
-            DBSaveResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     TopicRequest req = utilMethods.getTopicRequest(1001);
 
     req.setRequestOperationType(requestOperationType);
     req.setDeleteAssociatedSchema(true);
-    DBSaveResponse<Topic> result = updateData.updateTopicRequest(req, "uiuser2");
+    CRUDResponse<Topic> result = updateData.updateTopicRequest(req, "uiuser2");
     assertThat(result.getResultStatus()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(deleteDataJdbcHelper, times(1)).deleteTopics(any());
     verify(deleteDataJdbcHelper, times(1))
@@ -148,11 +148,11 @@ public class UpdateDataJdbcTest {
     int reqNum = 1001;
     when(insertDataJdbcHelper.insertIntoTopicSOT(any()))
         .thenReturn(
-            DBSaveResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     TopicRequest req = utilMethods.getTopicRequest(1001);
     req.setRequestOperationType(requestOperationType);
-    DBSaveResponse<Topic> result = updateData.updateTopicRequest(req, "uiuser2");
+    CRUDResponse<Topic> result = updateData.updateTopicRequest(req, "uiuser2");
     assertThat(result.getResultStatus()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(insertDataJdbcHelper, times(1)).insertIntoTopicSOT(any());
   }

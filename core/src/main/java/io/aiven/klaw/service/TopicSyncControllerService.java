@@ -15,7 +15,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.DBSaveResponse;
+import io.aiven.klaw.dao.CRUDResponse;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
@@ -634,7 +634,7 @@ public class TopicSyncControllerService {
       // Approve request
       if (createResult.get("topicId") != null) {
         topicRequest.setTopicid(Integer.parseInt(createResult.get("topicId")));
-        DBSaveResponse<Topic> saveResults =
+        CRUDResponse<Topic> saveResults =
             manageDatabase.getHandleDbRequests().updateTopicRequest(topicRequest, getUserName());
         // entities size should always be equal to 1 as they are saved one at a time here.
         if (saveResults.getResultStatus().equals(ApiResultStatus.SUCCESS.value)
@@ -1141,7 +1141,7 @@ public class TopicSyncControllerService {
 
     if (listTopics.size() > 0) {
       try {
-        DBSaveResponse<Topic> statusSync =
+        CRUDResponse<Topic> statusSync =
             manageDatabase.getHandleDbRequests().addToSynctopics(listTopics);
         manageDatabase.loadTopicsForOneTenant(tenantId);
         return ApiResponse.builder().success(true).message(statusSync.getResultStatus()).build();

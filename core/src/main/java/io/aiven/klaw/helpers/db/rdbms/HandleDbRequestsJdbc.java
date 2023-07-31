@@ -74,7 +74,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcInsertHelper.insertIntoRequestSchema(schemaRequest);
   }
 
-  public DBSaveResponse<Topic> addToSynctopics(List<Topic> topicRequests) {
+  public CRUDResponse<Topic> addToSynctopics(List<Topic> topicRequests) {
     return jdbcInsertHelper.insertIntoTopicSOT(topicRequests);
   }
 
@@ -749,7 +749,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public DBSaveResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver) {
+  public CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver) {
     return jdbcUpdateHelper.updateTopicRequest(topicRequest, approver);
   }
 

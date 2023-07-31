@@ -160,7 +160,7 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public DBSaveResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver) {
+  public CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver) {
     log.debug("updateTopicRequest {} {}", topicRequest.getTopicname(), approver);
     topicRequest.setApprover(approver);
     topicRequest.setRequestStatus(RequestStatus.APPROVED.value);
@@ -183,9 +183,9 @@ public class UpdateDataJdbc {
     final RequestOperationType requestOperationType =
         RequestOperationType.of(topicRequest.getRequestOperationType());
     if (requestOperationType == null) {
-      return DBSaveResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build();
+      return CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build();
     }
-    DBSaveResponse<Topic> saveResult = null;
+    CRUDResponse<Topic> saveResult = null;
     switch (requestOperationType) {
       case CREATE, PROMOTE -> saveResult = insertDataJdbcHelper.insertIntoTopicSOT(topics);
       case UPDATE -> saveResult = updateTopicSOT(topics, topicRequest.getOtherParams());
@@ -241,14 +241,14 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  private DBSaveResponse<Topic> updateTopicSOT(List<Topic> topics, String topicId) {
+  private CRUDResponse<Topic> updateTopicSOT(List<Topic> topics, String topicId) {
     topics.forEach(
         topic -> {
           log.debug("updateTopicSOT {}", topic.getTopicname());
           topic.setTopicid(Integer.parseInt(topicId));
           topicRepo.save(topic);
         });
-    return DBSaveResponse.<Topic>builder()
+    return CRUDResponse.<Topic>builder()
         .resultStatus(ApiResultStatus.SUCCESS.value)
         .entities(topics)
         .build();

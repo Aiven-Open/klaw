@@ -246,13 +246,13 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public DBSaveResponse<Topic> deleteTopics(Topic topic) {
+  public CRUDResponse<Topic> deleteTopics(Topic topic) {
     log.debug("deleteTopics {}", topic.getTopicname());
     List<Topic> topics =
         topicRepo.findAllByTopicnameAndEnvironmentAndTenantId(
             topic.getTopicname(), topic.getEnvironment(), topic.getTenantId());
     topicRepo.deleteAll(topics);
-    return DBSaveResponse.<Topic>builder()
+    return CRUDResponse.<Topic>builder()
         .resultStatus(ApiResultStatus.SUCCESS.value)
         .entities(List.of(topic))
         .build();
