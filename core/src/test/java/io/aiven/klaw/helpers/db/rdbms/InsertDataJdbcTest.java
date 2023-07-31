@@ -103,7 +103,7 @@ public class InsertDataJdbcTest {
   public void insertIntoTopicSOT() {
     List<Topic> topics = utilMethods.getTopics();
     when(topicRepo.getNextTopicRequestId(anyInt())).thenReturn(101);
-    String result = insertData.insertIntoTopicSOT(topics);
+    String result = insertData.insertIntoTopicSOT(topics).getResultStatus();
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 

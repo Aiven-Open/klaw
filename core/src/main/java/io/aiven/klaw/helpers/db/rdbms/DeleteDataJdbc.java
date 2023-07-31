@@ -246,12 +246,16 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public void deleteTopics(Topic topic) {
+  public DBSaveResponse<Topic> deleteTopics(Topic topic) {
     log.debug("deleteTopics {}", topic.getTopicname());
     List<Topic> topics =
         topicRepo.findAllByTopicnameAndEnvironmentAndTenantId(
             topic.getTopicname(), topic.getEnvironment(), topic.getTenantId());
     topicRepo.deleteAll(topics);
+    return DBSaveResponse.<Topic>builder()
+        .resultStatus(ApiResultStatus.SUCCESS.value)
+        .entities(List.of(topic))
+        .build();
   }
 
   public void deleteConnectors(KwKafkaConnector connector) {

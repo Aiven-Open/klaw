@@ -2,25 +2,7 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.AclID;
-import io.aiven.klaw.dao.AclRequests;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.KafkaConnectorRequest;
-import io.aiven.klaw.dao.KwKafkaConnector;
-import io.aiven.klaw.dao.KwKafkaConnectorID;
-import io.aiven.klaw.dao.KwProperties;
-import io.aiven.klaw.dao.KwRolesPermissions;
-import io.aiven.klaw.dao.KwTenants;
-import io.aiven.klaw.dao.MessageSchema;
-import io.aiven.klaw.dao.RegisterUserInfo;
-import io.aiven.klaw.dao.SchemaRequest;
-import io.aiven.klaw.dao.Team;
-import io.aiven.klaw.dao.TeamID;
-import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.dao.TopicID;
-import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.NewUserStatus;
@@ -178,7 +160,7 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String updateTopicRequest(TopicRequest topicRequest, String approver) {
+  public DBSaveResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver) {
     log.debug("updateTopicRequest {} {}", topicRequest.getTopicname(), approver);
     topicRequest.setApprover(approver);
     topicRequest.setRequestStatus(RequestStatus.APPROVED.value);
@@ -201,13 +183,14 @@ public class UpdateDataJdbc {
     final RequestOperationType requestOperationType =
         RequestOperationType.of(topicRequest.getRequestOperationType());
     if (requestOperationType == null) {
-      return ApiResultStatus.SUCCESS.value;
+      return DBSaveResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build();
     }
+    DBSaveResponse<Topic> saveResult = null;
     switch (requestOperationType) {
-      case CREATE, PROMOTE -> insertDataJdbcHelper.insertIntoTopicSOT(topics);
-      case UPDATE -> updateTopicSOT(topics, topicRequest.getOtherParams());
+      case CREATE, PROMOTE -> saveResult = insertDataJdbcHelper.insertIntoTopicSOT(topics);
+      case UPDATE -> saveResult = updateTopicSOT(topics, topicRequest.getOtherParams());
       case DELETE -> {
-        deleteDataJdbcHelper.deleteTopics(topicObj);
+        saveResult = deleteDataJdbcHelper.deleteTopics(topicObj);
         if (topicRequest.getDeleteAssociatedSchema()) {
           Env kafkaEnv =
               selectDataJdbcHelper.selectEnvDetails(
@@ -222,7 +205,7 @@ public class UpdateDataJdbc {
       }
     }
 
-    return ApiResultStatus.SUCCESS.value;
+    return saveResult;
   }
 
   public String updateConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {
@@ -258,13 +241,17 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  private void updateTopicSOT(List<Topic> topics, String topicId) {
+  private DBSaveResponse<Topic> updateTopicSOT(List<Topic> topics, String topicId) {
     topics.forEach(
         topic -> {
           log.debug("updateTopicSOT {}", topic.getTopicname());
           topic.setTopicid(Integer.parseInt(topicId));
           topicRepo.save(topic);
         });
+    return DBSaveResponse.<Topic>builder()
+        .resultStatus(ApiResultStatus.SUCCESS.value)
+        .entities(topics)
+        .build();
   }
 
   private void updateConnectorSOT(List<KwKafkaConnector> topics, String topicId) {

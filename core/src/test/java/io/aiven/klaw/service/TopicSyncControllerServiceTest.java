@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.DBSaveResponse;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
@@ -198,7 +199,9 @@ public class TopicSyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.addToSynctopics(any()))
+        .thenReturn(
+            DBSaveResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
 
     ApiResponse result =
         topicSyncControllerService.updateSyncTopics(utilMethods.getSyncTopicUpdates());
@@ -280,7 +283,12 @@ public class TopicSyncControllerServiceTest {
         .thenReturn(
             createAPIResponse(
                 "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
-
+    when(handleDbRequests.updateTopicRequest(any(), any()))
+        .thenReturn(
+            DBSaveResponse.<Topic>builder()
+                .resultStatus(ApiResultStatus.SUCCESS.value)
+                .entities(List.of(new Topic()))
+                .build());
     // execute
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
@@ -289,7 +297,7 @@ public class TopicSyncControllerServiceTest {
     // verfiy only 1 topic Request is sent to the manage database as the other already exists.
     verify(handleDbRequests).requestForTopic(topicRequestCaptor.capture());
     verify(handleDbRequests).updateTopicRequest(updateTopicRequestCaptor.capture(), eq(USERNAME));
-
+    verify(handleDbRequests, times(1)).updateTopicRequest(any(), any());
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two topics but one already exists so only one should be added to the database.
@@ -323,6 +331,12 @@ public class TopicSyncControllerServiceTest {
             eq(TENANT_ID),
             anyBoolean()))
         .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value));
+    when(handleDbRequests.updateTopicRequest(any(), any()))
+        .thenReturn(
+            DBSaveResponse.<Topic>builder()
+                .resultStatus(ApiResultStatus.SUCCESS.value)
+                .entities(List.of(new Topic()))
+                .build());
 
     // execute
     ApiResponse retval =
@@ -333,7 +347,7 @@ public class TopicSyncControllerServiceTest {
     verify(handleDbRequests, times(2)).requestForTopic(topicRequestCaptor.capture());
     verify(handleDbRequests, times(2))
         .updateTopicRequest(updateTopicRequestCaptor.capture(), eq(USERNAME));
-
+    verify(handleDbRequests, times(2)).updateTopicRequest(any(), any());
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two new topics both should be added to the database.
@@ -369,7 +383,12 @@ public class TopicSyncControllerServiceTest {
         .thenReturn(
             createAPIResponse(
                 "org.apache.kafka.common.errors.TopicExistsException: Topic 'testtopic' already exists."));
-
+    when(handleDbRequests.updateTopicRequest(any(), any()))
+        .thenReturn(
+            DBSaveResponse.<Topic>builder()
+                .resultStatus(ApiResultStatus.SUCCESS.value)
+                .entities(List.of(new Topic()))
+                .build());
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
             createSyncBackTopic(SELECTED_TOPICS, new String[] {"1", "2"}));
@@ -377,7 +396,7 @@ public class TopicSyncControllerServiceTest {
     // verfiy only 1 topic Request is sent to the manage database
     verify(handleDbRequests).requestForTopic(topicRequestCaptor.capture());
     verify(handleDbRequests).updateTopicRequest(updateTopicRequestCaptor.capture(), eq(USERNAME));
-
+    verify(handleDbRequests, times(1)).updateTopicRequest(any(), any());
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two topics but one already exists so only one should be added to the database.
@@ -412,7 +431,12 @@ public class TopicSyncControllerServiceTest {
             eq(TENANT_ID),
             anyBoolean()))
         .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value));
-
+    when(handleDbRequests.updateTopicRequest(any(), any()))
+        .thenReturn(
+            DBSaveResponse.<Topic>builder()
+                .resultStatus(ApiResultStatus.SUCCESS.value)
+                .entities(List.of(new Topic()))
+                .build());
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
             createSyncBackTopic(SELECTED_TOPICS, new String[] {"1", "2"}));
@@ -421,7 +445,7 @@ public class TopicSyncControllerServiceTest {
     verify(handleDbRequests, times(2)).requestForTopic(topicRequestCaptor.capture());
     verify(handleDbRequests, times(2))
         .updateTopicRequest(updateTopicRequestCaptor.capture(), eq(USERNAME));
-
+    verify(handleDbRequests, times(2)).updateTopicRequest(any(), any());
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two new topics both should be added to the database.
@@ -457,7 +481,12 @@ public class TopicSyncControllerServiceTest {
         .thenReturn(createAPIResponse(ApiResultStatus.SUCCESS.value))
         .thenThrow(
             new KlawException("Could not approve topic request. Please contact Administrator."));
-
+    when(handleDbRequests.updateTopicRequest(any(), any()))
+        .thenReturn(
+            DBSaveResponse.<Topic>builder()
+                .resultStatus(ApiResultStatus.SUCCESS.value)
+                .entities(List.of(new Topic()))
+                .build());
     ApiResponse retval =
         topicSyncControllerService.updateSyncBackTopics(
             createSyncBackTopic(SELECTED_TOPICS, new String[] {"1", "2"}));
@@ -465,7 +494,7 @@ public class TopicSyncControllerServiceTest {
     // verfiy only 1 topic Request is sent to the manage database
     verify(handleDbRequests).requestForTopic(topicRequestCaptor.capture());
     verify(handleDbRequests).updateTopicRequest(updateTopicRequestCaptor.capture(), eq(USERNAME));
-
+    verify(handleDbRequests, times(1)).updateTopicRequest(any(), any());
     List<TopicRequest> req = topicRequestCaptor.getAllValues();
     List<TopicRequest> update = updateTopicRequestCaptor.getAllValues();
     // we have two topics but one already exists so only one should be added to the database.
