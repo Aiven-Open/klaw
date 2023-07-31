@@ -239,6 +239,9 @@ const TopicSubscriptions = () => {
               }
             }}
             value={selectedSubs}
+            ariaLabel={
+              "Switch between user subscriptions, prefixed subscriptions and transactional subscriptions"
+            }
           >
             <SegmentedControl name="User subscriptions" value="aclInfoList">
               User subs.
