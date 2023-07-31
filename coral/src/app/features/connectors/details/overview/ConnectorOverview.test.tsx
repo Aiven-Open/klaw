@@ -51,10 +51,18 @@ describe("ConnectorOverview", () => {
     render(<ConnectorOverview />);
   });
 
+  it("shows the correct header", () => {
+    const header = screen.getByText("Connector configuration");
+
+    expect(header).toBeVisible();
+  });
+
   it("shows an editor with preview of the connector info", () => {
     const previewEditor = screen.getByTestId("topic-connector");
 
     expect(previewEditor).toBeVisible();
-    expect(previewEditor).toHaveTextContent(`"connectorId": 1003`);
+    expect(previewEditor).toHaveTextContent(
+      `"connector.class" : "io.confluent.connect.storage.tools.SchemaSourceConnector"`
+    );
   });
 });
