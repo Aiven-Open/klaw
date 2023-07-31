@@ -2,6 +2,7 @@ import { PageHeader } from "@aivenio/aquarium";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PreviewBanner from "src/app/components/PreviewBanner";
+import ConnectorEditRequest from "src/app/features/connectors/request/ConnectorEditRequest";
 
 const RequestConnectorEdit = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const RequestConnectorEdit = () => {
         linkTarget={`/connectorOverview?connectorName=${connectorName}`}
       />
       <PageHeader title={"Request connector update"} />
-      <div>Edit connector</div>
+      <ConnectorEditRequest />
     </>
   );
 };

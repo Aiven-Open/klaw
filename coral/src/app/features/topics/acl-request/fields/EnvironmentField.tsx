@@ -53,12 +53,13 @@ const EnvironmentField = ({
   prefixed = false,
   readOnly = false,
 }: EnvironmentFieldProps) => {
+  const labelText = readOnly ? "Environment (read-only)" : "Environment";
   return (
     <NativeSelect
       name="environment"
-      labelText="Environment"
+      labelText={labelText}
       placeholder={"-- Please select --"}
-      required
+      required={!readOnly}
       readOnly={readOnly}
     >
       {getOptions(environments, prefixed, selectedTopic)}

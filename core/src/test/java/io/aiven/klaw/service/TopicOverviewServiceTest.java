@@ -808,16 +808,13 @@ public class TopicOverviewServiceTest {
     verify(handleDbRequests, times(0)).existsTopicRequest(any(), any(), any(), anyInt());
     verify(handleDbRequests, times(0)).existsAclRequest(any(), any(), any(), anyInt());
     verify(handleDbRequests, times(0)).existsSchemaRequest(any(), any(), any(), anyInt());
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL()).isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasACL()).isFalse(); // topic claim
 
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenClaimRequest()).isTrue();
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest())
-        .isFalse(); // topic hasAcl
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest())
-        .isFalse(); // topic hasAcl
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
-        .isFalse(); // topic hasAcl
-    assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenACLRequest()).isFalse();
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenTopicRequest()).isFalse();
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest()).isTrue();
+    assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse();
   }
 
   private static Map<Integer, KwClusters> getKwClusterMap() {

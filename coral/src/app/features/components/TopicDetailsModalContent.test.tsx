@@ -35,7 +35,7 @@ const noAdvancedConfigRequest: TopicRequest = {
 
 const withAdvancedConfigRequest: TopicRequest = {
   requestOperationType: "CREATE",
-  description: "Description is mandatory",
+  description: "This topic description is mandatory!",
   remarks: undefined,
   topicid: 1015,
   topicpartitions: 2,
@@ -99,8 +99,8 @@ describe("TopicDetailsModalContent", () => {
       expect(findTerm("Topic")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.topicname)).toBeVisible();
     });
-    it("renders Description", () => {
-      expect(findTerm("Description")).toBeVisible();
+    it("renders Topic description", () => {
+      expect(findTerm("Topic description")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.description)).toBeVisible();
     });
     it("renders Topic partition", () => {
@@ -153,9 +153,11 @@ describe("TopicDetailsModalContent", () => {
       expect(findTerm("Topic")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.topicname)).toBeVisible();
     });
-    it("renders Description", () => {
-      expect(findTerm("Description")).toBeVisible();
-      expect(findDefinition("Description is mandatory")).toBeVisible();
+    it("renders Topic description", () => {
+      expect(findTerm("Topic description")).toBeVisible();
+      expect(
+        findDefinition("This topic description is mandatory!")
+      ).toBeVisible();
     });
     it("renders Topic partition", () => {
       expect(findTerm("Topic partition")).toBeVisible();

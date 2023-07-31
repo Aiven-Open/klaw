@@ -1,4 +1,4 @@
-import { useToast } from "@aivenio/aquarium";
+import { Box, useToast } from "@aivenio/aquarium";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
@@ -68,6 +68,7 @@ function TopicDetails(props: TopicOverviewProps) {
     error: topicError,
     isLoading: topicIsLoading,
     isRefetching: topicIsRefetching,
+    refetch: refetchTopic,
   } = useQuery(["topic-overview", topicName, environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
   });
@@ -104,11 +105,13 @@ function TopicDetails(props: TopicOverviewProps) {
       }),
     {
       onSuccess: () => {
-        setShowClaimModal(false);
-        toast({
-          message: "Topic claim request successfully created",
-          position: "bottom-left",
-          variant: "default",
+        refetchTopic().then(() => {
+          setShowClaimModal(false);
+          toast({
+            message: "Topic claim request successfully created",
+            position: "bottom-left",
+            variant: "default",
+          });
         });
       },
       onError: (error: HTTPError) => {
@@ -155,11 +158,16 @@ function TopicDetails(props: TopicOverviewProps) {
       />
       {topicData?.topicInfo !== undefined &&
         !topicData.topicInfo.topicOwner && (
-          <TopicClaimBanner
-            setShowClaimModal={setShowClaimModal}
-            isError={createClaimTopicRequestIsError}
-            errorMessage={claimErrorMessage}
-          />
+          <Box marginBottom={"l1"}>
+            <TopicClaimBanner
+              topicName={topicName}
+              hasOpenClaimRequest={topicData?.topicInfo.hasOpenClaimRequest}
+              hasOpenRequest={topicData?.topicInfo.hasOpenRequest}
+              setShowClaimModal={setShowClaimModal}
+              isError={createClaimTopicRequestIsError}
+              errorMessage={claimErrorMessage}
+            />
+          </Box>
         )}
       <TopicOverviewResourcesTabs
         isLoading={topicIsLoading || schemaIsLoading}
