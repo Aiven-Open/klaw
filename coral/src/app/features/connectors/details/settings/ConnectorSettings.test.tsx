@@ -406,7 +406,7 @@ describe("ConnectorSettings", () => {
 
     it("shows a warning text about deletion of the connector", () => {
       const warningText = screen.getByText(
-        "Once a request for deletion is approved, there is no going back. Please be certain."
+        "Submit a request for this topic to be deleted. Once the request is approved, the action is irreversible."
       );
 
       expect(warningText).toBeVisible();
@@ -470,7 +470,7 @@ describe("ConnectorSettings", () => {
         name: "Request connector deletion",
       });
       const deleteInformation = screen.queryByText(
-        "Once you delete a connector, there is no going back. Please be certain."
+        "Submit a request for this topic to be deleted. Once the request is approved, the action is irreversible."
       );
 
       expect(deleteHeadline).not.toBeInTheDocument();

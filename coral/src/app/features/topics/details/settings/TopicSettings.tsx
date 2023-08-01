@@ -137,7 +137,7 @@ function TopicSettings() {
                 <div>
                   {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
                   <Button.Primary onClick={() => {}} disabled={true}>
-                    Delete topic
+                    Request topic deletion
                   </Button.Primary>
                 </div>
               </Box>
@@ -176,11 +176,11 @@ function TopicSettings() {
               >
                 <div>
                   <Typography.DefaultStrong htmlTag={"h3"}>
-                    Delete this topic
+                    Request topic deletion
                   </Typography.DefaultStrong>
                   <Box component={"p"}>
-                    Once you delete a topic, there is no going back. Please be
-                    certain.
+                    Submit a request for this topic to be deleted. Once the
+                    request is approved, the action is irreversible.
                   </Box>
                 </div>
 
@@ -189,7 +189,7 @@ function TopicSettings() {
                     onClick={() => setShowConfirmation(true)}
                     disabled={!showDeleteTopic}
                   >
-                    Delete topic
+                    Request topic deletion
                   </Button.Primary>
                 </div>
               </Box>
