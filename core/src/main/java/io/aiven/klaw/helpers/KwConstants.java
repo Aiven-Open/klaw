@@ -41,7 +41,7 @@ public class KwConstants {
   public static final String MAIL_TOPICDELETEREQUEST_CONTENT =
       "Dear User, \\nA request for a delete topic %s has been requested in Klaw.";
   public static final String MAIL_TOPICCLAIMREQUEST_CONTENT =
-      "Dear User, \\nA request for a clam topic %s has been requested in Klaw.";
+      "Dear User, \\nA request for a claim topic %s has been requested in Klaw.";
   public static final String MAIL_TOPICREQUESTAPPROVAL_CONTENT =
       "Dear User, \\nYour topic request for %s has been approved.\n";
   public static final String MAIL_TOPICREQUESTDENIAL_CONTENT =
