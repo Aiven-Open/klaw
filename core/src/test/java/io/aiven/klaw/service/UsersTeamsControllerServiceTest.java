@@ -284,6 +284,7 @@ public class UsersTeamsControllerServiceTest {
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt())).thenReturn(new HashMap<>());
     when(handleDbRequests.getAllComponentsCountForUser("testuser", 101)).thenReturn(1);
+    when(handleDbRequests.existsComponentsCountForUser("testuser", 101)).thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
     assertThat(apiResponse.getMessage())
         .isEqualTo(

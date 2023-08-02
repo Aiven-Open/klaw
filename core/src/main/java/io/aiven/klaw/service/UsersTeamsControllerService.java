@@ -513,8 +513,9 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_106).build();
     }
 
-    if (manageDatabase.getHandleDbRequests().getAllComponentsCountForUser(userIdToDelete, tenantId)
-        > 0) {
+    if (manageDatabase
+        .getHandleDbRequests()
+        .existsComponentsCountForUser(userIdToDelete, tenantId)) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_107).build();
     }
 

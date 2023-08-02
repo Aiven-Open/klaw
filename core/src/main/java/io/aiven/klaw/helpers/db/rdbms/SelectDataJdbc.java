@@ -1556,16 +1556,39 @@ public class SelectDataJdbc {
     return calculateComponentsCountForTeam(teamId, tenantId, false);
   }
 
+  public boolean existsComponentsCountForUser(String userId, int tenantId) {
+    return calculateComponentsCountForUser(userId, tenantId, true) > 0;
+  }
+
+  public int calculateComponentsCountForUser(String userId, int tenantId, boolean existsOnly) {
+    List<Supplier<Integer>> list =
+        List.of(
+            () ->
+                ((Long) schemaRequestRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+                    .intValue(),
+            () ->
+                ((Long)
+                        kafkaConnectorRequestsRepo.findAllRecordsCountForUserId(userId, tenantId)
+                            .get(0)[0])
+                    .intValue(),
+            () ->
+                ((Long) topicRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+                    .intValue(),
+            () ->
+                ((Long) aclRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
+                    .intValue());
+    int res = 0;
+    for (var elem : list) {
+      res += elem.get();
+      if (existsOnly && res > 0) {
+        return res;
+      }
+    }
+    return res;
+  }
+
   public int findAllComponentsCountForUser(String userId, int tenantId) {
-    return ((Long) schemaRequestRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long)
-                kafkaConnectorRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) topicRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) aclRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue();
+    return calculateComponentsCountForUser(userId, tenantId, false);
   }
 
   public int getAllTopicsCountInAllTenants() {

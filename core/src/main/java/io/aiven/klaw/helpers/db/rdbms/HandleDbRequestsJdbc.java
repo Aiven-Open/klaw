@@ -987,6 +987,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsComponentsCountForUser(String userId, int tenantId) {
+    return jdbcSelectHelper.existsComponentsCountForUser(userId, tenantId);
+  }
+
+  @Override
   public Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId) {
     return jdbcSelectHelper.getTopicAndVersionsForEnvAndTenantId(envId, tenantId);
   }

@@ -434,6 +434,8 @@ public interface HandleDbRequests {
 
   int getAllComponentsCountForUser(String userName, int tenantId);
 
+  boolean existsComponentsCountForUser(String userId, int tenantId);
+
   Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId);
 
   MessageSchema getTeamIdFromSchemaTopicNameAndEnvAndTenantId(
