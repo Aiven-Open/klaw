@@ -1010,7 +1010,12 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public List<RegisterUserInfoModelResponse> getNewUserRequests() {
+  public List<RegisterUserInfoModelResponse> getNewUserRequests()
+      throws KlawNotAuthorizedException {
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+      throw new KlawNotAuthorizedException("You are not authorized to view this information.");
+    }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 
