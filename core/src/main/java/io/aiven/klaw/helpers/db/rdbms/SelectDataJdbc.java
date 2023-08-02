@@ -1050,12 +1050,7 @@ public class SelectDataJdbc {
   }
 
   public Team selectTeamDetailsFromName(String teamName, int tenantId) {
-    List<Team> teamList = teamRepo.findAllByTenantIdAndTeamname(tenantId, teamName);
-    if (!teamList.isEmpty()) {
-      return teamList.get(0);
-    } else {
-      return null;
-    }
+    return teamRepo.findFirstByTenantIdAndTeamnameOrderByTenantId(tenantId, teamName);
   }
 
   public List<Map<String, String>> selectActivityLogByTeam(
