@@ -53,8 +53,8 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
     - Do not forget to set the following configuration options in the [settings](`http://localhost:1337/serverConfig`) (Dashboard -> settings)
       - Cluster API URL (klaw.clusterapi.url): `http://klaw-cluster-api:9343` (running in docker)
       - Base sync cluster, order of topic promotion environments, topic request envs (klaw.tenant.config): you may copy the example provided, replacing the environment names with the ones you created. For example, if you have only created a `DEV` environment:
-      ```
-        {
+```
+    {
         "tenantModel" : {
             "tenantName" : "default",
             "baseSyncEnvironment" : "DEV",
@@ -64,8 +64,8 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
             "orderOfConnectorsPromotionEnvsList" : null,
             "requestConnectorsEnvironmentsList" : null
         }
-        }
-      ```
+    }
+```
 13. You are good to go! 🎉
 
 
