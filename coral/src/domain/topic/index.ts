@@ -1,5 +1,5 @@
 import {
-  claimTopic,
+  requestTopicClaim,
   requestTopicDeletion,
   requestTopicEdit,
   getTopicDetailsPerEnv,
@@ -25,7 +25,7 @@ import {
 } from "src/domain/topic/topic-types";
 
 export {
-  claimTopic,
+  requestTopicClaim,
   requestTopicDeletion,
   requestTopicEdit,
   getTopicDetailsPerEnv,

@@ -363,7 +363,7 @@ const getTopicDetailsPerEnv = (
   );
 };
 
-const claimTopic = (params: TopicClaimPayload) => {
+const requestTopicClaim = (params: TopicClaimPayload) => {
   const payload: KlawApiModel<"TopicClaimRequestModel"> = {
     env: params.env,
     topicName: params.topicName,
@@ -377,7 +377,7 @@ const claimTopic = (params: TopicClaimPayload) => {
 
 export {
   approveTopicRequest,
-  claimTopic,
+  requestTopicClaim,
   declineTopicRequest,
   requestTopicDeletion,
   deleteTopicRequest,
