@@ -31,48 +31,48 @@ public class KwConstants {
   public static final String INFRATEAM = "INFRATEAM";
   public static final String STAGINGTEAM = "STAGINGTEAM";
   public static final String MAIL_TOPICREQUEST_CONTENT =
-      "Dear User, \\nA request for a create topic %s has been requested in Klaw.";
+      "Dear User, \\nA request for creating a new topic %s has been submitted in Klaw.";
 
   public static final String MAIL_TOPICPROMOTIONREQUEST_CONTENT =
-      "Dear User, \\nA request to promote topic %s to the next environment has been requested in Klaw.";
+      "Dear User, \\nA request to promote the topic %s to the next environment has been submitted in Klaw.";
 
   public static final String MAIL_TOPICUPDATEREQUEST_CONTENT =
-      "Dear User, \\nA request to update the topic %s has been requested in Klaw.";
+      "Dear User, \\nA request to update the topic %s has been submitted in Klaw.";
   public static final String MAIL_TOPICDELETEREQUEST_CONTENT =
-      "Dear User, \\nA request for a delete topic %s has been requested in Klaw.";
+      "Dear User, \\nA request to delete the topic %s has been submitted in Klaw.";
   public static final String MAIL_TOPICCLAIMREQUEST_CONTENT =
-      "Dear User, \\nA request for a clam topic %s has been requested in Klaw.";
+      "Dear User,\\nA request to claim the topic '%s' has been submitted in Klaw.";
   public static final String MAIL_TOPICREQUESTAPPROVAL_CONTENT =
-      "Dear User, \\nYour topic request for %s has been approved.\n";
+      "Dear User, \\nYour topic request for %s has been approved.\\n";
   public static final String MAIL_TOPICREQUESTDENIAL_CONTENT =
-      "Dear User, \\nYour topic request for %s has been declined.\\nReason : %s\n";
+      "Dear User, \\nYour topic request for %s has been declined.\\nReason: %s\\n";
   public static final String MAIL_ACLREQUEST_CONTENT =
-      "Dear User, \\nA request for a new acl %s for topic %s has been requested in Klaw.";
+      "Dear User, \\nA request to create a new ACL %s for the topic %s has been submitted in Klaw.";
   public static final String MAIL_ACLREQUESTDELETE_CONTENT =
-      "Dear User, \\nA request for a Delete acl %s for topic %s has been requested in Klaw.";
+      "Dear User, \\nA request to delete the ACL %s for the topic %s has been submitted in Klaw.";
   public static final String MAIL_ACLREQUESTAPPROVAL_CONTENT =
-      "Dear User, \\nYour acl request %s for topic %s has been approved.";
+      "Dear User, \\nYour ACL request %s for the topic %s has been approved.";
   public static final String MAIL_ACLREQUESTDENIAL_CONTENT =
-      "Dear User, \\nYour acl request for %s for topic %s has been declined.\\nReason : %s";
+      "Dear User, \\nYour ACL request for %s for the topic %s has been declined.\\nReason: %s";
   public static final String MAIL_REGISTERUSER_CONTENT =
-      "Dear Super User, \\nYou have a new pending user registration request from : \\n\\nUser name : %s \\n\\nName : %s \\n\\nTeam : %s\\n\\nRole : %s";
+      "Dear Super User,\\nA new user registration request is pending:\\n\\nUser name: %s\\nName: %s\\nTeam: %s\\nRole: %s";
   public static final String MAIL_REGISTERUSER_SAAS_CONTENT =
-      "Dear Super User, \\nThere is a new user registration request from : \\n\\nUser name : %s \\n\\nName : %s ";
+      "Dear Super User, \\nA request for new user registration has been received from:\\n\\nUser name: %s \\nName: %s ";
   public static final String MAIL_REGISTERUSERTOUSER_CONTENT =
-      "Dear User, \\nThank you for registering in Klaw. Below here are your details. \\n\\nUser name : %s \\nName : %s \\nTeam : %s\\nRole : %s \\n\\n Account pending Activation.";
+      "Dear User, \\nThank you for registering in Klaw. Below are your details. \\n\\nUser name: %s \\nName: %s \\nTeam: %s \\nRole: %s \\n\\n Your account is pending activation.";
   public static final String MAIL_REGISTERUSERTOUSER_SAAS_CONTENT =
-      "Dear User, \\nThank you for registering in Klaw. Below here are your registration details. \\n\\nUser name : %s \\nPassword : %s \\nName : %s \\nTenant : %s\\nTeam : %s\\nRole : %s \\n\\n  Account pending Activation.";
+      "Dear User, \\nThank you for registering in Klaw. Below are your registration details. \\n\\nUser name: %s \\nPassword: %s \\nName: %s \\nTenant: %s \\nTeam: %s \\nRole: %s \\n\\n Your account is pending activation.";
   public static final String MAIL_REGISTERUSERTOUSER_SAAS_ADMIN_CONTENT =
-      "Dear User, \\nThank you for registering in Klaw. Below here are your registration details. \\n\\nUser name : %s \\nPassword : %s \\nName : %s \\nTeam : %s\\nRole : %s \\n\\n ACTIVATE : Please click %s to activate.";
+      "Dear User, \\nThank you for registering in Klaw. Below are your registration details. \\n\\nUser name: %s \\nPassword: %s \\nName: %s \\nTeam: %s \\nRole: %s \\n\\n ACTIVATE: Click this link %s to activate your account.";
   public static final String MAIL_RECONTOPICS_CONTENT =
-      "Dear User, \\n  Below are the topics which need to be reconciled. \\n\\n Tenant : %s \\n\\n Topics : \\n\\n %s";
+      "Dear User, \\n These are the topics that require reconciliation:\\n\\nTenant: %s\\nTopics: %s";
   public static final String MAIL_NEWUSERADDED_CONTENT =
-      "Dear User, \\nYou have been given access to Klaw. \\n\\nUser name : %s \\nPassword : %s";
+      "Dear User,\\n Congratulations, you have been granted access to Klaw.. \\n\\nUser name: %s\\nPassword: %s";
   public static final String MAIL_PASSWORDRESET_CONTENT =
-      "Dear User, \\nYou have requested a password reset on your Klaw account. \\n\\nUse your Reset Token to update your password : %s \\nIt will be valid for 10 minutes.\\n\\nIf you no longer wish to change your password ignore this email.";
+      "Dear User,\\nA password reset for your Klaw account has been requested.\\n\\nUse the Reset Token to update your password: %s\\nIt will be valid for 10 minutes.\\n\\nIf you did not request this change, please ignore this email.";
 
   public static final String MAIL_PASSWORDCHANGED_CONTENT =
-      "Dear User, \\nYour password has been changed.\\nIf you did not request a password change please contact your administrator.";
+      "Dear User,\\nYou have successfully changed your password.\\n If you did not request a password change, please contact your administrator.";
 
   public static final String REPORTS_LOCATION = "/tmp/";
   public static final String MAIL_NOTIFICATIONS_ENABLE = "true";
