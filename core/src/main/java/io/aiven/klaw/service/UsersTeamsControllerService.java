@@ -460,7 +460,7 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_103).build();
     }
 
-    if (manageDatabase.getHandleDbRequests().getAllComponentsCountForTeam(teamId, tenantId) > 0) {
+    if (manageDatabase.getHandleDbRequests().existsComponentsCountForTeam(teamId, tenantId)) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_104).build();
     }
 
