@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicOverviewInfo;
@@ -77,13 +78,9 @@ public class TopicOverviewService extends BaseOverviewService {
     environmentId = topicsPair.getKey();
     topics = topicsPair.getValue();
 
-    String syncCluster;
-    try {
-      syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
-    } catch (Exception exception) {
-      log.error("Exception while getting syncCluster. Ignored. ", exception);
-      syncCluster = null;
-    }
+    KwTenantConfigModel kwTenantConfigModel = manageDatabase.getTenantConfig().get(tenantId);
+    String syncCluster =
+        kwTenantConfigModel == null ? null : kwTenantConfigModel.getBaseSyncEnvironment();
 
     List<TopicOverviewInfo> topicInfoList = new ArrayList<>();
     List<ResourceHistory> topicHistoryList = new ArrayList<>();
