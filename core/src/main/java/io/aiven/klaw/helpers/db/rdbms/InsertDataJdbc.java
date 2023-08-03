@@ -173,7 +173,7 @@ public class InsertDataJdbc {
         .forEach(existingTopicIds::add);
 
     for (Topic topic : existingTopicIds) {
-      log.info("insertIntoTopicSOT {}", topic.getTopicname());
+      log.debug("insertIntoTopicSOT {}", topic.getTopicname());
       topic.setTopicid(getNextTopicRequestId("TOPIC_ID", topic.getTenantId()));
       topicRepo.save(topic);
     }
@@ -181,7 +181,7 @@ public class InsertDataJdbc {
       if (existingTopicIds.contains(topic)) {
         continue;
       }
-      log.info("insertIntoTopicSOT {}", topic.getTopicname());
+      log.debug("insertIntoTopicSOT {}", topic.getTopicname());
       topicRepo.save(topic);
     }
 
