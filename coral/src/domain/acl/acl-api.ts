@@ -115,7 +115,7 @@ const deleteAclRequest = ({ reqIds }: DeleteRequestParams) => {
   );
 };
 
-const createAclDeletionRequest = (
+const requestAclDeletion = (
   payload: KlawApiRequest<"deleteAclSubscriptionRequest">
 ): Promise<KlawApiResponse<"deleteAclSubscriptionRequest">> => {
   return api.post<
@@ -171,6 +171,6 @@ export {
   deleteAclRequest,
   getAivenServiceAccounts,
   getAivenServiceAccountDetails,
-  createAclDeletionRequest,
+  requestAclDeletion,
   getConsumerOffsets,
 };
