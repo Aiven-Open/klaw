@@ -1,13 +1,13 @@
 import {
   claimTopic,
-  deleteTopic,
-  editTopic,
+  requestTopicDeletion,
+  requestTopicEdit,
   getTopicDetailsPerEnv,
   getTopicNames,
   getTopicRequests,
   getTopicTeam,
   getTopics,
-  promoteTopic,
+  requestTopicPromotion,
   updateTopicDocumentation,
 } from "src/domain/topic/topic-api";
 import {
@@ -26,14 +26,14 @@ import {
 
 export {
   claimTopic,
-  deleteTopic,
-  editTopic,
+  requestTopicDeletion,
+  requestTopicEdit,
   getTopicDetailsPerEnv,
   getTopicNames,
   getTopicRequests,
   getTopicTeam,
   getTopics,
-  promoteTopic,
+  requestTopicPromotion,
   updateTopicDocumentation,
 };
 export type {
