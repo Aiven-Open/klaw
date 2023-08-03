@@ -146,14 +146,17 @@ the only place that speaks with the backend and knows what data from the backend
 
 **`POST` - Creating a request: `request{entity}{action noun}`**
 Only use `request` as a verb when the API handlers creates a request entity which needs to be approved, with the structure `request{entity}{action}`.
+
 Example: `requestTopicCreation`, `requestConnectorDeletion`, `requestTopicPromotion`
 
 **`POST` - Acting on a created request: `{action verb}{entity}Request`**
 Only use `Request` as a noun when the API handlers fires an action against a created request entity, with the structure `{action}{entity}Request`.
+
 Example: `deleteTopicRequest`, `approveTopicRequest`
 
 **`POST` / `GET` - Immediate action: `{action verb}{entity}{optional category}`**
 Do not use `request` for immediate actions (no request entity created), but the structure `{action}{entity}{optional category}`.
+
 Example: `updateTopicDocumentation`, `getConnectorOverview`
 
 ### First level: `services`
