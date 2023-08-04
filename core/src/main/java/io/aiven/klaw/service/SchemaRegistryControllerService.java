@@ -222,10 +222,7 @@ public class SchemaRegistryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_SCHEMAS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
     String userName = getUserName();
     try {
@@ -236,10 +233,9 @@ public class SchemaRegistryControllerService {
                   Integer.parseInt(avroSchemaId),
                   userName,
                   commonUtilsService.getTenantId(getUserName()));
-      return ApiResponse.builder()
-          .success((result.equals(ApiResultStatus.SUCCESS.value)))
-          .message(result)
-          .build();
+      return ApiResultStatus.SUCCESS.value.equals(result)
+          ? ApiResponse.ok(result)
+          : ApiResponse.notOk(result);
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -251,10 +247,7 @@ public class SchemaRegistryControllerService {
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
 
     SchemaRequest schemaRequest =
@@ -263,15 +256,12 @@ public class SchemaRegistryControllerService {
             .getSchemaRequest(Integer.parseInt(avroSchemaId), tenantId);
 
     if (Objects.equals(schemaRequest.getRequestor(), userDetails))
-      return ApiResponse.builder().success(false).message(SCHEMA_ERR_101).build();
+      return ApiResponse.notOk(SCHEMA_ERR_101);
 
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
     if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
 
     ResponseEntity<ApiResponse> response =
@@ -311,10 +301,9 @@ public class SchemaRegistryControllerService {
             dbHandle,
             SCHEMA_REQUEST_APPROVED,
             commonUtilsService.getLoginUrl());
-        return ApiResponse.builder()
-            .success((responseDb.equals(ApiResultStatus.SUCCESS.value)))
-            .message(responseDb)
-            .build();
+        return ApiResultStatus.SUCCESS.value.equals(responseDb)
+            ? ApiResponse.ok(responseDb)
+            : ApiResponse.notOk(responseDb);
       } catch (Exception e) {
         log.error("Exception:", e);
         throw new KlawException(e.getMessage());
@@ -325,10 +314,7 @@ public class SchemaRegistryControllerService {
       if (errStr.length() > 100) {
         errStr = errStr.substring(0, 98) + "...";
       }
-      return ApiResponse.builder()
-          .success(false)
-          .message(String.format(SCHEMA_ERR_102, errStr))
-          .build();
+      return ApiResponse.notOk(String.format(SCHEMA_ERR_102, errStr));
     }
   }
 
@@ -366,10 +352,7 @@ public class SchemaRegistryControllerService {
     log.info("execSchemaRequestsDecline {}", avroSchemaId);
     String userDetails = getUserName();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -378,10 +361,7 @@ public class SchemaRegistryControllerService {
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
     if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
 
     try {
@@ -396,10 +376,9 @@ public class SchemaRegistryControllerService {
           dbHandle,
           SCHEMA_REQUEST_DENIED,
           commonUtilsService.getLoginUrl());
-      return ApiResponse.builder()
-          .success((responseDb.equals(ApiResultStatus.SUCCESS.value)))
-          .message(responseDb)
-          .build();
+      return ApiResultStatus.SUCCESS.value.equals(responseDb)
+          ? ApiResponse.ok(responseDb)
+          : ApiResponse.notOk(responseDb);
     } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
@@ -410,24 +389,21 @@ public class SchemaRegistryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
 
     Integer userTeamId = commonUtilsService.getTeamId(userDetails);
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (!userAndTopicOwnerAreOnTheSameTeam(schemaPromotion.getTopicName(), userTeamId, tenantId)) {
-      return ApiResponse.builder().success(false).message(SCHEMA_ERR_103).build();
+      return ApiResponse.notOk(SCHEMA_ERR_103);
     }
 
     SchemaRequestModel schemaRequest = buildSchemaRequestFromPromotionRequest(schemaPromotion);
     Optional<Env> optionalEnv = getSchemaEnvFromKafkaEnvId(schemaPromotion.getSourceEnvironment());
 
     if (optionalEnv.isEmpty()) {
-      return ApiResponse.builder().success(false).message(SCHEMA_ERR_104).build();
+      return ApiResponse.notOk(SCHEMA_ERR_104);
     }
     Env schemaSourceEnv = optionalEnv.get();
     SortedMap<Integer, Map<String, Object>> schemaObjects =
@@ -497,10 +473,7 @@ public class SchemaRegistryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
 
     // If force register is not set validate the schema
@@ -518,14 +491,14 @@ public class SchemaRegistryControllerService {
       new ObjectMapper().readValue(schemaRequest.getSchemafull(), Object.class);
     } catch (IOException e) {
       log.error("Exception:", e);
-      return ApiResponse.builder().success(false).message(SCHEMA_ERR_105).build();
+      return ApiResponse.notOk(SCHEMA_ERR_105);
     }
 
     Integer userTeamId = commonUtilsService.getTeamId(userName);
     schemaRequest.setTeamId(userTeamId);
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (!userAndTopicOwnerAreOnTheSameTeam(schemaRequest.getTopicname(), userTeamId, tenantId)) {
-      return ApiResponse.builder().success(false).message(SCHEMA_ERR_106).build();
+      return ApiResponse.notOk(SCHEMA_ERR_106);
     }
 
     List<SchemaRequest> schemaReqs =
@@ -553,7 +526,7 @@ public class SchemaRegistryControllerService {
                               schemaRequest1.getTopicname(), schemaRequest.getTopicname()))
               .collect(Collectors.toList());
       if (schemaReqs.size() > 0) {
-        return ApiResponse.builder().success(false).message(SCHEMA_ERR_107).build();
+        return ApiResponse.notOk(SCHEMA_ERR_107);
       }
     }
 
@@ -576,10 +549,9 @@ public class SchemaRegistryControllerService {
           SCHEMA_REQUESTED,
           commonUtilsService.getLoginUrl());
 
-      return ApiResponse.builder()
-          .success((responseDb.equals(ApiResultStatus.SUCCESS.value)))
-          .message(responseDb)
-          .build();
+      return ApiResultStatus.SUCCESS.value.equals(responseDb)
+          ? ApiResponse.ok(responseDb)
+          : ApiResponse.notOk(responseDb);
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());

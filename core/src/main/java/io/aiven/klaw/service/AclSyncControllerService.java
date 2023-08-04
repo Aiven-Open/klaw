@@ -70,10 +70,7 @@ public class AclSyncControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
 
     List<Acl> listTopics = new ArrayList<>();
@@ -97,10 +94,7 @@ public class AclSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userName)
             .contains(syncAclUpdateItem.getEnvSelected())) {
-          return ApiResponse.builder()
-              .success(false)
-              .message(ApiResultStatus.NOT_AUTHORIZED.value)
-              .build();
+          return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
         }
         t = new Acl();
 
@@ -136,7 +130,7 @@ public class AclSyncControllerService {
         }
       }
     } else {
-      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
+      return ApiResponse.notOk(SYNC_ERR_101);
     }
 
     String syncStatus = "";
@@ -148,10 +142,10 @@ public class AclSyncControllerService {
         syncStatus = manageDatabase.getHandleDbRequests().deleteAcls(listDeleteAcls, tenantId);
       }
       if ((!listTopics.isEmpty() || !listDeleteAcls.isEmpty())) {
-        return ApiResponse.builder().success(true).message(syncStatus).build();
+        return ApiResponse.ok(syncStatus);
       }
 
-      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
+      return ApiResponse.notOk(SYNC_ERR_101);
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -173,10 +167,7 @@ public class AclSyncControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
 
     List<String> resultStatus = new ArrayList<>();

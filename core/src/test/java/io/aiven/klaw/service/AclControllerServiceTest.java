@@ -488,8 +488,7 @@ public class AclControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
 
-    ApiResponse apiResponse =
-        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyMap(), anyBoolean()))
@@ -573,7 +572,7 @@ public class AclControllerServiceTest {
     t1.setEnvironment("1");
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
 
-    ApiResponse apiResponse = ApiResponse.builder().message("failure").build();
+    ApiResponse apiResponse = ApiResponse.notOk("failure");
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
 
@@ -597,8 +596,7 @@ public class AclControllerServiceTest {
     t1.setEnvironment("1");
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(List.of(t1));
 
-    ApiResponse apiResponse =
-        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(clusterApiService.approveAclRequests(any(), anyInt()))
         .thenReturn(new ResponseEntity<>(apiResponse, HttpStatus.OK));
     when(handleDbRequests.updateAclRequest(any(), any(), anyMap(), anyBoolean()))

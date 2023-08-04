@@ -411,10 +411,7 @@ public class SchemaRegistrySyncControllerService {
     int tenantId = commonUtilsService.getTenantId(userDetails);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
     List<String> logArray = new ArrayList<>();
     logArray.add("Topics/Schemas result");
@@ -425,7 +422,7 @@ public class SchemaRegistrySyncControllerService {
             .getEnvDetails(syncSchemaUpdates.getSourceKafkaEnvSelected(), tenantId);
 
     if (kafkaEnv.getAssociatedEnv() == null) {
-      return ApiResponse.builder().success(false).message(SCH_SYNC_ERR_101).build();
+      return ApiResponse.notOk(SCH_SYNC_ERR_101);
     }
 
     if (syncSchemaUpdates.getTopicsSelectionType().equals("ALL_TOPICS")) {
@@ -515,10 +512,7 @@ public class SchemaRegistrySyncControllerService {
     int tenantId = commonUtilsService.getTenantId(userDetails);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
     Env kafkaEnv =
         manageDatabase
@@ -526,7 +520,7 @@ public class SchemaRegistrySyncControllerService {
             .getEnvDetails(syncSchemaUpdates.getSourceKafkaEnvSelected(), tenantId);
 
     if (kafkaEnv.getAssociatedEnv() == null) {
-      return ApiResponse.builder().success(false).message(SCH_SYNC_ERR_101).build();
+      return ApiResponse.notOk(SCH_SYNC_ERR_101);
     }
 
     Env schemaEnvSelected =
@@ -585,14 +579,11 @@ public class SchemaRegistrySyncControllerService {
       }
     }
 
-    return ApiResponse.builder()
-        .success(true)
-        .message(
-            "Topics/Schemas "
-                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicList())
-                + "\nSchemas removed "
-                + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicListForRemoval()))
-        .build();
+    return ApiResponse.ok(
+        "Topics/Schemas "
+            + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicList())
+            + "\nSchemas removed "
+            + CollectionUtils.emptyIfNull(syncSchemaUpdates.getTopicListForRemoval()));
   }
 
   // schema content either from metadata or cluster

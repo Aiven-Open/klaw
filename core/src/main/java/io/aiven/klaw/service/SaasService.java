@@ -131,7 +131,7 @@ public class SaasService {
 
     try {
       if (handleValidations(newUser, tenantMap, resultMap)) {
-        return ApiResponse.builder().success(false).message(resultMap.get("result")).build();
+        return ApiResponse.notOk(resultMap.get("result"));
       }
 
       RegisterUserInfoModel newUserTarget = new RegisterUserInfoModel();
@@ -144,19 +144,19 @@ public class SaasService {
       if (newUser.getTenantName() == null || newUser.getTenantName().equals("")) {
         // new user
         if (createNewUserForActivation(resultMap, newUserTarget)) {
-          return ApiResponse.builder().success(false).message(resultMap.get("error")).build();
+          return ApiResponse.notOk(resultMap.get("error"));
         }
       } else if (!tenantMap.containsValue(newUser.getTenantName())) {
         resultMap.put("error", SAAS_ERR_103);
-        return ApiResponse.builder().success(false).message(SAAS_ERR_103).build();
+        return ApiResponse.notOk(SAAS_ERR_103);
       } else {
         // create user for existing tenant
         if (createUserForExistingTenant(newUser, tenantMap, resultMap, newUserTarget)) {
-          return ApiResponse.builder().success(false).message(resultMap.get("error")).build();
+          return ApiResponse.notOk(resultMap.get("error"));
         }
       }
 
-      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.SUCCESS;
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(e.getMessage());
@@ -290,22 +290,22 @@ public class SaasService {
         usersTeamsControllerService.getRegistrationInfoFromId(activationId, "");
 
     if (registerUserInfoModel == null) {
-      return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
+      return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
     } else if ("APPROVED".equals(registerUserInfoModel.getStatus())) {
-      return ApiResponse.builder().success(true).message("already_activated").build();
+      return ApiResponse.ok("already_activated");
     } else if ("PENDING".equals(registerUserInfoModel.getStatus())) {
       Map<String, String> result;
       try {
         result = approveUserSaas(registerUserInfoModel);
         if (ApiResultStatus.SUCCESS.value.equals(result.get("result"))) {
-          return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+          return ApiResponse.SUCCESS;
         } else {
-          return ApiResponse.builder().success(false).message("othererror").build();
+          return ApiResponse.notOk("othererror");
         }
       } catch (Exception e) {
         log.error("Exception:", e);
       }
     }
-    return ApiResponse.builder().success(false).message("error").build();
+    return ApiResponse.notOk("error");
   }
 }

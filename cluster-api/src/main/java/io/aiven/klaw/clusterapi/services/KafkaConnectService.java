@@ -82,9 +82,9 @@ public class KafkaConnectService {
       return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_3);
     } catch (RestClientException ex) {
       log.error("Error in deleting connector ", ex);
-      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_3).build();
+      return ApiResponse.notOk(CLUSTER_API_ERR_3);
     }
-    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.SUCCESS;
   }
 
   public ApiResponse updateConnector(ClusterConnectorRequest clusterConnectorRequest) {
@@ -110,9 +110,9 @@ public class KafkaConnectService {
       log.error("Error in updating connector ", e);
       return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_2);
     } catch (Exception ex) {
-      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_2).build();
+      return ApiResponse.notOk(CLUSTER_API_ERR_2);
     }
-    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.SUCCESS;
   }
 
   private static ApiResponse buildErrorResponseFromRestException(
@@ -123,11 +123,7 @@ public class KafkaConnectService {
     } catch (Exception ex) {
       log.error("Error caught trying to process the error response. ", ex);
     }
-    if (errorResponse != null) {
-      return ApiResponse.builder().success(false).message(errorResponse.getMessage()).build();
-    } else {
-      return ApiResponse.builder().success(false).message(defaultErrorMsg).build();
-    }
+    return ApiResponse.notOk(errorResponse == null ? defaultErrorMsg : errorResponse.getMessage());
   }
 
   public ApiResponse postNewConnector(ClusterConnectorRequest clusterConnectorRequest)
@@ -153,12 +149,12 @@ public class KafkaConnectService {
 
       return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_1);
     } catch (Exception ex) {
-      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_1).build();
+      return ApiResponse.notOk(CLUSTER_API_ERR_1);
     }
     if (responseNew.getStatusCodeValue() == 201) {
-      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.SUCCESS;
     } else {
-      return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
+      return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
     }
   }
 
@@ -342,20 +338,20 @@ public class KafkaConnectService {
     } catch (HttpServerErrorException | HttpClientErrorException e) {
       return buildErrorResponseFromRestException(e, CLUSTER_API_ERR_1);
     } catch (Exception ex) {
-      return ApiResponse.builder().success(false).message(CLUSTER_API_ERR_1).build();
+      return ApiResponse.notOk(CLUSTER_API_ERR_1);
     }
     if (responseNew.getStatusCode().is2xxSuccessful()) {
-      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.SUCCESS;
     } else {
-      return ApiResponse.builder().success(false).message(ApiResultStatus.FAILURE.value).build();
+      return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
     }
   }
 
   public ApiResponse pauseConnector(ClusterConnectorRequest clusterConnectorRequest) {
-    return ApiResponse.builder().success(false).message("To be implemented").build();
+    return ApiResponse.notOk("To be implemented");
   }
 
   public ApiResponse resumeConnector(ClusterConnectorRequest clusterConnectorRequest) {
-    return ApiResponse.builder().success(false).message("To be implemented").build();
+    return ApiResponse.notOk("To be implemented");
   }
 }

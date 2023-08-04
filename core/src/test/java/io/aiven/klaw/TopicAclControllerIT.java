@@ -435,8 +435,7 @@ public class TopicAclControllerIT {
     String topicName = TopicAclControllerIT.topicName + topicId1;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
         .thenReturn(ClusterStatus.ONLINE);
-    ApiResponse apiResponse =
-        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
 
     when(clusterApiService.approveTopicRequests(
             topicName, RequestOperationType.CREATE.value, 2, "1", "1", new HashMap<>(), 101, null))
@@ -742,8 +741,7 @@ public class TopicAclControllerIT {
               .data(dataObj)
               .build();
     } else {
-      apiResponse =
-          ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+      apiResponse = ApiResponse.SUCCESS;
     }
 
     when(clusterApiService.approveAclRequests(any(), anyInt()))
@@ -1062,8 +1060,7 @@ public class TopicAclControllerIT {
     String topicName = TopicAclControllerIT.topicName + topicID;
     when(clusterApiService.getClusterApiStatus(anyString(), anyBoolean(), anyInt()))
         .thenReturn(ClusterStatus.ONLINE);
-    ApiResponse apiResponse =
-        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
 
     when(clusterApiService.approveTopicRequests(
             topicName,

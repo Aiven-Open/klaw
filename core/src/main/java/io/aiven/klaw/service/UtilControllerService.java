@@ -722,10 +722,7 @@ public class UtilControllerService implements InitializingBean {
     } else if (entityType.equals(EntityType.USERS.name())
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
     }
     log.debug("Reset cache triggered on the instance {}", resetEntityCache);
 
@@ -735,10 +732,10 @@ public class UtilControllerService implements InitializingBean {
                 commonUtilsService.updateMetadataCache(kwMetadataUpdates, false);
               })
           .get();
-      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.SUCCESS;
     } catch (InterruptedException | ExecutionException e) {
       log.error("Error from resetCache ", e);
-      return ApiResponse.builder().success(false).message(e.getMessage()).build();
+      return ApiResponse.notOk(e.getMessage());
     }
   }
 
