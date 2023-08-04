@@ -39,6 +39,13 @@ public interface AclRequestsRepo
       @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
   @Query(
+      value =
+          "select exists(select 1 from kwaclrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created')",
+      nativeQuery = true)
+  boolean existsRecordsCountForUserId(
+      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
+
+  @Query(
       value = "select max(aclid) from kwaclrequests where tenantid = :tenantId",
       nativeQuery = true)
   Integer getNextAclRequestId(@Param("tenantId") Integer tenantId);

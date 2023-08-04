@@ -972,18 +972,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public int getAllComponentsCountForTeam(Integer teamId, int tenantId) {
-    return jdbcSelectHelper.findAllComponentsCountForTeam(teamId, tenantId);
-  }
-
-  @Override
   public boolean existsComponentsCountForTeam(Integer teamId, int tenantId) {
     return jdbcSelectHelper.existsComponentsCountForTeam(teamId, tenantId);
   }
 
   @Override
-  public int getAllComponentsCountForUser(String userId, int tenantId) {
-    return jdbcSelectHelper.findAllComponentsCountForUser(userId, tenantId);
+  public boolean existsComponentsCountForUser(String userId, int tenantId) {
+    return jdbcSelectHelper.existsComponentsCountForUser(userId, tenantId);
   }
 
   @Override
