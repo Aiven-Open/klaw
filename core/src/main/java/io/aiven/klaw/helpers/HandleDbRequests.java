@@ -428,6 +428,8 @@ public interface HandleDbRequests {
 
   int getAllComponentsCountForTeam(Integer teamId, int tenantId);
 
+  boolean existsComponentsCountForTeam(Integer teamId, int tenantId);
+
   int getAllTopicsCountInAllTenants();
 
   int getAllComponentsCountForUser(String userName, int tenantId);
