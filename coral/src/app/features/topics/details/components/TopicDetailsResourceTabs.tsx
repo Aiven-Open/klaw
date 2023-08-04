@@ -53,44 +53,11 @@ function TopicOverviewResourcesTabs({
     }
   }
 
-  const tabsMap: Array<{
-    topicOverviewTabEnum: TopicOverviewTabEnum;
-    title: string;
-  }> = [
-    {
-      topicOverviewTabEnum: TopicOverviewTabEnum.OVERVIEW,
-      title: "Overview",
-    },
-    {
-      topicOverviewTabEnum: TopicOverviewTabEnum.ACLS,
-      title: "Subscriptions",
-    },
-    {
-      topicOverviewTabEnum: TopicOverviewTabEnum.MESSAGES,
-      title: "Messages",
-    },
-    {
-      topicOverviewTabEnum: TopicOverviewTabEnum.SCHEMA,
-      title: "Schema",
-    },
-    {
-      topicOverviewTabEnum: TopicOverviewTabEnum.DOCUMENTATION,
-      title: "Readme",
-    },
-    {
-      topicOverviewTabEnum: TopicOverviewTabEnum.HISTORY,
-      title: "History",
-    },
-    {
-      topicOverviewTabEnum: TopicOverviewTabEnum.SETTINGS,
-      title: "Settings",
-    },
-  ];
-
-  const renderTabContent = () => {
-    if (isError) {
-      return (
-        <Box marginBottom={"l1"} marginTop={"l2"}>
+  const TabContent = (
+    <div>
+      <PreviewBanner linkTarget={`/topicOverview?topicname=${topicName}`} />
+      {isError && (
+        <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
           <Alert type="error">
             There was an error trying to load the topic details:{" "}
             {parseErrorMsg(error)}.
@@ -98,73 +65,103 @@ function TopicOverviewResourcesTabs({
             Please try again later.
           </Alert>
         </Box>
-      );
-    }
-
-    if (isLoading) {
-      return (
+      )}
+      {isLoading && (
         <Box paddingTop={"l2"} display={"flex"} justifyContent={"center"}>
           <div className={"visually-hidden"}>Loading topic details</div>
           <Icon icon={loading} fontSize={"30px"} />
         </Box>
-      );
-    }
-
-    if (!topicOverview?.topicExists) {
-      return (
-        <Box marginBottom={"l1"} marginTop={"l2"}>
+      )}
+      {!isLoading && !topicOverview?.topicExists && (
+        <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
           <Alert type="warning">Topic {topicName} does not exist.</Alert>
         </Box>
-      );
-    }
-    return (
-      <div data-testid={"tabpanel-content"}>
-        <Outlet
-          context={{
-            environmentId:
-              environmentId || topicOverview.availableEnvironments[0].id,
-            setSchemaVersion,
-            topicOverview,
-            topicOverviewIsRefetching,
-            topicName: topicOverview.topicInfo.topicName,
-            topicSchemas,
-            topicSchemasIsRefetching,
-            userCanDeleteTopic: topicOverview.topicInfo.topicDeletable,
-            topicHasOpenDeleteRequest: !topicOverview.topicInfo.showDeleteTopic,
-          }}
-        />
-      </div>
-    );
-  };
+      )}
+      {!isError && !isLoading && topicOverview?.topicExists && (
+        <div data-testid={"tabpanel-content"}>
+          <Outlet
+            context={{
+              environmentId:
+                environmentId || topicOverview.availableEnvironments[0].id,
+              setSchemaVersion,
+              topicOverview,
+              topicOverviewIsRefetching,
+              topicName,
+              topicSchemas,
+              topicSchemasIsRefetching,
+              userCanDeleteTopic: topicOverview.topicInfo.topicDeletable,
+              topicHasOpenDeleteRequest:
+                !topicOverview.topicInfo.showDeleteTopic,
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
 
-  const TopicTabs = () => (
+  return (
     <Tabs
       value={currentTab}
       onChange={(resourceTypeId) => navigateToTab(navigate, resourceTypeId)}
     >
-      {tabsMap.map((tab) => {
-        return (
-          <Tabs.Tab
-            title={tab.title}
-            value={tab.topicOverviewTabEnum}
-            aria-label={tab.title}
-            key={tab.title}
-          >
-            {currentTab === tab.topicOverviewTabEnum && (
-              <div>
-                <PreviewBanner
-                  linkTarget={`/topicOverview?topicname=${topicName}`}
-                />
-                {renderTabContent()}
-              </div>
-            )}
-          </Tabs.Tab>
-        );
-      })}
+      <Tabs.Tab
+        title={"Overview"}
+        value={TopicOverviewTabEnum.OVERVIEW}
+        aria-label={"Overview"}
+        key={"Overview"}
+      >
+        {TabContent}
+      </Tabs.Tab>
+      <Tabs.Tab
+        title={"Subscriptions"}
+        value={TopicOverviewTabEnum.ACLS}
+        aria-label={"Subscriptions"}
+        key={"Subscriptions"}
+      >
+        {TabContent}
+      </Tabs.Tab>
+      <Tabs.Tab
+        title={"Messages"}
+        value={TopicOverviewTabEnum.MESSAGES}
+        aria-label={"Messages"}
+        key={"Messages"}
+      >
+        {TabContent}
+      </Tabs.Tab>
+      <Tabs.Tab
+        title={"Schema"}
+        value={TopicOverviewTabEnum.SCHEMA}
+        aria-label={"Schema"}
+        key={"Schema"}
+      >
+        {TabContent}
+      </Tabs.Tab>
+      <Tabs.Tab
+        title={"Readme"}
+        value={TopicOverviewTabEnum.DOCUMENTATION}
+        aria-label={"Readme"}
+        key={"Readme"}
+      >
+        {TabContent}
+      </Tabs.Tab>
+      <Tabs.Tab
+        title={"History"}
+        value={TopicOverviewTabEnum.HISTORY}
+        aria-label={"History"}
+        key={"History"}
+      >
+        {TabContent}
+      </Tabs.Tab>
+      <Tabs.Tab
+        title={"Settings"}
+        value={TopicOverviewTabEnum.SETTINGS}
+        aria-label={"Settings"}
+        key={"Settings"}
+      >
+        {TabContent}
+      </Tabs.Tab>
     </Tabs>
   );
-
-  return <TopicTabs />;
 }
 
 export { TopicOverviewResourcesTabs };
