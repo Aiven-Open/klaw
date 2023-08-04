@@ -1552,20 +1552,19 @@ public class SelectDataJdbc {
     return res;
   }
 
-  public int findAllComponentsCountForTeam(Integer teamId, int tenantId) {
-    return calculateComponentsCountForTeam(teamId, tenantId, false);
-  }
-
-  public int findAllComponentsCountForUser(String userId, int tenantId) {
-    return ((Long) schemaRequestRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long)
-                kafkaConnectorRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) topicRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) aclRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue();
+  public boolean existsComponentsCountForUser(String userId, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () -> schemaRequestRepo.existsRecordsCountForUserId(userId, tenantId),
+            () -> kafkaConnectorRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
+            () -> topicRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
+            () -> aclRequestsRepo.existsRecordsCountForUserId(userId, tenantId));
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public int getAllTopicsCountInAllTenants() {

@@ -393,10 +393,9 @@ public class UsersTeamsControllerService {
       teamModels.forEach(
           teamModel -> {
             teamModel.setShowDeleteTeam(
-                (manageDatabase
-                            .getHandleDbRequests()
-                            .getAllComponentsCountForTeam(teamModel.getTeamId(), tenantId)
-                        == 0)
+                (!manageDatabase
+                        .getHandleDbRequests()
+                        .existsComponentsCountForTeam(teamModel.getTeamId(), tenantId))
                     && (manageDatabase
                         .getHandleDbRequests()
                         .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId)
@@ -513,8 +512,9 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_106).build();
     }
 
-    if (manageDatabase.getHandleDbRequests().getAllComponentsCountForUser(userIdToDelete, tenantId)
-        > 0) {
+    if (manageDatabase
+        .getHandleDbRequests()
+        .existsComponentsCountForUser(userIdToDelete, tenantId)) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_107).build();
     }
 
