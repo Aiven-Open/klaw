@@ -517,8 +517,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<RegisterUserInfo> getAllStagingRegisterUsersInfo(String userName) {
-    return jdbcSelectHelper.selectAllStagingRegisterUsersInfo(userName);
+  public RegisterUserInfo getFirstStagingRegisterUsersInfo(String userName) {
+    return jdbcSelectHelper.selectFirstStagingRegisterUsersInfo(userName);
   }
 
   public UserInfo getUsersInfo(String username) {
