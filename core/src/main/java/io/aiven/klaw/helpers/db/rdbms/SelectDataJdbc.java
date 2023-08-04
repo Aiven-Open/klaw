@@ -1044,6 +1044,11 @@ public class SelectDataJdbc {
     return aclRepo.findAllByTenantId(tenantId);
   }
 
+  public boolean validateIfConsumerGroupUsedByAnotherTeam(
+      Integer teamId, int tenantId, String consumerGroup) {
+    return aclRepo.validateIfConsumerGroupUsedByAnotherTeam(teamId, tenantId, consumerGroup);
+  }
+
   public Team selectTeamDetails(Integer teamId, int tenantId) {
     TeamID teamID = new TeamID(teamId, tenantId);
     Optional<Team> teamList = teamRepo.findById(teamID);
