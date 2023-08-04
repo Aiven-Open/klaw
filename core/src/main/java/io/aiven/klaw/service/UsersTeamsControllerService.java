@@ -393,10 +393,9 @@ public class UsersTeamsControllerService {
       teamModels.forEach(
           teamModel -> {
             teamModel.setShowDeleteTeam(
-                (manageDatabase
-                            .getHandleDbRequests()
-                            .getAllComponentsCountForTeam(teamModel.getTeamId(), tenantId)
-                        == 0)
+                (!manageDatabase
+                        .getHandleDbRequests()
+                        .existsComponentsCountForTeam(teamModel.getTeamId(), tenantId))
                     && (manageDatabase
                         .getHandleDbRequests()
                         .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId)

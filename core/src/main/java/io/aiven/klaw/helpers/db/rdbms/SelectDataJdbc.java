@@ -3,7 +3,33 @@ package io.aiven.klaw.helpers.db.rdbms;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 
 import com.google.common.collect.Lists;
-import io.aiven.klaw.dao.*;
+import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclID;
+import io.aiven.klaw.dao.AclRequestID;
+import io.aiven.klaw.dao.AclRequests;
+import io.aiven.klaw.dao.ActivityLog;
+import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.EnvID;
+import io.aiven.klaw.dao.KafkaConnectorRequest;
+import io.aiven.klaw.dao.KafkaConnectorRequestID;
+import io.aiven.klaw.dao.KwClusterID;
+import io.aiven.klaw.dao.KwClusters;
+import io.aiven.klaw.dao.KwKafkaConnector;
+import io.aiven.klaw.dao.KwProperties;
+import io.aiven.klaw.dao.KwRolesPermissions;
+import io.aiven.klaw.dao.KwTenants;
+import io.aiven.klaw.dao.MessageSchema;
+import io.aiven.klaw.dao.ProductDetails;
+import io.aiven.klaw.dao.RegisterUserInfo;
+import io.aiven.klaw.dao.SchemaRequest;
+import io.aiven.klaw.dao.SchemaRequestID;
+import io.aiven.klaw.dao.Team;
+import io.aiven.klaw.dao.TeamID;
+import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.dao.TopicID;
+import io.aiven.klaw.dao.TopicRequest;
+import io.aiven.klaw.dao.TopicRequestID;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
@@ -11,7 +37,26 @@ import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
-import io.aiven.klaw.repository.*;
+import io.aiven.klaw.repository.AclRepo;
+import io.aiven.klaw.repository.AclRequestsRepo;
+import io.aiven.klaw.repository.ActivityLogRepo;
+import io.aiven.klaw.repository.EnvRepo;
+import io.aiven.klaw.repository.KwClusterRepo;
+import io.aiven.klaw.repository.KwEntitySequenceRepo;
+import io.aiven.klaw.repository.KwKafkaConnectorRepo;
+import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
+import io.aiven.klaw.repository.KwMetricsRepo;
+import io.aiven.klaw.repository.KwPropertiesRepo;
+import io.aiven.klaw.repository.KwRolesPermsRepo;
+import io.aiven.klaw.repository.MessageSchemaRepo;
+import io.aiven.klaw.repository.ProductDetailsRepo;
+import io.aiven.klaw.repository.RegisterInfoRepo;
+import io.aiven.klaw.repository.SchemaRequestRepo;
+import io.aiven.klaw.repository.TeamRepo;
+import io.aiven.klaw.repository.TenantRepo;
+import io.aiven.klaw.repository.TopicRepo;
+import io.aiven.klaw.repository.TopicRequestsRepo;
+import io.aiven.klaw.repository.UserInfoRepo;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -1552,43 +1597,19 @@ public class SelectDataJdbc {
     return res;
   }
 
-  public int findAllComponentsCountForTeam(Integer teamId, int tenantId) {
-    return calculateComponentsCountForTeam(teamId, tenantId, false);
-  }
-
   public boolean existsComponentsCountForUser(String userId, int tenantId) {
-    return calculateComponentsCountForUser(userId, tenantId, true) > 0;
-  }
-
-  public int calculateComponentsCountForUser(String userId, int tenantId, boolean existsOnly) {
-    List<Supplier<Integer>> list =
+    List<Supplier<Boolean>> list =
         List.of(
-            () ->
-                ((Long) schemaRequestRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-                    .intValue(),
-            () ->
-                ((Long)
-                        kafkaConnectorRequestsRepo.findAllRecordsCountForUserId(userId, tenantId)
-                            .get(0)[0])
-                    .intValue(),
-            () ->
-                ((Long) topicRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-                    .intValue(),
-            () ->
-                ((Long) aclRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-                    .intValue());
-    int res = 0;
+            () -> schemaRequestRepo.existsRecordsCountForUserId(userId, tenantId),
+            () -> kafkaConnectorRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
+            () -> topicRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
+            () -> aclRequestsRepo.existsRecordsCountForUserId(userId, tenantId));
     for (var elem : list) {
-      res += elem.get();
-      if (existsOnly && res > 0) {
-        return res;
+      if (elem.get()) {
+        return true;
       }
     }
-    return res;
-  }
-
-  public int findAllComponentsCountForUser(String userId, int tenantId) {
-    return calculateComponentsCountForUser(userId, tenantId, false);
+    return false;
   }
 
   public int getAllTopicsCountInAllTenants() {

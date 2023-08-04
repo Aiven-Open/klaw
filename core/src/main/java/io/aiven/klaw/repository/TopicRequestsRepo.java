@@ -46,9 +46,9 @@ public interface TopicRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwtopicrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created'",
+          "select exists(select 1 from kwtopicrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created')",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForUserId(
+  boolean existsRecordsCountForUserId(
       @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
   @Query(
