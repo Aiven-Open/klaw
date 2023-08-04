@@ -32,9 +32,9 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
-      value = "select count(*) from kwacls where teamid = :teamId and tenantid = :tenantId",
+      value = "select exists(select 1 from kwacls where teamid = :teamId and tenantid = :tenantId)",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForTeamId(
+  boolean existsRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   @Query(
