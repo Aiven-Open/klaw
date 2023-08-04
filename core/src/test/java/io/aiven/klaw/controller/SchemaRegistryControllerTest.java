@@ -118,7 +118,7 @@ public class SchemaRegistryControllerTest {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
     ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
-    when(schemaRegistryControllerService.uploadSchema(any())).thenReturn(apiResponse);
+    when(schemaRegistryControllerService.uploadSchema(any(), any())).thenReturn(apiResponse);
 
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
