@@ -81,4 +81,6 @@ public interface KwKafkaConnectorRequestsRepo
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,
       @Param("connectorStatus") String connectorStatus);
+
+  void deleteByTenantId(int tenantId);
 }

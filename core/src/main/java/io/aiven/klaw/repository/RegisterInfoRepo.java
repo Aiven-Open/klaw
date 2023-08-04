@@ -19,4 +19,6 @@ public interface RegisterInfoRepo extends CrudRepository<RegisterUserInfo, Strin
   List<RegisterUserInfo> findAllByUsernameAndStatus(String userId, String status);
 
   List<RegisterUserInfo> findAllByRegistrationId(String registrationId);
+
+  void deleteByTenantId(int tenantId);
 }

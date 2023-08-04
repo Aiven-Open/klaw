@@ -42,4 +42,9 @@ public interface KwKafkaConnectorRepo extends CrudRepository<KwKafkaConnector, K
       value = "select max(connectorid) from kwkafkaconnector where tenantid = :tenantId",
       nativeQuery = true)
   Integer getNextConnectorRequestId(@Param("tenantId") Integer tenantId);
+
+  void deleteByConnectorNameAndEnvironmentAndTenantId(
+      String connectorName, String env, int tenantId);
+
+  void deleteByTenantId(int tenantId);
 }
