@@ -47,8 +47,8 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 11. As superadmin, create one ore more users [proxy](http://localhost:1337/users)
    "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating the user views in Coral first, so you'll need to login to Coral with a "user" account to have access to all functionality.
 12. As superadmin, add a cluster and environment - you can follow our [official documentation](https://www.klaw-project.io/docs/getstarted)
-    -  When configuring Kafka clusters: the bootstrap server for Kafka cluster is running on `http://klaw-kafka:9092` in docker
-    -  When confuguring schema registry: the bootstrap server for schema registry is running on `http://klaw-schema-registry:8081` in docker.
+    - When configuring Kafka clusters: the bootstrap server for Kafka cluster is running on `http://klaw-kafka:9092` in docker
+    - When confuguring schema registry: the bootstrap server for schema registry is running on `http://klaw-schema-registry:8081` in docker.
     - Do not forget to set the following configuration options in the [settings](`http://localhost:1337/serverConfig`) (Dashboard -> settings)
       - Cluster API URL (klaw.clusterapi.url): `http://klaw-cluster-api:9343` (running in docker)
       - Base sync cluster, order of topic promotion environments, topic request envs (klaw.tenant.config): you may copy the example provided, replacing the environment names with the ones you created. For example, if you have only created a `DEV` environment:
