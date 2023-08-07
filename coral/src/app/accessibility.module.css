@@ -21,12 +21,6 @@
  ************************************************
 */
 
-/*make border-radius and focus styles consistent for buttons that*/
-/*are used instead of DS (e.g. submenu)*/
-button {
-  border-radius: 0.125rem !important;
-}
-
 button:focus-visible {
   outline: 2px solid var(--interactive-elements-focus) !important;
   outline-offset: 2px !important;
@@ -42,10 +36,9 @@ a:global(:not(.Aquarium-Button)):focus {
 }
 
 a:not(.Aquarium-Button):focus-visible {
-  outline-offset: 2px;
-  /*represents info-70*/
-  outline-color: var(--interactive-elements-focus);
-  box-shadow: 0 0 3px 0 #ddd;
+  outline-offset: 1px !important;
+  box-shadow: 0 0 3px 0 transparent;
+  outline: 2px solid var(--interactive-elements-focus);
 }
 
 /****************************************
