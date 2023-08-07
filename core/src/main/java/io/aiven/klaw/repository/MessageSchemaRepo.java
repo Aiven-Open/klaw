@@ -49,4 +49,9 @@ public interface MessageSchemaRepo extends CrudRepository<MessageSchema, Message
       nativeQuery = true)
   List<Object[]> findTopicAndVersionsForEnvAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
+
+  void deleteByTenantId(int tenantId);
+
+  void deleteByTenantIdAndTopicnameAndEnvironment(
+      int tenantId, String topicName, String environmentId);
 }

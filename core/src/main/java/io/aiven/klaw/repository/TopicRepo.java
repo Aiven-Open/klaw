@@ -105,4 +105,8 @@ public interface TopicRepo extends CrudRepository<Topic, TopicID> {
       @Param("envId") String envId,
       @Param("teamId") Integer teamId,
       @Param("tenantId") Integer tenantId);
+
+  void deleteByTopicnameAndEnvironmentAndTenantId(String topicName, String env, int tenantId);
+
+  void deleteByTenantId(int tenantId);
 }
