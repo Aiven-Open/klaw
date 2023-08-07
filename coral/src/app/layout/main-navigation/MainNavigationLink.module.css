@@ -4,6 +4,7 @@
 
 .mainNavigationLink a {
   color: var(--body-text-color) !important;
+  display: block;
 }
 
 .mainNavigationLink a:hover,
@@ -12,8 +13,11 @@
 }
 
 .mainNavigationLinkActive a {
+  display: block;
   color: var(--main-navigation-active) !important;
 }
+
 .mainNavigationLinkActive {
   background-color: white !important;
 }
+
