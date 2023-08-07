@@ -95,7 +95,8 @@ Related to that the proxy currently also does not redirect you to the login if y
 
 ℹ️ When you're done, you can run either: 
 - `pnpm dev:stop` to stop all containers in docker (enables a fast restart) 
-- `pnpm dev:destroy` to tear down all containers in docker (you'll have to run `pnpm setup` or `pnpm:start` again next time you want to use them, so they get build again)
+- `pnpm dev:destroy` to tear down all containers in docker (you'll have to run `pnpm run setup` or `pnpm:start` again 
+  next time you want to use them, so they get build again)
 
 
 ## How to run the project
