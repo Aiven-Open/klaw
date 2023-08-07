@@ -662,7 +662,7 @@ public class TopicControllerServiceTest {
     String topicName = TOPIC_1;
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
 
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -692,7 +692,7 @@ public class TopicControllerServiceTest {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     topicRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
 
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -729,7 +729,7 @@ public class TopicControllerServiceTest {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     topicRequest.setRequestOperationType(RequestOperationType.UPDATE.value);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
 
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -764,7 +764,7 @@ public class TopicControllerServiceTest {
     String topicName = TOPIC_1;
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
+    ApiResponse apiResponse = ApiResponse.FAILURE;
 
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -1429,7 +1429,7 @@ public class TopicControllerServiceTest {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     topicRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
 
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
@@ -1472,7 +1472,7 @@ public class TopicControllerServiceTest {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     topicRequest.setRequestOperationType(RequestOperationType.CLAIM.value);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
 
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
