@@ -20,19 +20,23 @@ public interface ActivityLogRepo extends CrudRepository<ActivityLog, ActivityLog
   @Query(
       value =
           "select date(activitytime), count(*) from kwactivitylog where"
-              + " teamid = :teamIdVar and tenantid = :tenantId group by date(activitytime) order by date(activitytime) asc",
+              + " teamid = :teamIdVar and tenantid = :tenantId group by date(activitytime) order by date(activitytime) asc limit :limit",
       nativeQuery = true)
-  List<Object[]> findActivityLogForTeamId(
-      @Param("teamIdVar") Integer teamIdVar, @Param("tenantId") Integer tenantId);
+  List<Object[]> findActivityLogForTeamIdForLastNDays(
+      @Param("teamIdVar") Integer teamIdVar,
+      @Param("tenantId") Integer tenantId,
+      @Param("limit") Integer limit);
 
   @Query(
       value =
           "select date(activitytime), count(*) from kwactivitylog where "
               + " env in :envId and tenantid = :tenantId"
-              + " group by date(activitytime) order by date(activitytime) asc;",
+              + " group by date(activitytime) order by date(activitytime) asc limit :limit",
       nativeQuery = true)
-  List<Object[]> findActivityLogForLastDays(
-      @Param("envId") String[] envId, @Param("tenantId") Integer tenantId);
+  List<Object[]> findActivityLogForLastNDays(
+      @Param("envId") String[] envId,
+      @Param("tenantId") Integer tenantId,
+      @Param("limit") Integer limit);
 
   @Query(
       value = "select max(kwreqno) from kwactivitylog where tenantid = :tenantId",
