@@ -1,11 +1,11 @@
 import {
   approveSchemaRequest,
-  createSchemaRequest,
+  requestSchemaCreation,
   declineSchemaRequest,
   getSchemaRequests,
   getSchemaRequestsForApprover,
   deleteSchemaRequest,
-  promoteSchemaRequest,
+  requestSchemaPromotion,
 } from "src/domain/schema-request/schema-request-api";
 import {
   CreatedSchemaRequests,
@@ -21,11 +21,11 @@ export type {
   PromoteSchemaPayload,
 };
 export {
-  createSchemaRequest,
+  requestSchemaCreation,
   getSchemaRequestsForApprover,
   approveSchemaRequest,
   declineSchemaRequest,
   getSchemaRequests,
   deleteSchemaRequest,
-  promoteSchemaRequest,
+  requestSchemaPromotion,
 };

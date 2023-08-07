@@ -43,16 +43,16 @@ public interface KwKafkaConnectorRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwkafkaconnectorrequests where teamid = :teamId and tenantid = :tenantId and connectorstatus='created'",
+          "select exists(select 1 from kwkafkaconnectorrequests where teamid = :teamId and tenantid = :tenantId and connectorstatus='created')",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForTeamId(
+  boolean existsRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   @Query(
       value =
-          "select count(*) from kwkafkaconnectorrequests where (requestor = :userId) and tenantid = :tenantId and connectorstatus='created'",
+          "select exists(select 1 from kwkafkaconnectorrequests where (requestor = :userId) and tenantid = :tenantId and connectorstatus='created')",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForUserId(
+  boolean existsRecordsCountForUserId(
       @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
   @Query(
@@ -81,4 +81,6 @@ public interface KwKafkaConnectorRequestsRepo
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,
       @Param("connectorStatus") String connectorStatus);
+
+  void deleteByTenantId(int tenantId);
 }

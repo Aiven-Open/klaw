@@ -26,6 +26,7 @@ import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.response.KwPropertiesResponse;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,8 +79,8 @@ public class ServerConfigServiceTest {
   public void getAllPropsNotAuthorized() {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(true);
     serverConfigService.getAllProperties();
-    List<ServerConfigProperties> list = serverConfigService.getAllProps();
-    assertThat(list).isEmpty(); // filtering for spring. and klaw.
+    Collection<ServerConfigProperties> collection = serverConfigService.getAllProps();
+    assertThat(collection).isEmpty(); // filtering for spring. and klaw.
   }
 
   @Test
@@ -87,8 +88,8 @@ public class ServerConfigServiceTest {
   public void getAllProps() {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     serverConfigService.getAllProperties();
-    List<ServerConfigProperties> list = serverConfigService.getAllProps();
-    assertThat(list).isEmpty(); // filtering for spring. and klaw.
+    Collection<ServerConfigProperties> collection = serverConfigService.getAllProps();
+    assertThat(collection).isEmpty(); // filtering for spring. and klaw.
   }
 
   private void loginMock() {

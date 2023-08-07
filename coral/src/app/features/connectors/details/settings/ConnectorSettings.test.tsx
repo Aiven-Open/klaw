@@ -2,7 +2,10 @@ import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ConnectorSettings } from "src/app/features/connectors/details/settings/ConnectorSettings";
-import { ConnectorOverview, deleteConnector } from "src/domain/connector";
+import {
+  ConnectorOverview,
+  requestConnectorDeletion,
+} from "src/domain/connector";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { KlawApiModel } from "types/utils";
 
@@ -18,8 +21,8 @@ jest.mock("src/app/features/connectors/details/ConnectorDetails", () => ({
 }));
 
 jest.mock("src/domain/connector/connector-api.ts");
-const mockDeleteConnector = deleteConnector as jest.MockedFunction<
-  typeof deleteConnector
+const mockDeleteConnector = requestConnectorDeletion as jest.MockedFunction<
+  typeof requestConnectorDeletion
 >;
 
 const testConnectorName = "my-nice-connector";

@@ -393,10 +393,9 @@ public class UsersTeamsControllerService {
       teamModels.forEach(
           teamModel -> {
             teamModel.setShowDeleteTeam(
-                (manageDatabase
-                            .getHandleDbRequests()
-                            .getAllComponentsCountForTeam(teamModel.getTeamId(), tenantId)
-                        == 0)
+                (!manageDatabase
+                        .getHandleDbRequests()
+                        .existsComponentsCountForTeam(teamModel.getTeamId(), tenantId))
                     && (manageDatabase
                         .getHandleDbRequests()
                         .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId)
@@ -460,7 +459,7 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_103).build();
     }
 
-    if (manageDatabase.getHandleDbRequests().getAllComponentsCountForTeam(teamId, tenantId) > 0) {
+    if (manageDatabase.getHandleDbRequests().existsComponentsCountForTeam(teamId, tenantId)) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_104).build();
     }
 
@@ -513,8 +512,9 @@ public class UsersTeamsControllerService {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_106).build();
     }
 
-    if (manageDatabase.getHandleDbRequests().getAllComponentsCountForUser(userIdToDelete, tenantId)
-        > 0) {
+    if (manageDatabase
+        .getHandleDbRequests()
+        .existsComponentsCountForUser(userIdToDelete, tenantId)) {
       return ApiResponse.builder().success(false).message(TEAMS_ERR_107).build();
     }
 
@@ -923,18 +923,19 @@ public class UsersTeamsControllerService {
     }
 
     // get the user details from db
-    List<RegisterUserInfo> stagingRegisterUsersInfo =
-        manageDatabase.getHandleDbRequests().getAllStagingRegisterUsersInfo(newUser.getUsername());
+    RegisterUserInfo stagingRegisterUserInfo =
+        manageDatabase
+            .getHandleDbRequests()
+            .getFirstStagingRegisterUsersInfo(newUser.getUsername());
 
     // enrich user info
-    if (!stagingRegisterUsersInfo.isEmpty()) {
-      RegisterUserInfo registerUserInfo = stagingRegisterUsersInfo.get(0);
-      newUser.setTeamId(registerUserInfo.getTeamId());
+    if (stagingRegisterUserInfo != null) {
+      newUser.setTeamId(stagingRegisterUserInfo.getTeamId());
       newUser.setTeam(
           manageDatabase.getTeamNameFromTeamId(
-              registerUserInfo.getTenantId(), registerUserInfo.getTeamId()));
-      newUser.setRole(registerUserInfo.getRole());
-      newUser.setTenantId(registerUserInfo.getTenantId());
+              stagingRegisterUserInfo.getTenantId(), stagingRegisterUserInfo.getTeamId()));
+      newUser.setRole(stagingRegisterUserInfo.getRole());
+      newUser.setTenantId(stagingRegisterUserInfo.getTenantId());
     }
 
     try {
@@ -1010,7 +1011,12 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public List<RegisterUserInfoModelResponse> getNewUserRequests() {
+  public List<RegisterUserInfoModelResponse> getNewUserRequests()
+      throws KlawNotAuthorizedException {
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+      throw new KlawNotAuthorizedException("You are not authorized to view this information.");
+    }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 

@@ -9,7 +9,7 @@ import {
 import userEvent from "@testing-library/user-event";
 import TopicSubscriptions from "src/app/features/topics/details/subscriptions/TopicSubscriptions";
 import {
-  createAclDeletionRequest,
+  requestAclDeletion,
   getAivenServiceAccountDetails,
   getConsumerOffsets,
 } from "src/domain/acl/acl-api";
@@ -43,10 +43,9 @@ const testOffsetsData = {
 };
 
 const mockGetTeams = getTeams as jest.MockedFunction<typeof getTeams>;
-const mockCreateDeleteAclRequest =
-  createAclDeletionRequest as jest.MockedFunction<
-    typeof createAclDeletionRequest
-  >;
+const mockCreateDeleteAclRequest = requestAclDeletion as jest.MockedFunction<
+  typeof requestAclDeletion
+>;
 
 const mockAuthUserReturnValue = {
   canSwitchTeams: "",

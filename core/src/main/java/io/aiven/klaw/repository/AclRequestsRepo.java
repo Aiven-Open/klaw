@@ -26,9 +26,9 @@ public interface AclRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwaclrequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created'",
+          "select exists(select 1 from kwaclrequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created')",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForTeamId(
+  boolean existsRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   @Query(
@@ -36,6 +36,13 @@ public interface AclRequestsRepo
           "select count(*) from kwaclrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created'",
       nativeQuery = true)
   List<Object[]> findAllRecordsCountForUserId(
+      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
+
+  @Query(
+      value =
+          "select exists(select 1 from kwaclrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created')",
+      nativeQuery = true)
+  boolean existsRecordsCountForUserId(
       @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
   @Query(
@@ -91,4 +98,6 @@ public interface AclRequestsRepo
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,
       @Param("topicStatus") String topicStatus);
+
+  void deleteByTenantId(int tenantId);
 }

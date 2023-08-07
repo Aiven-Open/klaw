@@ -24,4 +24,8 @@ public interface KwRolesPermsRepo extends CrudRepository<KwRolesPermissions, KwR
       value = "select max(id) from kwrolespermissions where tenantid = :tenantId",
       nativeQuery = true)
   Integer getMaxRolePermissionId(@Param("tenantId") Integer tenantId);
+
+  void deleteByRoleIdAndTenantId(String roleId, int tenantId);
+
+  void deleteByTenantId(int tenantId);
 }

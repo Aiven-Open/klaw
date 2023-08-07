@@ -135,7 +135,7 @@ const deleteConnectorRequest = ({ reqIds }: DeleteRequestParams) => {
   >(API_PATHS.deleteRequest, { requestEntityType: "CONNECTOR", reqIds });
 };
 
-const createConnectorRequest = (
+const requestConnectorCreation = (
   connectorPayload: Omit<
     KlawApiRequest<"createConnectorRequest">,
     "requestOperationType"
@@ -150,7 +150,7 @@ const createConnectorRequest = (
   });
 };
 
-const editConnector = (
+const requestConnectorEdit = (
   connectorPayload: Omit<
     KlawApiRequest<"createConnectorRequest">,
     "requestOperationType"
@@ -215,7 +215,7 @@ async function updateConnectorDocumentation({
   });
 }
 
-async function deleteConnector({
+async function requestConnectorDeletion({
   connectorName,
   envId,
 }: DeleteConnectorPayload) {
@@ -232,11 +232,11 @@ async function deleteConnector({
 
 export {
   approveConnectorRequest,
-  createConnectorRequest,
+  requestConnectorCreation,
   declineConnectorRequest,
-  deleteConnector,
+  requestConnectorDeletion,
   deleteConnectorRequest,
-  editConnector,
+  requestConnectorEdit,
   getConnectorDetailsPerEnv,
   getConnectorOverview,
   getConnectorRequests,

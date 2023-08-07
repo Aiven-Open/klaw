@@ -34,6 +34,7 @@ import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -69,7 +70,7 @@ public class ServerConfigService {
 
   private final CommonUtilsService commonUtilsService;
 
-  private static List<ServerConfigProperties> listProps;
+  private static Map<String, ServerConfigProperties> key2Props;
 
   public ServerConfigService(
       Environment env,
@@ -85,7 +86,7 @@ public class ServerConfigService {
   @PostConstruct
   public void getAllProperties() {
     log.debug("All server properties being loaded");
-    List<ServerConfigProperties> listProps = new ArrayList<>();
+    Map<String, ServerConfigProperties> key2Props = new HashMap<>();
     List<String> allowedKeys = Arrays.asList("spring.", "klaw.");
 
     if (env instanceof ConfigurableEnvironment) {
@@ -105,37 +106,28 @@ public class ServerConfigService {
             } else {
               props.setValue(WordUtils.wrap(propertySource.getProperty(key) + "", 125, "\n", true));
             }
-            if (!checkPropertyExists(listProps, key)
+            if (!key2Props.containsKey(key)
                 && !key.toLowerCase().contains("path")
                 && !key.contains("secretkey")
                 && !key.contains("password")
                 && !key.contains("username")) {
               if (allowedKeys.stream().anyMatch(key::startsWith)) {
-                listProps.add(props);
+                key2Props.put(props.getKey(), props);
               }
             }
           }
         }
       }
     }
-    ServerConfigService.listProps = listProps;
+    ServerConfigService.key2Props = key2Props;
   }
 
-  public List<ServerConfigProperties> getAllProps() {
+  public Collection<ServerConfigProperties> getAllProps() {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
       return new ArrayList<>();
     }
-    return listProps;
-  }
-
-  private boolean checkPropertyExists(List<ServerConfigProperties> props, String key) {
-    for (ServerConfigProperties serverProps : props) {
-      if (Objects.equals(serverProps.getKey(), key)) {
-        return true;
-      }
-    }
-    return false;
+    return key2Props.values();
   }
 
   public List<KwPropertiesResponse> getAllEditableProps() {

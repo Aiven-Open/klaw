@@ -2,7 +2,7 @@ import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { TopicSettings } from "src/app/features/topics/details/settings/TopicSettings";
-import { TopicOverview, deleteTopic } from "src/domain/topic";
+import { TopicOverview, requestTopicDeletion } from "src/domain/topic";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { KlawApiModel } from "types/utils";
 
@@ -18,7 +18,9 @@ jest.mock("src/app/features/topics/details/TopicDetails", () => ({
 }));
 
 jest.mock("src/domain/topic/topic-api.ts");
-const mockDeleteTopic = deleteTopic as jest.MockedFunction<typeof deleteTopic>;
+const mockDeleteTopic = requestTopicDeletion as jest.MockedFunction<
+  typeof requestTopicDeletion
+>;
 
 const testTopicName = "my-nice-topic";
 const testEnvironmentId = 8;
