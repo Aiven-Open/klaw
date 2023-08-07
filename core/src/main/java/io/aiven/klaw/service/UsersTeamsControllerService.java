@@ -167,7 +167,7 @@ public class UsersTeamsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getUserName(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     if (newUser.getTeamId() == null) {
@@ -443,7 +443,7 @@ public class UsersTeamsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -487,7 +487,7 @@ public class UsersTeamsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     UserInfo existingUserInfo = manageDatabase.getHandleDbRequests().getUsersInfo(userIdToDelete);
@@ -565,7 +565,7 @@ public class UsersTeamsControllerService {
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     try {
@@ -652,7 +652,7 @@ public class UsersTeamsControllerService {
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     int tenantId;
@@ -697,7 +697,7 @@ public class UsersTeamsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_TEAMS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -1023,7 +1023,7 @@ public class UsersTeamsControllerService {
     if (isExternal
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -1054,7 +1054,7 @@ public class UsersTeamsControllerService {
       if (resultResp.getMessage().contains(ApiResultStatus.SUCCESS.value)) {
         dbHandle.updateNewUserRequest(username, userDetails, true);
       } else {
-        return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+        return ApiResponse.FAILURE;
       }
       return ApiResponse.SUCCESS;
     } catch (Exception e) {
@@ -1069,7 +1069,7 @@ public class UsersTeamsControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -1158,7 +1158,7 @@ public class UsersTeamsControllerService {
     }
 
     if (!authorizedUser) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     String result =

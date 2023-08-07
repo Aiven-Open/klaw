@@ -521,7 +521,7 @@ public class TopicSyncControllerService {
     logArray.add("Type of Sync " + syncBackTopics.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     List<String> resultStatus = new ArrayList<>();
@@ -822,7 +822,7 @@ public class TopicSyncControllerService {
     logArray.add("Type of Sync " + syncTopicsBulk.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     if ("SELECTED_TOPICS".equals(syncTopicsBulk.getTypeOfSync())) {
@@ -953,7 +953,7 @@ public class TopicSyncControllerService {
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     // tenant filtering
@@ -990,7 +990,7 @@ public class TopicSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userDetails)
             .contains(topicUpdate.getEnvSelected())) {
-          return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+          return ApiResponse.NOT_AUTHORIZED;
         }
         existingTopics = getTopicFromName(topicUpdate.getTopicName(), tenantId);
 

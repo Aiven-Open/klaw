@@ -116,7 +116,7 @@ public class RolesPermissionsControllerService {
   public ApiResponse updatePermissions(KwRolesPermissionsModel[] permissionsSet)
       throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     Map<String, String> uniqueMap = new HashMap<>();
@@ -172,7 +172,7 @@ public class RolesPermissionsControllerService {
   public ApiResponse deleteRole(String roleId) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     if (KwConstants.USER_ROLE.equals(roleId) || KwConstants.SUPERADMIN_ROLE.equals(roleId)) {
@@ -197,7 +197,7 @@ public class RolesPermissionsControllerService {
   public ApiResponse addRoleId(String roleId) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     List<KwRolesPermissions> kwRolesPermissionsAdd = new ArrayList<>();

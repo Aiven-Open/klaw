@@ -195,13 +195,13 @@ public class ServerConfigService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.UPDATE_SERVERCONFIG)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     // SUPERADMINS filter
     if (tenantId != KwConstants.DEFAULT_TENANT_ID) {
       if (!KwConstants.allowConfigForAdmins.contains(kwKey)) {
-        return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+        return ApiResponse.NOT_AUTHORIZED;
       }
     }
 
@@ -258,7 +258,7 @@ public class ServerConfigService {
             .data(kwKey)
             .build();
       } else {
-        return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+        return ApiResponse.FAILURE;
       }
     } catch (Exception e) {
       throw new KlawException(e.getMessage());

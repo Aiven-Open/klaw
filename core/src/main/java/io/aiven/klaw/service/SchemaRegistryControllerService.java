@@ -222,7 +222,7 @@ public class SchemaRegistryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_SCHEMAS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
     String userName = getUserName();
     try {
@@ -247,7 +247,7 @@ public class SchemaRegistryControllerService {
     String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(getUserName());
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     SchemaRequest schemaRequest =
@@ -261,7 +261,7 @@ public class SchemaRegistryControllerService {
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
     if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     ResponseEntity<ApiResponse> response =
@@ -352,7 +352,7 @@ public class SchemaRegistryControllerService {
     log.info("execSchemaRequestsDecline {}", avroSchemaId);
     String userDetails = getUserName();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_SCHEMAS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -361,7 +361,7 @@ public class SchemaRegistryControllerService {
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
 
     if (!allowedEnvIdSet.contains(schemaRequest.getEnvironment())) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     try {
@@ -389,7 +389,7 @@ public class SchemaRegistryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     Integer userTeamId = commonUtilsService.getTeamId(userDetails);
@@ -473,7 +473,7 @@ public class SchemaRegistryControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SCHEMAS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     // If force register is not set validate the schema

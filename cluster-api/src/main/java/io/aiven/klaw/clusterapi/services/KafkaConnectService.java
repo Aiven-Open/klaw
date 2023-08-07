@@ -9,7 +9,6 @@ import io.aiven.klaw.clusterapi.models.ClusterConnectorRequest;
 import io.aiven.klaw.clusterapi.models.connect.ConnectorState;
 import io.aiven.klaw.clusterapi.models.connect.ConnectorsStatus;
 import io.aiven.klaw.clusterapi.models.connect.Status;
-import io.aiven.klaw.clusterapi.models.enums.ApiResultStatus;
 import io.aiven.klaw.clusterapi.models.enums.ClusterStatus;
 import io.aiven.klaw.clusterapi.models.enums.KafkaClustersType;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
@@ -151,11 +150,7 @@ public class KafkaConnectService {
     } catch (Exception ex) {
       return ApiResponse.notOk(CLUSTER_API_ERR_1);
     }
-    if (responseNew.getStatusCodeValue() == 201) {
-      return ApiResponse.SUCCESS;
-    } else {
-      return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
-    }
+    return responseNew.getStatusCodeValue() == 201 ? ApiResponse.SUCCESS : ApiResponse.FAILURE;
   }
 
   public ConnectorsStatus getConnectors(
@@ -340,11 +335,9 @@ public class KafkaConnectService {
     } catch (Exception ex) {
       return ApiResponse.notOk(CLUSTER_API_ERR_1);
     }
-    if (responseNew.getStatusCode().is2xxSuccessful()) {
-      return ApiResponse.SUCCESS;
-    } else {
-      return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
-    }
+    return responseNew.getStatusCode().is2xxSuccessful()
+        ? ApiResponse.SUCCESS
+        : ApiResponse.FAILURE;
   }
 
   public ApiResponse pauseConnector(ClusterConnectorRequest clusterConnectorRequest) {

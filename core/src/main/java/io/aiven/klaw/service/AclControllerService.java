@@ -100,7 +100,7 @@ public class AclControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     String result;
@@ -546,7 +546,7 @@ public class AclControllerService {
     try {
       if (commonUtilsService.isNotAuthorizedUser(
           getPrincipal(), PermissionType.REQUEST_CREATE_SUBSCRIPTIONS)) {
-        return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+        return ApiResponse.NOT_AUTHORIZED;
       }
       String userName = getCurrentUserName();
       log.info("deleteAclRequests {}", req_no);
@@ -570,7 +570,7 @@ public class AclControllerService {
     final String userName = getCurrentUserName();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_SUBSCRIPTIONS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -580,11 +580,11 @@ public class AclControllerService {
 
     // Verify if user raising request belongs to the same team as the Subscription owner team
     if (!Objects.equals(acl.getTeamId(), commonUtilsService.getTeamId(userName))) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     if (!commonUtilsService.getEnvsFromUserId(userName).contains(acl.getEnvironment())) {
-      return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+      return ApiResponse.FAILURE;
     }
 
     // verify if a request already exists
@@ -626,7 +626,7 @@ public class AclControllerService {
     int tenantId = commonUtilsService.getTenantId(userDetails);
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -719,7 +719,7 @@ public class AclControllerService {
 
     // tenant filtering
     if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     return ApiResponse.SUCCESS;
@@ -817,7 +817,7 @@ public class AclControllerService {
     String userDetails = getCurrentUserName();
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -834,7 +834,7 @@ public class AclControllerService {
 
     // tenant filtering
     if (!commonUtilsService.getEnvsFromUserId(userDetails).contains(aclReq.getEnvironment())) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     try {

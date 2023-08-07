@@ -36,4 +36,7 @@ public class ApiResponse {
   }
 
   public static final ApiResponse SUCCESS = ApiResponse.ok(ApiResultStatus.SUCCESS.value);
+  public static final ApiResponse FAILURE = ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+  public static final ApiResponse NOT_AUTHORIZED =
+      ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
 }

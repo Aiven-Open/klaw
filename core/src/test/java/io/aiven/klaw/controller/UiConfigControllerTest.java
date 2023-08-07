@@ -204,7 +204,7 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("ABCDEFGHIJKL"); // > 10 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.ok(ApiResultStatus.FAILURE.value);
+    ApiResponse apiResponse = ApiResponse.FAILURE;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
@@ -221,7 +221,8 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("A"); // < 2 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+    ApiResponse apiResponse = ApiResponse.FAILURE;
+    ;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
@@ -238,7 +239,8 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setClusterId(null);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+    ApiResponse apiResponse = ApiResponse.FAILURE;
+    ;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(

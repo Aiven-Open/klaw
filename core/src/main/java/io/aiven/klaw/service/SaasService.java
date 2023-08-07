@@ -290,7 +290,7 @@ public class SaasService {
         usersTeamsControllerService.getRegistrationInfoFromId(activationId, "");
 
     if (registerUserInfoModel == null) {
-      return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+      return ApiResponse.FAILURE;
     } else if ("APPROVED".equals(registerUserInfoModel.getStatus())) {
       return ApiResponse.ok("already_activated");
     } else if ("PENDING".equals(registerUserInfoModel.getStatus())) {

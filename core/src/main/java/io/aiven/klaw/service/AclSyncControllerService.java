@@ -70,7 +70,7 @@ public class AclSyncControllerService {
     int tenantId = commonUtilsService.getTenantId(userName);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SUBSCRIPTIONS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     List<Acl> listTopics = new ArrayList<>();
@@ -94,7 +94,7 @@ public class AclSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userName)
             .contains(syncAclUpdateItem.getEnvSelected())) {
-          return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+          return ApiResponse.NOT_AUTHORIZED;
         }
         t = new Acl();
 
@@ -167,7 +167,7 @@ public class AclSyncControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.SYNC_BACK_SUBSCRIPTIONS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     List<String> resultStatus = new ArrayList<>();

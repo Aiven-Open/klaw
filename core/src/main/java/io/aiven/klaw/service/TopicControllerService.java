@@ -694,7 +694,7 @@ public class TopicControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_TOPICS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
     String userName = getUserName();
     try {
@@ -722,7 +722,7 @@ public class TopicControllerService {
   public ApiResponse approveTopicRequests(String topicId) throws KlawException {
     log.info("approveTopicRequests {}", topicId);
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     String userName = getUserName();
@@ -863,7 +863,7 @@ public class TopicControllerService {
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     if (!allowedEnvIdSet.contains(topicRequest.getEnvironment())) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
     return ApiResponse.SUCCESS;
   }
@@ -872,7 +872,7 @@ public class TopicControllerService {
       throws KlawException {
     log.info("declineTopicRequests {} {}", topicId, reasonForDecline);
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_TOPICS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     String userName = getUserName();
@@ -888,7 +888,7 @@ public class TopicControllerService {
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
     if (!allowedEnvIdSet.contains(topicRequest.getEnvironment())) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     try {
@@ -963,7 +963,7 @@ public class TopicControllerService {
             ? ApiResponse.ok(status)
             : ApiResponse.notOk(status);
       } else {
-        return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+        return ApiResponse.FAILURE;
       }
     } catch (Exception e) {
       throw new KlawException(e.getMessage());

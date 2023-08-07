@@ -103,7 +103,7 @@ public class KafkaConnectControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     try {
@@ -480,7 +480,7 @@ public class KafkaConnectControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_CREATE_CONNECTORS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
     try {
       String deleteTopicReqStatus =
@@ -500,7 +500,7 @@ public class KafkaConnectControllerService {
     try {
       if (commonUtilsService.isNotAuthorizedUser(
           getPrincipal(), PermissionType.MANAGE_CONNECTORS)) {
-        return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+        return ApiResponse.NOT_AUTHORIZED;
       }
       return clusterApiService.restartConnector(kafkaConnectorRestartModel, tenantId);
     } catch (KlawException e) {
@@ -614,7 +614,7 @@ public class KafkaConnectControllerService {
     int tenantId = commonUtilsService.getTenantId(getUserName());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     KafkaConnectorRequest connectorRequest =
@@ -642,7 +642,7 @@ public class KafkaConnectControllerService {
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
     if (!allowedEnvIdSet.contains(connectorRequest.getEnvironment())) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
@@ -763,7 +763,7 @@ public class KafkaConnectControllerService {
     log.info("declineConnectorRequests {} {}", connectorId, reasonForDecline);
     String userDetails = getUserName();
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.APPROVE_CONNECTORS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -779,7 +779,7 @@ public class KafkaConnectControllerService {
     // tenant filtering
     final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(getUserName());
     if (!allowedEnvIdSet.contains(connectorRequest.getEnvironment())) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     try {
@@ -812,7 +812,7 @@ public class KafkaConnectControllerService {
 
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.REQUEST_DELETE_CONNECTORS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
@@ -1371,7 +1371,7 @@ public class KafkaConnectControllerService {
       return ApiResponse.ok(
           manageDatabase.getHandleDbRequests().updateConnectorDocumentation(kwKafkaConnector));
     } else {
-      return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+      return ApiResponse.FAILURE;
     }
   }
 

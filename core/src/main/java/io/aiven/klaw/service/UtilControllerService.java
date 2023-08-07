@@ -722,7 +722,7 @@ public class UtilControllerService implements InitializingBean {
     } else if (entityType.equals(EntityType.USERS.name())
         && commonUtilsService.isNotAuthorizedUser(
             getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
     log.debug("Reset cache triggered on the instance {}", resetEntityCache);
 

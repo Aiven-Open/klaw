@@ -36,4 +36,5 @@ public class ApiResponse {
   }
 
   public static final ApiResponse SUCCESS = ApiResponse.ok(ApiResultStatus.SUCCESS.value);
+  public static final ApiResponse FAILURE = ApiResponse.notOk(ApiResultStatus.FAILURE.value);
 }

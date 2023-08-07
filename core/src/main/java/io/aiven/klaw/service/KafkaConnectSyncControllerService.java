@@ -81,7 +81,7 @@ public class KafkaConnectSyncControllerService {
     String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     // tenant filtering
@@ -111,7 +111,7 @@ public class KafkaConnectSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userName)
             .contains(topicUpdate.getEnvSelected())) {
-          return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+          return ApiResponse.NOT_AUTHORIZED;
         }
         existingTopics = getConnectorsFromName(topicUpdate.getConnectorName(), tenantId);
 

@@ -411,7 +411,7 @@ public class SchemaRegistrySyncControllerService {
     int tenantId = commonUtilsService.getTenantId(userDetails);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_SCHEMAS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
     List<String> logArray = new ArrayList<>();
     logArray.add("Topics/Schemas result");
@@ -512,7 +512,7 @@ public class SchemaRegistrySyncControllerService {
     int tenantId = commonUtilsService.getTenantId(userDetails);
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_SCHEMAS)) {
-      return ApiResponse.notOk(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
     Env kafkaEnv =
         manageDatabase
