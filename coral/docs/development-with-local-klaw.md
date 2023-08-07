@@ -33,7 +33,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 6. Install and run Docker: [Get Docker](https://docs.docker.com/get-docker/)
 7. Go to directory [`coral/proxy`](../../coral/proxy)
 8. Run `pnpm install` if you haven't already
-9. Run `pnpm setup` to build and deploy your docker container for:
+9. Run `pnpm run setup` to build and deploy your docker container for:
     - Klaw core: the main API Coral interacts with
     - Klaw cluster api: the API interacting with the Kafka clusters managed by Klaw
     - Kafka, zoo-keeper, schema-registry: a basic Kafka setup
@@ -47,10 +47,25 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 11. As superadmin, create one ore more users [proxy](http://localhost:1337/users)
    "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating the user views in Coral first, so you'll need to login to Coral with a "user" account to have access to all functionality.
 12. As superadmin, add a cluster and environment - you can follow our [official documentation](https://www.klaw-project.io/docs/getstarted)
-13. Bootstrap server for Kafka cluster is `http://klaw-kafka:9092`, which is running in your docker
-14. Bootstrap server SchemaRegistry is `klaw-schema-registry:8081`, which is running in your docker.
-15. In [settings](`http://localhost:1337/serverConfig`), add the Cluster api `http://klaw-cluster-api:9343`, which is running in your docker. You can test the connection, using the button.
-16. You are good to go! 🎉
+    - When configuring Kafka clusters: the bootstrap server for Kafka cluster is running on `http://klaw-kafka:9092` in docker
+    - When confuguring schema registry: the bootstrap server for schema registry is running on `http://klaw-schema-registry:8081` in docker.
+    - Do not forget to set the following configuration options in the [settings](`http://localhost:1337/serverConfig`) (Dashboard -> settings)
+      - Cluster API URL (klaw.clusterapi.url): `http://klaw-cluster-api:9343` (running in docker)
+      - Base sync cluster, order of topic promotion environments, topic request envs (klaw.tenant.config): you may copy the example provided, replacing the environment names with the ones you created. For example, if you have only created a `DEV` environment:
+```
+    {
+        "tenantModel" : {
+            "tenantName" : "default",
+            "baseSyncEnvironment" : "DEV",
+            "orderOfTopicPromotionEnvsList" : [ "DEV" ],
+            "requestTopicsEnvironmentsList" : [ "DEV" ],
+            "baseSyncKafkaConnectCluster" : null,
+            "orderOfConnectorsPromotionEnvsList" : null,
+            "requestConnectorsEnvironmentsList" : null
+        }
+    }
+```
+13. You are good to go! 🎉
 
 
 ### Note on login and authentication
@@ -79,7 +94,8 @@ Related to that the proxy currently also does not redirect you to the login if y
 
 ℹ️ When you're done, you can run either: 
 - `pnpm dev:stop` to stop all containers in docker (enables a fast restart) 
-- `pnpm dev:destroy` to tear down all containers in docker (you'll have to run `pnpm setup` or `pnpm:start` again next time you want to use them, so they get build again)
+- `pnpm dev:destroy` to tear down all containers in docker (you'll have to run `pnpm run setup` or `pnpm:start` again 
+  next time you want to use them, so they get build again)
 
 
 ## How to run the project
