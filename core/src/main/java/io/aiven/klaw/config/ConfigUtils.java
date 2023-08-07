@@ -7,13 +7,15 @@ import java.util.List;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /*
 - Provide static resources to be loaded, required by the application
 - Apply HttpSecurity configs
  */
 public class ConfigUtils {
-  protected static List<String> getStaticResources(boolean coralEnabled) {
+  protected static AntPathRequestMatcher[] getStaticResources(boolean coralEnabled) {
+
     List<String> staticResourcesHtmlArray =
         new ArrayList<>(
             List.of(
@@ -46,7 +48,15 @@ public class ConfigUtils {
       staticResourcesHtmlArray.add("/assets/coral/**");
     }
 
-    return staticResourcesHtmlArray;
+    AntPathRequestMatcher[] antPathRequestMatchersArray =
+        new AntPathRequestMatcher[staticResourcesHtmlArray.size()];
+    int i = 0;
+    for (String s : staticResourcesHtmlArray) {
+      antPathRequestMatchersArray[i] = new AntPathRequestMatcher(s);
+      i++;
+    }
+
+    return antPathRequestMatchersArray;
   }
 
   protected static void applyHttpSecurityConfig(
@@ -58,7 +68,7 @@ public class ConfigUtils {
     http.csrf()
         .disable()
         .authorizeHttpRequests()
-        .requestMatchers(getStaticResources(coralEnabled).toArray(new String[0]))
+        .requestMatchers(getStaticResources(coralEnabled))
         .permitAll()
         .anyRequest()
         .authenticated()

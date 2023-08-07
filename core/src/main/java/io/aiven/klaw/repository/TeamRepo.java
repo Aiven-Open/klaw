@@ -25,4 +25,6 @@ public interface TeamRepo extends CrudRepository<Team, TeamID> {
   Integer getNextTeamId(@Param("tenantId") Integer tenantId);
 
   Team findFirstByTenantIdAndTeamnameOrderByTenantId(int tenantId, String teamName);
+
+  void deleteByTenantId(int tenantId);
 }
