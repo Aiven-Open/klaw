@@ -923,18 +923,19 @@ public class UsersTeamsControllerService {
     }
 
     // get the user details from db
-    List<RegisterUserInfo> stagingRegisterUsersInfo =
-        manageDatabase.getHandleDbRequests().getAllStagingRegisterUsersInfo(newUser.getUsername());
+    RegisterUserInfo stagingRegisterUserInfo =
+        manageDatabase
+            .getHandleDbRequests()
+            .getFirstStagingRegisterUsersInfo(newUser.getUsername());
 
     // enrich user info
-    if (!stagingRegisterUsersInfo.isEmpty()) {
-      RegisterUserInfo registerUserInfo = stagingRegisterUsersInfo.get(0);
-      newUser.setTeamId(registerUserInfo.getTeamId());
+    if (stagingRegisterUserInfo != null) {
+      newUser.setTeamId(stagingRegisterUserInfo.getTeamId());
       newUser.setTeam(
           manageDatabase.getTeamNameFromTeamId(
-              registerUserInfo.getTenantId(), registerUserInfo.getTeamId()));
-      newUser.setRole(registerUserInfo.getRole());
-      newUser.setTenantId(registerUserInfo.getTenantId());
+              stagingRegisterUserInfo.getTenantId(), stagingRegisterUserInfo.getTeamId()));
+      newUser.setRole(stagingRegisterUserInfo.getRole());
+      newUser.setTenantId(stagingRegisterUserInfo.getTenantId());
     }
 
     try {
@@ -1010,7 +1011,12 @@ public class UsersTeamsControllerService {
     }
   }
 
-  public List<RegisterUserInfoModelResponse> getNewUserRequests() {
+  public List<RegisterUserInfoModelResponse> getNewUserRequests()
+      throws KlawNotAuthorizedException {
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.ADD_EDIT_DELETE_USERS)) {
+      throw new KlawNotAuthorizedException("You are not authorized to view this information.");
+    }
     int tenantId = commonUtilsService.getTenantId(getUserName());
     List<RegisterUserInfo> registerUserInfoList;
 

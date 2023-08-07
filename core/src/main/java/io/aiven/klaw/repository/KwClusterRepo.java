@@ -16,4 +16,6 @@ public interface KwClusterRepo extends CrudRepository<KwClusters, KwClusterID> {
   Integer getNextClusterId(@Param("tenantId") Integer tenantId);
 
   List<KwClusters> findAllByTenantId(int tenantId);
+
+  void deleteByTenantId(int tenantId);
 }

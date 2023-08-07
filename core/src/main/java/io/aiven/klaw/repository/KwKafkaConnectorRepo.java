@@ -33,13 +33,18 @@ public interface KwKafkaConnectorRepo extends CrudRepository<KwKafkaConnector, K
 
   @Query(
       value =
-          "select count(*) from kwkafkaconnector where teamid = :teamId and tenantid = :tenantId",
+          "select exists(select 1 from kwkafkaconnector where teamid = :teamId and tenantid = :tenantId)",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForTeamId(
+  boolean existsRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   @Query(
       value = "select max(connectorid) from kwkafkaconnector where tenantid = :tenantId",
       nativeQuery = true)
   Integer getNextConnectorRequestId(@Param("tenantId") Integer tenantId);
+
+  void deleteByConnectorNameAndEnvironmentAndTenantId(
+      String connectorName, String env, int tenantId);
+
+  void deleteByTenantId(int tenantId);
 }

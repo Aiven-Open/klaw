@@ -19,7 +19,7 @@ import {
   Environment,
   getEnvironmentsForSchemaRequest,
 } from "src/domain/environment";
-import { createSchemaRequest } from "src/domain/schema-request";
+import { requestSchemaCreation } from "src/domain/schema-request";
 import { TopicNames, getTopicNames } from "src/domain/topic";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
@@ -108,7 +108,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
     },
   });
 
-  const schemaRequestMutation = useMutation(createSchemaRequest, {
+  const schemaRequestMutation = useMutation(requestSchemaCreation, {
     onSuccess: () => {
       navigate("/requests/schemas?status=CREATED");
       toast({

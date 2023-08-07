@@ -228,7 +228,7 @@ public interface HandleDbRequests {
 
   List<RegisterUserInfo> getAllRegisterUsersInformation();
 
-  List<RegisterUserInfo> getAllStagingRegisterUsersInfo(String userId);
+  RegisterUserInfo getFirstStagingRegisterUsersInfo(String userName);
 
   UserInfo getUsersInfo(String username);
 

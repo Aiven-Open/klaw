@@ -883,6 +883,7 @@ public class TopicAclControllerIT {
     TopicOverview response = OBJECT_MAPPER.readValue(res, TopicOverview.class);
     assertThat(response.getAclInfoList()).hasSize(1);
   }
+
   // get acls to be synced - retrieve from Source of truth
   @Order(27)
   @Test
