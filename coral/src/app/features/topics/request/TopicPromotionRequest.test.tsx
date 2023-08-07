@@ -6,7 +6,7 @@ import TopicPromotionRequest from "src/app/features/topics/request/TopicPromotio
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment";
 import { mockedEnvironmentResponse } from "src/domain/environment/environment-api.msw";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
-import { getTopicDetailsPerEnv, promoteTopic } from "src/domain/topic";
+import { getTopicDetailsPerEnv, requestTopicPromotion } from "src/domain/topic";
 import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import * as ReactQuery from "@tanstack/react-query";
@@ -24,8 +24,8 @@ jest.mock("@aivenio/aquarium", () => ({
 }));
 
 jest.mock("src/domain/topic/topic-api.ts");
-const mockPromoteTopic = promoteTopic as jest.MockedFunction<
-  typeof promoteTopic
+const mockPromoteTopic = requestTopicPromotion as jest.MockedFunction<
+  typeof requestTopicPromotion
 >;
 const mockGetTopicDetailsPerEnv = getTopicDetailsPerEnv as jest.MockedFunction<
   typeof getTopicDetailsPerEnv

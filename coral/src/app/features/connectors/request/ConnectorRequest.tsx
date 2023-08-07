@@ -26,7 +26,7 @@ import {
   ConnectorRequestFormSchema,
   connectorRequestFormSchema,
 } from "src/app/features/connectors/request/schemas/connector-request-form";
-import { createConnectorRequest } from "src/domain/connector";
+import { requestConnectorCreation } from "src/domain/connector";
 import {
   Environment,
   getAllEnvironmentsForConnector,
@@ -51,7 +51,7 @@ function ConnectorRequest() {
     queryFn: () => getAllEnvironmentsForConnector(),
   });
 
-  const connectorRequestMutation = useMutation(createConnectorRequest, {
+  const connectorRequestMutation = useMutation(requestConnectorCreation, {
     onSuccess: () => {
       navigate("/requests/connectors?status=CREATED");
       toast({

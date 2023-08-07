@@ -1,10 +1,10 @@
 import {
   approveConnectorRequest,
-  createConnectorRequest,
+  requestConnectorCreation,
   declineConnectorRequest,
-  deleteConnector,
+  requestConnectorDeletion,
   deleteConnectorRequest,
-  editConnector,
+  requestConnectorEdit,
   getConnectorDetailsPerEnv,
   getConnectorOverview,
   getConnectorRequests,
@@ -24,11 +24,11 @@ import {
 
 export {
   approveConnectorRequest,
-  createConnectorRequest,
+  requestConnectorCreation,
   declineConnectorRequest,
-  deleteConnector,
+  requestConnectorDeletion,
   deleteConnectorRequest,
-  editConnector,
+  requestConnectorEdit,
   getConnectorDetailsPerEnv,
   getConnectorOverview,
   getConnectorRequests,

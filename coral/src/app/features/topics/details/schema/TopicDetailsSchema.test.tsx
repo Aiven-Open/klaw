@@ -5,11 +5,11 @@ import userEvent from "@testing-library/user-event";
 import { TopicDetailsSchema } from "src/app/features/topics/details/schema/TopicDetailsSchema";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { TopicSchemaOverview } from "src/domain/topic";
-import { promoteSchemaRequest } from "src/domain/schema-request";
+import { requestSchemaPromotion } from "src/domain/schema-request";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
-const mockPromoteSchemaRequest = promoteSchemaRequest as jest.MockedFunction<
-  typeof promoteSchemaRequest
+const mockPromoteSchemaRequest = requestSchemaPromotion as jest.MockedFunction<
+  typeof requestSchemaPromotion
 >;
 
 const mockedUseTopicDetails = jest.fn();

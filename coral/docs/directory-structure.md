@@ -128,21 +128,36 @@ In this directory, we group similar code together based on one feature. The stru
 - Every feature folder includes one component on the top level to export. This file is named the same as the features directory.
   -❗This root component should be the only one used in imports outside of this feature.
 
-
 #### Second level: `app/pages`
 
 Contains every page of the application. The structure in this folder should mirror the structure of routing. If there is a link to a "dashboard" page in the web app, there should be a `dashboard/index.tsx` page inside `pages`. The files don't need to have a `Page` pre- or postfix since the directory already gives that information.
 
-
 ### First level: `domain` folder
 
 Contains different domains we need to describe the UI application. They are specific to it. They are the concepts you would elaborate on when describing the Klaw UI app.
-`domain` is where business logic lives and a layer between e.g. the data from the backend API and `app`. `domain` is 
+`domain` is where business logic lives and a layer between e.g. the data from the backend API and `app`. `domain` is
 the only place that speaks with the backend and knows what data from the backend looks like.
 
 - We name the folders in `domain` based on the model / concept they are implementing.
+- Each `domain` has a main file called `{entity}-api.ts` which holds handler functions for API operations, which are used in the `app` folder
 - Every folder includes a `index.ts` file to export modules / interfaces and act as a public API.
 
+#### Naming convention for `domain` handlers
+
+**`POST` - Creating a request: `request{entity}{action noun}`**
+Only use `request` as a verb when the API handlers creates a request entity which needs to be approved, with the structure `request{entity}{action}`.
+
+Example: `requestTopicCreation`, `requestConnectorDeletion`, `requestTopicPromotion`
+
+**`POST` - Acting on a created request: `{action verb}{entity}Request`**
+Only use `Request` as a noun when the API handlers fires an action against a created request entity, with the structure `{action}{entity}Request`.
+
+Example: `deleteTopicRequest`, `approveTopicRequest`
+
+**`POST` / `GET` - Immediate action: `{action verb}{entity}{optional category}`**
+Do not use `request` for immediate actions (no request entity created), but the structure `{action}{entity}{optional category}`.
+
+Example: `updateTopicDocumentation`, `getConnectorOverview`
 
 ### First level: `services`
 

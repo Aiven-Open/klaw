@@ -26,7 +26,7 @@ type CreateSchemaRequestPayload = ResolveIntersectionTypes<
     Partial<KlawApiRequest<"uploadSchema">>
 >;
 
-const createSchemaRequest = (
+const requestSchemaCreation = (
   params: CreateSchemaRequestPayload
 ): Promise<KlawApiResponse<"uploadSchema">> => {
   const payload: KlawApiRequest<"uploadSchema"> = {
@@ -153,7 +153,7 @@ const deleteSchemaRequest = ({
   });
 };
 
-const promoteSchemaRequest = (
+const requestSchemaPromotion = (
   payload: ResolveIntersectionTypes<Omit<PromoteSchemaPayload, "appName">>
 ) => {
   return api.post<KlawApiResponse<"promoteSchema">, PromoteSchemaPayload>(
@@ -163,11 +163,11 @@ const promoteSchemaRequest = (
 };
 
 export {
-  createSchemaRequest,
+  requestSchemaCreation,
   getSchemaRequestsForApprover,
   approveSchemaRequest,
   declineSchemaRequest,
   getSchemaRequests,
   deleteSchemaRequest,
-  promoteSchemaRequest,
+  requestSchemaPromotion,
 };

@@ -22,7 +22,7 @@ import { SchemaPromotionModal } from "src/app/features/topics/details/schema/com
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
 import {
   PromoteSchemaPayload,
-  promoteSchemaRequest,
+  requestSchemaPromotion,
 } from "src/domain/schema-request";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
@@ -74,7 +74,7 @@ function TopicDetailsSchema() {
           throw new Error("No promotion details available");
         }
 
-        return promoteSchemaRequest({
+        return requestSchemaPromotion({
           targetEnvironment: schemaPromotionDetails.targetEnvId,
           sourceEnvironment: schemaPromotionDetails.sourceEnv,
           topicName,
