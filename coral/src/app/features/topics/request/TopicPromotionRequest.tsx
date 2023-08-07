@@ -31,7 +31,7 @@ import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment/environ
 import {
   TopicDetailsPerEnv,
   getTopicDetailsPerEnv,
-  promoteTopic,
+  requestTopicPromotion,
 } from "src/domain/topic";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
@@ -150,7 +150,7 @@ function TopicPromotionRequest() {
     isLoading: promoteIsLoading,
     isError: promoteIsError,
     error: promoteError,
-  } = useMutation(promoteTopic, {
+  } = useMutation(requestTopicPromotion, {
     onSuccess: () => {
       navigate(-1);
       toast({
@@ -200,8 +200,7 @@ function TopicPromotionRequest() {
           {targetEnvironment !== undefined ? (
             <NativeSelect
               name="environment"
-              labelText={"Environment"}
-              required
+              labelText={"Environment (read-only)"}
               readOnly
             >
               <Option
@@ -220,9 +219,8 @@ function TopicPromotionRequest() {
         </Box>
         <TextInput<Schema>
           name={"topicname"}
-          labelText="Topic name"
+          labelText="Topic name (read-only)"
           placeholder={generateTopicNameDescription(targetEnvironment?.params)}
-          required={true}
           readOnly
         />
         <Box.Flex gap={"l1"}>
@@ -264,9 +262,8 @@ function TopicPromotionRequest() {
           <Box grow={1} width={"1/2"}>
             <Textarea<Schema>
               name="description"
-              labelText="Description"
+              labelText="Topic description (read-only)"
               rows={5}
-              required={true}
               readOnly
             />
           </Box>

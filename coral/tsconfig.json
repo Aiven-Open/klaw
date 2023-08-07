@@ -18,5 +18,6 @@
     "noErrorTruncation": true
   },
   "include": ["src"],
+  "exclude": ["proxy"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

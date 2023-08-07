@@ -1,9 +1,11 @@
 import {
   approveConnectorRequest,
-  createConnectorRequest,
+  requestConnectorCreation,
   declineConnectorRequest,
-  deleteConnector,
+  requestConnectorDeletion,
   deleteConnectorRequest,
+  requestConnectorEdit,
+  getConnectorDetailsPerEnv,
   getConnectorOverview,
   getConnectorRequests,
   getConnectorRequestsForApprover,
@@ -12,6 +14,7 @@ import {
 } from "src/domain/connector/connector-api";
 import {
   Connector,
+  ConnectorDetailsForEnv,
   ConnectorDocumentationMarkdown,
   ConnectorOverview,
   ConnectorRequest,
@@ -21,10 +24,12 @@ import {
 
 export {
   approveConnectorRequest,
-  createConnectorRequest,
+  requestConnectorCreation,
   declineConnectorRequest,
-  deleteConnector,
+  requestConnectorDeletion,
   deleteConnectorRequest,
+  requestConnectorEdit,
+  getConnectorDetailsPerEnv,
   getConnectorOverview,
   getConnectorRequests,
   getConnectorRequestsForApprover,
@@ -34,6 +39,7 @@ export {
 
 export type {
   Connector,
+  ConnectorDetailsForEnv,
   ConnectorDocumentationMarkdown,
   ConnectorOverview,
   ConnectorRequest,

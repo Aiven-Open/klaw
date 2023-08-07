@@ -7,6 +7,7 @@ import io.aiven.klaw.model.ServerConfigProperties;
 import io.aiven.klaw.model.response.ConnectivityStatus;
 import io.aiven.klaw.model.response.KwPropertiesResponse;
 import io.aiven.klaw.service.ServerConfigService;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class ServerConfigController {
       value = "/getAllServerConfig",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<ServerConfigProperties>> getAllProperties() {
+  public ResponseEntity<Collection<ServerConfigProperties>> getAllProperties() {
     return new ResponseEntity<>(serverConfigService.getAllProps(), HttpStatus.OK);
   }
 

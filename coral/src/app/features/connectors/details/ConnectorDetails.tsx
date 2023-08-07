@@ -83,13 +83,14 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         entity={{ name: connectorName, type: "connector" }}
         entityExists={Boolean(connectorData?.connectorExists)}
         entityUpdating={connectorIsRefetching}
-        entityEditLink={
-          "/connector/connectorName=SchemaTest&env=${connectorOverview.availableEnvironments[0].id}&requestType=edit"
-        }
+        entityEditLink={`/connector/${connectorName}/request-update?env=${connectorData?.connectorInfo.environmentId}`}
         environments={connectorData?.availableEnvironments}
         environmentId={environmentId}
         setEnvironmentId={setEnvironmentId}
-        showEditButton={Boolean(connectorData?.connectorInfo.showEditConnector)}
+        showEditButton={Boolean(
+          connectorData?.connectorInfo.showEditConnector &&
+            !connectorData?.connectorInfo.hasOpenRequest
+        )}
       />
 
       <ConnectorOverviewResourcesTabs

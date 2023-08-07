@@ -24,7 +24,7 @@ const TopicDeleteConfirmationModal = ({
 
   return (
     <Modal
-      title={"Delete topic"}
+      title={"Request topic deletion"}
       close={onClose}
       primaryAction={{
         text: "Request topic deletion",
@@ -43,8 +43,9 @@ const TopicDeleteConfirmationModal = ({
     >
       <Box display={"flex"} flexDirection={"column"} rowGap={"l1"}>
         <p>
-          Are you sure you would like to delete this topic? Once this request is
-          made it cannot be reversed.
+          Are you sure you want to proceed with the deletion request for this
+          topic? Once the request is approved, the topic will be permanently
+          deleted.
         </p>
         <>
           <Checkbox
@@ -57,7 +58,7 @@ const TopicDeleteConfirmationModal = ({
           </Checkbox>
         </>
         <Textarea
-          labelText="You can add the reason to delete the topic (optional)"
+          labelText="Add your reasons for deleting this topic (optional)"
           placeholder="Write a message ..."
           onChange={(event) =>
             setRemark(event.target.value ? event.target.value : undefined)

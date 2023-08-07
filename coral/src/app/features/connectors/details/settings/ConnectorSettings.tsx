@@ -13,7 +13,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
 import { ConnectorDeleteConfirmationModal } from "src/app/features/connectors/details/settings/components/ConnectorDeleteConfirmationModal";
-import { deleteConnector } from "src/domain/connector";
+import { requestConnectorDeletion } from "src/domain/connector";
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
@@ -39,7 +39,7 @@ function ConnectorSettings() {
 
   const { mutate, isLoading } = useMutation(
     (remark?: string) =>
-      deleteConnector({
+      requestConnectorDeletion({
         connectorName,
         envId: environmentId,
         remark,
@@ -179,8 +179,8 @@ function ConnectorSettings() {
                     Request connector deletion
                   </Typography.DefaultStrong>
                   <Box component={"p"}>
-                    Once a request for deletion is approved, there is no going
-                    back. Please be certain.
+                    Submit a request for this topic to be deleted. Once the
+                    request is approved, the action is irreversible.
                   </Box>
                 </div>
 

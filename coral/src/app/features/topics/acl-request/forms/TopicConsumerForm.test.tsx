@@ -116,11 +116,14 @@ describe("<TopicConsumerForm />", () => {
       expect(environmentField).toBeRequired();
     });
 
-    it("renders a readonly field with information when no environment  is chosen", () => {
-      const field = screen.getByRole("textbox", { name: "Topic name" });
-      expect(field).toBeVisible();
+    it("renders a readOnly field with information when no environment is chosen", () => {
+      const field = screen.getByRole("textbox", {
+        name: "Topic name *",
+      });
+
+      expect(field).toBeRequired();
       expect(field).toHaveAttribute("readonly");
-      expect(field).toHaveValue("Select environment first");
+      expect(field).toHaveDisplayValue("Select environment first");
     });
 
     it("does not render consumergroup field", () => {
@@ -468,18 +471,19 @@ describe("<TopicConsumerForm isSubscription />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders disabled required EnvironmentField", () => {
+    it("renders readOnly EnvironmentField", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Environment *",
+        name: "Environment (read-only)",
       });
 
       expect(environmentField).toBeVisible();
       expect(environmentField).toBeDisabled();
-      expect(environmentField).toBeRequired();
+      expect(environmentField).toHaveAttribute("aria-readonly", "true");
     });
 
-    it("renders a readonly field with information when no environment  is chosen", () => {
-      const field = screen.getByRole("textbox", { name: "Topic name" });
+    it("renders a readonly field with information when no environment is chosen", () => {
+      const field = screen.getByRole("textbox", { name: "Topic name *" });
+
       expect(field).toBeVisible();
       expect(field).toHaveAttribute("readonly");
       expect(field).toHaveValue("Select environment first");
@@ -584,24 +588,23 @@ describe("<TopicConsumerForm isSubscription />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders disabled EnvironmentField with DEV selected", () => {
+    it("renders readOnly EnvironmentField with DEV selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Environment *",
+        name: "Environment (read-only)",
       });
 
-      expect(environmentField).toBeVisible();
       expect(environmentField).toBeDisabled();
+      expect(environmentField).toHaveAttribute("aria-readonly", "true");
       expect(environmentField).toHaveDisplayValue("DEV");
     });
 
-    it("renders TopicNameField", () => {
+    it("renders readOnly TopicNameField", () => {
       const topicNameField = screen.getByRole("combobox", {
-        name: "Topic name *",
+        name: "Topic name (read-only)",
       });
 
       expect(topicNameField).toBeVisible();
       expect(topicNameField).toHaveAttribute("aria-readOnly", "true");
-      expect(topicNameField).toBeRequired();
       expect(topicNameField).toHaveValue("hello");
     });
 
@@ -704,24 +707,23 @@ describe("<TopicConsumerForm isSubscription />", () => {
       expect(consumerField).toBeEnabled();
     });
 
-    it("renders disabled EnvironmentField with TST selected", () => {
+    it("renders readOnly EnvironmentField with TST selected", () => {
       const environmentField = screen.getByRole("combobox", {
-        name: "Environment *",
+        name: "Environment (read-only)",
       });
 
-      expect(environmentField).toBeVisible();
       expect(environmentField).toBeDisabled();
+      expect(environmentField).toHaveAttribute("aria-readonly", "true");
       expect(environmentField).toHaveDisplayValue("TST");
     });
 
-    it("renders TopicNameField", () => {
+    it("renders readOnly TopicNameField", () => {
       const topicNameField = screen.getByRole("combobox", {
-        name: "Topic name *",
+        name: "Topic name (read-only)",
       });
 
-      expect(topicNameField).toBeVisible();
+      expect(topicNameField).toBeDisabled();
       expect(topicNameField).toHaveAttribute("aria-readOnly", "true");
-      expect(topicNameField).toBeRequired();
       expect(topicNameField).toHaveValue("hello");
     });
 

@@ -6,7 +6,7 @@ import { render } from "@testing-library/react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
-import { createSchemaRequest } from "src/domain/schema-request";
+import { requestSchemaCreation } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 
 jest.mock("src/domain/schema-request/schema-request-api.ts");
@@ -17,8 +17,8 @@ const mockGetSchemaRegistryEnvironments =
   getEnvironmentsForSchemaRequest as jest.MockedFunction<
     typeof getEnvironmentsForSchemaRequest
   >;
-const mockCreateSchemaRequest = createSchemaRequest as jest.MockedFunction<
-  typeof createSchemaRequest
+const mockCreateSchemaRequest = requestSchemaCreation as jest.MockedFunction<
+  typeof requestSchemaCreation
 >;
 const mockGetTopicNames = getTopicNames as jest.MockedFunction<
   typeof getTopicNames
@@ -75,7 +75,7 @@ describe("SchemaRequest", () => {
 
     it("shows the form for this specific topic", async () => {
       const input = await screen.findByRole("combobox", {
-        name: "Topic name",
+        name: "Topic name (read-only)",
       });
 
       expect(input).toBeVisible();

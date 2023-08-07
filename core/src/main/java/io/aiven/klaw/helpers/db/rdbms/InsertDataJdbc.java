@@ -7,9 +7,12 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -86,7 +89,12 @@ public class InsertDataJdbc {
     log.debug("insertIntoRequestTopic {}", topicRequest);
 
     Map<String, String> hashMap = new HashMap<>();
-    Integer topicId = getNextTopicRequestId("TOPIC_REQ_ID", topicRequest.getTenantId());
+    Integer topicId;
+    if (topicRequest.getTopicid() == null) {
+      topicId = getNextTopicRequestId("TOPIC_REQ_ID", topicRequest.getTenantId());
+    } else {
+      topicId = topicRequest.getTopicid();
+    }
     hashMap.put("topicId", "" + topicId);
 
     topicRequest.setTopicid(topicId);
@@ -155,20 +163,27 @@ public class InsertDataJdbc {
   }
 
   public synchronized String insertIntoTopicSOT(List<Topic> topics) {
-    topics.forEach(
-        topic -> {
-          log.debug("insertIntoTopicSOT {}", topic.getTopicname());
-          if (!topic.isExistingTopic()) {
-            TopicID topicID = new TopicID();
-            topicID.setTenantId(topic.getTenantId());
-            topicID.setTopicid(topic.getTopicid());
+    Set<Topic> existingTopicIds = new HashSet<>();
+    topicRepo
+        .findAllById(
+            topics.stream()
+                .filter(t -> !t.isExistingTopic())
+                .map(t -> new TopicID(t.getTopicid(), t.getTenantId()))
+                .collect(Collectors.toList()))
+        .forEach(existingTopicIds::add);
 
-            if (topicRepo.existsById(topicID)) {
-              topic.setTopicid(getNextTopicRequestId("TOPIC_ID", topic.getTenantId()));
-            }
-          }
-          topicRepo.save(topic);
-        });
+    for (Topic topic : existingTopicIds) {
+      log.debug("insertIntoTopicSOT {}", topic.getTopicname());
+      topic.setTopicid(getNextTopicRequestId("TOPIC_ID", topic.getTenantId()));
+      topicRepo.save(topic);
+    }
+    for (Topic topic : topics) {
+      if (existingTopicIds.contains(topic)) {
+        continue;
+      }
+      log.debug("insertIntoTopicSOT {}", topic.getTopicname());
+      topicRepo.save(topic);
+    }
 
     return ApiResultStatus.SUCCESS.value;
   }

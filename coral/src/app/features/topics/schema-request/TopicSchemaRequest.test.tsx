@@ -11,7 +11,7 @@ import { TopicSchemaRequest } from "src/app/features/topics/schema-request/Topic
 import { getEnvironmentsForSchemaRequest } from "src/domain/environment";
 import { createMockEnvironmentDTO } from "src/domain/environment/environment-test-helper";
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
-import { createSchemaRequest } from "src/domain/schema-request";
+import { requestSchemaCreation } from "src/domain/schema-request";
 import { getTopicNames } from "src/domain/topic";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -23,8 +23,8 @@ const mockGetSchemaRegistryEnvironments =
   getEnvironmentsForSchemaRequest as jest.MockedFunction<
     typeof getEnvironmentsForSchemaRequest
   >;
-const mockCreateSchemaRequest = createSchemaRequest as jest.MockedFunction<
-  typeof createSchemaRequest
+const mockCreateSchemaRequest = requestSchemaCreation as jest.MockedFunction<
+  typeof requestSchemaCreation
 >;
 const mockGetTopicNames = getTopicNames as jest.MockedFunction<
   typeof getTopicNames
@@ -374,7 +374,9 @@ describe("TopicSchemaRequest", () => {
 
     it("shows readonly select element for the topic name", () => {
       const form = getForm();
-      const select = within(form).getByRole("combobox", { name: "Topic name" });
+      const select = within(form).getByRole("combobox", {
+        name: "Topic name (read-only)",
+      });
 
       expect(select).toBeVisible();
       expect(select).toBeDisabled();
@@ -383,7 +385,9 @@ describe("TopicSchemaRequest", () => {
 
     it("sets the value for readonly select for topic name", () => {
       const form = getForm();
-      const select = within(form).getByRole("combobox", { name: "Topic name" });
+      const select = within(form).getByRole("combobox", {
+        name: "Topic name (read-only)",
+      });
 
       expect(select).toHaveValue(testTopicName);
     });

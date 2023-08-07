@@ -1,31 +1,13 @@
 package io.aiven.klaw.validation;
 
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_101;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_102;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_103;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_104;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_105;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_106;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_107;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_108;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_109;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_110;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_111;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_112;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_113;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_114;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_115;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_116;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_117;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_118;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_119;
-import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_120;
+import static io.aiven.klaw.error.KlawErrorMessages.*;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.CommonUtilsService;
@@ -76,7 +58,8 @@ public class TopicRequestValidatorImpl
     if (permissionType.equals(PermissionType.REQUEST_CREATE_TOPICS)) {
       // Verify if topic request type is Create/Promote
       if (RequestOperationType.CREATE != topicRequestModel.getRequestOperationType()
-          && RequestOperationType.PROMOTE != topicRequestModel.getRequestOperationType()) {
+          && RequestOperationType.PROMOTE != topicRequestModel.getRequestOperationType()
+          && topicRequestModel.getRequestId() == null) {
         updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_101);
         return false;
       }
@@ -149,9 +132,25 @@ public class TopicRequestValidatorImpl
     if (!validateTopicConfigParameters(topicRequestModel, constraintValidatorContext)) return false;
 
     // Verify if topic request already exists
-    if (topics != null) {
+    if (topics != null && topicRequestModel.getRequestId() == null) {
       if (!topicControllerService.getExistingTopicRequests(topicRequestModel, tenantId).isEmpty()) {
         updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_110);
+        return false;
+      }
+    } else {
+      // Editing an existing topic request of type DELETE/CLAIM is not possible.
+      if (topicRequestModel.getRequestOperationType().equals(RequestOperationType.CLAIM)
+          || topicRequestModel.getRequestOperationType().equals(RequestOperationType.DELETE)) {
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_122);
+        return false;
+      }
+
+      // only requests in created state can be edited
+      if (!topicControllerService
+          .getTopicRequestFromTopicId(topicRequestModel.getRequestId(), tenantId)
+          .getRequestStatus()
+          .equals(RequestStatus.CREATED.value)) {
+        updateConstraint(constraintValidatorContext, TOPICS_VLD_ERR_123);
         return false;
       }
     }

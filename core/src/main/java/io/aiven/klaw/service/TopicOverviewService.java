@@ -9,6 +9,7 @@ import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicConfigurationRequest;
 import io.aiven.klaw.model.TopicOverviewInfo;
@@ -77,13 +78,9 @@ public class TopicOverviewService extends BaseOverviewService {
     environmentId = topicsPair.getKey();
     topics = topicsPair.getValue();
 
-    String syncCluster;
-    try {
-      syncCluster = manageDatabase.getTenantConfig().get(tenantId).getBaseSyncEnvironment();
-    } catch (Exception exception) {
-      log.error("Exception while getting syncCluster. Ignored. ", exception);
-      syncCluster = null;
-    }
+    KwTenantConfigModel kwTenantConfigModel = manageDatabase.getTenantConfig().get(tenantId);
+    String syncCluster =
+        kwTenantConfigModel == null ? null : kwTenantConfigModel.getBaseSyncEnvironment();
 
     List<TopicOverviewInfo> topicInfoList = new ArrayList<>();
     List<ResourceHistory> topicHistoryList = new ArrayList<>();
@@ -211,10 +208,22 @@ public class TopicOverviewService extends BaseOverviewService {
       TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
     topicInfo.setHasOpenACLRequest(isACLRequestOpen(topicName, envId, tenantId));
     topicInfo.setHasOpenTopicRequest(isTopicRequestOpen(topicName, envId, tenantId));
+    topicInfo.setHasOpenSchemaRequest(isSchemaRequestOpen(topicName, envId, tenantId));
+    topicInfo.setHasOpenClaimRequest(isClaimTopicRequestOpen(topicName, tenantId));
     topicInfo.setHasOpenRequest(
         topicInfo.isHasOpenACLRequest()
+            || topicInfo.isHasOpenSchemaRequest()
+            || topicInfo.isHasOpenTopicRequest()
+            || topicInfo.isHasOpenClaimRequest());
+  }
+
+  private void setHasOpenRequestOnly(
+      TopicOverviewInfo topicInfo, String topicName, String envId, int tenantId) {
+    topicInfo.setHasOpenRequest(
+        isACLRequestOpen(topicName, envId, tenantId)
             || isSchemaRequestOpen(topicName, envId, tenantId)
-            || topicInfo.isHasOpenTopicRequest());
+            || isTopicRequestOpen(topicName, envId, tenantId)
+            || isClaimTopicRequestOpen(topicName, tenantId));
   }
 
   private void setHasSchema(
@@ -330,6 +339,17 @@ public class TopicOverviewService extends BaseOverviewService {
         PromotionStatus promotionStatus = new PromotionStatus();
         promotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
         topicOverview.setTopicPromotionDetails(promotionStatus);
+        if (topicInfoList.size() > 0) {
+          topicInfoList
+              .get(0)
+              .setHasOpenClaimRequest(isClaimTopicRequestOpen(topicNameSearch, tenantId));
+          if (topicInfoList.get(0).isHasOpenClaimRequest()) {
+            topicInfoList.get(0).setHasOpenRequest(true);
+          } else {
+            // only make call to db if it is required.
+            setHasOpenRequestOnly(topicInfoList.get(0), topicNameSearch, environmentId, tenantId);
+          }
+        }
       }
     } catch (Exception e) {
       PromotionStatus promotionStatus = new PromotionStatus();
@@ -342,6 +362,12 @@ public class TopicOverviewService extends BaseOverviewService {
     return manageDatabase
         .getHandleDbRequests()
         .existsTopicRequest(topicName, RequestStatus.CREATED.value, environmentId, tenantId);
+  }
+
+  private boolean isClaimTopicRequestOpen(String topicName, int tenantId) {
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsClaimTopicRequest(topicName, RequestStatus.CREATED.value, tenantId);
   }
 
   private boolean isTopicPromoteRequestOpen(String topicName, String environmentId, int tenantId) {
@@ -364,8 +390,13 @@ public class TopicOverviewService extends BaseOverviewService {
 
   private boolean isSchemaRequestOpen(String topicName, String envId, int tenantId) {
     return manageDatabase
-        .getHandleDbRequests()
-        .existsSchemaRequest(topicName, RequestStatus.CREATED.value, envId, tenantId);
+        .getAssociatedSchemaEnvIdFromTopicId(envId, tenantId)
+        .filter(
+            s ->
+                manageDatabase
+                    .getHandleDbRequests()
+                    .existsSchemaRequest(topicName, RequestStatus.CREATED.value, s, tenantId))
+        .isPresent();
   }
 
   private PromotionStatus getTopicPromotionEnv(

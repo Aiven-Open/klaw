@@ -55,6 +55,15 @@ public class KlawExceptionHandler extends ResponseEntityExceptionHandler {
         ApiResponse.builder().success(false).message(ex.getMessage()).build(), HttpStatus.CONFLICT);
   }
 
+  @ExceptionHandler({KlawBadRequestException.class})
+  protected ResponseEntity<ApiResponse> handleKlawBadRequestException(
+      KlawBadRequestException ex, WebRequest request) {
+    log.error("KlawBadRequestException handler: ", ex);
+    return new ResponseEntity<>(
+        ApiResponse.builder().success(false).message(ex.getMessage()).build(),
+        HttpStatus.BAD_REQUEST);
+  }
+
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException ex,

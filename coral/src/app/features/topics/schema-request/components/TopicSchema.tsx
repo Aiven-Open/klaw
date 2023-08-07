@@ -90,7 +90,7 @@ function TopicSchema(props: TopicSchemaProps) {
             />
             <Typography.Caption htmlTag={"label"}>
               <span className={error?.message && "text-error-50"}>
-                Schema preview (read only)
+                Schema preview (read-only)
               </span>
             </Typography.Caption>
             <BorderBox

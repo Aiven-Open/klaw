@@ -123,6 +123,8 @@ function getPlugins(environment: Record<string, string>): PluginOption[] {
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const environment = loadEnv(mode, process.cwd(), "");
+  const usesNodeProxy = mode === "local-api";
+
   return {
     plugins: getPlugins(environment),
     define: {
@@ -135,19 +137,23 @@ export default defineConfig(({ mode }) => {
       "process.env": {
         ROUTER_BASENAME: getRouterBasename(environment),
         API_BASE_URL: getApiBaseUrl(environment),
-        FEATURE_FLAG_TOPNAV_DROPDOWN: ["development", "remote-api"]
+        FEATURE_FLAG_TOPIC_OVERVIEW: ["development", "remote-api", "local-api"]
           .includes(mode)
           .toString(),
-        FEATURE_FLAG_TOPIC_OVERVIEW: ["development", "remote-api"]
+        FEATURE_FLAG_CONNECTOR_OVERVIEW: [
+          "development",
+          "remote-api",
+          "local-api",
+        ]
           .includes(mode)
           .toString(),
-        FEATURE_FLAG_CONNECTOR_OVERVIEW: ["development", "remote-api"]
+        FEATURE_FLAG_PROMOTE_TOPIC: ["development", "remote-api", "local-api"]
           .includes(mode)
           .toString(),
-        FEATURE_FLAG_PROMOTE_TOPIC: ["development", "remote-api"]
+        FEATURE_FLAG_EDIT_TOPIC: ["development", "remote-api", "local-api"]
           .includes(mode)
           .toString(),
-        FEATURE_FLAG_EDIT_TOPIC: ["development", "remote-api"]
+        FEATURE_FLAG_EDIT_CONNECTOR: ["development", "remote-api", "local-api"]
           .includes(mode)
           .toString(),
       },
@@ -164,8 +170,11 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 5173,
-      https: getServerHTTPSConfig(environment),
-      proxy: getServerProxyConfig(environment),
+      // mode local-api is used in our node proxy,
+      // - no need to run a second proxy in that case
+      // - api runs on http:// not https://
+      https: usesNodeProxy ? null : getServerHTTPSConfig(environment),
+      proxy: usesNodeProxy ? null : getServerProxyConfig(environment),
     },
     preview: {
       port: 5173,
@@ -183,5 +192,9 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    // By setting the base to /coral for nodeProxy mode
+    // we get the same behaviour as on production mode
+    // were coral is deployed in directory `/coral`
+    base: usesNodeProxy ? "/coral/" : "/",
   };
 });

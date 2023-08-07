@@ -155,6 +155,8 @@ public interface HandleDbRequests {
       String env,
       int tenantId);
 
+  boolean existsClaimTopicRequest(String topicName, String requestStatus, int tenantId);
+
   boolean existsConnectorRequest(
       String connectorName, String requestStatus, String env, int tenantId);
 
@@ -226,7 +228,7 @@ public interface HandleDbRequests {
 
   List<RegisterUserInfo> getAllRegisterUsersInformation();
 
-  List<RegisterUserInfo> getAllStagingRegisterUsersInfo(String userId);
+  RegisterUserInfo getFirstStagingRegisterUsersInfo(String userName);
 
   UserInfo getUsersInfo(String username);
 
@@ -424,11 +426,11 @@ public interface HandleDbRequests {
 
   int getAllSchemaComponentsCountForEnv(String env, int tenantId);
 
-  int getAllComponentsCountForTeam(Integer teamId, int tenantId);
+  boolean existsComponentsCountForTeam(Integer teamId, int tenantId);
 
   int getAllTopicsCountInAllTenants();
 
-  int getAllComponentsCountForUser(String userName, int tenantId);
+  boolean existsComponentsCountForUser(String userId, int tenantId);
 
   Map<String, Set<String>> getTopicAndVersionsForEnvAndTenantId(String envId, int tenantId);
 

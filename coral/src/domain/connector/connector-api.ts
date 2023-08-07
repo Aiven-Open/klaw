@@ -135,7 +135,7 @@ const deleteConnectorRequest = ({ reqIds }: DeleteRequestParams) => {
   >(API_PATHS.deleteRequest, { requestEntityType: "CONNECTOR", reqIds });
 };
 
-const createConnectorRequest = (
+const requestConnectorCreation = (
   connectorPayload: Omit<
     KlawApiRequest<"createConnectorRequest">,
     "requestOperationType"
@@ -147,6 +147,21 @@ const createConnectorRequest = (
   >(API_PATHS.createConnectorRequest, {
     ...connectorPayload,
     requestOperationType: "CREATE",
+  });
+};
+
+const requestConnectorEdit = (
+  connectorPayload: Omit<
+    KlawApiRequest<"createConnectorRequest">,
+    "requestOperationType"
+  >
+) => {
+  return api.post<
+    KlawApiResponse<"createConnectorRequest">,
+    KlawApiRequest<"createConnectorRequest">
+  >(API_PATHS.createConnectorRequest, {
+    ...connectorPayload,
+    requestOperationType: "UPDATE",
   });
 };
 
@@ -167,6 +182,15 @@ const getConnectorOverview = ({
       new URLSearchParams(queryParams)
     )
     .then(transformConnectorOverviewResponse);
+};
+
+const getConnectorDetailsPerEnv = (
+  params: KlawApiRequestQueryParameters<"getConnectorDetailsPerEnv">
+) => {
+  return api.get<KlawApiResponse<"getConnectorDetailsPerEnv">>(
+    API_PATHS.getConnectorDetailsPerEnv,
+    new URLSearchParams(params)
+  );
 };
 
 type UpdateConnectorDocumentation = {
@@ -191,7 +215,7 @@ async function updateConnectorDocumentation({
   });
 }
 
-async function deleteConnector({
+async function requestConnectorDeletion({
   connectorName,
   envId,
 }: DeleteConnectorPayload) {
@@ -208,10 +232,12 @@ async function deleteConnector({
 
 export {
   approveConnectorRequest,
-  createConnectorRequest,
+  requestConnectorCreation,
   declineConnectorRequest,
-  deleteConnector,
+  requestConnectorDeletion,
   deleteConnectorRequest,
+  requestConnectorEdit,
+  getConnectorDetailsPerEnv,
   getConnectorOverview,
   getConnectorRequests,
   getConnectorRequestsForApprover,

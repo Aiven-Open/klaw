@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import ConnectorRequest from "src/app/features/connectors/request/ConnectorRequest";
 import { createEnvironment } from "src/domain/environment/environment-test-helper";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { createConnectorRequest } from "src/domain/connector";
+import { requestConnectorCreation } from "src/domain/connector";
 import { getAllEnvironmentsForConnector } from "src/domain/environment";
 
 jest.mock("src/domain/environment/environment-api.ts");
@@ -16,7 +16,9 @@ const mockGetConnectorEnvironmentRequest =
   >;
 
 const mockCreateConnectorRequest =
-  createConnectorRequest as jest.MockedFunction<typeof createConnectorRequest>;
+  requestConnectorCreation as jest.MockedFunction<
+    typeof requestConnectorCreation
+  >;
 
 const mockedUsedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -279,7 +281,7 @@ describe("<ConnectorRequest />", () => {
     });
   });
 
-  describe("Description", () => {
+  describe("Connector description", () => {
     beforeEach(() => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
         createEnvironment({ id: "1", name: "DEV" }),
@@ -398,9 +400,9 @@ describe("<ConnectorRequest />", () => {
           screen.getByRole("button", { name: "Submit request" })
         );
         await waitFor(() =>
-          expect(createConnectorRequest).toHaveBeenCalledTimes(1)
+          expect(requestConnectorCreation).toHaveBeenCalledTimes(1)
         );
-        expect(createConnectorRequest).toHaveBeenCalledWith({
+        expect(requestConnectorCreation).toHaveBeenCalledWith({
           connectorConfig:
             '{ "connector.class": "test", "tasks.max": 10, "topics": "test" }',
           connectorName: "this-is-connector-name",
@@ -431,8 +433,8 @@ describe("<ConnectorRequest />", () => {
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        expect(createConnectorRequest).toHaveBeenCalledTimes(1);
-        expect(createConnectorRequest).toHaveBeenCalledWith({
+        expect(requestConnectorCreation).toHaveBeenCalledTimes(1);
+        expect(requestConnectorCreation).toHaveBeenCalledWith({
           connectorConfig:
             '{ "connector.class": "test", "tasks.max": 10, "topics": "test" }',
           connectorName: "this-is-connector-name",
@@ -456,7 +458,7 @@ describe("<ConnectorRequest />", () => {
           ).toBeVisible()
         );
 
-        expect(createConnectorRequest).not.toHaveBeenCalled();
+        expect(requestConnectorCreation).not.toHaveBeenCalled();
         expect(mockedUseToast).not.toHaveBeenCalled();
         expect(
           screen.getByRole("button", { name: "Submit request" })
@@ -468,7 +470,7 @@ describe("<ConnectorRequest />", () => {
           screen.getByRole("button", { name: "Submit request" })
         );
 
-        expect(createConnectorRequest).toHaveBeenCalledTimes(1);
+        expect(requestConnectorCreation).toHaveBeenCalledTimes(1);
         await waitFor(() =>
           expect(mockedUseToast).toHaveBeenCalledWith({
             message: "Connector request successfully created",

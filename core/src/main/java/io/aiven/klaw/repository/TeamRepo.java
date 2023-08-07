@@ -23,4 +23,8 @@ public interface TeamRepo extends CrudRepository<Team, TeamID> {
 
   @Query(value = "select max(teamid) from kwteams where tenantid = :tenantId", nativeQuery = true)
   Integer getNextTeamId(@Param("tenantId") Integer tenantId);
+
+  Team findFirstByTenantIdAndTeamnameOrderByTenantId(int tenantId, String teamName);
+
+  void deleteByTenantId(int tenantId);
 }

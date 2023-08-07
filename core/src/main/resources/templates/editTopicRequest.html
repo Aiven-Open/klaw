@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<html ng-app="editTopicRequestApp" ng-controller="editTopicRequestCtrl">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<!-- Tell the browser to be responsive to screen width -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-YQB8J8J690');
+</script>
+
+	<!-- Favicon icon -->
+	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
+	<title>Request Topic | Kafka Self-service Topic Management Portal</title>
+	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
+	<!-- chartist CSS -->
+	<!--
+<link rel="stylesheet" type="text/css" href="assets/plugins/datatables.net-bs4/css/dataTables.bootstrap4.css">
+	<link rel="stylesheet" type="text/css"
+		  href="assets/plugins/datatables.net-bs4/css/responsive.dataTables.min.css">
+		  -->
+	<!-- Custom CSS -->
+	<link href="assets/css/style.css" rel="stylesheet">
+	<!-- You can change the theme colors from here -->
+	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
+	<link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
+
+	<script src="lib/angular.min.js"></script>
+	<script src="lib/angular-route.min.js"></script>
+	<script src="js/editTopicRequest.js"></script>
+	<link rel="stylesheet" href="assets/css/custom.css" />
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+	<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+	<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+
+	<![endif]-->
+</head>
+
+<body class="fix-header card-no-border logo-center" ng-init="getAuth();">
+<!-- ============================================================== -->
+<!-- Preloader - style you can find in spinners.css -->
+<!-- ============================================================== -->
+<div class="preloader">
+	<svg class="circular" viewBox="25 25 50 50">
+		<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10" /> </svg>
+</div>
+<!-- ============================================================== -->
+<!-- Main wrapper - style you can find in pages.scss -->
+<!-- ============================================================== -->
+<div id="main-wrapper">
+	<!-- ============================================================== -->
+	<!-- Topbar header - style you can find in pages.scss -->
+	<!-- ============================================================== -->
+	<header class="topbar">
+		<nav class="navbar top-navbar navbar-expand-md navbar-light">
+			<!-- ============================================================== -->
+			<!-- Logo -->
+			<!-- ============================================================== -->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="index">
+	<h4 style="color:white;">{{ companyinfo }}</h4>
+</a>
+				<!-- <a href="index"><img src="assets/images/clients/logo.jpg" width="100%" /></a> -->
+			</div>
+			<!-- ============================================================== -->
+			<!-- End Logo -->
+			<!-- ============================================================== -->
+			<div class="navbar-collapse">
+				<!-- ============================================================== -->
+				<!-- toggle and nav items -->
+				<!-- ============================================================== -->
+				<ul class="navbar-nav mr-auto mt-md-0">
+					<!-- This is  -->
+
+					<!-- ============================================================== -->
+					<!-- Search -->
+					<!-- ============================================================== -->
+					<a href="index"><img class="header-logo" src="assets/images/klaw_logo.png"/></a>
+
+				</ul>
+				<!-- ============================================================== -->
+				<!-- User profile and search -->
+				<!-- ============================================================== -->
+				<ul class="navbar-nav my-lg-0">
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="requestTopics"><i class="mdi mdi-plus"></i></a>
+					</li>
+					<li class="nav-item d-none d-md-block search-box"> <a
+							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
+							href="javascript:void(0)" ng-click="refreshPage()"><i class="mdi mdi-reload"></i></a>
+					</li>
+					<li ng-if="dashboardDetails.approveAtleastOneRequest=='Authorized'" class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
+								class="mdi mdi-message"></i>
+							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
+						</a>
+						<div class="dropdown-menu dropdown-menu-right mailbox scale-up">
+							<ul>
+								<li>
+									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
+								</li>
+								<li>
+									<div class="message-center position-relative">
+										<!-- Message -->
+										<a href="execTopics" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-danger btn-circle mr-2"><i class="fa fa-link"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">Topic Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notifications }}  requests</span>
+											</div>
+										</a>
+										<a href="execAcls" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-success btn-circle mr-2"><i class="ti-calendar"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">Acl Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsAcls }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execSchemas" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-info btn-circle mr-2"><i class="ti-pencil-alt"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">Schema Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsSchemas }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execConnectors" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-warning btn-circle mr-2"><i class="ti-vector"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">KafkaConnector Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ dashboardDetails.notificationsConnectors }}  requests</span>
+
+											</div>
+										</a>
+										<a href="execUsers" ng-show="dashboardDetails.addUser=='Authorized'" class="border-bottom d-block text-decoration-none py-2 px-3">
+											<div class="btn btn-primary btn-circle mr-2"><i class="ti-link"></i>
+											</div>
+											<div class="mail-contnet d-inline-block align-middle">
+												<h5 class="my-1">New User Requests</h5> <span
+													class="mail-desc font-12 text-truncate overflow-hidden text-nowrap d-block">{{ notificationsUsers }}  requests</span>
+
+											</div>
+										</a>
+									</div>
+								</li>
+
+							</ul>
+						</div>
+					</li>
+
+					<!-- ============================================================== -->
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
+						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="mdi mdi-account-circle"></i>
+						</button></a>
+						<div class="dropdown-menu dropdown-menu-right scale-up">
+							<ul class="dropdown-user">
+								<li>
+									<div class="dw-user-box">
+										<div class="u-img"><img src="assets/images/logged-user.png" alt="user"></div>
+										<div class="u-text">
+											<h4>{{userlogged}}</h4>
+											<p class="text-muted">{{teamname}}</p><a href="myProfile"
+																					 class="btn btn-rounded btn-danger btn-sm">View
+											Profile</a>
+										</div>
+									</div>
+								</li>
+								<li role="separator" class="divider"></li>
+								<li><a href="myProfile"><i class="ti-user"></i> My Profile</a></li>
+                                 <li><a href="tenantInfo"><i class="ti-package"></i> My Tenant Info</a></li>
+								<li ng-show="dashboardDetails.authenticationType=='db'"><a href="changePwd"><i class="ti-wallet"></i> Change Password</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="#" ng-click="logout()"><i class="fa fa-power-off"></i> Logout</a></li>
+							</ul>
+						</div>
+					</li>
+					<!-- ============================================================== -->
+					<!-- Language -->
+					<!-- ============================================================== -->
+					<li class="nav-item dropdown mega-dropdown">
+						<a
+								class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href=""
+								data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i
+								class="mdi mdi-help-circle"></i></a>
+						<div class="dropdown-menu scale-up-left">
+							<ul class="mega-dropdown-menu row">
+								<li class="col-lg-6">
+									<h4 class="mb-3">Contact Administrator</h4>
+									<!-- Contact -->
+									<form>
+										<div class="form-group">
+											<input type="text" class="form-control" ng-model="contactFormSubject" placeholder="Enter Subject">
+										</div>
+										<div class="form-group">
+											<textarea class="form-control" ng-model="contactFormMessage" rows="3" placeholder="Message"></textarea>
+										</div>
+										<button type="button" ng-click="sendMessageToAdmin();" class="btn btn-info">Submit</button>
+									</form>
+								</li>
+								<li class="col-lg-3">
+									<h4 class="mb-3">Help</h4>
+									<!-- List style -->
+									<ul class="list-style-none">
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-file-document"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="https://klaw-project.io/docs">Documentation</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-blinds"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="{{ dashboardDetails.supportlink }}">Raise a git issue</a></td>
+												</tr>
+											</table>
+										</li>
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-hexagon"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="helpwizard">Starting Wizard</a></td>
+												</tr>
+											</table>
+										</li>
+									</ul>
+								</li>
+								<li class="col-lg-3">
+									<h4 class="mb-3">Shortcuts</h4>
+									<!-- List style -->
+									<ul class="list-style-none">
+										<li>
+											<table>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="requestTopics">Request Topic</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="envs">Environments</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="users">Users</a></td>
+												</tr>
+												<tr>
+													<td><i class="mdi mdi-blender"></i></td>
+													<td><a class="dropdown-item" target="_blank" href="teams">Teams</a></td>
+												</tr>
+											</table>
+										</li>
+
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</li>
+				</ul>
+				<ul class="navbar-nav my-lg-0" style="width:200px;color:black;">
+					<table>
+						<tr>
+							<td width="100%">
+								<li class="nav-item d-none d-md-block search-box">
+									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
+											id="userbackground">
+										{{userlogged}}</button>
+								</li>
+							</td>
+
+						</tr>
+						<tr>
+							<td width="100%" ng-show="dashboardDetails.canSwitchTeams == 'false'">
+								<li class="nav-item d-none d-md-block search-box">
+									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
+											id="userbackground">
+										{{teamname}} | {{userrole}}</button>
+								</li>
+							</td>
+							<td width="100%" ng-show="dashboardDetails.canSwitchTeams == 'true'">
+								<li class="nav-item d-none d-md-block search-box">
+									<button type="button" class="btn waves-effect waves-light btn-block btn-xs btn-danger"
+											id="userbackground1">
+										<select style="font-size: xx-small" ng-change="onSwitchTeam()" ng-model="teamId" ng-options="team.teamId as team.teamname for team in switchTeamsListDashboard">
+
+										</select>
+										| {{userrole}}
+									</button>
+
+								</li>
+							</td>
+						</tr>
+
+					</table>
+
+				</ul>
+			</div>
+		</nav>
+	</header>
+
+	<!-- Left Sidebar - style you can find in sidebar.scss  -->
+	<!-- ============================================================== -->
+	<aside class="left-sidebar">
+		<!-- Sidebar scroll-->
+		<div class="scroll-sidebar">
+			<!-- Sidebar navigation-->
+			<nav class="sidebar-nav">
+				<ul id="sidebarnav">
+					<li class="nav-small-cap">PERSONAL</li>
+					<li>
+						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-gauge"></i><span class="hide-menu">Dashboard</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="index">Home</a></li>
+							<li><a href="activityLog">Activity Log</a></li>
+							<li><a href="analytics">Analytics</a></li>
+							<li><a href="serverConfig">Settings</a></li>
+						</ul>
+					</li>
+					<li ng-show="dashboardDetails.viewTopics=='Authorized'">
+						<a class="has-arrow" href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
+					</li>
+					<li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
+						<a class="has-arrow " href="kafkaConnectors" aria-expanded="false"><i class="mdi mdi-lan-connect"></i><span class="hide-menu">Apache Kafka Connect</span></a>
+					</li>
+					<li class="two-column active" ng-show="dashboardDetails.requestItems=='Authorized'">
+						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="requestTopics">Request Topic</a></li>
+					<li><a href="requestConnector">Request Connector</a></li>
+
+							<li><a href="myTopicRequests">My Topic Requests</a></li>
+							<li><a href="myAclRequests">My Acl Requests</a></li>
+							<li><a href="mySchemaRequests">My Schema Requests</a></li>
+					<li><a href="myConnectorRequests">My Connector Requests</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">FORMS, TABLE &amp; WIDGETS</li>
+					<li class="two-column">
+						<a class="has-arrow" href="#" aria-expanded="false"><i class="fas fa-server"></i><span class="hide-menu">Environments</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="envs">Environments</a></li>
+							<li><a href="clusters">Clusters</a></li>
+							<li ng-show="dashboardDetails.showAddDeleteTenants == 'Authorized'" ><a href="tenants">Tenants</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+
+					<li class="two-column">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-widgets"></i><span class="hide-menu">Users - Teams</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="users">Users</a></li>
+							<li><a href="teams">Teams</a></li>
+						</ul>
+					</li>
+					<li class="two-column" ng-show="dashboardDetails.canUpdatePermissions=='Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-account-key"></i><span class="hide-menu">Roles - Permissions</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li><a href="roles">Roles</a></li>
+							<li><a href="permissions">Permissions</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+					<li class="two-column" ng-show="dashboardDetails.syncTopicsAcls == 'Authorized' || dashboardDetails.syncBackTopics == 'Authorized' || dashboardDetails.syncConnectors == 'Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-arrange-send-backward"></i><span class="hide-menu">Synchronize</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeTopics">Topics from cluster</a></li>
+							<li ng-show="dashboardDetails.syncTopicsAcls == 'Authorized'"><a href="synchronizeAcls">Acls from cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackTopics == 'Authorized'"><a href="syncBackTopics">Topics to cluster</a></li>
+							<li ng-show="dashboardDetails.syncBackAcls == 'Authorized'"><a href="syncBackAcls">Acls to cluster</a></li>
+                            <li ng-show="dashboardDetails.syncSchemas == 'Authorized'"><a href="synchronizeSchemas">Schemas from cluster</a></li>
+                            <li ng-show="dashboardDetails.syncBackSchemas == 'Authorized'"><a href="syncBackSchemas">Schemas to cluster</a></li>
+							<li ng-show="dashboardDetails.syncConnectors == 'Authorized'"><a href="syncConnectors">Connectors from cluster</a></li>
+							<li ng-show="dashboardDetails.manageConnectors == 'Authorized'"><a href="manageConnectors">Manage Connectors</a></li>
+						</ul>
+					</li>
+					<li class="nav-devider"></li>
+					<li class="nav-small-cap">EXTRA COMPONENTS</li>
+					<li ng-show="dashboardDetails.approveAtleastOneRequest=='Authorized'">
+						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Approve</span></a>
+						<ul aria-expanded="false" class="collapse">
+							<li ng-show="dashboardDetails.approveDeclineTopics=='Authorized'"><a href="execTopics">Topic Request</a></li>
+							<li ng-show="dashboardDetails.approveDeclineSubscriptions=='Authorized'"><a href="execAcls">Acl Request</a></li>
+							<li ng-show="dashboardDetails.approveDeclineSchemas=='Authorized'"><a href="execSchemas">Schema Request</a></li>
+					<li ng-show="dashboardDetails.approveDeclineConnectors=='Authorized'"><a href="execConnectors">KafkaConnect Request</a></li>
+							  <li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
+						</ul>
+					</li>
+
+				</ul>
+			</nav>
+			<!-- End Sidebar navigation -->
+		</div>
+		<div class="notificationbar" ng-show="dashboardDetails.broadcastText != ''">
+			<marquee>{{ dashboardDetails.broadcastText }}</marquee>
+		</div>
+		<!-- End Sidebar scroll-->
+	</aside>
+
+	<!-- Page wrapper  -->
+	<!-- ============================================================== -->
+	<div class="page-wrapper">
+		<!-- ============================================================== -->
+		<!-- Container fluid  -->
+		<!-- ============================================================== -->
+		<div class="container-fluid">
+			<div class="row page-titles">
+			</div>
+			<div class="row" ng-if="dashboardDetails.coralEnabled === 'true'">
+				<div class="ribbon-wrapper card col-lg-6 col-md-6 col-xlg-2 col-xs-6">
+					<div class="ribbon ribbon-success">New user interface available</div>
+					<p class="ribbon-content">
+						Check out the new interface for <a href="coral/topics/request">topic request.</a>
+					</p>
+				</div>
+			</div>
+
+			<!-- Row -->
+
+			<div class="row" ng-show="alert != null && alert != ''" ng-init="">
+				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+					<div class="ribbon-wrapper card">
+						<div ng-show="alert.indexOf('success') != -1" class="ribbon ribbon-success">Notification</div>
+						<div ng-show="alert.indexOf('success') == -1" class="ribbon ribbon-warning">Notification</div>
+						<p class="ribbon-content">{{ alert }}</p>
+					</div>
+				</div>
+			</div>
+
+			<!-- Row -->
+
+			<div class="row" ng-init="getEnvs();getTopicConfigs();loadEditTopicInfo();">
+				<div class="col-lg-12">
+					<div class="card card-outline-success">
+						<div class="card-body">
+							<form id="form">
+								<div class="form-body">
+
+									<table class="table color-table success-table" width="100%"><tr>
+										<td align="left"><h3 class="card-title">{{ requestTitle }}</h3>
+										</td>
+										<td align="right">
+											<a href="browseTopics">
+												<i class="fas fa-arrow-alt-circle-left"></i>
+												<button type="button"
+														class="btn waves-effect waves-light btn-rounded btn-outline-info">Back to Topics</button>
+											</a>
+										</td></tr>
+									</table>
+
+									<hr size="1" color="black">
+
+									<!--/row-->
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Select Environment</label>
+												<select ng-show="addTopic.requestOperationType == 'CREATE'" required class="form-control custom-select"
+														ng-model="addTopic.environment"
+														ng-change="getEnvTopicPartitions(addTopic.environment)"
+														ng-options="env.id as env.name for env in allenvs">
+													<option value="" selected="selected">
+														Select Environment</option>
+												</select>
+												<select ng-show="addTopic.requestOperationType == 'UPDATE'" disabled required class="form-control custom-select"
+														ng-model="addTopic.environment"
+														ng-options="env.id as env.name for env in allenvs">
+													<option value="" selected="selected">
+														Select Environment</option>
+												</select>
+												<input disabled ng-show="addTopic.requestOperationType == 'PROMOTE'"  name="addTopic.envName"
+													   type="text" value="{{addTopic.environmentName}}" class="form-control">
+
+											</div>
+										</div>
+										<!--/span-->
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Topic name</label>
+												<input ng-show="addTopic.requestOperationType == 'CREATE'" type="text" class="form-control" ng-model="addTopic.topicname" required>
+												<input ng-show="addTopic.requestOperationType == 'UPDATE' || addTopic.requestOperationType == 'PROMOTE' || addTopic.requestOperationType == 'DELETE'"
+													   disabled type="text" class="form-control" ng-model="addTopic.topicname" required>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
+									<!--/row-->
+									<div class="row">
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Topic Partitions</label>
+												<select class="form-control custom-select"
+														required
+														ng-model="addTopic.topicpartitions"
+														ng-change="checkPartitionAndRepFactorWarnings()"
+														ng-options="partitions as partitions for partitions in envTopicMap.partitionsList">
+													<option value="" selected="selected">
+														Select Partitions</option>
+												</select>
+												<span ng-show="partitionWarn!=='' ">{{partitionWarn}}</span>
+											</div>
+										</div>
+										<!--/span-->
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Topic Replication factor</label>
+												<select class="form-control custom-select"
+														required
+														ng-model="addTopic.replicationfactor"
+														ng-change="checkPartitionAndRepFactorWarnings()"
+														ng-options="rf as rf for rf in envTopicMap.replicationFactorList">
+													<option value="" selected="selected">
+														Select Replication factor</option>
+												</select>
+												<span ng-show="repFactorWarn!=='' ">{{repFactorWarn}}</span>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Advanced Topic Configuration</label>
+
+												<table>
+													<tr valign="top" ng-repeat="oneTopicConfig in topicConfigsSelected track by $index">
+														<td width="45%">
+															<select class="form-control custom-select"
+																	ng-model="topicConfigsSelectedDropdown[$index]" name="topicConfigsSelectedDropdown[$index]"
+																	ng-change="updateLink($index)"
+																	ng-options="value as value for (keys, value) in topicConfigs">
+																<option value="" selected="selected">
+																	Select Config</option>
+															</select>
+														</td>
+														<td>
+															<input ng-show="propertyInfoLink[$index] != ''" ng-model="topicConfigsSelected[$index]" name="topicConfigsSelected[$index]"
+																   type="text" placeholder="" class="form-control">
+														</td>
+														<td>
+															<a ng-show="propertyInfoLink[$index] != ''" href="{{ propertyInfoLink[$index] }}" ng-model="topicConfigsSelectedLink[$index]" target="_blank">
+																<button type="button" class="btn btn-outline-info  mb-2">
+																	<i class="ti-info"></i>
+																</button>
+															</a>
+														</td>
+														<td ng-show="topicConfigsSelectedLength-1 == $index && propertyInfoLink[$index] != ''">
+															<button type="button" class="btn btn-info  mb-2" ng-click="addConfigRecord($index);">
+																<i class="ti-plus"></i>
+															</button>
+														</td>
+														<td ng-show="topicConfigsSelectedLength > 1">
+															<button type="button" class="btn btn-info  mb-2" ng-click="removeConfigRecord($index);">
+																<i class="ti-minus"></i>
+															</button>
+														</td>
+													</tr>
+												</table>
+
+												<small class="form-control-feedback">Check the info icon for possible values.</small>
+
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Topic Description</label>
+												<input  ng-show="addTopic.requestOperationType == 'CREATE'" class="form-control" maxlength="75" placeholder="This topic is for .."
+													   ng-model="addTopic.description">
+												<input  ng-show="addTopic.requestOperationType == 'UPDATE' ||
+												 addTopic.requestOperationType == 'PROMOTE'" class="form-control" maxlength="75" placeholder="This topic is for .."
+														disabled ng-model="addTopic.description">
+											</div>
+										</div>
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Remarks</label>
+												<input class="form-control" maxlength="75" placeholder="Any specific comments"
+													   ng-model="addTopic.remarks">
+											</div>
+										</div>
+										<div class="col-md-6">
+										</div>
+									</div>
+
+									<!--/row-->
+
+								</div>
+								<div id="alertbar">{{ alertnote }}</div>
+								<div class="form-actions">
+									<button ng-click="submitEditTopicRequest();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
+										{{ requestButton }}</button>
+									<button type="button" ng-click="cancelRequest();" class="btn btn-outline-inverse">Cancel</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<!-- footer -->
+		<!-- ============================================================== -->
+		<footer class="footer">
+			<a href="https://klaw-project.io">klaw-project.io</a>
+		</footer>
+		<!-- ============================================================== -->
+		<!-- End footer -->
+		<!-- ============================================================== -->
+	</div>
+	<!-- ============================================================== -->
+	<!-- End Page wrapper  -->
+	<!-- ============================================================== -->
+</div>
+<!-- All Jquery -->
+<!-- ============================================================== -->
+<script src="assets/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap tether Core JavaScript -->
+<script src="assets/plugins/popper/popper.min.js"></script>
+<script src="assets/plugins/bootstrap/js/bootstrap.min.js"></script>
+<!-- slimscrollbar scrollbar JavaScript -->
+<script src="assets/js/jquery.slimscroll.js"></script>
+<!--Wave Effects -->
+<script src="assets/js/waves.js"></script>
+<!--Menu sidebar -->
+<script src="assets/js/sidebarmenu.js"></script>
+<!--stickey kit -->
+<script src="assets/plugins/sticky-kit-master/dist/sticky-kit.min.js"></script>
+<script src="assets/plugins/sparkline/jquery.sparkline.min.js"></script>
+<!--Custom JavaScript -->
+<script src="assets/js/custom.min.js"></script>
+<!-- ============================================================== -->
+<!-- This page plugins -->
+<!-- ============================================================== -->
+<!--
+<script src="assets/plugins/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
+-->
+<!-- Chart JS -->
+<!-- <script src="assets/js/widget-data.js"></script> -->
+<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
+</body>
+
+</html>
