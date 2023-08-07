@@ -22,7 +22,6 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 
 - [node](https://nodejs.org/en/) needs to be installed. See [nvmrc](../.nvmrc) or the `engines` definition in [package.json](../package.json) for version.
 - Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm.
-- [Maven](https://maven.apache.org/) is the build tool used for Klaw and needs to be installed. You can [download the binary](https://maven.apache.org/download.cgi) or use a package manager (like [Homebrew](https://formulae.brew.sh/formula/maven) on MacOs).
 
 **Step by step**
 
