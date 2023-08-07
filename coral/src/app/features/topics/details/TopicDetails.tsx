@@ -18,7 +18,7 @@ import {
 } from "src/app/router_utils";
 import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
 import {
-  claimTopic,
+  requestTopicClaim,
   getSchemaOfTopic,
   getTopicOverview,
 } from "src/domain/topic/topic-api";
@@ -98,7 +98,7 @@ function TopicDetails(props: TopicOverviewProps) {
     isError: createClaimTopicRequestIsError,
   } = useMutation(
     (remark?: string) =>
-      claimTopic({
+      requestTopicClaim({
         topicName: topicData?.topicInfo.topicName || "",
         env: topicData?.topicInfo.envId || "",
         remark,

@@ -31,7 +31,7 @@ import {
 import { Routes } from "src/app/router_utils";
 import {
   ConnectorDetailsForEnv,
-  editConnector,
+  requestConnectorEdit,
   getConnectorDetailsPerEnv,
 } from "src/domain/connector";
 import { HTTPError } from "src/services/api";
@@ -142,7 +142,7 @@ function ConnectorEditRequest() {
     isLoading: editIsLoading,
     isError: editIsError,
     error: editError,
-  } = useMutation(editConnector, {
+  } = useMutation(requestConnectorEdit, {
     onSuccess: () => {
       navigate(-1);
       toast({

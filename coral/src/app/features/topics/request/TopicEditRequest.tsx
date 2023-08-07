@@ -31,7 +31,7 @@ import { Environment } from "src/domain/environment";
 import { getAllEnvironmentsForTopicAndAcl } from "src/domain/environment/environment-api";
 import {
   TopicDetailsPerEnv,
-  editTopic,
+  requestTopicEdit,
   getTopicDetailsPerEnv,
 } from "src/domain/topic";
 import { HTTPError } from "src/services/api";
@@ -152,7 +152,7 @@ function TopicEditRequest() {
     isLoading: editIsLoading,
     isError: editIsError,
     error: editError,
-  } = useMutation(editTopic, {
+  } = useMutation(requestTopicEdit, {
     onSuccess: () => {
       navigate(-1);
       toast({

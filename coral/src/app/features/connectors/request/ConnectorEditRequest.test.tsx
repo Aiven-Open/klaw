@@ -3,7 +3,10 @@ import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import ConnectorEditRequest from "src/app/features/connectors/request/ConnectorEditRequest";
-import { editConnector, getConnectorDetailsPerEnv } from "src/domain/connector";
+import {
+  requestConnectorEdit,
+  getConnectorDetailsPerEnv,
+} from "src/domain/connector";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import * as ReactQuery from "@tanstack/react-query";
 
@@ -52,8 +55,8 @@ const mockGetConnectorDetailsPerEnv =
     typeof getConnectorDetailsPerEnv
   >;
 
-const mockEditConnector = editConnector as jest.MockedFunction<
-  typeof editConnector
+const mockEditConnector = requestConnectorEdit as jest.MockedFunction<
+  typeof requestConnectorEdit
 >;
 
 const mockedUsedNavigate = jest.fn();
@@ -242,8 +245,8 @@ describe("<ConnectorEditRequest />", () => {
         await user.type(input, "hello");
         await user.click(button);
 
-        expect(editConnector).toHaveBeenCalledTimes(1);
-        expect(editConnector).toHaveBeenCalledWith({
+        expect(requestConnectorEdit).toHaveBeenCalledTimes(1);
+        expect(requestConnectorEdit).toHaveBeenCalledWith({
           connectorConfig:
             testConnectorDetailsPerEnvResponse.connectorContents
               .connectorConfig,
@@ -281,7 +284,7 @@ describe("<ConnectorEditRequest />", () => {
           ).toBeVisible()
         );
 
-        expect(editConnector).not.toHaveBeenCalled();
+        expect(requestConnectorEdit).not.toHaveBeenCalled();
         expect(mockedUseToast).not.toHaveBeenCalled();
         expect(
           screen.getByRole("button", { name: "Submit update request" })

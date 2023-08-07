@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { deleteTopic, DeleteTopicPayload } from "src/domain/topic";
+import { requestTopicDeletion, DeleteTopicPayload } from "src/domain/topic";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { TopicDeleteConfirmationModal } from "src/app/features/topics/details/settings/components/TopicDeleteConfirmationModal";
@@ -31,7 +31,7 @@ function TopicSettings() {
 
   const { mutate, isLoading } = useMutation(
     (params: Omit<DeleteTopicPayload, "topicName" | "env">) =>
-      deleteTopic({
+      requestTopicDeletion({
         topicName,
         env: environmentId,
         deleteAssociatedSchema: params.deleteAssociatedSchema,

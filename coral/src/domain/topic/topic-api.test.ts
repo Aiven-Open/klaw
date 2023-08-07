@@ -1,6 +1,6 @@
 import {
   getTopicRequestsForApprover,
-  requestTopic,
+  requestTopicCreation,
 } from "src/domain/topic/topic-api";
 import { server } from "src/services/test-utils/api-mocks/server";
 import api from "src/services/api";
@@ -23,7 +23,7 @@ describe("topic-api", () => {
     server.close();
   });
 
-  describe("requestTopic", () => {
+  describe("requestTopicCreation", () => {
     beforeEach(() => {
       mockRequestTopic({
         mswInstance: server,
@@ -62,7 +62,7 @@ describe("topic-api", () => {
           remarks: "",
           requestOperationType: "CREATE" as const,
         };
-      requestTopic(parameters);
+      requestTopicCreation(parameters);
       expect(postSpy).toHaveBeenCalledTimes(1);
       expect(postSpy).toHaveBeenCalledWith("/createTopics", payload);
     });
