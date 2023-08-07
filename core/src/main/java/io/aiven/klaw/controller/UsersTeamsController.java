@@ -134,7 +134,8 @@ public class UsersTeamsController {
       value = "/getNewUserRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<RegisterUserInfoModelResponse>> getNewUserRequests() {
+  public ResponseEntity<List<RegisterUserInfoModelResponse>> getNewUserRequests()
+      throws KlawNotAuthorizedException {
     return new ResponseEntity<>(usersTeamsControllerService.getNewUserRequests(), HttpStatus.OK);
   }
 
