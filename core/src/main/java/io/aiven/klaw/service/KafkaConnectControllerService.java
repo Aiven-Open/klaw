@@ -238,7 +238,7 @@ public class KafkaConnectControllerService {
         CONNECTOR_CREATE_REQUESTED,
         commonUtilsService.getLoginUrl());
     if (result.equals(ApiResultStatus.SUCCESS.value)) {
-      return ApiResponse.notOk(result);
+      return ApiResponse.ok(result);
     } else {
       return ApiResponse.notOk(result);
     }
