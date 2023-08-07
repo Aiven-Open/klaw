@@ -1,7 +1,7 @@
 import { Alert, Banner, Box, Spacing } from "@aivenio/aquarium";
 import { ReactElement } from "react";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
-import illustration from "src/app/images/topic-details-schema-Illustration.svg";
+import illustration from "src/app/images/topic-details-banner-Illustration.svg";
 import { PromotionStatus } from "src/domain/promotion";
 import { RequestOperationType } from "src/domain/requests/requests-types";
 
