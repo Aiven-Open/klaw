@@ -98,4 +98,6 @@ public interface AclRequestsRepo
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,
       @Param("topicStatus") String topicStatus);
+
+  void deleteByTenantId(int tenantId);
 }

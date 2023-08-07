@@ -81,4 +81,6 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
 
   @Query(value = "select max(aclid) from kwacls where tenantid = :tenantId", nativeQuery = true)
   Integer getNextAclId(@Param("tenantId") Integer tenantId);
+
+  void deleteByTenantId(int tenantId);
 }

@@ -923,18 +923,19 @@ public class UsersTeamsControllerService {
     }
 
     // get the user details from db
-    List<RegisterUserInfo> stagingRegisterUsersInfo =
-        manageDatabase.getHandleDbRequests().getAllStagingRegisterUsersInfo(newUser.getUsername());
+    RegisterUserInfo stagingRegisterUserInfo =
+        manageDatabase
+            .getHandleDbRequests()
+            .getFirstStagingRegisterUsersInfo(newUser.getUsername());
 
     // enrich user info
-    if (!stagingRegisterUsersInfo.isEmpty()) {
-      RegisterUserInfo registerUserInfo = stagingRegisterUsersInfo.get(0);
-      newUser.setTeamId(registerUserInfo.getTeamId());
+    if (stagingRegisterUserInfo != null) {
+      newUser.setTeamId(stagingRegisterUserInfo.getTeamId());
       newUser.setTeam(
           manageDatabase.getTeamNameFromTeamId(
-              registerUserInfo.getTenantId(), registerUserInfo.getTeamId()));
-      newUser.setRole(registerUserInfo.getRole());
-      newUser.setTenantId(registerUserInfo.getTenantId());
+              stagingRegisterUserInfo.getTenantId(), stagingRegisterUserInfo.getTeamId()));
+      newUser.setRole(stagingRegisterUserInfo.getRole());
+      newUser.setTenantId(stagingRegisterUserInfo.getTenantId());
     }
 
     try {

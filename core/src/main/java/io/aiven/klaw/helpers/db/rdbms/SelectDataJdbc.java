@@ -1030,8 +1030,8 @@ public class SelectDataJdbc {
     return registerInfoRepo.findAllByStatus("PENDING");
   }
 
-  public List<RegisterUserInfo> selectAllStagingRegisterUsersInfo(String userId) {
-    return registerInfoRepo.findAllByUsernameAndStatus(userId, "STAGING");
+  public RegisterUserInfo selectFirstStagingRegisterUsersInfo(String userId) {
+    return registerInfoRepo.findFirstByUsernameAndStatus(userId, "STAGING");
   }
 
   public RegisterUserInfo selectRegisterUsersInfo(String username) {
@@ -1376,17 +1376,17 @@ public class SelectDataJdbc {
   }
 
   public String getRegistrationId(String userId) {
-    List<RegisterUserInfo> registerInfoList =
-        registerInfoRepo.findAllByUsernameAndStatus(userId, "STAGING");
-    List<RegisterUserInfo> registerInfoList1 =
-        registerInfoRepo.findAllByUsernameAndStatus(userId, "PENDING");
-    if (registerInfoList.size() > 0) {
-      return registerInfoList.get(0).getRegistrationId();
-    } else if (registerInfoList1.size() > 0) {
-      return "PENDING_ACTIVATION";
-    } else {
-      return null;
+    RegisterUserInfo registerInfoStaging =
+        registerInfoRepo.findFirstByUsernameAndStatus(userId, "STAGING");
+    if (registerInfoStaging != null) {
+      return registerInfoStaging.getRegistrationId();
     }
+    boolean pendingArePresent =
+        registerInfoRepo.existsRegisterUserInfoByUsernameAndStatus(userId, "PENDING");
+    if (pendingArePresent) {
+      return "PENDING_ACTIVATION";
+    }
+    return null;
   }
 
   public RegisterUserInfo getRegistrationDetails(String registrationId, String status) {
