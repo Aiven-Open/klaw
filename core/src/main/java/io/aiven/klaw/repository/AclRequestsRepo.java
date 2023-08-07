@@ -26,9 +26,9 @@ public interface AclRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwaclrequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created'",
+          "select exists(select 1 from kwaclrequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created')",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForTeamId(
+  boolean existsRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   @Query(

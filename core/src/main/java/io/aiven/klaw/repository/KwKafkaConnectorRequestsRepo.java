@@ -43,9 +43,9 @@ public interface KwKafkaConnectorRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwkafkaconnectorrequests where teamid = :teamId and tenantid = :tenantId and connectorstatus='created'",
+          "select exists(select 1 from kwkafkaconnectorrequests where teamid = :teamId and tenantid = :tenantId and connectorstatus='created')",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForTeamId(
+  boolean existsRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   @Query(
