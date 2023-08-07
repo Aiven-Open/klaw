@@ -68,10 +68,10 @@ public class KafkaConnectSyncControllerService {
 
     try {
       String schemaOfObj = OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(res);
-      return ApiResponse.builder().success(true).message(schemaOfObj).build();
+      return ApiResponse.ok(schemaOfObj);
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
-      return ApiResponse.builder().success(false).message(e.getMessage()).build();
+      return ApiResponse.notOk(e.getMessage());
     }
   }
 
@@ -81,10 +81,7 @@ public class KafkaConnectSyncControllerService {
     String userName = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_CONNECTORS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     // tenant filtering
@@ -114,10 +111,7 @@ public class KafkaConnectSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userName)
             .contains(topicUpdate.getEnvSelected())) {
-          return ApiResponse.builder()
-              .success(false)
-              .message(ApiResultStatus.NOT_AUTHORIZED.value)
-              .build();
+          return ApiResponse.NOT_AUTHORIZED;
         }
         existingTopics = getConnectorsFromName(topicUpdate.getConnectorName(), tenantId);
 
@@ -147,10 +141,8 @@ public class KafkaConnectSyncControllerService {
                   topicUpdate.getConnectorName(), topicUpdate.getEnvSelected(), tenantId);
         } catch (KlawException | JsonProcessingException e) {
           log.error("Exception:", e);
-          return ApiResponse.builder()
-              .success(false)
-              .message(String.format(KAFKA_CONNECT_SYNC_ERR_101, topicUpdate.getConnectorName()))
-              .build();
+          return ApiResponse.notOk(
+              String.format(KAFKA_CONNECT_SYNC_ERR_101, topicUpdate.getConnectorName()));
         }
 
         boolean topicAdded = false;
@@ -227,42 +219,31 @@ public class KafkaConnectSyncControllerService {
     }
 
     if (updatedSyncTopics.size() == 0 && updatedSyncTopicsDelete.size() > 0) {
-      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.SUCCESS;
     }
 
     if (topicsDontExistInMainCluster) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(
-              KAFKA_CONNECT_SYNC_ERR_102
-                  + " :"
-                  + syncCluster
-                  + ". \n Topics : "
-                  + erroredTopicsExist)
-          .build();
+      return ApiResponse.notOk(
+          KAFKA_CONNECT_SYNC_ERR_102 + " :" + syncCluster + ". \n Topics : " + erroredTopicsExist);
     }
 
     if (topicsWithDiffTeams) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(
-              KAFKA_CONNECT_SYNC_ERR_103 + " :" + syncCluster + ". \n Topics : " + erroredTopics)
-          .build();
+      return ApiResponse.notOk(
+          KAFKA_CONNECT_SYNC_ERR_103 + " :" + syncCluster + ". \n Topics : " + erroredTopics);
     }
 
     if (kafkaConnectorList.size() > 0) {
       try {
         String result =
             manageDatabase.getHandleDbRequests().addToSyncConnectors(kafkaConnectorList);
-        return ApiResponse.builder()
-            .success((result.equals(ApiResultStatus.SUCCESS.value)))
-            .message(result)
-            .build();
+        return ApiResultStatus.SUCCESS.value.equals(result)
+            ? ApiResponse.ok(result)
+            : ApiResponse.notOk(result);
       } catch (Exception e) {
         throw new KlawException(e.getMessage());
       }
     } else {
-      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
+      return ApiResponse.notOk(SYNC_ERR_101);
     }
   }
 

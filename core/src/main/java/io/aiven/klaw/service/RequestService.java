@@ -42,10 +42,7 @@ public class RequestService {
         default -> undeterinableResource();
       };
     } catch (Exception ex) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(String.format(REQ_SER_ERR_101, reqId) + " " + ex.getMessage())
-          .build();
+      return ApiResponse.notOk(String.format(REQ_SER_ERR_101, reqId) + " " + ex.getMessage());
     }
   }
 
@@ -74,15 +71,12 @@ public class RequestService {
         default -> undeterinableResource();
       };
     } catch (Exception ex) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(String.format(REQ_SER_ERR_102, reqId))
-          .build();
+      return ApiResponse.notOk(String.format(REQ_SER_ERR_102, reqId));
     }
   }
 
   private static ApiResponse undeterinableResource() {
-    return ApiResponse.builder().success(false).message(REQ_SER_ERR_103).build();
+    return ApiResponse.notOk(REQ_SER_ERR_103);
   }
 
   private ApiResponse processDeclineRequests(
@@ -96,10 +90,7 @@ public class RequestService {
         default -> undeterinableResource();
       };
     } catch (Exception ex) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(String.format(REQ_SER_ERR_104, reqId))
-          .build();
+      return ApiResponse.notOk(String.format(REQ_SER_ERR_104, reqId));
     }
   }
 }

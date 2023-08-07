@@ -32,7 +32,7 @@ describe("ConnectorDeleteConfirmationModal", () => {
     it("shows more information to delete the connector", () => {
       const dialog = screen.getByRole("dialog");
       const headline = within(dialog).getByRole("heading", {
-        name: "Delete connector",
+        name: "Request connector deletion",
       });
       const text = within(dialog).getByText(
         "Are you sure you would like to request the deletion of this connector?"
@@ -45,7 +45,7 @@ describe("ConnectorDeleteConfirmationModal", () => {
     it("shows a textarea where user can add a comment why they delete the connector", () => {
       const dialog = screen.getByRole("dialog");
       const textarea = within(dialog).getByRole("textbox", {
-        name: "You can add the reason to delete the connector (optional)",
+        name: "Add your reasons for deleting this connector (optional)",
       });
 
       expect(textarea).toBeEnabled();
@@ -89,7 +89,7 @@ describe("ConnectorDeleteConfirmationModal", () => {
     it("disables textarea where user can add a comment why they delete the connector", () => {
       const dialog = screen.getByRole("dialog");
       const textarea = within(dialog).getByRole("textbox", {
-        name: "You can add the reason to delete the connector (optional)",
+        name: "Add your reasons for deleting this connector (optional)",
       });
 
       expect(textarea).toBeDisabled();
@@ -165,7 +165,7 @@ describe("ConnectorDeleteConfirmationModal", () => {
     it("triggers a given submit function with correct date when user adds a reason", async () => {
       const dialog = screen.getByRole("dialog");
       const textarea = within(dialog).getByRole("textbox", {
-        name: "You can add the reason to delete the connector (optional)",
+        name: "Add your reasons for deleting this connector (optional)",
       });
 
       const confirmationButton = within(dialog).getByRole("button", {

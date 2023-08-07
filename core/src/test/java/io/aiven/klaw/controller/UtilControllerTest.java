@@ -95,7 +95,7 @@ public class UtilControllerTest {
   public void resetMemoryCache() throws Exception {
     ResetEntityCache resetEntityCache = utilMethods.getResetEntityCache();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(resetEntityCache);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(utilControllerService.resetCache(eq(resetEntityCache))).thenReturn(apiResponse);
     mvc.perform(
             MockMvcRequestBuilders.post("/resetMemoryCache")

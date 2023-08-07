@@ -236,7 +236,7 @@ public class SchemaRegistryControllerServiceTest {
   public void execSchemaRequestsFailure1() throws KlawException {
     int schemaReqId = 1001;
 
-    ApiResponse apiResponse = ApiResponse.builder().message("Schema not registered").build();
+    ApiResponse apiResponse = ApiResponse.notOk("Schema not registered");
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
@@ -264,7 +264,7 @@ public class SchemaRegistryControllerServiceTest {
   public void execSchemaRequestsFailure2() {
     int schemaReqId = 1001;
 
-    ApiResponse apiResponse = ApiResponse.builder().message("Schema registered id\": 215").build();
+    ApiResponse apiResponse = ApiResponse.ok("Schema registered id\": 215");
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     SchemaRequest schemaRequest = new SchemaRequest();
@@ -770,11 +770,9 @@ public class SchemaRegistryControllerServiceTest {
 
   private static ResponseEntity<ApiResponse> buildValidationResponse(boolean isSuccess) {
     if (isSuccess) {
-      return ResponseEntity.ok(
-          ApiResponse.builder().success(true).message(VALIDATION_SUCCESS_MSG).build());
+      return ResponseEntity.ok(ApiResponse.ok(VALIDATION_SUCCESS_MSG));
     } else {
-      return ResponseEntity.ok(
-          ApiResponse.builder().success(false).message(VALIDATION_FAILURE_MSG).build());
+      return ResponseEntity.ok(ApiResponse.notOk(VALIDATION_FAILURE_MSG));
     }
   }
 

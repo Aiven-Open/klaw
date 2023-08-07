@@ -32,10 +32,10 @@ describe("TopicDeleteConfirmationModal", () => {
     it("shows more information to delete the topic", () => {
       const dialog = screen.getByRole("dialog");
       const headline = within(dialog).getByRole("heading", {
-        name: "Delete topic",
+        name: "Request topic deletion",
       });
       const text = within(dialog).getByText(
-        "Are you sure you would like to delete this topic? Once this request is made it cannot be reversed."
+        "Are you sure you want to proceed with the deletion request for this topic? Once the request is approved, the topic will be permanently deleted."
       );
 
       expect(headline).toBeVisible();
@@ -55,7 +55,7 @@ describe("TopicDeleteConfirmationModal", () => {
     it("shows a textarea where user can add a comment why they delete the topic", () => {
       const dialog = screen.getByRole("dialog");
       const textarea = within(dialog).getByRole("textbox", {
-        name: "You can add the reason to delete the topic (optional)",
+        name: "Add your reasons for deleting this topic (optional)",
       });
 
       expect(textarea).toBeEnabled();
@@ -109,7 +109,7 @@ describe("TopicDeleteConfirmationModal", () => {
     it("disables textarea where user can add a comment why they delete the topic", () => {
       const dialog = screen.getByRole("dialog");
       const textarea = within(dialog).getByRole("textbox", {
-        name: "You can add the reason to delete the topic (optional)",
+        name: "Add your reasons for deleting this topic (optional)",
       });
 
       expect(textarea).toBeDisabled();
@@ -224,7 +224,7 @@ describe("TopicDeleteConfirmationModal", () => {
         name: "Delete all versions of schema associated with this topic if a schema exists.",
       });
       const textarea = within(dialog).getByRole("textbox", {
-        name: "You can add the reason to delete the topic (optional)",
+        name: "Add your reasons for deleting this topic (optional)",
       });
 
       const confirmationButton = within(dialog).getByRole("button", {

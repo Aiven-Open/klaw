@@ -1,6 +1,7 @@
 import { Alert, Banner, Box, Button, Spacing } from "@aivenio/aquarium";
 import { Dispatch, SetStateAction } from "react";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
+import illustration from "src/app/images/topic-details-banner-Illustration.svg";
 
 interface TopicClaimBannerProps {
   topicName: string;
@@ -23,18 +24,20 @@ const TopicClaimBanner = ({
     // We do not render an InternalLinkButton to the Requests page for this state...
     // .. because a user cannot see the requests opened by members of other teams
     return (
-      <Banner layout="vertical" title={""}>
-        <Box component={"p"}>
-          There is an open request for {topicName} by the owners of this topic.
-          Your team cannot claim ownership at this time.
-        </Box>
+      <Banner image={illustration} layout="vertical" title={""}>
+        <Box.Flex minHeight={"full"}>
+          <Box.Flex component={"p"} alignSelf={"center"}>
+            There is an open request for {topicName} by the owners of this
+            topic. Your team cannot claim ownership at this time.
+          </Box.Flex>
+        </Box.Flex>
       </Banner>
     );
   }
 
   if (hasOpenClaimRequest) {
     return (
-      <Banner layout="vertical" title={""}>
+      <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
           There is already an open claim request for {topicName}.
         </Box>
@@ -48,7 +51,7 @@ const TopicClaimBanner = ({
   }
 
   return (
-    <Banner layout="vertical" title={""}>
+    <Banner image={illustration} layout="vertical" title={""}>
       <Spacing gap={"l1"}>
         {isError && (
           <div role="alert">
