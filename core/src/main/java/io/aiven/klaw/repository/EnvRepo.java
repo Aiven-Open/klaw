@@ -21,4 +21,6 @@ public interface EnvRepo extends CrudRepository<Env, EnvID> {
 
   @Query(value = "select max(id) from kwenv where tenantid = :tenantId", nativeQuery = true)
   Integer getNextId(@Param("tenantId") Integer tenantId);
+
+  void deleteByTenantId(int tenantId);
 }

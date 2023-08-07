@@ -103,7 +103,7 @@ const getTopicAdvancedConfigOptions = (): Promise<
     )
     .then(transformGetTopicAdvancedConfigOptionsResponse);
 
-const requestTopic = (
+const requestTopicCreation = (
   data: Schema
 ): Promise<KlawApiResponse<"createTopicsCreateRequest">> => {
   const payload: KlawApiRequest<"createTopicsCreateRequest"> = {
@@ -124,7 +124,7 @@ const requestTopic = (
   >(API_PATHS.createTopicsCreateRequest, payload);
 };
 
-const promoteTopic = (
+const requestTopicPromotion = (
   data: Schema
 ): Promise<KlawApiResponse<"createTopicsCreateRequest">> => {
   const payload: KlawApiRequest<"createTopicsCreateRequest"> = {
@@ -147,7 +147,7 @@ const promoteTopic = (
 
 // @TODO this should use the createTopicsCreateRequest`endpoint, but it does not handle the UPDATE type yet
 // Update when backend changes are merged to handle UPDATE with createTopicsCreateRequest
-const editTopic = (
+const requestTopicEdit = (
   data: Schema
 ): Promise<KlawApiResponse<"createTopicsUpdateRequest">> => {
   const payload: KlawApiRequest<"createTopicsUpdateRequest"> = {
@@ -271,7 +271,7 @@ const deleteTopicRequest = ({
   });
 };
 
-const deleteTopic = (params: DeleteTopicPayload) => {
+const requestTopicDeletion = (params: DeleteTopicPayload) => {
   // DeleteTopicPayload represents the KlawApiModel<"TopicDeleteRequestModel">
   // with "remark" added. "remark" is currently not implemented in the API
   // and will be added later. We 're already preparing
@@ -363,7 +363,7 @@ const getTopicDetailsPerEnv = (
   );
 };
 
-const claimTopic = (params: TopicClaimPayload) => {
+const requestTopicClaim = (params: TopicClaimPayload) => {
   const payload: KlawApiModel<"TopicClaimRequestModel"> = {
     env: params.env,
     topicName: params.topicName,
@@ -377,11 +377,11 @@ const claimTopic = (params: TopicClaimPayload) => {
 
 export {
   approveTopicRequest,
-  claimTopic,
+  requestTopicClaim,
   declineTopicRequest,
-  deleteTopic,
+  requestTopicDeletion,
   deleteTopicRequest,
-  editTopic,
+  requestTopicEdit,
   getSchemaOfTopic,
   getTopicAdvancedConfigOptions,
   getTopicDetailsPerEnv,
@@ -392,7 +392,7 @@ export {
   getTopicRequestsForApprover,
   getTopicTeam,
   getTopics,
-  promoteTopic,
-  requestTopic,
+  requestTopicPromotion,
+  requestTopicCreation,
   updateTopicDocumentation,
 };

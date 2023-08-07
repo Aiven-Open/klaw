@@ -670,11 +670,9 @@ public class AclRequestsIntegrationTest {
 
   @Test
   @Order(24)
-  public void getRequestsCountForCreatedStatus() {
-    int count = selectDataJdbc.findAllComponentsCountForUser("Jackie", 101);
-    assertThat(count).isEqualTo(21);
-    count = selectDataJdbc.findAllComponentsCountForUser("Jackie", 103);
-    assertThat(count).isEqualTo(10);
+  public void getRequestsExistenceForCreatedStatus() {
+    assertThat(selectDataJdbc.existsComponentsCountForUser("Jackie", 101)).isTrue();
+    assertThat(selectDataJdbc.existsComponentsCountForUser("Jackie", 103)).isTrue();
   }
 
   @Order(24)
