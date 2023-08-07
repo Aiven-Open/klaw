@@ -110,7 +110,7 @@ describe("TopicSettings", () => {
 
     it("shows no button to delete the topic", () => {
       const button = screen.queryByRole("button", {
-        name: "Delete topic",
+        name: "Request topic deletion",
       });
 
       expect(button).not.toBeInTheDocument();
@@ -181,7 +181,7 @@ describe("TopicSettings", () => {
 
       it("shows a disabled button to delete the topic", () => {
         const button = screen.getByRole("button", {
-          name: "Delete topic",
+          name: "Request topic deletion",
         });
 
         expect(button).toBeDisabled();
@@ -244,7 +244,7 @@ describe("TopicSettings", () => {
 
       it("shows a disabled button to delete the topic", () => {
         const button = screen.getByRole("button", {
-          name: "Delete topic",
+          name: "Request topic deletion",
         });
 
         expect(button).toBeDisabled();
@@ -307,7 +307,7 @@ describe("TopicSettings", () => {
 
       it("shows a disabled button to delete the topic", () => {
         const button = screen.getByRole("button", {
-          name: "Delete topic",
+          name: "Request topic deletion",
         });
 
         expect(button).toBeDisabled();
@@ -394,7 +394,7 @@ describe("TopicSettings", () => {
 
     it("shows a headline for delete topic", () => {
       const deleteTopicHeadline = screen.getByRole("heading", {
-        name: "Delete this topic",
+        name: "Request topic deletion",
       });
 
       expect(deleteTopicHeadline).toBeVisible();
@@ -402,7 +402,7 @@ describe("TopicSettings", () => {
 
     it("shows a warning text about deletion of the topic", () => {
       const warningText = screen.getByText(
-        "Once you delete a topic, there is no going back. Please be certain."
+        "Submit a request for this topic to be deleted. Once the request is approved, the action is irreversible."
       );
 
       expect(warningText).toBeVisible();
@@ -410,7 +410,7 @@ describe("TopicSettings", () => {
 
     it("shows a button to delete the topic", () => {
       const button = screen.getByRole("button", {
-        name: "Delete topic",
+        name: "Request topic deletion",
       });
 
       expect(button).toBeVisible();
@@ -462,9 +462,11 @@ describe("TopicSettings", () => {
     });
 
     it("does not show headline and text with information about deletion", () => {
-      const deleteHeadline = screen.queryByText("Delete this topic");
+      const deleteHeadline = screen.queryByRole("header", {
+        name: "Request topic deletion",
+      });
       const deleteInformation = screen.queryByText(
-        "Once you delete a topic, there is no going back. Please be certain."
+        "Submit a request for this topic to be deleted. Once the request is approved, the action is irreversible."
       );
 
       expect(deleteHeadline).not.toBeInTheDocument();
@@ -473,7 +475,7 @@ describe("TopicSettings", () => {
 
     it("disables the button to delete a topic", () => {
       const deleteButton = screen.getByRole("button", {
-        name: "Delete topic",
+        name: "Request topic deletion",
         hidden: true,
       });
 
@@ -506,12 +508,12 @@ describe("TopicSettings", () => {
       console.error = originalConsoleError;
     });
 
-    it('shows a confirmation modal when user clicks "Delete topic"', async () => {
+    it('shows a confirmation modal when user clicks "Request topic deletion"', async () => {
       const confirmationModalBeforeClick = screen.queryByRole("dialog");
       expect(confirmationModalBeforeClick).not.toBeInTheDocument();
 
       const button = screen.getByRole("button", {
-        name: "Delete topic",
+        name: "Request topic deletion",
       });
 
       await user.click(button);
@@ -523,7 +525,7 @@ describe("TopicSettings", () => {
 
     it('removes modal and does not delete topic if user clicks "cancel"', async () => {
       const button = screen.getByRole("button", {
-        name: "Delete topic",
+        name: "Request topic deletion",
       });
 
       await user.click(button);
@@ -549,7 +551,7 @@ describe("TopicSettings", () => {
       mockDeleteTopic.mockResolvedValue({ success: true });
 
       const button = screen.getByRole("button", {
-        name: "Delete topic",
+        name: "Request topic deletion",
       });
 
       await user.click(button);
@@ -579,7 +581,7 @@ describe("TopicSettings", () => {
       mockDeleteTopic.mockResolvedValue({ success: true });
 
       const button = screen.getByRole("button", {
-        name: "Delete topic",
+        name: "Request topic deletion",
       });
 
       await user.click(button);
@@ -616,7 +618,7 @@ describe("TopicSettings", () => {
       });
 
       const button = screen.getByRole("button", {
-        name: "Delete topic",
+        name: "Request topic deletion",
       });
 
       await user.click(button);
