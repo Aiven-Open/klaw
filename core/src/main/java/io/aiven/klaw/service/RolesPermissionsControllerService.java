@@ -116,10 +116,7 @@ public class RolesPermissionsControllerService {
   public ApiResponse updatePermissions(KwRolesPermissionsModel[] permissionsSet)
       throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.UPDATE_PERMISSIONS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     Map<String, String> uniqueMap = new HashMap<>();
@@ -165,7 +162,7 @@ public class RolesPermissionsControllerService {
       if (kwRolesPermissionsAdd.size() > 0 || kwRolesPermissionsDelete.size() > 0) {
         manageDatabase.loadRolesForAllTenants();
       }
-      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.SUCCESS;
     } catch (Exception e) {
       log.error(e.getMessage());
       throw new KlawException(e.getMessage());
@@ -175,14 +172,11 @@ public class RolesPermissionsControllerService {
   public ApiResponse deleteRole(String roleId) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     if (KwConstants.USER_ROLE.equals(roleId) || KwConstants.SUPERADMIN_ROLE.equals(roleId)) {
-      return ApiResponse.builder().success(false).message(ROLE_PRM_ERR_101).build();
+      return ApiResponse.notOk(ROLE_PRM_ERR_101);
     }
 
     try {
@@ -191,10 +185,9 @@ public class RolesPermissionsControllerService {
               .getHandleDbRequests()
               .deleteRole(roleId, commonUtilsService.getTenantId(getUserName()));
       manageDatabase.loadRolesForAllTenants();
-      return ApiResponse.builder()
-          .success((status.equals(ApiResultStatus.SUCCESS.value)))
-          .message(status)
-          .build();
+      return ApiResultStatus.SUCCESS.value.equals(status)
+          ? ApiResponse.ok(status)
+          : ApiResponse.notOk(status);
     } catch (Exception e) {
       log.error(e.getMessage());
       throw new KlawException(e.getMessage());
@@ -204,10 +197,7 @@ public class RolesPermissionsControllerService {
   public ApiResponse addRoleId(String roleId) throws KlawException {
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ROLES)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     List<KwRolesPermissions> kwRolesPermissionsAdd = new ArrayList<>();
@@ -222,10 +212,9 @@ public class RolesPermissionsControllerService {
       String status =
           manageDatabase.getHandleDbRequests().updatePermissions(kwRolesPermissionsAdd, "ADD");
       manageDatabase.loadRolesForAllTenants();
-      return ApiResponse.builder()
-          .success((status.equals(ApiResultStatus.SUCCESS.value)))
-          .message(status)
-          .build();
+      return ApiResultStatus.SUCCESS.value.equals(status)
+          ? ApiResponse.ok(status)
+          : ApiResponse.notOk(status);
     } catch (Exception e) {
       log.error(e.getMessage());
       throw new KlawException(e.getMessage());

@@ -521,10 +521,7 @@ public class TopicSyncControllerService {
     logArray.add("Type of Sync " + syncBackTopics.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_BACK_TOPICS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     List<String> resultStatus = new ArrayList<>();
@@ -825,10 +822,7 @@ public class TopicSyncControllerService {
     logArray.add("Type of Sync " + syncTopicsBulk.getTypeOfSync());
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     if ("SELECTED_TOPICS".equals(syncTopicsBulk.getTypeOfSync())) {
@@ -959,10 +953,7 @@ public class TopicSyncControllerService {
     String userDetails = getUserName();
 
     if (commonUtilsService.isNotAuthorizedUser(getPrincipal(), PermissionType.SYNC_TOPICS)) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(ApiResultStatus.NOT_AUTHORIZED.value)
-          .build();
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     // tenant filtering
@@ -999,10 +990,7 @@ public class TopicSyncControllerService {
         if (!commonUtilsService
             .getEnvsFromUserId(userDetails)
             .contains(topicUpdate.getEnvSelected())) {
-          return ApiResponse.builder()
-              .success(false)
-              .message(ApiResultStatus.NOT_AUTHORIZED.value)
-              .build();
+          return ApiResponse.NOT_AUTHORIZED;
         }
         existingTopics = getTopicFromName(topicUpdate.getTopicName(), tenantId);
 
@@ -1101,34 +1089,30 @@ public class TopicSyncControllerService {
 
     if (updatedSyncTopics.size() == 0 && updatedSyncTopicsDelete.size() > 0) {
       manageDatabase.loadTopicsForOneTenant(tenantId);
-      return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+      return ApiResponse.SUCCESS;
     }
 
     if (topicsDontExistInMainCluster) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(TOPICS_SYNC_ERR_103 + syncCluster + ". \n Topics : " + erroredTopicsExist)
-          .build();
+      return ApiResponse.notOk(
+          TOPICS_SYNC_ERR_103 + syncCluster + ". \n Topics : " + erroredTopicsExist);
     }
 
     if (topicsWithDiffTeams) {
-      return ApiResponse.builder()
-          .success(false)
-          .message(TOPICS_SYNC_ERR_104 + syncCluster + ". \n Topics : " + erroredTopics)
-          .build();
+      return ApiResponse.notOk(
+          TOPICS_SYNC_ERR_104 + syncCluster + ". \n Topics : " + erroredTopics);
     }
 
     if (listTopics.size() > 0) {
       try {
         String statusSync = manageDatabase.getHandleDbRequests().addToSynctopics(listTopics);
         manageDatabase.loadTopicsForOneTenant(tenantId);
-        return ApiResponse.builder().success(true).message(statusSync).build();
+        return ApiResponse.ok(statusSync);
       } catch (Exception e) {
         log.error(e.getMessage());
         throw new KlawException(e.getMessage());
       }
     } else {
-      return ApiResponse.builder().success(false).message(SYNC_ERR_101).build();
+      return ApiResponse.notOk(SYNC_ERR_101);
     }
   }
 

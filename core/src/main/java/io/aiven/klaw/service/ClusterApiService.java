@@ -662,8 +662,7 @@ public class ClusterApiService {
       if (e.getMessage().contains(CLUSTER_API_ERR_120)
           || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return new ResponseEntity<>(
-            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+            ApiResponse.notOk(CLUSTER_API_ERR_118), HttpStatus.INTERNAL_SERVER_ERROR);
       }
       throw new KlawException(CLUSTER_API_ERR_108);
     }
@@ -778,12 +777,10 @@ public class ClusterApiService {
     if (e.getMessage().contains(CLUSTER_API_ERR_120)
         || e.getMessage().contains(CLUSTER_API_ERR_121)) {
       return new ResponseEntity<>(
-          ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
-          HttpStatus.INTERNAL_SERVER_ERROR);
+          ApiResponse.notOk(CLUSTER_API_ERR_118), HttpStatus.INTERNAL_SERVER_ERROR);
     } else if (e.getMessage().contains("Cannot connect to cluster.")) {
       return new ResponseEntity<>(
-          ApiResponse.builder().success(false).message(CLUSTER_API_ERR_119).build(),
-          HttpStatus.INTERNAL_SERVER_ERROR);
+          ApiResponse.notOk(CLUSTER_API_ERR_119), HttpStatus.INTERNAL_SERVER_ERROR);
     }
     throw new KlawException(clusterApiErr123);
   }
@@ -822,8 +819,7 @@ public class ClusterApiService {
       if (e.getMessage().contains(CLUSTER_API_ERR_120)
           || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return new ResponseEntity<>(
-            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+            ApiResponse.notOk(CLUSTER_API_ERR_118), HttpStatus.INTERNAL_SERVER_ERROR);
       }
       throw new KlawException(CLUSTER_API_ERR_111);
     }
@@ -836,8 +832,7 @@ public class ClusterApiService {
     getClusterApiProperties(tenantId);
     ResponseEntity<ApiResponse> response =
         new ResponseEntity<>(
-            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+            ApiResponse.notOk(CLUSTER_API_ERR_118), HttpStatus.INTERNAL_SERVER_ERROR);
 
     try {
       String uri = clusterConnUrl + URI_SCHEMA_RESET_CACHE;
@@ -869,8 +864,7 @@ public class ClusterApiService {
       if (e.getMessage().contains(CLUSTER_API_ERR_120)
           || e.getMessage().contains(CLUSTER_API_ERR_121)) {
         return new ResponseEntity<>(
-            ApiResponse.builder().success(false).message(CLUSTER_API_ERR_118).build(),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+            ApiResponse.notOk(CLUSTER_API_ERR_118), HttpStatus.INTERNAL_SERVER_ERROR);
       }
       throw new KlawException(CLUSTER_API_ERR_111);
     }

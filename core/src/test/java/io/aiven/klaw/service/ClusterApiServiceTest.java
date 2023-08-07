@@ -209,10 +209,8 @@ public class ClusterApiServiceTest {
   @Test
   @Order(7)
   public void approveTopicRequestsSuccess() throws KlawException {
-    ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response =
-        new ResponseEntity<>(
-            ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build(), HttpStatus.OK);
+        new ResponseEntity<>(ApiResponse.ok(ApiResultStatus.SUCCESS.value), HttpStatus.OK);
 
     String topicName = "testtopic";
     TopicRequest topicRequest = new TopicRequest();
@@ -273,7 +271,7 @@ public class ClusterApiServiceTest {
     aclRequests.setRequestOperationType(RequestOperationType.CREATE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -305,7 +303,7 @@ public class ClusterApiServiceTest {
     aclRequests.setRequestOperationType(RequestOperationType.DELETE.value);
     aclRequests.setAclIpPrincipleType(AclIPPrincipleType.IP_ADDRESS);
 
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     ResponseEntity<ApiResponse> responseEntity = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -348,7 +346,7 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -376,7 +374,7 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -408,7 +406,7 @@ public class ClusterApiServiceTest {
     String envSel = "DEV";
     String topicName = "testtopic";
 
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
@@ -451,10 +449,8 @@ public class ClusterApiServiceTest {
   @Test
   @Order(14)
   public void approveConnectorRequestsSuccess() throws KlawException, KlawRestException {
-    ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response =
-        new ResponseEntity<>(
-            ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build(), HttpStatus.OK);
+        new ResponseEntity<>(ApiResponse.ok(ApiResultStatus.SUCCESS.value), HttpStatus.OK);
 
     String topicName = "testtopic";
 
@@ -485,14 +481,9 @@ public class ClusterApiServiceTest {
   @Test
   @Order(15)
   public void approveConnectorRequests_ISE() throws KlawException, KlawRestException {
-    ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
     ResponseEntity<ApiResponse> response =
         new ResponseEntity<>(
-            ApiResponse.builder()
-                .message(ApiResultStatus.FAILURE.value)
-                .message(FAILED_TO_EXECUTE_SUCCESSFULLY)
-                .build(),
-            HttpStatus.INTERNAL_SERVER_ERROR);
+            ApiResponse.notOk(FAILED_TO_EXECUTE_SUCCESSFULLY), HttpStatus.INTERNAL_SERVER_ERROR);
 
     String topicName = "testtopic";
 
