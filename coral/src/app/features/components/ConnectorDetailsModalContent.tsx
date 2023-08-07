@@ -29,7 +29,7 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
       </Flexbox>
 
       <GridItem colSpan={"span-2"}>
-        <Label>Description</Label>
+        <Label>Connector description</Label>
         <dd>{request.description}</dd>
       </GridItem>
       <GridItem colSpan={"span-2"}>

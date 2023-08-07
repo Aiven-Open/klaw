@@ -70,12 +70,14 @@ function TopicOverview() {
         </Card>
       </GridItem>
 
-      {!topicOverviewIsRefetching && (
-        <TopicPromotionBanner
-          topicPromotionDetails={topicPromotionDetails}
-          isTopicOwner={topicOwner}
-          hasOpenRequest={hasOpenTopicRequest}
-        />
+      {!topicOverviewIsRefetching && topicOwner && (
+        <GridItem colSpan={"span-2"}>
+          <TopicPromotionBanner
+            topicName={topicName}
+            topicPromotionDetails={topicPromotionDetails}
+            hasOpenTopicRequest={hasOpenTopicRequest}
+          />
+        </GridItem>
       )}
 
       <GridItem colSpan={"span-2"}>

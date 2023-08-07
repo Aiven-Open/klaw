@@ -25,6 +25,9 @@ public interface TopicRequestsRepo
       String requestOperationType,
       String topicname);
 
+  boolean existsByTenantIdAndRequestStatusAndRequestOperationTypeAndTopicname(
+      int tenantId, String requestStatus, String requestOperationType, String topicname);
+
   List<TopicRequest> findAllByRequestStatusAndTopicnameAndEnvironmentAndTenantId(
       String topicStatus, String topicName, String envId, int tenantId);
 
@@ -43,9 +46,9 @@ public interface TopicRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwtopicrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created'",
+          "select exists(select 1 from kwtopicrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created')",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForUserId(
+  boolean existsRecordsCountForUserId(
       @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
   @Query(

@@ -33,16 +33,25 @@ testEnv () {
 }
 
 destroy() {
+  echo "Tear down container"
 	docker-compose -f docker-scripts/docker-compose-klaw.yaml down
   docker-compose -f docker-scripts/docker-compose-testEnv.yaml down
   docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml down
   docker-compose -f docker-scripts/docker-compose-testEnv-v2.yaml down
 }
 
+stop() {
+  echo "Stop container"
+  docker-compose -f docker-scripts/docker-compose-klaw.yaml stop
+  docker-compose -f docker-scripts/docker-compose-testEnv.yaml stop
+  docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml stop
+  docker-compose -f docker-scripts/docker-compose-testEnv-v2.yaml stop
+}
+
 deployDeveloperEnv() {
-  	echo `pwd`
-  	echo "Deploy developer Klaw"
-  	docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml up -d
+  echo `pwd`
+  echo "Deploy developer Klaw"
+  docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml up -d
 }
 
 deployDeveloperTestEnv() {
@@ -50,18 +59,19 @@ deployDeveloperTestEnv() {
   docker-compose -f docker-scripts/docker-compose-testEnv-v2.yaml up -d
 }
 
+
 set echo off
 usage () {
 
         echo "How to use klaw-docker:"
         echo "$0 --build will build Klaw and create klaw-core and klaw-cluster-api docker images in your local docker."
-        echo "$0 --deploy will deploy klaw-core and klaw-cluster-api locally and make klaw available at localhost:9097."
-        echo "$0 --testEnv will deploy a local instance of kafka at localhost:9092 to use with klaw."
-        echo "$0 --all will bulid all Klaw binaries, create Klaw docker images and deploy Klaw locally."
+        echo "$0 --deploy will deploy klaw-core and klaw-cluster-api locally and make Klaw available at localhost:9097."
+        echo "$0 --testEnv will deploy a local instance of Kafka at localhost:9092 to use with Klaw."
+        echo "$0 --all will build all Klaw binaries, create Klaw docker images and deploy Klaw locally."
         echo "$0 --destroy will tear down containers running in docker."
-        echo "$0 --dev-env will build and deploy a docker image that will run on windows mac or linux for development."
-        echo "$0 --dev-env-deploy will deploy without building again a docker image that will run on windows mac or linux for development."
-        echo "$0 --dev-kafka-env will deploy a kafka and schema registry on windows, mac or linux"
+        echo "$0 --dev-env will build and deploy a docker image that will run on Windows, Mac, or Linux for development."
+        echo "$0 --dev-env-deploy will deploy without building again a docker image that will run on Windows, Mac, or Linux for development."
+        echo "$0 --dev-kafka-env will deploy a Kafka and schema registry on Windows, Mac, or Linux."
 
 
 
@@ -95,6 +105,10 @@ case $COMMAND in
 		destroy
 		shift
 		;;
+  --stop)
+    stop
+    shift
+    ;;
   --dev-env)
     build
     deployDeveloperEnv

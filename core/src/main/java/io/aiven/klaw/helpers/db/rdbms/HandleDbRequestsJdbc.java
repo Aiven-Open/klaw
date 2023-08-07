@@ -354,6 +354,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsClaimTopicRequest(String topicName, String requestStatus, int tenantId) {
+    return jdbcSelectHelper.existsClaimTopicRequest(
+        topicName, requestStatus, RequestOperationType.CLAIM.value, tenantId);
+  }
+
+  @Override
   public boolean existsConnectorRequest(
       String connectorName, String requestStatus, String env, int tenantId) {
     return jdbcSelectHelper.existsConnectorRequest(connectorName, requestStatus, env, tenantId);
@@ -966,13 +972,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public int getAllComponentsCountForTeam(Integer teamId, int tenantId) {
-    return jdbcSelectHelper.findAllComponentsCountForTeam(teamId, tenantId);
+  public boolean existsComponentsCountForTeam(Integer teamId, int tenantId) {
+    return jdbcSelectHelper.existsComponentsCountForTeam(teamId, tenantId);
   }
 
   @Override
-  public int getAllComponentsCountForUser(String userId, int tenantId) {
-    return jdbcSelectHelper.findAllComponentsCountForUser(userId, tenantId);
+  public boolean existsComponentsCountForUser(String userId, int tenantId) {
+    return jdbcSelectHelper.existsComponentsCountForUser(userId, tenantId);
   }
 
   @Override

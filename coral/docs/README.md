@@ -1,11 +1,12 @@
 ## Table of content
 
-- [Notes about documentation](development-with-remote-api.md)
-- [Directory structure](directory-structure.md)
-- [Frontend Testing](frontend-testing.md)
 - [Accessibility for FE app](accessibility.md)
+- [Development with a local Klaw](development-with-local-klaw.md)
 - [Development with a remote API](development-with-remote-api.md)
+- [Directory structure](directory-structure.md)
+- [Documentation notes](documentation.md)
 - [Feature flags](feature-flags.md)
+- [Frontend Testing](frontend-testing.md)
 
 ## Tip
 

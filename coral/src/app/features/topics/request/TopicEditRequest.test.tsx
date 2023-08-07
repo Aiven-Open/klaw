@@ -331,21 +331,20 @@ describe("<TopicEditRequest />", () => {
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
 
-    it("shows a disabled select element for 'Environment' with correct default value", async () => {
+    it("shows a readOnly select element for 'Environment' with correct default value", async () => {
       const select = await screen.findByRole("combobox", {
-        name: "Environment *",
+        name: "Environment (read-only)",
       });
       expect(select).toBeDisabled();
-      expect(select).toBeRequired();
+      expect(select).toHaveAttribute("aria-readonly", "true");
       expect(select).toHaveDisplayValue("DEV");
     });
 
     it("shows a readOnly text input element for 'Topic name' with correct default value", async () => {
       const input = await screen.findByRole("textbox", {
-        name: "Topic name *",
+        name: "Topic name (read-only)",
       });
       expect(input).toHaveAttribute("readonly");
-      expect(input).toBeRequired();
       expect(input).toHaveDisplayValue(TOPIC_NAME);
     });
 
@@ -378,9 +377,9 @@ describe("<TopicEditRequest />", () => {
       );
     });
 
-    it("shows a readOnly text input element for 'Description' with correct default value", async () => {
+    it("shows a readOnly text input element for 'Topic description' with correct default value", async () => {
       const input = await screen.findByRole("textbox", {
-        name: "Description *",
+        name: "Topic description *",
       });
       const description = mockTopicDetails.topicContents?.description as string;
 
@@ -445,7 +444,7 @@ describe("<TopicEditRequest />", () => {
 
     it("shows a notification and does not submit when user has changed data, but reverted to initial values", async () => {
       const description = screen.getByRole("textbox", {
-        name: "Description *",
+        name: "Topic description *",
       });
 
       await waitFor(() =>

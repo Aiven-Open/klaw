@@ -374,7 +374,9 @@ describe("TopicSchemaRequest", () => {
 
     it("shows readonly select element for the topic name", () => {
       const form = getForm();
-      const select = within(form).getByRole("combobox", { name: "Topic name" });
+      const select = within(form).getByRole("combobox", {
+        name: "Topic name (read-only)",
+      });
 
       expect(select).toBeVisible();
       expect(select).toBeDisabled();
@@ -383,7 +385,9 @@ describe("TopicSchemaRequest", () => {
 
     it("sets the value for readonly select for topic name", () => {
       const form = getForm();
-      const select = within(form).getByRole("combobox", { name: "Topic name" });
+      const select = within(form).getByRole("combobox", {
+        name: "Topic name (read-only)",
+      });
 
       expect(select).toHaveValue(testTopicName);
     });

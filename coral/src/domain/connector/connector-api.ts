@@ -150,6 +150,21 @@ const createConnectorRequest = (
   });
 };
 
+const editConnector = (
+  connectorPayload: Omit<
+    KlawApiRequest<"createConnectorRequest">,
+    "requestOperationType"
+  >
+) => {
+  return api.post<
+    KlawApiResponse<"createConnectorRequest">,
+    KlawApiRequest<"createConnectorRequest">
+  >(API_PATHS.createConnectorRequest, {
+    ...connectorPayload,
+    requestOperationType: "UPDATE",
+  });
+};
+
 type GetConnectorOverviewParams =
   KlawApiRequestQueryParameters<"getConnectorOverview">;
 const getConnectorOverview = ({
@@ -167,6 +182,15 @@ const getConnectorOverview = ({
       new URLSearchParams(queryParams)
     )
     .then(transformConnectorOverviewResponse);
+};
+
+const getConnectorDetailsPerEnv = (
+  params: KlawApiRequestQueryParameters<"getConnectorDetailsPerEnv">
+) => {
+  return api.get<KlawApiResponse<"getConnectorDetailsPerEnv">>(
+    API_PATHS.getConnectorDetailsPerEnv,
+    new URLSearchParams(params)
+  );
 };
 
 type UpdateConnectorDocumentation = {
@@ -212,6 +236,8 @@ export {
   declineConnectorRequest,
   deleteConnector,
   deleteConnectorRequest,
+  editConnector,
+  getConnectorDetailsPerEnv,
   getConnectorOverview,
   getConnectorRequests,
   getConnectorRequestsForApprover,

@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Icon,
   NativeSelectBase,
   Option,
@@ -8,8 +7,8 @@ import {
 } from "@aivenio/aquarium";
 import database from "@aivenio/aquarium/dist/src/icons/database";
 import { Dispatch, SetStateAction } from "react";
-import { useNavigate } from "react-router-dom";
 import { EnvironmentInfo } from "src/domain/environment";
+import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 
 type TopicOverviewHeaderProps = {
   entity: { name: string; type: "connector" | "topic" };
@@ -33,8 +32,6 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
     entityExists,
     entityUpdating,
   } = props;
-
-  const navigate = useNavigate();
 
   return (
     <Box
@@ -101,12 +98,12 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
         )}
       </Box>
       {showEditButton && (
-        <Button.Primary
+        <InternalLinkButton
+          to={entityEditLink}
           disabled={!entityExists || entityUpdating}
-          onClick={() => navigate(entityEditLink)}
         >
-          Edit {entity.type}
-        </Button.Primary>
+          {`Edit ${entity.type}`}
+        </InternalLinkButton>
       )}
     </Box>
   );

@@ -10,13 +10,14 @@ const TopicNameField = ({
   topicNames,
   readOnly = false,
 }: TopicNameFieldProps) => {
+  const labelText = readOnly ? "Topic name (read-only)" : "Topic name";
   return (
     <NativeSelect
       name="topicname"
-      labelText="Topic name"
+      labelText={labelText}
       placeholder={"-- Select Topic --"}
       readOnly={readOnly}
-      required
+      required={!readOnly}
     >
       {topicNames.map((name) => (
         <Option key={name} value={name}>

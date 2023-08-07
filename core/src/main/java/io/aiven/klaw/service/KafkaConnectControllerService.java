@@ -21,6 +21,7 @@ import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.error.RestErrorResponse;
@@ -1264,7 +1265,8 @@ public class KafkaConnectControllerService {
     return overview;
   }
 
-  public ConnectorOverviewPerEnv getConnectorDetailsPerEnv(String envId, String connectorName) {
+  public ConnectorOverviewPerEnv getConnectorDetailsPerEnv(String envId, String connectorName)
+      throws KlawBadRequestException {
     ConnectorOverviewPerEnv connectorOverviewPerEnv = new ConnectorOverviewPerEnv();
     connectorOverviewPerEnv.setConnectorExists(false);
     String userName = getUserName();
@@ -1284,7 +1286,8 @@ public class KafkaConnectControllerService {
     String topicDescription = "";
     if (connectors.size() == 0) {
       connectorOverviewPerEnv.setError("Connector does not exist.");
-      return connectorOverviewPerEnv;
+      throw new KlawBadRequestException(
+          String.format("Connector %s does not exist.", connectorName));
     } else {
       Optional<KwKafkaConnector> topicDescFound =
           connectors.stream()
@@ -1319,8 +1322,7 @@ public class KafkaConnectControllerService {
             .get(0)
             .getTeamname();
     if (!Objects.equals(loggedInUserTeam, connectorModel.getTeamName())) {
-      connectorOverviewPerEnv.setError(KAFKA_CONNECT_ERR_119);
-      return connectorOverviewPerEnv;
+      throw new KlawBadRequestException(KAFKA_CONNECT_ERR_119);
     }
 
     if (connectorModel.getConnectorConfig() != null) {

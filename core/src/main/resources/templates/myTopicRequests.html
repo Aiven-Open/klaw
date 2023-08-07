@@ -500,9 +500,19 @@
 											<td align="left">
 												<h3 class="card-title">Topic : {{ topicRequest.topicname }}</h3>
 											</td>
-											<td ng-show="topicRequest.requestStatus == 'CREATED'" align="right">
-												<button type="button" ng-click="deleteTopicRequest(topicRequest.topicid);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
-												</button></td>
+											<td ng-show="topicRequest.requestStatus == 'CREATED'" align="right" width="2%">
+												<button type="button" ng-click="deleteTopicRequest(topicRequest.topicid);" class="btn btn-danger btn-circle">
+													<i class="fa fa-times"></i>
+												</button>
+											</td>
+											<td ng-show="topicRequest.requestStatus == 'CREATED' && topicRequest.requestor === userlogged &&
+														topicRequest.requestOperationType != 'DELETE' && topicRequest.requestOperationType != 'CLAIM'" align="right" width="2%">
+												<a href="editTopicRequest?topicRequestId={{ topicRequest.topicid }}">
+													<button type="button" class="btn btn-info btn-circle">
+														<i class="fa fa-edit"></i>
+													</button>
+												</a>
+											</td>
 										</tr>
 									</table>
 								</div>

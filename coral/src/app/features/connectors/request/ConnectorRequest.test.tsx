@@ -279,7 +279,7 @@ describe("<ConnectorRequest />", () => {
     });
   });
 
-  describe("Description", () => {
+  describe("Connector description", () => {
     beforeEach(() => {
       mockGetConnectorEnvironmentRequest.mockResolvedValue([
         createEnvironment({ id: "1", name: "DEV" }),

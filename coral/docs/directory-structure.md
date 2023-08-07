@@ -137,7 +137,8 @@ Contains every page of the application. The structure in this folder should mirr
 ### First level: `domain` folder
 
 Contains different domains we need to describe the UI application. They are specific to it. They are the concepts you would elaborate on when describing the Klaw UI app.
-`domain` is where business logic lives and a layer between e.g. the data from the backend api and `app`. `domain` is the only place that speaks with the backend and knows what data from the backend looks like.
+`domain` is where business logic lives and a layer between e.g. the data from the backend API and `app`. `domain` is 
+the only place that speaks with the backend and knows what data from the backend looks like.
 
 - We name the folders in `domain` based on the model / concept they are implementing.
 - Every folder includes a `index.ts` file to export modules / interfaces and act as a public API.

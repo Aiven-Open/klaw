@@ -1,4 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
+import { Box, useToast } from "@aivenio/aquarium";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   Navigate,
@@ -7,6 +8,8 @@ import {
   useOutletContext,
 } from "react-router-dom";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
+import TopicClaimBanner from "src/app/features/topics/details/components/TopicClaimBanner";
+import { TopicClaimConfirmationModal } from "src/app/features/topics/details/components/TopicClaimConfirmationModal";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import {
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
@@ -14,7 +17,13 @@ import {
   isTopicsOverviewTabEnum,
 } from "src/app/router_utils";
 import { TopicOverview, TopicSchemaOverview } from "src/domain/topic";
-import { getSchemaOfTopic, getTopicOverview } from "src/domain/topic/topic-api";
+import {
+  claimTopic,
+  getSchemaOfTopic,
+  getTopicOverview,
+} from "src/domain/topic/topic-api";
+import { HTTPError } from "src/services/api";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 type TopicOverviewProps = {
   topicName: string;
@@ -37,6 +46,7 @@ function findMatchingTab(
 function TopicDetails(props: TopicOverviewProps) {
   const { topicName } = props;
   const { state: initialEnvironment }: { state: string | null } = useLocation();
+  const toast = useToast();
 
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
@@ -47,6 +57,10 @@ function TopicDetails(props: TopicOverviewProps) {
   const [schemaVersion, setSchemaVersion] = useState<number | undefined>(
     undefined
   );
+  const [showClaimModal, setShowClaimModal] = useState(false);
+  const [claimErrorMessage, setClaimErrorMessage] = useState<
+    string | undefined
+  >();
 
   const {
     data: topicData,
@@ -54,6 +68,7 @@ function TopicDetails(props: TopicOverviewProps) {
     error: topicError,
     isLoading: topicIsLoading,
     isRefetching: topicIsRefetching,
+    refetch: refetchTopic,
   } = useQuery(["topic-overview", topicName, environmentId], {
     queryFn: () => getTopicOverview({ topicName, environmentId }),
   });
@@ -77,6 +92,35 @@ function TopicDetails(props: TopicOverviewProps) {
     enabled: environmentId !== undefined,
   });
 
+  const {
+    mutate: createClaimTopicRequest,
+    isLoading: createClaimTopicRequestIsLoading,
+    isError: createClaimTopicRequestIsError,
+  } = useMutation(
+    (remark?: string) =>
+      claimTopic({
+        topicName: topicData?.topicInfo.topicName || "",
+        env: topicData?.topicInfo.envId || "",
+        remark,
+      }),
+    {
+      onSuccess: () => {
+        refetchTopic().then(() => {
+          setShowClaimModal(false);
+          toast({
+            message: "Topic claim request successfully created",
+            position: "bottom-left",
+            variant: "default",
+          });
+        });
+      },
+      onError: (error: HTTPError) => {
+        setShowClaimModal(false);
+        setClaimErrorMessage(parseErrorMsg(error));
+      },
+    }
+  );
+
   useEffect(() => {
     if (
       topicData?.availableEnvironments !== undefined &&
@@ -91,7 +135,14 @@ function TopicDetails(props: TopicOverviewProps) {
   }
 
   return (
-    <div>
+    <>
+      {showClaimModal && (
+        <TopicClaimConfirmationModal
+          onSubmit={createClaimTopicRequest}
+          onClose={() => setShowClaimModal(false)}
+          isLoading={createClaimTopicRequestIsLoading}
+        />
+      )}
       <EntityDetailsHeader
         entity={{ name: topicName, type: "topic" }}
         entityExists={Boolean(topicData?.topicExists)}
@@ -105,7 +156,19 @@ function TopicDetails(props: TopicOverviewProps) {
         environmentId={environmentId}
         setEnvironmentId={setEnvironmentId}
       />
-
+      {topicData?.topicInfo !== undefined &&
+        !topicData.topicInfo.topicOwner && (
+          <Box marginBottom={"l1"}>
+            <TopicClaimBanner
+              topicName={topicName}
+              hasOpenClaimRequest={topicData?.topicInfo.hasOpenClaimRequest}
+              hasOpenRequest={topicData?.topicInfo.hasOpenRequest}
+              setShowClaimModal={setShowClaimModal}
+              isError={createClaimTopicRequestIsError}
+              errorMessage={claimErrorMessage}
+            />
+          </Box>
+        )}
       <TopicOverviewResourcesTabs
         isLoading={topicIsLoading || schemaIsLoading}
         isError={topicIsError || schemaIsError}
@@ -120,7 +183,7 @@ function TopicDetails(props: TopicOverviewProps) {
         topicSchemas={schemaData}
         topicSchemasIsRefetching={schemaIsRefetching}
       />
-    </div>
+    </>
   );
 }
 

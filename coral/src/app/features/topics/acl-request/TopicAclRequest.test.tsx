@@ -81,7 +81,7 @@ const assertSkeleton = async () => {
 
 const selectTestEnvironment = async () => {
   const environmentField = screen.getByRole("combobox", {
-    name: "Environment *",
+    name: /Environment/,
   });
   const option = screen.getByRole("option", { name: "TST" });
   await userEvent.selectOptions(environmentField, option);

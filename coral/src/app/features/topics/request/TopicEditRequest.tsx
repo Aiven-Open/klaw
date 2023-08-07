@@ -212,8 +212,7 @@ function TopicEditRequest() {
           {currentEnvironment !== undefined ? (
             <NativeSelect
               name="environment"
-              labelText={"Environment"}
-              required
+              labelText={"Environment (read-only)"}
               readOnly
             >
               <Option
@@ -232,9 +231,8 @@ function TopicEditRequest() {
         </Box>
         <TextInput<Schema>
           name={"topicname"}
-          labelText="Topic name"
+          labelText="Topic name (read-only)"
           placeholder={generateTopicNameDescription(currentEnvironment?.params)}
-          required={true}
           readOnly
         />
         <Box.Flex gap={"l1"}>
@@ -276,7 +274,7 @@ function TopicEditRequest() {
           <Box grow={1} width={"1/2"}>
             <Textarea<Schema>
               name="description"
-              labelText="Description"
+              labelText="Topic description"
               rows={5}
               required={true}
             />

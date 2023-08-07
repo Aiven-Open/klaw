@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.model.ApiResponse;
@@ -220,7 +221,8 @@ public class KafkaConnectController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ConnectorOverviewPerEnv> getConnectorDetailsPerEnv(
       @RequestParam("envSelected") String envId,
-      @RequestParam("connectorName") String connectorName) {
+      @RequestParam("connectorName") String connectorName)
+      throws KlawBadRequestException {
     return new ResponseEntity<>(
         kafkaConnectControllerService.getConnectorDetailsPerEnv(envId, connectorName),
         HttpStatus.OK);

@@ -15,6 +15,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_111;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_112;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_113;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_VLD_ERR_121;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static io.aiven.klaw.model.enums.MailType.*;
 import static org.springframework.beans.BeanUtils.copyProperties;
@@ -33,6 +34,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicBaseConfig;
@@ -128,7 +130,30 @@ public class TopicControllerService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     TopicRequest topicRequestDao = new TopicRequest();
-    copyProperties(topicRequestReq, topicRequestDao);
+
+    // Editing a topic request
+    if (topicRequestReq.getRequestId() != null) {
+      topicRequestDao =
+          getTopicRequestFromTopicId(
+              topicRequestReq.getRequestId(), commonUtilsService.getTenantId(userName));
+
+      // check if the topic request owned by the logged-in user
+      if (!topicRequestDao.getRequestor().equals(userName)) {
+        return ApiResponse.builder().success(false).message(TOPICS_VLD_ERR_121).build();
+      }
+
+      topicRequestDao.setTopicpartitions(topicRequestReq.getTopicpartitions());
+      topicRequestDao.setReplicationfactor(topicRequestReq.getReplicationfactor());
+
+      if (topicRequestDao.getRequestOperationType().equals(RequestOperationType.CREATE.value)) {
+        topicRequestDao.setTopicname(topicRequestReq.getTopicname());
+        topicRequestDao.setEnvironment(topicRequestReq.getEnvironment());
+        topicRequestDao.setDescription(topicRequestReq.getDescription());
+        topicRequestDao.setRemarks(topicRequestReq.getRemarks());
+      }
+    } else {
+      copyProperties(topicRequestReq, topicRequestDao);
+    }
     topicRequestDao.setRequestOperationType(topicRequestReq.getRequestOperationType().value);
 
     mapAdvancedTopicConfiguration(topicRequestReq, topicRequestDao);
@@ -637,24 +662,21 @@ public class TopicControllerService {
 
   private void validateAndCopyTopicConfigs(
       TopicRequest topicReq, TopicRequestsResponseModel topicRequestModel) {
-    try {
-      if (topicReq.getJsonParams() != null) {
-        List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
-        TopicConfigurationRequest topicConfigurationRequest =
-            OBJECT_MAPPER.readValue(topicReq.getJsonParams(), TopicConfigurationRequest.class);
-        for (Map.Entry<String, String> entry :
-            topicConfigurationRequest.getAdvancedTopicConfiguration().entrySet()) {
-          topicConfigEntryList.add(
-              TopicConfigEntry.builder()
-                  .configKey(entry.getKey())
-                  .configValue(entry.getValue())
-                  .build());
-        }
-        topicRequestModel.setAdvancedTopicConfigEntries(topicConfigEntryList);
+
+    if (topicReq.getJsonParams() != null) {
+      List<TopicConfigEntry> topicConfigEntryList = new ArrayList<>();
+      TopicConfigurationRequest topicConfigurationRequest =
+          UtilMethods.createTopicConfigurationRequestFromJson(
+              topicReq.getJsonParams(), OBJECT_MAPPER);
+      for (Map.Entry<String, String> entry :
+          topicConfigurationRequest.getAdvancedTopicConfiguration().entrySet()) {
+        topicConfigEntryList.add(
+            TopicConfigEntry.builder()
+                .configKey(entry.getKey())
+                .configValue(entry.getValue())
+                .build());
       }
-    } catch (JsonProcessingException e) {
-      // ignore this error while retrieving the requests
-      log.error("Error in parsing topic configs ", e);
+      topicRequestModel.setAdvancedTopicConfigEntries(topicConfigEntryList);
     }
   }
 
@@ -717,10 +739,7 @@ public class TopicControllerService {
 
     String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
-    TopicRequest topicRequest =
-        manageDatabase
-            .getHandleDbRequests()
-            .getTopicRequestsForTopic(Integer.parseInt(topicId), tenantId);
+    TopicRequest topicRequest = getTopicRequestFromTopicId(Integer.parseInt(topicId), tenantId);
 
     ApiResponse validationResponse = validateTopicRequest(topicRequest, userName);
     if (!validationResponse.isSuccess()) {
@@ -767,19 +786,8 @@ public class TopicControllerService {
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userName);
       }
     } else {
-      Map<String, String> topicConfig = null;
-      try {
-        if (null != topicRequest.getJsonParams()) {
-          topicConfig =
-              OBJECT_MAPPER
-                  .readValue(topicRequest.getJsonParams(), TopicConfigurationRequest.class)
-                  .getAdvancedTopicConfiguration();
-        }
-      } catch (JsonProcessingException e) {
-        // ignore this error while executing the req. should have been raised earlier in the
-        // process.
-        log.error("Error in parsing topic config ", e);
-      }
+      Map<String, String> topicConfig =
+          UtilMethods.createAdvancedConfigFromJson(topicRequest.getJsonParams(), OBJECT_MAPPER);
       updateTopicReqStatus =
           invokeClusterApiForTopicRequest(userName, tenantId, topicRequest, dbHandle, topicConfig);
     }
@@ -1028,15 +1036,10 @@ public class TopicControllerService {
 
         String topicJsonParams = topicOptional.get().getJsonParams();
         if (topicJsonParams != null) {
-          TopicConfigurationRequest topicConfigurationRequest;
-          try {
-            topicConfigurationRequest =
-                OBJECT_MAPPER.readValue(topicJsonParams, TopicConfigurationRequest.class);
-            topicInfo.setAdvancedTopicConfiguration(
-                topicConfigurationRequest.getAdvancedTopicConfiguration());
-          } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-          }
+          TopicConfigurationRequest topicConfigurationRequest =
+              UtilMethods.createTopicConfigurationRequestFromJson(topicJsonParams, OBJECT_MAPPER);
+          topicInfo.setAdvancedTopicConfiguration(
+              topicConfigurationRequest.getAdvancedTopicConfiguration());
         }
 
         Integer loggedInUserTeamId = commonUtilsService.getTeamId(userName);
@@ -1056,6 +1059,33 @@ public class TopicControllerService {
 
   public Map<String, String> getAdvancedTopicConfigs() {
     return TopicConfiguration.getTopicConfigurations();
+  }
+
+  public TopicRequestsResponseModel getTopicRequest(Integer topicReqId) {
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+    TopicRequest topicRequest = getTopicRequestFromTopicId(topicReqId, tenantId);
+    if (topicRequest == null) {
+      return null;
+    } else {
+      TopicRequestsResponseModel topicRequestModel = new TopicRequestsResponseModel();
+      copyProperties(topicRequest, topicRequestModel);
+      topicRequestModel.setRequestStatus(RequestStatus.of(topicRequest.getRequestStatus()));
+      topicRequestModel.setRequestOperationType(
+          RequestOperationType.of(topicRequest.getRequestOperationType()));
+      topicRequestModel.setEnvironmentName(getEnvDetails(topicRequest.getEnvironment()).getName());
+
+      validateAndCopyTopicConfigs(topicRequest, topicRequestModel);
+
+      topicRequestModel.setTeamname(
+          manageDatabase.getTeamNameFromTeamId(tenantId, topicRequest.getTeamId()));
+
+      return topicRequestModel;
+    }
+  }
+
+  public TopicRequest getTopicRequestFromTopicId(Integer topicReqId, int tenantId) {
+    return manageDatabase.getHandleDbRequests().getTopicRequestsForTopic(topicReqId, tenantId);
   }
 
   static class TopicNameComparator implements Comparator<Topic> {

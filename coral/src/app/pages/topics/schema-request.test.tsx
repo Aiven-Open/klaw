@@ -75,7 +75,7 @@ describe("SchemaRequest", () => {
 
     it("shows the form for this specific topic", async () => {
       const input = await screen.findByRole("combobox", {
-        name: "Topic name",
+        name: "Topic name (read-only)",
       });
 
       expect(input).toBeVisible();
