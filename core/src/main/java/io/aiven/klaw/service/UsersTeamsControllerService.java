@@ -1143,7 +1143,7 @@ public class UsersTeamsControllerService {
     boolean authorizedUser = true;
 
     if (!userInfo.isSwitchTeams()) {
-      return ApiResponse.ok(ApiResultStatus.NOT_AUTHORIZED.value);
+      return ApiResponse.NOT_AUTHORIZED;
     }
 
     Set<Integer> teamIds = userInfo.getSwitchAllowedTeamIds();

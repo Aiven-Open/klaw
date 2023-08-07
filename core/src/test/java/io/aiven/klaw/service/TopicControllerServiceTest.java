@@ -765,7 +765,6 @@ public class TopicControllerServiceTest {
     int topicId = 1001;
     TopicRequest topicRequest = getTopicRequest(topicName);
     ApiResponse apiResponse = ApiResponse.FAILURE;
-    ;
 
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);

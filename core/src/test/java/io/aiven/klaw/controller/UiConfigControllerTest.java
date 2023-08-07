@@ -222,7 +222,6 @@ public class UiConfigControllerTest {
     env.setName("A"); // < 2 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     ApiResponse apiResponse = ApiResponse.FAILURE;
-    ;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
@@ -240,7 +239,6 @@ public class UiConfigControllerTest {
     env.setClusterId(null);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
     ApiResponse apiResponse = ApiResponse.FAILURE;
-    ;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
