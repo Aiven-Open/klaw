@@ -245,13 +245,13 @@ public class UsersTeamsControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(tenantId);
     when(manageDatabase.getTeamObjForTenant(tenantId)).thenReturn(utilMethods.getTeams());
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(handleDbRequests.getAllComponentsCountForTeam(teamId, tenantId)).thenReturn(0);
+    when(handleDbRequests.existsComponentsCountForTeam(teamId, tenantId)).thenReturn(false);
     when(handleDbRequests.getAllUsersInfoForTeam(teamId, tenantId))
         .thenReturn(Collections.emptyList());
     List<TeamModelResponse> teams = usersTeamsControllerService.getAllTeamsSU();
     assertThat(teams.get(0).isShowDeleteTeam()).isTrue();
 
-    when(handleDbRequests.getAllComponentsCountForTeam(teamId, tenantId)).thenReturn(1);
+    when(handleDbRequests.existsComponentsCountForTeam(teamId, tenantId)).thenReturn(true);
     when(handleDbRequests.getAllUsersInfoForTeam(teamId, tenantId))
         .thenReturn(Collections.emptyList());
     teams = usersTeamsControllerService.getAllTeamsSU();
@@ -283,7 +283,7 @@ public class UsersTeamsControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt())).thenReturn(new HashMap<>());
-    when(handleDbRequests.getAllComponentsCountForUser("testuser", 101)).thenReturn(1);
+    when(handleDbRequests.existsComponentsCountForUser("testuser", 101)).thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
     assertThat(apiResponse.getMessage())
         .isEqualTo(
@@ -299,7 +299,6 @@ public class UsersTeamsControllerServiceTest {
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMap());
-    when(handleDbRequests.getAllComponentsCountForUser("testuser", 101)).thenReturn(1);
     ApiResponse apiResponse = usersTeamsControllerService.deleteUser("testuser", false);
     assertThat(apiResponse.getMessage())
         .isEqualTo("Not Authorized. Cannot delete a user with SUPERADMIN access.");

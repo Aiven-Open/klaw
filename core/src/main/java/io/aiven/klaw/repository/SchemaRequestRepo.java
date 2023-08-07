@@ -43,9 +43,9 @@ public interface SchemaRequestRepo
 
   @Query(
       value =
-          "select count(*) from kwschemarequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created'",
+          "select exists(select 1 from kwschemarequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created')",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForUserId(
+  boolean existsRecordsCountForUserId(
       @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
   List<SchemaRequest> findAllByTenantId(int tenantId);
