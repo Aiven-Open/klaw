@@ -54,9 +54,10 @@ public interface TopicRepo extends CrudRepository<Topic, TopicID> {
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
-      value = "select count(*) from kwtopics where teamid = :teamId and tenantid = :tenantId",
+      value =
+          "select exists(select 1 from kwtopics where teamid = :teamId and tenantid = :tenantId)",
       nativeQuery = true)
-  List<Object[]> findAllRecordsCountForTeamId(
+  boolean existsRecordsCountForTeamId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   @Query(
@@ -104,4 +105,8 @@ public interface TopicRepo extends CrudRepository<Topic, TopicID> {
       @Param("envId") String envId,
       @Param("teamId") Integer teamId,
       @Param("tenantId") Integer tenantId);
+
+  void deleteByTopicnameAndEnvironmentAndTenantId(String topicName, String env, int tenantId);
+
+  void deleteByTenantId(int tenantId);
 }

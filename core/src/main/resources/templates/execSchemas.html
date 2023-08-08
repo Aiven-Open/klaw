@@ -153,7 +153,7 @@
 
 											</div>
 										</a>
-										<a href="execUsers" class="border-bottom d-block text-decoration-none py-2 px-3">
+										<a href="execUsers" ng-show="dashboardDetails.addUser=='Authorized'" class="border-bottom d-block text-decoration-none py-2 px-3">
 											<div class="btn btn-primary btn-circle mr-2"><i class="ti-link"></i>
 											</div>
 											<div class="mail-contnet d-inline-block align-middle">
@@ -555,18 +555,12 @@
 											<span class="badge badge-info">{{ schemaRequest.requestStatus }}</span></b>
 										</div>
 
-										<div ng-show="schemaRequest.requestOperationType == 'CREATE'" class="p-2 border-right" style="width:12%">
-											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.requestOperationType }} Schema</span></b>
-										</div>
-										<div ng-show="schemaRequest.requestOperationType == 'UPDATE'" class="p-2 border-right" style="width:12%">
-											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-primary">{{ schemaRequest.requestOperationType }} Schema</span></b>
-										</div>
-										<div ng-show="schemaRequest.requestOperationType == 'DELETE'" class="p-2 border-right" style="width:12%">
-											<h6 class="text-primary">Request Type</h6><b>
-											<span class="badge badge-danger">{{ schemaRequest.requestOperationType }} Schema</span></b>
-										</div>
+										
+<div ng-show="schemaRequest.requestOperationType !== 'APPROVED'" class="p-2 border-right" style="width:12%">
+	<h6 class="text-primary">Request Type</h6><b>
+	<span class="badge badge-info">{{ schemaRequest.requestOperationType }} Schema</span></b>
+</div>
+
 
 										<div class="p-2" style="width:15%">
 											<h6 class="text-primary">Date Requested</h6><b>{{ schemaRequest.requesttimestring }}</b>

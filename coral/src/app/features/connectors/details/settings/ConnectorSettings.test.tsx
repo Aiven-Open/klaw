@@ -2,7 +2,10 @@ import { Context as AquariumContext } from "@aivenio/aquarium";
 import { cleanup, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ConnectorSettings } from "src/app/features/connectors/details/settings/ConnectorSettings";
-import { ConnectorOverview, deleteConnector } from "src/domain/connector";
+import {
+  ConnectorOverview,
+  requestConnectorDeletion,
+} from "src/domain/connector";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { KlawApiModel } from "types/utils";
 
@@ -18,8 +21,8 @@ jest.mock("src/app/features/connectors/details/ConnectorDetails", () => ({
 }));
 
 jest.mock("src/domain/connector/connector-api.ts");
-const mockDeleteConnector = deleteConnector as jest.MockedFunction<
-  typeof deleteConnector
+const mockDeleteConnector = requestConnectorDeletion as jest.MockedFunction<
+  typeof requestConnectorDeletion
 >;
 
 const testConnectorName = "my-nice-connector";
@@ -406,7 +409,7 @@ describe("ConnectorSettings", () => {
 
     it("shows a warning text about deletion of the connector", () => {
       const warningText = screen.getByText(
-        "Once a request for deletion is approved, there is no going back. Please be certain."
+        "Submit a request for this topic to be deleted. Once the request is approved, the action is irreversible."
       );
 
       expect(warningText).toBeVisible();
@@ -470,7 +473,7 @@ describe("ConnectorSettings", () => {
         name: "Request connector deletion",
       });
       const deleteInformation = screen.queryByText(
-        "Once you delete a connector, there is no going back. Please be certain."
+        "Submit a request for this topic to be deleted. Once the request is approved, the action is irreversible."
       );
 
       expect(deleteHeadline).not.toBeInTheDocument();

@@ -501,11 +501,12 @@ public class UpdateDataJdbc {
   }
 
   public String updateKwProperty(KwProperties kwProperties, int tenantId) {
-    List<KwProperties> kwProp =
-        kwPropertiesRepo.findAllByKwKeyAndTenantId(kwProperties.getKwKey(), tenantId);
-    if (!kwProp.isEmpty()) {
-      kwProp.get(0).setKwValue(kwProperties.getKwValue());
-      kwPropertiesRepo.save(kwProp.get(0));
+    KwProperties kwProp =
+        kwPropertiesRepo.findFirstByKwKeyAndTenantIdOrderByTenantId(
+            kwProperties.getKwKey(), tenantId);
+    if (kwProp != null) {
+      kwProp.setKwValue(kwProperties.getKwValue());
+      kwPropertiesRepo.save(kwProp);
       return ApiResultStatus.SUCCESS.value;
     }
 

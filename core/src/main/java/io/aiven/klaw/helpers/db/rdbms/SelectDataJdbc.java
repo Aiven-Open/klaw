@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1029,8 +1030,8 @@ public class SelectDataJdbc {
     return registerInfoRepo.findAllByStatus("PENDING");
   }
 
-  public List<RegisterUserInfo> selectAllStagingRegisterUsersInfo(String userId) {
-    return registerInfoRepo.findAllByUsernameAndStatus(userId, "STAGING");
+  public RegisterUserInfo selectFirstStagingRegisterUsersInfo(String userId) {
+    return registerInfoRepo.findFirstByUsernameAndStatus(userId, "STAGING");
   }
 
   public RegisterUserInfo selectRegisterUsersInfo(String username) {
@@ -1049,12 +1050,7 @@ public class SelectDataJdbc {
   }
 
   public Team selectTeamDetailsFromName(String teamName, int tenantId) {
-    List<Team> teamList = teamRepo.findAllByTenantIdAndTeamname(tenantId, teamName);
-    if (!teamList.isEmpty()) {
-      return teamList.get(0);
-    } else {
-      return null;
-    }
+    return teamRepo.findFirstByTenantIdAndTeamnameOrderByTenantId(tenantId, teamName);
   }
 
   public List<Map<String, String>> selectActivityLogByTeam(
@@ -1380,17 +1376,17 @@ public class SelectDataJdbc {
   }
 
   public String getRegistrationId(String userId) {
-    List<RegisterUserInfo> registerInfoList =
-        registerInfoRepo.findAllByUsernameAndStatus(userId, "STAGING");
-    List<RegisterUserInfo> registerInfoList1 =
-        registerInfoRepo.findAllByUsernameAndStatus(userId, "PENDING");
-    if (registerInfoList.size() > 0) {
-      return registerInfoList.get(0).getRegistrationId();
-    } else if (registerInfoList1.size() > 0) {
-      return "PENDING_ACTIVATION";
-    } else {
-      return null;
+    RegisterUserInfo registerInfoStaging =
+        registerInfoRepo.findFirstByUsernameAndStatus(userId, "STAGING");
+    if (registerInfoStaging != null) {
+      return registerInfoStaging.getRegistrationId();
     }
+    boolean pendingArePresent =
+        registerInfoRepo.existsRegisterUserInfoByUsernameAndStatus(userId, "PENDING");
+    if (pendingArePresent) {
+      return "PENDING_ACTIVATION";
+    }
+    return null;
   }
 
   public RegisterUserInfo getRegistrationDetails(String registrationId, String status) {
@@ -1473,90 +1469,73 @@ public class SelectDataJdbc {
         + ((Long) messageSchemaRepo.findAllSchemaCountForEnv(env, tenantId).get(0)[0]).intValue();
   }
 
-  public int findAllComponentsCountForTeam(Integer teamId, int tenantId) {
+  public boolean existsComponentsCountForTeam(Integer teamId, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () -> {
+              boolean res = schemaRequestRepo.existsRecordsCountForTeamId(teamId, tenantId);
 
-    if (log.isDebugEnabled()) {
-      int schemaRequestsRepoCount =
-          ((Long) schemaRequestRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-              .intValue();
-      int messageSchemaRepoCount =
-          ((Long) messageSchemaRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-              .intValue();
-      int kafkaConnectorRepoCount =
-          ((Long) kafkaConnectorRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-              .intValue();
-      int kafkaConnectorRequestsRepoCount =
-          ((Long)
-                  kafkaConnectorRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId)
-                      .get(0)[0])
-              .intValue();
-      int topicRepoCount =
-          ((Long) topicRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue();
-      int topicRequestsRepoCount =
-          ((Long) topicRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-              .intValue();
-      int aclRepoCount =
-          ((Long) aclRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue();
-      int aclRequestRepoCount =
-          ((Long) aclRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-              .intValue();
-      log.debug(
-          "For team {} Active Schema Requests {}, number of Schemas in DB {}",
-          teamId,
-          schemaRequestsRepoCount,
-          messageSchemaRepoCount);
-      log.debug(
-          "For team {} Active Connector Requests {}, number of Connector in DB {}",
-          teamId,
-          kafkaConnectorRepoCount,
-          kafkaConnectorRequestsRepoCount);
-      log.debug(
-          "For team {} Active Topic Requests {}, number of Topic in DB {}",
-          teamId,
-          topicRepoCount,
-          topicRequestsRepoCount);
-      log.debug(
-          "For team {} Active ACL Requests {}, number of ACL in DB {}",
-          teamId,
-          aclRepoCount,
-          aclRequestRepoCount);
-      // return here instead of doing a second search
-      return schemaRequestsRepoCount
-          + messageSchemaRepoCount
-          + kafkaConnectorRepoCount
-          + kafkaConnectorRequestsRepoCount
-          + topicRepoCount
-          + topicRequestsRepoCount
-          + aclRepoCount
-          + aclRequestRepoCount;
+              log.debug("For team {} Active Schema Requests {}", teamId, res);
+              return res;
+            },
+            () -> {
+              boolean res = messageSchemaRepo.existsRecordsCountForTeamId(teamId, tenantId);
+
+              log.debug("For team {} number of Schemas in DB {}", teamId, res);
+              return res;
+            },
+            () -> {
+              boolean res = kafkaConnectorRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              log.debug("For team {} Active Connector Requests {}", teamId, res);
+              return res;
+            },
+            () -> {
+              boolean res =
+                  kafkaConnectorRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              log.debug("For team {} number of Connector in DB {}", teamId, res);
+              return res;
+            },
+            () -> {
+              boolean res = topicRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              log.debug("For team {} Active Topic Requests {}", teamId, res);
+              return res;
+            },
+            () -> {
+              boolean res = topicRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              log.debug("For team {} number of Topic in DB {}", teamId, res);
+              return res;
+            },
+            () -> {
+              boolean res = aclRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              log.debug("For team {} Active ACL Requests {}", teamId, res);
+              return res;
+            },
+            () -> {
+              boolean res = aclRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
+              log.debug("For team {} number of ACL in DB {}", teamId, res);
+              return res;
+            });
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
     }
-    return ((Long) schemaRequestRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) messageSchemaRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) kafkaConnectorRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long)
-                kafkaConnectorRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) topicRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue()
-        + ((Long) topicRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) aclRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0]).intValue()
-        + ((Long) aclRequestsRepo.findAllRecordsCountForTeamId(teamId, tenantId).get(0)[0])
-            .intValue();
+    return false;
   }
 
-  public int findAllComponentsCountForUser(String userId, int tenantId) {
-    return ((Long) schemaRequestRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long)
-                kafkaConnectorRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) topicRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) aclRequestsRepo.findAllRecordsCountForUserId(userId, tenantId).get(0)[0])
-            .intValue();
+  public boolean existsComponentsCountForUser(String userId, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () -> schemaRequestRepo.existsRecordsCountForUserId(userId, tenantId),
+            () -> kafkaConnectorRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
+            () -> topicRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
+            () -> aclRequestsRepo.existsRecordsCountForUserId(userId, tenantId));
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public int getAllTopicsCountInAllTenants() {

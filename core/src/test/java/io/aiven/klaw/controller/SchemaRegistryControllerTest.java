@@ -85,7 +85,7 @@ public class SchemaRegistryControllerTest {
   @Test
   @Order(2)
   public void deleteSchemaRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(schemaRegistryControllerService.deleteSchemaRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -100,7 +100,7 @@ public class SchemaRegistryControllerTest {
   @Test
   @Order(3)
   public void execSchemaRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(schemaRegistryControllerService.execSchemaRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -117,8 +117,9 @@ public class SchemaRegistryControllerTest {
   public void uploadSchema() throws Exception {
     SchemaRequestModel schemaRequest = utilMethods.getSchemaRequests().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaRequest);
+
     ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
-    when(schemaRegistryControllerService.uploadSchema(any())).thenReturn(apiResponse);
+    when(schemaRegistryControllerService.uploadSchema(any(), any())).thenReturn(apiResponse);
 
     mvc.perform(
             MockMvcRequestBuilders.post("/uploadSchema")
@@ -134,7 +135,7 @@ public class SchemaRegistryControllerTest {
   public void promoteSchema() throws Exception {
     SchemaPromotion schemaPromotion = utilMethods.getSchemaPromotion().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(schemaPromotion);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(schemaRegistryControllerService.promoteSchema(any())).thenReturn(apiResponse);
 
     mvc.perform(

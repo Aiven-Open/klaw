@@ -166,7 +166,7 @@ public class UiConfigControllerTest {
   public void addNewEnvName3Chars() throws Exception {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
 
     mvcEnvs
@@ -185,7 +185,7 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("ABCDEFGHIJ"); // 10 chars allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
 
     mvcEnvs
@@ -204,7 +204,7 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("ABCDEFGHIJKL"); // > 10 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
+    ApiResponse apiResponse = ApiResponse.FAILURE;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
@@ -221,7 +221,7 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setName("A"); // < 2 chars, not allowed
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
+    ApiResponse apiResponse = ApiResponse.FAILURE;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
@@ -238,7 +238,7 @@ public class UiConfigControllerTest {
     EnvModel env = utilMethods.getEnvListToAdd().get(0);
     env.setClusterId(null);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(env);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.FAILURE.value).build();
+    ApiResponse apiResponse = ApiResponse.FAILURE;
     when(envsClustersTenantsControllerService.addNewEnv(any())).thenReturn(apiResponse);
     mvcEnvs
         .perform(
@@ -252,7 +252,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(12)
   public void deleteEnv() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(envsClustersTenantsControllerService.deleteEnvironment(anyString(), anyString()))
         .thenReturn(apiResponse);
 
@@ -270,7 +270,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(13)
   public void deleteTeam() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(usersTeamsControllerService.deleteTeam(any())).thenReturn(apiResponse);
 
     mvcUserTeams
@@ -286,7 +286,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(14)
   public void deleteUser() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(usersTeamsControllerService.deleteUser(anyString(), anyBoolean())).thenReturn(apiResponse);
 
     mvcUserTeams
@@ -302,7 +302,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(15)
   public void addNewUser() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     UserInfoModel userInfo = utilMethods.getUserInfoMock();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(userInfo);
     when(usersTeamsControllerService.addNewUser(any(), anyBoolean())).thenReturn(apiResponse);
@@ -322,7 +322,7 @@ public class UiConfigControllerTest {
   public void addNewTeam() throws Exception {
     Team team = utilMethods.getTeams().get(0);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(team);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(usersTeamsControllerService.addNewTeam(any(), anyBoolean())).thenReturn(apiResponse);
 
     mvcUserTeams
@@ -338,7 +338,7 @@ public class UiConfigControllerTest {
   @Test
   @Order(17)
   public void changePwd() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(usersTeamsControllerService.changePwd(any())).thenReturn(apiResponse);
 
     mvcUserTeams

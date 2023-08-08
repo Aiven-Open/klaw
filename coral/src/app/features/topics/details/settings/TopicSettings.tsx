@@ -11,7 +11,7 @@ import {
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { deleteTopic, DeleteTopicPayload } from "src/domain/topic";
+import { requestTopicDeletion, DeleteTopicPayload } from "src/domain/topic";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { TopicDeleteConfirmationModal } from "src/app/features/topics/details/settings/components/TopicDeleteConfirmationModal";
@@ -31,7 +31,7 @@ function TopicSettings() {
 
   const { mutate, isLoading } = useMutation(
     (params: Omit<DeleteTopicPayload, "topicName" | "env">) =>
-      deleteTopic({
+      requestTopicDeletion({
         topicName,
         env: environmentId,
         deleteAssociatedSchema: params.deleteAssociatedSchema,
@@ -137,7 +137,7 @@ function TopicSettings() {
                 <div>
                   {/* eslint-disable-next-line @typescript-eslint/no-empty-function */}
                   <Button.Primary onClick={() => {}} disabled={true}>
-                    Delete topic
+                    Request topic deletion
                   </Button.Primary>
                 </div>
               </Box>
@@ -176,11 +176,11 @@ function TopicSettings() {
               >
                 <div>
                   <Typography.DefaultStrong htmlTag={"h3"}>
-                    Delete this topic
+                    Request topic deletion
                   </Typography.DefaultStrong>
                   <Box component={"p"}>
-                    Once you delete a topic, there is no going back. Please be
-                    certain.
+                    Submit a request for this topic to be deleted. Once the
+                    request is approved, the action is irreversible.
                   </Box>
                 </div>
 
@@ -189,7 +189,7 @@ function TopicSettings() {
                     onClick={() => setShowConfirmation(true)}
                     disabled={!showDeleteTopic}
                   >
-                    Delete topic
+                    Request topic deletion
                   </Button.Primary>
                 </div>
               </Box>

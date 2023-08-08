@@ -172,8 +172,11 @@ public class MigrationUtility {
    */
   private void executeMigrationInstructions(
       SortedMap<Integer, Pair<String, Class<?>>> orderedMapOfMigrationInstructions)
-      throws IllegalAccessException, InvocationTargetException, KlawDataMigrationException,
-          NoSuchMethodException, ClassNotFoundException {
+      throws IllegalAccessException,
+          InvocationTargetException,
+          KlawDataMigrationException,
+          NoSuchMethodException,
+          ClassNotFoundException {
     for (Integer value : orderedMapOfMigrationInstructions.keySet()) {
       Class<?> runner = orderedMapOfMigrationInstructions.get(value).getRight();
       for (Method method : runner.getDeclaredMethods()) {

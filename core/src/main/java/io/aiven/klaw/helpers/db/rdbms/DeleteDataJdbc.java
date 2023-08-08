@@ -4,6 +4,7 @@ import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.repository.*;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -246,62 +247,65 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
+  @Transactional
   public CRUDResponse<Topic> deleteTopics(Topic topic) {
     log.debug("deleteTopics {}", topic.getTopicname());
-    List<Topic> topics =
-        topicRepo.findAllByTopicnameAndEnvironmentAndTenantId(
-            topic.getTopicname(), topic.getEnvironment(), topic.getTenantId());
-    topicRepo.deleteAll(topics);
+    topicRepo.deleteByTopicnameAndEnvironmentAndTenantId(
+        topic.getTopicname(), topic.getEnvironment(), topic.getTenantId());
     return CRUDResponse.<Topic>builder()
         .resultStatus(ApiResultStatus.SUCCESS.value)
         .entities(List.of(topic))
         .build();
   }
 
+  @Transactional
   public void deleteConnectors(KwKafkaConnector connector) {
     log.debug("deleteConnectors {}", connector.getConnectorName());
-    List<KwKafkaConnector> topics =
-        kafkaConnectorRepo.findAllByConnectorNameAndEnvironmentAndTenantId(
-            connector.getConnectorName(), connector.getEnvironment(), connector.getTenantId());
-    kafkaConnectorRepo.deleteAll(topics);
+    kafkaConnectorRepo.deleteByConnectorNameAndEnvironmentAndTenantId(
+        connector.getConnectorName(), connector.getEnvironment(), connector.getTenantId());
   }
 
+  @Transactional
   public String deleteRole(String roleId, int tenantId) {
-    List<KwRolesPermissions> rolePerms =
-        kwRolesPermsRepo.findAllByRoleIdAndTenantId(roleId, tenantId);
-    kwRolesPermsRepo.deleteAll(rolePerms);
+    kwRolesPermsRepo.deleteByRoleIdAndTenantId(roleId, tenantId);
 
     return ApiResultStatus.SUCCESS.value;
   }
 
+  @Transactional
   public String deleteAllUsers(int tenantId) {
-    userInfoRepo.deleteAll(userInfoRepo.findAllByTenantId(tenantId));
-    registerInfoRepo.deleteAll(registerInfoRepo.findAllByTenantId(tenantId));
+    userInfoRepo.deleteByTenantId(tenantId);
+    registerInfoRepo.deleteByTenantId(tenantId);
     return ApiResultStatus.SUCCESS.value;
   }
 
+  @Transactional
   public String deleteAllTeams(int tenantId) {
-    teamRepo.deleteAll(teamRepo.findAllByTenantId(tenantId));
+    teamRepo.deleteByTenantId(tenantId);
     return ApiResultStatus.SUCCESS.value;
   }
 
+  @Transactional
   public String deleteAllEnvs(int tenantId) {
-    envRepo.deleteAll(envRepo.findAllByTenantId(tenantId));
+    envRepo.deleteByTenantId(tenantId);
     return ApiResultStatus.SUCCESS.value;
   }
 
+  @Transactional
   public String deleteAllClusters(int tenantId) {
-    kwClusterRepo.deleteAll(kwClusterRepo.findAllByTenantId(tenantId));
+    kwClusterRepo.deleteByTenantId(tenantId);
     return ApiResultStatus.SUCCESS.value;
   }
 
+  @Transactional
   public String deleteAllRolesPerms(int tenantId) {
-    kwRolesPermsRepo.deleteAll(kwRolesPermsRepo.findAllByTenantId(tenantId));
+    kwRolesPermsRepo.deleteByTenantId(tenantId);
     return ApiResultStatus.SUCCESS.value;
   }
 
+  @Transactional
   public String deleteAllKwProps(int tenantId) {
-    kwPropertiesRepo.deleteAll(kwPropertiesRepo.findAllByTenantId(tenantId));
+    kwPropertiesRepo.deleteByTenantId(tenantId);
     return ApiResultStatus.SUCCESS.value;
   }
 
@@ -312,32 +316,32 @@ public class DeleteDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
+  @Transactional
   public String deleteTxnData(int tenantId) {
-    topicRequestsRepo.deleteAll(topicRequestsRepo.findAllByTenantId(tenantId));
-    topicRepo.deleteAll(topicRepo.findAllByTenantId(tenantId));
+    topicRequestsRepo.deleteByTenantId(tenantId);
+    topicRepo.deleteByTenantId(tenantId);
 
-    aclRequestsRepo.deleteAll(aclRequestsRepo.findAllByTenantId(tenantId));
-    aclRepo.deleteAll(aclRepo.findAllByTenantId(tenantId));
+    aclRequestsRepo.deleteByTenantId(tenantId);
+    aclRepo.deleteByTenantId(tenantId);
 
-    schemaRequestRepo.deleteAll(schemaRequestRepo.findAllByTenantId(tenantId));
-    messageSchemaRepo.deleteAll(messageSchemaRepo.findAllByTenantId(tenantId));
+    schemaRequestRepo.deleteByTenantId(tenantId);
+    messageSchemaRepo.deleteByTenantId(tenantId);
 
-    kafkaConnectorRepo.deleteAll(kafkaConnectorRepo.findAllByTenantId(tenantId));
-    kafkaConnectorRequestsRepo.deleteAll(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
+    kafkaConnectorRepo.deleteByTenantId(tenantId);
+    kafkaConnectorRequestsRepo.deleteByTenantId(tenantId);
 
     return ApiResultStatus.SUCCESS.value;
   }
 
+  @Transactional
   public void deleteSchemas(Topic topicObj) {
-    messageSchemaRepo.deleteAll(
-        messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(
-            topicObj.getTenantId(), topicObj.getTopicname(), topicObj.getEnvironment()));
+    messageSchemaRepo.deleteByTenantIdAndTopicnameAndEnvironment(
+        topicObj.getTenantId(), topicObj.getTopicname(), topicObj.getEnvironment());
   }
 
+  @Transactional
   public void deleteSchemasWithOptions(int tenantId, String topicName, String schemaEnv) {
-    messageSchemaRepo.deleteAll(
-        messageSchemaRepo.findAllByTenantIdAndTopicnameAndEnvironment(
-            tenantId, topicName, schemaEnv));
+    messageSchemaRepo.deleteByTenantIdAndTopicnameAndEnvironment(tenantId, topicName, schemaEnv);
   }
 
   public String deleteAcls(List<Acl> listDeleteAcls, int tenantId) {

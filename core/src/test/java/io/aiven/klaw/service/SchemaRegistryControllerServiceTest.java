@@ -27,6 +27,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.SchemaPromotion;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
@@ -235,7 +236,7 @@ public class SchemaRegistryControllerServiceTest {
   public void execSchemaRequestsFailure1() throws KlawException {
     int schemaReqId = 1001;
 
-    ApiResponse apiResponse = ApiResponse.builder().message("Schema not registered").build();
+    ApiResponse apiResponse = ApiResponse.notOk("Schema not registered");
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
     SchemaRequest schemaRequest = new SchemaRequest();
     schemaRequest.setSchemafull("schema..");
@@ -263,7 +264,7 @@ public class SchemaRegistryControllerServiceTest {
   public void execSchemaRequestsFailure2() {
     int schemaReqId = 1001;
 
-    ApiResponse apiResponse = ApiResponse.builder().message("Schema registered id\": 215").build();
+    ApiResponse apiResponse = ApiResponse.ok("Schema registered id\": 215");
     ResponseEntity<ApiResponse> response = new ResponseEntity<>(apiResponse, HttpStatus.OK);
 
     SchemaRequest schemaRequest = new SchemaRequest();
@@ -312,7 +313,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(List.of(topic));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
-    ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
+    ApiResponse resultResp =
+        schemaRegistryControllerService.uploadSchema(schemaRequest, RequestOperationType.CREATE);
     assertThat(resultResp.isSuccess()).isTrue();
   }
 
@@ -336,7 +338,7 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(buildValidationResponse(true));
 
     try {
-      schemaRegistryControllerService.uploadSchema(schemaRequest);
+      schemaRegistryControllerService.uploadSchema(schemaRequest, RequestOperationType.CREATE);
     } catch (KlawException e) {
       assertThat(e.getMessage()).contains("Error from schema upload");
     }
@@ -505,7 +507,8 @@ public class SchemaRegistryControllerServiceTest {
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
-    ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
+    ApiResponse resultResp =
+        schemaRegistryControllerService.uploadSchema(schemaRequest, RequestOperationType.CREATE);
     assertThat(resultResp.getMessage()).isEqualTo(VALIDATION_FAILURE_MSG);
     verify(clusterApiService, times(1))
         .validateSchema(anyString(), anyString(), anyString(), anyInt());
@@ -610,7 +613,8 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(List.of(topic));
     when(commonUtilsService.getFilteredTopicsForTenant(any())).thenReturn(List.of(topic));
 
-    ApiResponse resultResp = schemaRegistryControllerService.uploadSchema(schemaRequest);
+    ApiResponse resultResp =
+        schemaRegistryControllerService.uploadSchema(schemaRequest, RequestOperationType.CREATE);
     assertThat(resultResp.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
 
     verify(clusterApiService, times(0))
@@ -637,7 +641,9 @@ public class SchemaRegistryControllerServiceTest {
     NullPointerException ex =
         assertThrows(
             NullPointerException.class,
-            () -> schemaRegistryControllerService.uploadSchema(schemaRequest));
+            () ->
+                schemaRegistryControllerService.uploadSchema(
+                    schemaRequest, RequestOperationType.CREATE));
     assertThat(ex.getMessage())
         .contains("Cannot invoke \"java.lang.Boolean.booleanValue()\"")
         .contains("validateCompatiblityOnSave\" is null");
@@ -764,11 +770,9 @@ public class SchemaRegistryControllerServiceTest {
 
   private static ResponseEntity<ApiResponse> buildValidationResponse(boolean isSuccess) {
     if (isSuccess) {
-      return ResponseEntity.ok(
-          ApiResponse.builder().success(true).message(VALIDATION_SUCCESS_MSG).build());
+      return ResponseEntity.ok(ApiResponse.ok(VALIDATION_SUCCESS_MSG));
     } else {
-      return ResponseEntity.ok(
-          ApiResponse.builder().success(false).message(VALIDATION_FAILURE_MSG).build());
+      return ResponseEntity.ok(ApiResponse.notOk(VALIDATION_FAILURE_MSG));
     }
   }
 

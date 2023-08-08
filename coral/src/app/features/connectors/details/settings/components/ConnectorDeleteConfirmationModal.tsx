@@ -17,7 +17,7 @@ const ConnectorDeleteConfirmationModal = ({
 
   return (
     <Modal
-      title={"Delete connector"}
+      title={"Request connector deletion"}
       close={onClose}
       primaryAction={{
         text: "Request connector deletion",
@@ -35,7 +35,7 @@ const ConnectorDeleteConfirmationModal = ({
           Are you sure you would like to request the deletion of this connector?
         </p>
         <Textarea
-          labelText="You can add the reason to delete the connector (optional)"
+          labelText="Add your reasons for deleting this connector (optional)"
           placeholder="Write a message ..."
           onChange={(event) =>
             setRemark(event.target.value ? event.target.value : undefined)

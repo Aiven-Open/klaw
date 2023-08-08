@@ -1,13 +1,13 @@
 import {
-  claimTopic,
-  deleteTopic,
-  editTopic,
+  requestTopicClaim,
+  requestTopicDeletion,
+  requestTopicEdit,
   getTopicDetailsPerEnv,
   getTopicNames,
   getTopicRequests,
   getTopicTeam,
   getTopics,
-  promoteTopic,
+  requestTopicPromotion,
   updateTopicDocumentation,
 } from "src/domain/topic/topic-api";
 import {
@@ -25,15 +25,15 @@ import {
 } from "src/domain/topic/topic-types";
 
 export {
-  claimTopic,
-  deleteTopic,
-  editTopic,
+  requestTopicClaim,
+  requestTopicDeletion,
+  requestTopicEdit,
   getTopicDetailsPerEnv,
   getTopicNames,
   getTopicRequests,
   getTopicTeam,
   getTopics,
-  promoteTopic,
+  requestTopicPromotion,
   updateTopicDocumentation,
 };
 export type {
