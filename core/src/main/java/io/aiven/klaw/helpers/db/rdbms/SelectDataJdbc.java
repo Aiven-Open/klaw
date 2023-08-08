@@ -15,6 +15,7 @@ import io.aiven.klaw.repository.*;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -1055,44 +1056,34 @@ public class SelectDataJdbc {
 
   public List<Map<String, String>> selectActivityLogByTeam(
       Integer teamId, int numberOfDays, int tenantId) {
-    List<Map<String, String>> totalActivityLogCount = new ArrayList<>();
     try {
-      List<Object[]> activityCount = activityLogRepo.findActivityLogForTeamId(teamId, tenantId);
-      if (activityCount.size() > numberOfDays)
-        activityCount = activityCount.subList(0, numberOfDays - 1);
-      Map<String, String> hashMap;
-      for (Object[] actvty : activityCount) {
-        hashMap = new HashMap<>();
-        hashMap.put("dateofactivity", "" + actvty[0]);
-        hashMap.put("activitycount", "" + ((Long) actvty[1]).intValue());
-
-        totalActivityLogCount.add(hashMap);
-      }
+      return gatherActivityList(
+          activityLogRepo.findActivityLogForTeamIdForLastNDays(teamId, tenantId, numberOfDays));
     } catch (Exception e) {
       log.error("Error selectActivityLogForLastDays ", e);
     }
-    return totalActivityLogCount;
+    return Collections.emptyList();
   }
 
   public List<Map<String, String>> selectActivityLogForLastDays(
       int numberOfDays, String[] envIdList, int tenantId) {
-    List<Map<String, String>> totalActivityLogCount = new ArrayList<>();
     try {
-      List<Object[]> activityCount =
-          activityLogRepo.findActivityLogForLastDays(envIdList, tenantId);
-      if (activityCount.size() > numberOfDays) {
-        activityCount = activityCount.subList(0, numberOfDays - 1);
-      }
-      Map<String, String> hashMap;
-      for (Object[] actvty : activityCount) {
-        hashMap = new HashMap<>();
-        hashMap.put("dateofactivity", "" + actvty[0]);
-        hashMap.put("activitycount", "" + ((Long) actvty[1]).intValue());
-
-        totalActivityLogCount.add(hashMap);
-      }
+      return gatherActivityList(
+          activityLogRepo.findActivityLogForLastNDays(envIdList, tenantId, numberOfDays));
     } catch (Exception e) {
       log.error("Error selectActivityLogForLastDays ", e);
+    }
+    return Collections.emptyList();
+  }
+
+  private List<Map<String, String>> gatherActivityList(List<Object[]> activityCount) {
+    final List<Map<String, String>> totalActivityLogCount = new ArrayList<>(activityCount.size());
+    Map<String, String> hashMap;
+    for (Object[] activity : activityCount) {
+      hashMap = new HashMap<>(activity.length);
+      hashMap.put("dateofactivity", "" + activity[0]);
+      hashMap.put("activitycount", "" + ((Long) activity[1]).intValue());
+      totalActivityLogCount.add(hashMap);
     }
     return totalActivityLogCount;
   }
