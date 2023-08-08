@@ -32,6 +32,7 @@ const authUser: AuthUser = {
   teamId: "2",
   teamname: "awesome-bunch-of-people",
   username: "i-am-test-user",
+  userrole: "USER",
 };
 
 const testServiceAccountData = {

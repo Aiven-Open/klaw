@@ -21,6 +21,7 @@ function transformAuthResponse(response: KlawApiResponse<"getAuth">): AuthUser {
     teamname: response.teamname,
     teamId: response.teamId,
     canSwitchTeams: response.canSwitchTeams,
+    userrole: response.userrole,
   };
 }
 

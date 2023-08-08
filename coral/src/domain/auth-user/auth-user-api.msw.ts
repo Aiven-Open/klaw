@@ -8,6 +8,7 @@ const user: AuthUser = {
   teamname: "",
   teamId: "",
   canSwitchTeams: "",
+  userrole: "USER",
 };
 
 const correctUsername = "superadmin";

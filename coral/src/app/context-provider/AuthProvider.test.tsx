@@ -18,6 +18,7 @@ const testAuthUser: AuthUser = {
   teamId: "",
   teamname: "",
   username: "Jon Snow",
+  userrole: "USER",
 };
 
 const ChildComponent = () => {
