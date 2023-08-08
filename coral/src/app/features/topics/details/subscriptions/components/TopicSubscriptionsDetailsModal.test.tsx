@@ -8,9 +8,9 @@ import {
   getAivenServiceAccountDetails,
   getConsumerOffsets,
 } from "src/domain/acl/acl-api";
-import { AuthUser } from "src/domain/auth-user";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 jest.mock("src/domain/acl/acl-api");
 jest.mock("src/app/context-provider/AuthProvider", () => ({
@@ -26,14 +26,6 @@ const mockGetAivenServiceAccountDetails =
   >;
 const mockAuthUser = jest.fn();
 const mockCloseDetailsModal = jest.fn();
-
-const authUser: AuthUser = {
-  canSwitchTeams: "false",
-  teamId: "2",
-  teamname: "awesome-bunch-of-people",
-  username: "i-am-test-user",
-  userrole: "USER",
-};
 
 const testServiceAccountData = {
   username: "nkira",
@@ -132,7 +124,7 @@ const findTerm = (term: string) => {
 
 describe("TopicSubscriptionsDetailsModal.tsx", () => {
   beforeAll(() => {
-    mockAuthUser.mockReturnValue(authUser);
+    mockAuthUser.mockReturnValue(testAuthUser);
   });
 
   afterEach(() => {

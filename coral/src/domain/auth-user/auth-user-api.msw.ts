@@ -1,15 +1,7 @@
 import { rest } from "msw";
 import { getHTTPBaseAPIUrl } from "src/config";
-import { AuthUser } from "src/domain/auth-user/auth-user-types";
 import { SetupServerApi } from "msw/node";
-
-const user: AuthUser = {
-  username: "Super Admin",
-  teamname: "",
-  teamId: "",
-  canSwitchTeams: "",
-  userrole: "USER",
-};
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 const correctUsername = "superadmin";
 
@@ -28,7 +20,7 @@ function mockUserAuthRequest(mswInstance: SetupServerApi) {
           })
         );
       }
-      return res(ctx.status(200), ctx.json(user));
+      return res(ctx.status(200), ctx.json(testAuthUser));
     })
   );
 }
