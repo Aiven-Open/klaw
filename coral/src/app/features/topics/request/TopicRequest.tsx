@@ -1,14 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { FieldErrorsImpl, SubmitHandler } from "react-hook-form";
-import {
-  Alert,
-  Box,
-  Button,
-  Divider,
-  Flexbox,
-  FlexboxItem,
-  useToast,
-} from "@aivenio/aquarium";
+import { Alert, Box, Button, Divider, useToast } from "@aivenio/aquarium";
 import {
   Form,
   SubmitButton,
@@ -141,8 +133,8 @@ function TopicRequest() {
               )}
               required={true}
             />
-            <Box component={Flexbox} gap={"l1"}>
-              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+            <Box component={Box.Flex} gap={"l1"}>
+              <Box component={Box.Flex} grow={1} width={"1/2"}>
                 <SelectOrNumberInput
                   name={"topicpartitions"}
                   label={"Topic partitions"}
@@ -150,7 +142,7 @@ function TopicRequest() {
                   required={true}
                 />
               </Box>
-              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              <Box component={Box.Flex} grow={1} width={"1/2"}>
                 <SelectOrNumberInput
                   name={"replicationfactor"}
                   label={"Replication factor"}
@@ -171,8 +163,8 @@ function TopicRequest() {
             <Box paddingY={"l1"}>
               <Divider />
             </Box>
-            <Box component={Flexbox} gap={"l1"}>
-              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+            <Box component={Box.Flex} gap={"l1"}>
+              <Box component={Box.Flex} grow={1} width={"1/2"}>
                 <Textarea<Schema>
                   name="description"
                   labelText="Description"
@@ -180,7 +172,7 @@ function TopicRequest() {
                   required={true}
                 />
               </Box>
-              <Box component={FlexboxItem} grow={1} width={"1/2"}>
+              <Box component={Box.Flex} grow={1} width={"1/2"}>
                 {" "}
                 <Textarea<Schema>
                   name="remarks"

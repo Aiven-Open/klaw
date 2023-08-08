@@ -1,4 +1,4 @@
-import { Flexbox, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
+import { Box, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 import { ConnectorRequest } from "src/domain/connector";
 
@@ -17,23 +17,23 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
   if (!request) return null;
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Flexbox direction={"column"}>
+      <Box.Flex direction={"column"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip text={request.environmentName} />
         </dd>
-      </Flexbox>
-      <Flexbox direction={"column"}>
+      </Box.Flex>
+      <Box.Flex direction={"column"}>
         <Label>Connector name</Label>
         <dd>{request.connectorName}</dd>
-      </Flexbox>
+      </Box.Flex>
 
       <GridItem colSpan={"span-2"}>
         <Label>Description</Label>
         <dd>{request.description}</dd>
       </GridItem>
       <GridItem colSpan={"span-2"}>
-        <Flexbox direction={"column"}>
+        <Box.Flex direction={"column"}>
           <Label>Connector configuration</Label>
           <dd>
             <MonacoEditor
@@ -55,24 +55,24 @@ function ConnectorRequestDetails(props: DetailsModalContentProps) {
               }}
             />
           </dd>
-        </Flexbox>
+        </Box.Flex>
       </GridItem>
 
       <GridItem colSpan={"span-2"}>
-        <Flexbox direction={"column"}>
+        <Box.Flex direction={"column"}>
           <Label>Message for the approver</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
-        </Flexbox>
+        </Box.Flex>
       </GridItem>
 
-      <Flexbox direction={"column"}>
+      <Box.Flex direction={"column"}>
         <Label>Requested by</Label>
         <dd>{request.requestor}</dd>
-      </Flexbox>
-      <Flexbox direction={"column"}>
+      </Box.Flex>
+      <Box.Flex direction={"column"}>
         <Label>Requested on</Label>
         <dd>{request.requesttimestring} UTC</dd>
-      </Flexbox>
+      </Box.Flex>
     </Grid>
   );
 }

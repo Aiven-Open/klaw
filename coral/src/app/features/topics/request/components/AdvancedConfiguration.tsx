@@ -11,7 +11,7 @@ import { useEffect, useRef } from "react";
 import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { TopicAdvancedConfigurationOptions } from "src/domain/topic/topic-types";
 import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
-import { BorderBox, Box, Flexbox, Typography } from "@aivenio/aquarium";
+import { BorderBox, Box, Typography } from "@aivenio/aquarium";
 
 type Props = {
   name: "advancedConfiguration";
@@ -67,7 +67,7 @@ function AdvancedConfiguration({ name }: Props) {
   }
 
   return (
-    <Box component={Flexbox} gap={"l1"} direction={"column"}>
+    <Box component={Box.Flex} gap={"l1"} direction={"column"}>
       <Typography.Subheading>
         Advanced Topic Configuration
       </Typography.Subheading>

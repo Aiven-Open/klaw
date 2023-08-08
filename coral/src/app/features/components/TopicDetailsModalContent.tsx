@@ -1,10 +1,4 @@
-import {
-  BorderBox,
-  Flexbox,
-  Grid,
-  GridItem,
-  StatusChip,
-} from "@aivenio/aquarium";
+import { BorderBox, Box, Grid, GridItem, StatusChip } from "@aivenio/aquarium";
 import MonacoEditor from "@monaco-editor/react";
 import fromPairs from "lodash/fromPairs";
 import isEmpty from "lodash/isEmpty";
@@ -62,41 +56,41 @@ const TopicDetailsModalContent = ({
 
   return (
     <Grid htmlTag={"dl"} cols={"2"} rowGap={"6"}>
-      <Flexbox direction={"column"}>
+      <Box.Flex direction={"column"}>
         <Label>Environment</Label>
         <dd>
           <StatusChip status={"neutral"} text={environmentName} />
         </dd>
-      </Flexbox>
-      <Flexbox direction={"column"}>
+      </Box.Flex>
+      <Box.Flex direction={"column"}>
         <Label>Request type</Label>
         <dd>
           <StatusChip status={"neutral"} text={requestOperationType} />
         </dd>
-      </Flexbox>
+      </Box.Flex>
       <GridItem colSpan={"span-2"}>
-        <Flexbox direction={"column"}>
+        <Box.Flex direction={"column"}>
           <Label>Topic</Label>
           <dd>{topicname}</dd>
-        </Flexbox>
+        </Box.Flex>
       </GridItem>
       <GridItem colSpan={"span-2"}>
-        <Flexbox direction={"column"}>
+        <Box.Flex direction={"column"}>
           <Label>Description</Label>
           <dd>{description}</dd>
-        </Flexbox>
+        </Box.Flex>
       </GridItem>
-      <Flexbox direction={"column"}>
+      <Box.Flex direction={"column"}>
         <Label>Topic partition</Label>
         <dd>{topicpartitions}</dd>
-      </Flexbox>
-      <Flexbox direction={"column"}>
+      </Box.Flex>
+      <Box.Flex direction={"column"}>
         <Label>Topic replication factor</Label>
         <dd>{replicationfactor}</dd>
-      </Flexbox>
+      </Box.Flex>
       {hasAdvancedConfig && (
         <GridItem colSpan={"span-2"}>
-          <Flexbox direction={"column"}>
+          <Box.Flex direction={"column"}>
             <Label>Advanced configuration</Label>
             <BorderBox borderColor={"grey-20"}>
               <MonacoEditor
@@ -117,23 +111,23 @@ const TopicDetailsModalContent = ({
                 }}
               />
             </BorderBox>
-          </Flexbox>
+          </Box.Flex>
         </GridItem>
       )}
       <GridItem colSpan={"span-2"}>
-        <Flexbox direction={"column"}>
+        <Box.Flex direction={"column"}>
           <Label>Message for the approver</Label>
           <dd>{remarks || <i>No message</i>}</dd>
-        </Flexbox>
+        </Box.Flex>
       </GridItem>
-      <Flexbox direction={"column"}>
+      <Box.Flex direction={"column"}>
         <Label>Requested by</Label>
         <dd>{requestor}</dd>
-      </Flexbox>
-      <Flexbox direction={"column"}>
+      </Box.Flex>
+      <Box.Flex direction={"column"}>
         <Label>Requested on</Label>
         <dd>{requesttimestring} UTC</dd>
-      </Flexbox>
+      </Box.Flex>
     </Grid>
   );
 };

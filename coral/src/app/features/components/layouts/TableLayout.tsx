@@ -1,4 +1,4 @@
-import { Alert, Box, Flexbox } from "@aivenio/aquarium";
+import { Alert, Box } from "@aivenio/aquarium";
 import { ReactElement } from "react";
 import SkeletonTable from "src/app/features/approvals/SkeletonTable";
 import { parseErrorMsg } from "src/services/mutation-utils";
@@ -64,7 +64,7 @@ function TableLayout(props: TableLayoutProps) {
           >
             <Box className={"a11y-enhancement-data-table"}>{table}</Box>
           </Box>
-          <Flexbox justifyContent={"center"}>{pagination}</Flexbox>
+          <Box.Flex justifyContent={"center"}>{pagination}</Box.Flex>
         </>
       )}
     </>
