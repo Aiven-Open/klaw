@@ -416,7 +416,8 @@ public class SchemaRegistryControllerService {
         schemaObjects.get(Integer.valueOf(schemaPromotion.getSchemaVersion()));
     // Pretty Print the Json String so that it can be seen clearly in the UI.
     schemaRequest.setSchemafull(prettyPrintUglyJsonString((String) schemaObject.get("schema")));
-    return uploadSchema(schemaRequest);
+    // sending request operation type along with function call
+    return uploadSchema(schemaRequest, RequestOperationType.PROMOTE);
   }
 
   private boolean userAndTopicOwnerAreOnTheSameTeam(
@@ -467,7 +468,9 @@ public class SchemaRegistryControllerService {
     return schemaRequest;
   }
 
-  public ApiResponse uploadSchema(SchemaRequestModel schemaRequest) throws KlawException {
+  public ApiResponse uploadSchema(
+      SchemaRequestModel schemaRequest, RequestOperationType requestOperationType)
+      throws KlawException {
     log.info("uploadSchema {}", schemaRequest);
     String userName = getUserName();
 
@@ -533,7 +536,7 @@ public class SchemaRegistryControllerService {
     schemaRequest.setRequestor(userName);
     SchemaRequest schemaRequestDao = new SchemaRequest();
     copyProperties(schemaRequest, schemaRequestDao);
-    schemaRequestDao.setRequestOperationType(RequestOperationType.CREATE.value);
+    schemaRequestDao.setRequestOperationType(requestOperationType.value);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     schemaRequestDao.setTenantId(tenantId);
     try {
