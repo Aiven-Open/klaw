@@ -165,7 +165,8 @@ public class SchemaRegistryController {
   public ResponseEntity<ApiResponse> uploadSchema(
       @Valid @RequestBody SchemaRequestModel addSchemaRequest) throws KlawException {
     return new ResponseEntity<>(
-        schemaRegistryControllerService.uploadSchema(addSchemaRequest), HttpStatus.OK);
+        schemaRegistryControllerService.uploadSchema(addSchemaRequest, RequestOperationType.CREATE),
+        HttpStatus.OK);
   }
 
   @PostMapping(
