@@ -49,7 +49,7 @@ function transformAuthResponse(response: KlawApiResponse<"getAuth">): AuthUser {
   };
 }
 
-async function getAuth(): Promise<AuthUser> {
+function getAuth(): Promise<AuthUser> {
   return api
     .get<KlawApiResponse<"getAuth">>(API_PATHS.getAuth)
     .then((response) => transformAuthResponse(response));
