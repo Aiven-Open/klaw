@@ -185,10 +185,7 @@ public class InsertDataJdbc {
       topicRepo.save(topic);
     }
 
-    return CRUDResponse.<Topic>builder()
-        .resultStatus(ApiResultStatus.SUCCESS.value)
-        .entities(topics)
-        .build();
+    return CRUDResponse.ok(topics);
   }
 
   public synchronized String insertIntoConnectorSOT(

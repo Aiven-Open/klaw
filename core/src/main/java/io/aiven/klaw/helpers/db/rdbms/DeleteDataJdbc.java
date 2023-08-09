@@ -252,10 +252,7 @@ public class DeleteDataJdbc {
     log.debug("deleteTopics {}", topic.getTopicname());
     topicRepo.deleteByTopicnameAndEnvironmentAndTenantId(
         topic.getTopicname(), topic.getEnvironment(), topic.getTenantId());
-    return CRUDResponse.<Topic>builder()
-        .resultStatus(ApiResultStatus.SUCCESS.value)
-        .entities(List.of(topic))
-        .build();
+    return CRUDResponse.ok(List.of(topic));
   }
 
   @Transactional

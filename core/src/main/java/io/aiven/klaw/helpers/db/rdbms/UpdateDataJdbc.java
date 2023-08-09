@@ -24,11 +24,7 @@ import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -183,7 +179,7 @@ public class UpdateDataJdbc {
     final RequestOperationType requestOperationType =
         RequestOperationType.of(topicRequest.getRequestOperationType());
     if (requestOperationType == null) {
-      return CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build();
+      return CRUDResponse.ok(Collections.emptyList());
     }
     CRUDResponse<Topic> saveResult = null;
     switch (requestOperationType) {
@@ -248,10 +244,7 @@ public class UpdateDataJdbc {
           topic.setTopicid(Integer.parseInt(topicId));
           topicRepo.save(topic);
         });
-    return CRUDResponse.<Topic>builder()
-        .resultStatus(ApiResultStatus.SUCCESS.value)
-        .entities(topics)
-        .build();
+    return CRUDResponse.<Topic>ok(topics);
   }
 
   private void updateConnectorSOT(List<KwKafkaConnector> topics, String topicId) {

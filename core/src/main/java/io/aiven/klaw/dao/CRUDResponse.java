@@ -1,5 +1,6 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.model.enums.ApiResultStatus;
 import java.util.List;
 import lombok.Builder;
 import lombok.Data;
@@ -16,4 +17,18 @@ public class CRUDResponse<T> {
 
   private List<T> entities;
   private String resultStatus;
+
+  public static final <T> CRUDResponse<T> ok(List<T> entities) {
+    return CRUDResponse.<T>builder()
+        .resultStatus(ApiResultStatus.SUCCESS.value)
+        .entities(entities)
+        .build();
+  }
+
+  public static final <T> CRUDResponse<T> notOk(List<T> entities) {
+    return CRUDResponse.<T>builder()
+        .resultStatus(ApiResultStatus.FAILURE.value)
+        .entities(entities)
+        .build();
+  }
 }
