@@ -39,7 +39,7 @@ describe("TopicMessageOffsetFilter", () => {
         disabled={true}
       />
     );
-    within(screen.getByRole("group", { name: "Offset" }))
+    within(screen.getByRole("group", { name: "Number of messages" }))
       .getAllByRole("radio")
       .forEach((option) => expect(option).toBeDisabled());
   });
