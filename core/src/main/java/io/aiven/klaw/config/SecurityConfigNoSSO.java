@@ -162,7 +162,7 @@ public class SecurityConfigNoSSO {
       userInfo = iter.next();
       try {
         String secPwd = userInfo.getPwd();
-        if (secPwd != null && secPwd.equals("")) {
+        if (secPwd == null || secPwd.equals("")) {
           continue;
         } else {
           secPwd = decodePwd(secPwd);
