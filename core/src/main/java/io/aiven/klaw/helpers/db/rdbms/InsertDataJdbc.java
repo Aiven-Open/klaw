@@ -163,23 +163,19 @@ public class InsertDataJdbc {
   }
 
   public synchronized CRUDResponse<Topic> insertIntoTopicSOT(List<Topic> topics) {
-    Set<Topic> existingTopicIds = new HashSet<>();
+    Set<Integer> existingTopicIds = new HashSet<>();
     topicRepo
         .findAllById(
             topics.stream()
                 .filter(t -> !t.isExistingTopic())
                 .map(t -> new TopicID(t.getTopicid(), t.getTenantId()))
                 .collect(Collectors.toList()))
-        .forEach(existingTopicIds::add);
+        .forEach(entry -> existingTopicIds.add(entry.getTopicid()));
 
-    for (Topic topic : existingTopicIds) {
-      log.debug("insertIntoTopicSOT {}", topic.getTopicname());
-      topic.setTopicid(getNextTopicRequestId("TOPIC_ID", topic.getTenantId()));
-      topicRepo.save(topic);
-    }
     for (Topic topic : topics) {
-      if (existingTopicIds.contains(topic)) {
-        continue;
+      if (existingTopicIds.contains(topic.getTopicid())) {
+        log.debug("insertIntoTopicSOT {} update topic Id", topic.getTopicname());
+        topic.setTopicid(getNextTopicRequestId("TOPIC_ID", topic.getTenantId()));
       }
       log.debug("insertIntoTopicSOT {}", topic.getTopicname());
       topicRepo.save(topic);
