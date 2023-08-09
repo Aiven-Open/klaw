@@ -20,7 +20,8 @@ const getAuthUserMockForLogin = (
 // that users would change that string, so we can use it to identify
 // the superadmin role, which has different view-access
 const SUPERADMIN_USERROLE = "SUPERADMIN";
-function isSuperAdmin(user: AuthUser) {
+type SuperAdminUser = AuthUser & { userrole: typeof SUPERADMIN_USERROLE };
+function isSuperAdmin(user: AuthUser): user is SuperAdminUser {
   return user.userrole === SUPERADMIN_USERROLE;
 }
 
