@@ -2,22 +2,20 @@
 
 We're running a proxy server to enable a convenient way of developing Coral locally without the need to connect a remote api.
 
-
 ## Table of content
 
-* [Installation](#installation)
-* [Commands and flags](#commands-and-flags)
-    + [➡️ `pnpm dev:start`](#-pnpm-devstart)
-    + [➡️ `pnpm dev:restart`](#-pnpm-devrestart)
-    + [➡️ `pnpm:[start|restart]:testEnv`](#-pnpmstartrestarttestenv)
-    + [➡️ `pnpm dev:stop`](#-pnpm-devstop)
-    + [➡️ `pnpm dev:destroy`](#-pnpm-devdestroy)
-    + [➡️ `pnpm run setup`](#-pnpm-setup)
-    + [➡️ additional `--verbose` flag](#-additional---verbose-flag)
-* [How it works](#how-it-works)
-    + [These scripts are used by other scripts](#these-scripts-are-used-by-other-scripts)
-    + [Files](#files)
-      
+- [Installation](#installation)
+- [Commands and flags](#commands-and-flags)
+  - [➡️ `pnpm dev:start`](#-pnpm-devstart)
+  - [➡️ `pnpm dev:restart`](#-pnpm-devrestart)
+  - [➡️ `pnpm:[start|restart]:testEnv`](#-pnpmstartrestarttestenv)
+  - [➡️ `pnpm dev:stop`](#-pnpm-devstop)
+  - [➡️ `pnpm dev:destroy`](#-pnpm-devdestroy)
+  - [➡️ `pnpm run setup`](#-pnpm-setup)
+  - [➡️ additional `--verbose` flag](#-additional---verbose-flag)
+- [How it works](#how-it-works)
+  - [These scripts are used by other scripts](#these-scripts-are-used-by-other-scripts)
+  - [Files](#files)
 
 ## Installation
 
