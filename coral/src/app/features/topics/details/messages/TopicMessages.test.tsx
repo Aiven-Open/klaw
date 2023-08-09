@@ -49,7 +49,7 @@ describe("TopicMessages", () => {
       }
     );
     screen.getByText(
-      "To view messages in this topic, select the number of messages you'd like to view and select Fetch message."
+      "To view messages in this topic, select the number of messages you'd like to view and select Fetch messages."
     );
   });
   it("requests and displays all messages when Update results is pressed", async () => {

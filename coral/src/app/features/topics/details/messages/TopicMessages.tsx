@@ -74,7 +74,7 @@ function TopicMessages() {
       return (
         <EmptyState title="No messages displayed">
           To view messages in this topic, select the number of messages
-          you&apos;d like to view and select Fetch message.
+          you&apos;d like to view and select Fetch messages.
         </EmptyState>
       );
     } else if (isNoContentResult(consumeResult)) {
