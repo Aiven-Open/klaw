@@ -23,7 +23,7 @@ function TopicMessageOffsetFilter({
     <RadioButtonGroup
       name={"offset"}
       value={value}
-      labelText="Offset"
+      labelText="Number of messages"
       disabled={disabled}
       onChange={(value) => onChange(value as Offset)}
     >
