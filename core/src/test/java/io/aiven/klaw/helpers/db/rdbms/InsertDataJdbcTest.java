@@ -1,18 +1,12 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
-import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.KwEntitySequence;
-import io.aiven.klaw.dao.MessageSchema;
-import io.aiven.klaw.dao.SchemaRequest;
-import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.AclRequestsRepo;
@@ -28,9 +22,13 @@ import io.aiven.klaw.repository.UserInfoRepo;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.Mock;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -103,7 +101,7 @@ public class InsertDataJdbcTest {
   public void insertIntoTopicSOT() {
     List<Topic> topics = utilMethods.getTopics();
     when(topicRepo.getNextTopicRequestId(anyInt())).thenReturn(101);
-    String result = insertData.insertIntoTopicSOT(topics);
+    String result = insertData.insertIntoTopicSOT(topics).getResultStatus();
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
@@ -165,5 +163,42 @@ public class InsertDataJdbcTest {
         .thenReturn(kwEntitySequenceList);
     String result = insertData.insertIntoTeams(utilMethods.getTeams().get(0));
     assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  public void insertIntoTopicSOTAndReturnTopics(List<Topic> topics, List<Topic> existingIds) {
+    when(topicRepo.findAllById(any())).thenReturn(existingIds);
+    when(topicRepo.getNextTopicRequestId(anyInt())).thenReturn(31);
+    CRUDResponse<Topic> result = insertData.insertIntoTopicSOT(topics);
+    assertThat(result.getResultStatus()).isEqualTo(ApiResultStatus.SUCCESS.value);
+    // check that every entry is returnedcorrectly to the calling method.
+    assertEquals(topics.size(), result.getEntities().size());
+    assertEquals(topics, result.getEntities());
+  }
+
+  private static Stream<Arguments> insertIntoTopicSOTAndReturnTopics() {
+
+    return Stream.of(
+        Arguments.of(generateTopics(10, false), generateTopics(3, false)),
+        Arguments.of(generateTopics(1, false), generateTopics(0, false)),
+        Arguments.of(generateTopics(1, false), generateTopics(1, false)),
+        Arguments.of(generateTopics(22, false), generateTopics(0, false)));
+  }
+
+  private static List<Topic> generateTopics(int numberOfTopics, boolean alreadyExist) {
+    List<Topic> topics = new ArrayList<>();
+
+    for (int i = 0; i < numberOfTopics; i++) {
+      Topic t = new Topic();
+      t.setEnvironment("DEV");
+      t.setTopicname("Generate" + i);
+      t.setTeamId(8);
+      t.setTenantId(101);
+      t.setExistingTopic(alreadyExist);
+      t.setTopicid(i);
+      topics.add(t);
+    }
+    return topics;
   }
 }

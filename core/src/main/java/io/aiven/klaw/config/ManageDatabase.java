@@ -565,6 +565,14 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     topicsPerTenant.put(tenantId, handleDbRequests.getAllTopics(tenantId));
   }
 
+  public void addTopicToCache(int tenantId, Topic topic) {
+    log.debug("addTopicToCache {} {}", tenantId, topic);
+    // If the topic does not already exist in the cache simply add it.
+    if (!topicsPerTenant.get(tenantId).contains(topic)) {
+      topicsPerTenant.get(tenantId).add(topic);
+    }
+  }
+
   public List<Topic> getTopicsForTenant(int tenantId) {
     return topicsPerTenant.get(tenantId);
   }

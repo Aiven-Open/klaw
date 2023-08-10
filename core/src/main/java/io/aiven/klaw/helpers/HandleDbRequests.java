@@ -35,7 +35,7 @@ public interface HandleDbRequests {
 
   String requestForSchema(SchemaRequest schemaRequest);
 
-  String addToSynctopics(List<Topic> topicRequests);
+  CRUDResponse<Topic> addToSynctopics(List<Topic> topicRequests);
 
   String addToSyncConnectors(List<KwKafkaConnector> connectorRequests);
 
@@ -320,7 +320,7 @@ public interface HandleDbRequests {
 
   String updateConnectorDocumentation(KwKafkaConnector topic);
 
-  String updateTopicRequest(TopicRequest topicRequest, String approver);
+  CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver);
 
   String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 
