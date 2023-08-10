@@ -48,7 +48,9 @@ describe("TopicMessages", () => {
         queryClient: true,
       }
     );
-    screen.getByText("Select offset and Update results.");
+    screen.getByText(
+      "To view messages in this topic, select the number of messages you'd like to view and select Fetch messages."
+    );
   });
   it("requests and displays all messages when Update results is pressed", async () => {
     mockGetTopicMessages.mockResolvedValue(mockGetTopicMessagesResponse);
@@ -65,7 +67,7 @@ describe("TopicMessages", () => {
     );
     await userEvent.click(
       screen.getByRole("button", {
-        name: "Consume and display the latest 5 messages from topic test",
+        name: "Fetch and display the latest 5 messages from topic test",
       })
     );
     await waitFor(() => expect(mockGetTopicMessages).toHaveBeenCalledTimes(1));
@@ -95,11 +97,11 @@ describe("TopicMessages", () => {
     );
     await userEvent.click(
       screen.getByRole("button", {
-        name: "Consume and display the latest 5 messages from topic test",
+        name: "Fetch and display the latest 5 messages from topic test",
       })
     );
     await waitFor(() => {
-      screen.getByText("This Topic contains no Messages.");
+      screen.getByText("This Topic contains no messages.");
     });
   });
 
@@ -128,7 +130,7 @@ describe("TopicMessages", () => {
       );
       await userEvent.click(
         screen.getByRole("button", {
-          name: "Consume and display the latest 25 messages from topic test",
+          name: "Fetch and display the latest 25 messages from topic test",
         })
       );
       await waitFor(() => {
@@ -155,7 +157,7 @@ describe("TopicMessages", () => {
       await userEvent.click(screen.getByRole("radio", { name: "50" }));
       await userEvent.click(
         screen.getByRole("button", {
-          name: "Consume and display the latest 50 messages from topic test",
+          name: "Fetch and display the latest 50 messages from topic test",
         })
       );
       await waitFor(() => {
