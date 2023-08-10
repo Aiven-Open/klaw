@@ -6,20 +6,13 @@ import {
   tabThroughBackward,
   tabThroughForward,
 } from "src/services/test-utils/tabbing";
-import { AuthUser } from "src/domain/auth-user";
-
-const authUser: AuthUser = {
-  canSwitchTeams: "false",
-  teamId: "2",
-  teamname: "awesome-bunch-of-people",
-  username: "i-am-test-user",
-};
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 jest.mock("src/domain/team/team-api.ts");
 
 jest.mock("src/app/context-provider/AuthProvider", () => ({
   useAuthContext: () => {
-    return authUser;
+    return testAuthUser;
   },
 }));
 
@@ -75,7 +68,7 @@ describe("MainNavigation.tsx", () => {
 
     it("renders the user's current team", async () => {
       const teamLabel = screen.getByText("Team");
-      const teamName = screen.getByText(authUser.teamname);
+      const teamName = screen.getByText(testAuthUser.teamname);
       expect(teamLabel).toBeVisible();
       expect(teamName).toBeVisible();
     });
