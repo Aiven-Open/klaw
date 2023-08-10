@@ -8,8 +8,10 @@
 }
 
 .mainNavigationLink a:hover,
+.mainNavigationLink a:focus-visible,
 .mainNavigationLink:focus-within {
   color: var(--main-navigation-hover) !important;
+  text-decoration: none;
 }
 
 .mainNavigationLinkActive a {
