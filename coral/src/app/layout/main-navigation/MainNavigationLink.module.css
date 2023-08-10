@@ -10,13 +10,18 @@
 .mainNavigationLink a:hover,
 .mainNavigationLink a:focus-visible,
 .mainNavigationLink:focus-within {
-  color: var(--main-navigation-hover) !important;
-  text-decoration: none;
+  color: var(--navigation-elements-hover) !important;
+}
+
+.mainNavigationLink a:hover,
+.mainNavigationLink a:focus-visible,
+.mainNavigationLink:focus-within,
+.mainNavigationLinkActive a {
+  text-decoration: none !important;
 }
 
 .mainNavigationLinkActive a {
   display: block;
-  color: var(--main-navigation-active) !important;
 }
 
 .mainNavigationLinkActive {

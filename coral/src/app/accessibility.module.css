@@ -11,9 +11,15 @@
  *       or custom theme are covered
 */
 :root {
-  --main-navigation-active: var(--aquarium-colors-primary-80);
-  --main-navigation-hover: var(--aquarium-colors-primary-60);
-  --interactive-elements-focus: var(--aquarium-colors-primary-60);
+  /* Vars for navigation elements match the colour for
+    DS links links in navigation elements don't need
+    a colour but should have a hover colour*/
+  --navigation-elements-active: var(--aquarium-colors-primary-80);
+  --navigation-elements-hover: var(--aquarium-colors-primary-80);
+
+  /*the var matches the colour the DS sets for focus
+    via .focus\ classes */
+  --interactive-elements-focus: var(--aquarium-colors-info-70);
 }
 
 /************************************************
@@ -21,23 +27,22 @@
  ************************************************
 */
 
-button:focus-visible {
-  outline: 2px solid var(--interactive-elements-focus) !important;
-  outline-offset: 2px !important;
-}
+/* When we're using Router Links (or a elements)*/
+/* we need to match the styles to DS Links */
+/* This is covered by the selector*/
+/* a:global(:not(.Aquarium-Button)*/
 
 a:global(:not(.Aquarium-Button)) {
   color: var(--text-link-color);
 }
 
-a:global(:not(.Aquarium-Button)):hover,
-a:global(:not(.Aquarium-Button)):focus {
-  color: var(--text-link-color-hover);
+a:global(:not(.Aquarium-Button)):focus-visible,
+a:global(:not(.Aquarium-Button)):hover {
+  text-decoration: underline;
 }
 
 a:not(.Aquarium-Button):focus-visible {
   outline-offset: 1px !important;
-  box-shadow: 0 0 3px 0 transparent;
   outline: 2px solid var(--interactive-elements-focus);
 }
 
@@ -75,14 +80,29 @@ a:not(.Aquarium-Button):focus-visible {
  ****************************************
 */
 
-:root input:focus-visible,
-:root select:focus-visible,
-:root textarea:focus-visible {
+/*DS sets focus on elements via a .focus\ class (we can't select that)*/
+/*and changes the border color for elements with border. This is not */
+/*enough to match accessibility requirements (only 1 px border with low*/
+/*color contrast) so we're creating an outline of 2px */
+:root input:focus,
+:root select:focus,
+:root textarea:focus {
+  outline: 2px solid var(--interactive-elements-focus) !important;
+  outline-offset: 0 !important;
+}
+
+/* DS sets focus on button with .focus-visible\ and not .focus */
+/* so we're using this selector. Since the styles sets an */
+/* outline, we're only adding a px more to it to create */
+/* the same outline as for other elements */
+:root button:focus-visible {
   outline: 1px solid var(--interactive-elements-focus) !important;
   outline-offset: 0 !important;
 }
 
-:root button:focus {
+/* This is needed to create the same outline like above */
+/* for buttons that are not part of the DS*/
+:root button:not(.Aquarium-Button):focus-visible {
   outline: 2px solid var(--interactive-elements-focus) !important;
   outline-offset: 0 !important;
 }
@@ -106,6 +126,13 @@ a:not(.Aquarium-Button):focus-visible {
 :root [role="tablist"] [role="tab"]:focus-visible {
   /* The default outline was overflowing to the container. */
   outline-offset: -2px !important;
+  background-color: var(--aquarium-colors-grey-0);
+}
+
+:root [role="tablist"] [role="tab"]:hover > *,
+:root [role="tablist"] [role="tab"]:focus > *,
+:root [role="tablist"] [role="tab"]:focus-visible > * {
+  color: var(--aquarium-colors-primary-80) !important;
 }
 
 :root [role="tablist"] [role="tab"][aria-selected="true"] {
