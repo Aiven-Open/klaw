@@ -5,7 +5,7 @@ import {
   useAuthContext,
 } from "src/app/context-provider/AuthProvider";
 import { waitForElementToBeRemoved } from "@testing-library/react/pure";
-import { AuthUser } from "src/domain/auth-user";
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 const getAuthMock = jest.fn();
 jest.mock("src/domain/auth-user", () => ({
@@ -13,19 +13,13 @@ jest.mock("src/domain/auth-user", () => ({
   getAuth: () => getAuthMock(),
 }));
 
-const testAuthUser: AuthUser = {
-  canSwitchTeams: "",
-  teamId: "",
-  teamname: "",
-  username: "Jon Snow",
-};
-
 const ChildComponent = () => {
   const authUser = useAuthContext();
 
   return <div data-testid={"auth-provider-child"}>{authUser?.username}</div>;
 };
 
+const mockAuthUser = { ...testAuthUser, username: "Jon Snow" };
 describe("AuthProvider.tsx", () => {
   describe("gets the auth user", () => {
     beforeEach(() => {
@@ -57,7 +51,7 @@ describe("AuthProvider.tsx", () => {
 
   describe("renders an auth provider with given children when auth user is available", () => {
     beforeEach(async () => {
-      getAuthMock.mockReturnValue(testAuthUser);
+      getAuthMock.mockReturnValue(mockAuthUser);
       customRender(
         <AuthProvider>
           <ChildComponent />
