@@ -13,7 +13,7 @@ const ConnectorsPage = () => {
       <PageHeader
         title={"Connectors"}
         primaryAction={{
-          text: "Request new Connector",
+          text: "Request new connector",
           onClick: () => navigate("/connectors/request"),
           icon: add,
         }}
