@@ -168,17 +168,19 @@ function TopicDetailsSchema() {
           )}
         </Box>
 
-        {!topicSchemasIsRefetching && isTopicOwner && (
-          <Box alignSelf={"top"}>
-            <Link
-              to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
-            >
-              <Button.Primary icon={add} disabled={topicSchemasIsRefetching}>
-                Request a new version
-              </Button.Primary>
-            </Link>
-          </Box>
-        )}
+        {!topicSchemasIsRefetching &&
+          isTopicOwner &&
+          !schemaDetailsPerEnv?.promoteOnly && (
+            <Box alignSelf={"top"}>
+              <Link
+                to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
+              >
+                <Button.Primary icon={add} disabled={topicSchemasIsRefetching}>
+                  Request a new version
+                </Button.Primary>
+              </Link>
+            </Box>
+          )}
       </Box>
 
       {!topicSchemasIsRefetching && isTopicOwner && (
