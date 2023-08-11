@@ -10,6 +10,7 @@ interface TopicClaimBannerProps {
   setShowClaimModal: Dispatch<SetStateAction<boolean>>;
   isError: boolean;
   errorMessage?: string;
+  topicOwner: string;
 }
 
 const TopicClaimBanner = ({
@@ -19,6 +20,7 @@ const TopicClaimBanner = ({
   setShowClaimModal,
   isError,
   errorMessage,
+  topicOwner,
 }: TopicClaimBannerProps) => {
   if (hasOpenRequest) {
     // We do not render an InternalLinkButton to the Requests page for this state...
@@ -55,8 +57,8 @@ const TopicClaimBanner = ({
       <Spacing gap={"l1"}>
         {isError && <Alert type="error">{errorMessage}</Alert>}
         <Box component={"p"} marginBottom={"l1"}>
-          Your team is not the owner of this topic. Click below to create a
-          claim request for this topic.
+          This topic is currently owned by {topicOwner}. Select &quot;Claim
+          topic&quot; to request ownership.
         </Box>
       </Spacing>
       <Button.Primary onClick={() => setShowClaimModal(true)}>

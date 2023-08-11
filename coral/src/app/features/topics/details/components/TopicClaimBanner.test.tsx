@@ -13,6 +13,7 @@ const testProps = {
   topicName: TOPIC_NAME,
   hasOpenClaimRequest: false,
   hasOpenRequest: false,
+  topicOwner: "teamname",
 };
 
 describe("TopicClaimBanner", () => {
@@ -21,7 +22,7 @@ describe("TopicClaimBanner", () => {
   it("renders correct elements", () => {
     render(<TopicClaimBanner {...testProps} />);
     const description = screen.getByText(
-      "Your team is not the owner of this topic. Click below to create a claim request for this topic."
+      `This topic is currently owned by ${testProps.topicOwner}. Select "Claim topic" to request ownership.`
     );
 
     const button = screen.getByRole("button", { name: "Claim topic" });
