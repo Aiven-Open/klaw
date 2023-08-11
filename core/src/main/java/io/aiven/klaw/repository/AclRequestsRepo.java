@@ -19,9 +19,10 @@ public interface AclRequestsRepo
       int tenantId, String env, String requestStatus, String topicname);
 
   @Query(
-      value = "select count(*) from kwaclrequests where env = :envId and tenantid = :tenantId",
+      value =
+          "select exists(select 1 from kwaclrequests where env = :envId and tenantid = :tenantId)",
       nativeQuery = true)
-  List<Object[]> findAllAclRequestsCountForEnv(
+  boolean existsAclRequestsCountForEnv(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
