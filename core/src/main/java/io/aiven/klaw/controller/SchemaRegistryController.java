@@ -11,7 +11,6 @@ import io.aiven.klaw.model.response.SchemaOverview;
 import io.aiven.klaw.model.response.SchemaRequestsResponseModel;
 import io.aiven.klaw.service.SchemaOverviewService;
 import io.aiven.klaw.service.SchemaRegistryControllerService;
-import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
@@ -32,8 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class SchemaRegistryController {
 
   @Autowired SchemaRegistryControllerService schemaRegistryControllerService;
-
-  @Autowired TopicOverviewService topicOverviewService;
   @Autowired SchemaOverviewService schemaOverviewService;
 
   /**

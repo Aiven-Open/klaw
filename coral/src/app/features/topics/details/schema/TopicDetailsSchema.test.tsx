@@ -45,6 +45,7 @@ const testTopicSchemas: TopicSchemaOverview = {
     showNext: true,
     showPrev: false,
     latest: true,
+    promoteOnly: false,
   },
 };
 
@@ -70,6 +71,7 @@ const noPromotion_testTopicSchemas = {
     showNext: true,
     showPrev: false,
     latest: true,
+    promoteOnly: false,
   },
 };
 

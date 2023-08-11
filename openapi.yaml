@@ -7805,9 +7805,12 @@
           },
           "latest" : {
             "type" : "boolean"
+          },
+          "promoteOnly" : {
+            "type" : "boolean"
           }
         },
-        "required" : [ "compatibility", "content", "env", "id", "latest", "nextVersion", "prevVersion", "showNext", "showPrev", "version" ]
+        "required" : [ "compatibility", "content", "env", "id", "latest", "nextVersion", "prevVersion", "promoteOnly", "showNext", "showPrev", "version" ]
       },
       "SchemaOverview" : {
         "properties" : {

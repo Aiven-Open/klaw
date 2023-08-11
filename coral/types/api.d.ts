@@ -1368,6 +1368,7 @@ export type components = {
       showNext: boolean;
       showPrev: boolean;
       latest: boolean;
+      promoteOnly: boolean;
     };
     SchemaOverview: {
       topicExists: boolean;
