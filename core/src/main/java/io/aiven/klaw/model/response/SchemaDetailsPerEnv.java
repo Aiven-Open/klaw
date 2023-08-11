@@ -27,4 +27,6 @@ public class SchemaDetailsPerEnv {
   @NotNull private boolean showPrev;
   // simple boolean to identify if this is the latest schema on the topic for that environment.
   @NotNull private boolean latest;
+  // Indicates if this schema env is restricted to only allow new schemas through promotion.
+  @NotNull private boolean promoteOnly;
 }

@@ -7,6 +7,7 @@ import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
+import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -146,9 +147,8 @@ public class SchemaOverviewService extends BaseOverviewService {
             hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
             schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(true);
-            updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
-            schemaDetailsPerEnv.setVersion(latestSchemaVersion);
-
+            setSchemaDetailsPerEnvVersionAndCompatibility(
+                tenantId, schemaDetailsPerEnv, hashMapSchemaObj, latestSchemaVersion, schemaEnv);
             if (schemaObjects.size() > 1) {
               schemaDetailsPerEnv.setShowNext(true);
               schemaDetailsPerEnv.setShowPrev(false);
@@ -159,9 +159,8 @@ public class SchemaOverviewService extends BaseOverviewService {
             hashMapSchemaObj = schemaObjects.get(schemaVersionSearch);
             schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(false);
-            updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
-            schemaDetailsPerEnv.setVersion(schemaVersionSearch);
-
+            setSchemaDetailsPerEnvVersionAndCompatibility(
+                tenantId, schemaDetailsPerEnv, hashMapSchemaObj, schemaVersionSearch, schemaEnv);
             if (schemaObjects.size() > 1) {
               int indexOfVersion = allVersionsList.indexOf(schemaVersionSearch);
               if (indexOfVersion + 1 == allVersionsList.size()) {
@@ -206,6 +205,22 @@ public class SchemaOverviewService extends BaseOverviewService {
         schemaOverview.setSchemaDetailsPerEnv(schemaDetailsPerEnv);
       }
     }
+  }
+
+  private void setSchemaDetailsPerEnvVersionAndCompatibility(
+      int tenantId,
+      SchemaDetailsPerEnv schemaDetailsPerEnv,
+      Map<String, Object> hashMapSchemaObj,
+      Integer latestSchemaVersion,
+      Env schemaEnv) {
+    updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
+    schemaDetailsPerEnv.setVersion(latestSchemaVersion);
+
+    KwTenantConfigModel tenantModel = manageDatabase.getTenantConfig().get(tenantId);
+    List<String> reqSchemaEnvs =
+        tenantModel == null ? new ArrayList<>() : tenantModel.getRequestSchemaEnvironmentsList();
+
+    schemaDetailsPerEnv.setPromoteOnly(!reqSchemaEnvs.contains(schemaEnv.getId()));
   }
 
   private static void updateIdAndCompatibility(
