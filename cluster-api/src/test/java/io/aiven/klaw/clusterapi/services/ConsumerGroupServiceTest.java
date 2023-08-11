@@ -99,28 +99,4 @@ class ConsumerGroupServiceTest {
 
     Assertions.assertThat(actual).isEqualTo(expected);
   }
-
-  //  @Test
-  //  void resetConsumerGroupOffsetsSuccess() throws Exception {
-  //    List<TopicPartitionInfo> partitions = Collections.singletonList(new TopicPartitionInfo(1,
-  // Node.noNode(),
-  //            Collections.singletonList(Node.noNode()),
-  // Collections.singletonList(Node.noNode())));
-  //
-  //    when(clusterApiUtils.getAdminClient(any(), any(), any())).thenReturn(adminClient);
-  //
-  //    String testConsumerGroup = "testconsumergroup";
-  //
-  // when(adminClient.describeTopics(Collections.singletonList(TESTTOPIC))).thenReturn(describeTopicsResult);
-  //
-  //    TreeMap<String, Long> offsetPositionsMap = new TreeMap<>();
-  //    when(clusterService.retrieveOffsets(testConsumerGroup)).thenReturn(offsetPositionsMap);
-  //
-  //    OffsetsResponse offsetsResponse =
-  // consumerGroupOffsetsResetService.resetConsumerOffsets(topicName, testConsumerGroup,
-  // getConsumerGroupResetRequest(ResetType.EARLIEST));
-  //
-  //    assertNotNull(offsetsResponse);
-  //    verify(multiEnvProvider, times(1)).getClusterService(anyString());
-  //  }
 }
