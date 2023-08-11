@@ -1,4 +1,4 @@
-package io.aiven.klaw.clusterapi.models.offsets;
+package io.aiven.klaw.clusterapi.models.consumergroup;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

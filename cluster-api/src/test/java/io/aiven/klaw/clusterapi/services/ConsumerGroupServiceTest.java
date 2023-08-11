@@ -1,9 +1,10 @@
 package io.aiven.klaw.clusterapi.services;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.clusterapi.constants.TestConstants;
-import io.aiven.klaw.clusterapi.models.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.consumergroup.OffsetDetails;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
@@ -22,12 +23,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ConsumerGroupServiceTest {
 
+  public static final String TESTTOPIC = "testtopic";
   @Mock private ClusterApiUtils clusterApiUtils;
   @Mock private KafkaSupportedProtocol protocol;
   @Mock private AdminClient adminClient;
@@ -59,17 +60,15 @@ class ConsumerGroupServiceTest {
     offsetDetails.setEndOffset(Long.toString(offset));
     offsetDetails.setLag(Long.toString(0));
 
-    Mockito.when(
-            clusterApiUtils.getAdminClient(
-                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
+    when(clusterApiUtils.getAdminClient(
+            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
         .thenReturn(adminClient);
-    Mockito.when(adminClient.describeTopics(Collections.singletonList(TestConstants.TOPIC_NAME)))
+    when(adminClient.describeTopics(Collections.singletonList(TestConstants.TOPIC_NAME)))
         .thenReturn(describeTopicsResult);
-    Mockito.when(describeTopicsResult.values()).thenReturn(nameTopicDescriptionFutures);
-    Mockito.when(topicPartitionInfo.partition()).thenReturn(TestConstants.SINGLE_PARTITION);
-    Mockito.when(adminClient.listOffsets(any())).thenReturn(listOffsetsEarliestResult);
-    Mockito.when(listOffsetsEarliestResult.partitionResult(any()))
-        .thenReturn(listOffsetResultInfoFutures);
+    when(describeTopicsResult.values()).thenReturn(nameTopicDescriptionFutures);
+    when(topicPartitionInfo.partition()).thenReturn(TestConstants.SINGLE_PARTITION);
+    when(adminClient.listOffsets(any())).thenReturn(listOffsetsEarliestResult);
+    when(listOffsetsEarliestResult.partitionResult(any())).thenReturn(listOffsetResultInfoFutures);
 
     List<OffsetDetails> actual =
         consumerGroupService.getConsumerGroupDetails(
@@ -85,9 +84,8 @@ class ConsumerGroupServiceTest {
 
   @Test
   void getConsumerGroupDetailsFailure() throws Exception {
-    Mockito.when(
-            clusterApiUtils.getAdminClient(
-                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
+    when(clusterApiUtils.getAdminClient(
+            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
         .thenReturn(adminClient);
 
     List<OffsetDetails> actual =
@@ -101,4 +99,28 @@ class ConsumerGroupServiceTest {
 
     Assertions.assertThat(actual).isEqualTo(expected);
   }
+
+  //  @Test
+  //  void resetConsumerGroupOffsetsSuccess() throws Exception {
+  //    List<TopicPartitionInfo> partitions = Collections.singletonList(new TopicPartitionInfo(1,
+  // Node.noNode(),
+  //            Collections.singletonList(Node.noNode()),
+  // Collections.singletonList(Node.noNode())));
+  //
+  //    when(clusterApiUtils.getAdminClient(any(), any(), any())).thenReturn(adminClient);
+  //
+  //    String testConsumerGroup = "testconsumergroup";
+  //
+  // when(adminClient.describeTopics(Collections.singletonList(TESTTOPIC))).thenReturn(describeTopicsResult);
+  //
+  //    TreeMap<String, Long> offsetPositionsMap = new TreeMap<>();
+  //    when(clusterService.retrieveOffsets(testConsumerGroup)).thenReturn(offsetPositionsMap);
+  //
+  //    OffsetsResponse offsetsResponse =
+  // consumerGroupOffsetsResetService.resetConsumerOffsets(topicName, testConsumerGroup,
+  // getConsumerGroupResetRequest(ResetType.EARLIEST));
+  //
+  //    assertNotNull(offsetsResponse);
+  //    verify(multiEnvProvider, times(1)).getClusterService(anyString());
+  //  }
 }

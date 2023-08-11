@@ -1,9 +1,9 @@
 package io.aiven.klaw.clusterapi.controller;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
-import io.aiven.klaw.clusterapi.models.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.consumergroup.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.consumergroup.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
-import io.aiven.klaw.clusterapi.models.offsets.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.clusterapi.services.ConsumerGroupService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +44,7 @@ public class ConsumerGroupsController {
       @PathVariable String bootstrapServers,
       @Valid @PathVariable KafkaSupportedProtocol protocol,
       @PathVariable String clusterIdentification,
-      @Valid ResetConsumerGroupOffsetsRequest consumerGroupOffsetsRequest)
+      @RequestBody @Valid ResetConsumerGroupOffsetsRequest consumerGroupOffsetsRequest)
       throws Exception {
     return consumerGroupService.resetConsumerGroupOffsets(
         bootstrapServers, protocol, clusterIdentification, consumerGroupOffsetsRequest);

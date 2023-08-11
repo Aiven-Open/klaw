@@ -1,11 +1,11 @@
 package io.aiven.klaw.clusterapi.services;
 
 import io.aiven.klaw.clusterapi.models.ApiResponse;
-import io.aiven.klaw.clusterapi.models.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.consumergroup.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.consumergroup.OffsetResetType;
+import io.aiven.klaw.clusterapi.models.consumergroup.OffsetsTiming;
+import io.aiven.klaw.clusterapi.models.consumergroup.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
-import io.aiven.klaw.clusterapi.models.offsets.OffsetResetType;
-import io.aiven.klaw.clusterapi.models.offsets.OffsetsResetResponse;
-import io.aiven.klaw.clusterapi.models.offsets.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -67,51 +67,53 @@ public class ConsumerGroupService {
           case TO_DATE_TIME -> OffsetSpec.forTimestamp(
               consumerGroupOffsetsRequest.getConsumerGroupResetTimestampMilliSecs());
         };
+    Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter = new HashMap<>();
 
-    OffsetsResetResponse offsetsResetResponse = new OffsetsResetResponse();
-    Map<String, Map<String, Long>> offsetPositionsBeforeAndAfter = new HashMap<>();
-
-    // Get offsets before consumer group offset update
-    offsetPositionsBeforeAndAfter.put(
-        "BEFORE_OFFSET_RESET",
-        getCurrentOffsetsPositions(consumerGroupOffsetsRequest.getConsumerGroup(), adminClient));
-    resetConsumerGroupOffsets(
-        consumerGroupOffsetsRequest.getTopicName(),
-        consumerGroupOffsetsRequest.getConsumerGroup(),
-        offsetSpec,
+    extractOffsetsBeforeAndAfter(
+        consumerGroupOffsetsRequest,
+        adminClient,
         topicDescription,
-        adminClient);
+        offsetSpec,
+        offsetPositionsBeforeAndAfter);
 
-    // Get offsets after consumer group offset update
-    offsetPositionsBeforeAndAfter.put(
-        "AFTER_OFFSET_RESET",
-        getCurrentOffsetsPositions(consumerGroupOffsetsRequest.getConsumerGroup(), adminClient));
-    offsetsResetResponse.setConsumerGroupOffsets(offsetPositionsBeforeAndAfter);
-
-    return ApiResponse.builder().success(true).data(offsetsResetResponse).build();
+    return ApiResponse.builder().success(true).data(offsetPositionsBeforeAndAfter).build();
   }
 
-  public void resetConsumerGroupOffsets(
-      String topicName,
-      String consumerGroup,
-      OffsetSpec offsetSpec,
+  private void extractOffsetsBeforeAndAfter(
+      ResetConsumerGroupOffsetsRequest consumerGroupOffsetsRequest,
+      AdminClient adminClient,
       TopicDescription topicDescription,
-      AdminClient adminClient)
+      OffsetSpec offsetSpec,
+      Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter)
       throws Exception {
+    // Get offsets before consumer group offset update
+    offsetPositionsBeforeAndAfter.put(
+        OffsetsTiming.BEFORE_OFFSET_RESET,
+        getCurrentOffsetsPositions(consumerGroupOffsetsRequest.getConsumerGroup(), adminClient));
+
+    // reset offsets
     try {
       AlterConsumerGroupOffsetsOptions alterConsumerGroupOffsetsOptions =
           new AlterConsumerGroupOffsetsOptions();
       alterConsumerGroupOffsetsOptions.timeoutMs(2500);
       AlterConsumerGroupOffsetsResult futureResult =
           adminClient.alterConsumerGroupOffsets(
-              consumerGroup,
+              consumerGroupOffsetsRequest.getConsumerGroup(),
               getTopicPartitionOffsetsAndMetadataMap(
-                  topicName, offsetSpec, topicDescription, adminClient),
+                  consumerGroupOffsetsRequest.getTopicName(),
+                  offsetSpec,
+                  topicDescription,
+                  adminClient),
               alterConsumerGroupOffsetsOptions);
       futureResult.all().get();
     } catch (Exception e) {
       throw new Exception("Unable to reset consumer group offsets.", e);
     }
+
+    // Get offsets after consumer group offset update
+    offsetPositionsBeforeAndAfter.put(
+        OffsetsTiming.AFTER_OFFSET_RESET,
+        getCurrentOffsetsPositions(consumerGroupOffsetsRequest.getConsumerGroup(), adminClient));
   }
 
   public Map<TopicPartition, OffsetAndMetadata> getTopicPartitionOffsetsAndMetadataMap(
