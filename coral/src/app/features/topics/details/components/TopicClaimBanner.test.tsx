@@ -69,7 +69,7 @@ describe("TopicClaimBanner", () => {
     const description = screen.getByText(
       `A claim request for ${TOPIC_NAME} is already in progress.`
     );
-    const link = screen.getByRole("link", { name: "See the request" });
+    const link = screen.getByRole("link", { name: "View request" });
 
     expect(description).toBeVisible();
     expect(link).toBeVisible();

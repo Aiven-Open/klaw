@@ -145,7 +145,7 @@ describe("PromotionBanner", () => {
     });
 
     it("shows a link to open requests", () => {
-      const link = screen.getByRole("link", { name: "See the request" });
+      const link = screen.getByRole("link", { name: "View request" });
 
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
@@ -182,7 +182,7 @@ describe("PromotionBanner", () => {
     });
 
     it("shows a link to open requests", () => {
-      const link = screen.getByRole("link", { name: "See the request" });
+      const link = screen.getByRole("link", { name: "View request" });
 
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
@@ -219,7 +219,7 @@ describe("PromotionBanner", () => {
     });
 
     it("shows a button to open requests", () => {
-      const link = screen.getByRole("link", { name: "See the request" });
+      const link = screen.getByRole("link", { name: "View request" });
 
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
@@ -257,7 +257,7 @@ describe("PromotionBanner", () => {
 
     it("shows a link to open requests", () => {
       const link = screen.getByRole("link", {
-        name: "See the request",
+        name: "View request",
       });
 
       expect(link).toBeVisible();

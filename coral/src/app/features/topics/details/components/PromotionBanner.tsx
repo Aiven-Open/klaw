@@ -57,7 +57,7 @@ const PromotionBanner = ({
         <InternalLinkButton
           to={`/requests/${type}s?search=${entityName}&status=CREATED&page=1`}
         >
-          See the request
+          View request
         </InternalLinkButton>
       </Banner>
     );
@@ -75,7 +75,7 @@ const PromotionBanner = ({
         <InternalLinkButton
           to={`/requests/${type}s?search=${entityName}&requestType=${requestType}&status=CREATED&page=1`}
         >
-          See the request
+          View request
         </InternalLinkButton>
       </Banner>
     );

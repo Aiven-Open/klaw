@@ -46,7 +46,7 @@ const TopicClaimBanner = ({
         <InternalLinkButton
           to={`/requests/topics?search=${topicName}&requestType=CLAIM&status=CREATED&page=1`}
         >
-          See the request
+          View request
         </InternalLinkButton>
       </Banner>
     );

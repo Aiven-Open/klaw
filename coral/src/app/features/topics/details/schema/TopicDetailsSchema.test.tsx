@@ -308,7 +308,7 @@ describe("TopicDetailsSchema", () => {
       });
 
       it("shows a link to see open schema requests", () => {
-        const link = screen.getByRole("link", { name: "See the request" });
+        const link = screen.getByRole("link", { name: "View request" });
 
         expect(link).toBeVisible();
       });
