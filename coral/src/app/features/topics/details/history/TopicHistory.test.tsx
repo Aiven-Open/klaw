@@ -90,6 +90,7 @@ const testTopicSchemas: TopicSchemaOverview = {
     showNext: false,
     showPrev: false,
     latest: true,
+    promoteOnly: false,
   },
 };
 
