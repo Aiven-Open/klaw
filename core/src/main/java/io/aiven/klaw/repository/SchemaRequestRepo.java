@@ -29,9 +29,10 @@ public interface SchemaRequestRepo
   Integer getNextSchemaRequestId(@Param("tenantId") Integer tenantId);
 
   @Query(
-      value = "select count(*) from kwschemarequests where env = :envId and tenantid = :tenantId",
+      value =
+          "select exists(select 1 from kwschemarequests where env = :envId and tenantid = :tenantId)",
       nativeQuery = true)
-  List<Object[]> findAllSchemaRequestsCountForEnv(
+  boolean existsSchemaRequestsForEnv(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(

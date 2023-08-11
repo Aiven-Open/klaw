@@ -424,7 +424,7 @@ public interface HandleDbRequests {
 
   int getAllConnectorComponentsCountForEnv(String env, int tenantId);
 
-  int getAllSchemaComponentsCountForEnv(String env, int tenantId);
+  boolean existsSchemaComponentsForEnv(String env, int tenantId);
 
   boolean existsComponentsCountForTeam(Integer teamId, int tenantId);
 

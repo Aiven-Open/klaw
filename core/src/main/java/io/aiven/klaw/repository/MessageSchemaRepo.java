@@ -26,10 +26,10 @@ public interface MessageSchemaRepo extends CrudRepository<MessageSchema, Message
       int tenantId, String topicName, String schemaVersion, String environmentId);
 
   @Query(
-      value = "select count(*) from kwavroschemas where env = :envId and tenantid = :tenantId",
+      value =
+          "select exists(select 1 from kwavroschemas where env = :envId and tenantid = :tenantId)",
       nativeQuery = true)
-  List<Object[]> findAllSchemaCountForEnv(
-      @Param("envId") String envId, @Param("tenantId") Integer tenantId);
+  boolean existsSchemaForEnv(@Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
       value =
