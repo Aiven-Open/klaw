@@ -4,12 +4,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.google.common.collect.Lists;
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.repository.AclRepo;
 import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
 import io.aiven.klaw.repository.TeamRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
@@ -35,6 +37,7 @@ public class KafkaConnectorsIntegrationTest {
   @Autowired private UserInfoRepo userInfoRepo;
 
   @Autowired private TeamRepo teamRepo;
+  @Autowired private AclRepo aclRepo;
 
   @Autowired TestEntityManager entityManager;
 
@@ -82,8 +85,28 @@ public class KafkaConnectorsIntegrationTest {
     t2.setTeamname("pirates");
     t2.setTeamId(103);
     t2.setTenantId(103);
+
     entityManager.persistAndFlush(t1);
     entityManager.persistAndFlush(t2);
+
+    Acl acl1 = new Acl();
+    acl1.setReq_no(1);
+    acl1.setTeamId(101);
+    acl1.setTenantId(101);
+    acl1.setConsumergroup("test");
+    Acl acl2 = new Acl();
+    acl2.setReq_no(2);
+    acl2.setTeamId(101);
+    acl2.setTenantId(101);
+    acl2.setConsumergroup("test2");
+    Acl acl3 = new Acl();
+    acl3.setReq_no(3);
+    acl3.setTeamId(103);
+    acl3.setTenantId(101);
+    acl3.setConsumergroup("test");
+    entityManager.persistAndFlush(acl1);
+    entityManager.persistAndFlush(acl2);
+    entityManager.persistAndFlush(acl3);
 
     //
     generateData(
@@ -142,6 +165,7 @@ public class KafkaConnectorsIntegrationTest {
     ReflectionTestUtils.setField(selectDataJdbc, "kafkaConnectorRequestsRepo", repo);
     ReflectionTestUtils.setField(selectDataJdbc, "userInfoRepo", userInfoRepo);
     ReflectionTestUtils.setField(selectDataJdbc, "teamRepo", teamRepo);
+    ReflectionTestUtils.setField(selectDataJdbc, "aclRepo", aclRepo);
     loadData();
   }
 
@@ -156,9 +180,9 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "John", "all", null, true, 101, null, null, false);
 
-    assertThat(KafkaConnectorRequestList.size()).isEqualTo(results.size());
+    assertThat(KafkaConnectorRequestList).hasSameSizeAs(results);
 
-    assertThat(results.containsAll(KafkaConnectorRequestList)).isTrue();
+    assertThat(results).containsAll(KafkaConnectorRequestList);
   }
 
   @Test
@@ -172,11 +196,11 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "James", "all", null, true, 103, null, null, false);
 
-    assertThat(james.size()).isEqualTo(21);
+    assertThat(james).hasSize(21);
     for (KafkaConnectorRequest req : james) {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
-    assertThat(john.size()).isEqualTo(10);
+    assertThat(john).hasSize(10);
     for (KafkaConnectorRequest req : john) {
       assertThat(req.getTenantId()).isEqualTo(103);
     }
@@ -193,12 +217,12 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "John", RequestStatus.DECLINED.value, null, false, 103, null, null, false);
 
-    assertThat(james.size()).isEqualTo(11);
+    assertThat(james).hasSize(11);
     for (KafkaConnectorRequest req : james) {
       assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(101);
     }
-    assertThat(john.size()).isEqualTo(0);
+    assertThat(john).isEmpty();
   }
 
   @Test
@@ -216,10 +240,10 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, "John", "created", null, true, 103, null, null, false);
 
-    assertThat(james.size()).isEqualTo(0);
+    assertThat(james).isEmpty();
 
-    assertThat(john.size()).isEqualTo(10);
-    assertThat(james2.size()).isEqualTo(10);
+    assertThat(john).hasSize(10);
+    assertThat(james2).hasSize(10);
     for (KafkaConnectorRequest req : james2) {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
@@ -241,13 +265,13 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "John", "all", null, false, 103, null, null, false);
 
-    assertThat(james.size()).isEqualTo(21);
+    assertThat(james).hasSize(21);
     for (KafkaConnectorRequest req : james) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getTeamId()).isEqualTo(101);
     }
 
-    assertThat(john.size()).isEqualTo(10);
+    assertThat(john).hasSize(10);
     for (KafkaConnectorRequest req : john) {
       assertThat(req.getTenantId()).isEqualTo(103);
       assertThat(req.getTeamId()).isEqualTo(103);
@@ -261,7 +285,7 @@ public class KafkaConnectorsIntegrationTest {
     List<KafkaConnectorRequest> james =
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "James", "ALT", null, true, 101, null, null, false);
-    assertThat(james.size()).isEqualTo(0);
+    assertThat(james).isEmpty();
   }
 
   @Test
@@ -276,12 +300,12 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, "John", null, null, true, 103, null, null, false);
 
-    assertThat(tenant1.size()).isEqualTo(31);
+    assertThat(tenant1).hasSize(31);
     for (KafkaConnectorRequest req : tenant1) {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
 
-    assertThat(tenant2.size()).isEqualTo(10);
+    assertThat(tenant2).hasSize(10);
     for (KafkaConnectorRequest req : tenant2) {
       assertThat(req.getTenantId()).isEqualTo(103);
     }
@@ -310,7 +334,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "James", "all", null, true, 101, "test", null, false);
 
-    assertThat(jackie.size()).isEqualTo(11);
+    assertThat(jackie).hasSize(11);
 
     for (KafkaConnectorRequest req : jackie) {
       assertThat(req.getEnvironment()).isEqualTo("test");
@@ -326,7 +350,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "Jackie", "all", null, true, 101, "test", null, false);
 
-    assertThat(jackie.size()).isEqualTo(0);
+    assertThat(jackie).isEmpty();
   }
 
   @Test
@@ -341,9 +365,9 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, "John", "created", null, true, 103, null, "conn", false);
 
-    assertThat(tenant1.size()).isEqualTo(0);
+    assertThat(tenant1).isEmpty();
 
-    assertThat(tenant2.size()).isEqualTo(10);
+    assertThat(tenant2).hasSize(10);
   }
 
   @Test
@@ -354,7 +378,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "James", "all", null, true, 99, null, null, false);
 
-    assertThat(james.size()).isEqualTo(0);
+    assertThat(james).isEmpty();
   }
 
   @Test
@@ -368,9 +392,9 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, "James", null, null, true, 101, null, null, false);
 
-    assertThat(KafkaConnectorRequestList.size()).isEqualTo(results.size());
+    assertThat(KafkaConnectorRequestList).hasSameSizeAs(results);
 
-    assertThat(results.containsAll(KafkaConnectorRequestList)).isTrue();
+    assertThat(results).containsAll(KafkaConnectorRequestList);
   }
 
   @Test
@@ -384,11 +408,11 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "John", null, null, false, 103, null, null, false);
 
-    assertThat(james.size()).isEqualTo(21);
+    assertThat(james).hasSize(21);
     for (KafkaConnectorRequest req : james) {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
-    assertThat(john.size()).isEqualTo(10);
+    assertThat(john).hasSize(10);
     for (KafkaConnectorRequest req : john) {
       assertThat(req.getTenantId()).isEqualTo(103);
     }
@@ -405,13 +429,13 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "John", RequestStatus.DECLINED.value, null, false, 103, "test", null, false);
 
-    assertThat(james.size()).isEqualTo(10);
+    assertThat(james).hasSize(10);
     for (KafkaConnectorRequest req : james) {
       assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getEnvironment()).isEqualTo("dev");
     }
-    assertThat(john.size()).isEqualTo(0);
+    assertThat(john).isEmpty();
   }
 
   @Test
@@ -422,7 +446,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "Jackie", "all", null, true, 101, null, null, false);
 
-    assertThat(jackie.size()).isEqualTo(0);
+    assertThat(jackie).isEmpty();
   }
 
   @Test
@@ -433,7 +457,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, "Jackie", "all", null, true, 101, null, null, false);
 
-    assertThat(jackie.size()).isEqualTo(31);
+    assertThat(jackie).hasSize(31);
   }
 
   @Test
@@ -444,7 +468,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "Joan", RequestStatus.CREATED.value, null, true, 104, null, null, false);
 
-    assertThat(joan.size()).isEqualTo(7);
+    assertThat(joan).hasSize(7);
     for (KafkaConnectorRequest req : joan) {
       assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.CREATED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
@@ -460,7 +484,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "Joan", RequestStatus.DELETED.value, null, true, 104, null, null, false);
 
-    assertThat(joan.size()).isEqualTo(6);
+    assertThat(joan).hasSize(6);
     for (KafkaConnectorRequest req : joan) {
       assertThat(req.getRequestStatus()).isEqualTo(RequestStatus.DELETED.value);
       assertThat(req.getTenantId()).isEqualTo(104);
@@ -476,7 +500,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "James", RequestStatus.ALL.value, null, false, 101, null, null, false);
 
-    assertThat(resultSet.size()).isEqualTo(21);
+    assertThat(resultSet).hasSize(21);
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getRequestor()).isNotEqualTo("James");
@@ -497,7 +521,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, "James", RequestStatus.ALL.value, null, false, 101, null, null, false);
 
-    assertThat(resultSet.size()).isEqualTo(31);
+    assertThat(resultSet).hasSize(31);
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getRequestor()).isNotEqualTo("James");
@@ -515,7 +539,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "John", RequestStatus.ALL.value, null, true, 101, null, null, false);
 
-    assertThat(resultSet.size()).isEqualTo(31);
+    assertThat(resultSet).hasSize(31);
     for (KafkaConnectorRequest req : resultSet) {
       assertThat(req.getTenantId()).isEqualTo(101);
       assertThat(req.getRequestor()).isNotEqualTo("James");
@@ -535,7 +559,7 @@ public class KafkaConnectorsIntegrationTest {
     List<KafkaConnectorRequest> resultSet =
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, "John", RequestStatus.ALL.value, null, false, 103, null, null, false);
-    assertThat(resultSet.size()).isEqualTo(10);
+    assertThat(resultSet).hasSize(10);
 
     // MyTeamsRequests only
     for (KafkaConnectorRequest req : resultSet) {
@@ -557,7 +581,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "John", RequestStatus.ALL.value, null, false, 101, null, "first", false);
 
-    assertThat(resultSet.size()).isEqualTo(10);
+    assertThat(resultSet).hasSize(10);
 
     // MyTeamsRequests only
     for (KafkaConnectorRequest req : resultSet) {
@@ -575,7 +599,7 @@ public class KafkaConnectorsIntegrationTest {
     List<KafkaConnectorRequest> resultSet =
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             true, "James", RequestStatus.ALL.value, null, false, 103, null, "lots", false);
-    assertThat(resultSet.size()).isEqualTo(0);
+    assertThat(resultSet).isEmpty();
   }
 
   @Test
@@ -589,13 +613,15 @@ public class KafkaConnectorsIntegrationTest {
 
     assertThat(results).hasSize(2);
     // Jackie created all the requests so we expect 0 for created status which is approval status
-    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(10L);
-    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(10L);
-    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(10L);
-    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(1L);
+    assertThat(statsCount).containsEntry(RequestStatus.CREATED.value, 0L);
+    assertThat(operationTypeCount)
+        .containsEntry(RequestOperationType.CREATE.value, 10L)
+        .containsEntry(RequestOperationType.CLAIM.value, 10L);
+    assertThat(statsCount)
+        .containsEntry(RequestStatus.APPROVED.value, 0L)
+        .containsEntry(RequestStatus.DECLINED.value, 10L)
+        .containsEntry(RequestStatus.DELETED.value, 0L);
+    assertThat(operationTypeCount).containsEntry(RequestOperationType.UPDATE.value, 1L);
   }
 
   @Test
@@ -608,13 +634,15 @@ public class KafkaConnectorsIntegrationTest {
     Map<String, Long> operationTypeCount = results.get("OPERATION_TYPE_COUNTS");
 
     assertThat(results).hasSize(2);
-    assertThat(statsCount.get(RequestStatus.CREATED.value)).isEqualTo(21L);
-    assertThat(operationTypeCount.get(RequestOperationType.CREATE.value)).isEqualTo(10L);
-    assertThat(operationTypeCount.get(RequestOperationType.CLAIM.value)).isEqualTo(10L);
-    assertThat(statsCount.get(RequestStatus.APPROVED.value)).isEqualTo(0L);
-    assertThat(statsCount.get(RequestStatus.DECLINED.value)).isEqualTo(10L);
-    assertThat(statsCount.get(RequestStatus.DELETED.value)).isEqualTo(0L);
-    assertThat(operationTypeCount.get(RequestOperationType.UPDATE.value)).isEqualTo(1L);
+    assertThat(statsCount).containsEntry(RequestStatus.CREATED.value, 21L);
+    assertThat(operationTypeCount)
+        .containsEntry(RequestOperationType.CREATE.value, 10L)
+        .containsEntry(RequestOperationType.CLAIM.value, 10L);
+    assertThat(statsCount)
+        .containsEntry(RequestStatus.APPROVED.value, 0L)
+        .containsEntry(RequestStatus.DECLINED.value, 10L)
+        .containsEntry(RequestStatus.DELETED.value, 0L);
+    assertThat(operationTypeCount).containsEntry(RequestOperationType.UPDATE.value, 1L);
   }
 
   @Test
@@ -678,7 +706,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
 
-    assertThat(james).hasSize(Integer.valueOf(number));
+    assertThat(james).hasSize(Integer.parseInt(number));
   }
 
   @Order(28)
@@ -696,7 +724,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
 
-    assertThat(james).hasSize(Integer.valueOf(number));
+    assertThat(james).hasSize(Integer.parseInt(number));
   }
 
   @Order(29)
@@ -714,7 +742,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getTenantId()).isEqualTo(101);
     }
 
-    assertThat(requests).hasSize(Integer.valueOf(number));
+    assertThat(requests).hasSize(Integer.parseInt(number));
   }
 
   @Order(30)
@@ -732,7 +760,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getTeamId()).isEqualTo(Integer.valueOf(teamId));
     }
 
-    assertThat(requests).hasSize(Integer.valueOf(number));
+    assertThat(requests).hasSize(Integer.parseInt(number));
   }
 
   @Order(31)
@@ -749,7 +777,7 @@ public class KafkaConnectorsIntegrationTest {
       assertThat(req.getRequestor()).isEqualTo(requestor);
     }
 
-    assertThat(requests).hasSize(Integer.valueOf(number));
+    assertThat(requests).hasSize(Integer.parseInt(number));
   }
 
   @Order(32)
@@ -761,7 +789,7 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, requestor, null, null, true, 101, null, null, false);
 
-    assertThat(requests).hasSize(Integer.valueOf(number));
+    assertThat(requests).hasSize(Integer.parseInt(number));
   }
 
   @Order(33)
@@ -772,7 +800,17 @@ public class KafkaConnectorsIntegrationTest {
         selectDataJdbc.selectFilteredKafkaConnectorRequests(
             false, "Jackie", null, null, true, 103, null, null, false);
 
-    assertThat(requests).hasSize(Integer.valueOf(10));
+    assertThat(requests).hasSize(10);
+  }
+
+  @Order(34)
+  @Test
+  public void testValidateIfConsumerGroupUsedByAnotherTeam() {
+    assertThat(selectDataJdbc.validateIfConsumerGroupUsedByAnotherTeam(101, 101, "test")).isTrue();
+    assertThat(selectDataJdbc.validateIfConsumerGroupUsedByAnotherTeam(101, 101, "test2"))
+        .isFalse();
+    assertThat(selectDataJdbc.validateIfConsumerGroupUsedByAnotherTeam(101, 101, "non existing"))
+        .isFalse();
   }
 
   private void generateData(
