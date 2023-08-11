@@ -235,12 +235,10 @@ const routes: Array<RouteObject> = [
         path: Routes.TOPIC_SCHEMA_REQUEST,
         element: <SchemaRequest />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.TOPIC_PROMOTION_REQUEST,
         element: <TopicPromotionRequestPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_PROMOTE_TOPIC,
-        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
-      }),
+      },
       createRouteBehindFeatureFlag({
         path: Routes.TOPIC_EDIT_REQUEST,
         element: <TopicEditRequestPage />,
