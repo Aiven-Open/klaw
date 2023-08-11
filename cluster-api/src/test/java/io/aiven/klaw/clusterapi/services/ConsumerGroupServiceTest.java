@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class MonitoringServiceTest {
+class ConsumerGroupServiceTest {
 
   @Mock private ClusterApiUtils clusterApiUtils;
   @Mock private KafkaSupportedProtocol protocol;
@@ -34,11 +34,11 @@ class MonitoringServiceTest {
   @Mock private DescribeTopicsResult describeTopicsResult;
   @Mock private TopicPartitionInfo topicPartitionInfo;
   @Mock private ListOffsetsResult listOffsetsEarliestResult;
-  private MonitoringService monitoringService;
+  private ConsumerGroupService consumerGroupService;
 
   @BeforeEach
   void setUp() {
-    monitoringService = new MonitoringService(clusterApiUtils);
+    consumerGroupService = new ConsumerGroupService(clusterApiUtils);
   }
 
   @Test
@@ -72,7 +72,7 @@ class MonitoringServiceTest {
         .thenReturn(listOffsetResultInfoFutures);
 
     List<OffsetDetails> actual =
-        monitoringService.getConsumerGroupDetails(
+        consumerGroupService.getConsumerGroupDetails(
             TestConstants.CONSUMER_GROUP_ID,
             TestConstants.TOPIC_NAME,
             TestConstants.ENVIRONMENT,
@@ -91,7 +91,7 @@ class MonitoringServiceTest {
         .thenReturn(adminClient);
 
     List<OffsetDetails> actual =
-        monitoringService.getConsumerGroupDetails(
+        consumerGroupService.getConsumerGroupDetails(
             TestConstants.CONSUMER_GROUP_ID,
             TestConstants.TOPIC_NAME,
             TestConstants.ENVIRONMENT,
