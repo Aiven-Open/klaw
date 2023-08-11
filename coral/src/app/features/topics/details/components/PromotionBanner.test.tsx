@@ -138,7 +138,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is an open schema request for ${testTopicName}.`
+        `${testTopicName} has a pending request.`
       );
 
       expect(information).toBeVisible();
@@ -175,7 +175,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is an open topic request for ${testTopicName}.`
+        `${testTopicName} has a pending request.`
       );
 
       expect(information).toBeVisible();
@@ -212,7 +212,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is already an open promotion request for ${testTopicName}.`
+        `An promotion request for ${testTopicName} is already in progress.`
       );
 
       expect(information).toBeVisible();
@@ -249,7 +249,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is already an open promotion request for ${testTopicName}.`
+        `An promotion request for ${testTopicName} is already in progress.`
       );
 
       expect(information).toBeVisible();

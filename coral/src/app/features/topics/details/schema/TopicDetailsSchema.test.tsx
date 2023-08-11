@@ -297,7 +297,7 @@ describe("TopicDetailsSchema", () => {
 
         expect(promotionBanner).toBeVisible();
         expect(promotionBanner.textContent).toContain(
-          "There is an open schema request for topic-name."
+          "topic-name has a pending request."
         );
       });
 

@@ -52,7 +52,7 @@ const PromotionBanner = ({
     return (
       <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
-          There is an open {type} request for {entityName}.
+          {entityName} has a pending request.
         </Box>
         <InternalLinkButton
           to={`/requests/${type}s?search=${entityName}&status=CREATED&page=1`}
@@ -70,7 +70,7 @@ const PromotionBanner = ({
     return (
       <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
-          There is already an open promotion request for {entityName}.
+          An promotion request for {entityName} is already in progress.
         </Box>
         <InternalLinkButton
           to={`/requests/${type}s?search=${entityName}&requestType=${requestType}&status=CREATED&page=1`}
