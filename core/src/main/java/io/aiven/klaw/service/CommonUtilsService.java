@@ -800,7 +800,7 @@ public class CommonUtilsService {
     List<String> reqSchemaEnvs =
         tenantModel == null ? new ArrayList<>() : tenantModel.getRequestSchemaEnvironmentsList();
 
-    return reqSchemaEnvs.contains(schemaEnvId);
+    return reqSchemaEnvs != null ? reqSchemaEnvs.contains(schemaEnvId) : false;
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
