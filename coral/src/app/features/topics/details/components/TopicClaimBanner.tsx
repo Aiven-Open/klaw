@@ -41,7 +41,7 @@ const TopicClaimBanner = ({
     return (
       <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
-          There is already an open claim request for {topicName}.
+          A claim request for {topicName} is already in progress.
         </Box>
         <InternalLinkButton
           to={`/requests/topics?search=${topicName}&requestType=CLAIM&status=CREATED&page=1`}

@@ -67,7 +67,7 @@ describe("TopicClaimBanner", () => {
       { memoryRouter: true }
     );
     const description = screen.getByText(
-      `There is already an open claim request for ${TOPIC_NAME}.`
+      `A claim request for ${TOPIC_NAME} is already in progress.`
     );
     const link = screen.getByRole("link", { name: "See the request" });
 
