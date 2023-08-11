@@ -29,8 +29,8 @@ const TopicClaimBanner = ({
       <Banner image={illustration} layout="vertical" title={""}>
         <Box.Flex minHeight={"full"}>
           <Box.Flex component={"p"} alignSelf={"center"}>
-            There is an open request for {topicName} by the owners of this
-            topic. Your team cannot claim ownership at this time.
+            {topicName} has pending requests. Your team cannot claim ownership
+            at this time.
           </Box.Flex>
         </Box.Flex>
       </Banner>

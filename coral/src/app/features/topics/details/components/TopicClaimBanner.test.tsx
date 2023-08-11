@@ -82,7 +82,7 @@ describe("TopicClaimBanner", () => {
   it("renders correct state when there is already a request opened by the owners of the topic", async () => {
     render(<TopicClaimBanner {...testProps} hasOpenRequest={true} />);
     const description = screen.getByText(
-      `There is an open request for ${TOPIC_NAME} by the owners of this topic. Your team cannot claim ownership at this time.`
+      `${TOPIC_NAME} has pending requests. Your team cannot claim ownership at this time.`
     );
 
     expect(description).toBeVisible();
