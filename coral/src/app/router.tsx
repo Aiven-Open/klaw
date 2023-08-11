@@ -63,11 +63,9 @@ const routes: Array<RouteObject> = [
         path: Routes.TOPICS,
         element: <Topics />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.TOPIC_OVERVIEW,
         element: <TopicDetailsPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_TOPIC_OVERVIEW,
-        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
         children: [
           {
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
@@ -113,7 +111,7 @@ const routes: Array<RouteObject> = [
             id: TopicOverviewTabEnum.SETTINGS,
           },
         ],
-      }),
+      },
       {
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
