@@ -470,7 +470,7 @@ public class ClusterApiControllerIT {
   @Test
   @Order(11)
   public void resetConsumerOffsetsToEarliest() throws Exception {
-    produceAndConsumeRecords(); // produce 10 records and consume all records
+    produceAndConsumeRecords(true); // produce 10 records and consume all records
 
     String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
@@ -539,7 +539,7 @@ public class ClusterApiControllerIT {
   @Test
   @Order(12)
   public void resetConsumerOffsetsToLatest() throws Exception {
-    produceAndConsumeRecords(); // produce 10 more records
+    produceAndConsumeRecords(true); // produce 10 more records
 
     String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
@@ -607,6 +607,74 @@ public class ClusterApiControllerIT {
 
   @Test
   @Order(13)
+  public void resetConsumerOffsetsToLatestDontConsumeRecs() throws Exception {
+    produceAndConsumeRecords(false); // produce 10 more records
+
+    String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
+    ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
+        ResetConsumerGroupOffsetsRequest.builder()
+            .offsetResetType(OffsetResetType.LATEST)
+            .consumerGroup(CONSUMER_GROUP)
+            .topicName(TOPIC_NAME)
+            .build();
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(resetConsumerGroupOffsetsRequest);
+
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post(url)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(jsonReq)
+                    .header(
+                        AUTHORIZATION,
+                        BEARER_PREFIX + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    ApiResponse apiResponse = new ObjectMapper().readValue(response, ApiResponse.class);
+
+    Map<OffsetsTiming, Map<String, Long>> offsetsResetResponse = (Map) apiResponse.getData();
+    assertThat(apiResponse.isSuccess()).isTrue();
+    assertThat(offsetsResetResponse).hasSize(2);
+    String offsetsBefore =
+        offsetsResetResponse
+                .get(OffsetsTiming.BEFORE_OFFSET_RESET.getValue())
+                .get(TOPIC_NAME + "-0")
+            + "";
+    String offsetsAfter =
+        offsetsResetResponse.get(OffsetsTiming.AFTER_OFFSET_RESET.getValue()).get(TOPIC_NAME + "-0")
+            + "";
+
+    String expectedOffsetsBeforeAfter = "20";
+    assertThat(offsetsBefore).isEqualTo(expectedOffsetsBeforeAfter);
+    assertThat(offsetsAfter).isEqualTo("30");
+
+    // verify consumer group offset position from admin client
+    Thread.sleep(300);
+    Map<String, Long> currentOffsetPositionsMap = new TreeMap<>();
+    embeddedKafkaBroker.doWithAdmin(
+        adminClient -> {
+          try {
+            Map<TopicPartition, OffsetAndMetadata> topicPartitionOffsetAndMetadataMap =
+                adminClient
+                    .listConsumerGroupOffsets(CONSUMER_GROUP)
+                    .partitionsToOffsetAndMetadata()
+                    .get();
+            for (TopicPartition topicPartition : topicPartitionOffsetAndMetadataMap.keySet()) {
+              currentOffsetPositionsMap.put(
+                  topicPartition.toString(),
+                  topicPartitionOffsetAndMetadataMap.get(topicPartition).offset());
+            }
+          } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+          }
+        });
+    assertThat(currentOffsetPositionsMap.get(TOPIC_NAME + "-0") + "").isEqualTo("30");
+  }
+
+  @Test
+  @Order(14)
   public void deleteTopics() throws Exception {
     // Create a topic
     String topicName = "testtopic-todelete";
@@ -648,7 +716,8 @@ public class ClusterApiControllerIT {
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
   }
 
-  private void produceAndConsumeRecords() throws ExecutionException, InterruptedException {
+  private void produceAndConsumeRecords(boolean consumeRecs)
+      throws ExecutionException, InterruptedException {
     Properties configProperties = new Properties();
     String stringSerializer = "org.apache.kafka.common.serialization.StringSerializer";
     String stringDeserializer = "org.apache.kafka.common.serialization.StringDeserializer";
@@ -666,26 +735,29 @@ public class ClusterApiControllerIT {
       producer.send(rec1).get();
     }
 
-    Properties consumerConfigProperties = new Properties();
-    consumerConfigProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
-    consumerConfigProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, stringDeserializer);
-    consumerConfigProperties.put(
-        ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, stringDeserializer);
-    consumerConfigProperties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP);
-    consumerConfigProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, "CLI_ID_131");
-    consumerConfigProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+    if (consumeRecs) {
+      Properties consumerConfigProperties = new Properties();
+      consumerConfigProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
+      consumerConfigProperties.put(
+          ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, stringDeserializer);
+      consumerConfigProperties.put(
+          ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, stringDeserializer);
+      consumerConfigProperties.put(ConsumerConfig.GROUP_ID_CONFIG, CONSUMER_GROUP);
+      consumerConfigProperties.put(ConsumerConfig.CLIENT_ID_CONFIG, "CLI_ID_131");
+      consumerConfigProperties.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
-    KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(consumerConfigProperties);
-    kafkaConsumer.subscribe(Collections.singletonList(TOPIC_NAME));
+      KafkaConsumer<String, String> kafkaConsumer = new KafkaConsumer<>(consumerConfigProperties);
+      kafkaConsumer.subscribe(Collections.singletonList(TOPIC_NAME));
 
-    ConsumerRecords<String, String> records = kafkaConsumer.poll(1000);
+      ConsumerRecords<String, String> records = kafkaConsumer.poll(1000);
 
-    for (ConsumerRecord<String, String> record : records) {
-      // processed recs
-      break;
+      for (ConsumerRecord<String, String> record : records) {
+        // processed recs
+        break;
+      }
+      kafkaConsumer.commitSync();
+      kafkaConsumer.close();
     }
-    kafkaConsumer.commitSync();
-    kafkaConsumer.close();
   }
 
   private MockHttpServletResponse executeCreateTopicRequest(String jsonReq, String url)

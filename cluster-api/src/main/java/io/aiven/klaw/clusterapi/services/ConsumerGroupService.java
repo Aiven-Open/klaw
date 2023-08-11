@@ -87,9 +87,13 @@ public class ConsumerGroupService {
       Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter)
       throws Exception {
     // Get offsets before consumer group offset update
-    offsetPositionsBeforeAndAfter.put(
-        OffsetsTiming.BEFORE_OFFSET_RESET,
-        getCurrentOffsetsPositions(consumerGroupOffsetsRequest.getConsumerGroup(), adminClient));
+    Map<String, Long> currentOffsets =
+        getCurrentOffsetsPositions(consumerGroupOffsetsRequest.getConsumerGroup(), adminClient);
+    if (!currentOffsets.isEmpty()) {
+      offsetPositionsBeforeAndAfter.put(OffsetsTiming.BEFORE_OFFSET_RESET, currentOffsets);
+    } else {
+      return;
+    }
 
     // reset offsets
     try {
@@ -155,7 +159,8 @@ public class ConsumerGroupService {
       }
       return currentOffsetPositionsMap;
     } catch (InterruptedException | ExecutionException e) {
-      throw new Exception("Unable to get consumer group offset positions.", e);
+      // ignore error as there may not be any events or couldn't retrieve events
+      return new HashMap<>();
     }
   }
 
