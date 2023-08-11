@@ -15,6 +15,7 @@ import static org.springframework.beans.BeanUtils.copyProperties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.CRUDResponse;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
@@ -25,12 +26,14 @@ import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
+import io.aiven.klaw.model.KwMetadataUpdates;
 import io.aiven.klaw.model.SyncBackTopics;
 import io.aiven.klaw.model.SyncTopicUpdates;
 import io.aiven.klaw.model.SyncTopicsBulk;
 import io.aiven.klaw.model.TopicInfo;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.ApiResultStatus;
+import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -592,8 +595,9 @@ public class TopicSyncControllerService {
         }
       } else {
         logUpdateSyncBackTopics.add("Topic created " + topicFound.getTopicname());
-        if (!Objects.equals(syncBackTopics.getSourceEnv(), syncBackTopics.getTargetEnv()))
+        if (!Objects.equals(syncBackTopics.getSourceEnv(), syncBackTopics.getTargetEnv())) {
           createAndApproveTopicRequest(syncBackTopics, topicFound, tenantId);
+        }
       }
     } catch (KlawException e) {
       log.error("Error in creating topic {}", topicFound, e);
@@ -623,12 +627,29 @@ public class TopicSyncControllerService {
       // Create request
       Map<String, String> createResult =
           manageDatabase.getHandleDbRequests().requestForTopic(topicRequest);
+      // TODO performance improvement batch save these requests to the DB.
       // Approve request
       if (createResult.get("topicId") != null) {
         topicRequest.setTopicid(Integer.parseInt(createResult.get("topicId")));
-        manageDatabase.getHandleDbRequests().updateTopicRequest(topicRequest, getUserName());
+        CRUDResponse<Topic> saveResults =
+            manageDatabase.getHandleDbRequests().updateTopicRequest(topicRequest, getUserName());
+        // entities size should always be equal to 1 as they are saved one at a time here.
+        if (saveResults.getResultStatus().equals(ApiResultStatus.SUCCESS.value)
+            && saveResults.getEntities().size() > 1) {
+          manageDatabase.addTopicToCache(tenantId, saveResults.getEntities().get(0));
+        }
       }
     }
+    // Single reset on other servers.
+    // Later this should be updated to send particular object across instead of having the cache
+    // reloaded on the other side.
+
+    commonUtilsService.resetCacheOnOtherServers(
+        KwMetadataUpdates.builder()
+            .tenantId(tenantId)
+            .entityType(EntityType.TOPICS.name())
+            .operationType(RequestOperationType.CREATE.value)
+            .build());
   }
 
   public List<TopicInfo> getTopicsRowView(
@@ -1104,9 +1125,11 @@ public class TopicSyncControllerService {
 
     if (listTopics.size() > 0) {
       try {
-        String statusSync = manageDatabase.getHandleDbRequests().addToSynctopics(listTopics);
+        CRUDResponse<Topic> statusSync =
+            manageDatabase.getHandleDbRequests().addToSynctopics(listTopics);
         manageDatabase.loadTopicsForOneTenant(tenantId);
-        return ApiResponse.ok(statusSync);
+
+        return ApiResponse.ok(statusSync.getResultStatus());
       } catch (Exception e) {
         log.error(e.getMessage());
         throw new KlawException(e.getMessage());

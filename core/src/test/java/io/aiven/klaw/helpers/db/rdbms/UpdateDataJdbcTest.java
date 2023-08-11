@@ -8,9 +8,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
+import io.aiven.klaw.dao.CRUDResponse;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwKafkaConnector;
+import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
@@ -102,13 +104,15 @@ public class UpdateDataJdbcTest {
   public void updateUpdateTopicRequest() {
     int reqNum = 1001;
     String requestOperationType = "Update";
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any()))
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     TopicRequest req = utilMethods.getTopicRequest(1001);
     req.setOtherParams("1001");
     req.setRequestOperationType(requestOperationType);
-    String result = updateData.updateTopicRequest(req, "uiuser2");
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    CRUDResponse<Topic> result = updateData.updateTopicRequest(req, "uiuser2");
+    assertThat(result.getResultStatus()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(topicRepo, times(1)).save(any());
   }
 
@@ -116,18 +120,23 @@ public class UpdateDataJdbcTest {
   public void updateDeleteTopicRequest() {
     int reqNum = 1001;
     String requestOperationType = "Delete";
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any()))
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     when(selectDataJdbcHelper.selectEnvDetails(anyString(), anyInt())).thenReturn(kafkaEnv);
     EnvTag envTag = new EnvTag();
     envTag.setId("3");
     when(kafkaEnv.getAssociatedEnv()).thenReturn(envTag);
+    when(deleteDataJdbcHelper.deleteTopics(any(Topic.class)))
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     TopicRequest req = utilMethods.getTopicRequest(1001);
 
     req.setRequestOperationType(requestOperationType);
     req.setDeleteAssociatedSchema(true);
-    String result = updateData.updateTopicRequest(req, "uiuser2");
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    CRUDResponse<Topic> result = updateData.updateTopicRequest(req, "uiuser2");
+    assertThat(result.getResultStatus()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(deleteDataJdbcHelper, times(1)).deleteTopics(any());
     verify(deleteDataJdbcHelper, times(1))
         .deleteSchemasWithOptions(anyInt(), anyString(), anyString());
@@ -137,12 +146,14 @@ public class UpdateDataJdbcTest {
   @ValueSource(strings = {"Create", "Promote"})
   public void updateCreateAndPromoteTopicRequest(String requestOperationType) {
     int reqNum = 1001;
-    when(insertDataJdbcHelper.insertIntoTopicSOT(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(insertDataJdbcHelper.insertIntoTopicSOT(any()))
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(insertDataJdbcHelper.getNextTopicRequestId(anyString(), anyInt())).thenReturn(reqNum);
     TopicRequest req = utilMethods.getTopicRequest(1001);
     req.setRequestOperationType(requestOperationType);
-    String result = updateData.updateTopicRequest(req, "uiuser2");
-    assertThat(result).isEqualTo(ApiResultStatus.SUCCESS.value);
+    CRUDResponse<Topic> result = updateData.updateTopicRequest(req, "uiuser2");
+    assertThat(result.getResultStatus()).isEqualTo(ApiResultStatus.SUCCESS.value);
     verify(insertDataJdbcHelper, times(1)).insertIntoTopicSOT(any());
   }
 
