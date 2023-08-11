@@ -239,12 +239,10 @@ const routes: Array<RouteObject> = [
         path: Routes.TOPIC_PROMOTION_REQUEST,
         element: <TopicPromotionRequestPage />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.TOPIC_EDIT_REQUEST,
         element: <TopicEditRequestPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_EDIT_TOPIC,
-        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
-      }),
+      },
       createRouteBehindFeatureFlag({
         path: Routes.CONNECTOR_EDIT_REQUEST,
         element: <ConnectorEditRequest />,
