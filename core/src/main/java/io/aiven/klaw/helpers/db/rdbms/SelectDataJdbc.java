@@ -1445,13 +1445,17 @@ public class SelectDataJdbc {
             .intValue();
   }
 
-  public int findAllConnectorComponentsCountForEnv(String env, int tenantId) {
-    return ((Long) kafkaConnectorRepo.findAllConnectorCountForEnv(env, tenantId).get(0)[0])
-            .intValue()
-        + ((Long)
-                kafkaConnectorRequestsRepo.findAllConnectorRequestsCountForEnv(env, tenantId)
-                    .get(0)[0])
-            .intValue();
+  public boolean existsConnectorComponentsForEnv(String env, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () -> kafkaConnectorRepo.existConnectorForEnv(env, tenantId),
+            () -> kafkaConnectorRequestsRepo.existsConnectorRequestsForEnv(env, tenantId));
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean existsSchemaComponentsForEnv(String env, int tenantId) {

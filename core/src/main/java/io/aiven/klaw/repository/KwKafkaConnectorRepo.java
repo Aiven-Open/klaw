@@ -26,10 +26,10 @@ public interface KwKafkaConnectorRepo extends CrudRepository<KwKafkaConnector, K
       String connectorName, String env, int tenantId);
 
   @Query(
-      value = "select count(*) from kwkafkaconnector where env = :envId and tenantid = :tenantId",
+      value =
+          "select exists(select 1 from kwkafkaconnector where env = :envId and tenantid = :tenantId)",
       nativeQuery = true)
-  List<Object[]> findAllConnectorCountForEnv(
-      @Param("envId") String envId, @Param("tenantId") Integer tenantId);
+  boolean existConnectorForEnv(@Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
       value =

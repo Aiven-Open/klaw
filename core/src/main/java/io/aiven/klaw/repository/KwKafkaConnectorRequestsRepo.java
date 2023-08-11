@@ -31,9 +31,9 @@ public interface KwKafkaConnectorRequestsRepo
 
   @Query(
       value =
-          "select count(*) from kwkafkaconnectorrequests where env = :envId and tenantid = :tenantId and connectorstatus='created'",
+          "select exists(select 1 from kwkafkaconnectorrequests where env = :envId and tenantid = :tenantId and connectorstatus='created')",
       nativeQuery = true)
-  List<Object[]> findAllConnectorRequestsCountForEnv(
+  boolean existsConnectorRequestsForEnv(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
