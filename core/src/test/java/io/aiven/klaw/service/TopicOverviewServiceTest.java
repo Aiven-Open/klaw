@@ -15,11 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.KwClusters;
-import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.KwTenantConfigModel;
@@ -215,6 +211,7 @@ public class TopicOverviewServiceTest {
   public void getGivenATopicWithManyKafkaEnv_ReturnNextInPromotion() throws Exception {
     stubUserInfo();
     stubKafkaPromotion(TESTTOPIC, 15);
+    stubEnvironment("1", "4");
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.KAFKA, 15);
     when(commonUtilsService.getTopicsForTopicName(TESTTOPIC, 101))
         .thenReturn(List.of(createTopic(TESTTOPIC)));
@@ -335,6 +332,7 @@ public class TopicOverviewServiceTest {
   public void getTopicOverview() {
     mockTenantConfig();
     stubUserInfo();
+    stubEnvironment("1", "4");
     when(commonUtilsService.getTenantId(any())).thenReturn(101);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Arrays.asList("1", "2", "3")));
@@ -349,6 +347,7 @@ public class TopicOverviewServiceTest {
 
     when(manageDatabase.getAllEnvList(anyInt()))
         .thenReturn(createListOfEnvs(KafkaClustersType.SCHEMA_REGISTRY, 5));
+    when(commonUtilsService.isCreateNewSchemaAllowed(eq("4"), eq(101))).thenReturn(true);
 
     TopicOverview topicOverview =
         topicOverviewService.getTopicOverview(TESTTOPIC, "1", AclGroupBy.NONE);
@@ -358,13 +357,15 @@ public class TopicOverviewServiceTest {
         .isEqualTo(PromotionStatusType.NO_PROMOTION);
     assertThat(topicOverview.getTopicInfoList().get(0).isTopicDeletable())
         .isTrue(); // topic can be deleted
-
+    assertThat(topicOverview.isCreateSchemaAllowed()).isTrue();
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(utilMethods.getTopicInMultipleEnvs("testtopic", TEAMID, 2));
 
     topicOverview = topicOverviewService.getTopicOverview(TESTTOPIC, "2", AclGroupBy.NONE);
+    stubEnvironment("1", "5");
+    when(commonUtilsService.isCreateNewSchemaAllowed(eq("5"), eq(101))).thenReturn(false);
     assertThat(topicOverview.getAvailableEnvironments().size()).isEqualTo(2);
     assertThat(topicOverview.getTopicInfoList().size()).isEqualTo(1);
     assertThat(topicOverview.getTopicPromotionDetails().getStatus())
@@ -393,6 +394,7 @@ public class TopicOverviewServiceTest {
     assertThat(topicOverview.getTopicInfoList().get(0).isHasOpenRequest())
         .isFalse(); // topic hasAcl
     assertThat(topicOverview.getTopicInfoList().get(0).isHasSchema()).isFalse(); // topic hasAcl
+    assertThat(topicOverview.isCreateSchemaAllowed()).isFalse();
   }
 
   @Test
@@ -979,5 +981,16 @@ public class TopicOverviewServiceTest {
     when(userInfo.getTeamId()).thenReturn(TEAMID);
     when(mailService.getUserName(any())).thenReturn(TEAM_ID);
     when(commonUtilsService.getTeamId(eq(TEAM_ID))).thenReturn(TEAMID);
+  }
+
+  private void stubEnvironment(String kafkaEnvId, String schemaEnvId) {
+    Env env = new Env();
+    EnvTag tag = new EnvTag();
+    tag.setId(schemaEnvId);
+    tag.setName("ENV");
+    env.setEnvExists("true");
+    env.setAssociatedEnv(tag);
+    env.setId(kafkaEnvId);
+    when(commonUtilsService.getEnvDetails(eq(kafkaEnvId), eq(101))).thenReturn(env);
   }
 }

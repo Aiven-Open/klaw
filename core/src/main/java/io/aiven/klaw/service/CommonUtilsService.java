@@ -795,6 +795,14 @@ public class CommonUtilsService {
         .isPresent();
   }
 
+  public boolean isCreateNewSchemaAllowed(String schemaEnvId, int tenantId) {
+    KwTenantConfigModel tenantModel = manageDatabase.getTenantConfig().get(tenantId);
+    List<String> reqSchemaEnvs =
+        tenantModel == null ? new ArrayList<>() : tenantModel.getRequestSchemaEnvironmentsList();
+
+    return reqSchemaEnvs.contains(schemaEnvId);
+  }
+
   public Env getEnvDetails(String envId, int tenantId) {
     Optional<Env> envFound =
         manageDatabase.getKafkaEnvList(tenantId).stream()
