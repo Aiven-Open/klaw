@@ -96,7 +96,7 @@ describe("TopicDetailsSchema", () => {
   const user = userEvent.setup();
 
   describe("renders correct views for topic owner", () => {
-    describe("when topic has (multiple) schema(s)", () => {
+    describe("when topic has (multiple) schema(s)  and `createSchemaAllowed` is true (default)", () => {
       beforeAll(() => {
         mockPromoteSchemaRequest.mockResolvedValue({
           success: true,
@@ -202,7 +202,62 @@ describe("TopicDetailsSchema", () => {
       });
     });
 
-    describe("when topic has no schema yet", () => {
+    describe("when topic has (multiple) schema(s)  and `createSchemaAllowed` is false", () => {
+      beforeAll(() => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: testTopicSchemas,
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: { topicInfo: { topicOwner: true } },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema createSchemaAllowed={false} />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("shows no link to request a new schema version", () => {
+        const link = screen.queryByRole("link", {
+          name: "Request a new version",
+        });
+
+        // a "disabled internal link" is a disabled button in the DOM
+        // since links can not be disabled (and should not)
+        // we're hiding this button with aria-hidden on the parent in this
+        // case, and confirm that it can be queried by role here
+        const button = screen.queryByRole("button", {
+          name: "Request a new version",
+        });
+
+        expect(link).not.toBeInTheDocument();
+        expect(button).not.toBeInTheDocument();
+      });
+
+      it("shows information that schema has to be promoted", () => {
+        const alert = screen.getByTestId("schema-promotable-only-alert");
+
+        expect(alert).toBeInTheDocument();
+      });
+    });
+
+    describe("when topic has no schema yet and `createSchemaAllowed` is true (default)", () => {
       beforeAll(() => {
         mockPromoteSchemaRequest.mockResolvedValue({
           success: true,
@@ -267,6 +322,66 @@ describe("TopicDetailsSchema", () => {
         });
 
         expect(link).not.toBeInTheDocument();
+      });
+    });
+
+    describe("when topic has no schema yet and `createSchemaAllowed` is false", () => {
+      beforeAll(() => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: noSchema_testTopicSchemas,
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: { topicInfo: { topicOwner: true } },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema createSchemaAllowed={false} />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("shows information that there is no schema yet", () => {
+        const text = screen.getByText("No schema available for this topic");
+
+        expect(text).toBeVisible();
+      });
+
+      it("disables button to request a new schema", () => {
+        const button = screen.getByRole("button", {
+          name: "Request a new schema",
+        });
+
+        expect(button).toBeDisabled();
+      });
+
+      it("shows no select element for versions", () => {
+        const select = screen.queryByRole("combobox", {
+          name: "Select version",
+        });
+
+        expect(select).not.toBeInTheDocument();
+      });
+
+      it("shows information that schema has to be promoted", () => {
+        const alert = screen.getByTestId("schema-promotable-only-alert");
+
+        expect(alert).toBeInTheDocument();
       });
     });
 

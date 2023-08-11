@@ -28,8 +28,11 @@ import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
+import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schema/components/SchemaPromotableOnlyAlert";
 
-function TopicDetailsSchema() {
+//@ TODO change to api response value
+// eslint-disable-next-line react/prop-types
+function TopicDetailsSchema({ createSchemaAllowed = true }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -112,9 +115,11 @@ function TopicDetailsSchema() {
           primaryAction={{
             onClick: () => navigate(`/topic/${topicName}/request-schema`),
             text: "Request a new schema",
-            disabled: topicSchemasIsRefetching,
+            disabled: topicSchemasIsRefetching || !createSchemaAllowed,
           }}
-        ></EmptyState>
+        >
+          {!createSchemaAllowed && <SchemaPromotableOnlyAlert />}
+        </EmptyState>
       </>
     );
   }
@@ -170,9 +175,12 @@ function TopicDetailsSchema() {
         </Box>
 
         {!topicSchemasIsRefetching && isTopicOwner && (
-          <Box alignSelf={"top"}>
+          // In case user can not create a new schema, we don't want the disabled "link" to show up
+          // as it makes it harder to convey the information for assistive technology
+          <Box alignSelf={"top"} aria-hidden={!createSchemaAllowed}>
             <InternalLinkButton
               to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
+              disabled={!createSchemaAllowed}
             >
               <Box.Flex component={"span"} alignItems={"center"} colGap={"3"}>
                 <InlineIcon
@@ -189,6 +197,9 @@ function TopicDetailsSchema() {
         )}
       </Box>
 
+      {!createSchemaAllowed && (
+        <SchemaPromotableOnlyAlert marginBottom={"l2"} />
+      )}
       {!topicSchemasIsRefetching && isTopicOwner && (
         <SchemaPromotionBanner
           schemaPromotionDetails={schemaPromotionDetails}
