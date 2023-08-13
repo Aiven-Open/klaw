@@ -65,6 +65,7 @@ import org.apache.kafka.common.resource.PatternType;
 import org.apache.kafka.common.resource.ResourcePatternFilter;
 import org.apache.kafka.common.resource.ResourceType;
 import org.apache.tomcat.util.codec.binary.Base64;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -714,6 +715,39 @@ public class ClusterApiControllerIT {
 
     ApiResponse apiResponse = mapper.readValue(response.getContentAsString(), ApiResponse.class);
     assertThat(apiResponse.getMessage()).isEqualTo(ApiResultStatus.SUCCESS.value);
+  }
+
+  @Test
+  @Order(15)
+  public void resetOffsetsNonExistingTopic() throws Exception {
+    String url = "/topics/consumerGroupOffsets/reset/" + bootStrapServersSsl + "/SSL/" + "DEV2";
+    String nonExistingTopic = "topicdoesnotexist";
+    ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
+        ResetConsumerGroupOffsetsRequest.builder()
+            .offsetResetType(OffsetResetType.LATEST)
+            .consumerGroup(CONSUMER_GROUP)
+            .topicName(nonExistingTopic)
+            .build();
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(resetConsumerGroupOffsetsRequest);
+
+    Exception thrown =
+        Assertions.assertThrows(
+            Exception.class,
+            () ->
+                mvc.perform(
+                        MockMvcRequestBuilders.post(url)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(jsonReq)
+                            .header(
+                                AUTHORIZATION,
+                                BEARER_PREFIX
+                                    + generateToken(KWCLUSTERAPIUSER, clusterAccessSecret, 3L))
+                            .accept(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk())
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString());
+    assertThat(thrown.getMessage()).contains("Topic " + nonExistingTopic + " does not exist.");
   }
 
   private void produceAndConsumeRecords(boolean consumeRecs)

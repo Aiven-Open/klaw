@@ -174,7 +174,7 @@ public class ConsumerGroupService {
       throws Exception {
     try {
       DescribeTopicsResult result = adminClient.describeTopics(Collections.singleton(topicName));
-      if (result != null && result.values().containsKey(topicName)) {
+      if (result.values().containsKey(topicName)) {
         return result.values().get(topicName).get();
       } else {
         return null;

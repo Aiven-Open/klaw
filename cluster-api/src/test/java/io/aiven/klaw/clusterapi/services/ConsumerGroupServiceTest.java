@@ -1,10 +1,13 @@
 package io.aiven.klaw.clusterapi.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.clusterapi.constants.TestConstants;
 import io.aiven.klaw.clusterapi.models.consumergroup.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.consumergroup.OffsetResetType;
+import io.aiven.klaw.clusterapi.models.consumergroup.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
@@ -18,7 +21,6 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -79,7 +81,7 @@ class ConsumerGroupServiceTest {
             TestConstants.CLUSTER_NAME);
     List<OffsetDetails> expected = List.of(offsetDetails);
 
-    Assertions.assertThat(actual).isEqualTo(expected);
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
@@ -97,6 +99,24 @@ class ConsumerGroupServiceTest {
             TestConstants.CLUSTER_NAME);
     List<OffsetDetails> expected = Collections.emptyList();
 
-    Assertions.assertThat(actual).isEqualTo(expected);
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  void resetConsumerOffsetsToDateTimeFailure() {
+    ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
+        ResetConsumerGroupOffsetsRequest.builder()
+            .offsetResetType(OffsetResetType.TO_DATE_TIME)
+            .consumerGroup("CONSUMER_GROUP")
+            .topicName("testtopic")
+            .build();
+    Exception thrown =
+        org.junit.jupiter.api.Assertions.assertThrows(
+            Exception.class,
+            () ->
+                consumerGroupService.resetConsumerGroupOffsets(
+                    "dev", KafkaSupportedProtocol.SSL, "CLID2", resetConsumerGroupOffsetsRequest));
+    assertThat(thrown.getMessage())
+        .contains("Timestamp must be provided for reset type TO_DATE_TIME");
   }
 }
