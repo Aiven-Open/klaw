@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class ConsumerGroupService {
+  public static final int TIMEOUT_MS = 2500;
   private final ClusterApiUtils clusterApiUtils;
 
   public ConsumerGroupService(ClusterApiUtils clusterApiUtils) {
@@ -43,7 +44,7 @@ public class ConsumerGroupService {
       String clusterIdentification,
       ResetConsumerGroupOffsetsRequest consumerGroupOffsetsRequest)
       throws Exception {
-    log.info(
+    log.debug(
         "Reset consumer group offsets env {} request {}", environment, consumerGroupOffsetsRequest);
 
     if (OffsetResetType.TO_DATE_TIME.equals(consumerGroupOffsetsRequest.getOffsetResetType())
@@ -55,7 +56,7 @@ public class ConsumerGroupService {
 
     TopicDescription topicDescription =
         describeTopic(adminClient, consumerGroupOffsetsRequest.getTopicName());
-    if (null == topicDescription) {
+    if (topicDescription == null) {
       throw new Exception(
           "Topic " + consumerGroupOffsetsRequest.getTopicName() + " does not exist.");
     }
@@ -76,7 +77,14 @@ public class ConsumerGroupService {
         offsetSpec,
         offsetPositionsBeforeAndAfter);
 
-    return ApiResponse.builder().success(true).data(offsetPositionsBeforeAndAfter).build();
+    if (offsetPositionsBeforeAndAfter.isEmpty()) {
+      return ApiResponse.builder()
+          .success(false)
+          .message("Unable to reset/retrieve offsets")
+          .build();
+    } else {
+      return ApiResponse.builder().success(true).data(offsetPositionsBeforeAndAfter).build();
+    }
   }
 
   private void extractOffsetsBeforeAndAfter(
@@ -91,33 +99,31 @@ public class ConsumerGroupService {
         getCurrentOffsetsPositions(consumerGroupOffsetsRequest.getConsumerGroup(), adminClient);
     if (!currentOffsets.isEmpty()) {
       offsetPositionsBeforeAndAfter.put(OffsetsTiming.BEFORE_OFFSET_RESET, currentOffsets);
-    } else {
-      return;
-    }
 
-    // reset offsets
-    try {
-      AlterConsumerGroupOffsetsOptions alterConsumerGroupOffsetsOptions =
-          new AlterConsumerGroupOffsetsOptions();
-      alterConsumerGroupOffsetsOptions.timeoutMs(2500);
-      AlterConsumerGroupOffsetsResult futureResult =
-          adminClient.alterConsumerGroupOffsets(
-              consumerGroupOffsetsRequest.getConsumerGroup(),
-              getTopicPartitionOffsetsAndMetadataMap(
-                  consumerGroupOffsetsRequest.getTopicName(),
-                  offsetSpec,
-                  topicDescription,
-                  adminClient),
-              alterConsumerGroupOffsetsOptions);
-      futureResult.all().get();
-    } catch (Exception e) {
-      throw new Exception("Unable to reset consumer group offsets.", e);
-    }
+      // reset offsets
+      try {
+        AlterConsumerGroupOffsetsOptions alterConsumerGroupOffsetsOptions =
+            new AlterConsumerGroupOffsetsOptions();
+        alterConsumerGroupOffsetsOptions.timeoutMs(TIMEOUT_MS);
+        AlterConsumerGroupOffsetsResult futureResult =
+            adminClient.alterConsumerGroupOffsets(
+                consumerGroupOffsetsRequest.getConsumerGroup(),
+                getTopicPartitionOffsetsAndMetadataMap(
+                    consumerGroupOffsetsRequest.getTopicName(),
+                    offsetSpec,
+                    topicDescription,
+                    adminClient),
+                alterConsumerGroupOffsetsOptions);
+        futureResult.all().get();
+      } catch (Exception e) {
+        throw new Exception("Unable to reset consumer group offsets.", e);
+      }
 
-    // Get offsets after consumer group offset update
-    offsetPositionsBeforeAndAfter.put(
-        OffsetsTiming.AFTER_OFFSET_RESET,
-        getCurrentOffsetsPositions(consumerGroupOffsetsRequest.getConsumerGroup(), adminClient));
+      // Get offsets after consumer group offset update
+      offsetPositionsBeforeAndAfter.put(
+          OffsetsTiming.AFTER_OFFSET_RESET,
+          getCurrentOffsetsPositions(consumerGroupOffsetsRequest.getConsumerGroup(), adminClient));
+    }
   }
 
   public Map<TopicPartition, OffsetAndMetadata> getTopicPartitionOffsetsAndMetadataMap(
@@ -168,13 +174,13 @@ public class ConsumerGroupService {
       throws Exception {
     try {
       DescribeTopicsResult result = adminClient.describeTopics(Collections.singleton(topicName));
-      if (result.values().containsKey(topicName)) {
+      if (result != null && result.values().containsKey(topicName)) {
         return result.values().get(topicName).get();
       } else {
         return null;
       }
     } catch (Exception ex) {
-      if (ex.getLocalizedMessage().contains("UnknownTopicOrPartitionException")) {
+      if (ex.getMessage().contains("UnknownTopic")) {
         log.info("Topic {} does not exist on the cluster.", topicName);
         return null;
       } else {
@@ -211,23 +217,14 @@ public class ConsumerGroupService {
           describeTopicsResult.values().get(topicName).get().partitions();
 
       TopicPartition topicPartition;
-      Map<TopicPartition, OffsetSpec> topicPartitionOffsetSpecMap = new HashMap<>();
 
-      for (TopicPartitionInfo topicPartitionInfo : topicPartitions) {
-        topicPartition = new TopicPartition(topicName, topicPartitionInfo.partition());
-        topicPartitionOffsetSpecMap.put(topicPartition, OffsetSpec.earliest());
-      }
       ListOffsetsResult listOffsetsEarliestResult =
-          adminClient.listOffsets(topicPartitionOffsetSpecMap);
-
-      topicPartitionOffsetSpecMap = new HashMap<>();
-      for (TopicPartitionInfo topicPartitionInfo : topicPartitions) {
-        topicPartition = new TopicPartition(topicName, topicPartitionInfo.partition());
-        topicPartitionOffsetSpecMap.put(topicPartition, OffsetSpec.latest());
-      }
+          adminClient.listOffsets(
+              getTopicPartitionOffsetSpecMap(topicName, topicPartitions, OffsetSpec.earliest()));
 
       ListOffsetsResult listOffsetsLatestResult =
-          adminClient.listOffsets(topicPartitionOffsetSpecMap);
+          adminClient.listOffsets(
+              getTopicPartitionOffsetSpecMap(topicName, topicPartitions, OffsetSpec.latest()));
 
       for (TopicPartitionInfo topicPartitionInfo : topicPartitions) {
         topicPartition = new TopicPartition(topicName, topicPartitionInfo.partition());
@@ -253,5 +250,16 @@ public class ConsumerGroupService {
           exception);
       return consumerGroupOffsetList;
     }
+  }
+
+  private Map<TopicPartition, OffsetSpec> getTopicPartitionOffsetSpecMap(
+      String topicName, List<TopicPartitionInfo> topicPartitions, OffsetSpec offsetSpec) {
+    TopicPartition topicPartition;
+    Map<TopicPartition, OffsetSpec> topicPartitionOffsetSpecMap = new HashMap<>();
+    for (TopicPartitionInfo topicPartitionInfo : topicPartitions) {
+      topicPartition = new TopicPartition(topicName, topicPartitionInfo.partition());
+      topicPartitionOffsetSpecMap.put(topicPartition, offsetSpec);
+    }
+    return topicPartitionOffsetSpecMap;
   }
 }
