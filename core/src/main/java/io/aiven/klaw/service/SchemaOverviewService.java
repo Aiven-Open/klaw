@@ -354,7 +354,7 @@ public class SchemaOverviewService extends BaseOverviewService {
                     .existsSchemaRequest(
                         topicName,
                         RequestStatus.CREATED.value,
-                        RequestOperationType.CREATE.value,
+                        RequestOperationType.PROMOTE.value,
                         s,
                         tenantId))
         .isPresent();
