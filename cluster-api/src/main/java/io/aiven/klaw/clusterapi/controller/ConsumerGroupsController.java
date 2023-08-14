@@ -60,7 +60,7 @@ public class ConsumerGroupsController {
    */
   @RequestMapping(
       value =
-          "/getConsumerOffsets/{bootstrapServers}/{protocol}/{clusterName}/{consumerGroupId}/{topicName}",
+          "/consumerOffsets/{bootstrapServers}/{protocol}/{clusterName}/{consumerGroupId}/{topicName}",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<OffsetDetails>> getConsumerOffsets(
       @PathVariable String bootstrapServers,

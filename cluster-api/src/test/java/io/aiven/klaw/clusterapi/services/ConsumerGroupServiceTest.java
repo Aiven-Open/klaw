@@ -29,8 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 class ConsumerGroupServiceTest {
-
-  public static final String TESTTOPIC = "testtopic";
   @Mock private ClusterApiUtils clusterApiUtils;
   @Mock private KafkaSupportedProtocol protocol;
   @Mock private AdminClient adminClient;
