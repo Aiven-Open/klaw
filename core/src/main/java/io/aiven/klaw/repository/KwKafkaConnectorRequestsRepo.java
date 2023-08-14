@@ -2,6 +2,7 @@ package io.aiven.klaw.repository;
 
 import io.aiven.klaw.dao.KafkaConnectorRequest;
 import io.aiven.klaw.dao.KafkaConnectorRequestID;
+import io.aiven.klaw.model.enums.RequestStatus;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
@@ -29,12 +30,16 @@ public interface KwKafkaConnectorRequestsRepo
 
   List<KafkaConnectorRequest> findAllByTenantId(int tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwkafkaconnectorrequests where env = :envId and tenantid = :tenantId and connectorstatus='created')",
-      nativeQuery = true)
-  boolean existsConnectorRequestsForEnv(
-      @Param("envId") String envId, @Param("tenantId") Integer tenantId);
+  default boolean existsConnectorRequestsForEnvTenantIdAndCreatedStatus(
+      String envId, Integer tenantId) {
+    return existsByEnvironmentAndTenantIdAndRequestStatus(
+        envId, tenantId, RequestStatus.CREATED.value);
+  }
+
+  boolean existsByEnvironmentAndTenantIdAndRequestStatus(
+      @Param("envId") String envId,
+      @Param("tenantId") Integer tenantId,
+      @Param("requestStatus") String requestStatus);
 
   @Query(
       value = "select max(connectorid) from kwkafkaconnectorrequests where tenantid = :tenantId",

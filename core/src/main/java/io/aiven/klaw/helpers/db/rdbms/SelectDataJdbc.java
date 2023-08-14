@@ -1449,7 +1449,9 @@ public class SelectDataJdbc {
     List<Supplier<Boolean>> list =
         List.of(
             () -> kafkaConnectorRepo.existsByEnvironmentAndTenantId(env, tenantId),
-            () -> kafkaConnectorRequestsRepo.existsConnectorRequestsForEnv(env, tenantId));
+            () ->
+                kafkaConnectorRequestsRepo.existsConnectorRequestsForEnvTenantIdAndCreatedStatus(
+                    env, tenantId));
     for (var elem : list) {
       if (elem.get()) {
         return true;
