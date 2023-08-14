@@ -1,9 +1,13 @@
 package io.aiven.klaw.clusterapi.services;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.clusterapi.constants.TestConstants;
-import io.aiven.klaw.clusterapi.models.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.consumergroup.OffsetDetails;
+import io.aiven.klaw.clusterapi.models.consumergroup.OffsetResetType;
+import io.aiven.klaw.clusterapi.models.consumergroup.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.clusterapi.models.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.clusterapi.utils.ClusterApiUtils;
 import java.util.Collections;
@@ -17,28 +21,25 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-class MonitoringServiceTest {
-
+class ConsumerGroupServiceTest {
   @Mock private ClusterApiUtils clusterApiUtils;
   @Mock private KafkaSupportedProtocol protocol;
   @Mock private AdminClient adminClient;
   @Mock private DescribeTopicsResult describeTopicsResult;
   @Mock private TopicPartitionInfo topicPartitionInfo;
   @Mock private ListOffsetsResult listOffsetsEarliestResult;
-  private MonitoringService monitoringService;
+  private ConsumerGroupService consumerGroupService;
 
   @BeforeEach
   void setUp() {
-    monitoringService = new MonitoringService(clusterApiUtils);
+    consumerGroupService = new ConsumerGroupService(clusterApiUtils);
   }
 
   @Test
@@ -59,20 +60,18 @@ class MonitoringServiceTest {
     offsetDetails.setEndOffset(Long.toString(offset));
     offsetDetails.setLag(Long.toString(0));
 
-    Mockito.when(
-            clusterApiUtils.getAdminClient(
-                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
+    when(clusterApiUtils.getAdminClient(
+            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
         .thenReturn(adminClient);
-    Mockito.when(adminClient.describeTopics(Collections.singletonList(TestConstants.TOPIC_NAME)))
+    when(adminClient.describeTopics(Collections.singletonList(TestConstants.TOPIC_NAME)))
         .thenReturn(describeTopicsResult);
-    Mockito.when(describeTopicsResult.values()).thenReturn(nameTopicDescriptionFutures);
-    Mockito.when(topicPartitionInfo.partition()).thenReturn(TestConstants.SINGLE_PARTITION);
-    Mockito.when(adminClient.listOffsets(any())).thenReturn(listOffsetsEarliestResult);
-    Mockito.when(listOffsetsEarliestResult.partitionResult(any()))
-        .thenReturn(listOffsetResultInfoFutures);
+    when(describeTopicsResult.values()).thenReturn(nameTopicDescriptionFutures);
+    when(topicPartitionInfo.partition()).thenReturn(TestConstants.SINGLE_PARTITION);
+    when(adminClient.listOffsets(any())).thenReturn(listOffsetsEarliestResult);
+    when(listOffsetsEarliestResult.partitionResult(any())).thenReturn(listOffsetResultInfoFutures);
 
     List<OffsetDetails> actual =
-        monitoringService.getConsumerGroupDetails(
+        consumerGroupService.getConsumerGroupDetails(
             TestConstants.CONSUMER_GROUP_ID,
             TestConstants.TOPIC_NAME,
             TestConstants.ENVIRONMENT,
@@ -80,18 +79,17 @@ class MonitoringServiceTest {
             TestConstants.CLUSTER_NAME);
     List<OffsetDetails> expected = List.of(offsetDetails);
 
-    Assertions.assertThat(actual).isEqualTo(expected);
+    assertThat(actual).isEqualTo(expected);
   }
 
   @Test
   void getConsumerGroupDetailsFailure() throws Exception {
-    Mockito.when(
-            clusterApiUtils.getAdminClient(
-                TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
+    when(clusterApiUtils.getAdminClient(
+            TestConstants.ENVIRONMENT, protocol, TestConstants.CLUSTER_NAME))
         .thenReturn(adminClient);
 
     List<OffsetDetails> actual =
-        monitoringService.getConsumerGroupDetails(
+        consumerGroupService.getConsumerGroupDetails(
             TestConstants.CONSUMER_GROUP_ID,
             TestConstants.TOPIC_NAME,
             TestConstants.ENVIRONMENT,
@@ -99,6 +97,24 @@ class MonitoringServiceTest {
             TestConstants.CLUSTER_NAME);
     List<OffsetDetails> expected = Collections.emptyList();
 
-    Assertions.assertThat(actual).isEqualTo(expected);
+    assertThat(actual).isEqualTo(expected);
+  }
+
+  @Test
+  void resetConsumerOffsetsToDateTimeFailure() {
+    ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
+        ResetConsumerGroupOffsetsRequest.builder()
+            .offsetResetType(OffsetResetType.TO_DATE_TIME)
+            .consumerGroup("CONSUMER_GROUP")
+            .topicName("testtopic")
+            .build();
+    Exception thrown =
+        org.junit.jupiter.api.Assertions.assertThrows(
+            Exception.class,
+            () ->
+                consumerGroupService.resetConsumerGroupOffsets(
+                    "dev", KafkaSupportedProtocol.SSL, "CLID2", resetConsumerGroupOffsetsRequest));
+    assertThat(thrown.getMessage())
+        .contains("Timestamp must be provided for reset type TO_DATE_TIME");
   }
 }
