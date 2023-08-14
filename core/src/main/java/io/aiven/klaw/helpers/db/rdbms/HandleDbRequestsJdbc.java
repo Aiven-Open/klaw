@@ -962,8 +962,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public int getAllConnectorComponentsCountForEnv(String env, int tenantId) {
-    return jdbcSelectHelper.findAllConnectorComponentsCountForEnv(env, tenantId);
+  public boolean existsConnectorComponentsForEnv(String env, int tenantId) {
+    return jdbcSelectHelper.existsConnectorComponentsForEnv(env, tenantId);
   }
 
   @Override

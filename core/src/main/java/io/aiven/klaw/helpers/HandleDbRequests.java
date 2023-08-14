@@ -422,7 +422,7 @@ public interface HandleDbRequests {
 
   int getAllKafkaComponentsCountForEnv(String env, int tenantId);
 
-  int getAllConnectorComponentsCountForEnv(String env, int tenantId);
+  boolean existsConnectorComponentsForEnv(String env, int tenantId);
 
   boolean existsSchemaComponentsForEnv(String env, int tenantId);
 
