@@ -1128,3 +1128,77 @@ databaseChangeLog:
                     name: changeid
                     type: INT
               tableName: kwdatamigration
+    - changeSet:
+        id: 14-08-2023 New table to store operational requests like reset offsets
+        author: muralibasani
+        changes:
+          - createTable:
+              columns:
+                - column:
+                    constraints:
+                      nullable: false
+                      primaryKey: true
+                      primaryKeyName: CONSTRAINT_OP_REQS
+                    name: reqid
+                    type: INT
+                - column:
+                    constraints:
+                      nullable: false
+                      primaryKey: true
+                      primaryKeyName: CONSTRAINT_OP_REQS
+                    name: tenantid
+                    type: INT
+                - column:
+                    name: topicname
+                    type: VARCHAR(150)
+                - column:
+                    name: consumergroup
+                    type: VARCHAR(150)
+                - column:
+                    name: offsetresettype
+                    type: VARCHAR(50)
+                - column:
+                    name: resettimestamp
+                    type: timestamp
+                - column:
+                    name: env
+                    type: VARCHAR(50)
+                - column:
+                    constraints:
+                      nullable: false
+                    name: teamid
+                    type: INT
+                - column:
+                    name: appname
+                    type: VARCHAR(150)
+                - column:
+                    name: requestor
+                    type: VARCHAR(300)
+                - column:
+                    name: requesttime
+                    type: TIMESTAMP
+                - column:
+                    name: requeststatus
+                    type: VARCHAR(50)
+                - column:
+                    name: remarks
+                    type: VARCHAR(500)
+                - column:
+                    name: approver
+                    type: VARCHAR(300)
+                - column:
+                    name: approvingteamid
+                    type: VARCHAR(10)
+                - column:
+                    name: exectime
+                    type: TIMESTAMP
+                - column:
+                    name: requestname
+                    type: VARCHAR(50)
+                - column:
+                    name: otherparams
+                    type: VARCHAR(150)
+                - column:
+                    name: description
+                    type: VARCHAR(100)
+              tableName: kwoperationalrequests

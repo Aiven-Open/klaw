@@ -46,6 +46,9 @@ public class InsertDataJdbc {
   private TopicRepo topicRepo;
 
   @Autowired(required = false)
+  private OperationalRequestsRepo operationalRequestsRepo;
+
+  @Autowired(required = false)
   private KwKafkaConnectorRepo kafkaConnectorRepo;
 
   @Autowired(required = false)
@@ -256,6 +259,40 @@ public class InsertDataJdbc {
     return hashMap;
   }
 
+  synchronized Map<String, String> insertIntoOperationalRequests(
+      OperationalRequest operationalRequest) {
+    log.debug("insertIntoOperationalRequests {}", operationalRequest.getTopicname());
+    Map<String, String> hashMap = new HashMap<>();
+
+    Integer nextOperationalRequestId =
+        getNextOperationalRequestId(operationalRequest.getTenantId());
+    hashMap.put("reqId", "" + nextOperationalRequestId);
+    operationalRequest.setReqId(nextOperationalRequestId);
+
+    operationalRequest.setRequestStatus(RequestStatus.CREATED.value);
+    operationalRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
+    operationalRequestsRepo.save(operationalRequest);
+
+    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(operationalRequest.getRequestor());
+
+    ActivityLog activityLog = new ActivityLog();
+    activityLog.setReq_no(getNextActivityLogRequestId(operationalRequest.getTenantId()));
+    activityLog.setActivityName("OperationalRequest");
+    activityLog.setActivityType(operationalRequest.getOperationalRequestType().value);
+    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
+    activityLog.setTeamId(userInfo.getTeamId());
+    activityLog.setDetails(
+        operationalRequest.getTopicname() + "-" + operationalRequest.getConsumerGroup());
+    activityLog.setUser(operationalRequest.getRequestor());
+    activityLog.setEnv(operationalRequest.getEnvironment());
+    activityLog.setTenantId(operationalRequest.getTenantId());
+
+    // Insert into acl activity log
+    insertIntoActivityLog(activityLog);
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
+    return hashMap;
+  }
+
   public synchronized String insertIntoAclsSOT(List<Acl> acls, boolean isSyncAcls) {
 
     acls.forEach(
@@ -423,6 +460,15 @@ public class InsertDataJdbc {
       return 1001;
     } else {
       return aclReqId + 1;
+    }
+  }
+
+  public Integer getNextOperationalRequestId(int tenantId) {
+    Integer operationalRequestId = operationalRequestsRepo.getNextOperationalRequestId(tenantId);
+    if (operationalRequestId == null) {
+      return 1001;
+    } else {
+      return operationalRequestId + 1;
     }
   }
 

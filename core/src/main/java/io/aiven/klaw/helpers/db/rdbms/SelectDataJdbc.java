@@ -60,6 +60,9 @@ public class SelectDataJdbc {
   private AclRequestsRepo aclRequestsRepo;
 
   @Autowired(required = false)
+  private OperationalRequestsRepo operationalRequestsRepo;
+
+  @Autowired(required = false)
   private TopicRepo topicRepo;
 
   @Autowired(required = false)
@@ -1900,5 +1903,16 @@ public class SelectDataJdbc {
 
   public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
     return messageSchemaRepo.existsByTenantIdAndTopicnameAndEnvironment(tenantId, topicName, env);
+  }
+
+  public OperationalRequest selectOperationalRequest(int reqNo, int tenantId) {
+    log.debug("selectOperationalRequest {}", reqNo);
+    OperationalRequestID operationalRequestID = new OperationalRequestID();
+    operationalRequestID.setReqId(reqNo);
+    operationalRequestID.setTenantId(tenantId);
+
+    Optional<OperationalRequest> operationalRequest =
+        operationalRequestsRepo.findById(operationalRequestID);
+    return operationalRequest.orElse(null);
   }
 }

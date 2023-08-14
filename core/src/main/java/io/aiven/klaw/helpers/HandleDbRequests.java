@@ -23,6 +23,8 @@ public interface HandleDbRequests {
 
   Map<String, String> requestForAcl(AclRequests aclReq);
 
+  Map<String, String> requestForConsumerOffsetsReset(OperationalRequest operationalRequest);
+
   String addNewUser(UserInfo userInfo);
 
   String addNewTeam(Team team);
@@ -235,6 +237,8 @@ public interface HandleDbRequests {
   RegisterUserInfo getRegisterUsersInfo(String username);
 
   AclRequests getAcl(int req_no, int tenantId);
+
+  OperationalRequest getOperationalRequest(int reqNo, int tenantId);
 
   List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId);
 

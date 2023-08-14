@@ -48,6 +48,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcInsertHelper.insertIntoRequestAcl(aclReq);
   }
 
+  @Override
+  public Map<String, String> requestForConsumerOffsetsReset(OperationalRequest operationalRequest) {
+    return jdbcInsertHelper.insertIntoOperationalRequests(operationalRequest);
+  }
+
   public String addNewUser(UserInfo userInfo) {
     return jdbcInsertHelper.insertIntoUsers(userInfo);
   }
@@ -533,6 +538,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public AclRequests getAcl(int req_no, int tenantId) {
     return jdbcSelectHelper.selectAcl(req_no, tenantId);
+  }
+
+  @Override
+  public OperationalRequest getOperationalRequest(int reqNo, int tenantId) {
+    return jdbcSelectHelper.selectOperationalRequest(reqNo, tenantId);
   }
 
   public List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId) {

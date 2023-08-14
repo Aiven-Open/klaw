@@ -138,6 +138,9 @@ public class KlawErrorMessages {
   public static final String CLUSTER_API_ERR_123 =
       "Could not approve schema delete request. Please contact Administrator.";
 
+  public static final String CLUSTER_API_ERR_124 =
+      "Could not approve reset consumer offsets request. Please contact Administrator.";
+
   // Env clusters tenants service
   public static final String ENV_CLUSTER_TNT_ERR_101 =
       "Failure. Please choose a different name. This environment name already exists.";
