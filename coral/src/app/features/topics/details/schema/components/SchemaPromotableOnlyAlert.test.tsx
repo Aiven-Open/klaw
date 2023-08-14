@@ -12,12 +12,13 @@ describe("SchemaPromotableOnlyAlert", () => {
 
     expect(alert).toBeVisible();
     expect(alert).toHaveTextContent(
-      "Users are not allowed to request a new schema in this environment. To add a schema, promote the schema from a lower environment. You can read more in our documentation."
+      "Users are not allowed to request a new schema in this environment. To add a schema, promote the schema from a" +
+        " lower environment. Learn more."
     );
   });
 
   it("shows link to documentation", () => {
-    const link = screen.getByRole("link", { name: "our documentation" });
+    const link = screen.getByRole("link", { name: "Learn more" });
 
     expect(link).toBeVisible();
     expect(link).toHaveAttribute(

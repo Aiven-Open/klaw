@@ -14,8 +14,7 @@ function SchemaPromotableOnlyAlert({
       <Alert type={"warning"}>
         <span>
           Users are not allowed to request a new schema in this environment. To
-          add a schema, promote the schema from a lower environment. You can
-          read more in{" "}
+          add a schema, promote the schema from a lower environment.{" "}
           <a
             target="_blank"
             rel="noreferrer"
@@ -23,7 +22,7 @@ function SchemaPromotableOnlyAlert({
               "https://www.klaw-project.io/docs/Concepts/promotion#schema-promotion"
             }
           >
-            our documentation
+            Learn more
           </a>
           .
         </span>
