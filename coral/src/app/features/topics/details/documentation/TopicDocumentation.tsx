@@ -1,4 +1,11 @@
-import { Alert, Box, PageHeader, Skeleton, useToast } from "@aivenio/aquarium";
+import {
+  Alert,
+  Box,
+  PageHeader,
+  Skeleton,
+  Typography,
+  useToast,
+} from "@aivenio/aquarium";
 import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { useState } from "react";
@@ -35,7 +42,7 @@ function TopicDocumentation() {
       onSuccess: () => {
         queryClient.refetchQueries(["topic-overview"]).then(() => {
           toast({
-            message: "Documentation successfully updated",
+            message: "Readme successfully updated",
             position: "bottom-left",
             variant: "default",
           });
@@ -52,9 +59,9 @@ function TopicDocumentation() {
   if (topicOverviewIsRefetching) {
     return (
       <>
-        <PageHeader title={"Documentation"} />
+        <PageHeader title={"Readme"} />
         <Box paddingTop={"l2"}>
-          <div className={"visually-hidden"}>Loading documentation</div>
+          <div className={"visually-hidden"}>Loading readme</div>
           <Skeleton />
         </Box>
       </>
@@ -64,23 +71,28 @@ function TopicDocumentation() {
   if (editMode) {
     return (
       <>
-        <PageHeader title={"Edit documentation"} />
-        <>
-          {isError && (
-            <Box marginBottom={"l1"}>
-              <Alert type="error">
-                The documentation could not be saved, there was an error: <br />
-                {parseErrorMsg(error)}
-              </Alert>
-            </Box>
-          )}
-          <DocumentationEditor
-            documentation={topicOverview.topicDocumentation}
-            save={(text) => mutate(text)}
-            cancel={() => setEditMode(false)}
-            isSaving={saving}
-          />
-        </>
+        <PageHeader title={"Edit readme"} />
+        <Box component={Typography.SmallText} marginBottom={"l2"}>
+          Readme provides essential information, guidelines, and explanations
+          about the topic, helping team members understand its purpose and
+          usage. Edit the readme to update or expand this information as the
+          topic evolves.
+        </Box>
+
+        {isError && (
+          <Box marginBottom={"l1"}>
+            <Alert type="error">
+              The readme could not be saved, there was an error: <br />
+              {parseErrorMsg(error)}
+            </Alert>
+          </Box>
+        )}
+        <DocumentationEditor
+          documentation={topicOverview.topicDocumentation}
+          save={(text) => mutate(text)}
+          cancel={() => setEditMode(false)}
+          isSaving={saving}
+        />
       </>
     );
   }
@@ -91,7 +103,7 @@ function TopicDocumentation() {
   ) {
     return (
       <>
-        <PageHeader title={"Documentation"} />
+        <PageHeader title={"Readme"} />
         <NoDocumentationBanner addDocumentation={() => setEditMode(true)} />
       </>
     );
@@ -100,10 +112,10 @@ function TopicDocumentation() {
   if (isDocumentationTransformationError(topicOverview.topicDocumentation)) {
     return (
       <>
-        <PageHeader title={"Documentation"} />
+        <PageHeader title={"Readme"} />
         <Alert type="error">
-          Something went wrong while trying to transform the documentation into
-          the right format.
+          Something went wrong while trying to transform the readme into the
+          right format.
         </Alert>
       </>
     );
@@ -112,12 +124,19 @@ function TopicDocumentation() {
   return (
     <>
       <PageHeader
-        title={"Documentation"}
+        title={"Readme"}
         primaryAction={{
-          text: "Edit documentation",
+          text: "Edit readme",
           onClick: () => setEditMode(true),
         }}
       />
+      <Box component={Typography.SmallText} marginBottom={"l2"}>
+        Readme provides essential information, guidelines, and explanations
+        about the topic, helping team members understand its purpose and usage.
+        Edit the readme to update or expand this information as the topic
+        evolves.
+      </Box>
+
       <Box paddingTop={"l2"}>
         <DocumentationView markdownString={topicOverview.topicDocumentation} />
       </Box>

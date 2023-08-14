@@ -56,7 +56,7 @@ function ConnectorOverviewResourcesTabs({
     },
     {
       connectorOverviewTabEnum: ConnectorOverviewTabEnum.DOCUMENTATION,
-      title: "Documentation",
+      title: "Readme",
     },
     {
       connectorOverviewTabEnum: ConnectorOverviewTabEnum.HISTORY,

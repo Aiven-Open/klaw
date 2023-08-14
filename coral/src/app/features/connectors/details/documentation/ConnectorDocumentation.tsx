@@ -1,4 +1,11 @@
-import { Alert, Box, PageHeader, Skeleton, useToast } from "@aivenio/aquarium";
+import {
+  Alert,
+  Box,
+  PageHeader,
+  Skeleton,
+  Typography,
+  useToast,
+} from "@aivenio/aquarium";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
@@ -36,7 +43,7 @@ function ConnectorDocumentation() {
       onSuccess: () => {
         queryClient.refetchQueries(["connector-overview"]).then(() => {
           toast({
-            message: "Documentation successfully updated",
+            message: "Readme successfully updated",
             position: "bottom-left",
             variant: "default",
           });
@@ -53,9 +60,9 @@ function ConnectorDocumentation() {
   if (connectorIsRefetching) {
     return (
       <>
-        <PageHeader title={"Documentation"} />
+        <PageHeader title={"Readme"} />
         <Box paddingTop={"l2"}>
-          <div className={"visually-hidden"}>Loading documentation</div>
+          <div className={"visually-hidden"}>Loading readme</div>
           <Skeleton />
         </Box>
       </>
@@ -65,12 +72,18 @@ function ConnectorDocumentation() {
   if (editMode) {
     return (
       <>
-        <PageHeader title={"Edit documentation"} />
+        <PageHeader title={"Edit readme"} />
+        <Box component={Typography.SmallText} marginBottom={"l2"}>
+          Readme provides essential information, guidelines, and explanations
+          about the connector, helping team members understand its purpose and
+          usage. Edit the readme to update or expand this information as the
+          connector evolves.
+        </Box>
         <>
           {isError && (
             <Box marginBottom={"l1"}>
               <Alert type="error">
-                The documentation could not be saved, there was an error: <br />
+                The readme could not be saved, there was an error: <br />
                 {parseErrorMsg(error)}
               </Alert>
             </Box>
@@ -92,7 +105,7 @@ function ConnectorDocumentation() {
   ) {
     return (
       <>
-        <PageHeader title={"Documentation"} />
+        <PageHeader title={"Readme"} />
         <NoDocumentationBanner addDocumentation={() => setEditMode(true)} />
       </>
     );
@@ -103,10 +116,10 @@ function ConnectorDocumentation() {
   ) {
     return (
       <>
-        <PageHeader title={"Documentation"} />
+        <PageHeader title={"Readme"} />
         <Alert type="error">
-          Something went wrong while trying to transform the documentation into
-          the right format.
+          Something went wrong while trying to transform the readme into the
+          right format.
         </Alert>
       </>
     );
@@ -115,12 +128,18 @@ function ConnectorDocumentation() {
   return (
     <>
       <PageHeader
-        title={"Documentation"}
+        title={"Readme"}
         primaryAction={{
-          text: "Edit documentation",
+          text: "Edit readme",
           onClick: () => setEditMode(true),
         }}
       />
+      <Box component={Typography.SmallText} marginBottom={"l2"}>
+        Readme provides essential information, guidelines, and explanations
+        about the connector, helping team members understand its purpose and
+        usage. Edit the readme to update or expand this information as the
+        connector evolves.
+      </Box>
       <Box paddingTop={"l2"}>
         <DocumentationView
           markdownString={connectorOverview.connectorDocumentation}
