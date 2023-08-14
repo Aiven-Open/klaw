@@ -2,7 +2,9 @@ package io.aiven.klaw.repository;
 
 import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.TopicRequestID;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -64,13 +66,21 @@ public interface TopicRequestsRepo
   List<Object[]> findAllTopicRequestsGroupByOperationType(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
+  default Map<String, Long> getCountPerTopicType(Integer teamId, Integer tenantId) {
+    return toStringLongMap(findAllTopicRequestsGroupByOperationType(teamId, tenantId));
+  }
+
   @Query(
       value =
           "select topicstatus, count(*) from kwtopicrequests where tenantid = :tenantId"
               + " and teamid = :teamId group by topicstatus",
       nativeQuery = true)
-  List<Object[]> findAllTopicRequestsGroupByStatus(
+  List<Object[]> findCountPerTopicStatus(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+
+  default Map<String, Long> getCountPerTopicStatus(Integer teamId, Integer tenantId) {
+    return toStringLongMap(findCountPerTopicStatus(teamId, tenantId));
+  }
 
   @Query(
       value =
@@ -96,4 +106,12 @@ public interface TopicRequestsRepo
       @Param("topicStatus") String topicStatus);
 
   void deleteByTenantId(int tenantId);
+
+  private Map<String, Long> toStringLongMap(List<Object[]> list) {
+    var result = new HashMap<String, Long>(list.size());
+    for (var elem : list) {
+      result.put((String) elem[0], (Long) elem[1]);
+    }
+    return result;
+  }
 }
