@@ -55,7 +55,7 @@ describe("Topics", () => {
 
     it("shows a headline", async () => {
       const headline = screen.getByRole("heading", {
-        name: "All topics",
+        name: "Topics",
       });
 
       expect(headline).toBeVisible();

@@ -436,7 +436,7 @@ describe("TopicDetails", () => {
 
       const description = await waitFor(() =>
         screen.getByText(
-          "Your team is not the owner of this topic. Click below to create a claim request for this topic."
+          `This topic is currently owned by ${testTopicOverview.topicInfo.teamname}. Select "Claim topic" to request ownership.`
         )
       );
       const button = await waitFor(() =>

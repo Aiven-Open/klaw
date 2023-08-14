@@ -116,8 +116,8 @@ describe("AclDetailsModalContent", () => {
       expect(findTerm("Consumer group")).toBeVisible();
       expect(findDefinition("Not applicable")).toBeVisible();
     });
-    it("renders Message for the approver", () => {
-      expect(findTerm("Message for the approver")).toBeVisible();
+    it("renders Message for approval", () => {
+      expect(findTerm("Message for approval")).toBeVisible();
       expect(findDefinition(mockedIpsAclRequest.remarks)).toBeVisible();
     });
     it("renders Requested by", () => {
@@ -168,8 +168,8 @@ describe("AclDetailsModalContent", () => {
         findDefinition(mockedPrincipalsAclrequest.consumergroup)
       ).toBeVisible();
     });
-    it("renders Message for the approver default text", () => {
-      expect(findTerm("Message for the approver")).toBeVisible();
+    it("renders Message for approval default text", () => {
+      expect(findTerm("Message for approval")).toBeVisible();
       expect(findDefinition("No message")).toBeVisible();
     });
     it("renders Requested by", () => {

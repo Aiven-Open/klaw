@@ -74,7 +74,7 @@ describe("SchemaPromotionBanner", () => {
       name: "Promote",
     });
     const linkSeeRequest = screen.getByRole("link", {
-      name: "See the request",
+      name: "View request",
     });
 
     expect(linkSeeRequest).toBeVisible();
@@ -103,7 +103,7 @@ describe("SchemaPromotionBanner", () => {
       name: "Promote",
     });
     const linkSeeRequest = screen.getByRole("link", {
-      name: "See the request",
+      name: "View request",
     });
 
     expect(linkSeeRequest).toBeVisible();
