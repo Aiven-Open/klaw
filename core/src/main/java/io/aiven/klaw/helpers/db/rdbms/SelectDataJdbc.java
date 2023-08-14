@@ -1439,10 +1439,10 @@ public class SelectDataJdbc {
   public boolean existsKafkaComponentsForEnv(String env, int tenantId) {
     List<Supplier<Boolean>> list =
         List.of(
-            () -> topicRepo.existsTopicsCountForEnv(env, tenantId),
+            () -> topicRepo.existsByEnvironmentAndTenantId(env, tenantId),
             () -> topicRequestsRepo.existsTopicRequestsCountForEnv(env, tenantId),
             () -> aclRepo.existsAclsCountForEnv(env, tenantId),
-            () -> aclRequestsRepo.existsAclRequestsCountForEnv(env, tenantId));
+            () -> aclRequestsRepo.existsByEnvironmentAndTenantId(env, tenantId));
     for (var elem : list) {
       if (elem.get()) {
         return true;
