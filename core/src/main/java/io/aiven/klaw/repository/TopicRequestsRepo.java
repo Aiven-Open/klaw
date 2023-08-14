@@ -31,11 +31,7 @@ public interface TopicRequestsRepo
   List<TopicRequest> findAllByRequestStatusAndTopicnameAndEnvironmentAndTenantId(
       String topicStatus, String topicName, String envId, int tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwtopicrequests where env = :envId and tenantid = :tenantId)",
-      nativeQuery = true)
-  boolean existsTopicRequestsCountForEnv(
+  boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
