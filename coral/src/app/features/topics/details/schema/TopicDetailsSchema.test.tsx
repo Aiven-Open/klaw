@@ -297,7 +297,7 @@ describe("TopicDetailsSchema", () => {
 
         expect(promotionBanner).toBeVisible();
         expect(promotionBanner.textContent).toContain(
-          "There is an open schema request for topic-name."
+          "topic-name has a pending request."
         );
       });
 
@@ -308,7 +308,7 @@ describe("TopicDetailsSchema", () => {
       });
 
       it("shows a link to see open schema requests", () => {
-        const link = screen.getByRole("link", { name: "See the request" });
+        const link = screen.getByRole("link", { name: "View request" });
 
         expect(link).toBeVisible();
       });

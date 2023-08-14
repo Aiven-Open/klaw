@@ -82,7 +82,7 @@ describe("TopicPromotionBanner", () => {
     });
 
     const link = screen.getByRole("link", {
-      name: "See the request",
+      name: "View request",
     });
 
     expect(link).toBeVisible();
@@ -98,7 +98,7 @@ describe("TopicPromotionBanner", () => {
     });
 
     const link = screen.getByRole("link", {
-      name: "See the request",
+      name: "View request",
     });
 
     expect(link).toBeVisible();

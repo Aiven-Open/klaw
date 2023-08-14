@@ -13,6 +13,7 @@ const testProps = {
   topicName: TOPIC_NAME,
   hasOpenClaimRequest: false,
   hasOpenRequest: false,
+  topicOwner: "teamname",
 };
 
 describe("TopicClaimBanner", () => {
@@ -21,7 +22,7 @@ describe("TopicClaimBanner", () => {
   it("renders correct elements", () => {
     render(<TopicClaimBanner {...testProps} />);
     const description = screen.getByText(
-      "Your team is not the owner of this topic. Click below to create a claim request for this topic."
+      `This topic is currently owned by ${testProps.topicOwner}. Select "Claim topic" to request ownership.`
     );
 
     const button = screen.getByRole("button", { name: "Claim topic" });
@@ -66,9 +67,9 @@ describe("TopicClaimBanner", () => {
       { memoryRouter: true }
     );
     const description = screen.getByText(
-      `There is already an open claim request for ${TOPIC_NAME}.`
+      `A claim request for ${TOPIC_NAME} is already in progress.`
     );
-    const link = screen.getByRole("link", { name: "See the request" });
+    const link = screen.getByRole("link", { name: "View request" });
 
     expect(description).toBeVisible();
     expect(link).toBeVisible();
@@ -81,7 +82,7 @@ describe("TopicClaimBanner", () => {
   it("renders correct state when there is already a request opened by the owners of the topic", async () => {
     render(<TopicClaimBanner {...testProps} hasOpenRequest={true} />);
     const description = screen.getByText(
-      `There is an open request for ${TOPIC_NAME} by the owners of this topic. Your team cannot claim ownership at this time.`
+      `${TOPIC_NAME} has pending requests. Your team cannot claim ownership at this time.`
     );
 
     expect(description).toBeVisible();
