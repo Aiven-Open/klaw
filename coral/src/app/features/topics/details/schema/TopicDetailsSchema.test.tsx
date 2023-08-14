@@ -25,6 +25,7 @@ const testTopicSchemas: TopicSchemaOverview = {
   txnAclsExists: false,
   topicExists: true,
   schemaExists: true,
+  createSchemaAllowed: true,
   allSchemaVersions: [3, 2, 1],
   latestVersion: 3,
   schemaPromotionDetails: {
@@ -45,7 +46,6 @@ const testTopicSchemas: TopicSchemaOverview = {
     showNext: true,
     showPrev: false,
     latest: true,
-    promoteOnly: false,
   },
 };
 
@@ -54,6 +54,7 @@ const noPromotion_testTopicSchemas = {
   schemaExists: true,
   prefixAclsExists: false,
   txnAclsExists: false,
+  createSchemaAllowed: false,
   allSchemaVersions: [3, 2, 1],
   latestVersion: 3,
   schemaPromotionDetails: {
@@ -71,7 +72,6 @@ const noPromotion_testTopicSchemas = {
     showNext: true,
     showPrev: false,
     latest: true,
-    promoteOnly: false,
   },
 };
 
@@ -297,7 +297,7 @@ describe("TopicDetailsSchema", () => {
 
         expect(promotionBanner).toBeVisible();
         expect(promotionBanner.textContent).toContain(
-          "There is an open schema request for topic-name."
+          "topic-name has a pending request."
         );
       });
 
@@ -308,7 +308,7 @@ describe("TopicDetailsSchema", () => {
       });
 
       it("shows a link to see open schema requests", () => {
-        const link = screen.getByRole("link", { name: "See the request" });
+        const link = screen.getByRole("link", { name: "View request" });
 
         expect(link).toBeVisible();
       });

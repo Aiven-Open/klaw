@@ -34,6 +34,7 @@ const testTopicOverview: TopicOverview = {
   prefixAclsExists: false,
   schemaExists: false,
   txnAclsExists: false,
+  createSchemaAllowed: false,
   topicPromotionDetails: { status: "NO_PROMOTION" },
   topicIdForDocumentation: 99999,
   topicInfo: {

@@ -205,7 +205,8 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
           />
           <Textarea
             name={"remarks"}
-            labelText={"Enter a message for approval"}
+            labelText={"Message for approval"}
+            placeholder="Comments about this request for the approver."
           />
           <Box display={"flex"} colGap={"l1"} marginTop={"3"}>
             <SubmitButton>Submit request</SubmitButton>

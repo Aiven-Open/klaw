@@ -3,8 +3,8 @@ import { Textarea } from "src/app/components/Form";
 const RemarksField = () => (
   <Textarea
     name="remarks"
-    labelText="Remarks"
-    placeholder="Comments about this request."
+    labelText="Message for approval"
+    placeholder="Comments about this request for the approver."
   />
 );
 

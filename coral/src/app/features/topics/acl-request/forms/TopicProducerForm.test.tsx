@@ -173,8 +173,10 @@ describe("<TopicProducerForm />", () => {
       expect(hiddenPrincipalsField).toBeNull();
     });
 
-    it("renders RemarksField", () => {
-      const remarksField = screen.getByRole("textbox", { name: "Remarks" });
+    it("renders RemarksField to enter message for approval", () => {
+      const remarksField = screen.getByRole("textbox", {
+        name: "Message for approval",
+      });
 
       expect(remarksField).toBeVisible();
       expect(remarksField).toBeEnabled();
@@ -310,8 +312,10 @@ describe("<TopicProducerForm />", () => {
       expect(serviceAccountsField).toBeEnabled();
     });
 
-    it("renders RemarksField", () => {
-      const remarksField = screen.getByRole("textbox", { name: "Remarks" });
+    it("renders RemarksField to enter message for approval", () => {
+      const remarksField = screen.getByRole("textbox", {
+        name: "Message for approval",
+      });
 
       expect(remarksField).toBeVisible();
       expect(remarksField).toBeEnabled();
@@ -439,8 +443,10 @@ describe("<TopicProducerForm />", () => {
       expect(hiddenPrincipalsField).toBeNull();
     });
 
-    it("renders RemarksField", () => {
-      const remarksField = screen.getByRole("textbox", { name: "Remarks" });
+    it("renders RemarksField to enter message for approval", () => {
+      const remarksField = screen.getByRole("textbox", {
+        name: "Message for approval",
+      });
 
       expect(remarksField).toBeVisible();
       expect(remarksField).toBeEnabled();
@@ -590,8 +596,10 @@ describe("<TopicProducerForm isSubscription />", () => {
       expect(hiddenPrincipalsField).toBeNull();
     });
 
-    it("renders RemarksField", () => {
-      const remarksField = screen.getByRole("textbox", { name: "Remarks" });
+    it("renders RemarksField to enter message for approval", () => {
+      const remarksField = screen.getByRole("textbox", {
+        name: "Message for approval",
+      });
 
       expect(remarksField).toBeVisible();
       expect(remarksField).toBeEnabled();
@@ -729,8 +737,10 @@ describe("<TopicProducerForm isSubscription />", () => {
       expect(serviceAccountsField).toBeEnabled();
     });
 
-    it("renders RemarksField", () => {
-      const remarksField = screen.getByRole("textbox", { name: "Remarks" });
+    it("renders RemarksField to enter message for approval", () => {
+      const remarksField = screen.getByRole("textbox", {
+        name: "Message for approval",
+      });
 
       expect(remarksField).toBeVisible();
       expect(remarksField).toBeEnabled();
@@ -863,8 +873,10 @@ describe("<TopicProducerForm isSubscription />", () => {
       expect(hiddenPrincipalsField).toBeNull();
     });
 
-    it("renders RemarksField", () => {
-      const remarksField = screen.getByRole("textbox", { name: "Remarks" });
+    it("renders RemarksField to enter message for approval", () => {
+      const remarksField = screen.getByRole("textbox", {
+        name: "Message for approval",
+      });
 
       expect(remarksField).toBeVisible();
       expect(remarksField).toBeEnabled();

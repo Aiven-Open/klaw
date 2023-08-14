@@ -52,6 +52,7 @@ const testTopicOverview: TopicOverview = {
   prefixAclsExists: false,
   txnAclsExists: false,
   schemaExists: false,
+  createSchemaAllowed: false,
   topicInfo: testTopicInfo,
   aclInfoList: [],
   topicHistoryList: [],

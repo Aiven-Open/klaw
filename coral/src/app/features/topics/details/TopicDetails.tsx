@@ -162,6 +162,7 @@ function TopicDetails(props: TopicOverviewProps) {
             <TopicClaimBanner
               topicName={topicName}
               hasOpenClaimRequest={topicData?.topicInfo.hasOpenClaimRequest}
+              topicOwner={topicData.topicInfo.teamname}
               hasOpenRequest={topicData?.topicInfo.hasOpenRequest}
               setShowClaimModal={setShowClaimModal}
               isError={createClaimTopicRequestIsError}

@@ -335,6 +335,12 @@ public class TopicOverviewService extends BaseOverviewService {
           topicOverview.setSchemaExists(
               commonUtilsService.existsSchemaForTopic(topicNameSearch, environmentId, tenantId));
         }
+        Env env = commonUtilsService.getEnvDetails(environmentId, tenantId);
+        if (env != null && env.getAssociatedEnv() != null) {
+          topicOverview.setCreateSchemaAllowed(
+              commonUtilsService.isCreateNewSchemaAllowed(
+                  env.getAssociatedEnv().getId(), tenantId));
+        }
       } else {
         PromotionStatus promotionStatus = new PromotionStatus();
         promotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);

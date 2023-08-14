@@ -50,6 +50,7 @@ const testTopicOverview: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
+  createSchemaAllowed: false,
   topicInfo: {
     topicName: testTopicName,
     noOfPartitions: 1,
@@ -148,6 +149,7 @@ const testTopicSchemas: TopicSchemaOverview = {
   txnAclsExists: false,
   allSchemaVersions: [1],
   latestVersion: 1,
+  createSchemaAllowed: false,
   schemaPromotionDetails: {
     status: "SUCCESS",
     sourceEnv: "3",
@@ -166,7 +168,6 @@ const testTopicSchemas: TopicSchemaOverview = {
     showNext: false,
     showPrev: false,
     latest: true,
-    promoteOnly: false,
   },
 };
 
@@ -435,7 +436,7 @@ describe("TopicDetails", () => {
 
       const description = await waitFor(() =>
         screen.getByText(
-          "Your team is not the owner of this topic. Click below to create a claim request for this topic."
+          `This topic is currently owned by ${testTopicOverview.topicInfo.teamname}. Select "Claim topic" to request ownership.`
         )
       );
       const button = await waitFor(() =>

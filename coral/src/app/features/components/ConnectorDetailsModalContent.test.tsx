@@ -93,7 +93,7 @@ describe("ConnectorRequestDetailsModalContent", () => {
     });
 
     it("shows a message to approver", () => {
-      const term = findTerm("Message for the approver");
+      const term = findTerm("Message for approval");
       const definition = findDefinition(term);
 
       expect(term).toBeVisible();

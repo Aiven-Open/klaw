@@ -6,6 +6,7 @@ const mockUseTopicDetailsDataWithAcl: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
+  createSchemaAllowed: false,
   topicInfo: {
     topicName: "aivendemotopic",
     noOfPartitions: 1,
@@ -74,6 +75,7 @@ const mockUseTopicDetailsDataWithoutAcl: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
+  createSchemaAllowed: false,
   topicInfo: {
     topicName: "aivendemotopic",
     noOfPartitions: 1,
