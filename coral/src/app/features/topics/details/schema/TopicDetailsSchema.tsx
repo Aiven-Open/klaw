@@ -32,7 +32,7 @@ import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schem
 
 //@ TODO change to api response value
 // eslint-disable-next-line react/prop-types
-function TopicDetailsSchema({ createSchemaAllowed = true }) {
+function TopicDetailsSchema() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
@@ -43,6 +43,7 @@ function TopicDetailsSchema({ createSchemaAllowed = true }) {
       latestVersion,
       schemaDetailsPerEnv,
       schemaPromotionDetails,
+      createSchemaAllowed,
     },
     topicSchemasIsRefetching,
     setSchemaVersion,

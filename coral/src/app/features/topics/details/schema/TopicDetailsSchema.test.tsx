@@ -26,6 +26,7 @@ jest.mock("react-router-dom", () => ({
 
 const testTopicName = "topic-name";
 const testEnvironmentId = 1;
+
 const testTopicSchemas: TopicSchemaOverview = {
   prefixAclsExists: false,
   txnAclsExists: false,
@@ -55,23 +56,24 @@ const testTopicSchemas: TopicSchemaOverview = {
   },
 };
 
-const noSchema_testTopicSchemas = {
+const noSchema_testTopicSchemas: TopicSchemaOverview = {
   topicExists: true,
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
+  createSchemaAllowed: true,
   allSchemaVersions: [],
   schemaPromotionDetails: {
     status: "NO_PROMOTION",
   },
 };
 
-const noPromotion_testTopicSchemas = {
+const noPromotion_testTopicSchemas: TopicSchemaOverview = {
   topicExists: true,
   schemaExists: true,
   prefixAclsExists: false,
   txnAclsExists: false,
-  createSchemaAllowed: false,
+  createSchemaAllowed: true,
   allSchemaVersions: [3, 2, 1],
   latestVersion: 3,
   schemaPromotionDetails: {
@@ -213,13 +215,13 @@ describe("TopicDetailsSchema", () => {
           topicSchemasIsRefetching: false,
           topicName: testTopicName,
           environmentId: testEnvironmentId,
-          topicSchemas: testTopicSchemas,
+          topicSchemas: { ...testTopicSchemas, createSchemaAllowed: false },
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: true } },
         });
         customRender(
           <AquariumContext>
-            <TopicDetailsSchema createSchemaAllowed={false} />
+            <TopicDetailsSchema />
           </AquariumContext>,
           {
             memoryRouter: true,
@@ -336,13 +338,16 @@ describe("TopicDetailsSchema", () => {
           topicSchemasIsRefetching: false,
           topicName: testTopicName,
           environmentId: testEnvironmentId,
-          topicSchemas: noSchema_testTopicSchemas,
+          topicSchemas: {
+            ...noSchema_testTopicSchemas,
+            createSchemaAllowed: false,
+          },
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: true } },
         });
         customRender(
           <AquariumContext>
-            <TopicDetailsSchema createSchemaAllowed={false} />
+            <TopicDetailsSchema />
           </AquariumContext>,
           {
             memoryRouter: true,
