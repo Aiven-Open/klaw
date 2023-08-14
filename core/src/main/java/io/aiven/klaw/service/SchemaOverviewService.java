@@ -7,7 +7,6 @@ import io.aiven.klaw.dao.EnvTag;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.model.KwTenantConfigModel;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
@@ -204,6 +203,8 @@ public class SchemaOverviewService extends BaseOverviewService {
         log.debug("SchemaDetails {}", schemaDetailsPerEnv);
         schemaOverview.setSchemaDetailsPerEnv(schemaDetailsPerEnv);
       }
+      schemaOverview.setCreateSchemaAllowed(
+          commonUtilsService.isCreateNewSchemaAllowed(schemaEnv.getId(), tenantId));
     }
   }
 
@@ -215,12 +216,6 @@ public class SchemaOverviewService extends BaseOverviewService {
       Env schemaEnv) {
     updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
     schemaDetailsPerEnv.setVersion(latestSchemaVersion);
-
-    KwTenantConfigModel tenantModel = manageDatabase.getTenantConfig().get(tenantId);
-    List<String> reqSchemaEnvs =
-        tenantModel == null ? new ArrayList<>() : tenantModel.getRequestSchemaEnvironmentsList();
-
-    schemaDetailsPerEnv.setPromoteOnly(!reqSchemaEnvs.contains(schemaEnv.getId()));
   }
 
   private static void updateIdAndCompatibility(
@@ -359,7 +354,7 @@ public class SchemaOverviewService extends BaseOverviewService {
                     .existsSchemaRequest(
                         topicName,
                         RequestStatus.CREATED.value,
-                        RequestOperationType.CREATE.value,
+                        RequestOperationType.PROMOTE.value,
                         s,
                         tenantId))
         .isPresent();

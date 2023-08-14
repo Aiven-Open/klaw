@@ -972,13 +972,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public int getAllConnectorComponentsCountForEnv(String env, int tenantId) {
-    return jdbcSelectHelper.findAllConnectorComponentsCountForEnv(env, tenantId);
+  public boolean existsConnectorComponentsForEnv(String env, int tenantId) {
+    return jdbcSelectHelper.existsConnectorComponentsForEnv(env, tenantId);
   }
 
   @Override
-  public int getAllSchemaComponentsCountForEnv(String env, int tenantId) {
-    return jdbcSelectHelper.findAllSchemaComponentsCountForEnv(env, tenantId);
+  public boolean existsSchemaComponentsForEnv(String env, int tenantId) {
+    return jdbcSelectHelper.existsSchemaComponentsForEnv(env, tenantId);
   }
 
   @Override

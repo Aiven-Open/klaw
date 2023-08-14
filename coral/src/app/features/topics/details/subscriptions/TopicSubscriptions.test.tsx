@@ -70,6 +70,7 @@ const testTopicOverview: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
+  createSchemaAllowed: false,
   topicInfo: {
     noOfPartitions: 1,
     noOfReplicas: "1",

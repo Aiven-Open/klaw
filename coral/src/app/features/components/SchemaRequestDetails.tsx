@@ -59,7 +59,7 @@ function SchemaRequestDetails(props: DetailsModalContentProps) {
 
       <GridItem colSpan={"span-2"}>
         <Flexbox direction={"column"}>
-          <Label>Message for the approver</Label>
+          <Label>Message for approval</Label>
           <dd>{request.remarks || <i>No message</i>}</dd>
         </Flexbox>
       </GridItem>

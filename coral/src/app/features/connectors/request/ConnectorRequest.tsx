@@ -181,6 +181,7 @@ function ConnectorRequest() {
             <Textarea<ConnectorRequestFormSchema>
               name={"remarks"}
               labelText={"Message for approval"}
+              placeholder="Comments about this request for the approver."
             />
           </Grid>
 

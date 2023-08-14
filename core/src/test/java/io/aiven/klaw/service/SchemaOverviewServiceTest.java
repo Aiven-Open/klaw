@@ -128,7 +128,7 @@ public class SchemaOverviewServiceTest {
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
         .isEqualTo(PromotionStatusType.SUCCESS);
-    assertThat(returnedValue.getSchemaDetailsPerEnv().isPromoteOnly()).isFalse();
+    assertThat(returnedValue.isCreateSchemaAllowed()).isTrue();
     assertThat(returnedValue.getSchemaPromotionDetails().getSourceEnv()).isEqualTo("1");
     assertThat(returnedValue.getSchemaPromotionDetails().getTargetEnv()).isEqualTo("test-2");
   }
@@ -256,7 +256,7 @@ public class SchemaOverviewServiceTest {
     when(handleDbRequests.existsSchemaRequest(
             eq(TESTTOPIC),
             eq(RequestStatus.CREATED.value),
-            eq(RequestOperationType.CREATE.value),
+            eq(RequestOperationType.PROMOTE.value),
             eq("4"),
             eq(101)))
         .thenReturn(true);
@@ -292,7 +292,7 @@ public class SchemaOverviewServiceTest {
     when(handleDbRequests.existsSchemaRequest(
             eq(TESTTOPIC),
             eq(RequestStatus.CREATED.value),
-            eq(RequestOperationType.CREATE.value),
+            eq(RequestOperationType.PROMOTE.value),
             eq("4"),
             eq(101)))
         .thenReturn(true);
@@ -330,7 +330,7 @@ public class SchemaOverviewServiceTest {
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
         .isEqualTo(PromotionStatusType.NO_PROMOTION);
-    assertThat(returnedValue.getSchemaDetailsPerEnv().isPromoteOnly()).isTrue();
+    assertThat(returnedValue.isCreateSchemaAllowed()).isFalse();
   }
 
   private TreeMap<Integer, Map<String, Object>> getAvroSchemas(int numOfEntries) {
@@ -487,13 +487,8 @@ public class SchemaOverviewServiceTest {
     when(handleDbRequests.getEnvDetails("2", 101)).thenReturn(kafkaEnv2);
     when(handleDbRequests.getEnvDetails("3", 101)).thenReturn(schemaEnv1);
     when(handleDbRequests.getEnvDetails("4", 101)).thenReturn(schemaEnv2);
-    when(manageDatabase.getTenantConfig())
-        .thenReturn(
-            new HashMap<>() {
-              {
-                put(101, model);
-              }
-            });
+    when(commonUtilsService.isCreateNewSchemaAllowed(eq("3"), eq(101))).thenReturn(true);
+    when(commonUtilsService.isCreateNewSchemaAllowed(eq("4"), eq(101))).thenReturn(false);
   }
 
   private void stubKafkaPromotion(String testtopic, int numberOfEnvs) throws Exception {

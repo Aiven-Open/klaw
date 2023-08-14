@@ -1,7 +1,7 @@
 lockfileVersion: 5.4
 
 specifiers:
-  '@aivenio/aquarium': ^1.33.0
+  '@aivenio/aquarium': ^1.35.0
   '@hookform/resolvers': ^2.9.10
   '@monaco-editor/react': ^4.5.0
   '@peculiar/webcrypto': ^1.4.3
@@ -40,6 +40,7 @@ specifiers:
   msw: ^0.47.4
   openapi-typescript: ^6.2.0
   prettier: ^3.0.0
+  prop-types: '>=15.6.0 <16.0.0'
   react: ^18.2.0
   react-dom: ^18.2.0
   react-hook-form: ^7.43.9
@@ -65,7 +66,7 @@ specifiers:
   zod: ^3.19.1
 
 dependencies:
-  '@aivenio/aquarium': 1.33.0_pvnihi4muhoy7kenlmiyxwzuqy
+  '@aivenio/aquarium': 1.35.0_es47ko4v4bx3uspfmtojbkulci
   '@hookform/resolvers': 2.9.10_react-hook-form@7.43.9
   '@monaco-editor/react': 4.5.0_bp43pgihi2cxclx2bm2cvm6q7a
   '@tanstack/react-query': 4.29.5_biqbaboplfbrettd7655fr4n2y
@@ -121,6 +122,7 @@ devDependencies:
   msw: 0.47.4_typescript@5.0.4
   openapi-typescript: 6.2.0
   prettier: 3.0.0
+  prop-types: 15.8.1
   react-test-renderer: 18.2.0_react@18.2.0
   rollup-plugin-visualizer: 5.9.0
   ts-jest: 29.1.0_tobmchb5uviuq5lwsinkw5fvje
@@ -136,8 +138,8 @@ packages:
     resolution: {integrity: sha512-+u76oB43nOHrF4DDWRLWDCtci7f3QJoEBigemIdIeTi1ODqjx6Tad9NCVnPRwewWlKkVab5PlK8DCtPTyX7S8g==}
     dev: true
 
-  /@aivenio/aquarium/1.33.0_pvnihi4muhoy7kenlmiyxwzuqy:
-    resolution: {integrity: sha512-+Xc5tfq6xv870bJh/x7/Qe4NfzTgYBCJI3Ji5vJSIqOG+RQZImW64r4+J61t+toF4upLhHfIX8TQInoYnbbHDw==}
+  /@aivenio/aquarium/1.35.0_es47ko4v4bx3uspfmtojbkulci:
+    resolution: {integrity: sha512-w9RkRC8xyDMJzLgtMml/qqIUmlJVbC5H15KAn0pdNpGA4Y49cDmmX47SOXV1OwhIUfr4zR05bbXqFaPXCd1R0w==}
     peerDependencies:
       lodash: 4.x
       react: 16.x || 17.x || 18.x
@@ -154,7 +156,7 @@ packages:
       react-aria: 3.26.0_biqbaboplfbrettd7655fr4n2y
       react-dom: 18.2.0_react@18.2.0
       react-stately: 3.24.0_react@18.2.0
-      recharts: 2.6.2_biqbaboplfbrettd7655fr4n2y
+      recharts: 2.6.2_v2m5e27vhdewzwhryxwfaorcca
     transitivePeerDependencies:
       - prop-types
     dev: false
@@ -6429,6 +6431,7 @@ packages:
 
   /loose-envify/1.4.0:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
+    hasBin: true
     dependencies:
       js-tokens: 4.0.0
 
@@ -7453,7 +7456,7 @@ packages:
       react-is: 18.2.0
     dev: true
 
-  /react-smooth/2.0.3_biqbaboplfbrettd7655fr4n2y:
+  /react-smooth/2.0.3_v2m5e27vhdewzwhryxwfaorcca:
     resolution: {integrity: sha512-yl4y3XiMorss7ayF5QnBiSprig0+qFHui8uh7Hgg46QX5O+aRMRKlfGGNGLHno35JkQSvSYY8eCWkBfHfrSHfg==}
     peerDependencies:
       prop-types: ^15.6.0
@@ -7461,6 +7464,7 @@ packages:
       react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     dependencies:
       fast-equals: 5.0.1
+      prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-transition-group: 2.9.0_biqbaboplfbrettd7655fr4n2y
@@ -7562,7 +7566,7 @@ packages:
       decimal.js-light: 2.5.1
     dev: false
 
-  /recharts/2.6.2_biqbaboplfbrettd7655fr4n2y:
+  /recharts/2.6.2_v2m5e27vhdewzwhryxwfaorcca:
     resolution: {integrity: sha512-dVhNfgI21LlF+4AesO3mj+i+9YdAAjoGaDWIctUgH/G2iy14YVtb/DSUeic77xr19rbKCiq+pQGfeg2kJQDHig==}
     engines: {node: '>=12'}
     peerDependencies:
@@ -7573,11 +7577,12 @@ packages:
       classnames: 2.3.2
       eventemitter3: 4.0.7
       lodash: 4.17.21
+      prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-is: 16.13.1
       react-resize-detector: 8.1.0_biqbaboplfbrettd7655fr4n2y
-      react-smooth: 2.0.3_biqbaboplfbrettd7655fr4n2y
+      react-smooth: 2.0.3_v2m5e27vhdewzwhryxwfaorcca
       recharts-scale: 0.4.5
       reduce-css-calc: 2.1.8
       victory-vendor: 36.6.10

@@ -9,4 +9,6 @@ public class ResourceOverviewAttributes {
   @NotNull boolean schemaExists;
   @NotNull boolean prefixAclsExists;
   @NotNull boolean txnAclsExists;
+  // Indicates if this schema env is restricted to only allow new schemas through promotion.
+  @NotNull private boolean createSchemaAllowed;
 }
