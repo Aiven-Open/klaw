@@ -47,13 +47,12 @@ describe("RequestResourcesTabs", () => {
         replace: true,
       });
     });
-    // Tab is disabled because Connectors are not yet implemented in coral
-    // @TODO uncomment test when Connectors are implemented
-    // it('navigates to correct URL when "Connectors" tab is clicked', async () => {
-    //   await user.click(screen.getByRole("tab", { name: "Connectors" }));
-    //   expect(mockedNavigate).toHaveBeenCalledWith("/requests/connectors", {
-    //     replace: true,
-    //   });
-    // });
+
+    it('navigates to correct URL when "Connectors" tab is clicked', async () => {
+      await user.click(screen.getByRole("tab", { name: "Connector requests" }));
+      expect(mockedNavigate).toHaveBeenCalledWith("/requests/connectors", {
+        replace: true,
+      });
+    });
   });
 });

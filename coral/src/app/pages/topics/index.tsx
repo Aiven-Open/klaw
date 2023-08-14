@@ -10,7 +10,7 @@ const Topics = () => {
     <>
       <PreviewBanner linkTarget={"/browseTopics"} />
       <PageHeader
-        title={"All topics"}
+        title={"Topics"}
         primaryAction={{
           text: "Request new topic",
           onClick: () => navigate("/topics/request"),
