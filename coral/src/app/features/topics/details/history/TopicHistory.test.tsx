@@ -30,6 +30,7 @@ const testTopicOverview: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
+  createSchemaAllowed: false,
   topicInfo: {
     noOfPartitions: 1,
     noOfReplicas: "1",
@@ -72,6 +73,7 @@ const testTopicSchemas: TopicSchemaOverview = {
   txnAclsExists: false,
   allSchemaVersions: [1],
   latestVersion: 1,
+  createSchemaAllowed: false,
   schemaPromotionDetails: {
     status: "SUCCESS",
     sourceEnv: "3",
@@ -90,7 +92,6 @@ const testTopicSchemas: TopicSchemaOverview = {
     showNext: false,
     showPrev: false,
     latest: true,
-    promoteOnly: false,
   },
 };
 
