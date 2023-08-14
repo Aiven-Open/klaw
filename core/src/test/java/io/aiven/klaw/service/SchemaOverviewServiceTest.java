@@ -256,7 +256,7 @@ public class SchemaOverviewServiceTest {
     when(handleDbRequests.existsSchemaRequest(
             eq(TESTTOPIC),
             eq(RequestStatus.CREATED.value),
-            eq(RequestOperationType.CREATE.value),
+            eq(RequestOperationType.PROMOTE.value),
             eq("4"),
             eq(101)))
         .thenReturn(true);
@@ -292,7 +292,7 @@ public class SchemaOverviewServiceTest {
     when(handleDbRequests.existsSchemaRequest(
             eq(TESTTOPIC),
             eq(RequestStatus.CREATED.value),
-            eq(RequestOperationType.CREATE.value),
+            eq(RequestOperationType.PROMOTE.value),
             eq("4"),
             eq(101)))
         .thenReturn(true);

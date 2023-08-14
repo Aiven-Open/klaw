@@ -25,10 +25,7 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
 
   List<Acl> findAllByTenantId(int tenantId);
 
-  @Query(
-      value = "select count(*) from kwacls where env = :envId and tenantid = :tenantId",
-      nativeQuery = true)
-  List<Object[]> findAllAclsCountForEnv(
+  boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
