@@ -157,11 +157,7 @@ function SchemaRequests() {
           cancel={closeModal}
         />
       )}
-      {errorQuickActions && (
-        <div role="alert">
-          <Alert type="error">{errorQuickActions}</Alert>
-        </div>
-      )}
+      {errorQuickActions && <Alert type="error">{errorQuickActions}</Alert>}
       <TableLayout
         filters={[
           <EnvironmentFilter

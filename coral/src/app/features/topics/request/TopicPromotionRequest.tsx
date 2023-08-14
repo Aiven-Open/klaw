@@ -187,7 +187,7 @@ function TopicPromotionRequest() {
         </Dialog>
       )}
       {promoteIsError && (
-        <Box marginBottom={"l1"} role="alert">
+        <Box marginBottom={"l1"}>
           <Alert type="error">{parseErrorMsg(promoteError)}</Alert>
         </Box>
       )}

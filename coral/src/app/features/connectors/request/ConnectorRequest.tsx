@@ -75,7 +75,7 @@ function ConnectorRequest() {
     <>
       <Box>
         {connectorRequestMutation.isError && (
-          <Box marginBottom={"l1"} role="alert">
+          <Box marginBottom={"l1"}>
             <Alert type="error">
               {parseErrorMsg(connectorRequestMutation.error)}
             </Alert>

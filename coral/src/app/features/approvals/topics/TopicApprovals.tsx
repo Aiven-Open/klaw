@@ -272,9 +272,7 @@ function TopicApprovals() {
         />
       )}
       {errorQuickActions !== "" && (
-        <div role="alert">
-          <Alert type="error">{errorQuickActions}</Alert>
-        </div>
+        <Alert type="error">{errorQuickActions}</Alert>
       )}
       <TableLayout
         filters={[

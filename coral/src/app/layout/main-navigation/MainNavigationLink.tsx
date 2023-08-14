@@ -1,8 +1,8 @@
-import { Box, Icon } from "@aivenio/aquarium";
+import { Box, Icon, Link } from "@aivenio/aquarium";
 import data from "@aivenio/aquarium/dist/src/icons/console";
 import classes from "src/app/layout/main-navigation/MainNavigationLink.module.css";
 import { Routes } from "src/app/router_utils";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 function LinkContent({
   linkText,
@@ -52,13 +52,13 @@ function MainNavigationLink(props: MainNavigationLinkProps) {
       paddingBottom={"3"}
     >
       {isRouterLink() ? (
-        <Link to={to} aria-current={active && "page"}>
+        <RouterLink to={to} aria-current={active && "page"}>
+          <LinkContent icon={icon} linkText={linkText} />
+        </RouterLink>
+      ) : (
+        <Link href={to} aria-current={active && "page"}>
           <LinkContent icon={icon} linkText={linkText} />
         </Link>
-      ) : (
-        <a href={to} aria-current={active && "page"}>
-          <LinkContent icon={icon} linkText={linkText} />
-        </a>
       )}
     </Box>
   );

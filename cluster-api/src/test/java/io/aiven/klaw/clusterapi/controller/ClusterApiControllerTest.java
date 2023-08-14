@@ -22,8 +22,6 @@ import io.aiven.klaw.clusterapi.services.AivenApiService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaAclService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaTopicService;
 import io.aiven.klaw.clusterapi.services.ConfluentCloudApiService;
-import io.aiven.klaw.clusterapi.services.MonitoringService;
-import io.aiven.klaw.clusterapi.services.SchemaService;
 import io.aiven.klaw.clusterapi.services.UtilComponentsService;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -44,8 +42,6 @@ public class ClusterApiControllerTest {
   @MockBean private UtilComponentsService utilComponentsService;
   @MockBean private ApacheKafkaAclService apacheKafkaAclService;
   @MockBean private ApacheKafkaTopicService apacheKafkaTopicService;
-  @MockBean private SchemaService schemaService;
-  @MockBean private MonitoringService monitoringService;
   @MockBean private AivenApiService aivenApiService;
 
   @MockBean private ConfluentCloudApiService confluentCloudApiService;
@@ -62,7 +58,6 @@ public class ClusterApiControllerTest {
             utilComponentsService,
             apacheKafkaAclService,
             apacheKafkaTopicService,
-            monitoringService,
             aivenApiService,
             confluentCloudApiService);
     mvc = MockMvcBuilders.standaloneSetup(clusterApiController).dispatchOptions(true).build();

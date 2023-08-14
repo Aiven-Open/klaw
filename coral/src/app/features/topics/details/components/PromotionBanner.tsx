@@ -85,11 +85,9 @@ const PromotionBanner = ({
     <Banner image={illustration} layout="vertical" title={""}>
       <Spacing gap={"l1"}>
         {hasError && (
-          <div role="alert">
-            <Alert type="error">
-              {errorMessage.length > 0 ? errorMessage : "Unexpected error."}
-            </Alert>
-          </div>
+          <Alert type="error">
+            {errorMessage.length > 0 ? errorMessage : "Unexpected error."}
+          </Alert>
         )}
 
         <Box component={"p"} marginBottom={"l1"}>
