@@ -143,7 +143,7 @@ function TopicSchemaRequest(props: TopicSchemaRequestProps) {
       )}
       <Box>
         {schemaRequestMutation.isError && (
-          <Box marginBottom={"l1"} role="alert">
+          <Box marginBottom={"l1"}>
             <Alert type="error">
               {parseErrorMsg(schemaRequestMutation.error)}
             </Alert>

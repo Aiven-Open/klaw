@@ -107,7 +107,7 @@ function TopicRequest() {
       )}
       <Box>
         {isError && (
-          <Box marginBottom={"l1"} role="alert">
+          <Box marginBottom={"l1"}>
             <Alert type="error">{parseErrorMsg(error)}</Alert>
           </Box>
         )}

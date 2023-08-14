@@ -199,7 +199,7 @@ function TopicEditRequest() {
         </Dialog>
       )}
       {editIsError && (
-        <Box marginBottom={"l1"} role="alert">
+        <Box marginBottom={"l1"}>
           <Alert type="error">{parseErrorMsg(editError)}</Alert>
         </Box>
       )}

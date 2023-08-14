@@ -90,7 +90,7 @@ function TopicOverviewResourcesTabs({
   const renderTabContent = () => {
     if (isError) {
       return (
-        <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
+        <Box marginBottom={"l1"} marginTop={"l2"}>
           <Alert type="error">
             There was an error trying to load the topic details:{" "}
             {parseErrorMsg(error)}.
@@ -112,7 +112,7 @@ function TopicOverviewResourcesTabs({
 
     if (!topicOverview?.topicExists) {
       return (
-        <Box marginBottom={"l1"} marginTop={"l2"} role="alert">
+        <Box marginBottom={"l1"} marginTop={"l2"}>
           <Alert type="warning">Topic {topicName} does not exist.</Alert>
         </Box>
       );

@@ -68,7 +68,7 @@ function ConnectorDocumentation() {
         <PageHeader title={"Edit documentation"} />
         <>
           {isError && (
-            <Box marginBottom={"l1"} role="alert">
+            <Box marginBottom={"l1"}>
               <Alert type="error">
                 The documentation could not be saved, there was an error: <br />
                 {parseErrorMsg(error)}
@@ -104,12 +104,10 @@ function ConnectorDocumentation() {
     return (
       <>
         <PageHeader title={"Documentation"} />
-        <Box role="alert">
-          <Alert type="error">
-            Something went wrong while trying to transform the documentation
-            into the right format.
-          </Alert>
-        </Box>
+        <Alert type="error">
+          Something went wrong while trying to transform the documentation into
+          the right format.
+        </Alert>
       </>
     );
   }
