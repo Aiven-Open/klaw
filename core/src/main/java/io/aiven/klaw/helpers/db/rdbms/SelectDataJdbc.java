@@ -1386,17 +1386,11 @@ public class SelectDataJdbc {
   }
 
   public RegisterUserInfo getRegistrationDetails(String registrationId, String status) {
-    List<RegisterUserInfo> registerUserInfoList;
     if ("".equals(status)) {
-      registerUserInfoList = registerInfoRepo.findAllByRegistrationId(registrationId);
+      return registerInfoRepo.findFirstByRegistrationId(registrationId);
     } else {
-      registerUserInfoList =
-          registerInfoRepo.findAllByRegistrationIdAndStatus(registrationId, status);
+      return registerInfoRepo.findFirstByRegistrationIdAndStatus(registrationId, status);
     }
-    if (registerUserInfoList.size() == 1) {
-      return registerUserInfoList.get(0);
-    }
-    return null;
   }
 
   public List<Topic> getTopicsforTeam(Integer teamId, int tenantId) {

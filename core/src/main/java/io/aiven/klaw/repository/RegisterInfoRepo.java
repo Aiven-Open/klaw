@@ -14,13 +14,13 @@ public interface RegisterInfoRepo extends CrudRepository<RegisterUserInfo, Strin
 
   List<RegisterUserInfo> findAllByTenantId(int tenantId);
 
-  List<RegisterUserInfo> findAllByRegistrationIdAndStatus(String registrationId, String status);
-
   RegisterUserInfo findFirstByUsernameAndStatus(String userId, String status);
 
   boolean existsRegisterUserInfoByUsernameAndStatus(String userId, String status);
 
-  List<RegisterUserInfo> findAllByRegistrationId(String registrationId);
+  RegisterUserInfo findFirstByRegistrationId(String registrationId);
+
+  RegisterUserInfo findFirstByRegistrationIdAndStatus(String registrationId, String status);
 
   void deleteByTenantId(int tenantId);
 }
