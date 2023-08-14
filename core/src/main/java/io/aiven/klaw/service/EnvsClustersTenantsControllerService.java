@@ -894,8 +894,7 @@ public class EnvsClustersTenantsControllerService {
         }
         break;
       case "schemaregistry":
-        if (manageDatabase.getHandleDbRequests().getAllSchemaComponentsCountForEnv(envId, tenantId)
-            > 0) {
+        if (manageDatabase.getHandleDbRequests().existsSchemaComponentsForEnv(envId, tenantId)) {
           return ApiResponse.notOk(ENV_CLUSTER_TNT_ERR_107);
         }
         break;

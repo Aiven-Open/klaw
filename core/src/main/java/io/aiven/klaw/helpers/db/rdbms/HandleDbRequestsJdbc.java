@@ -967,8 +967,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public int getAllSchemaComponentsCountForEnv(String env, int tenantId) {
-    return jdbcSelectHelper.findAllSchemaComponentsCountForEnv(env, tenantId);
+  public boolean existsSchemaComponentsForEnv(String env, int tenantId) {
+    return jdbcSelectHelper.existsSchemaComponentsForEnv(env, tenantId);
   }
 
   @Override

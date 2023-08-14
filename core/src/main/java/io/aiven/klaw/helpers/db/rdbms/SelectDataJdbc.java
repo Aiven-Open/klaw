@@ -1454,10 +1454,17 @@ public class SelectDataJdbc {
             .intValue();
   }
 
-  public int findAllSchemaComponentsCountForEnv(String env, int tenantId) {
-    return ((Long) schemaRequestRepo.findAllSchemaRequestsCountForEnv(env, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) messageSchemaRepo.findAllSchemaCountForEnv(env, tenantId).get(0)[0]).intValue();
+  public boolean existsSchemaComponentsForEnv(String env, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () -> schemaRequestRepo.existsSchemaRequestByEnvironmentAndTenantId(env, tenantId),
+            () -> messageSchemaRepo.existsMessageSchemaByEnvironmentAndTenantId(env, tenantId));
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean existsComponentsCountForTeam(Integer teamId, int tenantId) {
