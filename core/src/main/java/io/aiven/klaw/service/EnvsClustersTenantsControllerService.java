@@ -354,10 +354,9 @@ public class EnvsClustersTenantsControllerService {
       envModelList.forEach(
           envModel -> {
             envModel.setShowDeleteEnv(
-                manageDatabase
-                        .getHandleDbRequests()
-                        .getAllKafkaComponentsCountForEnv(envModel.getId(), tenantId)
-                    <= 0);
+                !manageDatabase
+                    .getHandleDbRequests()
+                    .existsKafkaComponentsForEnv(envModel.getId(), tenantId));
           });
     }
 
@@ -878,8 +877,7 @@ public class EnvsClustersTenantsControllerService {
 
     switch (envType) {
       case "kafka":
-        if (manageDatabase.getHandleDbRequests().getAllKafkaComponentsCountForEnv(envId, tenantId)
-            > 0) {
+        if (manageDatabase.getHandleDbRequests().existsKafkaComponentsForEnv(envId, tenantId)) {
           return ApiResponse.notOk(ENV_CLUSTER_TNT_ERR_105);
         }
         break;

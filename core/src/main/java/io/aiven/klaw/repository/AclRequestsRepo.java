@@ -18,10 +18,7 @@ public interface AclRequestsRepo
   boolean existsByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
       int tenantId, String env, String requestStatus, String topicname);
 
-  @Query(
-      value = "select count(*) from kwaclrequests where env = :envId and tenantid = :tenantId",
-      nativeQuery = true)
-  List<Object[]> findAllAclRequestsCountForEnv(
+  boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(

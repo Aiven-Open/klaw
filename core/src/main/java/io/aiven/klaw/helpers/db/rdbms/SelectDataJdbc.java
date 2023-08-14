@@ -1436,13 +1436,19 @@ public class SelectDataJdbc {
     return productDetailsRepo.findById(name);
   }
 
-  public int findAllKafkaComponentsCountForEnv(String env, int tenantId) {
-    return ((Long) topicRepo.findAllTopicsCountForEnv(env, tenantId).get(0)[0]).intValue()
-        + ((Long) topicRequestsRepo.findAllTopicRequestsCountForEnv(env, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) aclRepo.findAllAclsCountForEnv(env, tenantId).get(0)[0]).intValue()
-        + ((Long) aclRequestsRepo.findAllAclRequestsCountForEnv(env, tenantId).get(0)[0])
-            .intValue();
+  public boolean existsKafkaComponentsForEnv(String env, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () -> topicRepo.existsByEnvironmentAndTenantId(env, tenantId),
+            () -> topicRequestsRepo.existsByEnvironmentAndTenantId(env, tenantId),
+            () -> aclRepo.existsByEnvironmentAndTenantId(env, tenantId),
+            () -> aclRequestsRepo.existsByEnvironmentAndTenantId(env, tenantId));
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean existsConnectorComponentsForEnv(String env, int tenantId) {

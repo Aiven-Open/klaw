@@ -957,8 +957,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public int getAllKafkaComponentsCountForEnv(String env, int tenantId) {
-    return jdbcSelectHelper.findAllKafkaComponentsCountForEnv(env, tenantId);
+  public boolean existsKafkaComponentsForEnv(String env, int tenantId) {
+    return jdbcSelectHelper.existsKafkaComponentsForEnv(env, tenantId);
   }
 
   @Override
