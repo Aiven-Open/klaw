@@ -151,7 +151,7 @@ describe("TopicDocumentation", () => {
         await user.click(addReadmeButton);
 
         const description = screen.getByText(
-          `Readme provides essential information, guidelines, and explanations about the topic, helping team members understand its purpose and usage. Edit the readme to update or expand this information as the topic evolves.`
+          `Readme provides essential information, guidelines, and explanations about the topic, helping team members understand its purpose and usage. Edit the readme to update the information as the topic evolves.`
         );
 
         expect(description).toBeVisible();
@@ -195,7 +195,7 @@ describe("TopicDocumentation", () => {
 
       it("shows a description about the readme", () => {
         const description = screen.getByText(
-          `Readme provides essential information, guidelines, and explanations about the topic, helping team members understand its purpose and usage. Edit the readme to update or expand this information as the topic evolves.`
+          `Readme provides essential information, guidelines, and explanations about the topic, helping team members understand its purpose and usage. Edit the readme to update the information as the topic evolves.`
         );
 
         expect(description).toBeVisible();

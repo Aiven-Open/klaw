@@ -141,7 +141,7 @@ describe("ConnectorDocumentation", () => {
         await user.click(addReadmeButton);
 
         const description = screen.getByText(
-          `Readme provides essential information, guidelines, and explanations about the connector, helping team members understand its purpose and usage. Edit the readme to update or expand this information as the connector evolves.`
+          `Readme provides essential information, guidelines, and explanations about the connector, helping team members understand its purpose and usage. Edit the readme to update the information as the connector evolves.`
         );
 
         expect(description).toBeVisible();
@@ -185,7 +185,7 @@ describe("ConnectorDocumentation", () => {
 
       it("shows a description about the readme", () => {
         const description = screen.getByText(
-          `Readme provides essential information, guidelines, and explanations about the connector, helping team members understand its purpose and usage. Edit the readme to update or expand this information as the connector evolves.`
+          `Readme provides essential information, guidelines, and explanations about the connector, helping team members understand its purpose and usage. Edit the readme to update the information as the connector evolves.`
         );
 
         expect(description).toBeVisible();

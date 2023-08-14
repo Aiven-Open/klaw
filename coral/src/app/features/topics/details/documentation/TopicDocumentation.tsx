@@ -75,8 +75,7 @@ function TopicDocumentation() {
         <Box component={Typography.SmallText} marginBottom={"l2"}>
           Readme provides essential information, guidelines, and explanations
           about the topic, helping team members understand its purpose and
-          usage. Edit the readme to update or expand this information as the
-          topic evolves.
+          usage. Edit the readme to update the information as the topic evolves.
         </Box>
 
         {isError && (
@@ -133,8 +132,7 @@ function TopicDocumentation() {
       <Box component={Typography.SmallText} marginBottom={"l2"}>
         Readme provides essential information, guidelines, and explanations
         about the topic, helping team members understand its purpose and usage.
-        Edit the readme to update or expand this information as the topic
-        evolves.
+        Edit the readme to update the information as the topic evolves.
       </Box>
 
       <Box paddingTop={"l2"}>

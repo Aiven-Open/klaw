@@ -76,8 +76,8 @@ function ConnectorDocumentation() {
         <Box component={Typography.SmallText} marginBottom={"l2"}>
           Readme provides essential information, guidelines, and explanations
           about the connector, helping team members understand its purpose and
-          usage. Edit the readme to update or expand this information as the
-          connector evolves.
+          usage. Edit the readme to update the information as the connector
+          evolves.
         </Box>
         <>
           {isError && (
@@ -137,8 +137,8 @@ function ConnectorDocumentation() {
       <Box component={Typography.SmallText} marginBottom={"l2"}>
         Readme provides essential information, guidelines, and explanations
         about the connector, helping team members understand its purpose and
-        usage. Edit the readme to update or expand this information as the
-        connector evolves.
+        usage. Edit the readme to update the information as the connector
+        evolves.
       </Box>
       <Box paddingTop={"l2"}>
         <DocumentationView
