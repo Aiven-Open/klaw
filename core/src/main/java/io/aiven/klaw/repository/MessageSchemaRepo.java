@@ -25,11 +25,8 @@ public interface MessageSchemaRepo extends CrudRepository<MessageSchema, Message
   List<MessageSchema> findAllByTenantIdAndTopicnameAndSchemaversionAndEnvironment(
       int tenantId, String topicName, String schemaVersion, String environmentId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwavroschemas where env = :envId and tenantid = :tenantId)",
-      nativeQuery = true)
-  boolean existsSchemaForEnv(@Param("envId") String envId, @Param("tenantId") Integer tenantId);
+  boolean existsMessageSchemaByEnvironmentAndTenantId(
+      @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
       value =

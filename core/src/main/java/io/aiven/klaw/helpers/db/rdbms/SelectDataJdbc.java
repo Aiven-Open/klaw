@@ -1457,8 +1457,8 @@ public class SelectDataJdbc {
   public boolean existsSchemaComponentsForEnv(String env, int tenantId) {
     List<Supplier<Boolean>> list =
         List.of(
-            () -> schemaRequestRepo.existsSchemaRequestsForEnv(env, tenantId),
-            () -> messageSchemaRepo.existsSchemaForEnv(env, tenantId));
+            () -> schemaRequestRepo.existsSchemaRequestByEnvironmentAndTenantId(env, tenantId),
+            () -> messageSchemaRepo.existsMessageSchemaByEnvironmentAndTenantId(env, tenantId));
     for (var elem : list) {
       if (elem.get()) {
         return true;

@@ -28,11 +28,7 @@ public interface SchemaRequestRepo
       nativeQuery = true)
   Integer getNextSchemaRequestId(@Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwschemarequests where env = :envId and tenantid = :tenantId)",
-      nativeQuery = true)
-  boolean existsSchemaRequestsForEnv(
+  boolean existsSchemaRequestByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
