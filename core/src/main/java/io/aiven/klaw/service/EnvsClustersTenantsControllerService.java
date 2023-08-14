@@ -531,7 +531,7 @@ public class EnvsClustersTenantsControllerService {
             envModel.setShowDeleteEnv(
                 !manageDatabase
                     .getHandleDbRequests()
-                    .existsConnectorComponentsForEnv(envModel.getId(), tenantId));
+                    .existsSchemaComponentsForEnv(envModel.getId(), tenantId));
           });
     }
 
