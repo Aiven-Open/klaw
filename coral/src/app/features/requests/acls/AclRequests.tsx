@@ -165,11 +165,7 @@ function AclRequests() {
           isLoading={deleteIsLoading || dataIsRefetching}
         />
       )}
-      {errorMessage !== "" && (
-        <div role="alert">
-          <Alert type="error">{errorMessage}</Alert>
-        </div>
-      )}
+      {errorMessage !== "" && <Alert type="error">{errorMessage}</Alert>}
       <TableLayout
         filters={[
           <EnvironmentFilter

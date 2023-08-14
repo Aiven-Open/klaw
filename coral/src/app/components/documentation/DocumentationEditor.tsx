@@ -3,6 +3,7 @@ import { a11yLight } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import {
   Box,
   Button,
+  Link,
   SegmentedControl,
   SegmentedControlGroup,
   Typography,
@@ -47,14 +48,11 @@ function DocumentationEditor({
 
   return (
     <Box.Flex flexDirection={"column"} rowGap={"3"}>
-      <Box.Flex
-        alignSelf={"start"}
-        component={"section"}
-        aria-label={"Switch between edit and preview mode"}
-      >
+      <Box.Flex component={"section"} alignSelf={"start"}>
         <SegmentedControlGroup
           onChange={(value: ViewMode) => setViewMode(value)}
           value={viewMode}
+          ariaLabel={"Switch between edit and preview mode"}
         >
           <SegmentedControl<ViewMode>
             aria-pressed={viewMode === "edit"}
@@ -118,7 +116,8 @@ function DocumentationEditor({
           <Box.Flex justifyContent={"end"}>
             <Typography.SmallStrong id={"editor-markdown-description"}>
               We are supporting markdown following the{" "}
-              <a href={"https://commonmark.org/help/"}>CommonMark</a> standard.
+              <Link href={"https://commonmark.org/help/"}>CommonMark</Link>{" "}
+              standard.
             </Typography.SmallStrong>
           </Box.Flex>
         </>

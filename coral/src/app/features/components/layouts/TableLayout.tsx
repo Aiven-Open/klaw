@@ -48,11 +48,9 @@ function TableLayout(props: TableLayoutProps) {
       </Box>
       {isLoading && <SkeletonTable />}
       {isErrorLoading && (
-        <div role={"alert"}>
-          <Alert type={"error"}>
-            {parseErrorMsg(errorMessage)}. Please try again later!
-          </Alert>
-        </div>
+        <Alert type={"error"}>
+          {parseErrorMsg(errorMessage)}. Please try again later!
+        </Alert>
       )}
       {!isLoading && !isErrorLoading && (
         <>

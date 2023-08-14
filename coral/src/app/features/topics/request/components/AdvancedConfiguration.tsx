@@ -11,7 +11,7 @@ import { useEffect, useRef } from "react";
 import { getTopicAdvancedConfigOptions } from "src/domain/topic/topic-api";
 import { TopicAdvancedConfigurationOptions } from "src/domain/topic/topic-types";
 import { Schema } from "src/app/features/topics/request/form-schemas/topic-request-form";
-import { BorderBox, Box, Flexbox, Typography } from "@aivenio/aquarium";
+import { BorderBox, Box, Flexbox, Link, Typography } from "@aivenio/aquarium";
 
 type Props = {
   name: "advancedConfiguration";
@@ -73,13 +73,13 @@ function AdvancedConfiguration({ name }: Props) {
       </Typography.Subheading>
       <Typography.Caption>
         For advanced topic-level configurations, refer to the official{" "}
-        <a
+        <Link
           href="https://kafka.apache.org/documentation/#topicconfigs"
           target="_blank"
           rel="noreferrer"
         >
           Apache Kafka Documentation
-        </a>
+        </Link>
         .
       </Typography.Caption>
       <BorderBox borderColor="grey-20">
