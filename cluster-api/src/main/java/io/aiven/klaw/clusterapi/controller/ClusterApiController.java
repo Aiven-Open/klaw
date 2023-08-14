@@ -3,7 +3,6 @@ package io.aiven.klaw.clusterapi.controller;
 import io.aiven.klaw.clusterapi.models.ApiResponse;
 import io.aiven.klaw.clusterapi.models.ClusterAclRequest;
 import io.aiven.klaw.clusterapi.models.ClusterTopicRequest;
-import io.aiven.klaw.clusterapi.models.OffsetDetails;
 import io.aiven.klaw.clusterapi.models.ServiceAccountDetails;
 import io.aiven.klaw.clusterapi.models.TopicConfig;
 import io.aiven.klaw.clusterapi.models.enums.AclType;
@@ -15,11 +14,9 @@ import io.aiven.klaw.clusterapi.services.AivenApiService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaAclService;
 import io.aiven.klaw.clusterapi.services.ApacheKafkaTopicService;
 import io.aiven.klaw.clusterapi.services.ConfluentCloudApiService;
-import io.aiven.klaw.clusterapi.services.MonitoringService;
 import io.aiven.klaw.clusterapi.services.UtilComponentsService;
 import jakarta.validation.Valid;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.AllArgsConstructor;
@@ -45,8 +42,6 @@ public class ClusterApiController {
   ApacheKafkaAclService apacheKafkaAclService;
 
   ApacheKafkaTopicService apacheKafkaTopicService;
-
-  MonitoringService monitoringService;
 
   AivenApiService aivenApiService;
 
@@ -161,25 +156,6 @@ public class ClusterApiController {
             .success(true)
             .build();
     return new ResponseEntity<>(apiResponse, HttpStatus.OK);
-  }
-
-  @RequestMapping(
-      value =
-          "/getConsumerOffsets/{bootstrapServers}/{protocol}/{clusterName}/{consumerGroupId}/{topicName}",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<OffsetDetails>> getConsumerOffsets(
-      @PathVariable String bootstrapServers,
-      @Valid @PathVariable KafkaSupportedProtocol protocol,
-      @PathVariable String clusterName,
-      @PathVariable String consumerGroupId,
-      @PathVariable String topicName)
-      throws Exception {
-    List<OffsetDetails> consumerOffsetDetails =
-        monitoringService.getConsumerGroupDetails(
-            consumerGroupId, topicName, bootstrapServers, protocol, clusterName);
-
-    return new ResponseEntity<>(consumerOffsetDetails, HttpStatus.OK);
   }
 
   @PostMapping(
