@@ -31,6 +31,9 @@ public interface SchemaRequestRepo
   boolean existsSchemaRequestByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
+  boolean existsSchemaRequestByEnvironmentAndTenantIdAndRequestStatus(
+      String envId, Integer tenantId, String requestStatus);
+
   @Query(
       value =
           "select exists(select 1 from kwschemarequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created')",
