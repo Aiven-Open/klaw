@@ -52,6 +52,7 @@ const testTopicOverview: TopicOverview = {
   schemaExists: false,
   prefixAclsExists: false,
   txnAclsExists: false,
+  createSchemaAllowed: false,
   topicInfo: {
     topicName: testTopicName,
     noOfPartitions: 1,

@@ -3,7 +3,6 @@ import { ReactElement } from "react";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import illustration from "src/app/images/topic-details-banner-Illustration.svg";
 import { PromotionStatus } from "src/domain/promotion";
-import { RequestOperationType } from "src/domain/requests/requests-types";
 
 interface PromotionBannerProps {
   // `entityName` is only optional on
@@ -52,30 +51,27 @@ const PromotionBanner = ({
     return (
       <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
-          There is an open {type} request for {entityName}.
+          {entityName} has a pending request.
         </Box>
         <InternalLinkButton
           to={`/requests/${type}s?search=${entityName}&status=CREATED&page=1`}
         >
-          See the request
+          View request
         </InternalLinkButton>
       </Banner>
     );
   }
 
   if (hasOpenPromotionRequest) {
-    // Schema currently shows all types as "CREATE"
-    const requestType: RequestOperationType =
-      type === "topic" ? "PROMOTE" : "CREATE";
     return (
       <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
-          There is already an open promotion request for {entityName}.
+          An promotion request for {entityName} is already in progress.
         </Box>
         <InternalLinkButton
-          to={`/requests/${type}s?search=${entityName}&requestType=${requestType}&status=CREATED&page=1`}
+          to={`/requests/${type}s?search=${entityName}&requestType=PROMOTE&status=CREATED&page=1`}
         >
-          See the request
+          View request
         </InternalLinkButton>
       </Banner>
     );
@@ -85,11 +81,9 @@ const PromotionBanner = ({
     <Banner image={illustration} layout="vertical" title={""}>
       <Spacing gap={"l1"}>
         {hasError && (
-          <div role="alert">
-            <Alert type="error">
-              {errorMessage.length > 0 ? errorMessage : "Unexpected error."}
-            </Alert>
-          </div>
+          <Alert type="error">
+            {errorMessage.length > 0 ? errorMessage : "Unexpected error."}
+          </Alert>
         )}
 
         <Box component={"p"} marginBottom={"l1"}>

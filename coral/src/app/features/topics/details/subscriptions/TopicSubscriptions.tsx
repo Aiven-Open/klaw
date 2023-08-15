@@ -191,7 +191,7 @@ const TopicSubscriptions = () => {
         }}
       />
       {errorMessage !== "" && (
-        <Box role="alert" marginBottom={"l2"}>
+        <Box marginBottom={"l2"}>
           <Alert type="error">{errorMessage}</Alert>
         </Box>
       )}
@@ -239,6 +239,9 @@ const TopicSubscriptions = () => {
               }
             }}
             value={selectedSubs}
+            ariaLabel={
+              "Switch between user subscriptions, prefixed subscriptions and transactional subscriptions"
+            }
           >
             <SegmentedControl name="User subscriptions" value="aclInfoList">
               User subs.

@@ -114,7 +114,7 @@ public class SchemaOverviewServiceTest {
     //      kafka envs are 1,2
     //      Expecting kafka env ids to be returned now instead of schema env ids
     stubUserInfo();
-
+    stubEnvironments();
     stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 5);
 
     when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3,4");
@@ -128,7 +128,7 @@ public class SchemaOverviewServiceTest {
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
         .isEqualTo(PromotionStatusType.SUCCESS);
-
+    assertThat(returnedValue.isCreateSchemaAllowed()).isTrue();
     assertThat(returnedValue.getSchemaPromotionDetails().getSourceEnv()).isEqualTo("1");
     assertThat(returnedValue.getSchemaPromotionDetails().getTargetEnv()).isEqualTo("test-2");
   }
@@ -256,7 +256,7 @@ public class SchemaOverviewServiceTest {
     when(handleDbRequests.existsSchemaRequest(
             eq(TESTTOPIC),
             eq(RequestStatus.CREATED.value),
-            eq(RequestOperationType.CREATE.value),
+            eq(RequestOperationType.PROMOTE.value),
             eq("4"),
             eq(101)))
         .thenReturn(true);
@@ -292,7 +292,7 @@ public class SchemaOverviewServiceTest {
     when(handleDbRequests.existsSchemaRequest(
             eq(TESTTOPIC),
             eq(RequestStatus.CREATED.value),
-            eq(RequestOperationType.CREATE.value),
+            eq(RequestOperationType.PROMOTE.value),
             eq("4"),
             eq(101)))
         .thenReturn(true);
@@ -311,6 +311,26 @@ public class SchemaOverviewServiceTest {
     assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
     assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
         .isEqualTo(PromotionStatusType.NO_PROMOTION);
+  }
+
+  @Test
+  @Order(10)
+  public void givenASchemaInHighestEnv_ReturnNoPromotion() throws Exception {
+    stubUserInfo();
+    when(commonUtilsService.getTeamId(anyString())).thenReturn(10);
+    when(handleDbRequests.getAllTopicsByTopicNameAndTeamIdAndTenantId(
+            eq(TESTTOPIC), eq(10), eq(101)))
+        .thenReturn(List.of(createTopic(TESTTOPIC, "1")));
+    stubSchemaPromotionInfo(TESTTOPIC, KafkaClustersType.SCHEMA_REGISTRY, 2);
+
+    when(commonUtilsService.getSchemaPromotionEnvsFromKafkaEnvs(eq(101))).thenReturn("3");
+
+    SchemaOverview returnedValue = schemaOverviewService.getSchemaOfTopic(TESTTOPIC, 1, "2");
+
+    assertThat(returnedValue.getSchemaPromotionDetails()).isNotNull();
+    assertThat(returnedValue.getSchemaPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.NO_PROMOTION);
+    assertThat(returnedValue.isCreateSchemaAllowed()).isFalse();
   }
 
   private TreeMap<Integer, Map<String, Object>> getAvroSchemas(int numOfEntries) {
@@ -426,6 +446,10 @@ public class SchemaOverviewServiceTest {
         .thenReturn(utilMethods.createSchemaList())
         .thenReturn(null);
 
+    stubEnvironments();
+  }
+
+  private void stubEnvironments() {
     Env kafkaEnv1 = new Env();
     kafkaEnv1.setName("DEV");
     kafkaEnv1.setId("1");
@@ -455,11 +479,16 @@ public class SchemaOverviewServiceTest {
     schemaEnv2.setName("TST");
     schemaEnv2.setClusterId(1);
     schemaEnv2.setAssociatedEnv(new EnvTag("2", "TST"));
+    KwTenantConfigModel model = new KwTenantConfigModel();
+    model.setRequestSchemaEnvironmentsList(List.of("3"));
+    model.setRequestTopicsEnvironmentsList(List.of("1"));
 
     when(handleDbRequests.getEnvDetails("1", 101)).thenReturn(kafkaEnv1);
     when(handleDbRequests.getEnvDetails("2", 101)).thenReturn(kafkaEnv2);
     when(handleDbRequests.getEnvDetails("3", 101)).thenReturn(schemaEnv1);
     when(handleDbRequests.getEnvDetails("4", 101)).thenReturn(schemaEnv2);
+    when(commonUtilsService.isCreateNewSchemaAllowed(eq("3"), eq(101))).thenReturn(true);
+    when(commonUtilsService.isCreateNewSchemaAllowed(eq("4"), eq(101))).thenReturn(false);
   }
 
   private void stubKafkaPromotion(String testtopic, int numberOfEnvs) throws Exception {

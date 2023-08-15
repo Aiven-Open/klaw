@@ -768,7 +768,7 @@ public class TopicControllerService {
         updateSchemaMsg = ", TopicSchemaStatus: " + schemaUpdateStatus;
       }
 
-      updateTopicReqStatus = dbHandle.addToSynctopics(allTopics);
+      updateTopicReqStatus = dbHandle.addToSynctopics(allTopics).getResultStatus();
       if (ApiResultStatus.SUCCESS.value.equals(updateTopicReqStatus)
           && ApiResultStatus.SUCCESS.value.equalsIgnoreCase(schemaUpdateStatus)) {
         updateTopicReqStatus = dbHandle.updateTopicRequestStatus(topicRequest, userName);
@@ -816,7 +816,7 @@ public class TopicControllerService {
     if (response.getBody().isSuccess()) {
       saveToTopicHistory(userName, tenantId, topicRequest);
 
-      updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userName);
+      updateTopicReqStatus = dbHandle.updateTopicRequest(topicRequest, userName).getResultStatus();
       mailService.sendMail(
           topicRequest.getTopicname(),
           null,

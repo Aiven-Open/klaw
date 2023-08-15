@@ -35,7 +35,7 @@ public interface HandleDbRequests {
 
   String requestForSchema(SchemaRequest schemaRequest);
 
-  String addToSynctopics(List<Topic> topicRequests);
+  CRUDResponse<Topic> addToSynctopics(List<Topic> topicRequests);
 
   String addToSyncConnectors(List<KwKafkaConnector> connectorRequests);
 
@@ -320,7 +320,7 @@ public interface HandleDbRequests {
 
   String updateConnectorDocumentation(KwKafkaConnector topic);
 
-  String updateTopicRequest(TopicRequest topicRequest, String approver);
+  CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver);
 
   String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 
@@ -420,11 +420,11 @@ public interface HandleDbRequests {
 
   Optional<ProductDetails> getProductDetails(String name);
 
-  int getAllKafkaComponentsCountForEnv(String env, int tenantId);
+  boolean existsKafkaComponentsForEnv(String env, int tenantId);
 
-  int getAllConnectorComponentsCountForEnv(String env, int tenantId);
+  boolean existsConnectorComponentsForEnv(String env, int tenantId);
 
-  int getAllSchemaComponentsCountForEnv(String env, int tenantId);
+  boolean existsSchemaComponentsForEnv(String env, int tenantId);
 
   boolean existsComponentsCountForTeam(Integer teamId, int tenantId);
 

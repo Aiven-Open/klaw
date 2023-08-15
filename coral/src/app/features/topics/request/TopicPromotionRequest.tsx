@@ -187,7 +187,7 @@ function TopicPromotionRequest() {
         </Dialog>
       )}
       {promoteIsError && (
-        <Box marginBottom={"l1"} role="alert">
+        <Box marginBottom={"l1"}>
           <Alert type="error">{parseErrorMsg(promoteError)}</Alert>
         </Box>
       )}
@@ -271,6 +271,7 @@ function TopicPromotionRequest() {
             <Textarea<Schema>
               name="remarks"
               labelText="Message for approval"
+              placeholder="Comments about this request for the approver."
               rows={5}
             />
           </Box>

@@ -115,8 +115,8 @@ describe("TopicDetailsModalContent", () => {
         findDefinition(noAdvancedConfigRequest.replicationfactor)
       ).toBeVisible();
     });
-    it("renders Message for the approver", () => {
-      expect(findTerm("Message for the approver")).toBeVisible();
+    it("renders Message for approval", () => {
+      expect(findTerm("Message for approval")).toBeVisible();
       expect(findDefinition(noAdvancedConfigRequest.remarks)).toBeVisible();
     });
     it("renders Requested by", () => {
@@ -171,8 +171,8 @@ describe("TopicDetailsModalContent", () => {
         findDefinition(noAdvancedConfigRequest.replicationfactor)
       ).toBeVisible();
     });
-    it("renders Message for the approver", () => {
-      expect(findTerm("Message for the approver")).toBeVisible();
+    it("renders Message for approval", () => {
+      expect(findTerm("Message for approval")).toBeVisible();
       expect(findDefinition("No message")).toBeVisible();
     });
     it("renders Requested by", () => {

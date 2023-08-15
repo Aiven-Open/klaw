@@ -74,7 +74,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcInsertHelper.insertIntoRequestSchema(schemaRequest);
   }
 
-  public String addToSynctopics(List<Topic> topicRequests) {
+  public CRUDResponse<Topic> addToSynctopics(List<Topic> topicRequests) {
     return jdbcInsertHelper.insertIntoTopicSOT(topicRequests);
   }
 
@@ -749,7 +749,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public String updateTopicRequest(TopicRequest topicRequest, String approver) {
+  public CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver) {
     return jdbcUpdateHelper.updateTopicRequest(topicRequest, approver);
   }
 
@@ -957,18 +957,18 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public int getAllKafkaComponentsCountForEnv(String env, int tenantId) {
-    return jdbcSelectHelper.findAllKafkaComponentsCountForEnv(env, tenantId);
+  public boolean existsKafkaComponentsForEnv(String env, int tenantId) {
+    return jdbcSelectHelper.existsKafkaComponentsForEnv(env, tenantId);
   }
 
   @Override
-  public int getAllConnectorComponentsCountForEnv(String env, int tenantId) {
-    return jdbcSelectHelper.findAllConnectorComponentsCountForEnv(env, tenantId);
+  public boolean existsConnectorComponentsForEnv(String env, int tenantId) {
+    return jdbcSelectHelper.existsConnectorComponentsForEnv(env, tenantId);
   }
 
   @Override
-  public int getAllSchemaComponentsCountForEnv(String env, int tenantId) {
-    return jdbcSelectHelper.findAllSchemaComponentsCountForEnv(env, tenantId);
+  public boolean existsSchemaComponentsForEnv(String env, int tenantId) {
+    return jdbcSelectHelper.existsSchemaComponentsForEnv(env, tenantId);
   }
 
   @Override

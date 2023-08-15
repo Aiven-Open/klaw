@@ -1081,6 +1081,7 @@ export type components = {
       schemaExists: boolean;
       prefixAclsExists: boolean;
       txnAclsExists: boolean;
+      createSchemaAllowed: boolean;
       topicInfoList: (components["schemas"]["TopicOverviewInfo"])[];
       aclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       prefixedAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
@@ -1374,6 +1375,7 @@ export type components = {
       schemaExists: boolean;
       prefixAclsExists: boolean;
       txnAclsExists: boolean;
+      createSchemaAllowed: boolean;
       allSchemaVersions?: (number)[];
       /** Format: int32 */
       latestVersion?: number;

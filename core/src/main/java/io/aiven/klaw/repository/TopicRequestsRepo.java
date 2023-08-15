@@ -28,13 +28,13 @@ public interface TopicRequestsRepo
   boolean existsByTenantIdAndRequestStatusAndRequestOperationTypeAndTopicname(
       int tenantId, String requestStatus, String requestOperationType, String topicname);
 
+  boolean existsByTenantIdAndEnvironmentAndRequestStatus(
+      int tenantId, String environment, String requestStatus);
+
   List<TopicRequest> findAllByRequestStatusAndTopicnameAndEnvironmentAndTenantId(
       String topicStatus, String topicName, String envId, int tenantId);
 
-  @Query(
-      value = "select count(*) from kwtopicrequests where env = :envId and tenantid = :tenantId",
-      nativeQuery = true)
-  List<Object[]> findAllTopicRequestsCountForEnv(
+  boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(

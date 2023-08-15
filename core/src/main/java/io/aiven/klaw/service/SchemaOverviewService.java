@@ -146,9 +146,8 @@ public class SchemaOverviewService extends BaseOverviewService {
             hashMapSchemaObj = schemaObjects.get(latestSchemaVersion);
             schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(true);
-            updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
-            schemaDetailsPerEnv.setVersion(latestSchemaVersion);
-
+            setSchemaDetailsPerEnvVersionAndCompatibility(
+                tenantId, schemaDetailsPerEnv, hashMapSchemaObj, latestSchemaVersion, schemaEnv);
             if (schemaObjects.size() > 1) {
               schemaDetailsPerEnv.setShowNext(true);
               schemaDetailsPerEnv.setShowPrev(false);
@@ -159,9 +158,8 @@ public class SchemaOverviewService extends BaseOverviewService {
             hashMapSchemaObj = schemaObjects.get(schemaVersionSearch);
             schemaOfObj = (String) hashMapSchemaObj.get(SCHEMA);
             schemaDetailsPerEnv.setLatest(false);
-            updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
-            schemaDetailsPerEnv.setVersion(schemaVersionSearch);
-
+            setSchemaDetailsPerEnvVersionAndCompatibility(
+                tenantId, schemaDetailsPerEnv, hashMapSchemaObj, schemaVersionSearch, schemaEnv);
             if (schemaObjects.size() > 1) {
               int indexOfVersion = allVersionsList.indexOf(schemaVersionSearch);
               if (indexOfVersion + 1 == allVersionsList.size()) {
@@ -205,7 +203,19 @@ public class SchemaOverviewService extends BaseOverviewService {
         log.debug("SchemaDetails {}", schemaDetailsPerEnv);
         schemaOverview.setSchemaDetailsPerEnv(schemaDetailsPerEnv);
       }
+      schemaOverview.setCreateSchemaAllowed(
+          commonUtilsService.isCreateNewSchemaAllowed(schemaEnv.getId(), tenantId));
     }
+  }
+
+  private void setSchemaDetailsPerEnvVersionAndCompatibility(
+      int tenantId,
+      SchemaDetailsPerEnv schemaDetailsPerEnv,
+      Map<String, Object> hashMapSchemaObj,
+      Integer latestSchemaVersion,
+      Env schemaEnv) {
+    updateIdAndCompatibility(schemaDetailsPerEnv, hashMapSchemaObj);
+    schemaDetailsPerEnv.setVersion(latestSchemaVersion);
   }
 
   private static void updateIdAndCompatibility(
@@ -344,7 +354,7 @@ public class SchemaOverviewService extends BaseOverviewService {
                     .existsSchemaRequest(
                         topicName,
                         RequestStatus.CREATED.value,
-                        RequestOperationType.CREATE.value,
+                        RequestOperationType.PROMOTE.value,
                         s,
                         tenantId))
         .isPresent();

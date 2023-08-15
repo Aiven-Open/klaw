@@ -305,6 +305,12 @@ public class UtilControllerService implements InitializingBean {
       }
 
       AuthenticationInfo authenticationInfo = new AuthenticationInfo();
+
+      boolean isUserSuperadmin =
+          SUPERADMIN
+              .name()
+              .equals(manageDatabase.getHandleDbRequests().getUsersInfo(userName).getRole());
+
       Map<String, String> teamTopics =
           reqsHandle.getDashboardInfo(commonUtilsService.getTeamId(userName), tenantId);
       authenticationInfo.setMyteamtopics(teamTopics.get("myteamtopics"));
@@ -531,13 +537,7 @@ public class UtilControllerService implements InitializingBean {
       }
 
       if (tenantId == KwConstants.DEFAULT_TENANT_ID
-          && SUPERADMIN
-              .name()
-              .equals(
-                  manageDatabase
-                      .getHandleDbRequests()
-                      .getUsersInfo(userName)
-                      .getRole())) { // allow adding tenants only to "default"
+          && isUserSuperadmin) { // allow adding tenants only to "default"
         addDeleteEditTenants = ApiResultStatus.AUTHORIZED.value;
       } else {
         addDeleteEditTenants = "NotAuthorized";
@@ -639,7 +639,8 @@ public class UtilControllerService implements InitializingBean {
       authenticationInfo.setAddDeleteEditEnvs(addDeleteEditEnvs);
 
       // coral attributes
-      authenticationInfo.setCoralEnabled(Boolean.toString(coralEnabled && isCoralBuilt));
+      authenticationInfo.setCoralEnabled(
+          Boolean.toString(coralEnabled && isCoralBuilt && !isUserSuperadmin));
 
       return authenticationInfo;
     } else return null;

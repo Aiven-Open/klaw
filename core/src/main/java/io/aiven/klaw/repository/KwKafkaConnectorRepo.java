@@ -25,10 +25,7 @@ public interface KwKafkaConnectorRepo extends CrudRepository<KwKafkaConnector, K
   List<KwKafkaConnector> findAllByConnectorNameAndEnvironmentAndTenantId(
       String connectorName, String env, int tenantId);
 
-  @Query(
-      value = "select count(*) from kwkafkaconnector where env = :envId and tenantid = :tenantId",
-      nativeQuery = true)
-  List<Object[]> findAllConnectorCountForEnv(
+  boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(

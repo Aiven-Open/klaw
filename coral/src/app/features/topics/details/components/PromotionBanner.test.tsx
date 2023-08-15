@@ -138,14 +138,14 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is an open schema request for ${testTopicName}.`
+        `${testTopicName} has a pending request.`
       );
 
       expect(information).toBeVisible();
     });
 
     it("shows a link to open requests", () => {
-      const link = screen.getByRole("link", { name: "See the request" });
+      const link = screen.getByRole("link", { name: "View request" });
 
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
@@ -175,14 +175,14 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is an open topic request for ${testTopicName}.`
+        `${testTopicName} has a pending request.`
       );
 
       expect(information).toBeVisible();
     });
 
     it("shows a link to open requests", () => {
-      const link = screen.getByRole("link", { name: "See the request" });
+      const link = screen.getByRole("link", { name: "View request" });
 
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
@@ -212,19 +212,19 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is already an open promotion request for ${testTopicName}.`
+        `An promotion request for ${testTopicName} is already in progress.`
       );
 
       expect(information).toBeVisible();
     });
 
     it("shows a button to open requests", () => {
-      const link = screen.getByRole("link", { name: "See the request" });
+      const link = screen.getByRole("link", { name: "View request" });
 
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
-        "/requests/schemas?search=my-test-topic&requestType=CREATE&status=CREATED&page=1"
+        "/requests/schemas?search=my-test-topic&requestType=PROMOTE&status=CREATED&page=1"
       );
     });
   });
@@ -249,7 +249,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `There is already an open promotion request for ${testTopicName}.`
+        `An promotion request for ${testTopicName} is already in progress.`
       );
 
       expect(information).toBeVisible();
@@ -257,7 +257,7 @@ describe("PromotionBanner", () => {
 
     it("shows a link to open requests", () => {
       const link = screen.getByRole("link", {
-        name: "See the request",
+        name: "View request",
       });
 
       expect(link).toBeVisible();

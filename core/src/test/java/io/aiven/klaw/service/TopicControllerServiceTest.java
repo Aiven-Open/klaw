@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.CRUDResponse;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.MessageSchema;
@@ -667,7 +668,8 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(clusterApiService.approveTopicRequests(
             anyString(),
             anyString(),
@@ -697,7 +699,8 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
@@ -714,7 +717,9 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.addToSynctopics(any()))
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(handleDbRequests.updateTopicRequestStatus(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
 
@@ -734,7 +739,8 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
@@ -769,7 +775,8 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(clusterApiService.approveTopicRequests(
             anyString(),
             anyString(),
@@ -1434,7 +1441,8 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
@@ -1451,7 +1459,9 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.addToSynctopics(any()))
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(handleDbRequests.updateTopicRequestStatus(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(manageDatabase.getSchemaRegEnvList(eq(0))).thenReturn(List.of(env));
@@ -1477,7 +1487,8 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(handleDbRequests.getTopicRequestsForTopic(anyInt(), anyInt())).thenReturn(topicRequest);
     when(handleDbRequests.updateTopicRequest(any(), anyString()))
-        .thenReturn(ApiResultStatus.SUCCESS.value);
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
     when(clusterApiService.approveTopicRequests(
@@ -1494,7 +1505,9 @@ public class TopicControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(handleDbRequests.addToSynctopics(any())).thenReturn(ApiResultStatus.SUCCESS.value);
+    when(handleDbRequests.addToSynctopics(any()))
+        .thenReturn(
+            CRUDResponse.<Topic>builder().resultStatus(ApiResultStatus.SUCCESS.value).build());
     when(handleDbRequests.updateTopicRequestStatus(any(), anyString()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     when(manageDatabase.getSchemaRegEnvList(eq(0))).thenReturn(List.of(env));

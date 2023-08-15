@@ -199,7 +199,7 @@ function TopicEditRequest() {
         </Dialog>
       )}
       {editIsError && (
-        <Box marginBottom={"l1"} role="alert">
+        <Box marginBottom={"l1"}>
           <Alert type="error">{parseErrorMsg(editError)}</Alert>
         </Box>
       )}
@@ -283,6 +283,7 @@ function TopicEditRequest() {
             <Textarea<Schema>
               name="remarks"
               labelText="Message for approval"
+              placeholder="Comments about this request for the approver."
               rows={5}
             />
           </Box>

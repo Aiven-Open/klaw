@@ -14,10 +14,11 @@ describe("TopicMessageOffsetFilter", () => {
         disabled={false}
       />
     );
-    screen.getByRole("radio", { name: "5" });
-    screen.getByRole("radio", { name: "25" });
-    screen.getByRole("radio", { name: "50" });
+    expect(screen.getByRole("radio", { name: "5" })).toBeVisible();
+    expect(screen.getByRole("radio", { name: "25" })).toBeVisible();
+    expect(screen.getByRole("radio", { name: "50" })).toBeVisible();
   });
+
   it("is possible to select an option", async () => {
     const onChange = jest.fn();
     render(
@@ -31,6 +32,7 @@ describe("TopicMessageOffsetFilter", () => {
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith("50");
   });
+
   it("is not possible to select an option if the input is disabled", () => {
     render(
       <TopicMessageOffsetFilter
@@ -39,7 +41,11 @@ describe("TopicMessageOffsetFilter", () => {
         disabled={true}
       />
     );
-    within(screen.getByRole("group", { name: "Number of messages" }))
+    within(
+      screen.getByRole("group", {
+        name: "Number of messages Choose how many recent messages you want to view from this topic.",
+      })
+    )
       .getAllByRole("radio")
       .forEach((option) => expect(option).toBeDisabled());
   });

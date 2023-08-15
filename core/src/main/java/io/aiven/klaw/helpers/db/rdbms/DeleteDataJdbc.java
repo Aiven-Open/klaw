@@ -248,10 +248,11 @@ public class DeleteDataJdbc {
   }
 
   @Transactional
-  public void deleteTopics(Topic topic) {
+  public CRUDResponse<Topic> deleteTopics(Topic topic) {
     log.debug("deleteTopics {}", topic.getTopicname());
     topicRepo.deleteByTopicnameAndEnvironmentAndTenantId(
         topic.getTopicname(), topic.getEnvironment(), topic.getTenantId());
+    return CRUDResponse.ok(List.of(topic));
   }
 
   @Transactional
