@@ -411,7 +411,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
       // <input type="file" /> does not have a corresponding role
       const textArea = within(form).getByRole("textbox", {
-        name: "Enter a message for approval",
+        name: "Message for approval",
       });
 
       expect(textArea).toBeEnabled();
@@ -560,7 +560,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const remarkInput = screen.getByRole("textbox", {
-        name: "Enter a message for approval",
+        name: "Message for approval",
       });
       await userEvent.type(remarkInput, "Important information");
 
@@ -584,7 +584,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const remarkInput = screen.getByRole("textbox", {
-        name: "Enter a message for approval",
+        name: "Message for approval",
       });
       await userEvent.type(remarkInput, "Important information");
 
@@ -610,7 +610,7 @@ describe("TopicSchemaRequest", () => {
       const form = getForm();
 
       const remarkInput = screen.getByRole("textbox", {
-        name: "Enter a message for approval",
+        name: "Message for approval",
       });
       await userEvent.type(remarkInput, "Important information");
 

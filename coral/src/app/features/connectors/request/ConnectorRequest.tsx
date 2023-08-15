@@ -75,7 +75,7 @@ function ConnectorRequest() {
     <>
       <Box>
         {connectorRequestMutation.isError && (
-          <Box marginBottom={"l1"} role="alert">
+          <Box marginBottom={"l1"}>
             <Alert type="error">
               {parseErrorMsg(connectorRequestMutation.error)}
             </Alert>
@@ -181,6 +181,7 @@ function ConnectorRequest() {
             <Textarea<ConnectorRequestFormSchema>
               name={"remarks"}
               labelText={"Message for approval"}
+              placeholder="Comments about this request for the approver."
             />
           </Grid>
 

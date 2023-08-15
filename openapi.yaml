@@ -6976,6 +6976,9 @@
           "txnAclsExists" : {
             "type" : "boolean"
           },
+          "createSchemaAllowed" : {
+            "type" : "boolean"
+          },
           "topicInfoList" : {
             "type" : "array",
             "items" : {
@@ -7023,7 +7026,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "availableEnvironments", "prefixAclsExists", "schemaExists", "topicExists", "topicIdForDocumentation", "topicInfoList", "topicPromotionDetails", "txnAclsExists" ]
+        "required" : [ "availableEnvironments", "createSchemaAllowed", "prefixAclsExists", "schemaExists", "topicExists", "topicIdForDocumentation", "topicInfoList", "topicPromotionDetails", "txnAclsExists" ]
       },
       "TopicOverviewInfo" : {
         "properties" : {
@@ -7093,10 +7096,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },
@@ -7823,6 +7826,9 @@
           "txnAclsExists" : {
             "type" : "boolean"
           },
+          "createSchemaAllowed" : {
+            "type" : "boolean"
+          },
           "allSchemaVersions" : {
             "type" : "array",
             "items" : {
@@ -7841,7 +7847,7 @@
             "$ref" : "#/components/schemas/SchemaDetailsPerEnv"
           }
         },
-        "required" : [ "prefixAclsExists", "schemaExists", "schemaPromotionDetails", "topicExists", "txnAclsExists" ]
+        "required" : [ "createSchemaAllowed", "prefixAclsExists", "schemaExists", "schemaPromotionDetails", "topicExists", "txnAclsExists" ]
       },
       "KwReport" : {
         "properties" : {

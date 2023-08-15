@@ -2,16 +2,9 @@ import { Context as AquariumContext } from "@aivenio/aquarium";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { cleanup, screen } from "@testing-library/react";
 import { TeamInfo } from "src/app/features/team-info/TeamInfo";
-import { AuthUser } from "src/domain/auth-user";
 import { getTeamsOfUser } from "src/domain/team";
 import { KlawApiResponse } from "types/utils";
-
-const authUser: AuthUser = {
-  canSwitchTeams: "false",
-  teamId: "2",
-  teamname: "awesome-bunch-of-people",
-  username: "i-am-test-user",
-};
+import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 const mockAuthUser = jest.fn();
 jest.mock("src/app/context-provider/AuthProvider", () => ({
@@ -46,7 +39,7 @@ const testTeams: KlawApiResponse<"getSwitchTeams"> = [
 
 describe("TeamInfo", () => {
   describe("shows a info about user's team when they can't switch teams", () => {
-    mockAuthUser.mockReturnValue(authUser);
+    mockAuthUser.mockReturnValue(testAuthUser);
 
     beforeAll(() => {
       mockGetTeamsOfUser.mockResolvedValue([]);
@@ -71,13 +64,13 @@ describe("TeamInfo", () => {
     });
 
     it("shows team of the user as text", async () => {
-      const team = await screen.findByText(authUser.teamname);
+      const team = await screen.findByText(testAuthUser.teamname);
 
       expect(team).toBeVisible();
     });
 
     it("does not render a menu to change teams", async () => {
-      await screen.findByText(authUser.teamname);
+      await screen.findByText(testAuthUser.teamname);
       const menuButton = screen.queryByRole("button", {
         name: "Change your team",
       });
@@ -87,7 +80,7 @@ describe("TeamInfo", () => {
   });
 
   describe("shows a info about user's team and a dropdown to switch team", () => {
-    mockAuthUser.mockReturnValue({ ...authUser, canSwitchTeams: "true" });
+    mockAuthUser.mockReturnValue({ ...testAuthUser, canSwitchTeams: "true" });
 
     beforeAll(() => {
       mockGetTeamsOfUser.mockResolvedValue(testTeams);
@@ -103,7 +96,7 @@ describe("TeamInfo", () => {
     afterAll(cleanup);
 
     it("shows team of the user as menu", async () => {
-      const team = await screen.findByText(authUser.teamname);
+      const team = await screen.findByText(testAuthUser.teamname);
       const menuButton = await screen.findByRole("button", {
         name: "Change your team",
       });

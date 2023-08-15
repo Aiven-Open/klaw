@@ -2,25 +2,7 @@ package io.aiven.klaw.helpers.db.rdbms;
 
 import static org.springframework.beans.BeanUtils.copyProperties;
 
-import io.aiven.klaw.dao.Acl;
-import io.aiven.klaw.dao.AclID;
-import io.aiven.klaw.dao.AclRequests;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.KafkaConnectorRequest;
-import io.aiven.klaw.dao.KwKafkaConnector;
-import io.aiven.klaw.dao.KwKafkaConnectorID;
-import io.aiven.klaw.dao.KwProperties;
-import io.aiven.klaw.dao.KwRolesPermissions;
-import io.aiven.klaw.dao.KwTenants;
-import io.aiven.klaw.dao.MessageSchema;
-import io.aiven.klaw.dao.RegisterUserInfo;
-import io.aiven.klaw.dao.SchemaRequest;
-import io.aiven.klaw.dao.Team;
-import io.aiven.klaw.dao.TeamID;
-import io.aiven.klaw.dao.Topic;
-import io.aiven.klaw.dao.TopicID;
-import io.aiven.klaw.dao.TopicRequest;
-import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.NewUserStatus;
@@ -42,11 +24,7 @@ import io.aiven.klaw.repository.TopicRequestsRepo;
 import io.aiven.klaw.repository.UserInfoRepo;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -178,7 +156,7 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String updateTopicRequest(TopicRequest topicRequest, String approver) {
+  public CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver) {
     log.debug("updateTopicRequest {} {}", topicRequest.getTopicname(), approver);
     topicRequest.setApprover(approver);
     topicRequest.setRequestStatus(RequestStatus.APPROVED.value);
@@ -201,13 +179,14 @@ public class UpdateDataJdbc {
     final RequestOperationType requestOperationType =
         RequestOperationType.of(topicRequest.getRequestOperationType());
     if (requestOperationType == null) {
-      return ApiResultStatus.SUCCESS.value;
+      return CRUDResponse.ok(Collections.emptyList());
     }
+    CRUDResponse<Topic> saveResult = null;
     switch (requestOperationType) {
-      case CREATE, PROMOTE -> insertDataJdbcHelper.insertIntoTopicSOT(topics);
-      case UPDATE -> updateTopicSOT(topics, topicRequest.getOtherParams());
+      case CREATE, PROMOTE -> saveResult = insertDataJdbcHelper.insertIntoTopicSOT(topics);
+      case UPDATE -> saveResult = updateTopicSOT(topics, topicRequest.getOtherParams());
       case DELETE -> {
-        deleteDataJdbcHelper.deleteTopics(topicObj);
+        saveResult = deleteDataJdbcHelper.deleteTopics(topicObj);
         if (topicRequest.getDeleteAssociatedSchema()) {
           Env kafkaEnv =
               selectDataJdbcHelper.selectEnvDetails(
@@ -222,7 +201,7 @@ public class UpdateDataJdbc {
       }
     }
 
-    return ApiResultStatus.SUCCESS.value;
+    return saveResult;
   }
 
   public String updateConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {
@@ -250,7 +229,7 @@ public class UpdateDataJdbc {
       return ApiResultStatus.SUCCESS.value;
     }
     switch (rot) {
-      case CREATE -> insertDataJdbcHelper.insertIntoConnectorSOT(connectors, false);
+      case CREATE, PROMOTE -> insertDataJdbcHelper.insertIntoConnectorSOT(connectors, false);
       case UPDATE -> updateConnectorSOT(connectors, connectorRequest.getOtherParams());
       case DELETE -> deleteDataJdbcHelper.deleteConnectors(topicObj);
     }
@@ -258,13 +237,14 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  private void updateTopicSOT(List<Topic> topics, String topicId) {
+  private CRUDResponse<Topic> updateTopicSOT(List<Topic> topics, String topicId) {
     topics.forEach(
         topic -> {
           log.debug("updateTopicSOT {}", topic.getTopicname());
           topic.setTopicid(Integer.parseInt(topicId));
           topicRepo.save(topic);
         });
+    return CRUDResponse.<Topic>ok(topics);
   }
 
   private void updateConnectorSOT(List<KwKafkaConnector> topics, String topicId) {

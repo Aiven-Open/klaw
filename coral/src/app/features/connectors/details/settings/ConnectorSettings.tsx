@@ -96,7 +96,7 @@ function ConnectorSettings() {
 
       <PageHeader title={"Settings"} />
       {errorMessage && (
-        <Box role="alert" marginBottom={"l2"}>
+        <Box marginBottom={"l2"}>
           <Alert type="error">{errorMessage}</Alert>
         </Box>
       )}

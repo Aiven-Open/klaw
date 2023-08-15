@@ -102,7 +102,7 @@ public class KwConstants {
 
   public static final String URI_CLUSTER_API = "/topics/getApiStatus";
   public static final String URI_KAFKA_SR_CONN_STATUS = "/topics/getStatus/";
-  public static final String URI_GET_CONSUMER_OFFSETS = "/topics/getConsumerOffsets/";
+  public static final String URI_GET_CONSUMER_OFFSETS = "/topics/consumerGroupOffsets/";
   public static final String URI_GET_TOPIC_CONTENTS = "/topics/getTopicContents/";
   public static final String URI_GET_ACLS = "/topics/getAcls/";
   public static final String URI_CREATE_ACLS = "/topics/createAcls";

@@ -354,10 +354,9 @@ public class EnvsClustersTenantsControllerService {
       envModelList.forEach(
           envModel -> {
             envModel.setShowDeleteEnv(
-                manageDatabase
-                        .getHandleDbRequests()
-                        .getAllKafkaComponentsCountForEnv(envModel.getId(), tenantId)
-                    <= 0);
+                !manageDatabase
+                    .getHandleDbRequests()
+                    .existsKafkaComponentsForEnv(envModel.getId(), tenantId));
           });
     }
 
@@ -529,10 +528,9 @@ public class EnvsClustersTenantsControllerService {
       envModelList.forEach(
           envModel -> {
             envModel.setShowDeleteEnv(
-                manageDatabase
-                        .getHandleDbRequests()
-                        .getAllConnectorComponentsCountForEnv(envModel.getId(), tenantId)
-                    <= 0);
+                !manageDatabase
+                    .getHandleDbRequests()
+                    .existsSchemaComponentsForEnv(envModel.getId(), tenantId));
           });
     }
 
@@ -607,10 +605,9 @@ public class EnvsClustersTenantsControllerService {
       envModelList.forEach(
           envModel -> {
             envModel.setShowDeleteEnv(
-                manageDatabase
-                        .getHandleDbRequests()
-                        .getAllConnectorComponentsCountForEnv(envModel.getId(), tenantId)
-                    <= 0);
+                !manageDatabase
+                    .getHandleDbRequests()
+                    .existsConnectorComponentsForEnv(envModel.getId(), tenantId));
           });
     }
 
@@ -880,22 +877,17 @@ public class EnvsClustersTenantsControllerService {
 
     switch (envType) {
       case "kafka":
-        if (manageDatabase.getHandleDbRequests().getAllKafkaComponentsCountForEnv(envId, tenantId)
-            > 0) {
+        if (manageDatabase.getHandleDbRequests().existsKafkaComponentsForEnv(envId, tenantId)) {
           return ApiResponse.notOk(ENV_CLUSTER_TNT_ERR_105);
         }
         break;
       case "kafkaconnect":
-        if (manageDatabase
-                .getHandleDbRequests()
-                .getAllConnectorComponentsCountForEnv(envId, tenantId)
-            > 0) {
+        if (manageDatabase.getHandleDbRequests().existsConnectorComponentsForEnv(envId, tenantId)) {
           return ApiResponse.notOk(ENV_CLUSTER_TNT_ERR_106);
         }
         break;
       case "schemaregistry":
-        if (manageDatabase.getHandleDbRequests().getAllSchemaComponentsCountForEnv(envId, tenantId)
-            > 0) {
+        if (manageDatabase.getHandleDbRequests().existsSchemaComponentsForEnv(envId, tenantId)) {
           return ApiResponse.notOk(ENV_CLUSTER_TNT_ERR_107);
         }
         break;

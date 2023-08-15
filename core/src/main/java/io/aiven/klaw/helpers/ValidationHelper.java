@@ -7,7 +7,6 @@ public class ValidationHelper {
 
   public static void validateNotEmptyOrBlank(String value, String errMsg) throws KlawRestException {
     try {
-      Validate.notEmpty(value);
       Validate.notBlank(value);
     } catch (Exception ex) {
       throw new KlawRestException(errMsg);

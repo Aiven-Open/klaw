@@ -198,6 +198,7 @@ describe("topic-transformer.ts", () => {
         schemaExists: false,
         prefixAclsExists: false,
         txnAclsExists: false,
+        createSchemaAllowed: false,
         topicInfoList: [
           {
             topicName: "test-topic",
@@ -238,6 +239,7 @@ describe("topic-transformer.ts", () => {
         prefixAclsExists: false,
         schemaExists: false,
         topicExists: false,
+        createSchemaAllowed: false,
         topicIdForDocumentation: 1,
         topicInfo: {
           envId: "4",
@@ -276,6 +278,7 @@ describe("topic-transformer.ts", () => {
         prefixAclsExists: false,
         txnAclsExists: false,
         schemaExists: false,
+        createSchemaAllowed: false,
         topicInfoList: [
           {
             topicName: "test-topic",
@@ -370,6 +373,7 @@ describe("topic-transformer.ts", () => {
         prefixAclsExists: false,
         schemaExists: false,
         topicExists: false,
+        createSchemaAllowed: false,
         topicIdForDocumentation: 1,
         topicInfo: {
           envId: "4",

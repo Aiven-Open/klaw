@@ -797,7 +797,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -822,7 +822,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -848,7 +848,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -1140,7 +1140,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -1165,7 +1165,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -1191,7 +1191,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -2219,7 +2219,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -2243,7 +2243,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -2269,7 +2269,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -2548,7 +2548,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -2572,7 +2572,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 
@@ -2598,7 +2598,7 @@ describe("<TopicAclRequest />", () => {
         const form = getForm();
 
         const remarkInput = screen.getByRole("textbox", {
-          name: "Remarks",
+          name: "Message for approval",
         });
         await userEvent.type(remarkInput, "Important information");
 

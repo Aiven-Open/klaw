@@ -1473,28 +1473,53 @@ public class SelectDataJdbc {
     return productDetailsRepo.findById(name);
   }
 
-  public int findAllKafkaComponentsCountForEnv(String env, int tenantId) {
-    return ((Long) topicRepo.findAllTopicsCountForEnv(env, tenantId).get(0)[0]).intValue()
-        + ((Long) topicRequestsRepo.findAllTopicRequestsCountForEnv(env, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) aclRepo.findAllAclsCountForEnv(env, tenantId).get(0)[0]).intValue()
-        + ((Long) aclRequestsRepo.findAllAclRequestsCountForEnv(env, tenantId).get(0)[0])
-            .intValue();
+  public boolean existsKafkaComponentsForEnv(String env, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () -> topicRepo.existsByEnvironmentAndTenantId(env, tenantId),
+            () ->
+                topicRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatus(
+                    tenantId, env, RequestStatus.CREATED.value),
+            () -> aclRepo.existsByEnvironmentAndTenantId(env, tenantId),
+            () ->
+                aclRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatus(
+                    tenantId, env, RequestStatus.CREATED.value));
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  public int findAllConnectorComponentsCountForEnv(String env, int tenantId) {
-    return ((Long) kafkaConnectorRepo.findAllConnectorCountForEnv(env, tenantId).get(0)[0])
-            .intValue()
-        + ((Long)
-                kafkaConnectorRequestsRepo.findAllConnectorRequestsCountForEnv(env, tenantId)
-                    .get(0)[0])
-            .intValue();
+  public boolean existsConnectorComponentsForEnv(String env, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () -> kafkaConnectorRepo.existsByEnvironmentAndTenantId(env, tenantId),
+            () ->
+                kafkaConnectorRequestsRepo.existsConnectorRequestsForEnvTenantIdAndCreatedStatus(
+                    env, tenantId));
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 
-  public int findAllSchemaComponentsCountForEnv(String env, int tenantId) {
-    return ((Long) schemaRequestRepo.findAllSchemaRequestsCountForEnv(env, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) messageSchemaRepo.findAllSchemaCountForEnv(env, tenantId).get(0)[0]).intValue();
+  public boolean existsSchemaComponentsForEnv(String env, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () ->
+                schemaRequestRepo.existsSchemaRequestByEnvironmentAndTenantIdAndRequestStatus(
+                    env, tenantId, RequestStatus.CREATED.value),
+            () -> messageSchemaRepo.existsMessageSchemaByEnvironmentAndTenantId(env, tenantId));
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean existsComponentsCountForTeam(Integer teamId, int tenantId) {
