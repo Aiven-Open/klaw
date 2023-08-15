@@ -6,7 +6,6 @@ import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.DbAuthInfo;
 import java.util.*;
@@ -138,7 +137,7 @@ public class UiConfigControllerService {
         contactFormMessage,
         commonUtilsService.getTenantId(getUserName()),
         commonUtilsService.getLoginUrl());
-    return ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    return ApiResponse.SUCCESS;
   }
 
   public List<String> getRequestTypeStatuses() {

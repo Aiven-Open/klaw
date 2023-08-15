@@ -72,14 +72,15 @@ function TopicMessages() {
   function getTableContent() {
     if (!consumeResult) {
       return (
-        <EmptyState title="Consume Messages">
-          Select offset and Update results.
+        <EmptyState title="No messages displayed">
+          To view messages in this topic, select the number of messages
+          you&apos;d like to view and select Fetch messages.
         </EmptyState>
       );
     } else if (isNoContentResult(consumeResult)) {
       return (
         <EmptyState title="No messages">
-          This Topic contains no Messages.
+          This Topic contains no messages.
         </EmptyState>
       );
     } else {
@@ -110,10 +111,10 @@ function TopicMessages() {
               onClick={handleUpdateResultClick}
               disabled={isConsuming}
               loading={isConsuming}
-              aria-label={`Consume and display the latest ${offset} messages from topic ${topicName}`}
+              aria-label={`Fetch and display the latest ${offset} messages from topic ${topicName}`}
               icon={refreshIcon}
             >
-              Update results
+              Fetch messages
             </Button.Primary>
           </Box.Flex>,
         ]}

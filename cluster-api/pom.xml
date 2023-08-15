@@ -23,9 +23,10 @@
         <!-- the list is sorted-->
         <apache.commons.lang.version>3.13.0</apache.commons.lang.version>
         <guava.version>31.1-jre</guava.version>
-        <kafka.client.version>3.4.1</kafka.client.version>
+        <kafka.version>3.5.1</kafka.version>
+        <kafka.client.version>3.5.1</kafka.client.version>
         <mockserver.version>5.15.0</mockserver.version>
-        <spring-kafka-test.version>3.0.8</spring-kafka-test.version>
+        <spring-kafka-test.version>3.0.9</spring-kafka-test.version>
     </properties>
 
     <dependencies>

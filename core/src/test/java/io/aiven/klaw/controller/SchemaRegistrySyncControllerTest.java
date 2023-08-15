@@ -16,7 +16,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncSchemaUpdates;
-import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.response.SchemaDetailsResponse;
 import io.aiven.klaw.model.response.SyncSchemasList;
 import io.aiven.klaw.service.SchemaRegistrySyncControllerService;
@@ -84,8 +83,7 @@ public class SchemaRegistrySyncControllerTest {
   @Test
   @Order(2)
   public void updateSyncSchemas() throws Exception {
-    ApiResponse apiResponse =
-        ApiResponse.builder().success(true).message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     SyncSchemaUpdates syncSchemaUpdates = new SyncSchemaUpdates();
     syncSchemaUpdates.setSourceKafkaEnvSelected("1");
     syncSchemaUpdates.setTopicList(List.of("Topic01"));

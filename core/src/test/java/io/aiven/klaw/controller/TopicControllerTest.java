@@ -81,7 +81,7 @@ public class TopicControllerTest {
   public void createTopics() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicCreateRequestModel(1001);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(topicControllerService.createTopicsCreateRequest(any())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -98,7 +98,7 @@ public class TopicControllerTest {
   public void updateSyncTopics() throws Exception {
     List<SyncTopicUpdates> syncTopicUpdates = utilMethods.getSyncTopicUpdates();
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(syncTopicUpdates);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(topicSyncControllerService.updateSyncTopics(any())).thenReturn(apiResponse);
 
     mvcSync
@@ -188,7 +188,7 @@ public class TopicControllerTest {
   @Test
   @Order(6)
   public void deleteTopicRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(topicControllerService.deleteTopicRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -203,7 +203,7 @@ public class TopicControllerTest {
   @Test
   @Order(7)
   public void approveTopicRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(topicControllerService.approveTopicRequests(anyString())).thenReturn(apiResponse);
 
     mvc.perform(
@@ -218,7 +218,7 @@ public class TopicControllerTest {
   @Test
   @Order(8)
   public void declineTopicRequests() throws Exception {
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(topicControllerService.declineTopicRequests(anyString(), anyString()))
         .thenReturn(apiResponse);
 
@@ -296,7 +296,7 @@ public class TopicControllerTest {
   public void updateTopic() throws Exception {
     TopicRequestModel addTopicRequest = utilMethods.getTopicUpdateRequestModel(1001);
     String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(addTopicRequest);
-    ApiResponse apiResponse = ApiResponse.builder().message(ApiResultStatus.SUCCESS.value).build();
+    ApiResponse apiResponse = ApiResponse.SUCCESS;
     when(topicControllerService.createTopicsUpdateRequest(any())).thenReturn(apiResponse);
 
     mvc.perform(
