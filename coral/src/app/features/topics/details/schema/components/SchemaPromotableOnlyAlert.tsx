@@ -2,9 +2,19 @@ import { Alert, Box, BoxProps } from "@aivenio/aquarium";
 
 type SchemaPromotableOnlyAlertProps = {
   marginBottom?: BoxProps<"div">["marginBottom"];
+  isNewVersionRequest?: boolean;
 };
+
+const textVersion =
+  "You can't create a new schema or new version for it here. Create your request in the lowest environment and then" +
+  " promote it upwards.";
+
+const textNewCreation =
+  "Schemas are created in lower environments and promoted to higher environment. To add a schema to this topic, create a request in the lower environment and promote it to the higher one.";
+
 function SchemaPromotableOnlyAlert({
   marginBottom,
+  isNewVersionRequest = false,
 }: SchemaPromotableOnlyAlertProps) {
   return (
     <Box
@@ -13,8 +23,7 @@ function SchemaPromotableOnlyAlert({
     >
       <Alert type={"warning"}>
         <span>
-          Users are not allowed to request a new schema in this environment. To
-          add a schema, promote the schema from a lower environment.{" "}
+          {isNewVersionRequest ? textVersion : textNewCreation}{" "}
           <a
             target="_blank"
             rel="noreferrer"

@@ -199,7 +199,10 @@ function TopicDetailsSchema() {
       </Box>
 
       {!createSchemaAllowed && (
-        <SchemaPromotableOnlyAlert marginBottom={"l2"} />
+        <SchemaPromotableOnlyAlert
+          marginBottom={"l2"}
+          isNewVersionRequest={true}
+        />
       )}
       {!topicSchemasIsRefetching && isTopicOwner && (
         <SchemaPromotionBanner

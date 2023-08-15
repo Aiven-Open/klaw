@@ -256,6 +256,9 @@ describe("TopicDetailsSchema", () => {
         const alert = screen.getByTestId("schema-promotable-only-alert");
 
         expect(alert).toBeInTheDocument();
+        expect(alert).toHaveTextContent(
+          "You can't create a new schema or new version for it here."
+        );
       });
     });
 
@@ -387,6 +390,9 @@ describe("TopicDetailsSchema", () => {
         const alert = screen.getByTestId("schema-promotable-only-alert");
 
         expect(alert).toBeInTheDocument();
+        expect(alert).toHaveTextContent(
+          "To add a schema to this topic, create a request in the lower environment"
+        );
       });
     });
 
