@@ -18,6 +18,9 @@ public interface AclRequestsRepo
   boolean existsByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
       int tenantId, String env, String requestStatus, String topicname);
 
+  boolean existsByTenantIdAndEnvironmentAndRequestStatus(
+      int tenantId, String env, String requestStatus);
+
   boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 

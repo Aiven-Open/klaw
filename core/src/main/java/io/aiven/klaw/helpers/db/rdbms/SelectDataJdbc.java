@@ -1440,9 +1440,13 @@ public class SelectDataJdbc {
     List<Supplier<Boolean>> list =
         List.of(
             () -> topicRepo.existsByEnvironmentAndTenantId(env, tenantId),
-            () -> topicRequestsRepo.existsByEnvironmentAndTenantId(env, tenantId),
+            () ->
+                topicRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatus(
+                    tenantId, env, RequestStatus.CREATED.value),
             () -> aclRepo.existsByEnvironmentAndTenantId(env, tenantId),
-            () -> aclRequestsRepo.existsByEnvironmentAndTenantId(env, tenantId));
+            () ->
+                aclRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatus(
+                    tenantId, env, RequestStatus.CREATED.value));
     for (var elem : list) {
       if (elem.get()) {
         return true;
