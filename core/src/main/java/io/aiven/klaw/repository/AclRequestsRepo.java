@@ -68,6 +68,9 @@ public interface AclRequestsRepo
   List<Object[]> findAllAclRequestsGroupByStatusMyTeam(
       @Param("requestingTeamId") Integer requestingTeamId, @Param("tenantId") Integer tenantId);
 
+  List<AclRequests> findAllByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
+      int tenantId, String env, String requestStatus, String topicname);
+
   // requests assigned to my team
   @Query(
       value =
