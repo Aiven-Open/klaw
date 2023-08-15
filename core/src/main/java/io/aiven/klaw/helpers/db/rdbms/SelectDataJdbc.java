@@ -236,39 +236,6 @@ public class SelectDataJdbc {
     return aclRequestsRepo.findAll(Example.of(request));
   }
 
-  /**
-   * Query the AclRequestsRepo by supplying optional search parameters any given search parameters
-   * will be utilised in the search.
-   *
-   * @param tenantId The tenantId
-   * @param environment the environment
-   * @param requestStatus created/declined/approved
-   * @param topic The topic Name
-   * @return
-   */
-  public Iterable<AclRequests> findAclRequestsByExample(
-      int tenantId, String environment, String requestStatus, String topic) {
-
-    AclRequests request = new AclRequests();
-
-    request.setTenantId(tenantId);
-    if (topic != null && !topic.isEmpty()) {
-      request.setTopicname(topic);
-    }
-    if (environment != null && !environment.isEmpty()) {
-      request.setEnvironment(environment);
-    }
-    if (requestStatus != null && !requestStatus.equalsIgnoreCase("all")) {
-      request.setRequestStatus(requestStatus);
-    }
-    // check if debug is enabled so the logger doesnt waste resources converting object request to a
-    // string
-    if (log.isDebugEnabled()) {
-      log.debug("find By topic etc example {}", request);
-    }
-    return aclRequestsRepo.findAll(Example.of(request));
-  }
-
   public List<SchemaRequest> selectFilteredSchemaRequests(
       boolean isApproval,
       String requestor,
