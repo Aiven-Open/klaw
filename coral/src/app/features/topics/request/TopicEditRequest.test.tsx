@@ -497,6 +497,7 @@ describe("<TopicEditRequest />", () => {
         replicationfactor: mockTopicDetails.topicContents.noOfReplicas,
         topicname: TOPIC_NAME,
         topicpartitions: String(mockTopicDetails.topicContents.noOfPartitions),
+        topicId: mockTopicDetails.topicId,
       });
     });
 
