@@ -239,19 +239,16 @@ public class SelectDataJdbc {
    * Query the AclRequestsRepo by supplying optional search parameters any given search parameters
    * will be utilised in the search.
    *
-   * @param topic The topic Name
-   * @param environment the environment
-   * @param aclType Producer or consumer
-   * @param requestStatus created/declined/approved
-   * @param requestor the name of the user who created the request in klaw
    * @param tenantId The tenantId
+   * @param environment the environment
+   * @param requestStatus created/declined/approved
+   * @param topic The topic Name
    * @return
    */
   public Iterable<AclRequests> findAclRequestsByExample(
       int tenantId,
-      String env,
+      String environment,
       String requestStatus,
-      RequestOperationType requestOperationType,
       String topic) {
 
     AclRequests request = new AclRequests();
@@ -260,11 +257,11 @@ public class SelectDataJdbc {
     if (topic != null && !topic.isEmpty()) {
       request.setTopicname(topic);
     }
+    if (environment != null && !environment.isEmpty()) {
+      request.setEnvironment(environment);
+    }
     if (requestStatus != null && !requestStatus.equalsIgnoreCase("all")) {
       request.setRequestStatus(requestStatus);
-    }
-    if (requestOperationType != null) {
-      request.setRequestOperationType(requestOperationType.value);
     }
     // check if debug is enabled so the logger doesnt waste resources converting object request to a
     // string

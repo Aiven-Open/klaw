@@ -234,7 +234,7 @@ public abstract class BaseOverviewService {
     List<AclRequests> disable;
     
     for (Acl aclSotItem : aclsFromSOT) {
-      disable = aclRequestsRepo.findAllByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(tenantId, aclSotItem.getEnvironment(), RequestStatus.CREATED.value, RequestOperationType.DELETE.value, aclSotItem.getTopicname());
+      disable = aclRequestsRepo.findAllByTenantIdAndEnvironmentAndRequestStatusAndTopicname(tenantId, aclSotItem.getEnvironment(), RequestStatus.DELETED.value, aclSotItem.getTopicname());
       if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) {
         boolean itemExists = disable.stream().anyMatch(item -> item.getReq_no().equals(aclSotItem.getReq_no()));
         mp = new AclOverviewInfo();

@@ -18,10 +18,10 @@ public interface AclRequestsRepo
   boolean existsByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
       int tenantId, String env, String requestStatus, String topicname);
 
-  boolean existsByTenantIdAndEnvironmentAndRequestStatus(
-      int tenantId, String env, String requestStatus);
-
-  boolean existsByEnvironmentAndTenantId(
+  @Query(
+      value = "select count(*) from kwaclrequests where env = :envId and tenantid = :tenantId",
+      nativeQuery = true)
+  List<Object[]> findAllAclRequestsCountForEnv(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(
@@ -86,8 +86,8 @@ public interface AclRequestsRepo
   List<Object[]> findAllAclRequestsGroupByStatusAssignedToTeam(
       @Param("assignedToTeamId") Integer assignedToTeamId, @Param("tenantId") Integer tenantId);
   
-  List<AclRequests> findAllByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(
-      int tenantId, String env, String requestStatus, String requestOperationType, String topicname);
+  List<AclRequests> findAllByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
+      int tenantId, String env, String requestStatus, String topicname);
   // requests assigned to my team
   @Query(
       value =
