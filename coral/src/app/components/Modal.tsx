@@ -116,6 +116,7 @@ function Modal(props: ModalProps) {
           className={classes.modalWrapper}
         >
           <Box
+            aria-label={title}
             component={"dialog"}
             aria-modal={"true"}
             paddingX={"l3"}
