@@ -895,7 +895,8 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectors(0));
 
     assertThatThrownBy(
-            () -> kafkaConnectControllerService.getConnectorDetailsPerEnv("1", CONNECTOR_NAME))
+            () ->
+                kafkaConnectControllerService.getConnectorDetailsPerEnvToEdit("1", CONNECTOR_NAME))
         .isInstanceOf(KlawBadRequestException.class)
         .hasMessage("Connector conn1 does not exist.");
   }
@@ -922,7 +923,8 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(List.of(createTeam("Natto", 23)));
 
     assertThatThrownBy(
-            () -> kafkaConnectControllerService.getConnectorDetailsPerEnv("1", CONNECTOR_NAME))
+            () ->
+                kafkaConnectControllerService.getConnectorDetailsPerEnvToEdit("1", CONNECTOR_NAME))
         .isInstanceOf(KlawBadRequestException.class)
         .hasMessage("Sorry, your team does not own the connector !!");
   }
