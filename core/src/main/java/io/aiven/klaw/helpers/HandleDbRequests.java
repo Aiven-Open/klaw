@@ -434,7 +434,7 @@ public interface HandleDbRequests {
 
   Optional<ProductDetails> getProductDetails(String name);
 
-  int getAllKafkaComponentsCountForEnv(String env, int tenantId);
+  boolean existsKafkaComponentsForEnv(String env, int tenantId);
 
   boolean existsConnectorComponentsForEnv(String env, int tenantId);
 

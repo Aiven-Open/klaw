@@ -47,10 +47,7 @@ public interface TopicRepo extends CrudRepository<Topic, TopicID> {
   List<Object[]> findAllTopicsForTeam(
       @Param("teamIdVar") Integer teamIdVar, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value = "select count(*) from kwtopics where env = :envId and tenantid = :tenantId",
-      nativeQuery = true)
-  List<Object[]> findAllTopicsCountForEnv(
+  boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
   @Query(

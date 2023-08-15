@@ -1451,13 +1451,23 @@ public class SelectDataJdbc {
     return productDetailsRepo.findById(name);
   }
 
-  public int findAllKafkaComponentsCountForEnv(String env, int tenantId) {
-    return ((Long) topicRepo.findAllTopicsCountForEnv(env, tenantId).get(0)[0]).intValue()
-        + ((Long) topicRequestsRepo.findAllTopicRequestsCountForEnv(env, tenantId).get(0)[0])
-            .intValue()
-        + ((Long) aclRepo.findAllAclsCountForEnv(env, tenantId).get(0)[0]).intValue()
-        + ((Long) aclRequestsRepo.findAllAclRequestsCountForEnv(env, tenantId).get(0)[0])
-            .intValue();
+  public boolean existsKafkaComponentsForEnv(String env, int tenantId) {
+    List<Supplier<Boolean>> list =
+        List.of(
+            () -> topicRepo.existsByEnvironmentAndTenantId(env, tenantId),
+            () ->
+                topicRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatus(
+                    tenantId, env, RequestStatus.CREATED.value),
+            () -> aclRepo.existsByEnvironmentAndTenantId(env, tenantId),
+            () ->
+                aclRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatus(
+                    tenantId, env, RequestStatus.CREATED.value));
+    for (var elem : list) {
+      if (elem.get()) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public boolean existsConnectorComponentsForEnv(String env, int tenantId) {
@@ -1478,7 +1488,9 @@ public class SelectDataJdbc {
   public boolean existsSchemaComponentsForEnv(String env, int tenantId) {
     List<Supplier<Boolean>> list =
         List.of(
-            () -> schemaRequestRepo.existsSchemaRequestByEnvironmentAndTenantId(env, tenantId),
+            () ->
+                schemaRequestRepo.existsSchemaRequestByEnvironmentAndTenantIdAndRequestStatus(
+                    env, tenantId, RequestStatus.CREATED.value),
             () -> messageSchemaRepo.existsMessageSchemaByEnvironmentAndTenantId(env, tenantId));
     for (var elem : list) {
       if (elem.get()) {
