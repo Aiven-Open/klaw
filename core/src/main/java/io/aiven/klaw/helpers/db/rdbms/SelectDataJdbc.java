@@ -235,6 +235,7 @@ public class SelectDataJdbc {
     }
     return aclRequestsRepo.findAll(Example.of(request));
   }
+
   /**
    * Query the AclRequestsRepo by supplying optional search parameters any given search parameters
    * will be utilised in the search.
@@ -246,10 +247,7 @@ public class SelectDataJdbc {
    * @return
    */
   public Iterable<AclRequests> findAclRequestsByExample(
-      int tenantId,
-      String environment,
-      String requestStatus,
-      String topic) {
+      int tenantId, String environment, String requestStatus, String topic) {
 
     AclRequests request = new AclRequests();
 

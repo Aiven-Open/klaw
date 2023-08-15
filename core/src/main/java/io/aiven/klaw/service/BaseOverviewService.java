@@ -17,13 +17,11 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.PromotionStatusType;
-import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.repository.AclRequestsRepo;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -232,11 +230,17 @@ public abstract class BaseOverviewService {
     List<AclOverviewInfo> aclList = new ArrayList<>();
     AclOverviewInfo mp;
     List<AclRequests> disable;
-    
+
     for (Acl aclSotItem : aclsFromSOT) {
-      disable = aclRequestsRepo.findAllByTenantIdAndEnvironmentAndRequestStatusAndTopicname(tenantId, aclSotItem.getEnvironment(), RequestStatus.DELETED.value, aclSotItem.getTopicname());
+      disable =
+          aclRequestsRepo.findAllByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
+              tenantId,
+              aclSotItem.getEnvironment(),
+              RequestStatus.DELETED.value,
+              aclSotItem.getTopicname());
       if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) {
-        boolean itemExists = disable.stream().anyMatch(item -> item.getReq_no().equals(aclSotItem.getReq_no()));
+        boolean itemExists =
+            disable.stream().anyMatch(item -> item.getReq_no().equals(aclSotItem.getReq_no()));
         mp = new AclOverviewInfo();
         mp.setEnvironment(aclSotItem.getEnvironment());
         Env envDetails = getEnvDetails(aclSotItem.getEnvironment(), tenantId);
