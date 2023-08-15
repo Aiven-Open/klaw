@@ -4,7 +4,9 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_101;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.OperationalRequest;
+import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
@@ -14,13 +16,25 @@ import io.aiven.klaw.model.cluster.consumergroup.OffsetsTiming;
 import io.aiven.klaw.model.cluster.consumergroup.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.MailType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
+import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
+import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
 import java.sql.Timestamp;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -34,16 +48,19 @@ public class OperationalRequestsService {
   private final MailUtils mailService;
   private final ClusterApiService clusterApiService;
   private final CommonUtilsService commonUtilsService;
+  private final RolesPermissionsControllerService rolesPermissionsControllerService;
 
   public OperationalRequestsService(
       ManageDatabase manageDatabase,
       MailUtils mailService,
       ClusterApiService clusterApiService,
-      CommonUtilsService commonUtilsService) {
+      CommonUtilsService commonUtilsService,
+      RolesPermissionsControllerService rolesPermissionsControllerService) {
     this.manageDatabase = manageDatabase;
     this.mailService = mailService;
     this.clusterApiService = clusterApiService;
     this.commonUtilsService = commonUtilsService;
+    this.rolesPermissionsControllerService = rolesPermissionsControllerService;
   }
 
   public ApiResponse createConsumerOffsetsResetRequest(
@@ -89,6 +106,170 @@ public class OperationalRequestsService {
 
     ZonedDateTime parsedDate = ZonedDateTime.parse(timeStampStr, dfUTC);
     return Timestamp.from(parsedDate.toInstant());
+  }
+
+  public List<OperationalRequestsResponseModel> getConsumerOffsetsResetRequests(
+      String pageNo,
+      String currentPage,
+      OperationalRequestType operationalRequestType,
+      String requestStatus,
+      String env,
+      String wildcardSearch,
+      Order order,
+      boolean isMyRequest) {
+    log.debug("getTopicRequests page {} operationalRequestType {}", pageNo, operationalRequestType);
+    String userName = getUserName();
+    HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+    List<OperationalRequest> operationalRequests =
+        dbHandle.getOperationalRequests(
+            userName,
+            operationalRequestType,
+            requestStatus,
+            env,
+            wildcardSearch,
+            isMyRequest,
+            commonUtilsService.getTenantId(userName));
+    // tenant filtering
+    operationalRequests = filterByTenantAndSort(order, userName, operationalRequests);
+
+    operationalRequests = getOperationalRequestsPaged(operationalRequests, pageNo, currentPage);
+    return getOperationalRequestModels(operationalRequests);
+  }
+
+  private List<OperationalRequestsResponseModel> getOperationalRequestModels(
+      List<OperationalRequest> operationalRequestList) {
+    List<OperationalRequestsResponseModel> operationalRequestModelList = new ArrayList<>();
+    OperationalRequestsResponseModel operationalRequestModel;
+    String userName = getUserName();
+    Integer userTeamId = commonUtilsService.getTeamId(userName);
+
+    int tenantId = commonUtilsService.getTenantId(userName);
+    List<String> approverRoles =
+        rolesPermissionsControllerService.getApproverRoles("TOPICS", tenantId);
+    List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
+
+    for (OperationalRequest topicReq : operationalRequestList) {
+      operationalRequestModel = new OperationalRequestsResponseModel();
+      copyProperties(topicReq, operationalRequestModel);
+      operationalRequestModel.setRequestStatus(RequestStatus.of(topicReq.getRequestStatus()));
+      operationalRequestModel.setOperationalRequestType(topicReq.getOperationalRequestType());
+
+      operationalRequestModel.setTeamname(
+          manageDatabase.getTeamNameFromTeamId(tenantId, topicReq.getRequestingTeamId()));
+
+      // show approving info only before approvals
+      if (RequestStatus.APPROVED != operationalRequestModel.getRequestStatus()) {
+        operationalRequestModel.setApprovingTeamDetails(
+            updateApproverInfo(
+                userList,
+                manageDatabase.getTeamNameFromTeamId(tenantId, userTeamId),
+                approverRoles,
+                operationalRequestModel.getRequestor()));
+      }
+      operationalRequestModelList.add(setRequestorPermissions(operationalRequestModel, userName));
+    }
+    return operationalRequestModelList;
+  }
+
+  private OperationalRequestsResponseModel setRequestorPermissions(
+      OperationalRequestsResponseModel req, String userName) {
+    log.debug(
+        " My request Status {} and userName {} and requestor {}",
+        req.getRequestStatus(),
+        userName,
+        req.getRequestor());
+    if (RequestStatus.CREATED == req.getRequestStatus()
+        && userName != null
+        && userName.equals(req.getRequestor())) {
+      req.setDeletable(true);
+      req.setEditable(true);
+    }
+
+    return req;
+  }
+
+  private String updateApproverInfo(
+      List<UserInfo> userList, String teamName, List<String> approverRoles, String requestor) {
+    StringBuilder approvingInfo = new StringBuilder("Team : " + teamName + ", Users : ");
+
+    for (UserInfo userInfo : userList) {
+      if (approverRoles.contains(userInfo.getRole())
+          && !Objects.equals(requestor, userInfo.getUsername())) {
+        approvingInfo.append(userInfo.getUsername()).append(",");
+      }
+    }
+
+    return String.valueOf(approvingInfo);
+  }
+
+  private List<OperationalRequest> getOperationalRequestsPaged(
+      List<OperationalRequest> origActivityList, String pageNo, String currentPage) {
+
+    List<OperationalRequest> newList = new ArrayList<>();
+    Env envSelected;
+
+    if (origActivityList != null && origActivityList.size() > 0) {
+      int totalRecs = origActivityList.size();
+      int recsPerPage = 10;
+      int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
+
+      pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
+      int requestPageNo = Integer.parseInt(pageNo);
+      int startVar = (requestPageNo - 1) * recsPerPage;
+      int lastVar = (requestPageNo) * (recsPerPage);
+
+      List<String> numList = new ArrayList<>();
+      commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
+
+      for (int i = 0; i < totalRecs; i++) {
+        OperationalRequest operationalRequest = origActivityList.get(i);
+        if (i >= startVar && i < lastVar) {
+          operationalRequest.setAllPageNos(numList);
+          operationalRequest.setTotalNoPages("" + totalPages);
+          operationalRequest.setCurrentPage(pageNo);
+          envSelected = getEnvDetails(operationalRequest.getEnvironment());
+          operationalRequest.setEnvironmentName(envSelected.getName());
+          newList.add(operationalRequest);
+        }
+      }
+    }
+
+    return newList;
+  }
+
+  public Env getEnvDetails(String envId) {
+    Optional<Env> envFound =
+        manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()
+            .filter(env -> Objects.equals(env.getId(), envId))
+            .findFirst();
+    return envFound.orElse(null);
+  }
+
+  private List<OperationalRequest> filterByTenantAndSort(
+      Order order, String userName, List<OperationalRequest> topicReqs) {
+    try {
+      final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
+      topicReqs =
+          topicReqs.stream()
+              .filter(topicRequest -> allowedEnvIdSet.contains(topicRequest.getEnvironment()))
+              .sorted(getPreferredOrdering(order))
+              .collect(Collectors.toList());
+    } catch (Exception e) {
+      log.error("No environments/clusters found.", e);
+      return new ArrayList<>();
+    }
+    return topicReqs;
+  }
+
+  private Comparator<OperationalRequest> getPreferredOrdering(Order order) {
+    return switch (order) {
+      case ASC_REQUESTED_TIME -> compareByTime();
+      case DESC_REQUESTED_TIME -> Collections.reverseOrder(compareByTime());
+    };
+  }
+
+  private static Comparator<OperationalRequest> compareByTime() {
+    return Comparator.comparing(OperationalRequest::getRequesttime);
   }
 
   public ApiResponse resetConsumerOffsets(String req_no) {

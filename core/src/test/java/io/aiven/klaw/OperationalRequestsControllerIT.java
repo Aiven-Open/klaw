@@ -13,9 +13,12 @@ import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
+import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
 import io.aiven.klaw.service.ClusterApiService;
+import java.util.List;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -68,6 +71,7 @@ public class OperationalRequestsControllerIT {
   }
 
   @Test
+  @Order(1)
   public void createOffsetResetRequest() throws Exception {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         utilMethods.getConsumerOffsetResetRequest();
@@ -86,6 +90,31 @@ public class OperationalRequestsControllerIT {
 
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response1.isSuccess()).isTrue();
+  }
+
+  @Test
+  @Order(2)
+  public void getOffsetResetRequests() throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/operationalRequest")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .param("pageNo", "1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    List<OperationalRequestsResponseModel> operationalRequestList =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(operationalRequestList.size()).isEqualTo(1);
+    assertThat(operationalRequestList.get(0).getTopicname())
+        .isEqualTo(utilMethods.getConsumerOffsetResetRequest().getTopicname());
+    assertThat(operationalRequestList.get(0).getConsumerGroup())
+        .isEqualTo(utilMethods.getConsumerOffsetResetRequest().getConsumerGroup());
+    assertThat(operationalRequestList.get(0).getOffsetResetType())
+        .isEqualTo(utilMethods.getConsumerOffsetResetRequest().getOffsetResetType());
   }
 
   // Create user1, user2, user3 with USER role success

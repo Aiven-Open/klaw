@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -89,4 +90,10 @@ public class OperationalRequest implements Serializable {
   @Transient private String environmentName;
 
   @Transient private String requesttimestring;
+
+  @Transient private String totalNoPages;
+
+  @Transient private String currentPage;
+
+  @Transient private List<String> allPageNos;
 }

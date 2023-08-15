@@ -4,6 +4,7 @@ import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -66,6 +67,15 @@ public interface HandleDbRequests {
       String requestor,
       String status,
       RequestOperationType requestoperationType,
+      String env,
+      String wildcardSearch,
+      boolean isMyRequest,
+      int tenantId);
+
+  List<OperationalRequest> getOperationalRequests(
+      String userName,
+      OperationalRequestType operationalRequestType,
+      String requestStatus,
       String env,
       String wildcardSearch,
       boolean isMyRequest,

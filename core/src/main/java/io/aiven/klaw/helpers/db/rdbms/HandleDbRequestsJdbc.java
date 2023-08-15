@@ -5,6 +5,7 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -140,6 +141,27 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         tenantId,
         null,
         requestOperationType,
+        env,
+        wildcardSearch,
+        isMyRequest);
+  }
+
+  public List<OperationalRequest> getOperationalRequests(
+      String requestor,
+      OperationalRequestType operationalRequestType,
+      String requestStatus,
+      String env,
+      String wildcardSearch,
+      boolean isMyRequest,
+      int tenantId) {
+    return jdbcSelectHelper.selectFilteredOperationalRequests(
+        false,
+        requestor,
+        requestStatus,
+        false,
+        tenantId,
+        null,
+        operationalRequestType,
         env,
         wildcardSearch,
         isMyRequest);
