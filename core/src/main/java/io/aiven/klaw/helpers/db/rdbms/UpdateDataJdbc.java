@@ -229,7 +229,7 @@ public class UpdateDataJdbc {
       return ApiResultStatus.SUCCESS.value;
     }
     switch (rot) {
-      case CREATE -> insertDataJdbcHelper.insertIntoConnectorSOT(connectors, false);
+      case CREATE, PROMOTE -> insertDataJdbcHelper.insertIntoConnectorSOT(connectors, false);
       case UPDATE -> updateConnectorSOT(connectors, connectorRequest.getOtherParams());
       case DELETE -> deleteDataJdbcHelper.deleteConnectors(topicObj);
     }
