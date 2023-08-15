@@ -224,7 +224,7 @@ describe("PromotionBanner", () => {
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
-        "/requests/schemas?search=my-test-topic&requestType=CREATE&status=CREATED&page=1"
+        "/requests/schemas?search=my-test-topic&requestType=PROMOTE&status=CREATED&page=1"
       );
     });
   });
