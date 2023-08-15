@@ -224,7 +224,7 @@ public class KafkaConnectController {
       @RequestParam("connectorName") String connectorName)
       throws KlawBadRequestException {
     return new ResponseEntity<>(
-        kafkaConnectControllerService.getConnectorDetailsPerEnv(envId, connectorName),
+        kafkaConnectControllerService.getConnectorDetailsPerEnvToEdit(envId, connectorName),
         HttpStatus.OK);
   }
 

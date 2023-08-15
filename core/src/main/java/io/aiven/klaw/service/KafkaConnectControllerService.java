@@ -557,7 +557,8 @@ public class KafkaConnectControllerService {
     return connectorRequestModels;
   }
 
-  private String createConnectorConfig(KafkaConnectorRequest connectorRequest) {
+  private String createConnectorConfig(
+      KafkaConnectorRequest connectorRequest, String typeOfRequest) {
     ConnectorConfig connectorConfig = new ConnectorConfig();
     connectorConfig.setName(connectorRequest.getConnectorName());
 
@@ -568,7 +569,11 @@ public class KafkaConnectControllerService {
       ObjectNode objectNode = (ObjectNode) jsonNode;
       connectorConfig.setConfig(objectNode);
 
-      return WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(connectorConfig);
+      if (typeOfRequest.equals(RequestOperationType.UPDATE.value)) {
+        return WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(objectNode);
+      } else {
+        return WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(connectorConfig);
+      }
     } catch (JsonProcessingException e) {
       log.error("Exception:", e);
       return e.toString();
@@ -623,9 +628,9 @@ public class KafkaConnectControllerService {
             .getConnectorRequestsForConnector(Integer.parseInt(connectorId), tenantId);
 
     String jsonConnectorConfig;
-
     try {
-      jsonConnectorConfig = createConnectorConfig(connectorRequest);
+      jsonConnectorConfig =
+          createConnectorConfig(connectorRequest, connectorRequest.getRequestOperationType());
     } catch (Exception e) {
       log.error("Exception:", e);
       throw new KlawException(KAFKA_CONNECT_ERR_112);
@@ -673,30 +678,15 @@ public class KafkaConnectControllerService {
       KafkaSupportedProtocol protocol = kwClusters.getProtocol();
       String kafkaConnectHost = kwClusters.getBootstrapServers();
 
-      if (RequestOperationType.UPDATE.value.equals(
-          connectorRequest.getRequestOperationType())) // only config
-      {
-        updateConnectorReqStatus =
-            clusterApiService.approveConnectorRequests(
-                connectorRequest.getConnectorName(),
-                protocol,
-                connectorRequest.getRequestOperationType(),
-                connectorRequest.getConnectorConfig(),
-                kafkaConnectHost,
-                kwClusters.getClusterName() + kwClusters.getClusterId(),
-                tenantId);
-      } else {
-
-        updateConnectorReqStatus =
-            clusterApiService.approveConnectorRequests(
-                connectorRequest.getConnectorName(),
-                protocol,
-                connectorRequest.getRequestOperationType(),
-                jsonConnectorConfig,
-                kafkaConnectHost,
-                kwClusters.getClusterName() + kwClusters.getClusterId(),
-                tenantId);
-      }
+      updateConnectorReqStatus =
+          clusterApiService.approveConnectorRequests(
+              connectorRequest.getConnectorName(),
+              protocol,
+              connectorRequest.getRequestOperationType(),
+              jsonConnectorConfig,
+              kafkaConnectHost,
+              kwClusters.getClusterName() + kwClusters.getClusterId(),
+              tenantId);
 
       if (Objects.equals(updateConnectorReqStatus, ApiResultStatus.SUCCESS.value)) {
         setConnectorHistory(connectorRequest, userDetails, tenantId);
@@ -1224,7 +1214,7 @@ public class KafkaConnectControllerService {
     return overview;
   }
 
-  public ConnectorOverviewPerEnv getConnectorDetailsPerEnv(String envId, String connectorName)
+  public ConnectorOverviewPerEnv getConnectorDetailsPerEnvToEdit(String envId, String connectorName)
       throws KlawBadRequestException {
     ConnectorOverviewPerEnv connectorOverviewPerEnv = new ConnectorOverviewPerEnv();
     connectorOverviewPerEnv.setConnectorExists(false);
@@ -1262,27 +1252,38 @@ public class KafkaConnectControllerService {
               .collect(Collectors.toList());
     }
 
-    for (KwKafkaConnector kafkaConnector : connectors) {
-      connectorModel.setEnvironmentName(
-          getKafkaConnectEnvDetails(kafkaConnector.getEnvironment()).getName());
-      connectorModel.setEnvironmentId(kafkaConnector.getEnvironment());
-      connectorModel.setConnectorConfig(kafkaConnector.getConnectorConfig());
-      connectorModel.setTeamName(
-          manageDatabase.getTeamNameFromTeamId(tenantId, kafkaConnector.getTeamId()));
-      connectorOverviewPerEnv.setConnectorId(kafkaConnector.getConnectorId());
-    }
-
-    connectorModel.setDescription(topicDescription);
-
     String loggedInUserTeam =
         manageDatabase
             .getHandleDbRequests()
             .getAllTeamsOfUsers(getUserName(), tenantId)
             .get(0)
             .getTeamname();
-    if (!Objects.equals(loggedInUserTeam, connectorModel.getTeamName())) {
-      throw new KlawBadRequestException(KAFKA_CONNECT_ERR_119);
+
+    for (KwKafkaConnector kafkaConnector : connectors) {
+      connectorModel.setEnvironmentName(
+          getKafkaConnectEnvDetails(kafkaConnector.getEnvironment()).getName());
+      connectorModel.setEnvironmentId(kafkaConnector.getEnvironment());
+
+      connectorModel.setTeamName(
+          manageDatabase.getTeamNameFromTeamId(tenantId, kafkaConnector.getTeamId()));
+      if (!Objects.equals(loggedInUserTeam, connectorModel.getTeamName())) {
+        throw new KlawBadRequestException(KAFKA_CONNECT_ERR_119);
+      }
+      connectorOverviewPerEnv.setConnectorId(kafkaConnector.getConnectorId());
+
+      JsonNode jsonNode;
+      try {
+        jsonNode = OBJECT_MAPPER.readTree(kafkaConnector.getConnectorConfig());
+        updateJsonNode("decrypt", jsonNode);
+        ObjectNode objectNode = (ObjectNode) jsonNode;
+        connectorModel.setConnectorConfig(
+            WRITER_WITH_DEFAULT_PRETTY_PRINTER.writeValueAsString(objectNode));
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
     }
+
+    connectorModel.setDescription(topicDescription);
 
     if (connectorModel.getConnectorConfig() != null) {
       connectorOverviewPerEnv.setConnectorExists(true);
