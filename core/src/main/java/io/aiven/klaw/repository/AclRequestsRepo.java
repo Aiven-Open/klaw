@@ -85,7 +85,9 @@ public interface AclRequestsRepo
       nativeQuery = true)
   List<Object[]> findAllAclRequestsGroupByStatusAssignedToTeam(
       @Param("assignedToTeamId") Integer assignedToTeamId, @Param("tenantId") Integer tenantId);
-
+  
+  List<AclRequests> findAllByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(
+      int tenantId, String env, String requestStatus, String requestOperationType, String topicname);
   // requests assigned to my team
   @Query(
       value =

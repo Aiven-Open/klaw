@@ -234,6 +234,43 @@ public class SelectDataJdbc {
     }
     return aclRequestsRepo.findAll(Example.of(request));
   }
+  /**
+   * Query the AclRequestsRepo by supplying optional search parameters any given search parameters
+   * will be utilised in the search.
+   *
+   * @param topic The topic Name
+   * @param environment the environment
+   * @param aclType Producer or consumer
+   * @param requestStatus created/declined/approved
+   * @param requestor the name of the user who created the request in klaw
+   * @param tenantId The tenantId
+   * @return
+   */
+  public Iterable<AclRequests> findAclRequestsByExample(
+      int tenantId,
+      String requestStatus,
+      RequestOperationType requestOperationType,
+      String topic) {
+
+    AclRequests request = new AclRequests();
+
+    request.setTenantId(tenantId);
+    if (topic != null && !topic.isEmpty()) {
+      request.setTopicname(topic);
+    }
+    if (requestStatus != null && !requestStatus.equalsIgnoreCase("all")) {
+      request.setRequestStatus(requestStatus);
+    }
+    if (requestOperationType != null) {
+      request.setRequestOperationType(requestOperationType.value);
+    }
+    // check if debug is enabled so the logger doesnt waste resources converting object request to a
+    // string
+    if (log.isDebugEnabled()) {
+      log.debug("find By topic etc example {}", request);
+    }
+    return aclRequestsRepo.findAll(Example.of(request));
+  }
 
   public List<SchemaRequest> selectFilteredSchemaRequests(
       boolean isApproval,

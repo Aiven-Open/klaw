@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
+import io.aiven.klaw.dao.AclRequests;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicOverviewInfo;
@@ -16,9 +17,13 @@ import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.PromotionStatusType;
+import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
+import io.aiven.klaw.repository.AclRequestsRepo;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -51,6 +56,8 @@ public abstract class BaseOverviewService {
   @Autowired protected ManageDatabase manageDatabase;
   @Autowired protected ClusterApiService clusterApiService;
   @Autowired protected CommonUtilsService commonUtilsService;
+  @Autowired protected AclRequestsRepo aclRequestsRepo;
+
   protected final MailUtils mailService;
 
   public BaseOverviewService(MailUtils mailService) {
@@ -224,9 +231,12 @@ public abstract class BaseOverviewService {
 
     List<AclOverviewInfo> aclList = new ArrayList<>();
     AclOverviewInfo mp;
-
+    List<AclRequests> disable;
+    
     for (Acl aclSotItem : aclsFromSOT) {
+      disable = aclRequestsRepo.findAllByTenantIdAndEnvironmentAndRequestStatusAndRequestOperationTypeAndTopicname(tenantId, aclSotItem.getEnvironment(), RequestStatus.CREATED.value, RequestOperationType.DELETE.value, aclSotItem.getTopicname());
       if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) {
+        boolean itemExists = disable.stream().anyMatch(item -> item.getReq_no().equals(aclSotItem.getReq_no()));
         mp = new AclOverviewInfo();
         mp.setEnvironment(aclSotItem.getEnvironment());
         Env envDetails = getEnvDetails(aclSotItem.getEnvironment(), tenantId);
@@ -247,7 +257,7 @@ public abstract class BaseOverviewService {
                     .get(envDetails.getClusterId())
                     .getKafkaFlavor()));
         if (aclSotItem.getTeamId() != null && aclSotItem.getTeamId().equals(loggedInUserTeam)) {
-          mp.setShowDeleteAcl(true);
+          mp.setShowDeleteAcl(!itemExists);
           // Only add ACL info if it is the owning team that is requesting it
           mp.setAcl_ip(aclSotItem.getAclip());
           mp.setAcl_ssl(aclSotItem.getAclssl());
