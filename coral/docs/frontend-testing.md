@@ -12,14 +12,14 @@
     * [Goals of testing approach](#goals-of-testing-approach)
     * [How to test](#how-to-test)
         + [How to get the best out of our libs](#how-to-get-the-best-out-of-our-libs)
-            - [Use `screen` when possible](#use--screen--when-possible)
-            - [follow the [recommended priority how to use queries](https://testing-library.com/docs/queries/about/#priority)](#follow-the--recommended-priority-how-to-use-queries--https---testing-librarycom-docs-queries-about--priority-)
-            - [make use of the [jest-dom matcher](https://github.com/testing-library/jest-dom)](#make-use-of-the--jest-dom-matcher--https---githubcom-testing-library-jest-dom-)
+            - [Use `screen` when possible](#use-screen-when-possible)
+            - [follow the [recommended priority how to use queries](https://testing-library.com/docs/queries/about/#priority)](#follow-the-recommended-priority-how-to-use-queries)
+            - [make use of the [jest-dom matcher](https://github.com/testing-library/jest-dom)](#make-use-of-the-jest-dom-matcher)
                 * [Example and benefits of jest-dom matcher](#example-and-benefits-of-jest-dom-matcher)
         + [How to structure test files](#how-to-structure-test-files)
         + [How to group tests meaningful](#how-to-group-tests-meaningful)
-            - [Example: Grouping tests that check the default markup is rendered](#example--grouping-tests-that-check-the-default-markup-is-rendered)
-            - [Example: Grouping tests that test user interaction](#example--grouping-tests-that-test-user-interaction)
+            - [Example: Grouping tests that check the default markup is rendered](#example-grouping-tests-that-check-the-default-markup-is-rendered)
+            - [Example: Grouping tests that test user interaction](#example-grouping-tests-that-test-user-interaction)
     * [How to write test descriptions](#how-to-write-test-descriptions)
         + [General tip](#general-tip)
         + [Recommended rules](#recommended-rules)
@@ -157,7 +157,7 @@ It’s not necessary to use `toBeVisible()` on e.g. form elements. If they are n
 
 `.toBeChecked()` is another custom matcher from jest-dom. Only a valid, semantic and at least mostly accessible html element can be asserted with this. It can't be used on a `button type="button"` for example. This implicitly make sure all these things are working correctly.
 
-#### How to structure test files 
+#### How to structure test files
 
 The first `describe` block:
 

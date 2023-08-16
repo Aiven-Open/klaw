@@ -7,7 +7,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 ## Table of content
 
 * [First setup](#first-setup)
-+ [Note on login and authentication](#note-to-login-and-authentication)
++ [Note on login and authentication](#note-on-login-and-authentication)
     * [Login ](#login)
     * [Authentication expired](#authentication-expired)
     - [🙋Potential browser problem](#potential-browser-problem)
@@ -72,7 +72,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 
 The correct redirect for login and authentication is **not** working yet.
 
-##### Login 
+##### Login
 
 - Go to your [local Klaw](http://localhost:9097/login)
 - Login with your credentials
