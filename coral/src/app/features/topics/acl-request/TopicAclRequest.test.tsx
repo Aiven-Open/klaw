@@ -1263,7 +1263,7 @@ describe("<TopicAclRequest />", () => {
         });
 
         await userEvent.type(consumerGroupField, "group");
-        userEvent.tab();
+        await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
@@ -2681,7 +2681,7 @@ describe("<TopicAclRequest />", () => {
         });
 
         await userEvent.type(consumerGroupField, "group");
-        userEvent.tab();
+        await userEvent.tab();
 
         await waitFor(() => expect(submitButton).toBeEnabled());
         await userEvent.click(submitButton);
