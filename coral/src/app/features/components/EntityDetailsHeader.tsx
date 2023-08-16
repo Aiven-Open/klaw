@@ -9,11 +9,13 @@ import database from "@aivenio/aquarium/dist/src/icons/database";
 import { Dispatch, SetStateAction } from "react";
 import { EnvironmentInfo } from "src/domain/environment";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
+import { DisabledButtonTooltip } from "src/app/components/DisabledButtonTooltip";
 
 type TopicOverviewHeaderProps = {
   entity: { name: string; type: "connector" | "topic" };
   entityEditLink: string;
   showEditButton: boolean;
+  hasPendingRequest: boolean;
   entityExists: boolean;
   entityUpdating: boolean;
   environments?: EnvironmentInfo[];
@@ -25,6 +27,7 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
   const {
     entity,
     showEditButton,
+    hasPendingRequest,
     entityEditLink,
     environments,
     environmentId,
@@ -97,13 +100,22 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
           </Box>
         )}
       </Box>
-      {showEditButton && (
+      {showEditButton && !hasPendingRequest && (
         <InternalLinkButton
           to={entityEditLink}
           disabled={!entityExists || entityUpdating}
         >
           {`Edit ${entity.type}`}
         </InternalLinkButton>
+      )}
+
+      {showEditButton && hasPendingRequest && (
+        <DisabledButtonTooltip
+          tooltip={`The ${entity.type} has a pending request.`}
+          role={"link"}
+        >
+          {`Edit ${entity.type}`}
+        </DisabledButtonTooltip>
       )}
     </Box>
   );
