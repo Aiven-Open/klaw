@@ -37,7 +37,6 @@ type Environment = {
 type EnvironmentInfo = KlawApiModel<"EnvIdInfo">;
 
 const ALL_ENVIRONMENTS_VALUE = "ALL";
-const ENVIRONMENT_NOT_INITIALIZED = "d3a914ff-cff6-42d4-988e-b0425128e770";
 
 export type { Environment, EnvironmentInfo };
-export { ALL_ENVIRONMENTS_VALUE, ENVIRONMENT_NOT_INITIALIZED };
+export { ALL_ENVIRONMENTS_VALUE };

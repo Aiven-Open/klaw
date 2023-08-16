@@ -1,4 +1,4 @@
-import { Topic, TopicRequest } from "src/domain/topic/topic-types";
+import { Topic } from "src/domain/topic/topic-types";
 import { KlawApiResponse } from "types/utils";
 import { EnvironmentInfo } from "src/domain/environment/environment-types";
 
@@ -116,45 +116,8 @@ function createMockTopicApiResponse({
   return response;
 }
 
-const defaultTopicRequest: TopicRequest = {
-  topicname: "test-topic-1",
-  environment: "1",
-  topicpartitions: 4,
-  teamname: "NCC1701D",
-  remarks: "asap",
-  description: "This topic is for test",
-  replicationfactor: "2",
-  environmentName: "BRG",
-  topicid: 1000,
-  advancedTopicConfigEntries: [
-    {
-      configKey: "cleanup.policy",
-      configValue: "delete",
-    },
-  ],
-  requestOperationType: "CREATE",
-  requestor: "jlpicard",
-  requesttime: "1987-09-28T13:37:00.001+00:00",
-  requesttimestring: "28-Sep-1987 13:37:00",
-  requestStatus: "CREATED",
-  totalNoPages: "1",
-  approvingTeamDetails:
-    "Team : NCC1701D, Users : jlpicard, worf, bcrusher, geordilf,",
-  teamId: 1003,
-  allPageNos: ["1"],
-  currentPage: "1",
-  editable: true,
-  deletable: true,
-  deleteAssociatedSchema: false,
-};
-
-function createMockTopicRequest(request?: Partial<TopicRequest>): TopicRequest {
-  return { ...defaultTopicRequest, ...request };
-}
-
 export {
   createMockTopic,
   createMockTopicApiResponse,
   baseTestObjectMockedTopic,
-  createMockTopicRequest,
 };
