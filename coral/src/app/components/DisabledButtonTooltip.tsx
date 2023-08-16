@@ -32,7 +32,7 @@ function DisabledButtonTooltip({
       // does not build a relation by using aria-describedby.
       aria-hidden="true"
       content={props.tooltip}
-      placement="left"
+      placement="bottom"
       isOpen={tooltipOpen}
       data-testid={"test"}
     >
@@ -43,7 +43,7 @@ function DisabledButtonTooltip({
           aria-label={`${children}. ${props.tooltip}`}
           // this event handling is not ideal, since a button in focus will
           // behave unexpected when mouse and keyboard are used. since it's
-          // an edgecase and we (hopefully) can use tooltip soon, it is ok
+          // an edge case and we (hopefully) can use tooltip soon, it is ok
           onMouseEnter={toggleTooltip}
           onMouseLeave={toggleTooltip}
           onFocus={toggleTooltip}
