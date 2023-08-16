@@ -25,7 +25,7 @@ function NoDocumentationBanner({
     <EmptyState
       title={"No readme available"}
       image={illustration}
-      layout={EmptyStateLayout.CenterHorizontal}
+      layout={EmptyStateLayout.Horizontal}
       primaryAction={{
         text: "Add readme",
         onClick: addDocumentation,
