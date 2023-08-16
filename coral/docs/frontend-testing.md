@@ -111,7 +111,8 @@ We recommend to use screen where it is possible. It helps developer experience b
 
 A great benefit is that this can help us making our markup more accessible. If you can't use the recommended query, you should check if there is a reason for that. 
 
-**Example**: There is a alert and you can't query it other than with looking for the text? That means assistive technology also has no information that this is a warning. Changing that element to have an [alert role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role) enables you to use the recommended queries. And it makes the content more accessible!
+**Example**: There is an alert, and you can't query it other than with looking for the text? That means assistive 
+technology also has no information that this is a warning. Changing that element to have an [alert role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role) enables you to use the recommended queries. And it makes the content more accessible!
 
 **💡 Tip to remember the right query**
 
@@ -129,7 +130,8 @@ throwSuggestions: true
 
 This adds the config only to your test file. No others are not affected! The config is making mistakes and still experimental, so we won't use it in a general config. It's up to you if you want to remove it in your test file after writing the tests. 
 
-⚠️ Note: it only suggests a better query if the element in the component is semantically correct / accessible. It only solve something on the test side (using better queries to make test implicitly test more important things), not on the code side.
+⚠️ Note: it only suggests a better query if the element in the component is semantically correct / accessible. It 
+only solves something on the test side (using better queries to make test implicitly test more important things), not on the code side.
 
 ##### make use of the [jest-dom matcher](https://github.com/testing-library/jest-dom)
 
@@ -312,9 +314,9 @@ This block can:
 
 Examples:
 
-- describe *“renders all necessary elements"*
-- describe *“when user selects a certain environment"*
-- describe *“handles the form for deleting a topic"*
+- describe *"renders all necessary elements"*
+- describe *"when user selects a certain environment"*
+- describe *"handles the form for deleting a topic"*
 
 The `it` block contains the specification itself. Together with its assertion it describes the expected outcome. Keep in mind that **one-assertion-per-it** is a good rule to follow for small tests. 
 
@@ -324,13 +326,13 @@ We read the `it` together with the description itself:
 it('closes the modal when user confirms')
 ```
 
-Is read as *“it closes the modal when user confirms"*
+Is read as *"it closes the modal when user confirms"*
 
 Examples:
 
-- it *“shows an input element"*
-- it *“changes the color when user clicks button"*
-- it *“disables the button when required input is missing"*
+- it *"shows an input element"*
+- it *"changes the color when user clicks button"*
+- it *"disables the button when required input is missing"*
 
 #### Recommended rules
 

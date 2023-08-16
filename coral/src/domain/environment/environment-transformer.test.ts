@@ -6,7 +6,7 @@ import { Environment } from "src/domain/environment/environment-types";
 describe("environment-transformer.ts", () => {
   describe("transformEnvironmentApiResponse", () => {
     // even though the openapi definition defines `params` as required
-    // some endpoints don't have a `params` property
+    // some endpoints don't have a `params` property,
     // so we need to add a handling for that, too
     it("transforms API response objects into application domain model without params", () => {
       const emptyParamsEnv: KlawApiModel<"EnvModelResponse"> =

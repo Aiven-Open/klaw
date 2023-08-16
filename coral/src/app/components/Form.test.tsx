@@ -437,7 +437,7 @@ describe("Form", () => {
       assertSubmitted({ city: "Berlin" });
     });
 
-    // @TODO accesibility testing once tab navigation is fixed for RadioButton
+    // @TODO accessibility testing once tab navigation is fixed for RadioButton
   });
 
   describe("<RadioButtonGroup>", () => {
@@ -489,7 +489,7 @@ describe("Form", () => {
       assertSubmitted({ city: "Helsinki" });
     });
 
-    // @TODO accesibility testing once tab navigation is fixed for RadioButtonGroup
+    // @TODO accessibility testing once tab navigation is fixed for RadioButtonGroup
   });
 
   describe("<ComplexNativeSelect>", () => {
@@ -795,7 +795,7 @@ describe("Form", () => {
     it("renders the file input as required dependent on prop", () => {
       // component is not set to required for all the other
       // test cases because we can't "upload" a valid file with
-      // content in test, so this block has it's own cleanup/render
+      // content in test, so this block has its own cleanup/render
       cleanup();
       renderForm(
         <FileInput<Schema>

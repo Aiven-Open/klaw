@@ -475,7 +475,7 @@ describe("AclApprovals", () => {
   describe("enables user to approve a request with quick action", () => {
     const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
@@ -493,7 +493,7 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -566,7 +566,7 @@ describe("AclApprovals", () => {
   describe("enables user to approve a request through details modal", () => {
     const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
@@ -585,7 +585,7 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -685,7 +685,7 @@ describe("AclApprovals", () => {
   describe("enables user to decline a request with quick action", () => {
     const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
@@ -704,7 +704,7 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -847,7 +847,7 @@ describe("AclApprovals", () => {
   describe("enables user to decline a request through details modal", () => {
     const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
@@ -866,7 +866,7 @@ describe("AclApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });

@@ -15,7 +15,7 @@ function parseErrorMsg(error: unknown): string {
     return error.message;
   }
 
-  // eg. see structure of error we return in
+  // e.g. see structure of error we return in
   // handleError as HTTPError
   // same as above, we want to default to
   // the default message in case the string

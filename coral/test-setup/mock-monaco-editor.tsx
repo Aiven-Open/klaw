@@ -2,7 +2,7 @@
 // @ts-ignore
 import React from "react"; // eslint-disable-line @typescript-eslint/no-unused-vars
 
-// github issue to investigate a more versatile testing approach:
+// GitHub issue to investigate a more versatile testing approach:
 // 🐙 https://github.com/aiven/klaw/issues/475
 jest.mock("@monaco-editor/react", () => {
   return {

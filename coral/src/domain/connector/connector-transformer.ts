@@ -47,7 +47,7 @@ async function transformConnectorOverviewResponse(
   // while we save documentation in stringified html to be
   // backwards compatible with the Angular app for now,
   // we're planing to migrate to pure Markdown at some
-  // point and don't want stringfied html to bleed into
+  // point and don't want stringified html to bleed into
   // an area outside from `/domain`
 
   let documentation;

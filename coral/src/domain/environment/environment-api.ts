@@ -5,7 +5,7 @@ import { KlawApiResponse } from "types/utils";
 
 //  For each entity, there should be two GET endpoints for environments:
 // - one gets *all* environments for that entity: used for browsing (list tables, Approval tables and My requests tables)
-// - one gets environments *filtered according to the admin's rules*: used for creating requests (forms)
+// - one gets environments *filtered according to the admins rules*: used for creating requests (forms)
 
 // Exceptions to this rule:
 // - ACL and Topic share the same environments

@@ -16,8 +16,8 @@
 - we do automated accessibility linting and testing
 - we do manual testing for new features 
 	- using tools to help us find issues
-	- using assisitve technology to see how it works for ourselves
-- we do usability testing sessions with users that are used to assitive technology
+	- using assistive technology to see how it works for ourselves
+- we do usability testing sessions with users that are used to assistive technology
 - we collect resources in documentation for developers for best practices
 
 
@@ -35,7 +35,7 @@
 - Lighthouse (browser extension)
 - axe DevTools - Web Accessibility Testing (browser extension)
 - https://wave.webaim.org/extension/  (browser extension)
-- qualWeb Accessibility Checker (browser extension)
+- Web Accessibility Checker (browser extension)
 - https://validator.w3.org/
 - https://raw.githubusercontent.com/Heydon/REVENGE.CSS/master/revenge.css
 

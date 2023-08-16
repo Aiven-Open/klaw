@@ -182,7 +182,7 @@ describe("ClusterDetails", () => {
         expect(info).toHaveClass("visually-hidden");
       });
 
-      it("hides the definition list from assitive technology", () => {
+      it("hides the definition list from assistive technology", () => {
         const list = getDefinitionList(component);
         expect(list.parentElement).toHaveAttribute("aria-hidden", "true");
       });
