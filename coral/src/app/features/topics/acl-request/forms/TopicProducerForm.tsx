@@ -5,7 +5,7 @@ import {
   Grid,
   GridItem,
   RadioButton as BaseRadioButton,
-  SecondaryButton,
+  Button,
   useToast,
 } from "@aivenio/aquarium";
 import { useMutation } from "@tanstack/react-query";
@@ -193,7 +193,7 @@ const TopicProducerForm = ({
             <SubmitButton loading={isLoading}>Submit request</SubmitButton>
           </GridItem>
           <GridItem>
-            <SecondaryButton
+            <Button.Secondary
               disabled={isLoading}
               type="button"
               onClick={
@@ -203,7 +203,7 @@ const TopicProducerForm = ({
               }
             >
               Cancel
-            </SecondaryButton>
+            </Button.Secondary>
           </GridItem>
         </Grid>
       </Form>
