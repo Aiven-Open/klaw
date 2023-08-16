@@ -19,6 +19,13 @@ import {
 import { isDocumentationTransformationError } from "src/domain/helper/documentation-helper";
 import { parseErrorMsg } from "src/services/mutation-utils";
 
+const readmeDescription = (
+  <Box component={Typography.SmallText} marginBottom={"l2"}>
+    Readme provides essential information, guidelines, and explanations about
+    the connector, helping team members understand its purpose and usage. Edit
+    the readme to update the information as the connector evolves.
+  </Box>
+);
 function ConnectorDocumentation() {
   const queryClient = useQueryClient();
 
@@ -73,12 +80,7 @@ function ConnectorDocumentation() {
     return (
       <>
         <PageHeader title={"Edit readme"} />
-        <Box component={Typography.SmallText} marginBottom={"l2"}>
-          Readme provides essential information, guidelines, and explanations
-          about the connector, helping team members understand its purpose and
-          usage. Edit the readme to update the information as the connector
-          evolves.
-        </Box>
+        {readmeDescription}
         <>
           {isError && (
             <Box marginBottom={"l1"}>
@@ -134,12 +136,7 @@ function ConnectorDocumentation() {
           onClick: () => setEditMode(true),
         }}
       />
-      <Box component={Typography.SmallText} marginBottom={"l2"}>
-        Readme provides essential information, guidelines, and explanations
-        about the connector, helping team members understand its purpose and
-        usage. Edit the readme to update the information as the connector
-        evolves.
-      </Box>
+      {readmeDescription}
       <Box paddingTop={"l2"}>
         <DocumentationView
           markdownString={connectorOverview.connectorDocumentation}

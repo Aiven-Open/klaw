@@ -19,6 +19,13 @@ import { DocumentationEditor } from "src/app/components/documentation/Documentat
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 import { isDocumentationTransformationError } from "src/domain/helper/documentation-helper";
 
+const readmeDescription = (
+  <Box component={Typography.SmallText} marginBottom={"l2"}>
+    Readme provides essential information, guidelines, and explanations about
+    the topic, helping team members understand its purpose and usage. Edit the
+    readme to update the information as the topic evolves.
+  </Box>
+);
 function TopicDocumentation() {
   const queryClient = useQueryClient();
 
@@ -72,11 +79,7 @@ function TopicDocumentation() {
     return (
       <>
         <PageHeader title={"Edit readme"} />
-        <Box component={Typography.SmallText} marginBottom={"l2"}>
-          Readme provides essential information, guidelines, and explanations
-          about the topic, helping team members understand its purpose and
-          usage. Edit the readme to update the information as the topic evolves.
-        </Box>
+        {readmeDescription}
 
         {isError && (
           <Box marginBottom={"l1"}>
@@ -129,11 +132,7 @@ function TopicDocumentation() {
           onClick: () => setEditMode(true),
         }}
       />
-      <Box component={Typography.SmallText} marginBottom={"l2"}>
-        Readme provides essential information, guidelines, and explanations
-        about the topic, helping team members understand its purpose and usage.
-        Edit the readme to update the information as the topic evolves.
-      </Box>
+      {readmeDescription}
 
       <Box paddingTop={"l2"}>
         <DocumentationView markdownString={topicOverview.topicDocumentation} />
