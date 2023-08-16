@@ -54,14 +54,14 @@ const TOPIC_OVERVIEW_TAB_ID_INTO_PATH = {
   [TopicOverviewTabEnum.ACLS]: "subscriptions",
   [TopicOverviewTabEnum.MESSAGES]: "messages",
   [TopicOverviewTabEnum.SCHEMA]: "schema",
-  [TopicOverviewTabEnum.DOCUMENTATION]: "documentation",
+  [TopicOverviewTabEnum.DOCUMENTATION]: "readme",
   [TopicOverviewTabEnum.HISTORY]: "history",
   [TopicOverviewTabEnum.SETTINGS]: "settings",
 } as const;
 
 const CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH = {
   [ConnectorOverviewTabEnum.OVERVIEW]: "overview",
-  [ConnectorOverviewTabEnum.DOCUMENTATION]: "documentation",
+  [ConnectorOverviewTabEnum.DOCUMENTATION]: "readme",
   [ConnectorOverviewTabEnum.HISTORY]: "history",
   [ConnectorOverviewTabEnum.SETTINGS]: "settings",
 } as const;

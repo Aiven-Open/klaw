@@ -14,22 +14,22 @@ describe("NoDocumentationBanner", () => {
 
     afterAll(cleanup);
 
-    it("shows headline No Documentation", () => {
+    it("shows headline No readme", () => {
       const headline = screen.getByRole("heading", {
-        name: "No documentation",
+        name: "No readme available",
       });
       expect(headline).toBeVisible();
     });
 
-    it("shows information that no documentation is available for this connector", () => {
+    it("shows information that no readme is available for this connector", () => {
       const infoText = screen.getByText(
-        "You can add documentation for your connector."
+        "Add a readme to give your team essential information, guidelines, and context about the connector."
       );
       expect(infoText).toBeVisible();
     });
 
-    it("shows button to add a documentation", () => {
-      const button = screen.getByRole("button", { name: "Add documentation" });
+    it("shows button to add a readme", () => {
+      const button = screen.getByRole("button", { name: "Add readme" });
       expect(button).toBeVisible();
     });
   });
@@ -44,8 +44,8 @@ describe("NoDocumentationBanner", () => {
       jest.clearAllMocks();
     });
 
-    it("adds documentation when user clicks button", async () => {
-      const button = screen.getByRole("button", { name: "Add documentation" });
+    it("adds readme when user clicks button", async () => {
+      const button = screen.getByRole("button", { name: "Add readme" });
       await user.click(button);
 
       expect(testAddDocumentation).toHaveBeenCalled();

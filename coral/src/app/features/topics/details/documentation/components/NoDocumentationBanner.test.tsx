@@ -1,6 +1,6 @@
-import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 
 const testAddDocumentation = jest.fn();
 
@@ -16,20 +16,20 @@ describe("NoDocumentationBanner", () => {
 
     it("shows headline No Documentation", () => {
       const headline = screen.getByRole("heading", {
-        name: "No documentation",
+        name: "No readme available",
       });
       expect(headline).toBeVisible();
     });
 
-    it("shows information that no documentation is available for this topic", () => {
+    it("shows information that no readme is available for this topic", () => {
       const infoText = screen.getByText(
-        "You can add documentation for your topic."
+        "Add a readme to give your team essential information, guidelines, and context about the topic."
       );
       expect(infoText).toBeVisible();
     });
 
-    it("shows button to add a documentation", () => {
-      const button = screen.getByRole("button", { name: "Add documentation" });
+    it("shows button to add a readme", () => {
+      const button = screen.getByRole("button", { name: "Add readme" });
       expect(button).toBeVisible();
     });
   });
@@ -44,8 +44,8 @@ describe("NoDocumentationBanner", () => {
       jest.clearAllMocks();
     });
 
-    it("adds documentation when user clicks button", async () => {
-      const button = screen.getByRole("button", { name: "Add documentation" });
+    it("adds readme when user clicks button", async () => {
+      const button = screen.getByRole("button", { name: "Add readme" });
       await user.click(button);
 
       expect(testAddDocumentation).toHaveBeenCalled();
