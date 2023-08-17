@@ -80,6 +80,9 @@ public class KafkaConnectControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
+
+  private static final String ELLIPSIS = "...";
+  private static final int TOPIC_NAME_MAX_LENGTH = 11;
   public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
 
@@ -285,12 +288,17 @@ public class KafkaConnectControllerService {
   }
 
   private void updateTeamNamesForDisplay(List<KafkaConnectorModelResponse> topicListUpdated) {
-    topicListUpdated.forEach(
-        topicInfo -> {
-          if (topicInfo.getTeamName().length() > 9) {
-            topicInfo.setTeamName(topicInfo.getTeamName().substring(0, 8) + "...");
-          }
-        });
+    topicListUpdated.stream()
+        .filter(
+            t ->
+                t.getTeamName().length() > TOPIC_NAME_MAX_LENGTH - ELLIPSIS.length() + 1
+                    && (t.getTeamName().length() != TOPIC_NAME_MAX_LENGTH
+                        || !t.getTeamName().endsWith(ELLIPSIS)))
+        .forEach(
+            topicInfo ->
+                topicInfo.setTeamName(
+                    topicInfo.getTeamName().substring(0, TOPIC_NAME_MAX_LENGTH - ELLIPSIS.length())
+                        + ELLIPSIS));
   }
 
   private List<KafkaConnectorModelResponse> getConnectorsPaginated(
