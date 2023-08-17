@@ -605,181 +605,14 @@ describe("SchemaApprovals", () => {
     });
   });
 
-  describe("enables user to decline a request", () => {
-    const testRequest = mockedApiResponseSchemaRequests.entries[0];
-
-    const originalConsoleError = console.error;
-    beforeEach(async () => {
-      console.error = jest.fn();
-      mockGetSchemaRegistryEnvironments.mockResolvedValue(
-        mockedEnvironmentResponse
-      );
-      mockGetSchemaRequestsForApprover.mockResolvedValue(
-        mockedApiResponseSchemaRequests
-      );
-
-      customRender(<SchemaApprovals />, {
-        queryClient: true,
-        memoryRouter: true,
-      });
-
-      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
-    });
-
-    afterEach(() => {
-      console.error = originalConsoleError;
-      jest.clearAllMocks();
-      cleanup();
-    });
-
-    it("requires user to add a reason for declining", async () => {
-      const declineButton = screen.getByRole("button", {
-        name: `Decline schema request for ${testRequest.topicname}`,
-      });
-
-      await userEvent.click(declineButton);
-      const modal = screen.getByRole("dialog");
-
-      const confirmDeclineButton = within(modal).getByRole("button", {
-        name: "Decline request",
-      });
-      expect(confirmDeclineButton).toBeDisabled();
-
-      await userEvent.click(confirmDeclineButton);
-      expect(mockDeclineSchemaRequest).not.toHaveBeenCalled();
-
-      const message = within(modal).getByRole("textbox", {
-        name: "Submit a reason to decline the request *",
-      });
-      expect(message).toBeRequired();
-
-      await userEvent.type(message, "This is my message");
-      await userEvent.tab();
-
-      expect(confirmDeclineButton).toBeEnabled();
-      expect(console.error).not.toHaveBeenCalled();
-    });
-
-    it("send a decline request api call if user declines a schema request", async () => {
-      mockDeclineSchemaRequest.mockResolvedValue([
-        { success: true, message: "" },
-      ]);
-
-      const declineButton = screen.getByRole("button", {
-        name: `Decline schema request for ${testRequest.topicname}`,
-      });
-
-      await userEvent.click(declineButton);
-      const modal = screen.getByRole("dialog");
-
-      const confirmDeclineButton = within(modal).getByRole("button", {
-        name: "Decline request",
-      });
-
-      const message = within(modal).getByRole("textbox", {
-        name: "Submit a reason to decline the request *",
-      });
-
-      await userEvent.type(message, "This is my message");
-      await userEvent.tab();
-      await userEvent.click(confirmDeclineButton);
-
-      expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
-        reqIds: [testRequest.req_no.toString()],
-        reason: "This is my message",
-      });
-      expect(console.error).not.toHaveBeenCalled();
-    });
-
-    it("updates the the data for the table if user declined a schema request", async () => {
-      mockDeclineSchemaRequest.mockResolvedValue([
-        { success: true, message: "" },
-      ]);
-      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
-        1,
-        defaultApiParams
-      );
-
-      const declineButton = screen.getByRole("button", {
-        name: `Decline schema request for ${testRequest.topicname}`,
-      });
-
-      await userEvent.click(declineButton);
-      const modal = screen.getByRole("dialog");
-
-      const confirmDeclineButton = within(modal).getByRole("button", {
-        name: "Decline request",
-      });
-
-      const message = within(modal).getByRole("textbox", {
-        name: "Submit a reason to decline the request *",
-      });
-
-      await userEvent.type(message, "This is my message");
-      await userEvent.tab();
-      await userEvent.click(confirmDeclineButton);
-
-      expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
-        reqIds: [testRequest.req_no.toString()],
-        reason: "This is my message",
-      });
-
-      expect(modal).not.toBeVisible();
-      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
-        2,
-        defaultApiParams
-      );
-      expect(console.error).not.toHaveBeenCalled();
-    });
-
-    it("informs user about error if declining request was not successful", async () => {
-      mockDeclineSchemaRequest.mockRejectedValue("OH NO");
-      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
-        1,
-        defaultApiParams
-      );
-
-      const declineButton = screen.getByRole("button", {
-        name: `Decline schema request for ${testRequest.topicname}`,
-      });
-
-      await userEvent.click(declineButton);
-      const modal = screen.getByRole("dialog");
-
-      const confirmDeclineButton = within(modal).getByRole("button", {
-        name: "Decline request",
-      });
-
-      const message = within(modal).getByRole("textbox", {
-        name: "Submit a reason to decline the request *",
-      });
-
-      await userEvent.type(message, "This is my message");
-      await userEvent.tab();
-      await userEvent.click(confirmDeclineButton);
-
-      expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
-        reqIds: [testRequest.req_no.toString()],
-        reason: "This is my message",
-      });
-
-      expect(modal).not.toBeVisible();
-      expect(mockGetSchemaRequestsForApprover).not.toHaveBeenCalledTimes(2);
-
-      const error = screen.getByRole("alert");
-      expect(error).toBeVisible();
-
-      expect(console.error).toHaveBeenCalledWith("OH NO");
-    });
-  });
-
-  describe("enables user to approve a request", () => {
+  describe("enables user to approve a request with quick action", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
     const orignalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
+      console.error = jest.fn();
       mockGetSchemaRegistryEnvironments.mockResolvedValue(
         mockedEnvironmentResponse
       );
@@ -797,7 +630,7 @@ describe("SchemaApprovals", () => {
 
     afterEach(() => {
       console.error = orignalConsoleError;
-      jest.clearAllMocks();
+      jest.resetAllMocks();
       cleanup();
     });
 
@@ -813,7 +646,7 @@ describe("SchemaApprovals", () => {
       await userEvent.click(approveButton);
 
       expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
-        reqIds: [testRequest.req_no.toString()],
+        reqIds: [String(testRequest.req_no)],
       });
       expect(console.error).not.toHaveBeenCalled();
     });
@@ -834,7 +667,7 @@ describe("SchemaApprovals", () => {
       await userEvent.click(approveButton);
 
       expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
-        reqIds: [testRequest.req_no.toString()],
+        reqIds: [String(testRequest.req_no)],
       });
 
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
@@ -844,7 +677,7 @@ describe("SchemaApprovals", () => {
       expect(console.error).not.toHaveBeenCalled();
     });
 
-    it("informs user about error if declining request was not successful", async () => {
+    it("informs user about error if approving request was not successful", async () => {
       mockApproveSchemaRequest.mockRejectedValue("OH NO");
       expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
         1,
@@ -858,7 +691,7 @@ describe("SchemaApprovals", () => {
       await userEvent.click(approveButton);
 
       expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
-        reqIds: [testRequest.req_no.toString()],
+        reqIds: [String(testRequest.req_no)],
       });
 
       expect(mockApproveSchemaRequest).not.toHaveBeenCalledTimes(2);
@@ -867,6 +700,358 @@ describe("SchemaApprovals", () => {
       expect(error).toBeVisible();
 
       expect(console.error).toHaveBeenCalledWith("OH NO");
+    });
+  });
+
+  describe("enables user to approve a request through details modal", () => {
+    const testRequest = mockedApiResponseSchemaRequests.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      console.error = jest.fn();
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequestsForApprover.mockResolvedValue(
+        mockedApiResponseSchemaRequests
+      );
+
+      customRender(<SchemaApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a approve request api call if user approves a schema request", async () => {
+      mockApproveSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+      expect(modal).not.toBeInTheDocument();
+    });
+
+    it("updates the the data for the table if user approves a schema request", async () => {
+      mockApproveSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+      });
+
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+      expect(modal).not.toBeInTheDocument();
+    });
+
+    it("informs user about error if approving request was not successful", async () => {
+      mockApproveSchemaRequest.mockRejectedValue("OH NO");
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+      });
+
+      expect(mockApproveSchemaRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+      expect(modal).not.toBeInTheDocument();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
+    });
+  });
+
+  describe("enables user to decline a request with quick action", () => {
+    const testRequest = mockedApiResponseSchemaRequests.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      console.error = jest.fn();
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequestsForApprover.mockResolvedValue(
+        mockedApiResponseSchemaRequests
+      );
+
+      customRender(<SchemaApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("does not send a decline request is user does not add a reason", async () => {
+      mockDeclineSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      expect(confirmDecline).toBeDisabled();
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineSchemaRequest).not.toHaveBeenCalled();
+      expect(declineModal).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("send a decline request api call if user declines a schema request", async () => {
+      mockDeclineSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+        reason: "my reason",
+      });
+
+      expect(console.error).not.toHaveBeenCalled();
+      expect(declineModal).not.toBeInTheDocument();
+    });
+
+    it("updates the the data for the table if user declines a schema request", async () => {
+      mockDeclineSchemaRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineSchemaRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+        reason: "my reason",
+      });
+
+      expect(mockGetSchemaRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if declining request was not successful", async () => {
+      mockDeclineSchemaRequest.mockRejectedValue("Oh no");
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockApproveSchemaRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+      expect(declineModal).not.toBeInTheDocument();
+
+      expect(console.error).toHaveBeenCalledWith("Oh no");
+    });
+  });
+
+  describe("enables user to decline a request through details modal", () => {
+    const testRequest = mockedApiResponseSchemaRequests.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      console.error = jest.fn();
+      mockGetSchemaRegistryEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetSchemaRequestsForApprover.mockResolvedValue(
+        mockedApiResponseSchemaRequests
+      );
+
+      customRender(<SchemaApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("opens the decline user flow when user clicks decline in details modal", async () => {
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View schema request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const detailsModal = screen.getByRole("dialog", {
+        name: "Request details",
+      });
+
+      expect(detailsModal).toBeVisible();
+      const declineButton = within(detailsModal).getByRole("button", {
+        name: "Decline",
+      });
+
+      await userEvent.click(declineButton);
+
+      expect(detailsModal).not.toBeInTheDocument();
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+
+      expect(declineModal).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
     });
   });
 });
