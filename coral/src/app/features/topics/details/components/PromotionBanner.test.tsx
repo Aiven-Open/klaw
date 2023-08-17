@@ -23,6 +23,7 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={false}
           errorMessage={""}
         />,
@@ -40,6 +41,7 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={false}
           errorMessage={""}
         />,
@@ -57,6 +59,7 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={false}
           errorMessage={""}
         />,
@@ -74,6 +77,7 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={false}
           errorMessage={""}
         />,
@@ -91,6 +95,7 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={false}
           errorMessage={""}
         />,
@@ -108,6 +113,7 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={false}
           errorMessage={""}
         />,
@@ -126,6 +132,7 @@ describe("PromotionBanner", () => {
           promotionDetails={promotionDetails}
           type={"schema"}
           promoteElement={<></>}
+          hasOpenClaimRequest={false}
           hasOpenRequest={true}
           hasError={false}
           errorMessage={""}
@@ -150,7 +157,7 @@ describe("PromotionBanner", () => {
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
-        "/requests/schemas?search=my-test-topic&status=CREATED&page=1"
+        "/requests/schemas?search=my-test-topic&requestType=ALL&status=CREATED&page=1"
       );
     });
   });
@@ -163,6 +170,7 @@ describe("PromotionBanner", () => {
           promotionDetails={promotionDetails}
           type={"topic"}
           promoteElement={<></>}
+          hasOpenClaimRequest={false}
           hasOpenRequest={true}
           hasError={false}
           errorMessage={""}
@@ -187,7 +195,83 @@ describe("PromotionBanner", () => {
       expect(link).toBeVisible();
       expect(link).toHaveAttribute(
         "href",
-        "/requests/topics?search=my-test-topic&status=CREATED&page=1"
+        "/requests/topics?search=my-test-topic&requestType=ALL&status=CREATED&page=1"
+      );
+    });
+  });
+
+  describe("handles banner for entity with an open claim request (type schema)", () => {
+    beforeAll(() => {
+      customRender(
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"schema"}
+          promoteElement={<></>}
+          hasOpenClaimRequest={true}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
+        { browserRouter: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows information about the open request", () => {
+      const information = screen.getByText(
+        `A claim request for ${testTopicName} is in progress.`
+      );
+
+      expect(information).toBeVisible();
+    });
+
+    it("shows a link to open requests", () => {
+      const link = screen.getByRole("link", { name: "View request" });
+
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute(
+        "href",
+        "/approvals/schemas?search=my-test-topic&requestType=CLAIM&status=CREATED&page=1"
+      );
+    });
+  });
+
+  describe("handles banner for entity with an open claim request (type topic)", () => {
+    beforeAll(() => {
+      customRender(
+        <PromotionBanner
+          entityName={testTopicName}
+          promotionDetails={promotionDetails}
+          type={"topic"}
+          promoteElement={<></>}
+          hasOpenClaimRequest={true}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
+        { browserRouter: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows information about the open request", () => {
+      const information = screen.getByText(
+        `A claim request for ${testTopicName} is in progress.`
+      );
+
+      expect(information).toBeVisible();
+    });
+
+    it("shows a link to open requests", () => {
+      const link = screen.getByRole("link", { name: "View request" });
+
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute(
+        "href",
+        "/approvals/topics?search=my-test-topic&requestType=CLAIM&status=CREATED&page=1"
       );
     });
   });
@@ -200,6 +284,7 @@ describe("PromotionBanner", () => {
           promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
           type={"schema"}
           promoteElement={<></>}
+          hasOpenClaimRequest={false}
           hasOpenRequest={false}
           hasError={false}
           errorMessage={""}
@@ -238,6 +323,7 @@ describe("PromotionBanner", () => {
           type={"topic"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={false}
           errorMessage={""}
         />,
@@ -277,6 +363,7 @@ describe("PromotionBanner", () => {
           promotionDetails={promotionDetails}
           type={"schema"}
           promoteElement={promoteElement}
+          hasOpenClaimRequest={false}
           hasOpenRequest={false}
           hasError={false}
           errorMessage={""}
@@ -314,6 +401,7 @@ describe("PromotionBanner", () => {
           type={"topic"}
           promoteElement={promoteElement}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={false}
           errorMessage={""}
         />,
@@ -360,6 +448,7 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={true}
           errorMessage={testErrorMessage}
         />,
@@ -381,6 +470,7 @@ describe("PromotionBanner", () => {
           type={"schema"}
           promoteElement={<></>}
           hasOpenRequest={false}
+          hasOpenClaimRequest={false}
           hasError={true}
           errorMessage={""}
         />,

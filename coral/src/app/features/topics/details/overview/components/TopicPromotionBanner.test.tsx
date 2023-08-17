@@ -13,6 +13,7 @@ const promotionDetailForPromote: TopicOverview["topicPromotionDetails"] = {
 const promoteProps = {
   topicPromotionDetails: promotionDetailForPromote,
   hasOpenTopicRequest: false,
+  hasOpenClaimRequest: false,
   topicName: "topic-hello",
 };
 
@@ -27,6 +28,14 @@ const promotionDetailForSeeOpenRequest: TopicOverview["topicPromotionDetails"] =
 const seeOpenRequestProps = {
   topicPromotionDetails: promotionDetailForSeeOpenRequest,
   hasOpenTopicRequest: true,
+  hasOpenClaimRequest: false,
+  topicName: "topic-hello",
+};
+
+const seeOpenClaimRequestProps = {
+  topicPromotionDetails: promotionDetailForSeeOpenRequest,
+  hasOpenTopicRequest: false,
+  hasOpenClaimRequest: true,
   topicName: "topic-hello",
 };
 
@@ -41,6 +50,7 @@ const promotionDetailForSeeOpenPromotionRequest: TopicOverview["topicPromotionDe
 const seeOpenPromotionRequestProps = {
   topicPromotionDetails: promotionDetailForSeeOpenPromotionRequest,
   hasOpenTopicRequest: false,
+  hasOpenClaimRequest: false,
   topicName: "topic-hello",
 };
 
@@ -51,6 +61,7 @@ const promotionDetailForNoPromotion: TopicOverview["topicPromotionDetails"] = {
 const nullProps = {
   topicPromotionDetails: promotionDetailForNoPromotion,
   hasOpenTopicRequest: false,
+  hasOpenClaimRequest: false,
   topicName: "topic-hello",
 };
 
@@ -88,7 +99,23 @@ describe("TopicPromotionBanner", () => {
     expect(link).toBeVisible();
     expect(link).toHaveAttribute(
       "href",
-      `/requests/topics?search=${promoteProps.topicName}&status=CREATED&page=1`
+      `/requests/topics?search=${promoteProps.topicName}&requestType=ALL&status=CREATED&page=1`
+    );
+  });
+
+  it("renders correct banner (see open claim request)", () => {
+    customRender(<TopicPromotionBanner {...seeOpenClaimRequestProps} />, {
+      browserRouter: true,
+    });
+
+    const link = screen.getByRole("link", {
+      name: "View request",
+    });
+
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute(
+      "href",
+      `/approvals/topics?search=${promoteProps.topicName}&requestType=CLAIM&status=CREATED&page=1`
     );
   });
 

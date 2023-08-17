@@ -1,6 +1,7 @@
 import { Button } from "@aivenio/aquarium";
 import { TopicSchemaOverview } from "src/domain/topic";
 import { PromotionBanner } from "src/app/features/topics/details/components/PromotionBanner";
+import { useEffect } from "react";
 
 interface SchemaPromotionBannerProps {
   schemaPromotionDetails: TopicSchemaOverview["schemaPromotionDetails"];
@@ -9,6 +10,7 @@ interface SchemaPromotionBannerProps {
    * information to the user.
    */
   hasOpenSchemaRequest: boolean;
+  hasOpenClaimRequest: boolean;
   topicName: string;
   setShowSchemaPromotionModal: () => void;
   hasError?: boolean;
@@ -18,17 +20,23 @@ interface SchemaPromotionBannerProps {
 const SchemaPromotionBanner = ({
   schemaPromotionDetails,
   hasOpenSchemaRequest,
+  hasOpenClaimRequest,
   topicName,
   setShowSchemaPromotionModal,
   hasError = false,
   errorMessage = "",
 }: SchemaPromotionBannerProps) => {
+  useEffect(() => {
+    console.log("hasOpenClaimRequest", hasOpenClaimRequest);
+    console.log("hasOpenSchemaRequest", hasOpenSchemaRequest);
+  });
   return (
     <div data-testid={"schema-promotion-banner"}>
       <PromotionBanner
         entityName={topicName}
         promotionDetails={schemaPromotionDetails}
         hasOpenRequest={hasOpenSchemaRequest}
+        hasOpenClaimRequest={hasOpenClaimRequest}
         type={"schema"}
         hasError={hasError}
         errorMessage={errorMessage}
