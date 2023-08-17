@@ -13,7 +13,7 @@ const AclRequest = () => {
           topicName !== undefined ? `?topicName=${topicName}` : ""
         }`}
       />
-      <PageHeader title={"ACL (Access Control) Request"} />
+      <PageHeader title={"ACL (Access Control) request"} />
       <TopicAclRequest />
     </>
   );
