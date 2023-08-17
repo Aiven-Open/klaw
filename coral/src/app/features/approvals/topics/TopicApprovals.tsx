@@ -96,7 +96,6 @@ function TopicApprovals() {
     mutationFn: approveTopicRequest,
     onSuccess: () => {
       setErrorQuickActions("");
-      setDetailsModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
@@ -120,6 +119,7 @@ function TopicApprovals() {
     onError: (error: HTTPError) => {
       setErrorQuickActions(parseErrorMsg(error));
     },
+    onSettled: closeDetailsModal,
   });
 
   const {
@@ -130,7 +130,6 @@ function TopicApprovals() {
     mutationFn: declineTopicRequest,
     onSuccess: () => {
       setErrorQuickActions("");
-      setDeclineModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
@@ -154,12 +153,21 @@ function TopicApprovals() {
     onError: (error: HTTPError) => {
       setErrorQuickActions(parseErrorMsg(error));
     },
+    onSettled: closeDeclineModal,
   });
 
   const setCurrentPage = (page: number) => {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
   };
+
+  function closeDetailsModal() {
+    setDetailsModal({ isOpen: false, reqNo: null });
+  }
+
+  function closeDeclineModal() {
+    setDeclineModal({ isOpen: false, reqNo: null });
+  }
 
   function handleViewRequest(reqNo: number): void {
     setDetailsModal({ isOpen: true, reqNo });
@@ -219,7 +227,7 @@ function TopicApprovals() {
     <>
       {detailsModal.isOpen && (
         <RequestDetailsModal
-          onClose={() => setDetailsModal({ isOpen: false, reqNo: null })}
+          onClose={closeDetailsModal}
           actions={{
             primary: {
               text: "Approve",
@@ -236,7 +244,7 @@ function TopicApprovals() {
             secondary: {
               text: "Decline",
               onClick: () => {
-                setDetailsModal({ isOpen: false, reqNo: null });
+                closeDetailsModal();
                 setDeclineModal({
                   isOpen: true,
                   reqNo: detailsModal.reqNo,
@@ -256,8 +264,8 @@ function TopicApprovals() {
       )}
       {declineModal.isOpen && (
         <RequestDeclineModal
-          onClose={() => setDeclineModal({ isOpen: false, reqNo: null })}
-          onCancel={() => setDeclineModal({ isOpen: false, reqNo: null })}
+          onClose={closeDeclineModal}
+          onCancel={closeDeclineModal}
           onSubmit={(message: string) => {
             if (declineModal.reqNo === null) {
               setErrorQuickActions("reqNo is null, it should be a number");

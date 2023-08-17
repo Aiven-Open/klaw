@@ -7,7 +7,11 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import AclApprovals from "src/app/features/approvals/acls/AclApprovals";
-import { getAclRequestsForApprover } from "src/domain/acl/acl-api";
+import {
+  approveAclRequest,
+  declineAclRequest,
+  getAclRequestsForApprover,
+} from "src/domain/acl/acl-api";
 import transformAclRequestApiResponse from "src/domain/acl/acl-transformer";
 import { AclRequest } from "src/domain/acl/acl-types";
 import {
@@ -109,7 +113,22 @@ const mockGetAclRequestsForApproverResponse = transformAclRequestApiResponse(
 const mockGetAclRequestsForApproverResponseEmpty =
   transformAclRequestApiResponse([]);
 
+const mockDeclineAclRequest = declineAclRequest as jest.MockedFunction<
+  typeof declineAclRequest
+>;
+const mockApproveAclRequest = approveAclRequest as jest.MockedFunction<
+  typeof approveAclRequest
+>;
+
 describe("AclApprovals", () => {
+  const defaultApiParams = {
+    aclType: "ALL",
+    env: "ALL",
+    pageNo: "1",
+    requestStatus: "CREATED",
+    search: "",
+  };
+
   beforeAll(() => {
     mockIntersectionObserver();
     mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
@@ -200,7 +219,7 @@ describe("AclApprovals", () => {
       const approvedRow = screen.getAllByRole("row")[2];
       await userEvent.click(
         within(approvedRow).getByRole("button", {
-          name: /View acl request for/,
+          name: /View ACL request for/,
         })
       );
       const modal = screen.getByRole("dialog");
@@ -220,7 +239,7 @@ describe("AclApprovals", () => {
 
       await userEvent.click(
         within(createdRow).getByRole("button", {
-          name: /View acl request for/,
+          name: /View ACL request for/,
         })
       );
 
@@ -308,11 +327,8 @@ describe("AclApprovals", () => {
 
       await waitFor(() => {
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
-          aclType: "ALL",
+          ...defaultApiParams,
           env: "1",
-          pageNo: "1",
-          requestStatus: "CREATED",
-          search: "",
         });
       });
     });
@@ -332,11 +348,8 @@ describe("AclApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
-          aclType: "ALL",
-          env: "ALL",
-          pageNo: "1",
+          ...defaultApiParams,
           requestStatus: "DECLINED",
-          search: "",
         })
       );
     });
@@ -356,11 +369,8 @@ describe("AclApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          ...defaultApiParams,
           aclType: "PRODUCER",
-          env: "ALL",
-          pageNo: "1",
-          requestStatus: "CREATED",
-          search: "",
         })
       );
     });
@@ -376,10 +386,7 @@ describe("AclApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
-          aclType: "ALL",
-          env: "ALL",
-          pageNo: "1",
-          requestStatus: "CREATED",
+          ...defaultApiParams,
           search: "topicname",
         })
       );
@@ -400,11 +407,7 @@ describe("AclApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
-          aclType: "ALL",
-          env: "ALL",
-          pageNo: "1",
-          requestStatus: "CREATED",
-          search: "",
+          ...defaultApiParams,
           operationType: "CREATE",
         })
       );
@@ -426,10 +429,8 @@ describe("AclApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
+          ...defaultApiParams,
           aclType: "PRODUCER",
-          env: "ALL",
-          pageNo: "1",
-          requestStatus: "CREATED",
           search: "topicname",
         })
       );
@@ -464,14 +465,437 @@ describe("AclApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetAclRequestsForApprover).toHaveBeenCalledWith({
-          aclType: "ALL",
-          env: "ALL",
-          pageNo: "1",
-          requestStatus: "CREATED",
-          search: "",
+          ...defaultApiParams,
           operationType: "DELETE",
         })
       );
+    });
+  });
+
+  describe("enables user to approve a request with quick action", () => {
+    const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      mockGetAclRequestsForApprover.mockResolvedValue(
+        mockGetAclRequestsForApproverResponse
+      );
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+
+      customRender(<AclApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a approve request api call if user approves a acl request", async () => {
+      mockApproveAclRequest.mockResolvedValue([{ success: true, message: "" }]);
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveAclRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("updates the the data for the table if user approves a acl request", async () => {
+      mockApproveAclRequest.mockResolvedValue([{ success: true, message: "" }]);
+      expect(mockGetAclRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveAclRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+      });
+
+      expect(mockGetAclRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if approving request was not successful", async () => {
+      mockApproveAclRequest.mockRejectedValue("OH NO");
+      expect(mockGetAclRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveAclRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+      });
+
+      expect(mockGetAclRequestsForApprover).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
+    });
+  });
+
+  describe("enables user to approve a request through details modal", () => {
+    const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      console.error = jest.fn();
+      mockGetAclRequestsForApprover.mockResolvedValue(
+        mockGetAclRequestsForApproverResponse
+      );
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+
+      customRender(<AclApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a approve request api call if user approves a acl request", async () => {
+      mockApproveAclRequest.mockResolvedValue([{ success: true, message: "" }]);
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveAclRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+      expect(modal).not.toBeInTheDocument();
+    });
+
+    it("updates the the data for the table if user approves a acl request", async () => {
+      mockApproveAclRequest.mockResolvedValue([{ success: true, message: "" }]);
+      expect(mockGetAclRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveAclRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+      });
+
+      expect(mockGetAclRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+      expect(modal).not.toBeInTheDocument();
+    });
+
+    it("informs user about error if approving request was not successful", async () => {
+      mockApproveAclRequest.mockRejectedValue("OH NO");
+      expect(mockGetAclRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveAclRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+      });
+
+      expect(mockGetAclRequestsForApprover).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+      expect(modal).not.toBeInTheDocument();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
+    });
+  });
+
+  describe("enables user to decline a request with quick action", () => {
+    const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      console.error = jest.fn();
+      mockGetAclRequestsForApprover.mockResolvedValue(
+        mockGetAclRequestsForApproverResponse
+      );
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+
+      customRender(<AclApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("does not send a decline request is user does not add a reason", async () => {
+      mockDeclineAclRequest.mockResolvedValue([{ success: true, message: "" }]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      expect(confirmDecline).toBeDisabled();
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineAclRequest).not.toHaveBeenCalled();
+      expect(declineModal).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("send a decline request api call if user declines a ACL request", async () => {
+      mockDeclineAclRequest.mockResolvedValue([{ success: true, message: "" }]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineAclRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+        reason: "my reason",
+      });
+
+      expect(console.error).not.toHaveBeenCalled();
+      expect(declineModal).not.toBeInTheDocument();
+    });
+
+    it("updates the the data for the table if user declines a ACL request", async () => {
+      mockDeclineAclRequest.mockResolvedValue([{ success: true, message: "" }]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineAclRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.req_no)],
+        reason: "my reason",
+      });
+
+      expect(mockGetAclRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if declining request was not successful", async () => {
+      mockDeclineAclRequest.mockRejectedValue("Oh no");
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockGetAclRequestsForApprover).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+      expect(declineModal).not.toBeInTheDocument();
+
+      expect(console.error).toHaveBeenCalledWith("Oh no");
+    });
+  });
+
+  describe("enables user to decline a request through details modal", () => {
+    const testRequest = mockGetAclRequestsForApproverResponse.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      console.error = jest.fn();
+      mockGetAclRequestsForApprover.mockResolvedValue(
+        mockGetAclRequestsForApproverResponse
+      );
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+
+      customRender(<AclApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("opens the decline user flow when user clicks decline in details modal", async () => {
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View ACL request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const detailsModal = screen.getByRole("dialog", {
+        name: "Request details",
+      });
+
+      expect(detailsModal).toBeVisible();
+      const declineButton = within(detailsModal).getByRole("button", {
+        name: "Decline",
+      });
+
+      await userEvent.click(declineButton);
+
+      expect(detailsModal).not.toBeInTheDocument();
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+
+      expect(declineModal).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
     });
   });
 });
