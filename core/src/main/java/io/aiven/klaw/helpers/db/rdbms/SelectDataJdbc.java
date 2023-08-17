@@ -1445,8 +1445,7 @@ public class SelectDataJdbc {
             () -> aclRepo.existsByEnvironmentAndTenantId(env, tenantId),
             () ->
                 aclRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatus(
-                    tenantId, env, RequestStatus.CREATED.value),
-            () -> aclRequestsRepo.existsByEnvironmentAndTenantId(env, tenantId))
+                    tenantId, env, RequestStatus.CREATED.value))
         .anyMatch(Supplier::get);
   }
 
