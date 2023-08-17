@@ -93,7 +93,6 @@ function AclApprovals() {
     mutationFn: approveAclRequest,
     onSuccess: () => {
       setErrorMessage("");
-      setDetailsModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
@@ -113,6 +112,9 @@ function AclApprovals() {
     onError: (error: Error) => {
       setErrorMessage(parseErrorMsg(error));
     },
+    onSettled: () => {
+      setDetailsModal({ isOpen: false, reqNo: null });
+    },
   });
 
   const {
@@ -123,7 +125,6 @@ function AclApprovals() {
     mutationFn: declineAclRequest,
     onSuccess: () => {
       setErrorMessage("");
-      setDeclineModal({ isOpen: false, reqNo: null });
 
       // Refetch to update the tag number in the tabs
       queryClient.refetchQueries(["getRequestsWaitingForApproval"]);
@@ -143,6 +144,9 @@ function AclApprovals() {
     },
     onError: (error: Error) => {
       setErrorMessage(parseErrorMsg(error));
+    },
+    onSettled: () => {
+      setDeclineModal({ isOpen: false, reqNo: null });
     },
   });
 

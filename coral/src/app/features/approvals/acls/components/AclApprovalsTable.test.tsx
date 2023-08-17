@@ -226,7 +226,7 @@ describe("AclApprovalsTable", () => {
       within(within(getNthRow(1)).getAllByRole("cell")[10]).getByRole(
         "button",
         {
-          name: "View acl request for aivtopic1",
+          name: "View ACL request for aivtopic1",
         }
       )
     );
@@ -240,7 +240,7 @@ describe("AclApprovalsTable", () => {
       within(within(getNthRow(1)).getAllByRole("cell")[11]).getByRole(
         "button",
         {
-          name: "Approve acl request for aivtopic1",
+          name: "Approve ACL request for aivtopic1",
         }
       )
     );
@@ -254,7 +254,7 @@ describe("AclApprovalsTable", () => {
       within(within(getNthRow(1)).getAllByRole("cell")[12]).getByRole(
         "button",
         {
-          name: "Decline acl request for aivtopic1",
+          name: "Decline ACL request for aivtopic1",
         }
       )
     );
@@ -315,7 +315,7 @@ describe("AclApprovalsTable", () => {
       within(within(getNthRow(1)).getAllByRole("cell")[11]).getByRole(
         "button",
         {
-          name: "Approve acl request for aivtopic1",
+          name: "Approve ACL request for aivtopic1",
         }
       )
     ).toBeDisabled();
@@ -323,7 +323,7 @@ describe("AclApprovalsTable", () => {
       within(within(getNthRow(1)).getAllByRole("cell")[12]).getByRole(
         "button",
         {
-          name: "Decline acl request for aivtopic1",
+          name: "Decline ACL request for aivtopic1",
         }
       )
     ).toBeDisabled();
@@ -341,7 +341,7 @@ describe("AclApprovalsTable", () => {
       const rows = within(table).getAllByRole("row");
       const approvedRequestRow = rows[2];
       const approve = within(approvedRequestRow).getByRole("button", {
-        name: "Approve acl request for newaudittopic",
+        name: "Approve ACL request for newaudittopic",
       });
       expect(approve).toBeDisabled();
     });
@@ -352,7 +352,7 @@ describe("AclApprovalsTable", () => {
       const rows = within(table).getAllByRole("row");
       const approvedRequestRow = rows[2];
       const decline = within(approvedRequestRow).getByRole("button", {
-        name: "Decline acl request for newaudittopic",
+        name: "Decline ACL request for newaudittopic",
       });
       expect(decline).toBeDisabled();
     });
@@ -372,7 +372,7 @@ describe("AclApprovalsTable", () => {
       const rows = within(table).getAllByRole("row");
       const createdRequestRow = rows[1];
       const approve = within(createdRequestRow).getByRole("button", {
-        name: "Approve acl request for aivtopic1",
+        name: "Approve ACL request for aivtopic1",
       });
       expect(approve).toBeDisabled();
     });
@@ -383,7 +383,7 @@ describe("AclApprovalsTable", () => {
       const rows = within(table).getAllByRole("row");
       const createdRequestRow = rows[1];
       const decline = within(createdRequestRow).getByRole("button", {
-        name: "Decline acl request for aivtopic1",
+        name: "Decline ACL request for aivtopic1",
       });
       expect(decline).toBeDisabled();
     });
@@ -403,7 +403,7 @@ describe("AclApprovalsTable", () => {
       const createdRequestRow = rows[1];
       await userEvent.click(
         within(createdRequestRow).getByRole("button", {
-          name: "View acl request for aivtopic1",
+          name: "View ACL request for aivtopic1",
         })
       );
       expect(onDetails).toHaveBeenCalledTimes(1);
