@@ -23,6 +23,7 @@ const defaultTopicProps = {
   entity: testTopic,
   entityEditLink: "/hello/topic",
   showEditButton: true,
+  hasPendingRequest: false,
   environments: testEnvironments,
   environmentId: undefined,
   setEnvironmentId: mockSetEnvironmentId,
@@ -34,6 +35,7 @@ const defaultConnectorProps = {
   entity: testConnector,
   entityEditLink: "/hello/connector",
   showEditButton: true,
+  hasPendingRequest: false,
   environments: testEnvironments,
   environmentId: undefined,
   setEnvironmentId: mockSetEnvironmentId,
@@ -413,6 +415,55 @@ describe("EntityDetailsHeader", () => {
     });
   });
 
+  describe("correctly disables Edit button when there is a pending request", () => {
+    describe("disables button for topic", () => {
+      beforeAll(() => {
+        customRender(
+          <EntityDetailsHeader
+            {...defaultTopicProps}
+            hasPendingRequest={true}
+          />,
+          { browserRouter: true }
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows a disabled button to edit with information when there is a pending request", () => {
+        const link = screen.getByRole("link", { name: /Edit topic/ });
+
+        expect(link).toHaveAttribute("aria-disabled", "true");
+        expect(link).not.toHaveAttribute("href");
+        expect(link).toHaveAccessibleName(
+          "Edit topic. The topic has a pending request."
+        );
+      });
+    });
+
+    describe("disables button for connector", () => {
+      beforeAll(() => {
+        customRender(
+          <EntityDetailsHeader
+            {...defaultConnectorProps}
+            hasPendingRequest={true}
+          />,
+          { browserRouter: true }
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows a disabled button to edit with information when there is a pending request", () => {
+        const link = screen.getByRole("link", { name: /Edit connector/ });
+
+        expect(link).toHaveAttribute("aria-disabled", "true");
+        expect(link).not.toHaveAttribute("href");
+        expect(link).toHaveAccessibleName(
+          "Edit connector. The connector has a pending request."
+        );
+      });
+    });
+  });
   describe("correctly hides Edit button", () => {
     it("hides Edit button for Topic", async () => {
       customRender(

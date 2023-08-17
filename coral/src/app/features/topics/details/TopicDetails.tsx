@@ -147,10 +147,8 @@ function TopicDetails(props: TopicOverviewProps) {
         entity={{ name: topicName, type: "topic" }}
         entityExists={Boolean(topicData?.topicExists)}
         entityEditLink={`/topic/${topicName}/request-update?env=${topicData?.topicInfo.envId}`}
-        showEditButton={Boolean(
-          topicData?.topicInfo.showEditTopic &&
-            !topicData?.topicInfo.hasOpenTopicRequest
-        )}
+        showEditButton={Boolean(topicData?.topicInfo.showEditTopic)}
+        hasPendingRequest={Boolean(topicData?.topicInfo.hasOpenTopicRequest)}
         entityUpdating={topicIsRefetching}
         environments={topicData?.availableEnvironments}
         environmentId={environmentId}
