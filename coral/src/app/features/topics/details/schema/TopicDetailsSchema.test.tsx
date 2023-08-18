@@ -468,7 +468,53 @@ describe("TopicDetailsSchema", () => {
         });
       });
 
-      describe("shows when promotion is not available right now", () => {
+      describe("shows when promotion is not possible", () => {
+        beforeAll(() => {
+          mockedUseTopicDetails.mockReturnValue({
+            topicOverviewIsRefetching: false,
+            topicSchemasIsRefetching: false,
+            topicName: testTopicName,
+            environmentId: testEnvironmentId,
+            topicSchemas: noPromotion_testTopicSchemas,
+            setSchemaVersion: mockSetSchemaVersion,
+            topicOverview: { topicInfo: { topicOwner: true } },
+          });
+          customRender(
+            <AquariumContext>
+              <TopicDetailsSchema />
+            </AquariumContext>,
+            {
+              memoryRouter: true,
+              queryClient: true,
+            }
+          );
+        });
+
+        afterAll(cleanup);
+
+        it("does not show a link to request a new schema version", () => {
+          const link = screen.queryByRole("link", {
+            name: "Request a new version",
+          });
+
+          expect(link).toBeInTheDocument();
+        });
+
+        it("does not show information about schema promotion", () => {
+          const banner = screen.queryByText(
+            "This schema has not yet been promoted",
+            {
+              exact: false,
+            }
+          );
+          const button = screen.queryByRole("button", { name: "Promote" });
+
+          expect(banner).not.toBeInTheDocument();
+          expect(button).not.toBeInTheDocument();
+        });
+      });
+
+      describe("shows when promotion is not possible right now", () => {
         beforeAll(() => {
           mockPromoteSchemaRequest.mockResolvedValue({
             success: true,
@@ -644,7 +690,10 @@ describe("TopicDetailsSchema", () => {
         topicSchemasIsRefetching: false,
         topicName: testTopicName,
         environmentId: testEnvironmentId,
-        topicSchemas: testTopicSchemas,
+        topicSchemas: {
+          ...testTopicSchemas,
+          schemaPromotionDetails: undefined,
+        },
         setSchemaVersion: mockSetSchemaVersion,
         topicOverview: { topicInfo: { topicOwner: false } },
       });
@@ -680,50 +729,10 @@ describe("TopicDetailsSchema", () => {
       expect(button).not.toBeInTheDocument();
     });
 
-    describe("TopicDetailsSchema (status: NO_PROMOTION)", () => {
-      beforeAll(() => {
-        mockedUseTopicDetails.mockReturnValue({
-          topicOverviewIsRefetching: false,
-          topicSchemasIsRefetching: false,
-          topicName: testTopicName,
-          environmentId: testEnvironmentId,
-          topicSchemas: noPromotion_testTopicSchemas,
-          setSchemaVersion: mockSetSchemaVersion,
-          topicOverview: { topicInfo: { topicOwner: true } },
-        });
-        customRender(
-          <AquariumContext>
-            <TopicDetailsSchema />
-          </AquariumContext>,
-          {
-            memoryRouter: true,
-            queryClient: true,
-          }
-        );
-      });
+    it("shows an editor with preview of the schema", () => {
+      const previewEditor = screen.getByTestId("topic-schema");
 
-      afterAll(cleanup);
-
-      it("does not show a link to request a new schema version", () => {
-        const link = screen.queryByRole("link", {
-          name: "Request a new version",
-        });
-
-        expect(link).toBeInTheDocument();
-      });
-
-      it("does not show information about schema promotion", () => {
-        const banner = screen.queryByText(
-          "This schema has not yet been promoted",
-          {
-            exact: false,
-          }
-        );
-        const button = screen.queryByRole("button", { name: "Promote" });
-
-        expect(banner).not.toBeInTheDocument();
-        expect(button).not.toBeInTheDocument();
-      });
+      expect(previewEditor).toBeVisible();
     });
   });
 

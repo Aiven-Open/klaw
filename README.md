@@ -1,4 +1,5 @@
-# Klaw
+# Klaw · [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![CodeQL](https://github.com/Aiven-Open/klaw/actions/workflows/codeql.yml/badge.svg?branch=main)](https://github.com/Aiven-Open/klaw/actions/workflows/codeql.yml) ![CI](https://github.com/Aiven-Open/klaw/actions/workflows/workflow-merge-to-main.yaml/badge.svg)
+
 
 Klaw is fully opensource. 🥳 
 
