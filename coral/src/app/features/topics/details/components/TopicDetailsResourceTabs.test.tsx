@@ -32,8 +32,8 @@ const testMapTabs = [
     title: "Schema",
   },
   {
-    linkTo: "documentation",
-    title: "Documentation",
+    linkTo: "readme",
+    title: "Readme",
   },
   {
     linkTo: "history",

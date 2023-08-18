@@ -9,15 +9,16 @@ function NoDocumentationBanner({
 }: NoDocumentationBannerProps) {
   return (
     <EmptyState
-      title={"No documentation"}
+      title={"No readme available"}
       image={illustration}
       layout={EmptyStateLayout.CenterHorizontal}
       primaryAction={{
-        text: "Add documentation",
+        text: "Add readme",
         onClick: addDocumentation,
       }}
     >
-      You can add documentation for your connector.
+      Add a readme to give your team essential information, guidelines, and
+      context about the connector.
     </EmptyState>
   );
 }

@@ -7,11 +7,16 @@ import { mockedEnvironmentResponse } from "src/domain/environment/environment-ap
 import { transformEnvironmentApiResponse } from "src/domain/environment/environment-transformer";
 import { getTeams } from "src/domain/team/team-api";
 import { TopicRequest } from "src/domain/topic";
-import { getTopicRequestsForApprover } from "src/domain/topic/topic-api";
+import {
+  approveTopicRequest,
+  declineTopicRequest,
+  getTopicRequestsForApprover,
+} from "src/domain/topic/topic-api";
 import { transformGetTopicRequestsResponse } from "src/domain/topic/topic-transformer";
 import { TopicRequestApiResponse } from "src/domain/topic/topic-types";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
+import { approveSchemaRequest } from "src/domain/schema-request";
 
 jest.mock("src/domain/topic/topic-api.ts");
 jest.mock("src/domain/environment/environment-api.ts");
@@ -127,7 +132,20 @@ const mockGetEnvironmentResponse = transformEnvironmentApiResponse(
   mockedEnvironmentResponse
 );
 
+const mockApproveTopicRequest = approveTopicRequest as jest.MockedFunction<
+  typeof approveSchemaRequest
+>;
+const mockDeclineTopicRequest = declineTopicRequest as jest.MockedFunction<
+  typeof declineTopicRequest
+>;
+
 describe("TopicApprovals", () => {
+  const defaultApiParams = {
+    env: "ALL",
+    pageNo: "1",
+    requestStatus: "CREATED",
+    search: "",
+  };
   beforeAll(() => {
     mockIntersectionObserver();
   });
@@ -279,11 +297,8 @@ describe("TopicApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
 
       expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
-        env: "ALL",
+        ...defaultApiParams,
         pageNo: "100",
-        requestStatus: "CREATED",
-        search: "",
-        teamId: undefined,
       });
     });
 
@@ -296,11 +311,8 @@ describe("TopicApprovals", () => {
       await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
 
       expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
-        env: "ALL",
+        ...defaultApiParams,
         pageNo: "1",
-        requestStatus: "CREATED",
-        search: "",
-        teamId: undefined,
       });
     });
 
@@ -442,7 +454,7 @@ describe("TopicApprovals", () => {
       });
 
       await userEvent.click(viewDetailsButton);
-      const modal = screen.getByRole("dialog");
+      const modal = screen.getByRole("dialog", { name: "Request details" });
 
       expect(modal).toBeVisible();
       expect(modal).toHaveTextContent(firstRequest.topicname);
@@ -458,7 +470,7 @@ describe("TopicApprovals", () => {
       });
 
       await userEvent.click(viewDetailsButton);
-      const modal = screen.getByRole("dialog");
+      const modal = screen.getByRole("dialog", { name: "Request details" });
 
       expect(modal).toBeVisible();
       expect(modal).toHaveTextContent(lastRequest.topicname);
@@ -473,7 +485,7 @@ describe("TopicApprovals", () => {
       });
 
       await userEvent.click(viewDetailsButton);
-      const modal = screen.getByRole("dialog");
+      const modal = screen.getByRole("dialog", { name: "Request details" });
 
       const approveButton = within(modal).getByRole("button", {
         name: "Approve",
@@ -495,7 +507,7 @@ describe("TopicApprovals", () => {
       });
 
       await userEvent.click(viewDetailsButton);
-      const modal = screen.getByRole("dialog");
+      const modal = screen.getByRole("dialog", { name: "Request details" });
 
       const approveButton = within(modal).getByRole("button", {
         name: "Approve",
@@ -550,11 +562,8 @@ describe("TopicApprovals", () => {
 
       await waitFor(() => {
         expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
+          ...defaultApiParams,
           env: "1",
-          pageNo: "1",
-          requestStatus: "CREATED",
-          search: "",
-          teamId: undefined,
         });
       });
     });
@@ -574,11 +583,8 @@ describe("TopicApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
-          env: "ALL",
-          pageNo: "1",
+          ...defaultApiParams,
           requestStatus: "DECLINED",
-          search: "",
-          teamId: undefined,
         })
       );
     });
@@ -598,17 +604,13 @@ describe("TopicApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
-          env: "ALL",
-          pageNo: "1",
-          requestStatus: "CREATED",
-          search: "",
-          teamId: undefined,
+          ...defaultApiParams,
           operationType: "CREATE",
         })
       );
     });
 
-    it("filters by ACL type", async () => {
+    it("filters by team", async () => {
       const select = screen.getByLabelText("Filter by team");
 
       const option = within(select).getByRole("option", {
@@ -623,10 +625,7 @@ describe("TopicApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
-          env: "ALL",
-          pageNo: "1",
-          requestStatus: "CREATED",
-          search: "",
+          ...defaultApiParams,
           teamId: 1003,
         })
       );
@@ -643,11 +642,8 @@ describe("TopicApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
-          env: "ALL",
-          pageNo: "1",
-          requestStatus: "CREATED",
+          ...defaultApiParams,
           search: "topicname",
-          teamId: undefined,
         })
       );
     });
@@ -668,13 +664,445 @@ describe("TopicApprovals", () => {
 
       await waitFor(() =>
         expect(mockGetTopicRequestsForApprover).toHaveBeenCalledWith({
-          env: "ALL",
-          pageNo: "1",
-          requestStatus: "CREATED",
+          ...defaultApiParams,
           search: "topicname",
           teamId: 1003,
         })
       );
+    });
+  });
+
+  describe("enables user to approve a request with quick action", () => {
+    const testRequest = mockedApiResponse.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a approve request api call if user approves a topic request", async () => {
+      mockApproveTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveTopicRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.topicid)],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("updates the the data for the table if user approves a topic request", async () => {
+      mockApproveTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+      expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveTopicRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.topicid)],
+      });
+
+      expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if approving request was not successful", async () => {
+      mockApproveTopicRequest.mockRejectedValue("OH NO");
+      expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveTopicRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.topicid)],
+      });
+
+      expect(mockApproveTopicRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
+    });
+  });
+
+  describe("enables user to approve a request through details modal", () => {
+    const testRequest = mockedApiResponse.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a approve request api call if user approves a topic request", async () => {
+      mockApproveTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveTopicRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.topicid)],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+      expect(modal).not.toBeInTheDocument();
+    });
+
+    it("updates the the data for the table if user approves a topic request", async () => {
+      mockApproveTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+      expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveTopicRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.topicid)],
+      });
+
+      expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+      expect(modal).not.toBeInTheDocument();
+    });
+
+    it("informs user about error if approving request was not successful", async () => {
+      mockApproveTopicRequest.mockRejectedValue("OH NO");
+      expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveTopicRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.topicid)],
+      });
+
+      expect(mockApproveTopicRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+      expect(modal).not.toBeInTheDocument();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
+    });
+  });
+
+  describe("enables user to decline a request with quick action", () => {
+    const testRequest = mockedApiResponse.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("does not send a decline request is user does not add a reason", async () => {
+      mockDeclineTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      expect(confirmDecline).toBeDisabled();
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineTopicRequest).not.toHaveBeenCalled();
+      expect(declineModal).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("send a decline request api call if user declines a topic request", async () => {
+      mockDeclineTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineTopicRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.topicid)],
+        reason: "my reason",
+      });
+
+      expect(console.error).not.toHaveBeenCalled();
+      expect(declineModal).not.toBeInTheDocument();
+    });
+
+    it("updates the the data for the table if user declines a topic request", async () => {
+      mockDeclineTopicRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineTopicRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.topicid)],
+        reason: "my reason",
+      });
+
+      expect(mockGetTopicRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if declining request was not successful", async () => {
+      mockDeclineTopicRequest.mockRejectedValue("Oh no");
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockApproveTopicRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+      expect(declineModal).not.toBeInTheDocument();
+
+      expect(console.error).toHaveBeenCalledWith("Oh no");
+    });
+  });
+
+  describe("enables user to decline a request through details modal", () => {
+    const testRequest = mockedApiResponse.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+
+      mockGetTopicRequestsForApprover.mockResolvedValue(mockedApiResponse);
+      mockGetEnvironments.mockResolvedValue(mockGetEnvironmentResponse);
+      mockGetTeams.mockResolvedValue(mockedTeamsResponse);
+
+      customRender(<TopicApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("opens the decline user flow when user clicks decline in details modal", async () => {
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View topic request for ${testRequest.topicname}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const detailsModal = screen.getByRole("dialog", {
+        name: "Request details",
+      });
+
+      expect(detailsModal).toBeVisible();
+      const declineButton = within(detailsModal).getByRole("button", {
+        name: "Decline",
+      });
+
+      await userEvent.click(declineButton);
+
+      expect(detailsModal).not.toBeInTheDocument();
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+
+      expect(declineModal).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
     });
   });
 });

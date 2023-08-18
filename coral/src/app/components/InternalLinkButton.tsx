@@ -1,12 +1,13 @@
 import { asButton, ButtonProps, Button } from "@aivenio/aquarium";
 import { Link, LinkProps } from "react-router-dom";
 import { ResolveIntersectionTypes } from "types/utils";
+import { ReactNode } from "react";
 
 const AsButton = asButton<"a", LinkProps, HTMLAnchorElement>(Link);
 
 type InternalLinkButtonProps = ResolveIntersectionTypes<
   {
-    children: string;
+    children: string | ReactNode;
     kind?: ButtonProps["kind"];
     disabled?: boolean;
   } & LinkProps
