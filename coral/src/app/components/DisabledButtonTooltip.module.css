@@ -1,0 +1,11 @@
+.buttonWrapper button {
+  background-color: var(--aquarium-colors-primary-40);
+  cursor: not-allowed;
+}
+
+.buttonWrapper button:hover,
+.buttonWrapper button:focus,
+.buttonWrapper button:focus-visible {
+  background-color: var(--aquarium-colors-primary-40);
+  cursor: not-allowed;
+}

@@ -187,7 +187,7 @@ export default function AclApprovalsTable({
       action: (request: AclRequestTableRow) => ({
         onClick: () => onDetails(request.id),
         text: "View",
-        "aria-label": `View acl request for ${request.topicname}`,
+        "aria-label": `View ACL request for ${request.topicname}`,
         icon: infoSign,
       }),
     },
@@ -202,7 +202,7 @@ export default function AclApprovalsTable({
         return {
           onClick: () => onApprove(request.id),
           text: "Approve",
-          "aria-label": `Approve acl request for ${request.topicname}`,
+          "aria-label": `Approve ACL request for ${request.topicname}`,
           disabled:
             approveInProgress ||
             declineInProgress ||
@@ -224,13 +224,13 @@ export default function AclApprovalsTable({
         return {
           onClick: () => onDecline(request.id),
           text: "Decline",
-          "aria-label": `Decline acl request for ${request.topicname}`,
+          "aria-label": `Decline ACL request for ${request.topicname}`,
           disabled:
             approveInProgress ||
             declineInProgress ||
             actionsDisabled ||
             request.requestStatus !== "CREATED",
-          tooltip: `Decline acl request for topic ${request.topicname}`,
+          tooltip: `Decline ACL request for topic ${request.topicname}`,
           icon: declineInProgress ? loadingIcon : deleteIcon,
           loading: declineInProgress,
         };

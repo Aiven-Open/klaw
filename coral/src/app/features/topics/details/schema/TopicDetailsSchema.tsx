@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   EmptyState,
   Icon,
   Label,
@@ -10,13 +9,14 @@ import {
   TextareaBase,
   Typography,
   useToast,
+  InlineIcon,
 } from "@aivenio/aquarium";
 import add from "@aivenio/aquarium/icons/add";
 import gitNewBranch from "@aivenio/aquarium/icons/gitNewBranch";
 import MonacoEditor from "@monaco-editor/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { SchemaPromotionModal } from "src/app/features/topics/details/schema/components/SchemaPromotionModal";
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
@@ -27,7 +27,11 @@ import {
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
+import { InternalLinkButton } from "src/app/components/InternalLinkButton";
+import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schema/components/SchemaPromotableOnlyAlert";
 
+//@ TODO change to api response value
+// eslint-disable-next-line react/prop-types
 function TopicDetailsSchema() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -39,6 +43,7 @@ function TopicDetailsSchema() {
       latestVersion,
       schemaDetailsPerEnv,
       schemaPromotionDetails,
+      createSchemaAllowed,
     },
     topicSchemasIsRefetching,
     setSchemaVersion,
@@ -111,9 +116,11 @@ function TopicDetailsSchema() {
           primaryAction={{
             onClick: () => navigate(`/topic/${topicName}/request-schema`),
             text: "Request a new schema",
-            disabled: topicSchemasIsRefetching,
+            disabled: topicSchemasIsRefetching || !createSchemaAllowed,
           }}
-        />
+        >
+          {!createSchemaAllowed && <SchemaPromotableOnlyAlert />}
+        </EmptyState>
       </>
     );
   }
@@ -169,18 +176,34 @@ function TopicDetailsSchema() {
         </Box>
 
         {!topicSchemasIsRefetching && isTopicOwner && (
-          <Box alignSelf={"top"}>
-            <Link
+          // In case user can not create a new schema, we don't want the disabled "link" to show up
+          // as it makes it harder to convey the information for assistive technology
+          <Box alignSelf={"top"} aria-hidden={!createSchemaAllowed}>
+            <InternalLinkButton
               to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
+              disabled={!createSchemaAllowed}
             >
-              <Button.Primary icon={add} disabled={topicSchemasIsRefetching}>
+              <Box.Flex component={"span"} alignItems={"center"} colGap={"3"}>
+                <InlineIcon
+                  icon={add}
+                  scale={2}
+                  style={{
+                    fontSize: "20px",
+                  }}
+                />{" "}
                 Request a new version
-              </Button.Primary>
-            </Link>
+              </Box.Flex>
+            </InternalLinkButton>
           </Box>
         )}
       </Box>
 
+      {!createSchemaAllowed && (
+        <SchemaPromotableOnlyAlert
+          marginBottom={"l2"}
+          isNewVersionRequest={true}
+        />
+      )}
       {!topicSchemasIsRefetching && isTopicOwner && (
         <SchemaPromotionBanner
           schemaPromotionDetails={schemaPromotionDetails}

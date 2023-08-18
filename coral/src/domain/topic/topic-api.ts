@@ -145,10 +145,15 @@ const requestTopicPromotion = (
   >(API_PATHS.createTopicsCreateRequest, payload);
 };
 
+type RequestTopicEdit = Schema & { topicId: string };
 // @TODO this should use the createTopicsCreateRequest`endpoint, but it does not handle the UPDATE type yet
 // Update when backend changes are merged to handle UPDATE with createTopicsCreateRequest
+// @TODO 2: when creating a request to update a topic, we need to set the topicId in the optional
+// 'otherParams'. We will update the endpoint(s) to be better named and more precise (not having an
+// important param be optional), that's why we're adding a bit of a messy fix here instead of updating
+// forms schema etc.
 const requestTopicEdit = (
-  data: Schema
+  data: RequestTopicEdit
 ): Promise<KlawApiResponse<"createTopicsUpdateRequest">> => {
   const payload: KlawApiRequest<"createTopicsUpdateRequest"> = {
     description: data.description,
@@ -161,6 +166,7 @@ const requestTopicEdit = (
       data.advancedConfiguration
     ),
     requestOperationType: "UPDATE",
+    otherParams: data.topicId,
   };
   return api.post<
     KlawApiResponse<"createTopicsUpdateRequest">,

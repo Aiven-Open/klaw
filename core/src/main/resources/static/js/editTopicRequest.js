@@ -430,12 +430,12 @@ app.controller("editTopicRequestCtrl", function($scope, $http, $location, $windo
                 if(output != null && output !== ''){
                     $scope.addTopic = $scope.topicRequestDetail;
                     if($scope.addTopic.requestOperationType === 'CREATE'){
-                        $scope.requestTitle = "Topic Create Request";
+                        $scope.requestTitle = "Edit Topic Create Request";
                     }
                     else if($scope.addTopic.requestOperationType === 'UPDATE'){
-                        $scope.requestTitle = "Topic Update Request";
+                        $scope.requestTitle = "Edit Topic Update Request";
                     }else if($scope.addTopic.requestOperationType === 'PROMOTE'){
-                        $scope.requestTitle = "Topic Promote Request";
+                        $scope.requestTitle = "Edit Topic Promote Request";
                     }
                     $scope.getEnvTopicPartitions($scope.addTopic.environment);
 

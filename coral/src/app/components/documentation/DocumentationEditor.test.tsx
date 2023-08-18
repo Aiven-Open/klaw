@@ -16,7 +16,7 @@ const requiredProps = {
 describe("DocumentationEditor", () => {
   const user = userEvent.setup();
 
-  describe("shows all necessary elements when there is no existing documentation", () => {
+  describe("shows all necessary elements when there is no existing readme", () => {
     beforeAll(() => {
       render(<DocumentationEditor {...requiredProps} />);
     });
@@ -101,16 +101,16 @@ describe("DocumentationEditor", () => {
       expect(cancel).toBeEnabled();
     });
 
-    it("shows a button to save the documentation", () => {
-      const save = screen.getByRole("button", { name: "Save documentation" });
+    it("shows a button to save the readme", () => {
+      const save = screen.getByRole("button", { name: "Save readme" });
 
       expect(save).toBeEnabled();
     });
   });
 
-  describe("shows all necessary elements including an existing documentation", () => {
+  describe("shows all necessary elements including an existing readme", () => {
     const testDocumentation =
-      `# Hello world this is documentation` as TopicDocumentationMarkdown;
+      `# Hello world this is readme` as TopicDocumentationMarkdown;
     beforeAll(() => {
       render(
         <DocumentationEditor
@@ -128,14 +128,14 @@ describe("DocumentationEditor", () => {
       expect(textarea).toBeEnabled();
     });
 
-    it("shows the given documentation as value of textarea", () => {
+    it("shows the given readme as value of textarea", () => {
       const textarea = screen.getByRole("textbox", { name: "Markdown editor" });
 
       expect(textarea).toHaveValue(testDocumentation);
     });
   });
 
-  describe("shows a state where saving of documentation is in progress", () => {
+  describe("shows a state where saving of readme is in progress", () => {
     beforeAll(() => {
       render(<DocumentationEditor {...requiredProps} isSaving={true} />);
     });
@@ -155,7 +155,7 @@ describe("DocumentationEditor", () => {
     });
 
     it("disables the save button and shows loading information", () => {
-      const save = screen.getByRole("button", { name: "Saving documentation" });
+      const save = screen.getByRole("button", { name: "Saving readme" });
 
       expect(save).toBeDisabled();
     });
@@ -223,7 +223,7 @@ describe("DocumentationEditor", () => {
     });
   });
 
-  describe("enables user to add documentation in markdown format", () => {
+  describe("enables user to add readme in markdown format", () => {
     const existingDoc = "#Hello" as TopicDocumentationMarkdown;
     beforeEach(() => {
       render(
@@ -265,7 +265,7 @@ describe("DocumentationEditor", () => {
     it("does not call the given save function if user text did not change", async () => {
       const textarea = screen.getByRole("textbox", { name: "Markdown editor" });
       const saveButton = screen.getByRole("button", {
-        name: "Save documentation",
+        name: "Save readme",
       });
 
       await user.type(textarea, "     ");
@@ -278,7 +278,7 @@ describe("DocumentationEditor", () => {
     it("calls the given save function when user clicks button", async () => {
       const textarea = screen.getByRole("textbox", { name: "Markdown editor" });
       const saveButton = screen.getByRole("button", {
-        name: "Save documentation",
+        name: "Save readme",
       });
 
       await user.type(textarea, " world");
@@ -368,7 +368,7 @@ describe("DocumentationEditor", () => {
     it("enables user to save input using keyboard only", async () => {
       const textarea = screen.getByRole("textbox", { name: "Markdown editor" });
       const saveButton = screen.getByRole("button", {
-        name: "Save documentation",
+        name: "Save readme",
       });
 
       await user.type(textarea, "#Hello world");
