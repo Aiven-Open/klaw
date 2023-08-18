@@ -715,32 +715,32 @@ describe("TopicDetailsSchema", () => {
         );
       });
 
-    afterAll(() => {
-      cleanup();
-      jest.clearAllMocks();
-    });
-
-    it("does not show a link to request a new schema version", () => {
-      const link = screen.queryByRole("link", {
-        name: "Request a new version",
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
       });
 
-      expect(link).not.toBeInTheDocument();
-    });
+      it("does not show a link to request a new schema version", () => {
+        const link = screen.queryByRole("link", {
+          name: "Request a new version",
+        });
 
-    it("does not show information about schema promotion", () => {
-      const promotionBanner = screen.queryByTestId("schema-promotion-banner");
-      const button = screen.queryByRole("button", { name: "Promote" });
+        expect(link).not.toBeInTheDocument();
+      });
 
-      expect(promotionBanner).not.toBeInTheDocument();
-      expect(button).not.toBeInTheDocument();
-    });
+      it("does not show information about schema promotion", () => {
+        const promotionBanner = screen.queryByTestId("schema-promotion-banner");
+        const button = screen.queryByRole("button", { name: "Promote" });
 
-    it("shows an editor with preview of the schema", () => {
-      const previewEditor = screen.getByTestId("topic-schema");
+        expect(promotionBanner).not.toBeInTheDocument();
+        expect(button).not.toBeInTheDocument();
+      });
 
-      expect(previewEditor).toBeVisible();
-    });
+      it("shows an editor with preview of the schema", () => {
+        const previewEditor = screen.getByTestId("topic-schema");
+
+        expect(previewEditor).toBeVisible();
+      });
     });
 
     describe("when topic has no schema yet", () => {
