@@ -1,6 +1,5 @@
 import {
   Box,
-  EmptyState,
   Icon,
   Label,
   NativeSelect,
@@ -16,7 +15,6 @@ import gitNewBranch from "@aivenio/aquarium/icons/gitNewBranch";
 import MonacoEditor from "@monaco-editor/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { SchemaPromotionModal } from "src/app/features/topics/details/schema/components/SchemaPromotionModal";
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
@@ -29,12 +27,12 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schema/components/SchemaPromotableOnlyAlert";
+import { NoSchemaAvailableState } from "src/app/features/topics/details/schema/components/NoSchemaAvailableState";
 
 //@ TODO change to api response value
 // eslint-disable-next-line react/prop-types
 function TopicDetailsSchema() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   const {
     topicName,
@@ -108,19 +106,12 @@ function TopicDetailsSchema() {
 
   if (noSchema) {
     return (
-      <>
-        <PageHeader title="Schema" />
-        <EmptyState
-          title="No schema available for this topic"
-          primaryAction={{
-            onClick: () => navigate(`/topic/${topicName}/request-schema`),
-            text: "Request a new schema",
-            disabled: topicSchemasIsRefetching || !createSchemaAllowed,
-          }}
-        >
-          {!createSchemaAllowed && <SchemaPromotableOnlyAlert />}
-        </EmptyState>
-      </>
+      <NoSchemaAvailableState
+        topicName={topicName}
+        isTopicOwner={Boolean(isTopicOwner)}
+        topicSchemasIsRefetching={topicSchemasIsRefetching}
+        createSchemaAllowed={createSchemaAllowed}
+      />
     );
   }
 
