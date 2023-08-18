@@ -19,13 +19,15 @@ import { isDocumentationTransformationError } from "src/domain/helper/documentat
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { NoDocumentationBanner } from "src/app/features/components/documentation/components/NoDocumentationBanner";
 
-const readmeDescription = (
-  <Box component={Typography.SmallText} marginBottom={"l2"}>
-    Readme provides essential information, guidelines, and explanations about
-    the connector, helping team members understand its purpose and usage. Edit
-    the readme to update the information as the connector evolves.
-  </Box>
-);
+const readmeDescription = (connectorOwner: boolean) => {
+  const fixedText = `Readme provides essential information, guidelines, and explanations about the connector, helping team members understand its purpose and usage.`;
+  const additionalTextConnectorOwner = `Edit the readme to update the information as the connector evolves.`;
+  return (
+    <Box component={Typography.SmallText} marginBottom={"l2"}>
+      {fixedText} {connectorOwner ? additionalTextConnectorOwner : ""}
+    </Box>
+  );
+};
 function ConnectorDocumentation() {
   const queryClient = useQueryClient();
 
@@ -33,6 +35,10 @@ function ConnectorDocumentation() {
   const [saving, setSaving] = useState(false);
 
   const { connectorOverview, connectorIsRefetching } = useConnectorDetails();
+
+  const isUserConnectorOwner = Boolean(
+    connectorOverview.connectorInfo.connectorOwner
+  );
 
   const toast = useToast();
 
@@ -64,7 +70,7 @@ function ConnectorDocumentation() {
     }
   );
 
-  if (connectorIsRefetching) {
+  if (isUserConnectorOwner && connectorIsRefetching) {
     return (
       <>
         <PageHeader title={"Readme"} />
@@ -76,11 +82,11 @@ function ConnectorDocumentation() {
     );
   }
 
-  if (editMode) {
+  if (isUserConnectorOwner && editMode) {
     return (
       <>
         <PageHeader title={"Edit readme"} />
-        {readmeDescription}
+        {readmeDescription(isUserConnectorOwner)}
         <>
           {isError && (
             <Box marginBottom={"l1"}>
@@ -118,6 +124,7 @@ function ConnectorDocumentation() {
   }
 
   if (
+    isUserConnectorOwner &&
     isDocumentationTransformationError(connectorOverview.connectorDocumentation)
   ) {
     return (
@@ -135,12 +142,16 @@ function ConnectorDocumentation() {
     <>
       <PageHeader
         title={"Readme"}
-        primaryAction={{
-          text: "Edit readme",
-          onClick: () => setEditMode(true),
-        }}
+        primaryAction={
+          isUserConnectorOwner
+            ? {
+                text: "Edit readme",
+                onClick: () => setEditMode(true),
+              }
+            : undefined
+        }
       />
-      {readmeDescription}
+      {readmeDescription(isUserConnectorOwner)}
       <Box paddingTop={"l2"}>
         <DocumentationView
           markdownString={connectorOverview.connectorDocumentation}
