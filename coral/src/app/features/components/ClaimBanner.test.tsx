@@ -115,6 +115,7 @@ describe("ClaimBanner", () => {
             {...testProps}
             entityType={"topic"}
             hasOpenClaimRequest={true}
+            hasOpenRequest={true}
           />,
           {
             memoryRouter: true,
@@ -150,6 +151,7 @@ describe("ClaimBanner", () => {
             {...testProps}
             entityType={"connector"}
             hasOpenClaimRequest={true}
+            hasOpenRequest={true}
           />,
           {
             memoryRouter: true,
