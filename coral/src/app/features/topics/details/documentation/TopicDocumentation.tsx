@@ -6,7 +6,6 @@ import {
   Typography,
   useToast,
 } from "@aivenio/aquarium";
-import { NoDocumentationBanner } from "src/app/features/topics/details/documentation/components/NoDocumentationBanner";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -18,6 +17,7 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 import { isDocumentationTransformationError } from "src/domain/helper/documentation-helper";
+import { NoDocumentationBanner } from "src/app/features/components/documentation/components/NoDocumentationBanner";
 
 const readmeDescription = (
   <Box component={Typography.SmallText} marginBottom={"l2"}>
@@ -33,6 +33,8 @@ function TopicDocumentation() {
   const [saving, setSaving] = useState(false);
 
   const { topicOverview, topicOverviewIsRefetching } = useTopicDetails();
+
+  const isUserTopicOwner = Boolean(topicOverview.topicInfo.topicOwner);
 
   const toast = useToast();
 
@@ -106,7 +108,11 @@ function TopicDocumentation() {
     return (
       <>
         <PageHeader title={"Readme"} />
-        <NoDocumentationBanner addDocumentation={() => setEditMode(true)} />
+        <NoDocumentationBanner
+          addDocumentation={() => setEditMode(true)}
+          isUserOwner={isUserTopicOwner}
+          entity={"topic"}
+        />
       </>
     );
   }
