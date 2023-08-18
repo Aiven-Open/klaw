@@ -55,7 +55,8 @@ function TopicDetailsSchema() {
 
   const toast = useToast();
 
-  const { topicOwner, hasOpenSchemaRequest } = topicOverview.topicInfo;
+  const { topicOwner, hasOpenSchemaRequest, hasOpenClaimRequest } =
+    topicOverview.topicInfo;
   const isTopicOwner = topicOwner;
   const noSchema =
     allSchemaVersions.length === 0 ||
@@ -208,6 +209,7 @@ function TopicDetailsSchema() {
         <SchemaPromotionBanner
           schemaPromotionDetails={schemaPromotionDetails}
           hasOpenSchemaRequest={hasOpenSchemaRequest}
+          hasOpenClaimRequest={hasOpenClaimRequest}
           topicName={topicName}
           setShowSchemaPromotionModal={() =>
             setShowSchemaPromotionModal(!showSchemaPromotionModal)

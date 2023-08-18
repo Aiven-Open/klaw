@@ -13,13 +13,62 @@ interface PromotionBannerProps {
   promotionDetails: PromotionStatus;
   type: "schema" | "topic";
   promoteElement: ReactElement;
+  hasOpenClaimRequest: boolean;
   hasOpenRequest: boolean;
   hasError: boolean;
   errorMessage: string;
 }
 
+type RequestTypeLocal = "CLAIM" | "ALL" | "PROMOTE";
+function getRequestType({
+  hasOpenClaimRequest,
+  hasOpenPromotionRequest,
+}: {
+  hasOpenClaimRequest: boolean;
+  hasOpenPromotionRequest: boolean;
+}): RequestTypeLocal {
+  if (hasOpenPromotionRequest) {
+    return "PROMOTE";
+  }
+  if (hasOpenClaimRequest) {
+    return "CLAIM";
+  }
+  return "ALL";
+}
+
+function createLink({
+  type,
+  entityName,
+  requestType,
+}: {
+  type: "schema" | "topic";
+  entityName: string;
+  requestType: RequestTypeLocal;
+}): string {
+  const table = requestType === "CLAIM" ? "approvals" : "requests";
+
+  return `/${table}/${type}s?search=${entityName}&requestType=${requestType}&status=CREATED&page=1`;
+}
+
+function createText({
+  entityName,
+  requestType,
+}: {
+  entityName: string;
+  requestType: RequestTypeLocal;
+}): string {
+  if (requestType === "PROMOTE") {
+    return `An promotion request for ${entityName} is already in progress.`;
+  }
+  if (requestType === "CLAIM") {
+    return `A claim request for ${entityName} is in progress.`;
+  }
+  return `${entityName} has a pending request.`;
+}
+
 const PromotionBanner = ({
   promotionDetails,
+  hasOpenClaimRequest,
   hasOpenRequest,
   type,
   promoteElement,
@@ -44,35 +93,25 @@ const PromotionBanner = ({
     entityName !== undefined;
 
   const hasOpenPromotionRequest = status === "REQUEST_OPEN";
+  const hasPendingRequest =
+    hasOpenRequest || hasOpenPromotionRequest || hasOpenClaimRequest;
 
   if (!isPromotable) return null;
 
-  if (hasOpenRequest) {
-    return (
-      <Banner image={illustration} layout="vertical" title={""}>
-        <Box component={"p"} marginBottom={"l1"}>
-          {entityName} has a pending request.
-        </Box>
-        <InternalLinkButton
-          to={`/requests/${type}s?search=${entityName}&status=CREATED&page=1`}
-        >
-          View request
-        </InternalLinkButton>
-      </Banner>
-    );
-  }
+  if (hasPendingRequest) {
+    const requestType = getRequestType({
+      hasOpenClaimRequest,
+      hasOpenPromotionRequest,
+    });
+    const link = createLink({ type, entityName, requestType });
+    const text = createText({ entityName, requestType });
 
-  if (hasOpenPromotionRequest) {
     return (
       <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
-          An promotion request for {entityName} is already in progress.
+          {text}
         </Box>
-        <InternalLinkButton
-          to={`/requests/${type}s?search=${entityName}&requestType=PROMOTE&status=CREATED&page=1`}
-        >
-          View request
-        </InternalLinkButton>
+        <InternalLinkButton to={link}>View request</InternalLinkButton>
       </Banner>
     );
   }

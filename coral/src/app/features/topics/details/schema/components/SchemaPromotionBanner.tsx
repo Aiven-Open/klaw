@@ -9,6 +9,7 @@ interface SchemaPromotionBannerProps {
    * information to the user.
    */
   hasOpenSchemaRequest: boolean;
+  hasOpenClaimRequest: boolean;
   topicName: string;
   setShowSchemaPromotionModal: () => void;
   hasError?: boolean;
@@ -18,6 +19,7 @@ interface SchemaPromotionBannerProps {
 const SchemaPromotionBanner = ({
   schemaPromotionDetails,
   hasOpenSchemaRequest,
+  hasOpenClaimRequest,
   topicName,
   setShowSchemaPromotionModal,
   hasError = false,
@@ -29,6 +31,7 @@ const SchemaPromotionBanner = ({
         entityName={topicName}
         promotionDetails={schemaPromotionDetails}
         hasOpenRequest={hasOpenSchemaRequest}
+        hasOpenClaimRequest={hasOpenClaimRequest}
         type={"schema"}
         hasError={hasError}
         errorMessage={errorMessage}
