@@ -1590,9 +1590,10 @@ public class SelectDataJdbc {
       operationTypeCountsMap.put(RequestOperationType.CLAIM.value, assignedToClaimReqs);
       if (RequestMode.MY_APPROVALS == requestMode) {
         // Make sure to remove any requests which the requestor can not approve
+        // Using Integer.toString() as it seems to be the fastest method of changing it.
         Long topicApprovalCount =
             topicRequestsRepo.countRequestorsTopicRequestsGroupByStatusType(
-                teamId, tenantId, requestor, RequestStatus.CREATED.value);
+                teamId, Integer.toString(teamId), tenantId, requestor, RequestStatus.CREATED.value);
 
         statusCountsMap.put(
             RequestStatus.CREATED.value, topicApprovalCount == null ? 0L : topicApprovalCount);
@@ -1732,7 +1733,7 @@ public class SelectDataJdbc {
       // Make sure to remove any requests which the requestor can not approve
       Long connectorApprovalCount =
           kafkaConnectorRequestsRepo.countRequestorsConnectorRequestsGroupByStatusType(
-              teamId, tenantId, requestor, RequestStatus.CREATED.value);
+              teamId, Integer.toString(teamId), tenantId, requestor, RequestStatus.CREATED.value);
 
       statusCountsMap.put(
           RequestStatus.CREATED.value,
