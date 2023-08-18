@@ -17,15 +17,7 @@ import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
 import io.aiven.klaw.repository.AclRequestsRepo;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -223,19 +215,19 @@ public abstract class BaseOverviewService {
 
     List<AclOverviewInfo> aclList = new ArrayList<>();
     AclOverviewInfo mp;
-    List<AclRequests> disableShowDeleteAcl;
-
+    Set<Integer> set =
+        aclRequestsRepo
+            .findAllByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
+                tenantId,
+                aclsFromSOT.get(0).getEnvironment(),
+                RequestStatus.DELETED.value,
+                aclsFromSOT.get(0).getTopicname())
+            .stream()
+            .map(AclRequests::getReq_no)
+            .collect(Collectors.toSet());
     for (Acl aclSotItem : aclsFromSOT) {
-      disableShowDeleteAcl =
-          aclRequestsRepo.findAllByTenantIdAndEnvironmentAndRequestStatusAndTopicname(
-              tenantId,
-              aclSotItem.getEnvironment(),
-              RequestStatus.DELETED.value,
-              aclSotItem.getTopicname());
       if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) {
-        boolean deleteRequestExists =
-            disableShowDeleteAcl.stream()
-                .anyMatch(item -> item.getReq_no().equals(aclSotItem.getReq_no()));
+        boolean deleteRequestExists = set.contains(aclSotItem.getReq_no());
         mp = new AclOverviewInfo();
         mp.setEnvironment(aclSotItem.getEnvironment());
         Env envDetails = getEnvDetails(aclSotItem.getEnvironment(), tenantId);
