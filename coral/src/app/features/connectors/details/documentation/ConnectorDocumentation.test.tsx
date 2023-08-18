@@ -33,6 +33,7 @@ const testConnectorOverview: ConnectorOverview = {
   connectorIdForDocumentation: 99999,
   connectorInfo: {
     connectorName: "documentation-test-connector",
+    connectorOwner: true,
   } as ConnectorOverview["connectorInfo"],
   connectorExists: true,
 };

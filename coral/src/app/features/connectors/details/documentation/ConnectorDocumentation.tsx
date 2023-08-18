@@ -11,13 +11,13 @@ import { useState } from "react";
 import { DocumentationEditor } from "src/app/components/documentation/DocumentationEditor";
 import { DocumentationView } from "src/app/components/documentation/DocumentationView";
 import { useConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
-import { NoDocumentationBanner } from "src/app/features/connectors/details/documentation/components/NoDocumentationBanner";
 import {
   ConnectorDocumentationMarkdown,
   updateConnectorDocumentation,
 } from "src/domain/connector";
 import { isDocumentationTransformationError } from "src/domain/helper/documentation-helper";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { NoDocumentationBanner } from "src/app/features/components/documentation/components/NoDocumentationBanner";
 
 const readmeDescription = (
   <Box component={Typography.SmallText} marginBottom={"l2"}>
@@ -108,7 +108,11 @@ function ConnectorDocumentation() {
     return (
       <>
         <PageHeader title={"Readme"} />
-        <NoDocumentationBanner addDocumentation={() => setEditMode(true)} />
+        <NoDocumentationBanner
+          addDocumentation={() => setEditMode(true)}
+          isUserOwner={connectorOverview.connectorInfo.connectorOwner}
+          entity={"connector"}
+        />
       </>
     );
   }
