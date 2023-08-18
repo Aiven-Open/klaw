@@ -19,13 +19,15 @@ import { DocumentationView } from "src/app/components/documentation/Documentatio
 import { isDocumentationTransformationError } from "src/domain/helper/documentation-helper";
 import { NoDocumentationBanner } from "src/app/features/components/documentation/components/NoDocumentationBanner";
 
-const readmeDescription = (
-  <Box component={Typography.SmallText} marginBottom={"l2"}>
-    Readme provides essential information, guidelines, and explanations about
-    the topic, helping team members understand its purpose and usage. Edit the
-    readme to update the information as the topic evolves.
-  </Box>
-);
+const readmeDescription = (topicOwner: boolean) => {
+  const fixedText = `Readme provides essential information, guidelines, and explanations about the topic, helping team members understand its purpose and usage.`;
+  const additionalTextTopicOwner = `Edit the readme to update the information as the topic evolves.`;
+  return (
+    <Box component={Typography.SmallText} marginBottom={"l2"}>
+      {fixedText} {topicOwner ? additionalTextTopicOwner : ""}
+    </Box>
+  );
+};
 function TopicDocumentation() {
   const queryClient = useQueryClient();
 
@@ -65,7 +67,7 @@ function TopicDocumentation() {
     }
   );
 
-  if (topicOverviewIsRefetching) {
+  if (isUserTopicOwner && topicOverviewIsRefetching) {
     return (
       <>
         <PageHeader title={"Readme"} />
@@ -77,11 +79,11 @@ function TopicDocumentation() {
     );
   }
 
-  if (editMode) {
+  if (isUserTopicOwner && editMode) {
     return (
       <>
         <PageHeader title={"Edit readme"} />
-        {readmeDescription}
+        {readmeDescription(isUserTopicOwner)}
 
         {isError && (
           <Box marginBottom={"l1"}>
@@ -117,7 +119,10 @@ function TopicDocumentation() {
     );
   }
 
-  if (isDocumentationTransformationError(topicOverview.topicDocumentation)) {
+  if (
+    isUserTopicOwner &&
+    isDocumentationTransformationError(topicOverview.topicDocumentation)
+  ) {
     return (
       <>
         <PageHeader title={"Readme"} />
@@ -133,12 +138,16 @@ function TopicDocumentation() {
     <>
       <PageHeader
         title={"Readme"}
-        primaryAction={{
-          text: "Edit readme",
-          onClick: () => setEditMode(true),
-        }}
+        primaryAction={
+          isUserTopicOwner
+            ? {
+                text: "Edit readme",
+                onClick: () => setEditMode(true),
+              }
+            : undefined
+        }
       />
-      {readmeDescription}
+      {readmeDescription(isUserTopicOwner)}
 
       <Box paddingTop={"l2"}>
         <DocumentationView markdownString={topicOverview.topicDocumentation} />

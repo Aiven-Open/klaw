@@ -568,5 +568,63 @@ describe("TopicDocumentation", () => {
         expect(addReadmeButton).not.toBeInTheDocument();
       });
     });
+
+    describe("if the topic has existing readme", () => {
+      const existingReadme = "# Hello" as TopicDocumentationMarkdown;
+
+      beforeAll(() => {
+        mockUseTopicDetails.mockReturnValue({
+          ...mockTopicDetailsNotTopicOwner,
+          topicOverview: {
+            ...mockTopicDetailsNotTopicOwner.topicOverview,
+            topicDocumentation: existingReadme,
+          },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicDocumentation />
+          </AquariumContext>,
+          { queryClient: true }
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows readme headline", () => {
+        const headline = screen.getByRole("heading", { name: "Readme" });
+
+        expect(headline).toBeVisible();
+      });
+
+      it("shows a description about the readme", () => {
+        const description = screen.getByText(
+          `Readme provides essential information, guidelines, and explanations about the topic, helping team members understand its purpose and usage.`
+        );
+
+        expect(description).toBeVisible();
+      });
+
+      it("does not show editing information in the description for the readme", () => {
+        const description = screen.queryByText(
+          `Edit the readme to update the information as the topic evolves.`
+        );
+
+        expect(description).not.toBeInTheDocument();
+      });
+
+      it("shows the readme", () => {
+        const markdownView = screen.getByTestId("react-markdown-mock");
+
+        expect(markdownView).toBeVisible();
+        expect(markdownView).toHaveTextContent(existingReadme);
+      });
+
+      it("shows no button to edit readme", () => {
+        const addReadmeButton = screen.queryByRole("button");
+
+        expect(addReadmeButton).not.toBeInTheDocument();
+      });
+    });
   });
 });
