@@ -85,11 +85,12 @@ public interface TopicRequestsRepo
   @Query(
       value =
           "select count(*) from kwtopicrequests where tenantid = :tenantId"
-              + " and (teamid = :teamId or approvingteamid = :teamId) and requestor != :requestor "
+              + " and (teamid = :teamId or approvingteamid = :approvingTeamId) and requestor != :requestor "
               + "and topicstatus = :topicStatus  group by topicstatus",
       nativeQuery = true)
   Long countRequestorsTopicRequestsGroupByStatusType(
       @Param("teamId") Integer teamId,
+      @Param("approvingTeamId") String approvingTeamId,
       @Param("tenantId") Integer tenantId,
       @Param("requestor") String requestor,
       @Param("topicStatus") String topicStatus);
