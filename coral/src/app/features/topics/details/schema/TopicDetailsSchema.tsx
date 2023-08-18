@@ -59,9 +59,7 @@ function TopicDetailsSchema() {
     topicOverview.topicInfo;
   const isTopicOwner = topicOwner;
   const noSchema =
-    allSchemaVersions.length === 0 ||
-    schemaDetailsPerEnv === undefined ||
-    schemaPromotionDetails === undefined;
+    allSchemaVersions.length === 0 || schemaDetailsPerEnv === undefined;
 
   const { mutate: promoteSchema, isLoading: promoteSchemaIsLoading } =
     useMutation(
