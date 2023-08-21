@@ -27,7 +27,7 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schema/components/SchemaPromotableOnlyAlert";
-import { NoSchemaAvailableState } from "src/app/features/topics/details/schema/components/NoSchemaAvailableState";
+import { NoSchemaBanner } from "src/app/features/topics/details/schema/components/NoSchemaBanner";
 
 //@ TODO change to api response value
 // eslint-disable-next-line react/prop-types
@@ -106,12 +106,15 @@ function TopicDetailsSchema() {
 
   if (noSchema) {
     return (
-      <NoSchemaAvailableState
-        topicName={topicName}
-        isTopicOwner={Boolean(isTopicOwner)}
-        topicSchemasIsRefetching={topicSchemasIsRefetching}
-        createSchemaAllowed={createSchemaAllowed}
-      />
+      <>
+        <PageHeader title="Schema" />
+        <NoSchemaBanner
+          topicName={topicName}
+          isTopicOwner={Boolean(topicOwner)}
+          isCreatingSchemaAllowed={createSchemaAllowed}
+          schemaIsRefetching={topicSchemasIsRefetching}
+        />
+      </>
     );
   }
 

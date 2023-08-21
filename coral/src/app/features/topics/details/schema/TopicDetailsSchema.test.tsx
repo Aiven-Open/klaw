@@ -305,11 +305,8 @@ describe("TopicDetailsSchema", () => {
         expect(text).toBeVisible();
       });
 
-      it("shows button to request a new schema in banner", () => {
-        const noSchemaAvailableBanner = screen.getByTestId(
-          "no-schema-available-banner"
-        );
-        const button = within(noSchemaAvailableBanner).getByRole("button", {
+      it("shows button to request a new schema", () => {
+        const button = screen.getByRole("button", {
           name: "Request a new schema",
         });
 
@@ -745,16 +742,15 @@ describe("TopicDetailsSchema", () => {
 
     describe("when topic has no schema yet", () => {
       beforeAll(() => {
-        mockPromoteSchemaRequest.mockResolvedValue({
-          success: true,
-          message: "",
-        });
         mockedUseTopicDetails.mockReturnValue({
           topicOverviewIsRefetching: false,
           topicSchemasIsRefetching: false,
           topicName: testTopicName,
           environmentId: testEnvironmentId,
-          topicSchemas: noSchema_testTopicSchemas,
+          topicSchemas: {
+            ...noSchema_testTopicSchemas,
+            schemaPromotionDetails: undefined,
+          },
           setSchemaVersion: mockSetSchemaVersion,
           topicOverview: { topicInfo: { topicOwner: false } },
         });
@@ -774,22 +770,15 @@ describe("TopicDetailsSchema", () => {
         jest.clearAllMocks();
       });
 
-      it("does not show a link to request a new schema version", () => {
-        const noSchemaAvailableBanner = screen.getByTestId(
-          "no-schema-available-banner"
-        );
-        const link = within(noSchemaAvailableBanner).queryByRole("link", {
-          name: "Request a new version",
-        });
+      it("shows information to user", () => {
+        const info = screen.getByText("No schema available for this topic");
 
-        expect(link).not.toBeInTheDocument();
+        expect(info).toBeVisible();
       });
 
-      it("does not show information about schema promotion", () => {
-        const promotionBanner = screen.queryByTestId("schema-promotion-banner");
-        const button = screen.queryByRole("button", { name: "Promote" });
+      it("does not show a button to request a schema", () => {
+        const button = screen.queryByRole("button");
 
-        expect(promotionBanner).not.toBeInTheDocument();
         expect(button).not.toBeInTheDocument();
       });
     });
