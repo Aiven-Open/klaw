@@ -13,7 +13,6 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +20,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -180,8 +180,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
     }
@@ -306,8 +305,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       if (!wildcardFilter
@@ -517,7 +515,7 @@ public class SelectDataJdbc {
    * @param wildcardSearch filter the results by a wildcard search of the topicnames. Applied only
    *     when allReqs is true
    * @return A list of TopicRequests that meet the filtered criteria. Applied only when allReqs is
-   *     truei
+   *     true
    */
   public List<TopicRequest> selectFilteredTopicRequests(
       boolean isApproval,
@@ -629,8 +627,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       filterAndAddTopicRequest(topicRequests, row, wildcardSearch, wildcardFilter);
@@ -656,7 +653,9 @@ public class SelectDataJdbc {
       String wildcardSearch,
       boolean applyWildcardFilter) {
     if (!applyWildcardFilter
-        || row.getTopicname().toLowerCase().contains(wildcardSearch.toLowerCase())) {
+        || row.getTopicname()
+            .toLowerCase(Locale.ROOT)
+            .contains(wildcardSearch.toLowerCase(Locale.ROOT))) {
       operationalRequestList.add(row);
     }
   }
@@ -795,8 +794,7 @@ public class SelectDataJdbc {
     for (KafkaConnectorRequest row : topicRequestListSub) {
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       if (!wildcardSearch || row.getConnectorName().toLowerCase().contains(search.toLowerCase()))
@@ -2032,11 +2030,9 @@ public class SelectDataJdbc {
     boolean wildcardFilter = (wildcardSearch != null && !wildcardSearch.isEmpty());
 
     for (OperationalRequest row : operationRequestListSub) {
-
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       filterAndAddOperationalRequest(operationalRequests, row, wildcardSearch, wildcardFilter);

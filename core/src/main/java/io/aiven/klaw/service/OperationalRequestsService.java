@@ -199,7 +199,7 @@ public class OperationalRequestsService {
       }
     }
 
-    return String.valueOf(approvingInfo);
+    return approvingInfo.toString();
   }
 
   private List<OperationalRequest> getOperationalRequestsPaged(
@@ -320,9 +320,7 @@ public class OperationalRequestsService {
       }
     }
 
-    return apiResponse.isSuccess()
-        ? ApiResponse.ok(ApiResultStatus.SUCCESS.value)
-        : ApiResponse.notOk(ApiResultStatus.FAILURE.value);
+    return apiResponse.isSuccess() ? ApiResponse.SUCCESS : ApiResponse.FAILURE;
   }
 
   private void checkIsAuthorized(PermissionType permission) throws KlawNotAuthorizedException {
