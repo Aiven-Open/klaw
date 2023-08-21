@@ -21,6 +21,7 @@ describe("NoSchemaBanner", () => {
           isTopicOwner={false}
           schemaIsRefetching={false}
           isCreatingSchemaAllowed={false}
+          hasOpenRequest={false}
         />
       );
     });
@@ -49,6 +50,7 @@ describe("NoSchemaBanner", () => {
             isTopicOwner={true}
             schemaIsRefetching={true}
             isCreatingSchemaAllowed={true}
+            hasOpenRequest={false}
           />
         );
       });
@@ -78,6 +80,7 @@ describe("NoSchemaBanner", () => {
             isTopicOwner={true}
             schemaIsRefetching={false}
             isCreatingSchemaAllowed={true}
+            hasOpenRequest={false}
           />
         );
       });
@@ -107,6 +110,7 @@ describe("NoSchemaBanner", () => {
             isTopicOwner={true}
             schemaIsRefetching={false}
             isCreatingSchemaAllowed={false}
+            hasOpenRequest={false}
           />
         );
       });
@@ -136,6 +140,55 @@ describe("NoSchemaBanner", () => {
         );
       });
     });
+
+    describe("when there is a open schema request", () => {
+      beforeAll(() => {
+        customRender(
+          <NoSchemaBanner
+            topicName={testTopicName}
+            isTopicOwner={true}
+            schemaIsRefetching={false}
+            isCreatingSchemaAllowed={true}
+            hasOpenRequest={true}
+          />,
+          { memoryRouter: true }
+        );
+      });
+
+      afterAll(cleanup);
+
+      it("shows information that there is no schema yet", () => {
+        const text = screen.getByText("No schema available for this topic");
+
+        expect(text).toBeVisible();
+      });
+
+      it("shows information about pending request", () => {
+        const text = screen.getByText(
+          `A schema request for ${testTopicName} is already in progress.`
+        );
+
+        expect(text).toBeVisible();
+      });
+
+      it("shows link to open request", () => {
+        const link = screen.getByRole("link", { name: "View request" });
+
+        expect(link).toBeVisible();
+        expect(link).toHaveAttribute(
+          "href",
+          `/requests/schemas?status=CREATED&page=1&search=${testTopicName}`
+        );
+      });
+
+      it("shows disabled button to request a new schema", () => {
+        const button = screen.getByRole("button", {
+          name: "Request a new schema",
+        });
+
+        expect(button).toBeDisabled();
+      });
+    });
   });
 
   describe("enables topic owner to request a new schema", () => {
@@ -146,6 +199,7 @@ describe("NoSchemaBanner", () => {
           isTopicOwner={true}
           schemaIsRefetching={false}
           isCreatingSchemaAllowed={true}
+          hasOpenRequest={false}
         />,
         {
           memoryRouter: true,

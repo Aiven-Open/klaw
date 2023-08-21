@@ -113,6 +113,7 @@ function TopicDetailsSchema() {
           isTopicOwner={Boolean(topicOwner)}
           isCreatingSchemaAllowed={createSchemaAllowed}
           schemaIsRefetching={topicSchemasIsRefetching}
+          hasOpenRequest={hasOpenSchemaRequest}
         />
       </>
     );
