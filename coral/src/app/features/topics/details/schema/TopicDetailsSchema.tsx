@@ -28,6 +28,7 @@ import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/co
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schema/components/SchemaPromotableOnlyAlert";
 import { NoSchemaBanner } from "src/app/features/topics/details/schema/components/NoSchemaBanner";
+import { OpenSchemaRequestAlert } from "src/app/features/topics/details/schema/components/OpenSchemaRequestAlert";
 
 //@ TODO change to api response value
 // eslint-disable-next-line react/prop-types
@@ -175,7 +176,7 @@ function TopicDetailsSchema() {
           <Box alignSelf={"top"} aria-hidden={!createSchemaAllowed}>
             <InternalLinkButton
               to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
-              disabled={!createSchemaAllowed}
+              disabled={!createSchemaAllowed || hasOpenSchemaRequest}
             >
               <Box.Flex component={"span"} alignItems={"center"} colGap={"3"}>
                 <InlineIcon
@@ -192,13 +193,18 @@ function TopicDetailsSchema() {
         )}
       </Box>
 
-      {!createSchemaAllowed && (
+      {hasOpenSchemaRequest && (
+        <OpenSchemaRequestAlert marginBottom={"l2"} topicName={topicName} />
+      )}
+
+      {!hasOpenSchemaRequest && !createSchemaAllowed && (
         <SchemaPromotableOnlyAlert
           marginBottom={"l2"}
           isNewVersionRequest={true}
         />
       )}
-      {!topicSchemasIsRefetching && isTopicOwner && (
+
+      {!hasOpenSchemaRequest && !topicSchemasIsRefetching && isTopicOwner && (
         <SchemaPromotionBanner
           schemaPromotionDetails={schemaPromotionDetails}
           hasOpenSchemaRequest={hasOpenSchemaRequest}

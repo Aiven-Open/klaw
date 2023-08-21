@@ -1,6 +1,7 @@
-import { Alert, EmptyState } from "@aivenio/aquarium";
+import { EmptyState } from "@aivenio/aquarium";
 import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schema/components/SchemaPromotableOnlyAlert";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { OpenSchemaRequestAlert } from "src/app/features/topics/details/schema/components/OpenSchemaRequestAlert";
 
 type NoSchemaBannerProps = {
   topicName: string;
@@ -32,17 +33,7 @@ function NoSchemaBanner({
           disabled: true,
         }}
       >
-        <Alert type={"warning"}>
-          <span>
-            {`A schema request for ${topicName} is already in progress.`}
-          </span>{" "}
-          <Link
-            to={`/requests/schemas?status=CREATED&page=1&search=${topicName}`}
-          >
-            View request
-          </Link>
-          .
-        </Alert>
+        <OpenSchemaRequestAlert topicName={topicName} />
       </EmptyState>
     );
   }

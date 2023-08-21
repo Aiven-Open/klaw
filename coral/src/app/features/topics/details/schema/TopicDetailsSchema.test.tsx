@@ -262,6 +262,67 @@ describe("TopicDetailsSchema", () => {
       });
     });
 
+    describe("when topic has (multiple) schema(s) and a request is pending", () => {
+      beforeAll(() => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: testTopicSchemas,
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: {
+            topicInfo: { topicOwner: true, hasOpenSchemaRequest: true },
+          },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("shows a disabled link to request a new version", () => {
+        const link = screen.getByRole("link", {
+          name: "Request a new version",
+        });
+
+        expect(link).toBeDisabled();
+        expect(link).not.toHaveAttribute("href");
+      });
+
+      it("shows information that there is a pending request", () => {
+        const info = screen.getByText(
+          `A schema request for ${testTopicName} is already in progress.`
+        );
+
+        expect(info).toBeVisible();
+      });
+
+      it("shows a link to the open request", () => {
+        const link = screen.getByRole("link", { name: "View request" });
+
+        expect(link).toBeVisible();
+        expect(link).toHaveAttribute(
+          "href",
+          `/requests/schemas?status=CREATED&page=1&search=${testTopicName}`
+        );
+      });
+    });
+
     describe("when topic has no schema yet and `createSchemaAllowed` is true (default)", () => {
       beforeAll(() => {
         mockPromoteSchemaRequest.mockResolvedValue({
@@ -398,6 +459,68 @@ describe("TopicDetailsSchema", () => {
         );
       });
     });
+    describe("when topic has no schema yet and a request is pending", () => {
+      beforeAll(() => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: {
+            ...noSchema_testTopicSchemas,
+            createSchemaAllowed: false,
+          },
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: {
+            topicInfo: { topicOwner: true, hasOpenSchemaRequest: true },
+          },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("shows a disabled button to request a new schema", () => {
+        const link = screen.getByRole("button", {
+          name: "Request a new schema",
+        });
+
+        expect(link).toBeDisabled();
+      });
+
+      it("shows information that there is a pending request", () => {
+        const info = screen.getByText(
+          `A schema request for ${testTopicName} is already in progress.`
+        );
+
+        expect(info).toBeVisible();
+      });
+
+      it("shows a link to the open request", () => {
+        const link = screen.getByRole("link", { name: "View request" });
+
+        expect(link).toBeVisible();
+        expect(link).toHaveAttribute(
+          "href",
+          `/requests/schemas?status=CREATED&page=1&search=${testTopicName}`
+        );
+      });
+    });
 
     describe("shows promotion details to topic owner", () => {
       describe("shows when promotion is possible", () => {
@@ -514,64 +637,6 @@ describe("TopicDetailsSchema", () => {
 
           expect(banner).not.toBeInTheDocument();
           expect(button).not.toBeInTheDocument();
-        });
-      });
-
-      describe("shows when promotion is not possible right now", () => {
-        beforeAll(() => {
-          mockPromoteSchemaRequest.mockResolvedValue({
-            success: true,
-            message: "",
-          });
-          mockedUseTopicDetails.mockReturnValue({
-            topicOverviewIsRefetching: false,
-            topicSchemasIsRefetching: false,
-            topicName: testTopicName,
-            environmentId: testEnvironmentId,
-            topicSchemas: testTopicSchemas,
-            setSchemaVersion: mockSetSchemaVersion,
-            topicOverview: {
-              topicInfo: {
-                topicOwner: true,
-                hasOpenSchemaRequest: true,
-              },
-            },
-          });
-          customRender(
-            <AquariumContext>
-              <TopicDetailsSchema />
-            </AquariumContext>,
-            {
-              memoryRouter: true,
-              queryClient: true,
-            }
-          );
-        });
-
-        afterAll(() => {
-          cleanup();
-          jest.clearAllMocks();
-        });
-
-        it("shows information why schema request is not possible", () => {
-          const promotionBanner = screen.getByTestId("schema-promotion-banner");
-
-          expect(promotionBanner).toBeVisible();
-          expect(promotionBanner.textContent).toContain(
-            "topic-name has a pending request."
-          );
-        });
-
-        it("shows no button to promote the schema", () => {
-          const button = screen.queryByRole("button", { name: "Promote" });
-
-          expect(button).not.toBeInTheDocument();
-        });
-
-        it("shows a link to see open schema requests", () => {
-          const link = screen.getByRole("link", { name: "View request" });
-
-          expect(link).toBeVisible();
         });
       });
     });
