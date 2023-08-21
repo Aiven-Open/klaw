@@ -115,7 +115,7 @@ function ConnectorOverviewResourcesTabs({
     );
   }
 
-  const ConnectorTabs = () => (
+  return (
     <Tabs
       value={currentTab}
       onChange={(resourceTypeId) => navigateToTab(navigate, resourceTypeId)}
@@ -141,8 +141,6 @@ function ConnectorOverviewResourcesTabs({
       })}
     </Tabs>
   );
-
-  return <ConnectorTabs />;
 }
 
 export { ConnectorOverviewResourcesTabs };

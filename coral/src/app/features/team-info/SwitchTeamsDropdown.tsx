@@ -37,7 +37,7 @@ function SwitchTeamsDropdown({
     updateTeam,
     {
       onSuccess: async () => {
-        await queryClient.refetchQueries();
+        await queryClient.invalidateQueries();
         toast({
           message: "Team changed successfully.",
           variant: "default",
