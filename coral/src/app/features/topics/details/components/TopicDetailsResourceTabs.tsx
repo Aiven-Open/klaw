@@ -10,6 +10,7 @@ import {
 import { TopicOverview } from "src/domain/topic";
 import { TopicSchemaOverview } from "src/domain/topic/topic-types";
 import { parseErrorMsg } from "src/services/mutation-utils";
+import { useEffect } from "react";
 
 type Props = {
   currentTab: TopicOverviewTabEnum;
@@ -39,6 +40,9 @@ function TopicOverviewResourcesTabs({
   const navigate = useNavigate();
   const topicName = topicOverview?.topicInfo.topicName;
 
+  useEffect(() => {
+    console.log("TopicOverviewResourcesTabs mounting");
+  }, []);
   function navigateToTab(
     navigate: NavigateFunction,
     resourceTypeId: unknown
@@ -137,7 +141,7 @@ function TopicOverviewResourcesTabs({
     );
   };
 
-  const TopicTabs = () => (
+  return (
     <Tabs
       value={currentTab}
       onChange={(resourceTypeId) => navigateToTab(navigate, resourceTypeId)}
@@ -163,8 +167,6 @@ function TopicOverviewResourcesTabs({
       })}
     </Tabs>
   );
-
-  return <TopicTabs />;
 }
 
 export { TopicOverviewResourcesTabs };
