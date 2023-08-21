@@ -32,12 +32,9 @@ const navLinks = [
   { name: "Approve requests", linkTo: "/approvals" },
   { name: "My team's requests", linkTo: "/requests" },
   { name: "Audit log", linkTo: "/activityLog" },
-  { name: "Settings", linkTo: "/serverConfig" },
 ];
 
-const submenuItems = [
-  { name: "Users and teams", links: ["Users", "Teams", "User requests"] },
-];
+const submenuItems = [{ name: "Users and teams", links: ["Users", "Teams"] }];
 
 const navOrderFirstLevel = [
   { name: "Dashboard", isSubmenu: false },
@@ -47,7 +44,6 @@ const navOrderFirstLevel = [
   { name: "Approve requests", isSubmenu: false },
   { name: "My team's requests", isSubmenu: false },
   { name: "Audit log", isSubmenu: false },
-  { name: "Settings", isSubmenu: false },
 ];
 
 describe("MainNavigation.tsx", () => {
