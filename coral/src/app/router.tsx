@@ -63,11 +63,9 @@ const routes: Array<RouteObject> = [
         path: Routes.TOPICS,
         element: <Topics />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.TOPIC_OVERVIEW,
         element: <TopicDetailsPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_TOPIC_OVERVIEW,
-        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
         children: [
           {
             path: TOPIC_OVERVIEW_TAB_ID_INTO_PATH[
@@ -113,7 +111,7 @@ const routes: Array<RouteObject> = [
             id: TopicOverviewTabEnum.SETTINGS,
           },
         ],
-      }),
+      },
       {
         path: Routes.CONNECTORS,
         element: <ConnectorsPage />,
@@ -237,18 +235,14 @@ const routes: Array<RouteObject> = [
         path: Routes.TOPIC_SCHEMA_REQUEST,
         element: <SchemaRequest />,
       },
-      createRouteBehindFeatureFlag({
+      {
         path: Routes.TOPIC_PROMOTION_REQUEST,
         element: <TopicPromotionRequestPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_PROMOTE_TOPIC,
-        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
-      }),
-      createRouteBehindFeatureFlag({
+      },
+      {
         path: Routes.TOPIC_EDIT_REQUEST,
         element: <TopicEditRequestPage />,
-        featureFlag: FeatureFlag.FEATURE_FLAG_EDIT_TOPIC,
-        redirectRouteWithoutFeatureFlag: Routes.TOPICS,
-      }),
+      },
       createRouteBehindFeatureFlag({
         path: Routes.CONNECTOR_EDIT_REQUEST,
         element: <ConnectorEditRequest />,

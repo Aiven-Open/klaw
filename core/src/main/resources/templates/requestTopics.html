@@ -10,12 +10,14 @@
 	<meta name="author" content="">
 <!-- Global site tag (gtag.js) - Google Analytics -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-YQB8J8J690"></script>
+
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
   gtag('config', 'G-YQB8J8J690');
+
 </script>
 
 	<!-- Favicon icon -->
@@ -430,11 +432,20 @@
 		<div class="container-fluid">
 			<div class="row page-titles">
 			</div>
-			<div class="row" ng-if="dashboardDetails.coralEnabled === 'true'">
+			<div class="row" ng-if="dashboardDetails.coralEnabled === 'true' && requestType == 'CreateTopic'">
 				<div class="ribbon-wrapper card col-lg-6 col-md-6 col-xlg-2 col-xs-6">
 					<div class="ribbon ribbon-success">New user interface available</div>
 					<p class="ribbon-content">
 						Check out the new interface for <a href="coral/topics/request">topic request.</a>
+					</p>
+				</div>
+			</div>
+			<div class="row" ng-if="dashboardDetails.coralEnabled === 'true' && requestType == 'EditTopic'">
+				<div class="ribbon-wrapper card col-lg-6 col-md-6 col-xlg-2 col-xs-6">
+					<div class="ribbon ribbon-success">New user interface available</div>
+					<p class="ribbon-content">
+						Check out the new interface for <a
+							href="coral/topic/{{ addTopic.topicname }}/request-update?env={{ addTopic.envName }}">edit topic.</a>
 					</p>
 				</div>
 			</div>

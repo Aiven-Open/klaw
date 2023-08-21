@@ -9,11 +9,13 @@ interface TopicPromotionBannerProps {
    * information to the user.
    */
   hasOpenTopicRequest: boolean;
+  hasOpenClaimRequest: boolean;
   topicName: string;
 }
 
 const TopicPromotionBanner = ({
   topicPromotionDetails,
+  hasOpenClaimRequest,
   hasOpenTopicRequest,
   topicName,
 }: TopicPromotionBannerProps) => {
@@ -23,6 +25,7 @@ const TopicPromotionBanner = ({
         entityName={topicName}
         promotionDetails={topicPromotionDetails}
         hasOpenRequest={hasOpenTopicRequest}
+        hasOpenClaimRequest={hasOpenClaimRequest}
         type={"topic"}
         promoteElement={
           <InternalLinkButton

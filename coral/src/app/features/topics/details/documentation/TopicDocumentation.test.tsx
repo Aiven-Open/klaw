@@ -82,22 +82,22 @@ describe("TopicDocumentation", () => {
 
       afterAll(cleanup);
 
-      it("shows headline No Documentation", () => {
+      it("shows headline No readme available", () => {
         const headline = screen.getByRole("heading", {
-          name: "No documentation",
+          name: "No readme available",
         });
         expect(headline).toBeVisible();
       });
 
-      it("shows a button to add documentation", () => {
-        const addDocumentationButton = screen.getByRole("button", {
-          name: "Add documentation",
+      it("shows a button to add readme", () => {
+        const addReadmeButton = screen.getByRole("button", {
+          name: "Add readme",
         });
-        expect(addDocumentationButton).toBeEnabled();
+        expect(addReadmeButton).toBeEnabled();
       });
     });
 
-    describe("enables user to add documentation", () => {
+    describe("enables user to add readme", () => {
       beforeEach(() => {
         mockUseTopicDetails.mockReturnValue(mockTopicDetails);
         mockUpdateTopicDocumentation.mockResolvedValue({
@@ -121,33 +121,46 @@ describe("TopicDocumentation", () => {
         expect(markdownEditor).not.toBeInTheDocument();
       });
 
-      it("shows the edit mode when user clicks button to add documentation", async () => {
-        const addDocumentationButton = screen.getByRole("button", {
-          name: "Add documentation",
+      it("shows the edit mode when user clicks button to add readme", async () => {
+        const addReadmeButton = screen.getByRole("button", {
+          name: "Add readme",
         });
-        const headlineNoDocumentation = screen.getByRole("heading", {
-          name: "No documentation",
+        const headlineNoReadme = screen.getByRole("heading", {
+          name: "No readme available",
         });
 
-        expect(headlineNoDocumentation).toBeVisible();
-        await user.click(addDocumentationButton);
+        expect(headlineNoReadme).toBeVisible();
+        await user.click(addReadmeButton);
 
         const markdownEditor = screen.getByRole("textbox", {
           name: "Markdown editor",
         });
         const headlineEdit = screen.getByRole("heading", {
-          name: "Edit documentation",
+          name: "Edit readme",
         });
 
         expect(markdownEditor).toBeVisible();
-        expect(headlineNoDocumentation).not.toBeInTheDocument();
+        expect(headlineNoReadme).not.toBeInTheDocument();
         expect(headlineEdit).toBeVisible();
+      });
+
+      it("shows a description about the readme", async () => {
+        const addReadmeButton = screen.getByRole("button", {
+          name: "Add readme",
+        });
+        await user.click(addReadmeButton);
+
+        const description = screen.getByText(
+          `Readme provides essential information, guidelines, and explanations about the topic, helping team members understand its purpose and usage. Edit the readme to update the information as the topic evolves.`
+        );
+
+        expect(description).toBeVisible();
       });
     });
   });
 
-  describe("if the topic has existing documentation", () => {
-    const existingDocumentation = "# Hello" as TopicDocumentationMarkdown;
+  describe("if the topic has existing readme", () => {
+    const existingReadme = "# Hello" as TopicDocumentationMarkdown;
 
     describe("shows all necessary elements", () => {
       beforeAll(() => {
@@ -155,7 +168,7 @@ describe("TopicDocumentation", () => {
           ...mockTopicDetails,
           topicOverview: {
             ...mockTopicDetails.topicOverview,
-            topicDocumentation: existingDocumentation,
+            topicDocumentation: existingReadme,
           },
         });
 
@@ -174,34 +187,42 @@ describe("TopicDocumentation", () => {
 
       afterAll(cleanup);
 
-      it("shows documentation headline", () => {
-        const headline = screen.getByRole("heading", { name: "Documentation" });
+      it("shows readme headline", () => {
+        const headline = screen.getByRole("heading", { name: "Readme" });
 
         expect(headline).toBeVisible();
       });
 
-      it("shows the documentation", () => {
+      it("shows a description about the readme", () => {
+        const description = screen.getByText(
+          `Readme provides essential information, guidelines, and explanations about the topic, helping team members understand its purpose and usage. Edit the readme to update the information as the topic evolves.`
+        );
+
+        expect(description).toBeVisible();
+      });
+
+      it("shows the readme", () => {
         const markdownView = screen.getByTestId("react-markdown-mock");
 
         expect(markdownView).toBeVisible();
-        expect(markdownView).toHaveTextContent(existingDocumentation);
+        expect(markdownView).toHaveTextContent(existingReadme);
       });
 
-      it("shows a button to edit documentation", () => {
-        const addDocumentationButton = screen.getByRole("button", {
-          name: "Edit documentation",
+      it("shows a button to edit readme", () => {
+        const addReadmeButton = screen.getByRole("button", {
+          name: "Edit readme",
         });
-        expect(addDocumentationButton).toBeEnabled();
+        expect(addReadmeButton).toBeEnabled();
       });
     });
 
-    describe("enables user to edit documentation", () => {
+    describe("enables user to edit readme", () => {
       beforeEach(() => {
         mockUseTopicDetails.mockReturnValue({
           ...mockTopicDetails,
           topicOverview: {
             ...mockTopicDetails.topicOverview,
-            topicDocumentation: existingDocumentation,
+            topicDocumentation: existingReadme,
           },
         });
 
@@ -215,18 +236,18 @@ describe("TopicDocumentation", () => {
 
       afterEach(cleanup);
 
-      it("shows the edit mode when user clicks button to edit documentation", async () => {
-        const editDocumentation = screen.getByRole("button", {
-          name: "Edit documentation",
+      it("shows the edit mode when user clicks button to edit readme", async () => {
+        const editReadme = screen.getByRole("button", {
+          name: "Edit readme",
         });
 
-        await user.click(editDocumentation);
+        await user.click(editReadme);
 
         const markdownEditor = screen.getByRole("textbox", {
           name: "Markdown editor",
         });
         const headlineEdit = screen.getByRole("heading", {
-          name: "Edit documentation",
+          name: "Edit readme",
         });
 
         expect(markdownEditor).toBeVisible();
@@ -235,8 +256,8 @@ describe("TopicDocumentation", () => {
     });
   });
 
-  describe("if documentation is updating", () => {
-    const existingDocumentation = "# Hello" as TopicDocumentationMarkdown;
+  describe("if readme is updating", () => {
+    const existingReadme = "# Hello" as TopicDocumentationMarkdown;
 
     beforeAll(() => {
       mockUseTopicDetails.mockReturnValue({
@@ -244,7 +265,7 @@ describe("TopicDocumentation", () => {
         topicOverviewIsRefetching: true,
         topicOverview: {
           ...mockTopicDetails.topicOverview,
-          topicDocumentation: existingDocumentation,
+          topicDocumentation: existingReadme,
         },
       });
 
@@ -263,35 +284,35 @@ describe("TopicDocumentation", () => {
 
     afterAll(cleanup);
 
-    it("shows documentation headline", () => {
-      const headline = screen.getByRole("heading", { name: "Documentation" });
+    it("shows readme headline", () => {
+      const headline = screen.getByRole("heading", { name: "Readme" });
 
       expect(headline).toBeVisible();
     });
 
-    it("shows accessible information about loading documentation", () => {
-      const loadingInformation = screen.getByText("Loading documentation");
+    it("shows accessible information about loading readme", () => {
+      const loadingInformation = screen.getByText("Loading readme");
 
       expect(loadingInformation).toBeVisible();
       expect(loadingInformation).toHaveClass("visually-hidden");
     });
 
-    it("shows no documentation", () => {
+    it("shows no readme", () => {
       const markdownView = screen.queryByTestId("react-markdown-mock");
 
       expect(markdownView).not.toBeInTheDocument();
     });
 
-    it("shows no button to edit documentation", () => {
-      const addDocumentationButton = screen.queryByRole("button", {
-        name: "Edit documentation",
+    it("shows no button to edit readme", () => {
+      const addReadmeButton = screen.queryByRole("button", {
+        name: "Edit readme",
       });
-      expect(addDocumentationButton).not.toBeInTheDocument();
+      expect(addReadmeButton).not.toBeInTheDocument();
     });
   });
 
-  describe("enables user to update documentation", () => {
-    const existingDocumentation = "# Hello" as TopicDocumentationMarkdown;
+  describe("enables user to update readme", () => {
+    const existingReadme = "# Hello" as TopicDocumentationMarkdown;
     const userInput = "**Hello world**";
 
     beforeEach(() => {
@@ -299,7 +320,7 @@ describe("TopicDocumentation", () => {
         ...mockTopicDetails,
         topicOverview: {
           ...mockTopicDetails.topicOverview,
-          topicDocumentation: existingDocumentation,
+          topicDocumentation: existingReadme,
         },
       });
       mockUpdateTopicDocumentation.mockResolvedValue({
@@ -319,9 +340,9 @@ describe("TopicDocumentation", () => {
       cleanup();
     });
 
-    it("enables user to cancel editing the documentation", async () => {
+    it("enables user to cancel editing the readme", async () => {
       const editButton = screen.getByRole("button", {
-        name: "Edit documentation",
+        name: "Edit readme",
       });
 
       await user.click(editButton);
@@ -344,9 +365,9 @@ describe("TopicDocumentation", () => {
       expect(previewMode).toBeVisible();
     });
 
-    it("saves documentation when user clicks button", async () => {
+    it("saves readme when user clicks button", async () => {
       const editButton = screen.getByRole("button", {
-        name: "Edit documentation",
+        name: "Edit readme",
       });
 
       await user.click(editButton);
@@ -357,7 +378,7 @@ describe("TopicDocumentation", () => {
       await user.type(markdownEditor, userInput);
 
       const saveButton = screen.getByRole("button", {
-        name: "Save documentation",
+        name: "Save readme",
       });
 
       await user.click(saveButton);
@@ -365,16 +386,16 @@ describe("TopicDocumentation", () => {
       expect(mockUpdateTopicDocumentation).toHaveBeenCalledWith({
         topicName: "documentation-test-topic",
         topicIdForDocumentation: 99999,
-        topicDocumentation: existingDocumentation + userInput,
+        topicDocumentation: existingReadme + userInput,
       });
     });
 
     it("shows preview mode after successful update", async () => {
-      const editDocumentation = screen.getByRole("button", {
-        name: "Edit documentation",
+      const editReadme = screen.getByRole("button", {
+        name: "Edit readme",
       });
 
-      await user.click(editDocumentation);
+      await user.click(editReadme);
 
       const markdownEditor = screen.getByRole("textbox", {
         name: "Markdown editor",
@@ -382,7 +403,7 @@ describe("TopicDocumentation", () => {
       await user.type(markdownEditor, userInput);
 
       const saveButton = screen.getByRole("button", {
-        name: "Save documentation",
+        name: "Save readme",
       });
 
       await user.click(saveButton);
@@ -393,7 +414,7 @@ describe("TopicDocumentation", () => {
     });
   });
 
-  describe("handles errors when transforming documentation intro correct markdown from backend", () => {
+  describe("handles errors when transforming readme intro correct markdown from backend", () => {
     const originalConsoleError = console.error;
     beforeEach(() => {
       console.error = jest.fn();
@@ -426,7 +447,7 @@ describe("TopicDocumentation", () => {
 
       expect(errorInformation).toBeVisible();
       expect(errorInformation).toHaveTextContent(
-        "Something went wrong while trying to transform the documentation into the right format."
+        "Something went wrong while trying to transform the readme into the right format."
       );
 
       const previewMode = screen.queryByTestId("react-markdown-mock");
@@ -437,8 +458,8 @@ describe("TopicDocumentation", () => {
     });
   });
 
-  describe("handles errors with updating documentation", () => {
-    const existingDocumentation = "# Hello" as TopicDocumentationMarkdown;
+  describe("handles errors with updating readme", () => {
+    const existingReadme = "# Hello" as TopicDocumentationMarkdown;
     const userInput = "**Hello world**";
 
     const originalConsoleError = console.error;
@@ -448,7 +469,7 @@ describe("TopicDocumentation", () => {
         ...mockTopicDetails,
         topicOverview: {
           ...mockTopicDetails.topicOverview,
-          topicDocumentation: existingDocumentation,
+          topicDocumentation: existingReadme,
         },
       });
       mockUpdateTopicDocumentation.mockRejectedValue({
@@ -470,9 +491,9 @@ describe("TopicDocumentation", () => {
       cleanup();
     });
 
-    it("shows errors without saving documentation when user clicks button", async () => {
+    it("shows errors without saving readme when user clicks button", async () => {
       const editButton = screen.getByRole("button", {
-        name: "Edit documentation",
+        name: "Edit readme",
       });
 
       await user.click(editButton);
@@ -483,7 +504,7 @@ describe("TopicDocumentation", () => {
       await user.type(markdownEditor, userInput);
 
       const saveButton = screen.getByRole("button", {
-        name: "Save documentation",
+        name: "Save readme",
       });
 
       await user.click(saveButton);
@@ -491,7 +512,7 @@ describe("TopicDocumentation", () => {
       const error = screen.getByRole("alert");
       expect(error).toBeVisible();
       expect(error).toHaveTextContent(
-        "The documentation could not be saved, there was an error"
+        "The readme could not be saved, there was an error"
       );
 
       const previewMode = screen.queryByTestId("react-markdown-mock");

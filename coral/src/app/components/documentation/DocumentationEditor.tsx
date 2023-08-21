@@ -130,7 +130,7 @@ function DocumentationEditor({
           Cancel
         </Button.Secondary>
         <Button.Primary onClick={saveDocumentation} loading={isSaving}>
-          {isSaving ? "Saving documentation" : "Save documentation"}
+          {isSaving ? "Saving readme" : "Save readme"}
         </Button.Primary>
       </Box.Flex>
     </Box.Flex>

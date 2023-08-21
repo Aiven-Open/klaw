@@ -656,4 +656,446 @@ describe("ConnectorApprovals", () => {
       expect(console.error).toHaveBeenCalledWith("OH NO");
     });
   });
+
+  describe("enables user to approve a request with quick action", () => {
+    const testRequest = mockedApiResponseConnectorRequests.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetSyncConnectorsEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequestsForApprover.mockResolvedValue(
+        mockedApiResponseConnectorRequests
+      );
+
+      customRender(<ConnectorApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a approve request api call if user approves a connector request", async () => {
+      mockApproveConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.connectorId)],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("updates the the data for the table if user approves a connector request", async () => {
+      mockApproveConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.connectorId)],
+      });
+
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if approving request was not successful", async () => {
+      mockApproveConnectorRequest.mockRejectedValue("OH NO");
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const approveButton = screen.getByRole("button", {
+        name: `Approve Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.connectorId)],
+      });
+
+      expect(mockApproveConnectorRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
+    });
+  });
+
+  describe("enables user to approve a request through details modal", () => {
+    const testRequest = mockedApiResponseConnectorRequests.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetSyncConnectorsEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequestsForApprover.mockResolvedValue(
+        mockedApiResponseConnectorRequests
+      );
+
+      customRender(<ConnectorApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("send a approve request api call if user approves a connector request", async () => {
+      mockApproveConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.connectorId)],
+      });
+      expect(console.error).not.toHaveBeenCalled();
+      expect(modal).not.toBeInTheDocument();
+    });
+
+    it("updates the the data for the table if user approves a connector request", async () => {
+      mockApproveConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.connectorId)],
+      });
+
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+      expect(modal).not.toBeInTheDocument();
+    });
+
+    it("informs user about error if approving request was not successful", async () => {
+      mockApproveConnectorRequest.mockRejectedValue("OH NO");
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        1,
+        defaultApiParams
+      );
+
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const modal = screen.getByRole("dialog", { name: "Request details" });
+
+      expect(modal).toBeVisible();
+      const approveButton = within(modal).getByRole("button", {
+        name: "Approve",
+      });
+
+      await userEvent.click(approveButton);
+
+      expect(mockApproveConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.connectorId)],
+      });
+
+      expect(mockApproveConnectorRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+      expect(modal).not.toBeInTheDocument();
+
+      expect(console.error).toHaveBeenCalledWith("OH NO");
+    });
+  });
+
+  describe("enables user to decline a request with quick action", () => {
+    const testRequest = mockedApiResponseConnectorRequests.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetSyncConnectorsEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequestsForApprover.mockResolvedValue(
+        mockedApiResponseConnectorRequests
+      );
+
+      customRender(<ConnectorApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("does not send a decline request is user does not add a reason", async () => {
+      mockDeclineConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      expect(confirmDecline).toBeDisabled();
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineConnectorRequest).not.toHaveBeenCalled();
+      expect(declineModal).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("send a decline request api call if user declines a connector request", async () => {
+      mockDeclineConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.connectorId)],
+        reason: "my reason",
+      });
+
+      expect(console.error).not.toHaveBeenCalled();
+      expect(declineModal).not.toBeInTheDocument();
+    });
+
+    it("updates the the data for the table if user declines a connector request", async () => {
+      mockDeclineConnectorRequest.mockResolvedValue([
+        { success: true, message: "" },
+      ]);
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockDeclineConnectorRequest).toHaveBeenCalledWith({
+        reqIds: [String(testRequest.connectorId)],
+        reason: "my reason",
+      });
+
+      expect(mockGetConnectorRequestsForApprover).toHaveBeenNthCalledWith(
+        2,
+        defaultApiParams
+      );
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("informs user about error if declining request was not successful", async () => {
+      mockDeclineConnectorRequest.mockRejectedValue("Oh no");
+
+      const declineButton = screen.getByRole("button", {
+        name: `Decline Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(declineButton);
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+      expect(declineModal).toBeVisible();
+
+      const textAreaReason = within(declineModal).getByRole("textbox", {
+        name: "Submit a reason to decline the request *",
+      });
+
+      await userEvent.type(textAreaReason, "my reason");
+
+      const confirmDecline = within(declineModal).getByRole("button", {
+        name: "Decline request",
+      });
+
+      await userEvent.click(confirmDecline);
+
+      expect(mockApproveConnectorRequest).not.toHaveBeenCalledTimes(2);
+
+      const error = await screen.findByRole("alert");
+      expect(error).toBeVisible();
+      expect(declineModal).not.toBeInTheDocument();
+
+      expect(console.error).toHaveBeenCalledWith("Oh no");
+    });
+  });
+
+  describe("enables user to decline a request through details modal", () => {
+    const testRequest = mockedApiResponseConnectorRequests.entries[0];
+
+    const orignalConsoleError = console.error;
+    beforeEach(async () => {
+      console.error = jest.fn();
+      mockGetSyncConnectorsEnvironments.mockResolvedValue(
+        mockedEnvironmentResponse
+      );
+      mockGetConnectorRequestsForApprover.mockResolvedValue(
+        mockedApiResponseConnectorRequests
+      );
+
+      customRender(<ConnectorApprovals />, {
+        queryClient: true,
+        memoryRouter: true,
+      });
+
+      await waitForElementToBeRemoved(screen.getByTestId("skeleton-table"));
+    });
+
+    afterEach(() => {
+      console.error = orignalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("opens the decline user flow when user clicks decline in details modal", async () => {
+      const viewDetailsButton = screen.getByRole("button", {
+        name: `View Kafka connector request for ${testRequest.connectorName}`,
+      });
+
+      await userEvent.click(viewDetailsButton);
+      const detailsModal = screen.getByRole("dialog", {
+        name: "Request details",
+      });
+
+      expect(detailsModal).toBeVisible();
+      const declineButton = within(detailsModal).getByRole("button", {
+        name: "Decline",
+      });
+
+      await userEvent.click(declineButton);
+
+      expect(detailsModal).not.toBeInTheDocument();
+
+      const declineModal = screen.getByRole("dialog", {
+        name: "Decline request",
+      });
+
+      expect(declineModal).toBeVisible();
+      expect(console.error).not.toHaveBeenCalled();
+    });
+  });
 });

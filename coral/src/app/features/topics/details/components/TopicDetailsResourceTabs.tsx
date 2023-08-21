@@ -75,7 +75,7 @@ function TopicOverviewResourcesTabs({
     },
     {
       topicOverviewTabEnum: TopicOverviewTabEnum.DOCUMENTATION,
-      title: "Documentation",
+      title: "Readme",
     },
     {
       topicOverviewTabEnum: TopicOverviewTabEnum.HISTORY,

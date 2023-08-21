@@ -10,11 +10,6 @@ const mockedTopics = mockedTopicNames.map((name, index) =>
   createMockTopic({ topicName: name, topicId: index })
 );
 
-const isFeatureFlagActiveMock = jest.fn();
-jest.mock("src/services/feature-flags/utils", () => ({
-  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
-}));
-
 const tableRowHeader = ["Topic", "Environments", "Team"];
 
 describe("TopicTable.tsx", () => {
@@ -33,7 +28,6 @@ describe("TopicTable.tsx", () => {
   describe("shows all topics as a table", () => {
     beforeAll(() => {
       mockIntersectionObserver();
-      isFeatureFlagActiveMock.mockResolvedValue(true);
       customRender(
         <TopicTable
           topics={mockedTopics}
@@ -115,46 +109,6 @@ describe("TopicTable.tsx", () => {
         });
 
         expect(environmentList).toBeVisible();
-      });
-    });
-  });
-
-  describe("renders link to angular app if feature-flag is not enabled", () => {
-    beforeAll(() => {
-      mockIntersectionObserver();
-      isFeatureFlagActiveMock.mockReturnValue(false);
-      customRender(
-        <TopicTable
-          topics={mockedTopics}
-          ariaLabel={"Topics overview, page 1 of 10"}
-        />,
-        { memoryRouter: true }
-      );
-    });
-
-    afterAll(() => {
-      cleanup();
-      jest.resetAllMocks();
-    });
-
-    mockedTopics.forEach((topic) => {
-      it(`renders the topic name "${topic.topicName}" as a link to the detail view as row header`, () => {
-        const table = screen.getByRole("table", {
-          name: "Topics overview, page 1 of 10",
-        });
-        const rowHeader = within(table).getByRole("cell", {
-          name: topic.topicName,
-        });
-        const link = within(rowHeader).getByRole("link", {
-          name: topic.topicName,
-        });
-
-        expect(rowHeader).toBeVisible();
-        expect(link).toBeVisible();
-        expect(link).toHaveAttribute(
-          "href",
-          `http://localhost/topicOverview?topicname=${topic.topicName}`
-        );
       });
     });
   });
