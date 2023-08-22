@@ -67,7 +67,7 @@ public interface TopicRequestsRepo
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   default Map<String, Long> getCountPerTopicType(Integer teamId, Integer tenantId) {
-    return toStringLongMap(findAllTopicRequestsGroupByOperationType(teamId, tenantId));
+    return deriveCountsFromRequests(findAllTopicRequestsGroupByOperationType(teamId, tenantId));
   }
 
   @Query(
@@ -107,7 +107,7 @@ public interface TopicRequestsRepo
 
   void deleteByTenantId(int tenantId);
 
-  private Map<String, Long> toStringLongMap(List<Object[]> list) {
+  private Map<String, Long> deriveCountsFromRequests(List<Object[]> list) {
     var result = new HashMap<String, Long>(list.size());
     for (var elem : list) {
       result.put((String) elem[0], (Long) elem[1]);
