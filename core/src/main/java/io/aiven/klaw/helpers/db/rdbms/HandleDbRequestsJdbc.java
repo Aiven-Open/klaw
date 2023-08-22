@@ -731,7 +731,7 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public MessageSchema getFirstSchemaForTenantAndEnvAndTopicAndVersion(
+  public Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion) {
     return jdbcSelectHelper.getFirstSchemaForTenantAndEnvAndTopicAndVersion(
         tenantId, schemaEnvId, topicName, schemaVersion);

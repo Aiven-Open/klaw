@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -417,7 +418,7 @@ public class SchemaRegistrySyncControllerServiceTest {
     schema.setSchemafull("\"namespace : klaw.avro\"");
     when(handleDbRequests.getFirstSchemaForTenantAndEnvAndTopicAndVersion(
             anyInt(), anyString(), anyString(), anyString()))
-        .thenReturn(schema);
+        .thenReturn(Optional.of(schema));
 
     SchemaDetailsResponse schemaDetailsResponse =
         schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(

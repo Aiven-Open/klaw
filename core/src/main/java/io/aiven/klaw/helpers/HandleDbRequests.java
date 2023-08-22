@@ -312,7 +312,7 @@ public interface HandleDbRequests {
 
   List<Map<String, String>> getAllMetrics(String metricsType, String metricsName, String env);
 
-  MessageSchema getFirstSchemaForTenantAndEnvAndTopicAndVersion(
+  Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion);
 
   List<MessageSchema> getSchemaForTenantAndEnvAndTopic(

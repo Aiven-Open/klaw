@@ -1730,7 +1730,7 @@ public class SelectDataJdbc {
     return Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
   }
 
-  public MessageSchema getFirstSchemaForTenantAndEnvAndTopicAndVersion(
+  public Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion) {
     return messageSchemaRepo.findFirstByTenantIdAndEnvironmentAndTopicnameAndSchemaversion(
         tenantId, schemaEnvId, topicName, schemaVersion);
