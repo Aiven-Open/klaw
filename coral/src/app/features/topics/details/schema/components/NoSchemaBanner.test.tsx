@@ -165,7 +165,7 @@ describe("NoSchemaBanner", () => {
 
       it("shows information about pending request", () => {
         const text = screen.getByText(
-          `A schema request for ${testTopicName} is already in progress.`
+          `You cannot request a schema at this time. A schema request for ${testTopicName} is already in progress.`
         );
 
         expect(text).toBeVisible();

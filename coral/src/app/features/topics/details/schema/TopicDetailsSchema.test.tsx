@@ -306,7 +306,7 @@ describe("TopicDetailsSchema", () => {
 
       it("shows information that there is a pending request", () => {
         const info = screen.getByText(
-          `A schema request for ${testTopicName} is already in progress.`
+          `You cannot request a schema at this time. A schema request for ${testTopicName} is already in progress.`
         );
 
         expect(info).toBeVisible();
@@ -503,7 +503,7 @@ describe("TopicDetailsSchema", () => {
 
       it("shows information that there is a pending request", () => {
         const info = screen.getByText(
-          `A schema request for ${testTopicName} is already in progress.`
+          `You cannot request a schema at this time. A schema request for ${testTopicName} is already in progress.`
         );
 
         expect(info).toBeVisible();
