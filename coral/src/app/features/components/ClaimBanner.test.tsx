@@ -79,7 +79,7 @@ describe("ClaimBanner", () => {
 
       it("shows information that the topic has a pending request", () => {
         const description = screen.getByText(
-          `${testProps.entityName} has pending requests. Your team cannot claim ownership at this time.`
+          `Your team cannot claim ownership at this time. ${testProps.entityName} has pending requests.`
         );
 
         expect(description).toBeVisible();
@@ -101,7 +101,7 @@ describe("ClaimBanner", () => {
 
       it("shows information that the connector has a pending request", () => {
         const description = screen.getByText(
-          `${testProps.entityName} has pending requests. Your team cannot claim ownership at this time.`
+          `Your team cannot claim ownership at this time. ${testProps.entityName} has pending requests.`
         );
 
         expect(description).toBeVisible();
@@ -127,7 +127,7 @@ describe("ClaimBanner", () => {
 
       it("shows information that the topic has an open claim request", () => {
         const description = screen.getByText(
-          `A claim request for ${testProps.entityName} is already in progress.`
+          `Your team cannot claim ownership at this time. A claim request for ${testProps.entityName} is already in progress.`
         );
 
         expect(description).toBeVisible();
@@ -162,7 +162,7 @@ describe("ClaimBanner", () => {
 
       it("shows information that the connector has an open claim request", () => {
         const description = screen.getByText(
-          `A claim request for ${testProps.entityName} is already in progress.`
+          `Your team cannot claim ownership at this time. A claim request for ${testProps.entityName} is already in progress.`
         );
 
         expect(description).toBeVisible();
