@@ -79,7 +79,7 @@ public interface TopicRequestsRepo
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   default Map<String, Long> getCountPerTopicStatus(Integer teamId, Integer tenantId) {
-    return toStringLongMap(findCountPerTopicStatus(teamId, tenantId));
+    return deriveCountsFromRequests(findCountPerTopicStatus(teamId, tenantId));
   }
 
   @Query(
