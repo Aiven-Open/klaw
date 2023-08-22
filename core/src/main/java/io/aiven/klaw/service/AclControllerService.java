@@ -122,7 +122,7 @@ public class AclControllerService {
 
       // ignore consumer group check for Aiven kafka flavors
       if (!kafkaFlavor.equals(KafkaFlavors.AIVEN_FOR_APACHE_KAFKA.value)) {
-        if (validateTeamConsumerGroup(
+        if (validateIfConsumerGroupUsedByAnotherTeam(
             aclRequestsModel.getRequestingteam(), aclRequestsModel.getConsumergroup(), tenantId)) {
           result = String.format(ACL_ERR_103, aclRequestsModel.getConsumergroup());
           return ApiResponse.notOk(result);
@@ -863,17 +863,11 @@ public class AclControllerService {
     return mailService.getCurrentUserName();
   }
 
-  private boolean validateTeamConsumerGroup(Integer teamId, String consumerGroup, int tenantId) {
-    List<Acl> acls = manageDatabase.getHandleDbRequests().getUniqueConsumerGroups(tenantId);
-
-    for (Acl acl : acls) {
-      if (!Objects.equals(acl.getTeamId(), teamId)
-          && acl.getConsumergroup() != null
-          && Objects.equals(acl.getConsumergroup(), consumerGroup)) {
-        return true;
-      }
-    }
-    return false;
+  private boolean validateIfConsumerGroupUsedByAnotherTeam(
+      Integer teamId, String consumerGroup, int tenantId) {
+    return manageDatabase
+        .getHandleDbRequests()
+        .validateIfConsumerGroupUsedByAnotherTeam(teamId, tenantId, consumerGroup);
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
