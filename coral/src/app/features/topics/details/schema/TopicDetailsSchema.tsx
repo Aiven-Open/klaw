@@ -27,7 +27,8 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schema/components/SchemaPromotableOnlyAlert";
-import { NoSchemaAvailableState } from "src/app/features/topics/details/schema/components/NoSchemaAvailableState";
+import { NoSchemaBanner } from "src/app/features/topics/details/schema/components/NoSchemaBanner";
+import { OpenSchemaRequestAlert } from "src/app/features/topics/details/schema/components/OpenSchemaRequestAlert";
 
 //@ TODO change to api response value
 // eslint-disable-next-line react/prop-types
@@ -106,12 +107,16 @@ function TopicDetailsSchema() {
 
   if (noSchema) {
     return (
-      <NoSchemaAvailableState
-        topicName={topicName}
-        isTopicOwner={Boolean(isTopicOwner)}
-        topicSchemasIsRefetching={topicSchemasIsRefetching}
-        createSchemaAllowed={createSchemaAllowed}
-      />
+      <>
+        <PageHeader title="Schema" />
+        <NoSchemaBanner
+          topicName={topicName}
+          isTopicOwner={Boolean(topicOwner)}
+          isCreatingSchemaAllowed={createSchemaAllowed}
+          schemaIsRefetching={topicSchemasIsRefetching}
+          hasOpenRequest={hasOpenSchemaRequest}
+        />
+      </>
     );
   }
 
@@ -171,7 +176,7 @@ function TopicDetailsSchema() {
           <Box alignSelf={"top"} aria-hidden={!createSchemaAllowed}>
             <InternalLinkButton
               to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
-              disabled={!createSchemaAllowed}
+              disabled={!createSchemaAllowed || hasOpenSchemaRequest}
             >
               <Box.Flex component={"span"} alignItems={"center"} colGap={"3"}>
                 <InlineIcon
@@ -188,13 +193,18 @@ function TopicDetailsSchema() {
         )}
       </Box>
 
-      {!createSchemaAllowed && (
+      {hasOpenSchemaRequest && (
+        <OpenSchemaRequestAlert marginBottom={"l2"} topicName={topicName} />
+      )}
+
+      {!hasOpenSchemaRequest && !createSchemaAllowed && (
         <SchemaPromotableOnlyAlert
           marginBottom={"l2"}
           isNewVersionRequest={true}
         />
       )}
-      {!topicSchemasIsRefetching && isTopicOwner && (
+
+      {!hasOpenSchemaRequest && !topicSchemasIsRefetching && isTopicOwner && (
         <SchemaPromotionBanner
           schemaPromotionDetails={schemaPromotionDetails}
           hasOpenSchemaRequest={hasOpenSchemaRequest}
