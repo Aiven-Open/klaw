@@ -350,6 +350,14 @@ describe("ConnectorSettings", () => {
 
       afterAll(cleanup);
 
+      it("shows information connector can not be deleted at the moment", () => {
+        const information = screen.getByText(
+          "You can not create a delete request for this connector:"
+        );
+
+        expect(information).toBeVisible();
+      });
+
       it("shows information that connector has a pending request and open ACL requests", () => {
         const reasonsList = screen.getByRole("list");
         const listItem = within(reasonsList).getAllByRole("listitem");
