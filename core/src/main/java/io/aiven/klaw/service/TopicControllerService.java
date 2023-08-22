@@ -32,6 +32,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
+import io.aiven.klaw.helpers.DisplayHelper;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.helpers.UtilMethods;
@@ -81,7 +82,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class TopicControllerService implements Displayable {
+public class TopicControllerService {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @Autowired private final ClusterApiService clusterApiService;
@@ -1098,7 +1099,8 @@ public class TopicControllerService implements Displayable {
             commonUtilsService.getTenantId(userName));
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
-      updateTeamNamesForDisplay(topicListUpdated, TopicInfo::getTeamname, TopicInfo::setTopicName);
+      DisplayHelper.updateTeamNamesForDisplay(
+          topicListUpdated, TopicInfo::getTeamname, TopicInfo::setTopicName);
       return getPagedList(topicListUpdated);
     }
 
