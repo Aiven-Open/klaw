@@ -30,7 +30,10 @@ public class AclRequestsModel extends BaseRequestModel implements Serializable {
       acl_ip;
 
   private ArrayList<
-          @Pattern(message = "Invalid Principle", regexp = "^$|^[a-zA-Z 0-9_.,=-]{3,}$") String>
+          @Pattern(
+              message = "Invalid Principle, Username or Service Account",
+              regexp = "^$|^[a-zA-Z 0-9_.,=-]{3,}$")
+          String>
       acl_ssl;
 
   // prefixed acls or Literal(default)
