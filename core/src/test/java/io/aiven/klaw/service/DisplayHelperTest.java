@@ -33,6 +33,9 @@ public class DisplayHelperTest {
         of(
             List.of(
                 new DisplayableTestMock("12345678945"), new DisplayableTestMock("hello world!")),
+            List.of("12345678...", "hello wo...")),
+        of(
+            List.of(new DisplayableTestMock("12345678..."), new DisplayableTestMock("hello wo...")),
             List.of("12345678...", "hello wo...")));
   }
 
