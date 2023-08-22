@@ -81,7 +81,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class TopicControllerService {
+public class TopicControllerService implements Displayable {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   @Autowired private final ClusterApiService clusterApiService;
@@ -1098,19 +1098,11 @@ public class TopicControllerService {
             commonUtilsService.getTenantId(userName));
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
-      updateTeamNamesForDisplay(topicListUpdated);
+      updateTeamNamesForDisplay(topicListUpdated, TopicInfo::getTeamname, TopicInfo::setTopicName);
       return getPagedList(topicListUpdated);
     }
 
     return null;
-  }
-
-  private void updateTeamNamesForDisplay(List<TopicInfo> topicListUpdated) {
-    topicListUpdated.forEach(
-        topicInfo -> {
-          if (topicInfo.getTeamname().length() > 9)
-            topicInfo.setTeamname(topicInfo.getTeamname().substring(0, 8) + "...");
-        });
   }
 
   private List<TopicInfo> getTopicsPaginated(

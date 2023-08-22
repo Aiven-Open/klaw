@@ -1,6 +1,27 @@
 package io.aiven.klaw.service;
 
-import static io.aiven.klaw.error.KlawErrorMessages.*;
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_118;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_104;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_105;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_106;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_107;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_108;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_109;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_110;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_111;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_112;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_113;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_114;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_115;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_116;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_117;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_118;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_119;
+import static io.aiven.klaw.error.KlawErrorMessages.KAFKA_CONNECT_ERR_120;
+import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_KAFKA_CONNECT_ENVS;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CLAIM_REQUESTED;
 import static io.aiven.klaw.model.enums.MailType.CONNECTOR_CREATE_REQUESTED;
@@ -75,14 +96,12 @@ import org.springframework.web.client.HttpStatusCodeException;
 
 @Service
 @Slf4j
-public class KafkaConnectControllerService {
+public class KafkaConnectControllerService implements Displayable {
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
 
-  private static final String ELLIPSIS = "...";
-  private static final int TOPIC_NAME_MAX_LENGTH = 11;
   public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
 
@@ -255,7 +274,10 @@ public class KafkaConnectControllerService {
         getConnectorsPaginated(env, pageNo, currentPage, connectorNameSearch, teamId);
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
-      updateTeamNamesForDisplay(topicListUpdated);
+      updateTeamNamesForDisplay(
+          topicListUpdated,
+          KafkaConnectorModelResponse::getTeamName,
+          KafkaConnectorModelResponse::setTeamName);
       return getPagedList(topicListUpdated);
     }
 
@@ -285,20 +307,6 @@ public class KafkaConnectControllerService {
     }
 
     return newList;
-  }
-
-  private void updateTeamNamesForDisplay(List<KafkaConnectorModelResponse> topicListUpdated) {
-    topicListUpdated.stream()
-        .filter(
-            t ->
-                t.getTeamName().length() > TOPIC_NAME_MAX_LENGTH - ELLIPSIS.length() + 1
-                    && (t.getTeamName().length() != TOPIC_NAME_MAX_LENGTH
-                        || !t.getTeamName().endsWith(ELLIPSIS)))
-        .forEach(
-            topicInfo ->
-                topicInfo.setTeamName(
-                    topicInfo.getTeamName().substring(0, TOPIC_NAME_MAX_LENGTH - ELLIPSIS.length())
-                        + ELLIPSIS));
   }
 
   private List<KafkaConnectorModelResponse> getConnectorsPaginated(
