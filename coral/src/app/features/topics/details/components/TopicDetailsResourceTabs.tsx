@@ -137,7 +137,7 @@ function TopicOverviewResourcesTabs({
     );
   };
 
-  const TopicTabs = () => (
+  return (
     <Tabs
       value={currentTab}
       onChange={(resourceTypeId) => navigateToTab(navigate, resourceTypeId)}
@@ -163,8 +163,6 @@ function TopicOverviewResourcesTabs({
       })}
     </Tabs>
   );
-
-  return <TopicTabs />;
 }
 
 export { TopicOverviewResourcesTabs };

@@ -34,7 +34,12 @@ function TopicOverview() {
   } = useTopicDetails();
 
   const {
-    topicInfo: { topicOwner = false, hasOpenTopicRequest, clusterId },
+    topicInfo: {
+      topicOwner = false,
+      hasOpenTopicRequest,
+      hasOpenClaimRequest,
+      clusterId,
+    },
     topicPromotionDetails,
   } = topicOverview;
 
@@ -75,6 +80,7 @@ function TopicOverview() {
           <TopicPromotionBanner
             topicName={topicName}
             topicPromotionDetails={topicPromotionDetails}
+            hasOpenClaimRequest={hasOpenClaimRequest}
             hasOpenTopicRequest={hasOpenTopicRequest}
           />
         </GridItem>

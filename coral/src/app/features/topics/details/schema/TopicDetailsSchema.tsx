@@ -1,6 +1,5 @@
 import {
   Box,
-  EmptyState,
   Icon,
   Label,
   NativeSelect,
@@ -16,7 +15,6 @@ import gitNewBranch from "@aivenio/aquarium/icons/gitNewBranch";
 import MonacoEditor from "@monaco-editor/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTopicDetails } from "src/app/features/topics/details/TopicDetails";
 import { SchemaPromotionModal } from "src/app/features/topics/details/schema/components/SchemaPromotionModal";
 import { SchemaStats } from "src/app/features/topics/details/schema/components/SchemaStats";
@@ -29,12 +27,13 @@ import { parseErrorMsg } from "src/services/mutation-utils";
 import { SchemaPromotionBanner } from "src/app/features/topics/details/schema/components/SchemaPromotionBanner";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import { SchemaPromotableOnlyAlert } from "src/app/features/topics/details/schema/components/SchemaPromotableOnlyAlert";
+import { NoSchemaBanner } from "src/app/features/topics/details/schema/components/NoSchemaBanner";
+import { OpenSchemaRequestAlert } from "src/app/features/topics/details/schema/components/OpenSchemaRequestAlert";
 
 //@ TODO change to api response value
 // eslint-disable-next-line react/prop-types
 function TopicDetailsSchema() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   const {
     topicName,
@@ -55,12 +54,11 @@ function TopicDetailsSchema() {
 
   const toast = useToast();
 
-  const { topicOwner, hasOpenSchemaRequest } = topicOverview.topicInfo;
+  const { topicOwner, hasOpenSchemaRequest, hasOpenClaimRequest } =
+    topicOverview.topicInfo;
   const isTopicOwner = topicOwner;
   const noSchema =
-    allSchemaVersions.length === 0 ||
-    schemaDetailsPerEnv === undefined ||
-    schemaPromotionDetails === undefined;
+    allSchemaVersions.length === 0 || schemaDetailsPerEnv === undefined;
 
   const { mutate: promoteSchema, isLoading: promoteSchemaIsLoading } =
     useMutation(
@@ -111,16 +109,13 @@ function TopicDetailsSchema() {
     return (
       <>
         <PageHeader title="Schema" />
-        <EmptyState
-          title="No schema available for this topic"
-          primaryAction={{
-            onClick: () => navigate(`/topic/${topicName}/request-schema`),
-            text: "Request a new schema",
-            disabled: topicSchemasIsRefetching || !createSchemaAllowed,
-          }}
-        >
-          {!createSchemaAllowed && <SchemaPromotableOnlyAlert />}
-        </EmptyState>
+        <NoSchemaBanner
+          topicName={topicName}
+          isTopicOwner={Boolean(topicOwner)}
+          isCreatingSchemaAllowed={createSchemaAllowed}
+          schemaIsRefetching={topicSchemasIsRefetching}
+          hasOpenRequest={hasOpenSchemaRequest}
+        />
       </>
     );
   }
@@ -181,7 +176,7 @@ function TopicDetailsSchema() {
           <Box alignSelf={"top"} aria-hidden={!createSchemaAllowed}>
             <InternalLinkButton
               to={`/topic/${topicName}/request-schema?env=${schemaDetailsPerEnv.env}`}
-              disabled={!createSchemaAllowed}
+              disabled={!createSchemaAllowed || hasOpenSchemaRequest}
             >
               <Box.Flex component={"span"} alignItems={"center"} colGap={"3"}>
                 <InlineIcon
@@ -198,16 +193,22 @@ function TopicDetailsSchema() {
         )}
       </Box>
 
-      {!createSchemaAllowed && (
+      {hasOpenSchemaRequest && (
+        <OpenSchemaRequestAlert marginBottom={"l2"} topicName={topicName} />
+      )}
+
+      {!hasOpenSchemaRequest && !createSchemaAllowed && (
         <SchemaPromotableOnlyAlert
           marginBottom={"l2"}
           isNewVersionRequest={true}
         />
       )}
-      {!topicSchemasIsRefetching && isTopicOwner && (
+
+      {!hasOpenSchemaRequest && !topicSchemasIsRefetching && isTopicOwner && (
         <SchemaPromotionBanner
           schemaPromotionDetails={schemaPromotionDetails}
           hasOpenSchemaRequest={hasOpenSchemaRequest}
+          hasOpenClaimRequest={hasOpenClaimRequest}
           topicName={topicName}
           setShowSchemaPromotionModal={() =>
             setShowSchemaPromotionModal(!showSchemaPromotionModal)

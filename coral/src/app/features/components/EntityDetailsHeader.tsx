@@ -111,7 +111,7 @@ function EntityDetailsHeader(props: TopicOverviewHeaderProps) {
 
       {showEditButton && hasPendingRequest && (
         <DisabledButtonTooltip
-          tooltip={`The ${entity.type} has a pending request.`}
+          tooltip={`You cannot edit the ${entity.type} at this time. ${entity.name} has a pending request.`}
           role={"link"}
         >
           {`Edit ${entity.type}`}

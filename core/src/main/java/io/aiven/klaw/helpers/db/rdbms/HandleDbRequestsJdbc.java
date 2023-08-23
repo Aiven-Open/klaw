@@ -309,6 +309,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean validateIfConsumerGroupUsedByAnotherTeam(
+      Integer teamId, int tenantId, String consumerGroup) {
+    return jdbcSelectHelper.validateIfConsumerGroupUsedByAnotherTeam(
+        teamId, tenantId, consumerGroup);
+  }
+
+  @Override
   public Acl getSyncAclsFromReqNo(int reqNo, int tenantId) {
     return jdbcSelectHelper.selectSyncAclsFromReqNo(reqNo, tenantId);
   }

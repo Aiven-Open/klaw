@@ -41,10 +41,10 @@ const acl_ssl = z
   .max(5, { message: "Maximum 5 elements allowed." })
   .refine(
     (values) => {
-      return values.find((value) => value.length < 4) === undefined;
+      return values.find((value) => value.length < 3) === undefined;
     },
     {
-      message: "Every element must be more than 3 characters.",
+      message: "Every element must have at least 3 characters.",
     }
   )
   .optional();

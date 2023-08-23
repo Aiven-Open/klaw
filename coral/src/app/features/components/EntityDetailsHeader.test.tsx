@@ -435,7 +435,7 @@ describe("EntityDetailsHeader", () => {
         expect(link).toHaveAttribute("aria-disabled", "true");
         expect(link).not.toHaveAttribute("href");
         expect(link).toHaveAccessibleName(
-          "Edit topic. The topic has a pending request."
+          "Edit topic. You cannot edit the topic at this time. my-nice-topic has a pending request."
         );
       });
     });
@@ -459,7 +459,7 @@ describe("EntityDetailsHeader", () => {
         expect(link).toHaveAttribute("aria-disabled", "true");
         expect(link).not.toHaveAttribute("href");
         expect(link).toHaveAccessibleName(
-          "Edit connector. The connector has a pending request."
+          "Edit connector. You cannot edit the connector at this time. my-nice-connector has a pending request."
         );
       });
     });

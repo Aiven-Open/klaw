@@ -344,6 +344,14 @@ describe("TopicSettings", () => {
 
       afterAll(cleanup);
 
+      it("shows information topic can not be deleted at the moment", () => {
+        const information = screen.getByText(
+          "You can not create a delete request for this topic:"
+        );
+
+        expect(information).toBeVisible();
+      });
+
       it("shows information that topic has a pending request and open ACL requests", () => {
         const reasonsList = screen.getByRole("list");
         const listItem = within(reasonsList).getAllByRole("listitem");
