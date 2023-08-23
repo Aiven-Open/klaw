@@ -28,6 +28,7 @@ For the versions available, see the [tags on this repository](https://github.com
   - React UI - New look and feel for Browse topics, Create topic Request, Acl Request, Schema Request and Connector Request
   - React UI - New look and feel for Approving Topics, ACLs, Schemas and Connectors
   - React UI - New look and feel for viewing 'My team's Requests' for topics, ACLs, Schemas and Connectors
+  - React UI - New look and feel for viewing topic details
   
 - Acls (approval):  Create,Delete
   - React UI - Create Acl Request 
@@ -54,6 +55,8 @@ For the versions available, see the [tags on this repository](https://github.com
 - Synchronization (migration) from and to Apache Kafka clusters (Topics, Acls, Schemas and Connectors)
 - Reconciliation and email notifications on differences between Klaw and Clusters
 - Restore configuration (topics, acls)
+- Import Data: Import previously exported Data back into Klaw
+- High Availability : Klaw has been tested and updated to allow HA Clustering, with intercommunication between the clusters to keep them up to date.
 
 - Login 
   - Azure / Active directory integration
