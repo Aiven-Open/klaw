@@ -11,7 +11,6 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Modal } from "src/app/components/Modal";
-import { useAuthContext } from "src/app/context-provider/AuthProvider";
 import {
   getAivenServiceAccountDetails,
   getConsumerOffsets,
@@ -37,7 +36,6 @@ const TopicSubscriptionsDetailsModal = ({
   isAivenCluster,
   selectedSubscription,
 }: TopicSubscriptionsDetailsModalProps) => {
-  const user = useAuthContext();
   const {
     environment,
     consumergroup,
@@ -76,19 +74,13 @@ const TopicSubscriptionsDetailsModal = ({
     error: serviceAccountError,
     isFetched: serviceAccountDataFetched,
   } = useQuery<ServiceAccountDetails, HTTPError>(
-    [
-      "getAivenServiceAccountDetails",
-      environment,
-      topicname,
-      user?.username,
-      req_no,
-    ],
+    ["getAivenServiceAccountDetails", environment, topicname, acl_ssl, req_no],
     {
       queryFn: () => {
         return getAivenServiceAccountDetails({
           env: environment,
           topicName: topicname,
-          userName: user?.username || "",
+          serviceName: acl_ssl || "",
           aclReqNo: req_no,
         });
       },

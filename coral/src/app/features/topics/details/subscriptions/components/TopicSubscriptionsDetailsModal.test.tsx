@@ -10,12 +10,8 @@ import {
 } from "src/domain/acl/acl-api";
 import { AclOverviewInfo } from "src/domain/topic/topic-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-import { testAuthUser } from "src/domain/auth-user/auth-user-test-helper";
 
 jest.mock("src/domain/acl/acl-api");
-jest.mock("src/app/context-provider/AuthProvider", () => ({
-  useAuthContext: () => mockAuthUser(),
-}));
 
 const mockGetConsumerOffsets = getConsumerOffsets as jest.MockedFunction<
   typeof getConsumerOffsets
@@ -24,7 +20,7 @@ const mockGetAivenServiceAccountDetails =
   getAivenServiceAccountDetails as jest.MockedFunction<
     typeof getAivenServiceAccountDetails
   >;
-const mockAuthUser = jest.fn();
+
 const mockCloseDetailsModal = jest.fn();
 
 const testServiceAccountData = {
@@ -123,176 +119,239 @@ const findTerm = (term: string) => {
 };
 
 describe("TopicSubscriptionsDetailsModal.tsx", () => {
-  beforeAll(() => {
-    mockAuthUser.mockReturnValue(testAuthUser);
-  });
-
-  afterEach(() => {
-    cleanup();
-    jest.clearAllMocks();
-  });
-
-  it("should render correct data in details modal (Aiven)", async () => {
-    mockGetAivenServiceAccountDetails.mockResolvedValue(testServiceAccountData);
-
-    customRender(<TopicSubscriptionsDetailsModal {...defaultPropsAiven} />, {
-      queryClient: true,
-    });
-
-    await waitForElementToBeRemoved(screen.getByTestId("pw-skeleton"));
-
-    expect(findTerm("Environment")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsAiven.selectedSubscription.environmentName)
-    ).toBeVisible();
-
-    expect(findTerm("Subscription type")).toBeVisible();
-    expect(
-      findDefinition(
-        defaultPropsAiven.selectedSubscription.topictype.toUpperCase()
-      )
-    ).toBeVisible();
-
-    expect(findTerm("Pattern type")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsAiven.selectedSubscription.aclPatternType)
-    ).toBeVisible();
-
-    expect(findTerm("Topic name")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsAiven.selectedSubscription.topicname)
-    ).toBeVisible();
-
-    expect(findTerm("Consumer group")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsAiven.selectedSubscription.consumergroup)
-    ).toBeVisible();
-
-    expect(findTerm("IP or Service account based")).toBeVisible();
-    expect(findDefinition("Service account")).toBeVisible();
-
-    expect(findTerm("Service account")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsAiven.selectedSubscription.acl_ssl)
-    ).toBeVisible();
-
-    expect(findTerm("Service account password")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsAiven.serviceAccountData.password)
-    ).toBeVisible();
-
-    expect(screen.queryByText("Consumer offset")).not.toBeInTheDocument();
-  });
-
-  it("should render correct data in details modal (non Aiven consumer)", async () => {
-    mockGetConsumerOffsets.mockResolvedValue([testOffsetsData]);
-
-    customRender(<TopicSubscriptionsDetailsModal {...defaultPropsNonAiven} />, {
-      queryClient: true,
-    });
-
-    await waitForElementToBeRemoved(screen.getByTestId("offsets-skeleton"));
-
-    expect(findTerm("Environment")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsNonAiven.selectedSubscription.environmentName)
-    ).toBeVisible();
-
-    expect(findTerm("Subscription type")).toBeVisible();
-    expect(
-      findDefinition(
-        defaultPropsNonAiven.selectedSubscription.topictype.toUpperCase()
-      )
-    ).toBeVisible();
-
-    expect(findTerm("Pattern type")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsNonAiven.selectedSubscription.aclPatternType)
-    ).toBeVisible();
-
-    expect(findTerm("Topic name")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsNonAiven.selectedSubscription.topicname)
-    ).toBeVisible();
-
-    expect(findTerm("Consumer group")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsNonAiven.selectedSubscription.consumergroup)
-    ).toBeVisible();
-
-    expect(findTerm("IP or Principal based")).toBeVisible();
-    expect(findDefinition("IP")).toBeVisible();
-
-    expect(findTerm("IP")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsNonAiven.selectedSubscription.acl_ip)
-    ).toBeVisible();
-
-    expect(
-      screen.getByText("Partition 0 | Current offset 0 | End offset 0 | Lag 0")
-    ).toBeVisible();
-
-    expect(
-      screen.queryByText("Service account password")
-    ).not.toBeInTheDocument();
-  });
-
-  it("should render correct data in details modal (Aiven consumer, non owner user)", async () => {
-    mockGetAivenServiceAccountDetails.mockResolvedValue(
-      notOwnerTestServiceAccountData
-    );
-
-    customRender(
-      <TopicSubscriptionsDetailsModal {...defaultPropsNotOwnerAiven} />,
-      {
+  describe("renders correct data in details modal (Aiven)", () => {
+    beforeEach(() => {
+      mockGetAivenServiceAccountDetails.mockResolvedValue(
+        testServiceAccountData
+      );
+      customRender(<TopicSubscriptionsDetailsModal {...defaultPropsAiven} />, {
         queryClient: true,
-      }
-    );
+      });
+    });
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
 
-    await waitForElementToBeRemoved(screen.getByTestId("pw-skeleton"));
+    it("does not fetch data for consumer offset", async () => {
+      expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
+    });
 
-    expect(findTerm("Environment")).toBeVisible();
-    expect(
-      findDefinition(
-        defaultPropsNotOwnerAiven.selectedSubscription.environmentName
-      )
-    ).toBeVisible();
+    it("fetches the data for service account details", async () => {
+      expect(mockGetAivenServiceAccountDetails).toHaveBeenCalledWith({
+        aclReqNo: defaultPropsAiven.selectedSubscription.req_no,
+        env: defaultPropsAiven.selectedSubscription.environment,
+        serviceName: defaultPropsAiven.selectedSubscription.acl_ssl,
+        topicName: defaultPropsAiven.selectedSubscription.topicname,
+      });
+    });
 
-    expect(findTerm("Subscription type")).toBeVisible();
-    expect(
-      findDefinition(
-        defaultPropsNotOwnerAiven.selectedSubscription.topictype.toUpperCase()
-      )
-    ).toBeVisible();
+    it("renders correct data in details modal (Aiven)", async () => {
+      await waitForElementToBeRemoved(screen.getByTestId("pw-skeleton"));
 
-    expect(findTerm("Pattern type")).toBeVisible();
-    expect(
-      findDefinition(
-        defaultPropsNotOwnerAiven.selectedSubscription.aclPatternType
-      )
-    ).toBeVisible();
+      expect(findTerm("Environment")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsAiven.selectedSubscription.environmentName)
+      ).toBeVisible();
 
-    expect(findTerm("Topic name")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsNotOwnerAiven.selectedSubscription.topicname)
-    ).toBeVisible();
+      expect(findTerm("Subscription type")).toBeVisible();
+      expect(
+        findDefinition(
+          defaultPropsAiven.selectedSubscription.topictype.toUpperCase()
+        )
+      ).toBeVisible();
 
-    expect(findTerm("Consumer group")).toBeVisible();
-    expect(
-      findDefinition(
-        defaultPropsNotOwnerAiven.selectedSubscription.consumergroup
-      )
-    ).toBeVisible();
+      expect(findTerm("Pattern type")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsAiven.selectedSubscription.aclPatternType)
+      ).toBeVisible();
 
-    expect(findTerm("IP or Service account based")).toBeVisible();
-    expect(findDefinition("Service account")).toBeVisible();
+      expect(findTerm("Topic name")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsAiven.selectedSubscription.topicname)
+      ).toBeVisible();
 
-    expect(findTerm("Service account")).toBeVisible();
-    expect(
-      findDefinition(defaultPropsNotOwnerAiven.selectedSubscription.acl_ssl)
-    ).toBeVisible();
+      expect(findTerm("Consumer group")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsAiven.selectedSubscription.consumergroup)
+      ).toBeVisible();
 
-    expect(findTerm("Service account password")).toBeVisible();
-    expect(findDefinition("Not authorized to see this.")).toBeVisible();
+      expect(findTerm("IP or Service account based")).toBeVisible();
+      expect(findDefinition("Service account")).toBeVisible();
+
+      expect(findTerm("Service account")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsAiven.selectedSubscription.acl_ssl)
+      ).toBeVisible();
+
+      expect(findTerm("Service account password")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsAiven.serviceAccountData.password)
+      ).toBeVisible();
+
+      expect(screen.queryByText("Consumer offset")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("renders correct data in details modal (non Aiven consumer)", () => {
+    beforeEach(() => {
+      mockGetConsumerOffsets.mockResolvedValue([testOffsetsData]);
+
+      customRender(
+        <TopicSubscriptionsDetailsModal {...defaultPropsNonAiven} />,
+        {
+          queryClient: true,
+        }
+      );
+    });
+    afterEach(() => {
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("fetches data for consumer offset", async () => {
+      expect(mockGetConsumerOffsets).toHaveBeenCalledWith({
+        consumerGroupId:
+          defaultPropsNonAiven.selectedSubscription.consumergroup,
+        env: defaultPropsNonAiven.selectedSubscription.environment,
+        topicName: defaultPropsNonAiven.selectedSubscription.topicname,
+      });
+    });
+
+    it("does not fetch service account details from aiven", async () => {
+      expect(mockGetAivenServiceAccountDetails).not.toHaveBeenCalled();
+    });
+
+    it("renders correct data in details modal (non Aiven consumer)", async () => {
+      await waitForElementToBeRemoved(screen.getByTestId("offsets-skeleton"));
+
+      expect(findTerm("Environment")).toBeVisible();
+      expect(
+        findDefinition(
+          defaultPropsNonAiven.selectedSubscription.environmentName
+        )
+      ).toBeVisible();
+
+      expect(findTerm("Subscription type")).toBeVisible();
+      expect(
+        findDefinition(
+          defaultPropsNonAiven.selectedSubscription.topictype.toUpperCase()
+        )
+      ).toBeVisible();
+
+      expect(findTerm("Pattern type")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsNonAiven.selectedSubscription.aclPatternType)
+      ).toBeVisible();
+
+      expect(findTerm("Topic name")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsNonAiven.selectedSubscription.topicname)
+      ).toBeVisible();
+
+      expect(findTerm("Consumer group")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsNonAiven.selectedSubscription.consumergroup)
+      ).toBeVisible();
+
+      expect(findTerm("IP or Principal based")).toBeVisible();
+      expect(findDefinition("IP")).toBeVisible();
+
+      expect(findTerm("IP")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsNonAiven.selectedSubscription.acl_ip)
+      ).toBeVisible();
+
+      expect(
+        screen.getByText(
+          "Partition 0 | Current offset 0 | End offset 0 | Lag 0"
+        )
+      ).toBeVisible();
+
+      expect(
+        screen.queryByText("Service account password")
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("should render correct data in details modal (Aiven consumer, non owner user)", () => {
+    beforeAll(async () => {
+      mockGetAivenServiceAccountDetails.mockResolvedValue(
+        notOwnerTestServiceAccountData
+      );
+
+      customRender(
+        <TopicSubscriptionsDetailsModal {...defaultPropsNotOwnerAiven} />,
+        {
+          queryClient: true,
+        }
+      );
+
+      await waitForElementToBeRemoved(screen.getByTestId("pw-skeleton"));
+    });
+
+    afterAll(() => {
+      cleanup();
+      jest.resetAllMocks();
+    });
+
+    it("does not fetch data for consumer offset", async () => {
+      expect(mockGetConsumerOffsets).not.toHaveBeenCalled();
+    });
+
+    it("fetches service account details from aiven", async () => {
+      expect(mockGetAivenServiceAccountDetails).toHaveBeenCalledWith({
+        aclReqNo: defaultPropsNotOwnerAiven.selectedSubscription.req_no,
+        env: defaultPropsNotOwnerAiven.selectedSubscription.environment,
+        serviceName: defaultPropsNotOwnerAiven.selectedSubscription.acl_ssl,
+        topicName: defaultPropsNotOwnerAiven.selectedSubscription.topicname,
+      });
+    });
+
+    it("renders correct data in details modal (Aiven consumer, non owner user)", async () => {
+      expect(findTerm("Environment")).toBeVisible();
+      expect(
+        findDefinition(
+          defaultPropsNotOwnerAiven.selectedSubscription.environmentName
+        )
+      ).toBeVisible();
+
+      expect(findTerm("Subscription type")).toBeVisible();
+      expect(
+        findDefinition(
+          defaultPropsNotOwnerAiven.selectedSubscription.topictype.toUpperCase()
+        )
+      ).toBeVisible();
+
+      expect(findTerm("Pattern type")).toBeVisible();
+      expect(
+        findDefinition(
+          defaultPropsNotOwnerAiven.selectedSubscription.aclPatternType
+        )
+      ).toBeVisible();
+
+      expect(findTerm("Topic name")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsNotOwnerAiven.selectedSubscription.topicname)
+      ).toBeVisible();
+
+      expect(findTerm("Consumer group")).toBeVisible();
+      expect(
+        findDefinition(
+          defaultPropsNotOwnerAiven.selectedSubscription.consumergroup
+        )
+      ).toBeVisible();
+
+      expect(findTerm("IP or Service account based")).toBeVisible();
+      expect(findDefinition("Service account")).toBeVisible();
+
+      expect(findTerm("Service account")).toBeVisible();
+      expect(
+        findDefinition(defaultPropsNotOwnerAiven.selectedSubscription.acl_ssl)
+      ).toBeVisible();
+
+      expect(findTerm("Service account password")).toBeVisible();
+      expect(findDefinition("Not authorized to see this.")).toBeVisible();
+    });
   });
 });
