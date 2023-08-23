@@ -223,7 +223,7 @@ public abstract class BaseOverviewService {
                 RequestStatus.DELETED.value,
                 aclsFromSOT.get(0).getTopicname())
             .stream()
-            .map(AclRequests::getReq_no)
+            .map(AclRequests::otherParams)
             .collect(Collectors.toSet());
     for (Acl aclSotItem : aclsFromSOT) {
       if (aclSotItem.getAclip() != null || aclSotItem.getAclssl() != null) {
