@@ -154,7 +154,7 @@ describe("TopicHistory", () => {
     });
 
     it("shows information about missing history", () => {
-      const infoText = screen.getByText("This Topic contains no history.");
+      const infoText = screen.getByText("This topic contains no history.");
 
       expect(infoText).toBeVisible();
     });
