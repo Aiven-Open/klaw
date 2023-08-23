@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -1057,6 +1058,11 @@ public class SelectDataJdbc {
     return aclRepo.findAllByTenantId(tenantId);
   }
 
+  public boolean validateIfConsumerGroupUsedByAnotherTeam(
+      Integer teamId, int tenantId, String consumerGroup) {
+    return aclRepo.validateIfConsumerGroupUsedByAnotherTeam(teamId, tenantId, consumerGroup);
+  }
+
   public Team selectTeamDetails(Integer teamId, int tenantId) {
     TeamID teamID = new TeamID(teamId, tenantId);
     Optional<Team> teamList = teamRepo.findById(teamID);
@@ -1394,17 +1400,11 @@ public class SelectDataJdbc {
   }
 
   public RegisterUserInfo getRegistrationDetails(String registrationId, String status) {
-    List<RegisterUserInfo> registerUserInfoList;
     if ("".equals(status)) {
-      registerUserInfoList = registerInfoRepo.findAllByRegistrationId(registrationId);
+      return registerInfoRepo.findFirstByRegistrationId(registrationId);
     } else {
-      registerUserInfoList =
-          registerInfoRepo.findAllByRegistrationIdAndStatus(registrationId, status);
+      return registerInfoRepo.findFirstByRegistrationIdAndStatus(registrationId, status);
     }
-    if (registerUserInfoList.size() == 1) {
-      return registerUserInfoList.get(0);
-    }
-    return null;
   }
 
   public List<Topic> getTopicsforTeam(Integer teamId, int tenantId) {
@@ -1450,8 +1450,7 @@ public class SelectDataJdbc {
   }
 
   public boolean existsKafkaComponentsForEnv(String env, int tenantId) {
-    List<Supplier<Boolean>> list =
-        List.of(
+    return Stream.<Supplier<Boolean>>of(
             () -> topicRepo.existsByEnvironmentAndTenantId(env, tenantId),
             () ->
                 topicRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatus(
@@ -1459,57 +1458,35 @@ public class SelectDataJdbc {
             () -> aclRepo.existsByEnvironmentAndTenantId(env, tenantId),
             () ->
                 aclRequestsRepo.existsByTenantIdAndEnvironmentAndRequestStatus(
-                    tenantId, env, RequestStatus.CREATED.value));
-    for (var elem : list) {
-      if (elem.get()) {
-        return true;
-      }
-    }
-    return false;
+                    tenantId, env, RequestStatus.CREATED.value))
+        .anyMatch(Supplier::get);
   }
 
   public boolean existsConnectorComponentsForEnv(String env, int tenantId) {
-    List<Supplier<Boolean>> list =
-        List.of(
+    return Stream.<Supplier<Boolean>>of(
             () -> kafkaConnectorRepo.existsByEnvironmentAndTenantId(env, tenantId),
             () ->
                 kafkaConnectorRequestsRepo.existsConnectorRequestsForEnvTenantIdAndCreatedStatus(
-                    env, tenantId));
-    for (var elem : list) {
-      if (elem.get()) {
-        return true;
-      }
-    }
-    return false;
+                    env, tenantId))
+        .anyMatch(Supplier::get);
   }
 
   public boolean existsSchemaComponentsForEnv(String env, int tenantId) {
-    List<Supplier<Boolean>> list =
-        List.of(
-            () ->
-                schemaRequestRepo.existsSchemaRequestByEnvironmentAndTenantIdAndRequestStatus(
-                    env, tenantId, RequestStatus.CREATED.value),
-            () -> messageSchemaRepo.existsMessageSchemaByEnvironmentAndTenantId(env, tenantId));
-    for (var elem : list) {
-      if (elem.get()) {
-        return true;
-      }
-    }
-    return false;
+    return Stream.<Supplier<Boolean>>of(
+            () -> schemaRequestRepo.existsSchemaRequestByEnvironmentAndTenantId(env, tenantId),
+            () -> messageSchemaRepo.existsMessageSchemaByEnvironmentAndTenantId(env, tenantId))
+        .anyMatch(Supplier::get);
   }
 
   public boolean existsComponentsCountForTeam(Integer teamId, int tenantId) {
-    List<Supplier<Boolean>> list =
-        List.of(
+    return Stream.<Supplier<Boolean>>of(
             () -> {
               boolean res = schemaRequestRepo.existsRecordsCountForTeamId(teamId, tenantId);
-
               log.debug("For team {} Active Schema Requests {}", teamId, res);
               return res;
             },
             () -> {
               boolean res = messageSchemaRepo.existsRecordsCountForTeamId(teamId, tenantId);
-
               log.debug("For team {} number of Schemas in DB {}", teamId, res);
               return res;
             },
@@ -1543,28 +1520,17 @@ public class SelectDataJdbc {
               boolean res = aclRequestsRepo.existsRecordsCountForTeamId(teamId, tenantId);
               log.debug("For team {} number of ACL in DB {}", teamId, res);
               return res;
-            });
-    for (var elem : list) {
-      if (elem.get()) {
-        return true;
-      }
-    }
-    return false;
+            })
+        .anyMatch(Supplier::get);
   }
 
   public boolean existsComponentsCountForUser(String userId, int tenantId) {
-    List<Supplier<Boolean>> list =
-        List.of(
+    return Stream.<Supplier<Boolean>>of(
             () -> schemaRequestRepo.existsRecordsCountForUserId(userId, tenantId),
             () -> kafkaConnectorRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
             () -> topicRequestsRepo.existsRecordsCountForUserId(userId, tenantId),
-            () -> aclRequestsRepo.existsRecordsCountForUserId(userId, tenantId));
-    for (var elem : list) {
-      if (elem.get()) {
-        return true;
-      }
-    }
-    return false;
+            () -> aclRequestsRepo.existsRecordsCountForUserId(userId, tenantId))
+        .anyMatch(Supplier::get);
   }
 
   public int getAllTopicsCountInAllTenants() {

@@ -241,8 +241,8 @@ public class AclControllerServiceTest {
     acl.setConsumergroup(aclRequestsModel.getConsumergroup());
 
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
-    when(handleDbRequests.getUniqueConsumerGroups(anyInt()))
-        .thenReturn(Collections.singletonList(acl));
+    when(handleDbRequests.validateIfConsumerGroupUsedByAnotherTeam(anyInt(), anyInt(), anyString()))
+        .thenReturn(true);
     stubUserInfo();
     mockKafkaFlavor();
 

@@ -16,6 +16,7 @@ import {
   KlawApiRequest,
   KlawApiRequestQueryParameters,
   KlawApiResponse,
+  ResolveIntersectionTypes,
 } from "types/utils";
 
 const createAclRequest = (
@@ -137,16 +138,37 @@ function getAivenServiceAccounts(
   );
 }
 
-type GetAivenServiceAccountDetailsParams =
-  KlawApiRequestQueryParameters<"getAivenServiceAccountDetails">;
+/*** The parameter "userName" that the endpoint expects is actually
+ * the name of the service (acl_ssl). Since this is very confusing
+ * and error-prone, we name it different for the params of our
+ * api call function
+ * Will be renamed in Backend after release 2.5.
+ */
+type GetAivenServiceAccountDetailsParams = ResolveIntersectionTypes<
+  Omit<
+    KlawApiRequestQueryParameters<"getAivenServiceAccountDetails">,
+    "userName"
+  > & {
+    serviceName: KlawApiRequestQueryParameters<"getAivenServiceAccountDetails">["userName"];
+  }
+>;
+
 type getAivenServiceAccountDetailsResponse =
   KlawApiResponse<"getAivenServiceAccountDetails">;
 function getAivenServiceAccountDetails(
   params: GetAivenServiceAccountDetailsParams
 ): Promise<getAivenServiceAccountDetailsResponse> {
+  const apiParams: KlawApiRequestQueryParameters<"getAivenServiceAccountDetails"> =
+    {
+      aclReqNo: params.aclReqNo,
+      env: params.env,
+      topicName: params.topicName,
+      userName: params.serviceName,
+    };
+
   return api.get<getAivenServiceAccountDetailsResponse>(
     API_PATHS.getAivenServiceAccountDetails,
-    new URLSearchParams(params)
+    new URLSearchParams(apiParams)
   );
 }
 

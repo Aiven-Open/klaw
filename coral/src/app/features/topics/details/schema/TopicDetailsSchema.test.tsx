@@ -97,7 +97,7 @@ const noPromotion_testTopicSchemas: TopicSchemaOverview = {
 describe("TopicDetailsSchema", () => {
   const user = userEvent.setup();
 
-  describe("renders correct views for topic owner", () => {
+  describe("handles banner for topic owner", () => {
     describe("when topic has (multiple) schema(s)  and `createSchemaAllowed` is true (default)", () => {
       beforeAll(() => {
         mockPromoteSchemaRequest.mockResolvedValue({
@@ -262,6 +262,67 @@ describe("TopicDetailsSchema", () => {
       });
     });
 
+    describe("when topic has (multiple) schema(s) and a request is pending", () => {
+      beforeAll(() => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: testTopicSchemas,
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: {
+            topicInfo: { topicOwner: true, hasOpenSchemaRequest: true },
+          },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("shows a disabled link to request a new version", () => {
+        const link = screen.getByRole("link", {
+          name: "Request a new version",
+        });
+
+        expect(link).toBeDisabled();
+        expect(link).not.toHaveAttribute("href");
+      });
+
+      it("shows information that there is a pending request", () => {
+        const info = screen.getByText(
+          `You cannot request a schema at this time. A schema request for ${testTopicName} is already in progress.`
+        );
+
+        expect(info).toBeVisible();
+      });
+
+      it("shows a link to the open request", () => {
+        const link = screen.getByRole("link", { name: "View request" });
+
+        expect(link).toBeVisible();
+        expect(link).toHaveAttribute(
+          "href",
+          `/requests/schemas?status=CREATED&page=1&search=${testTopicName}`
+        );
+      });
+    });
+
     describe("when topic has no schema yet and `createSchemaAllowed` is true (default)", () => {
       beforeAll(() => {
         mockPromoteSchemaRequest.mockResolvedValue({
@@ -396,6 +457,69 @@ describe("TopicDetailsSchema", () => {
       });
     });
 
+    describe("when topic has no schema yet and a request is pending", () => {
+      beforeAll(() => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: {
+            ...noSchema_testTopicSchemas,
+            createSchemaAllowed: false,
+          },
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: {
+            topicInfo: { topicOwner: true, hasOpenSchemaRequest: true },
+          },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("shows a disabled button to request a new schema", () => {
+        const link = screen.getByRole("button", {
+          name: "Request a new schema",
+        });
+
+        expect(link).toBeDisabled();
+      });
+
+      it("shows information that there is a pending request", () => {
+        const info = screen.getByText(
+          `You cannot request a schema at this time. A schema request for ${testTopicName} is already in progress.`
+        );
+
+        expect(info).toBeVisible();
+      });
+
+      it("shows a link to the open request", () => {
+        const link = screen.getByRole("link", { name: "View request" });
+
+        expect(link).toBeVisible();
+        expect(link).toHaveAttribute(
+          "href",
+          `/requests/schemas?status=CREATED&page=1&search=${testTopicName}`
+        );
+      });
+    });
+
     describe("shows promotion details to topic owner", () => {
       describe("shows when promotion is possible", () => {
         beforeAll(() => {
@@ -513,64 +637,6 @@ describe("TopicDetailsSchema", () => {
           expect(button).not.toBeInTheDocument();
         });
       });
-
-      describe("shows when promotion is not possible right now", () => {
-        beforeAll(() => {
-          mockPromoteSchemaRequest.mockResolvedValue({
-            success: true,
-            message: "",
-          });
-          mockedUseTopicDetails.mockReturnValue({
-            topicOverviewIsRefetching: false,
-            topicSchemasIsRefetching: false,
-            topicName: testTopicName,
-            environmentId: testEnvironmentId,
-            topicSchemas: testTopicSchemas,
-            setSchemaVersion: mockSetSchemaVersion,
-            topicOverview: {
-              topicInfo: {
-                topicOwner: true,
-                hasOpenSchemaRequest: true,
-              },
-            },
-          });
-          customRender(
-            <AquariumContext>
-              <TopicDetailsSchema />
-            </AquariumContext>,
-            {
-              memoryRouter: true,
-              queryClient: true,
-            }
-          );
-        });
-
-        afterAll(() => {
-          cleanup();
-          jest.clearAllMocks();
-        });
-
-        it("shows information why schema request is not possible", () => {
-          const promotionBanner = screen.getByTestId("schema-promotion-banner");
-
-          expect(promotionBanner).toBeVisible();
-          expect(promotionBanner.textContent).toContain(
-            "topic-name has a pending request."
-          );
-        });
-
-        it("shows no button to promote the schema", () => {
-          const button = screen.queryByRole("button", { name: "Promote" });
-
-          expect(button).not.toBeInTheDocument();
-        });
-
-        it("shows a link to see open schema requests", () => {
-          const link = screen.getByRole("link", { name: "View request" });
-
-          expect(link).toBeVisible();
-        });
-      });
     });
 
     describe("shows correct state when data is updating", () => {
@@ -681,232 +747,277 @@ describe("TopicDetailsSchema", () => {
         expect(loadingPreview).toHaveClass("visually-hidden");
       });
     });
+
+    describe("enables topic owner to change the version of a schema", () => {
+      beforeEach(() => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: testTopicSchemas,
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: { topicInfo: { topicOwner: true } },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterEach(() => {
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("allows changing the version of the schema", async () => {
+        const select = screen.getByRole("combobox", { name: "Select version" });
+        await user.selectOptions(select, "2");
+
+        expect(select).toHaveValue("2");
+
+        expect(mockSetSchemaVersion).toHaveBeenCalledWith(2);
+      });
+    });
+
+    describe("enables topic owner to request a new schema", () => {
+      beforeEach(() => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: noSchema_testTopicSchemas,
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: { topicInfo: { topicOwner: true } },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterEach(() => {
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("navigates user to correct form", async () => {
+        const button = screen.getByRole("button", {
+          name: "Request a new schema",
+        });
+        await user.click(button);
+
+        expect(mockedNavigate).toHaveBeenCalledWith(
+          "/topic/topic-name/request-schema"
+        );
+      });
+    });
+
+    describe("enables topic owner to promote a schema", () => {
+      const originalConsoleError = console.error;
+
+      beforeEach(() => {
+        console.error = jest.fn();
+
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: testTopicSchemas,
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: { topicInfo: { topicOwner: true } },
+        });
+
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
+      });
+
+      afterEach(() => {
+        console.error = originalConsoleError;
+        cleanup();
+        jest.clearAllMocks();
+      });
+
+      it("sends an update schema request", async () => {
+        mockPromoteSchemaRequest.mockResolvedValue({
+          success: true,
+          message: "",
+        });
+
+        const buttonPromote = screen.getByRole("button", { name: "Promote" });
+
+        await user.click(buttonPromote);
+
+        const modal = screen.getByRole("dialog");
+        const buttonRequest = within(modal).getByRole("button", {
+          name: "Request schema promotion",
+        });
+
+        await user.click(buttonRequest);
+
+        expect(mockPromoteSchemaRequest).toHaveBeenCalledWith({
+          forceRegister: false,
+          remarks: "",
+          schemaVersion: "3",
+          sourceEnvironment: "1",
+          targetEnvironment: "2",
+          topicName: "topic-name",
+        });
+
+        expect(console.error).not.toHaveBeenCalled();
+      });
+
+      it("shows an error if promotion did fail", async () => {
+        mockPromoteSchemaRequest.mockRejectedValue({
+          success: false,
+          message: "Oh no",
+        });
+
+        const buttonPromote = screen.getByRole("button", { name: "Promote" });
+
+        await user.click(buttonPromote);
+
+        const modal = screen.getByRole("dialog");
+        const buttonRequest = within(modal).getByRole("button", {
+          name: "Request schema promotion",
+        });
+
+        await user.click(buttonRequest);
+
+        const alert = screen.getByRole("alert");
+        const errorMessage = within(alert).getByText("Oh no");
+
+        expect(alert).toBeVisible();
+        expect(errorMessage).toBeVisible();
+        expect(console.error).toHaveBeenCalledWith({
+          success: false,
+          message: "Oh no",
+        });
+      });
+    });
   });
 
   describe("renders right view for user that is not topic owner", () => {
-    beforeAll(() => {
-      mockedUseTopicDetails.mockReturnValue({
-        topicOverviewIsRefetching: false,
-        topicSchemasIsRefetching: false,
-        topicName: testTopicName,
-        environmentId: testEnvironmentId,
-        topicSchemas: {
-          ...testTopicSchemas,
-          schemaPromotionDetails: undefined,
-        },
-        setSchemaVersion: mockSetSchemaVersion,
-        topicOverview: { topicInfo: { topicOwner: false } },
-      });
-      customRender(
-        <AquariumContext>
-          <TopicDetailsSchema />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
-    });
-
-    afterAll(() => {
-      cleanup();
-      jest.clearAllMocks();
-    });
-
-    it("does not show a link to request a new schema version", () => {
-      const link = screen.queryByRole("link", {
-        name: "Request a new version",
+    describe("when topic has (multiple) schema(s)", () => {
+      beforeAll(() => {
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: {
+            ...testTopicSchemas,
+            schemaPromotionDetails: undefined,
+          },
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: { topicInfo: { topicOwner: false } },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
       });
 
-      expect(link).not.toBeInTheDocument();
-    });
-
-    it("does not show information about schema promotion", () => {
-      const promotionBanner = screen.queryByTestId("schema-promotion-banner");
-      const button = screen.queryByRole("button", { name: "Promote" });
-
-      expect(promotionBanner).not.toBeInTheDocument();
-      expect(button).not.toBeInTheDocument();
-    });
-
-    it("shows an editor with preview of the schema", () => {
-      const previewEditor = screen.getByTestId("topic-schema");
-
-      expect(previewEditor).toBeVisible();
-    });
-  });
-
-  describe("enables topic owner to change the version of a schema", () => {
-    beforeEach(() => {
-      mockPromoteSchemaRequest.mockResolvedValue({
-        success: true,
-        message: "",
-      });
-      mockedUseTopicDetails.mockReturnValue({
-        topicOverviewIsRefetching: false,
-        topicSchemasIsRefetching: false,
-        topicName: testTopicName,
-        environmentId: testEnvironmentId,
-        topicSchemas: testTopicSchemas,
-        setSchemaVersion: mockSetSchemaVersion,
-        topicOverview: { topicInfo: { topicOwner: true } },
-      });
-      customRender(
-        <AquariumContext>
-          <TopicDetailsSchema />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
-    });
-
-    afterEach(() => {
-      cleanup();
-      jest.clearAllMocks();
-    });
-
-    it("allows changing the version of the schema", async () => {
-      const select = screen.getByRole("combobox", { name: "Select version" });
-      await user.selectOptions(select, "2");
-
-      expect(select).toHaveValue("2");
-
-      expect(mockSetSchemaVersion).toHaveBeenCalledWith(2);
-    });
-  });
-
-  describe("enables topic owner to request a new schema", () => {
-    beforeEach(() => {
-      mockPromoteSchemaRequest.mockResolvedValue({
-        success: true,
-        message: "",
-      });
-      mockedUseTopicDetails.mockReturnValue({
-        topicOverviewIsRefetching: false,
-        topicSchemasIsRefetching: false,
-        topicName: testTopicName,
-        environmentId: testEnvironmentId,
-        topicSchemas: noSchema_testTopicSchemas,
-        setSchemaVersion: mockSetSchemaVersion,
-        topicOverview: { topicInfo: { topicOwner: true } },
-      });
-      customRender(
-        <AquariumContext>
-          <TopicDetailsSchema />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
-    });
-
-    afterEach(() => {
-      cleanup();
-      jest.clearAllMocks();
-    });
-
-    it("navigates user to correct form", async () => {
-      const button = screen.getByRole("button", {
-        name: "Request a new schema",
-      });
-      await user.click(button);
-
-      expect(mockedNavigate).toHaveBeenCalledWith(
-        "/topic/topic-name/request-schema"
-      );
-    });
-  });
-
-  describe("enables topic owner to promote a schema", () => {
-    const originalConsoleError = console.error;
-
-    beforeEach(() => {
-      console.error = jest.fn();
-
-      mockedUseTopicDetails.mockReturnValue({
-        topicOverviewIsRefetching: false,
-        topicSchemasIsRefetching: false,
-        topicName: testTopicName,
-        environmentId: testEnvironmentId,
-        topicSchemas: testTopicSchemas,
-        setSchemaVersion: mockSetSchemaVersion,
-        topicOverview: { topicInfo: { topicOwner: true } },
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
       });
 
-      customRender(
-        <AquariumContext>
-          <TopicDetailsSchema />
-        </AquariumContext>,
-        {
-          memoryRouter: true,
-          queryClient: true,
-        }
-      );
+      it("does not show a link to request a new schema version", () => {
+        const link = screen.queryByRole("link", {
+          name: "Request a new version",
+        });
+
+        expect(link).not.toBeInTheDocument();
+      });
+
+      it("does not show information about schema promotion", () => {
+        const promotionBanner = screen.queryByTestId("schema-promotion-banner");
+        const button = screen.queryByRole("button", { name: "Promote" });
+
+        expect(promotionBanner).not.toBeInTheDocument();
+        expect(button).not.toBeInTheDocument();
+      });
+
+      it("shows an editor with preview of the schema", () => {
+        const previewEditor = screen.getByTestId("topic-schema");
+
+        expect(previewEditor).toBeVisible();
+      });
     });
 
-    afterEach(() => {
-      console.error = originalConsoleError;
-      cleanup();
-      jest.clearAllMocks();
-    });
-
-    it("sends an update schema request", async () => {
-      mockPromoteSchemaRequest.mockResolvedValue({
-        success: true,
-        message: "",
+    describe("when topic has no schema yet", () => {
+      beforeAll(() => {
+        mockedUseTopicDetails.mockReturnValue({
+          topicOverviewIsRefetching: false,
+          topicSchemasIsRefetching: false,
+          topicName: testTopicName,
+          environmentId: testEnvironmentId,
+          topicSchemas: {
+            ...noSchema_testTopicSchemas,
+            schemaPromotionDetails: undefined,
+          },
+          setSchemaVersion: mockSetSchemaVersion,
+          topicOverview: { topicInfo: { topicOwner: false } },
+        });
+        customRender(
+          <AquariumContext>
+            <TopicDetailsSchema />
+          </AquariumContext>,
+          {
+            memoryRouter: true,
+            queryClient: true,
+          }
+        );
       });
 
-      const buttonPromote = screen.getByRole("button", { name: "Promote" });
-
-      await user.click(buttonPromote);
-
-      const modal = screen.getByRole("dialog");
-      const buttonRequest = within(modal).getByRole("button", {
-        name: "Request schema promotion",
+      afterAll(() => {
+        cleanup();
+        jest.clearAllMocks();
       });
 
-      await user.click(buttonRequest);
+      it("shows information to user", () => {
+        const info = screen.getByText("No schema available for this topic");
 
-      expect(mockPromoteSchemaRequest).toHaveBeenCalledWith({
-        forceRegister: false,
-        remarks: "",
-        schemaVersion: "3",
-        sourceEnvironment: "1",
-        targetEnvironment: "2",
-        topicName: "topic-name",
+        expect(info).toBeVisible();
       });
 
-      expect(console.error).not.toHaveBeenCalled();
-    });
+      it("does not show a button to request a schema", () => {
+        const button = screen.queryByRole("button");
 
-    it("shows an error if promotion did fail", async () => {
-      mockPromoteSchemaRequest.mockRejectedValue({
-        success: false,
-        message: "Oh no",
-      });
-
-      const buttonPromote = screen.getByRole("button", { name: "Promote" });
-
-      await user.click(buttonPromote);
-
-      const modal = screen.getByRole("dialog");
-      const buttonRequest = within(modal).getByRole("button", {
-        name: "Request schema promotion",
-      });
-
-      await user.click(buttonRequest);
-
-      const alert = screen.getByRole("alert");
-      const errorMessage = within(alert).getByText("Oh no");
-
-      expect(alert).toBeVisible();
-      expect(errorMessage).toBeVisible();
-      expect(console.error).toHaveBeenCalledWith({
-        success: false,
-        message: "Oh no",
+        expect(button).not.toBeInTheDocument();
       });
     });
   });

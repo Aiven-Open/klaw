@@ -89,6 +89,7 @@ const TopicAclRequest = () => {
     aclType === "PRODUCER"
       ? topicProducerForm.watch("topicname")
       : topicConsumerForm.watch("topicname");
+
   useQuery<TopicTeam, Error>(
     ["topicTeam", selectedTopicName, selectedPatternType, aclType],
     {

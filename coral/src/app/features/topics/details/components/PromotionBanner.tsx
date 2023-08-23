@@ -4,6 +4,9 @@ import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import illustration from "src/app/images/topic-details-banner-Illustration.svg";
 import { PromotionStatus } from "src/domain/promotion";
 
+type RequestTypeLocal = "CLAIM" | "ALL" | "PROMOTE";
+type EntityTypeLocal = "schema" | "topic";
+
 interface PromotionBannerProps {
   // `entityName` is only optional on
   // KlawApiModel<"PromotionStatus">
@@ -11,7 +14,7 @@ interface PromotionBannerProps {
   // the promotionDetails
   entityName: string;
   promotionDetails: PromotionStatus;
-  type: "schema" | "topic";
+  type: EntityTypeLocal;
   promoteElement: ReactElement;
   hasOpenClaimRequest: boolean;
   hasOpenRequest: boolean;
@@ -19,7 +22,6 @@ interface PromotionBannerProps {
   errorMessage: string;
 }
 
-type RequestTypeLocal = "CLAIM" | "ALL" | "PROMOTE";
 function getRequestType({
   hasOpenClaimRequest,
   hasOpenPromotionRequest,
@@ -41,7 +43,7 @@ function createLink({
   entityName,
   requestType,
 }: {
-  type: "schema" | "topic";
+  type: EntityTypeLocal;
   entityName: string;
   requestType: RequestTypeLocal;
 }): string {
@@ -51,19 +53,23 @@ function createLink({
 }
 
 function createText({
+  type,
   entityName,
   requestType,
 }: {
+  type: "schema" | "topic";
   entityName: string;
   requestType: RequestTypeLocal;
 }): string {
+  const defaultText = `You cannot promote the ${type} at this time.`;
+
   if (requestType === "PROMOTE") {
-    return `An promotion request for ${entityName} is already in progress.`;
+    return `${defaultText} An promotion request for ${entityName} is already in progress.`;
   }
   if (requestType === "CLAIM") {
-    return `A claim request for ${entityName} is in progress.`;
+    return `${defaultText} A claim request for ${entityName} is in progress.`;
   }
-  return `${entityName} has a pending request.`;
+  return `${defaultText} ${entityName} has a pending request.`;
 }
 
 const PromotionBanner = ({
@@ -104,7 +110,7 @@ const PromotionBanner = ({
       hasOpenPromotionRequest,
     });
     const link = createLink({ type, entityName, requestType });
-    const text = createText({ entityName, requestType });
+    const text = createText({ type, entityName, requestType });
 
     return (
       <Banner image={illustration} layout="vertical" title={""}>

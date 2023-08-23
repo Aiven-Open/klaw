@@ -200,6 +200,7 @@ public class ClusterApiControllerIT {
         .andExpect(status().isOk())
         .andReturn()
         .getResponse();
+    Thread.sleep(300);
 
     embeddedKafkaBroker.doWithAdmin(
         adminClient -> {

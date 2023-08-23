@@ -145,6 +145,9 @@ public interface HandleDbRequests {
 
   List<Acl> getUniqueConsumerGroups(int tenantId);
 
+  boolean validateIfConsumerGroupUsedByAnotherTeam(
+      Integer teamId, int tenantId, String consumerGroup);
+
   Acl getSyncAclsFromReqNo(int reqNo, int tenantId);
 
   boolean existsAclRequest(String topicName, String requestStatus, String env, int tenantId);

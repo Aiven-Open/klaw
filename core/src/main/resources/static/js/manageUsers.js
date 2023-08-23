@@ -390,7 +390,7 @@ app.controller("manageUsersCtrl", function($scope, $http, $location, $window) {
                     $scope.showAlertToast();
                     return;
                 }
-                if(!$scope.updatedTeamsSwitchList.includes($scope.addNewUser.team.teamId)){
+                if(!$scope.updatedTeamsSwitchList.includes($scope.addNewUser.team)){
                     $scope.alertnote = "Please select your own team, in the switch teams list.";
                     $scope.showAlertToast();
                     return;
