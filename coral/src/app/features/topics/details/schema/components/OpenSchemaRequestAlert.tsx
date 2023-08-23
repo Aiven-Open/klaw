@@ -14,7 +14,7 @@ function OpenSchemaRequestAlert({
     <Box marginBottom={marginBottom}>
       <Alert type={"warning"}>
         <span>
-          {`A schema request for ${topicName} is already in progress.`}
+          {`You cannot request a schema at this time. A schema request for ${topicName} is already in progress.`}
         </span>{" "}
         <Link
           to={`/requests/schemas?status=CREATED&page=1&search=${topicName}`}

@@ -145,7 +145,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `${testTopicName} has a pending request.`
+        `You cannot promote the schema at this time. ${testTopicName} has a pending request.`
       );
 
       expect(information).toBeVisible();
@@ -183,7 +183,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `${testTopicName} has a pending request.`
+        `You cannot promote the topic at this time. ${testTopicName} has a pending request.`
       );
 
       expect(information).toBeVisible();
@@ -221,7 +221,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `A claim request for ${testTopicName} is in progress.`
+        `You cannot promote the schema at this time. A claim request for ${testTopicName} is in progress.`
       );
 
       expect(information).toBeVisible();
@@ -259,7 +259,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `A claim request for ${testTopicName} is in progress.`
+        `You cannot promote the topic at this time. A claim request for ${testTopicName} is in progress.`
       );
 
       expect(information).toBeVisible();
@@ -297,7 +297,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `An promotion request for ${testTopicName} is already in progress.`
+        `You cannot promote the schema at this time. An promotion request for ${testTopicName} is already in progress.`
       );
 
       expect(information).toBeVisible();
@@ -335,7 +335,7 @@ describe("PromotionBanner", () => {
 
     it("shows information about the open request", () => {
       const information = screen.getByText(
-        `An promotion request for ${testTopicName} is already in progress.`
+        `You cannot promote the topic at this time. An promotion request for ${testTopicName} is already in progress.`
       );
 
       expect(information).toBeVisible();

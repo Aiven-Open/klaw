@@ -31,7 +31,7 @@ const ClaimBanner = ({
       <Banner image={illustration} layout="vertical" title={""}>
         <Box.Flex minHeight={"full"}>
           <Box.Flex component={"p"} alignSelf={"center"}>
-            {`${entityName} has pending requests. Your team cannot claim ownership at this time.`}
+            {`Your team cannot claim ownership at this time. ${entityName} has pending requests.`}
           </Box.Flex>
         </Box.Flex>
       </Banner>
@@ -42,7 +42,8 @@ const ClaimBanner = ({
     return (
       <Banner image={illustration} layout="vertical" title={""}>
         <Box component={"p"} marginBottom={"l1"}>
-          A claim request for {entityName} is already in progress.
+          Your team cannot claim ownership at this time. A claim request for{" "}
+          {entityName} is already in progress.
         </Box>
         <InternalLinkButton
           to={`/requests/${entityType}s?search=${entityName}&requestType=CLAIM&status=CREATED&page=1`}
