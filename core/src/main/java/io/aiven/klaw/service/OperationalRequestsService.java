@@ -221,16 +221,14 @@ public class OperationalRequestsService {
       List<String> numList = new ArrayList<>();
       commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
 
-      for (int i = 0; i < totalRecs; i++) {
+      for (int i = Math.max(0, startVar); i < Math.min(lastVar, totalRecs); i++) {
         OperationalRequest operationalRequest = origActivityList.get(i);
-        if (i >= startVar && i < lastVar) {
-          operationalRequest.setAllPageNos(numList);
-          operationalRequest.setTotalNoPages("" + totalPages);
-          operationalRequest.setCurrentPage(pageNo);
-          envSelected = getEnvDetails(operationalRequest.getEnvironment());
-          operationalRequest.setEnvironmentName(envSelected.getName());
-          newList.add(operationalRequest);
-        }
+        operationalRequest.setAllPageNos(numList);
+        operationalRequest.setTotalNoPages("" + totalPages);
+        operationalRequest.setCurrentPage(pageNo);
+        envSelected = getEnvDetails(operationalRequest.getEnvironment());
+        operationalRequest.setEnvironmentName(envSelected.getName());
+        newList.add(operationalRequest);
       }
     }
 
