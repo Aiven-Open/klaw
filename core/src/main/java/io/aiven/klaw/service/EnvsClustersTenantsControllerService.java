@@ -246,39 +246,22 @@ public class EnvsClustersTenantsControllerService {
                                   Comparator.comparing(KwClustersModelResponse::getClusterId))),
                       ArrayList::new));
     }
-    return getClustersModelsPaginated(pageNo, kwClustersModelList);
-  }
-
-  private List<KwClustersModelResponse> getClustersModelsPaginated(
-      String pageNo, List<KwClustersModelResponse> envListMap) {
-    List<KwClustersModelResponse> envListMapUpdated = new ArrayList<>();
-
-    int totalRecs = envListMap.size();
-    int recsPerPage = 10;
-
-    int totalPages =
-        envListMap.size() / recsPerPage + (envListMap.size() % recsPerPage > 0 ? 1 : 0);
-
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    for (int i = 0; i < totalRecs; i++) {
-
-      if (i >= startVar && i < lastVar) {
-        KwClustersModelResponse mp = envListMap.get(i);
-
-        mp.setTotalNoPages(totalPages + "");
-        List<String> numList = new ArrayList<>();
-        for (int k = 1; k <= totalPages; k++) {
-          numList.add("" + k);
-        }
-        mp.setAllPageNos(numList);
-        mp.setPublicKey(""); // remove public key from here
-        envListMapUpdated.add(mp);
-      }
-    }
-    return envListMapUpdated;
+    return Pager.getItemsList(
+        pageNo,
+        "",
+        10,
+        kwClustersModelList,
+        (pageContext, mp) -> {
+          mp.setTotalNoPages(pageContext.getTotalPages());
+          List<String> numList = new ArrayList<>();
+          int totalPages = Integer.parseInt(pageContext.getTotalPages());
+          for (int k = 1; k <= totalPages; k++) {
+            numList.add("" + k);
+          }
+          mp.setAllPageNos(numList);
+          mp.setPublicKey(""); // remove public key from here
+          return mp;
+        });
   }
 
   public List<EnvIdInfo> getSyncEnvs() {
@@ -448,37 +431,21 @@ public class EnvsClustersTenantsControllerService {
                       ArrayList::new));
     }
 
-    return getEnvModelsPaginated(pageNo, envListMap);
-  }
-
-  private List<EnvModelResponse> getEnvModelsPaginated(
-      String pageNo, List<EnvModelResponse> envListMap) {
-    List<EnvModelResponse> envListMapUpdated = new ArrayList<>();
-    int totalRecs = envListMap.size();
-    int recsPerPage = 10;
-
-    int totalPages =
-        envListMap.size() / recsPerPage + (envListMap.size() % recsPerPage > 0 ? 1 : 0);
-
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    for (int i = 0; i < totalRecs; i++) {
-
-      if (i >= startVar && i < lastVar) {
-        EnvModelResponse mp = envListMap.get(i);
-
-        mp.setTotalNoPages(totalPages + "");
-        List<String> numList = new ArrayList<>();
-        for (int k = 1; k <= totalPages; k++) {
-          numList.add("" + k);
-        }
-        mp.setAllPageNos(numList);
-        envListMapUpdated.add(mp);
-      }
-    }
-    return envListMapUpdated;
+    return Pager.getItemsList(
+        pageNo,
+        "",
+        10,
+        envListMap,
+        (pageContext, mp) -> {
+          mp.setTotalNoPages(pageContext.getTotalPages());
+          List<String> numList = new ArrayList<>();
+          int totalPages = Integer.parseInt(pageContext.getTotalPages());
+          for (int k = 1; k <= totalPages; k++) {
+            numList.add("" + k);
+          }
+          mp.setAllPageNos(numList);
+          return mp;
+        });
   }
 
   private List<EnvModelResponse> getEnvModels(

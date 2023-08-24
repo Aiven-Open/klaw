@@ -387,7 +387,19 @@ public class TopicControllerService {
     // tenant filtering
     topicReqs = filterByTenantAndSort(order, userName, topicReqs);
 
-    topicReqs = getTopicRequestsPaged(topicReqs, pageNo, currentPage);
+    topicReqs =
+        Pager.getItemsList(
+            pageNo,
+            currentPage,
+            10,
+            topicReqs,
+            (pageContext, activityLog) -> {
+              activityLog.setAllPageNos(pageContext.getAllPageNos());
+              activityLog.setTotalNoPages(pageContext.getTotalPages());
+              activityLog.setCurrentPage(pageContext.getPageNo());
+              activityLog.setEnvironmentName(getEnvDetails(activityLog.getEnvironment()).getName());
+              return activityLog;
+            });
     return getTopicRequestModels(topicReqs);
   }
 
@@ -433,41 +445,6 @@ public class TopicControllerService {
     }
 
     return req;
-  }
-
-  private List<TopicRequest> getTopicRequestsPaged(
-      List<TopicRequest> origActivityList, String pageNo, String currentPage) {
-
-    List<TopicRequest> newList = new ArrayList<>();
-    Env envSelected;
-
-    if (origActivityList != null && origActivityList.size() > 0) {
-      int totalRecs = origActivityList.size();
-      int recsPerPage = 10;
-      int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-
-      pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-      int requestPageNo = Integer.parseInt(pageNo);
-      int startVar = (requestPageNo - 1) * recsPerPage;
-      int lastVar = (requestPageNo) * (recsPerPage);
-
-      List<String> numList = new ArrayList<>();
-      commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-      for (int i = 0; i < totalRecs; i++) {
-        TopicRequest activityLog = origActivityList.get(i);
-        if (i >= startVar && i < lastVar) {
-          activityLog.setAllPageNos(numList);
-          activityLog.setTotalNoPages("" + totalPages);
-          activityLog.setCurrentPage(pageNo);
-          envSelected = getEnvDetails(activityLog.getEnvironment());
-          activityLog.setEnvironmentName(envSelected.getName());
-          newList.add(activityLog);
-        }
-      }
-    }
-
-    return newList;
   }
 
   public TopicTeamResponse getTopicTeamOnly(String topicName, AclPatternType patternType) {
@@ -581,7 +558,19 @@ public class TopicControllerService {
     }
 
     createdTopicReqList = filterByTenantAndSort(order, userName, createdTopicReqList);
-    createdTopicReqList = getTopicRequestsPaged(createdTopicReqList, pageNo, currentPage);
+    createdTopicReqList =
+        Pager.getItemsList(
+            pageNo,
+            currentPage,
+            10,
+            createdTopicReqList,
+            (pageContext, activityLog) -> {
+              activityLog.setAllPageNos(pageContext.getAllPageNos());
+              activityLog.setTotalNoPages(pageContext.getTotalPages());
+              activityLog.setCurrentPage(pageContext.getPageNo());
+              activityLog.setEnvironmentName(getEnvDetails(activityLog.getEnvironment()).getName());
+              return activityLog;
+            });
 
     return updateCreateTopicReqsList(createdTopicReqList, tenantId);
   }

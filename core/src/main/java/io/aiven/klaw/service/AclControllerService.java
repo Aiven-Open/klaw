@@ -280,7 +280,20 @@ public class AclControllerService {
             tenantId);
 
     aclReqs = filterAclRequestsByTenantAndOrder(userName, aclReqs, order);
-    aclReqs = getAclRequestsPaged(aclReqs, pageNo, currentPage, tenantId);
+    aclReqs =
+        Pager.getItemsList(
+            pageNo,
+            currentPage,
+            10,
+            aclReqs,
+            (pageContext, activityLog) -> {
+              activityLog.setAllPageNos(pageContext.getAllPageNos());
+              activityLog.setTotalNoPages(pageContext.getTotalPages());
+              activityLog.setCurrentPage(pageContext.getPageNo());
+              activityLog.setEnvironmentName(
+                  getEnvDetails(activityLog.getEnvironment(), tenantId).getName());
+              return activityLog;
+            });
     return getAclRequestsModels(aclReqs, tenantId, userName);
   }
 
@@ -400,80 +413,6 @@ public class AclControllerService {
     return "";
   }
 
-  public List<AclRequestsResponseModel> getAclRequestModelPaged(
-      List<AclRequestsResponseModel> origActivityList,
-      String pageNo,
-      String currentPage,
-      int tenantId) {
-    List<AclRequestsResponseModel> newList = new ArrayList<>();
-
-    if (origActivityList != null && origActivityList.size() > 0) {
-      int totalRecs = origActivityList.size();
-      int recsPerPage = 10;
-      int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-
-      pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-
-      int requestPageNo = Integer.parseInt(pageNo);
-      int startVar = (requestPageNo - 1) * recsPerPage;
-      int lastVar = (requestPageNo) * (recsPerPage);
-
-      List<String> numList = new ArrayList<>();
-      commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-      for (int i = 0; i < totalRecs; i++) {
-        AclRequestsResponseModel aclRequestsModel = origActivityList.get(i);
-        if (i >= startVar && i < lastVar) {
-          aclRequestsModel.setAllPageNos(numList);
-          aclRequestsModel.setTotalNoPages("" + totalPages);
-          aclRequestsModel.setCurrentPage(pageNo);
-          aclRequestsModel.setTeamname(
-              manageDatabase.getTeamNameFromTeamId(tenantId, aclRequestsModel.getTeamId()));
-          aclRequestsModel.setEnvironmentName(
-              getEnvDetails(aclRequestsModel.getEnvironment(), tenantId).getName());
-
-          newList.add(aclRequestsModel);
-        }
-      }
-    }
-
-    return newList;
-  }
-
-  public List<AclRequests> getAclRequestsPaged(
-      List<AclRequests> origActivityList, String pageNo, String currentPage, int tenantId) {
-    List<AclRequests> newList = new ArrayList<>();
-
-    if (origActivityList != null && origActivityList.size() > 0) {
-      int totalRecs = origActivityList.size();
-      int recsPerPage = 10;
-      int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-
-      pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-      int requestPageNo = Integer.parseInt(pageNo);
-      int startVar = (requestPageNo - 1) * recsPerPage;
-      int lastVar = (requestPageNo) * (recsPerPage);
-
-      List<String> numList = new ArrayList<>();
-      commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-      for (int i = 0; i < totalRecs; i++) {
-        AclRequests activityLog = origActivityList.get(i);
-        if (i >= startVar && i < lastVar) {
-          activityLog.setAllPageNos(numList);
-          activityLog.setTotalNoPages("" + totalPages);
-          activityLog.setCurrentPage(pageNo);
-          activityLog.setEnvironmentName(
-              getEnvDetails(activityLog.getEnvironment(), tenantId).getName());
-
-          newList.add(activityLog);
-        }
-      }
-    }
-
-    return newList;
-  }
-
   public List<AclRequestsResponseModel> getAclRequestsForApprover(
       String pageNo,
       String currentPage,
@@ -523,11 +462,21 @@ public class AclControllerService {
 
     createdAclReqs = filterAclRequestsByTenantAndOrder(getCurrentUserName(), createdAclReqs, order);
 
-    return getAclRequestModelPaged(
-        updateCreatAclReqsList(createdAclReqs, tenantId, userDetails),
+    return Pager.getItemsList(
         pageNo,
         currentPage,
-        tenantId);
+        10,
+        updateCreatAclReqsList(createdAclReqs, tenantId, userDetails),
+        (pageContext, aclRequestsModel) -> {
+          aclRequestsModel.setAllPageNos(pageContext.getAllPageNos());
+          aclRequestsModel.setTotalNoPages(pageContext.getTotalPages());
+          aclRequestsModel.setCurrentPage(pageContext.getPageNo());
+          aclRequestsModel.setTeamname(
+              manageDatabase.getTeamNameFromTeamId(tenantId, aclRequestsModel.getTeamId()));
+          aclRequestsModel.setEnvironmentName(
+              getEnvDetails(aclRequestsModel.getEnvironment(), tenantId).getName());
+          return aclRequestsModel;
+        });
   }
 
   private List<AclRequestsResponseModel> updateCreatAclReqsList(

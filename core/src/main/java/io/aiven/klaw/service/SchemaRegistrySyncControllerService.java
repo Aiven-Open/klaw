@@ -131,7 +131,23 @@ public class SchemaRegistrySyncControllerService {
           schemaInfoList.stream().filter(schema -> schema.getTeamId() == teamId).toList();
     }
 
-    schemaInfoList = getPagedResponse(pageNo, currentPage, schemaInfoList, tenantId);
+    schemaInfoList =
+        Pager.getItemsList(
+            pageNo,
+            currentPage,
+            schemaInfoList,
+            (pageContext, mp) -> {
+              mp.setTotalNoPages(pageContext.getTotalPages());
+              mp.setAllPageNos(pageContext.getAllPageNos());
+              mp.setCurrentPage(pageContext.getPageNo());
+              mp.setTeamId(mp.getTeamId() == 0 ? getTeamIdFromDb(tenantId, mp) : mp.getTeamId());
+              mp.setTeamname(
+                  StringUtils.isEmpty(mp.getTeamname())
+                      ? manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId())
+                      : mp.getTeamname());
+              mp.setPossibleTeams(getPossibleTeams(mp));
+              return mp;
+            });
     syncSchemasList.setSchemaSubjectInfoResponseList(schemaInfoList);
     return syncSchemasList;
   }
@@ -280,7 +296,22 @@ public class SchemaRegistrySyncControllerService {
       }
 
       syncSchemasList.setSchemaSubjectInfoResponseList(
-          getPagedResponse(pageNo, currentPage, schemaSubjectInfoResponseList, tenantId));
+          Pager.getItemsList(
+              pageNo,
+              currentPage,
+              schemaSubjectInfoResponseList,
+              (pageContext, mp) -> {
+                mp.setTotalNoPages(pageContext.getTotalPages());
+                mp.setAllPageNos(pageContext.getAllPageNos());
+                mp.setCurrentPage(pageContext.getPageNo());
+                mp.setTeamId(mp.getTeamId() == 0 ? getTeamIdFromDb(tenantId, mp) : mp.getTeamId());
+                mp.setTeamname(
+                    StringUtils.isEmpty(mp.getTeamname())
+                        ? manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId())
+                        : mp.getTeamname());
+                mp.setPossibleTeams(getPossibleTeams(mp));
+                return mp;
+              }));
       return syncSchemasList;
     } catch (Exception e) {
       log.error("Exception:", e);
@@ -644,48 +675,6 @@ public class SchemaRegistrySyncControllerService {
     }
 
     return schemaDetailsResponse;
-  }
-
-  private List<SchemaSubjectInfoResponse> getPagedResponse(
-      String pageNo,
-      String currentPage,
-      List<SchemaSubjectInfoResponse> schemaInfoOfTopicList,
-      int tenantId) {
-    List<SchemaSubjectInfoResponse> pagedTopicSyncList = new ArrayList<>();
-
-    int totalRecs = schemaInfoOfTopicList.size();
-    int recsPerPage = 20;
-
-    int totalPages =
-        schemaInfoOfTopicList.size() / recsPerPage
-            + (schemaInfoOfTopicList.size() % recsPerPage > 0 ? 1 : 0);
-
-    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    List<String> numList = new ArrayList<>();
-    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-    for (int i = 0; i < totalRecs; i++) {
-
-      if (i >= startVar && i < lastVar) {
-        SchemaSubjectInfoResponse mp = schemaInfoOfTopicList.get(i);
-
-        mp.setTotalNoPages(totalPages + "");
-        mp.setAllPageNos(numList);
-        mp.setCurrentPage(pageNo);
-        mp.setTeamId(mp.getTeamId() == 0 ? getTeamIdFromDb(tenantId, mp) : mp.getTeamId());
-        mp.setTeamname(
-            StringUtils.isEmpty(mp.getTeamname())
-                ? manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId())
-                : mp.getTeamname());
-        mp.setPossibleTeams(getPossibleTeams(mp));
-        pagedTopicSyncList.add(mp);
-      }
-    }
-    return pagedTopicSyncList;
   }
 
   private static List<String> getPossibleTeams(SchemaSubjectInfoResponse mp) {

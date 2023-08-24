@@ -142,7 +142,19 @@ public class SchemaRegistryControllerService {
 
     schemaRequestModels = schemaRequestModels.stream().sorted(getPreferredOrder(order)).toList();
 
-    return getSchemaRequestsPaged(schemaRequestModels, pageNo, currentPage, tenantId);
+    return Pager.getItemsList(
+        pageNo,
+        currentPage,
+        10,
+        schemaRequestModels,
+        (pageContext, schemaRequestModel1) -> {
+          schemaRequestModel1.setAllPageNos(pageContext.getAllPageNos());
+          schemaRequestModel1.setTotalNoPages(pageContext.getTotalPages());
+          schemaRequestModel1.setCurrentPage(pageContext.getPageNo());
+          schemaRequestModel1.setTeamname(
+              manageDatabase.getTeamNameFromTeamId(tenantId, schemaRequestModel1.getTeamId()));
+          return schemaRequestModel1;
+        });
   }
 
   private Comparator<SchemaRequestsResponseModel> getPreferredOrder(Order order) {
@@ -178,43 +190,6 @@ public class SchemaRegistryControllerService {
     }
 
     return req;
-  }
-
-  private List<SchemaRequestsResponseModel> getSchemaRequestsPaged(
-      List<SchemaRequestsResponseModel> schemaRequestModelList,
-      String pageNo,
-      String currentPage,
-      int tenantId) {
-
-    List<SchemaRequestsResponseModel> newList = new ArrayList<>();
-
-    if (schemaRequestModelList != null && schemaRequestModelList.size() > 0) {
-      int totalRecs = schemaRequestModelList.size();
-      int recsPerPage = 10;
-      int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-
-      pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-      int requestPageNo = Integer.parseInt(pageNo);
-      int startVar = (requestPageNo - 1) * recsPerPage;
-      int lastVar = (requestPageNo) * (recsPerPage);
-
-      List<String> numList = new ArrayList<>();
-      commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-      for (int i = 0; i < totalRecs; i++) {
-        SchemaRequestsResponseModel schemaRequestModel = schemaRequestModelList.get(i);
-        if (i >= startVar && i < lastVar) {
-          schemaRequestModel.setAllPageNos(numList);
-          schemaRequestModel.setTotalNoPages("" + totalPages);
-          schemaRequestModel.setCurrentPage(pageNo);
-          schemaRequestModel.setTeamname(
-              manageDatabase.getTeamNameFromTeamId(tenantId, schemaRequestModel.getTeamId()));
-          newList.add(schemaRequestModel);
-        }
-      }
-    }
-
-    return newList;
   }
 
   public ApiResponse deleteSchemaRequests(String avroSchemaId) throws KlawException {
