@@ -28,7 +28,7 @@ For the versions available, see the [tags on this repository](https://github.com
   - React UI - New look and feel for Browse topics, Create topic Request, Acl Request, Schema Request and Connector Request
   - React UI - New look and feel for Approving Topics, ACLs, Schemas and Connectors
   - React UI - New look and feel for viewing 'My team's Requests' for topics, ACLs, Schemas and Connectors
-  - Edit Topic Requests are now editable after creation and so you can alter them to correct any mistakes.
+  - Topic Requests are now editable after creation and so you can alter them to correct any mistakes.
   
 - Acls (approval):  Create,Delete
   - React UI - Create Acl Request 
