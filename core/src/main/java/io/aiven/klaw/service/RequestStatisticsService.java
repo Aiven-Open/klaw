@@ -96,7 +96,7 @@ public class RequestStatisticsService {
       RequestStatusCount requestStatusCount =
           RequestStatusCount.builder()
               .requestStatus(RequestStatus.of(key))
-              .count(stCounts.get(key))
+              .count(stCounts.getOrDefault(key, 0L))
               .build();
       requestStatusCountSet.add(requestStatusCount);
     }
@@ -105,7 +105,7 @@ public class RequestStatisticsService {
       RequestsOperationTypeCount requestsOperationTypeCount =
           RequestsOperationTypeCount.builder()
               .requestOperationType(RequestOperationType.of(key))
-              .count(opCounts.get(key))
+              .count(opCounts.getOrDefault(key, 0L))
               .build();
       requestsOperationTypeCountsSet.add(requestsOperationTypeCount);
     }
