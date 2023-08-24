@@ -128,7 +128,7 @@ The Klaw team will cross post questions and answers across both forums. The Klaw
 
 ### Manual
 ##### Use the Maven Wrapper
- - mvnw clean install
+ - ./mvnw clean install
 ##### Use your own Maven
  - mvn clean install
 
