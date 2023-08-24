@@ -11,6 +11,7 @@ With several downloads every week, many more companies which did not adopt a sol
 
 * Bootstrap UI, Angular, Javascript, HTML, CSS 
 * [Maven](https://maven.apache.org/) - Dependency Management
+  * A maven wrapper, mvnw is included in the Klaw Git Repo
 * Java (Jdk 17), Spring boot 3, Spring security, SQL, Apache Kafka Admin client 
 
 ## Versioning
@@ -126,7 +127,10 @@ The Klaw team will cross post questions and answers across both forums. The Klaw
 ## Install
 
 ### Manual
-mvn clean install
+##### Use the Maven Wrapper
+ - mvnw clean install
+##### Use your own Maven
+ - mvn clean install
 
 Optional step : For new React UI assets, make sure pnpm is pre installed which is required to build coral assets.
 
