@@ -1541,30 +1541,14 @@ public class SelectDataJdbc {
   // claim requests
   public Map<String, Map<String, Long>> getTopicRequestsCounts(
       int teamId, RequestMode requestMode, int tenantId, String requestor) {
-    Map<String, Map<String, Long>> allCountsMap = new HashMap<>();
+    Map<String, Long> operationTypeCountsMap =
+        topicRequestsRepo.getCountPerTopicType(teamId, tenantId);
+    Map<String, Long> statusCountsMap = topicRequestsRepo.getCountPerTopicStatus(teamId, tenantId);
 
-    Map<String, Long> operationTypeCountsMap = new HashMap<>();
-    Map<String, Long> statusCountsMap = new HashMap<>();
-
-    if (RequestMode.MY_REQUESTS == requestMode) {
-      List<Object[]> topicRequestsOperationTypObj =
-          topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
-      updateMap(operationTypeCountsMap, topicRequestsOperationTypObj);
-
-      List<Object[]> topicRequestsStatusObj =
-          topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
-      updateMap(statusCountsMap, topicRequestsStatusObj);
-    } else if (RequestMode.TO_APPROVE == requestMode || RequestMode.MY_APPROVALS == requestMode) {
-      List<Object[]> topicRequestsStatusObj =
-          topicRequestsRepo.findAllTopicRequestsGroupByStatus(teamId, tenantId);
-      updateMap(statusCountsMap, topicRequestsStatusObj);
-
+    if (RequestMode.TO_APPROVE == requestMode || RequestMode.MY_APPROVALS == requestMode) {
       long assignedToClaimReqs =
           topicRequestsRepo.countAllTopicRequestsByApprovingTeamAndTopictype(
               tenantId, "" + teamId, RequestOperationType.CLAIM.value);
-      List<Object[]> topicRequestsOperationTypObj =
-          topicRequestsRepo.findAllTopicRequestsGroupByOperationType(teamId, tenantId);
-      updateMap(operationTypeCountsMap, topicRequestsOperationTypObj);
 
       operationTypeCountsMap.put(RequestOperationType.CLAIM.value, assignedToClaimReqs);
       if (RequestMode.MY_APPROVALS == requestMode) {
@@ -1579,13 +1563,8 @@ public class SelectDataJdbc {
       }
     }
 
-    // update with 0L if requests don't exist
-    updateCountsForNonExistingRequestTypes(operationTypeCountsMap, statusCountsMap);
-
-    allCountsMap.put("STATUS_COUNTS", statusCountsMap);
-    allCountsMap.put("OPERATION_TYPE_COUNTS", operationTypeCountsMap);
-
-    return allCountsMap;
+    return Map.of(
+        "STATUS_COUNTS", statusCountsMap, "OPERATION_TYPE_COUNTS", operationTypeCountsMap);
   }
 
   // Acl requests can be submitted by any team. your team or other teams on topics.
@@ -1764,9 +1743,9 @@ public class SelectDataJdbc {
     return Lists.newArrayList(kafkaConnectorRequestsRepo.findAllByTenantId(tenantId));
   }
 
-  public List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+  public Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion) {
-    return messageSchemaRepo.findAllByTenantIdAndEnvironmentAndTopicnameAndSchemaversion(
+    return messageSchemaRepo.findFirstByTenantIdAndEnvironmentAndTopicnameAndSchemaversion(
         tenantId, schemaEnvId, topicName, schemaVersion);
   }
 
