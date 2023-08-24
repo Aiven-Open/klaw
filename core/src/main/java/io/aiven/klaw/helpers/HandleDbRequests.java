@@ -251,7 +251,7 @@ public interface HandleDbRequests {
 
   AclRequests getAcl(int req_no, int tenantId);
 
-  OperationalRequest getOperationalRequest(int reqNo, int tenantId);
+  OperationalRequest getOperationalRequest(int reqId, int tenantId);
 
   List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId);
 

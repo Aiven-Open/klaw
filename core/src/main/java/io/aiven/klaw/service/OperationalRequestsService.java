@@ -32,7 +32,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -132,7 +131,9 @@ public class OperationalRequestsService {
     // tenant filtering
     operationalRequests = filterByTenantAndSort(order, userName, operationalRequests);
 
-    operationalRequests = getOperationalRequestsPaged(operationalRequests, pageNo, currentPage);
+    operationalRequests =
+        getOperationalRequestsPaged(
+            operationalRequests, pageNo, currentPage, commonUtilsService.getTenantId(userName));
     return getOperationalRequestModels(operationalRequests);
   }
 
@@ -203,7 +204,7 @@ public class OperationalRequestsService {
   }
 
   private List<OperationalRequest> getOperationalRequestsPaged(
-      List<OperationalRequest> origActivityList, String pageNo, String currentPage) {
+      List<OperationalRequest> origActivityList, String pageNo, String currentPage, int tenantId) {
 
     List<OperationalRequest> newList = new ArrayList<>();
     Env envSelected;
@@ -226,21 +227,14 @@ public class OperationalRequestsService {
         operationalRequest.setAllPageNos(numList);
         operationalRequest.setTotalNoPages("" + totalPages);
         operationalRequest.setCurrentPage(pageNo);
-        envSelected = getEnvDetails(operationalRequest.getEnvironment());
+        envSelected =
+            commonUtilsService.getEnvDetails(operationalRequest.getEnvironment(), tenantId);
         operationalRequest.setEnvironmentName(envSelected.getName());
         newList.add(operationalRequest);
       }
     }
 
     return newList;
-  }
-
-  public Env getEnvDetails(String envId) {
-    Optional<Env> envFound =
-        manageDatabase.getKafkaEnvList(commonUtilsService.getTenantId(getUserName())).stream()
-            .filter(env -> Objects.equals(env.getId(), envId))
-            .findFirst();
-    return envFound.orElse(null);
   }
 
   private List<OperationalRequest> filterByTenantAndSort(
@@ -270,8 +264,8 @@ public class OperationalRequestsService {
     return Comparator.comparing(OperationalRequest::getRequesttime);
   }
 
-  public ApiResponse resetConsumerOffsets(String req_no) {
-    log.info("approveConsumerOffsetRequests {}", req_no);
+  public ApiResponse resetConsumerOffsets(String reqId) {
+    log.info("approveConsumerOffsetRequests {}", reqId);
     final String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
     if (commonUtilsService.isNotAuthorizedUser(
@@ -283,7 +277,7 @@ public class OperationalRequestsService {
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     OperationalRequest operationalRequest =
-        dbHandle.getOperationalRequest(Integer.parseInt(req_no), tenantId);
+        dbHandle.getOperationalRequest(Integer.parseInt(reqId), tenantId);
     ApiResponse apiResponse;
     try {
       apiResponse =

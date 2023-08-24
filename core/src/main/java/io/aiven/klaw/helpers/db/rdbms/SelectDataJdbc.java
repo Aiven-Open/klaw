@@ -1907,10 +1907,10 @@ public class SelectDataJdbc {
     return messageSchemaRepo.existsByTenantIdAndTopicnameAndEnvironment(tenantId, topicName, env);
   }
 
-  public OperationalRequest selectOperationalRequest(int reqNo, int tenantId) {
-    log.debug("selectOperationalRequest {}", reqNo);
+  public OperationalRequest selectOperationalRequest(int reqId, int tenantId) {
+    log.debug("selectOperationalRequest {}", reqId);
     OperationalRequestID operationalRequestID = new OperationalRequestID();
-    operationalRequestID.setReqId(reqNo);
+    operationalRequestID.setReqId(reqId);
     operationalRequestID.setTenantId(tenantId);
 
     Optional<OperationalRequest> operationalRequest =
@@ -2046,7 +2046,7 @@ public class SelectDataJdbc {
     // a
     // string
     if (log.isDebugEnabled()) {
-      log.debug("find By topic etc example {}", request);
+      log.debug("findOperationalRequestsByExample {}", request);
     }
 
     return operationalRequestsRepo.findAll(Example.of(request));

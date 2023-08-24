@@ -570,8 +570,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public OperationalRequest getOperationalRequest(int reqNo, int tenantId) {
-    return jdbcSelectHelper.selectOperationalRequest(reqNo, tenantId);
+  public OperationalRequest getOperationalRequest(int reqId, int tenantId) {
+    return jdbcSelectHelper.selectOperationalRequest(reqId, tenantId);
   }
 
   public List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId) {

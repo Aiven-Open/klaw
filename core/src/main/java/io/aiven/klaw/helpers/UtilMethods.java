@@ -23,8 +23,11 @@ public class UtilMethods {
   }
 
   public static String getUserName(String preferredUsername) {
-    return getUserName(
-        SecurityContextHolder.getContext().getAuthentication().getPrincipal(), preferredUsername);
+    return getUserName(getPrincipal(), preferredUsername);
+  }
+
+  public static Object getPrincipal() {
+    return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
   }
 
   /**
