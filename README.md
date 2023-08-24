@@ -24,21 +24,24 @@ For the versions available, see the [tags on this repository](https://github.com
 ## Features:
 
 - Topics (approval): Create, Update, Delete, Promote
-  - React UI is now by default enabled in the configuration. If react based assets are already built, new UI should be visible. 
+  - React UI is now by default enabled in the configuration. If react based assets are already built, new UI should be visible.   
   - React UI - New look and feel for Browse topics, Create topic Request, Acl Request, Schema Request and Connector Request
   - React UI - New look and feel for Approving Topics, ACLs, Schemas and Connectors
   - React UI - New look and feel for viewing 'My team's Requests' for topics, ACLs, Schemas and Connectors
+  - Edit Topic Requests are now editable after creation and so you can alter them to correct any mistakes.
   
 - Acls (approval):  Create,Delete
   - React UI - Create Acl Request 
   - Service accounts created for ACLs are assigned to the creating team
 - Connectors (approval): Create
   - Any connector can be created as long as the required plugin libraries are installed on the server.  
+  - Connector configuration now encrypts password configuration for security.  
 - Avro Schemas (approval): Create
   - View all available versions of the subjects per topic
   - React UI - Create Schema Request
   - Pre validation of Schemas compatibility on Schema request creation
 - Topic Overview :
+  - React UI now provides a redesigned Topic Overview and all of its capabilities to enhance the user experience.
   - Topic Config
   - Promote
   - Literal and Prefixed subscriptions
