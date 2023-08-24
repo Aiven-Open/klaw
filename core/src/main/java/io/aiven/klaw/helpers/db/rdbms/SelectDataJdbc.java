@@ -7,12 +7,12 @@ import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
-import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,6 +20,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -59,6 +60,9 @@ public class SelectDataJdbc {
 
   @Autowired(required = false)
   private AclRequestsRepo aclRequestsRepo;
+
+  @Autowired(required = false)
+  private OperationalRequestsRepo operationalRequestsRepo;
 
   @Autowired(required = false)
   private TopicRepo topicRepo;
@@ -177,8 +181,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
     }
@@ -303,8 +306,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       if (!wildcardFilter
@@ -626,8 +628,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       filterAndAddTopicRequest(topicRequests, row, wildcardSearch, wildcardFilter);
@@ -644,6 +645,19 @@ public class SelectDataJdbc {
     if (!applyWildcardFilter
         || row.getTopicname().toLowerCase().contains(wildcardSearch.toLowerCase())) {
       topicRequestList.add(row);
+    }
+  }
+
+  private void filterAndAddOperationalRequest(
+      List<OperationalRequest> operationalRequestList,
+      OperationalRequest row,
+      String wildcardSearch,
+      boolean applyWildcardFilter) {
+    if (!applyWildcardFilter
+        || row.getTopicname()
+            .toLowerCase(Locale.ROOT)
+            .contains(wildcardSearch.toLowerCase(Locale.ROOT))) {
+      operationalRequestList.add(row);
     }
   }
 
@@ -781,8 +795,7 @@ public class SelectDataJdbc {
     for (KafkaConnectorRequest row : topicRequestListSub) {
       try {
         row.setRequesttimestring(
-            (new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-                .format((row.getRequesttime()).getTime()));
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       if (!wildcardSearch || row.getConnectorName().toLowerCase().contains(search.toLowerCase()))
@@ -1871,5 +1884,150 @@ public class SelectDataJdbc {
 
   public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
     return messageSchemaRepo.existsByTenantIdAndTopicnameAndEnvironment(tenantId, topicName, env);
+  }
+
+  public OperationalRequest selectOperationalRequest(int reqId, int tenantId) {
+    log.debug("selectOperationalRequest {}", reqId);
+    OperationalRequestID operationalRequestID = new OperationalRequestID();
+    operationalRequestID.setReqId(reqId);
+    operationalRequestID.setTenantId(tenantId);
+
+    Optional<OperationalRequest> operationalRequest =
+        operationalRequestsRepo.findById(operationalRequestID);
+    return operationalRequest.orElse(null);
+  }
+
+  public List<OperationalRequest> selectFilteredOperationalRequests(
+      boolean isApproval,
+      String requestor,
+      String requestStatus,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      Integer teamId,
+      OperationalRequestType operationalRequestType,
+      String env,
+      String wildcardSearch,
+      boolean isMyRequest) {
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "selectFilteredOperationalRequests {} {} {} {} {} {}",
+          showRequestsOfAllTeams,
+          requestor,
+          requestStatus,
+          teamId,
+          env,
+          wildcardSearch);
+    }
+    Integer teamSelected = selectUserInfo(requestor).getTeamId();
+    List<OperationalRequest> operationalRequests = new ArrayList<>();
+    List<OperationalRequest> operationRequestListSub;
+    if (isApproval) { // approvers
+      // On Approvals this should always be filtered by the users current team
+      operationRequestListSub =
+          Lists.newArrayList(
+              findOperationalRequestsByExample(
+                  operationalRequestType,
+                  showRequestsOfAllTeams ? null : teamSelected,
+                  env,
+                  requestStatus,
+                  tenantId,
+                  null,
+                  isMyRequest ? requestor : null));
+
+      // remove users own requests to approve/show in the list
+      // Placed here as it should only apply for approvers.
+      operationRequestListSub =
+          operationRequestListSub.stream()
+              .filter(topicRequest -> !topicRequest.getRequestor().equals(requestor))
+              .toList();
+    } else {
+      if (showRequestsOfAllTeams) {
+        operationRequestListSub =
+            Lists.newArrayList(
+                findOperationalRequestsByExample(
+                    operationalRequestType,
+                    null,
+                    env,
+                    requestStatus,
+                    tenantId,
+                    null,
+                    isMyRequest ? requestor : null));
+      } else {
+        operationRequestListSub =
+            Lists.newArrayList(
+                findOperationalRequestsByExample(
+                    operationalRequestType,
+                    teamSelected,
+                    env,
+                    requestStatus,
+                    tenantId,
+                    null,
+                    isMyRequest ? requestor : null));
+      }
+    }
+
+    if (teamId != null) {
+      operationRequestListSub =
+          operationRequestListSub.stream()
+              .filter(topicRequest -> topicRequest.getRequestingTeamId().equals(teamId))
+              .toList();
+    }
+
+    boolean wildcardFilter = (wildcardSearch != null && !wildcardSearch.isEmpty());
+
+    for (OperationalRequest row : operationRequestListSub) {
+      try {
+        row.setRequesttimestring(
+            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
+      } catch (Exception ignored) {
+      }
+      filterAndAddOperationalRequest(operationalRequests, row, wildcardSearch, wildcardFilter);
+    }
+
+    return operationalRequests;
+  }
+
+  private Iterable<OperationalRequest> findOperationalRequestsByExample(
+      OperationalRequestType operationalRequestType,
+      Integer teamId,
+      String environment,
+      String requestStatus,
+      int tenantId,
+      String approvingTeam,
+      String userName) {
+
+    OperationalRequest request = new OperationalRequest();
+    request.setTenantId(tenantId);
+
+    if (operationalRequestType != null) {
+      request.setOperationalRequestType(operationalRequestType);
+    }
+    if (environment != null) {
+      request.setEnvironment(environment);
+    }
+    if (teamId != null) {
+      request.setRequestingTeamId(teamId);
+    }
+
+    if (approvingTeam != null && !approvingTeam.isEmpty()) {
+      request.setApprovingTeamId(approvingTeam);
+    }
+
+    if (requestStatus != null && !requestStatus.equalsIgnoreCase("all")) {
+      request.setRequestStatus(requestStatus);
+    }
+    // userName is transient and so not available in the database to be queried.
+    if (userName != null && !userName.isEmpty()) {
+      request.setRequestor(userName);
+    }
+
+    // check if debug is enabled so the logger doesn't waste resources converting object request to
+    // a
+    // string
+    if (log.isDebugEnabled()) {
+      log.debug("findOperationalRequestsByExample {}", request);
+    }
+
+    return operationalRequestsRepo.findAll(Example.of(request));
   }
 }

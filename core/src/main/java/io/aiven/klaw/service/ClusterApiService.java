@@ -19,6 +19,7 @@ import io.aiven.klaw.model.cluster.ClusterSchemaRequest;
 import io.aiven.klaw.model.cluster.ClusterTopicRequest;
 import io.aiven.klaw.model.cluster.ConnectorsStatus;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
+import io.aiven.klaw.model.cluster.consumergroup.ResetConsumerGroupOffsetsRequest;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.AclsNativeType;
@@ -1123,6 +1124,55 @@ public class ClusterApiService {
     } catch (Exception e) {
       log.error("Error from  retrieveMetrics {} ", jmxUrl, e);
       throw new KlawException(CLUSTER_API_ERR_116);
+    }
+  }
+
+  public ApiResponse resetConsumerOffsets(
+      ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest,
+      String environmentId,
+      int tenantId)
+      throws KlawException {
+    log.info("ResetConsumerGroupOffsetsRequest {}", resetConsumerGroupOffsetsRequest);
+    getClusterApiProperties(tenantId);
+    try {
+      Env envSelected = manageDatabase.getHandleDbRequests().getEnvDetails(environmentId, tenantId);
+      ResponseEntity<ApiResponse> response;
+
+      KwClusters kwClusters =
+          manageDatabase
+              .getClusters(KafkaClustersType.KAFKA, tenantId)
+              .get(envSelected.getClusterId());
+
+      String uriResetConsumerOffsets =
+          clusterConnUrl
+              + URI_CONSUMER_OFFSETS_RESET
+              + kwClusters.getBootstrapServers()
+              + "/"
+              + kwClusters.getProtocol()
+              + "/"
+              + kwClusters.getClusterName()
+              + kwClusters.getClusterId();
+
+      HttpHeaders headers = createHeaders(clusterApiUser);
+      HttpEntity<ResetConsumerGroupOffsetsRequest> request =
+          new HttpEntity<>(resetConsumerGroupOffsetsRequest, headers);
+      response =
+          getRestTemplate()
+              .exchange(
+                  uriResetConsumerOffsets,
+                  HttpMethod.POST,
+                  request,
+                  new ParameterizedTypeReference<>() {});
+
+      return response.getBody();
+
+    } catch (Exception e) {
+      log.error("Error from resetConsumerOffsets ", e);
+      if (e.getMessage().contains(CLUSTER_API_ERR_120)
+          || e.getMessage().contains(CLUSTER_API_ERR_121)) {
+        return ApiResponse.notOk(CLUSTER_API_ERR_118);
+      }
+      throw new KlawException(CLUSTER_API_ERR_124);
     }
   }
 

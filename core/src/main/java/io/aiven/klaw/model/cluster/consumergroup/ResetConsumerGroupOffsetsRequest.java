@@ -1,4 +1,4 @@
-package io.aiven.klaw.clusterapi.models.consumergroup;
+package io.aiven.klaw.model.cluster.consumergroup;
 
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;

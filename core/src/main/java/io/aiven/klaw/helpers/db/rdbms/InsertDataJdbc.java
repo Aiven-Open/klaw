@@ -21,6 +21,8 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class InsertDataJdbc {
 
+  public static final int DEFAULT_REQ_ID_NUMBER = 1001;
+
   @Autowired(required = false)
   private UserInfoRepo userInfoRepo;
 
@@ -44,6 +46,9 @@ public class InsertDataJdbc {
 
   @Autowired(required = false)
   private TopicRepo topicRepo;
+
+  @Autowired(required = false)
+  private OperationalRequestsRepo operationalRequestsRepo;
 
   @Autowired(required = false)
   private KwKafkaConnectorRepo kafkaConnectorRepo;
@@ -256,6 +261,40 @@ public class InsertDataJdbc {
     return hashMap;
   }
 
+  synchronized Map<String, String> insertIntoOperationalRequests(
+      OperationalRequest operationalRequest) {
+    log.debug("insertIntoOperationalRequests {}", operationalRequest.getTopicname());
+    Map<String, String> hashMap = new HashMap<>();
+
+    Integer nextOperationalRequestId =
+        getNextOperationalRequestId(operationalRequest.getTenantId());
+    hashMap.put("reqId", "" + nextOperationalRequestId);
+    operationalRequest.setReqId(nextOperationalRequestId);
+
+    operationalRequest.setRequestStatus(RequestStatus.CREATED.value);
+    operationalRequest.setRequesttime(new Timestamp(System.currentTimeMillis()));
+    operationalRequestsRepo.save(operationalRequest);
+
+    UserInfo userInfo = jdbcSelectHelper.selectUserInfo(operationalRequest.getRequestor());
+
+    ActivityLog activityLog = new ActivityLog();
+    activityLog.setReq_no(getNextActivityLogRequestId(operationalRequest.getTenantId()));
+    activityLog.setActivityName("OperationalRequest");
+    activityLog.setActivityType(operationalRequest.getOperationalRequestType().value);
+    activityLog.setActivityTime(new Timestamp(System.currentTimeMillis()));
+    activityLog.setTeamId(userInfo.getTeamId());
+    activityLog.setDetails(
+        operationalRequest.getTopicname() + "-" + operationalRequest.getConsumerGroup());
+    activityLog.setUser(operationalRequest.getRequestor());
+    activityLog.setEnv(operationalRequest.getEnvironment());
+    activityLog.setTenantId(operationalRequest.getTenantId());
+
+    // Insert into acl activity log
+    insertIntoActivityLog(activityLog);
+    hashMap.put("result", ApiResultStatus.SUCCESS.value);
+    return hashMap;
+  }
+
   public synchronized String insertIntoAclsSOT(List<Acl> acls, boolean isSyncAcls) {
 
     acls.forEach(
@@ -325,7 +364,7 @@ public class InsertDataJdbc {
     log.debug("insertIntoTeams {}", team.getTeamname());
     Integer teamId = getNextSeqIdAndUpdate(EntityType.TEAM.name(), team.getTenantId());
     if (teamId == null) { // check for INFRATEAM, STAGINTEAM
-      teamId = 1001;
+      teamId = DEFAULT_REQ_ID_NUMBER;
       insertIntoKwEntitySequence(EntityType.TEAM.name(), teamId + 1, team.getTenantId());
     }
     TeamID teamID = new TeamID(teamId, team.getTenantId());
@@ -344,7 +383,7 @@ public class InsertDataJdbc {
   public Integer getNextTeamId(int tenantId) {
     Integer teamId = teamRepo.getNextTeamId(tenantId);
     if (teamId == null) {
-      return 1001;
+      return DEFAULT_REQ_ID_NUMBER;
     } else {
       return teamId + 1;
     }
@@ -420,16 +459,25 @@ public class InsertDataJdbc {
   public Integer getNextAclRequestId(int tenantId) {
     Integer aclReqId = aclRequestsRepo.getNextAclRequestId(tenantId);
     if (aclReqId == null) {
-      return 1001;
+      return DEFAULT_REQ_ID_NUMBER;
     } else {
       return aclReqId + 1;
+    }
+  }
+
+  public Integer getNextOperationalRequestId(int tenantId) {
+    Integer operationalRequestId = operationalRequestsRepo.getNextOperationalRequestId(tenantId);
+    if (operationalRequestId == null) {
+      return DEFAULT_REQ_ID_NUMBER;
+    } else {
+      return operationalRequestId + 1;
     }
   }
 
   public Integer getNextAclId(int tenantId) {
     Integer aclId = aclRepo.getNextAclId(tenantId);
     if (aclId == null) {
-      return 1001;
+      return DEFAULT_REQ_ID_NUMBER;
     } else {
       return aclId + 1;
     }
@@ -439,7 +487,7 @@ public class InsertDataJdbc {
     Integer activityLogId = activityLogRepo.getNextActivityLogRequestId(tenantId);
 
     if (activityLogId == null) {
-      return 1001;
+      return DEFAULT_REQ_ID_NUMBER;
     } else {
       return activityLogId + 1;
     }
@@ -453,7 +501,7 @@ public class InsertDataJdbc {
       topicId = topicRepo.getNextTopicRequestId(tenantId);
     }
 
-    return topicId == null ? 1001 : topicId + 1;
+    return topicId == null ? DEFAULT_REQ_ID_NUMBER : topicId + 1;
   }
 
   public Integer getNextConnectorRequestId(String idType, int tenantId) {
@@ -467,7 +515,7 @@ public class InsertDataJdbc {
     }
 
     if (topicId == null) {
-      return 1001;
+      return DEFAULT_REQ_ID_NUMBER;
     } else {
       return topicId + 1;
     }
@@ -481,7 +529,7 @@ public class InsertDataJdbc {
       schemaReqId = messageSchemaRepo.getNextSchemaId(tenantId);
     }
 
-    return schemaReqId == null ? 1001 : schemaReqId + 1;
+    return schemaReqId == null ? DEFAULT_REQ_ID_NUMBER : schemaReqId + 1;
   }
 
   public String addNewTenant(KwTenants kwTenants) {
@@ -512,7 +560,7 @@ public class InsertDataJdbc {
   public String insertMetrics(KwMetrics kwMetrics) {
     Integer metricsId = metricsRepo.getNextId();
     if (metricsId == null) {
-      metricsId = 1001;
+      metricsId = DEFAULT_REQ_ID_NUMBER;
     } else {
       metricsId += 1;
     }
