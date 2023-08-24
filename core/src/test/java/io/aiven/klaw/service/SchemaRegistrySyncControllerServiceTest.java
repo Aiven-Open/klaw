@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -412,12 +413,12 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    List<MessageSchema> schemaList = utilMethods.getMSchemas();
-    schemaList.get(0).setTopicname(topicName);
-    schemaList.get(0).setSchemafull("\"namespace : klaw.avro\"");
-    when(handleDbRequests.getSchemaForTenantAndEnvAndTopicAndVersion(
+    MessageSchema schema = utilMethods.getMSchemas().get(0);
+    schema.setTopicname(topicName);
+    schema.setSchemafull("\"namespace : klaw.avro\"");
+    when(handleDbRequests.getFirstSchemaForTenantAndEnvAndTopicAndVersion(
             anyInt(), anyString(), anyString(), anyString()))
-        .thenReturn(schemaList);
+        .thenReturn(Optional.of(schema));
 
     SchemaDetailsResponse schemaDetailsResponse =
         schemaRegistrySyncControllerService.getSchemaOfTopicFromSource(
