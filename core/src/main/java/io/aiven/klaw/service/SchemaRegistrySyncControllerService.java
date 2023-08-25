@@ -624,13 +624,13 @@ public class SchemaRegistrySyncControllerService {
                 (String) schemaObject.get(schemaVersion).get("schema"), Object.class);
       }
     } else if (source.equals(SOURCE_METADATA)) {
-      List<MessageSchema> messageSchemaList =
+      Optional<MessageSchema> messageSchema =
           manageDatabase
               .getHandleDbRequests()
-              .getSchemaForTenantAndEnvAndTopicAndVersion(
+              .getFirstSchemaForTenantAndEnvAndTopicAndVersion(
                   tenantId, kafkaEnv.getAssociatedEnv().getId(), topicName, schemaVersion + "");
-      if (!messageSchemaList.isEmpty()) {
-        String schemaString = messageSchemaList.get(0).getSchemafull();
+      if (messageSchema.isPresent()) {
+        String schemaString = messageSchema.get().getSchemafull();
         dynamicObj = OBJECT_MAPPER.readValue(schemaString, Object.class);
       }
     }

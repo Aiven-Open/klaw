@@ -4,6 +4,7 @@ import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -22,6 +23,8 @@ public interface HandleDbRequests {
   Map<String, String> requestForConnector(KafkaConnectorRequest connectorRequest);
 
   Map<String, String> requestForAcl(AclRequests aclReq);
+
+  Map<String, String> requestForConsumerOffsetsReset(OperationalRequest operationalRequest);
 
   String addNewUser(UserInfo userInfo);
 
@@ -64,6 +67,15 @@ public interface HandleDbRequests {
       String requestor,
       String status,
       RequestOperationType requestoperationType,
+      String env,
+      String wildcardSearch,
+      boolean isMyRequest,
+      int tenantId);
+
+  List<OperationalRequest> getOperationalRequests(
+      String userName,
+      OperationalRequestType operationalRequestType,
+      String requestStatus,
       String env,
       String wildcardSearch,
       boolean isMyRequest,
@@ -239,6 +251,8 @@ public interface HandleDbRequests {
 
   AclRequests getAcl(int req_no, int tenantId);
 
+  OperationalRequest getOperationalRequest(int reqId, int tenantId);
+
   List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId);
 
   List<Topic> getTopicsforTeam(Integer teamId, int tenantId);
@@ -312,7 +326,7 @@ public interface HandleDbRequests {
 
   List<Map<String, String>> getAllMetrics(String metricsType, String metricsName, String env);
 
-  List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+  Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion);
 
   List<MessageSchema> getSchemaForTenantAndEnvAndTopic(

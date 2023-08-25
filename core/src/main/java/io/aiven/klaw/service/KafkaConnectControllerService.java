@@ -25,6 +25,7 @@ import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawRestException;
 import io.aiven.klaw.error.RestErrorResponse;
+import io.aiven.klaw.helpers.DisplayHelper;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.model.ApiResponse;
@@ -80,6 +81,7 @@ public class KafkaConnectControllerService {
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
   public static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER =
       OBJECT_MAPPER.writerWithDefaultPrettyPrinter();
+
   public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
 
@@ -252,7 +254,10 @@ public class KafkaConnectControllerService {
         getConnectorsPaginated(env, pageNo, currentPage, connectorNameSearch, teamId);
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
-      updateTeamNamesForDisplay(topicListUpdated);
+      DisplayHelper.updateTeamNamesForDisplay(
+          topicListUpdated,
+          KafkaConnectorModelResponse::getTeamName,
+          KafkaConnectorModelResponse::setTeamName);
       return getPagedList(topicListUpdated);
     }
 
@@ -282,15 +287,6 @@ public class KafkaConnectControllerService {
     }
 
     return newList;
-  }
-
-  private void updateTeamNamesForDisplay(List<KafkaConnectorModelResponse> topicListUpdated) {
-    topicListUpdated.forEach(
-        topicInfo -> {
-          if (topicInfo.getTeamName().length() > 9) {
-            topicInfo.setTeamName(topicInfo.getTeamName().substring(0, 8) + "...");
-          }
-        });
   }
 
   private List<KafkaConnectorModelResponse> getConnectorsPaginated(

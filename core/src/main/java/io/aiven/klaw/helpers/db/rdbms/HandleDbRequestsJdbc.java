@@ -5,6 +5,7 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.model.enums.AclType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.RequestMode;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -46,6 +47,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public Map<String, String> requestForAcl(AclRequests aclReq) {
     return jdbcInsertHelper.insertIntoRequestAcl(aclReq);
+  }
+
+  @Override
+  public Map<String, String> requestForConsumerOffsetsReset(OperationalRequest operationalRequest) {
+    return jdbcInsertHelper.insertIntoOperationalRequests(operationalRequest);
   }
 
   public String addNewUser(UserInfo userInfo) {
@@ -135,6 +141,27 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         tenantId,
         null,
         requestOperationType,
+        env,
+        wildcardSearch,
+        isMyRequest);
+  }
+
+  public List<OperationalRequest> getOperationalRequests(
+      String requestor,
+      OperationalRequestType operationalRequestType,
+      String requestStatus,
+      String env,
+      String wildcardSearch,
+      boolean isMyRequest,
+      int tenantId) {
+    return jdbcSelectHelper.selectFilteredOperationalRequests(
+        false,
+        requestor,
+        requestStatus,
+        false,
+        tenantId,
+        null,
+        operationalRequestType,
         env,
         wildcardSearch,
         isMyRequest);
@@ -542,6 +569,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
     return jdbcSelectHelper.selectAcl(req_no, tenantId);
   }
 
+  @Override
+  public OperationalRequest getOperationalRequest(int reqId, int tenantId) {
+    return jdbcSelectHelper.selectOperationalRequest(reqId, tenantId);
+  }
+
   public List<KwKafkaConnector> getConnectorsFromName(String connectorName, int tenantId) {
     return jdbcSelectHelper.selectConnectorDetails(connectorName, tenantId);
   }
@@ -731,9 +763,9 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
-  public List<MessageSchema> getSchemaForTenantAndEnvAndTopicAndVersion(
+  public Optional<MessageSchema> getFirstSchemaForTenantAndEnvAndTopicAndVersion(
       int tenantId, String schemaEnvId, String topicName, String schemaVersion) {
-    return jdbcSelectHelper.getSchemaForTenantAndEnvAndTopicAndVersion(
+    return jdbcSelectHelper.getFirstSchemaForTenantAndEnvAndTopicAndVersion(
         tenantId, schemaEnvId, topicName, schemaVersion);
   }
 

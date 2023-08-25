@@ -24,6 +24,7 @@ import io.aiven.klaw.model.charts.TeamOverview;
 import io.aiven.klaw.model.charts.Title;
 import io.aiven.klaw.model.cluster.SchemaInfoOfTopic;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
+import io.aiven.klaw.model.cluster.consumergroup.OffsetResetType;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclPermissionType;
@@ -33,11 +34,13 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaFlavors;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.MetadataOperationType;
+import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import io.aiven.klaw.model.requests.SchemaPromotion;
@@ -508,6 +511,21 @@ public class UtilMethods {
     topicRequest.setDescription("Test desc");
     topicRequest.setRequestor("kwusera");
     return topicRequest;
+  }
+
+  public ConsumerOffsetResetRequestModel getConsumerOffsetResetRequest() {
+    ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
+        new ConsumerOffsetResetRequestModel();
+    consumerOffsetResetRequestModel.setRequestor("kwusera");
+    consumerOffsetResetRequestModel.setTopicname("testtopic");
+    consumerOffsetResetRequestModel.setEnvironment("1");
+    consumerOffsetResetRequestModel.setDescription("Test desc");
+    consumerOffsetResetRequestModel.setRequestor("kwusera");
+    consumerOffsetResetRequestModel.setOffsetResetType(OffsetResetType.LATEST);
+    consumerOffsetResetRequestModel.setConsumerGroup("testconsumergroup");
+    consumerOffsetResetRequestModel.setOperationalRequestType(
+        OperationalRequestType.RESET_CONSUMER_OFFSETS);
+    return consumerOffsetResetRequestModel;
   }
 
   public TopicUpdateRequestModel getTopicUpdateRequestModel(int topicId) {

@@ -32,6 +32,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
+import io.aiven.klaw.helpers.DisplayHelper;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
 import io.aiven.klaw.helpers.UtilMethods;
@@ -1098,19 +1099,12 @@ public class TopicControllerService {
             commonUtilsService.getTenantId(userName));
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
-      updateTeamNamesForDisplay(topicListUpdated);
+      DisplayHelper.updateTeamNamesForDisplay(
+          topicListUpdated, TopicInfo::getTeamname, TopicInfo::setTopicName);
       return getPagedList(topicListUpdated);
     }
 
     return null;
-  }
-
-  private void updateTeamNamesForDisplay(List<TopicInfo> topicListUpdated) {
-    topicListUpdated.forEach(
-        topicInfo -> {
-          if (topicInfo.getTeamname().length() > 9)
-            topicInfo.setTeamname(topicInfo.getTeamname().substring(0, 8) + "...");
-        });
   }
 
   private List<TopicInfo> getTopicsPaginated(
