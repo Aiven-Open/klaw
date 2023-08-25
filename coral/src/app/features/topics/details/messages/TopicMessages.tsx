@@ -80,7 +80,7 @@ function TopicMessages() {
     } else if (isNoContentResult(consumeResult)) {
       return (
         <EmptyState title="No messages">
-          This Topic contains no messages.
+          This topic contains no messages.
         </EmptyState>
       );
     } else {
