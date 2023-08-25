@@ -237,19 +237,17 @@ public class AclControllerService {
   }
 
   private boolean verifyIfTopicExists(AclRequestsModel aclReq, int tenantId) {
-    List<Topic> topics = commonUtilsService.getTopicsForTopicName(aclReq.getTopicname(), tenantId);
-    boolean topicFound = false;
-
-    if (AclPatternType.LITERAL.value.equals(aclReq.getAclPatternType())) {
-      for (Topic topic : topics) {
-        if (Objects.equals(topic.getEnvironment(), aclReq.getEnvironment())) {
-          topicFound = true;
-          break;
-        }
-      }
-      return !topicFound;
+    if (!AclPatternType.LITERAL.value.equals(aclReq.getAclPatternType())) {
+      return false;
     }
-    return false;
+    List<Topic> topics = commonUtilsService.getTopicsForTopicName(aclReq.getTopicname(), tenantId);
+
+    for (Topic topic : topics) {
+      if (Objects.equals(topic.getEnvironment(), aclReq.getEnvironment())) {
+        return false;
+      }
+    }
+    return true;
   }
 
   public List<AclRequestsResponseModel> getAclRequests(

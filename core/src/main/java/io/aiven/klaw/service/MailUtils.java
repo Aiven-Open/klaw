@@ -626,11 +626,7 @@ public class MailUtils {
         manageDatabase.selectAllCachedUserInfo().stream()
             .filter(u -> u.getUsername().equals(username))
             .findFirst();
-    if (user.isPresent()) {
-      return user.get().getMailid();
-    } else {
-      return null;
-    }
+    return user.map(UserInfo::getMailid).orElse(null);
   }
 
   private List<String> getAllUsersWithPermissionToApproveRequest(
