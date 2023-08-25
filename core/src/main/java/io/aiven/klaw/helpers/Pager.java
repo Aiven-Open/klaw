@@ -7,7 +7,7 @@ import java.util.function.BiFunction;
 public class Pager {
   public static final int DEFAULT_REC_PER_PAGE = 20;
 
-  static int deriveCurrentPage(String pageNo, String currentPage, int totalPages) {
+  private static int deriveCurrentPage(String pageNo, String currentPage, int totalPages) {
     return switch (pageNo) {
       case ">" -> Integer.parseInt(currentPage) + 1;
       case ">>" -> totalPages;
