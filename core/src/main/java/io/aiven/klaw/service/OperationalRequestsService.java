@@ -4,12 +4,12 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_101;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.OperationalRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.cluster.consumergroup.OffsetResetType;
 import io.aiven.klaw.model.cluster.consumergroup.OffsetsTiming;
@@ -131,9 +131,25 @@ public class OperationalRequestsService {
     // tenant filtering
     operationalRequests = filterByTenantAndSort(order, userName, operationalRequests);
 
+    final int tenantId = commonUtilsService.getTenantId(userName);
     operationalRequests =
-        getOperationalRequestsPaged(
-            operationalRequests, pageNo, currentPage, commonUtilsService.getTenantId(userName));
+        operationalRequests.isEmpty()
+            ? Collections.emptyList()
+            : Pager.getItemsList(
+                pageNo,
+                currentPage,
+                10,
+                operationalRequests,
+                (pageContext, operationalRequest) -> {
+                  operationalRequest.setAllPageNos(pageContext.getAllPageNos());
+                  operationalRequest.setTotalNoPages(pageContext.getTotalPages());
+                  operationalRequest.setCurrentPage(pageContext.getPageNo());
+                  operationalRequest.setEnvironmentName(
+                      commonUtilsService
+                          .getEnvDetails(operationalRequest.getEnvironment(), tenantId)
+                          .getName());
+                  return operationalRequest;
+                });
     return getOperationalRequestModels(operationalRequests);
   }
 
@@ -201,40 +217,6 @@ public class OperationalRequestsService {
     }
 
     return approvingInfo.toString();
-  }
-
-  private List<OperationalRequest> getOperationalRequestsPaged(
-      List<OperationalRequest> origActivityList, String pageNo, String currentPage, int tenantId) {
-
-    List<OperationalRequest> newList = new ArrayList<>();
-    Env envSelected;
-
-    if (origActivityList != null && origActivityList.size() > 0) {
-      int totalRecs = origActivityList.size();
-      int recsPerPage = 10;
-      int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-
-      pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-      int requestPageNo = Integer.parseInt(pageNo);
-      int startVar = (requestPageNo - 1) * recsPerPage;
-      int lastVar = (requestPageNo) * (recsPerPage);
-
-      List<String> numList = new ArrayList<>();
-      commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-      for (int i = Math.max(0, startVar); i < Math.min(lastVar, totalRecs); i++) {
-        OperationalRequest operationalRequest = origActivityList.get(i);
-        operationalRequest.setAllPageNos(numList);
-        operationalRequest.setTotalNoPages("" + totalPages);
-        operationalRequest.setCurrentPage(pageNo);
-        envSelected =
-            commonUtilsService.getEnvDetails(operationalRequest.getEnvironment(), tenantId);
-        operationalRequest.setEnvironmentName(envSelected.getName());
-        newList.add(operationalRequest);
-      }
-    }
-
-    return newList;
   }
 
   private List<OperationalRequest> filterByTenantAndSort(

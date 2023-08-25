@@ -15,6 +15,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;

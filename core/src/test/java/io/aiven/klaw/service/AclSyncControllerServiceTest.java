@@ -181,7 +181,6 @@ public class AclSyncControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "1", topicNameSearch, "");
@@ -212,7 +211,6 @@ public class AclSyncControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "1", topicNameSearch, "");
@@ -259,7 +257,6 @@ public class AclSyncControllerServiceTest {
         .thenReturn(clustersHashMap);
     when(clustersHashMap.get(any())).thenReturn(kwClusters);
     when(kwClusters.getBootstrapServers()).thenReturn("clusters");
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
 
     List<AclInfo> aclList =
         aclSyncControllerService.getSyncAcls(envSelected, pageNo, "1", topicNameSearch, "");

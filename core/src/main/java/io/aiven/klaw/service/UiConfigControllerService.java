@@ -5,6 +5,7 @@ import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.DbAuthInfo;

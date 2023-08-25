@@ -14,6 +14,7 @@ import io.aiven.klaw.dao.MessageSchema;
 import io.aiven.klaw.dao.SchemaRequest;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SchemaResetCache;
 import io.aiven.klaw.model.SyncSchemaUpdates;

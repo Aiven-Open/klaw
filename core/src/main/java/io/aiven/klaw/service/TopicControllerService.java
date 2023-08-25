@@ -35,6 +35,7 @@ import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.DisplayHelper;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.ResourceHistory;
@@ -1148,7 +1149,38 @@ public class TopicControllerService {
     topicsFromSOT =
         topicFilteredList.stream().sorted(new TopicNameComparator()).collect(Collectors.toList());
 
-    return getTopicInfoList(topicsFromSOT, pageNo, currentPage, listAllEnvs, orderOfEnvs, tenantId);
+    return topicsFromSOT.isEmpty()
+        ? null
+        : Pager.getItemsList(
+            pageNo,
+            currentPage,
+            21,
+            topicsFromSOT,
+            (pageContext, topicSOT) -> {
+              int counterInc = counterIncrement();
+              TopicInfo mp = new TopicInfo();
+              mp.setSequence(counterInc + "");
+
+              List<String> envList = topicSOT.getEnvironmentsList();
+              envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
+
+              mp.setTopicid(topicSOT.getTopicid());
+              mp.setEnvId(topicSOT.getEnvironment());
+              mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
+              mp.setTopicName(topicSOT.getTopicname());
+              mp.setTeamId(topicSOT.getTeamId());
+              mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
+
+              mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
+              mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
+              mp.setDescription(topicSOT.getDescription());
+
+              mp.setTotalNoPages(pageContext.getTotalPages());
+              mp.setCurrentPage(pageContext.getPageNo());
+
+              mp.setAllPageNos(pageContext.getAllPageNos());
+              return mp;
+            });
   }
 
   private static List<Topic> getTopicsFromTopicSearchFilters(
@@ -1249,66 +1281,6 @@ public class TopicControllerService {
   private int counterIncrement() {
     topicCounter++;
     return topicCounter;
-  }
-
-  private List<TopicInfo> getTopicInfoList(
-      List<Topic> topicsFromSOT,
-      String pageNo,
-      String currentPage,
-      List<Env> listAllEnvs,
-      String orderOfEnvs,
-      int tenantId) {
-    int totalRecs = topicsFromSOT.size();
-    int recsPerPage = 21;
-
-    int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-    int requestPageNo = Integer.parseInt(pageNo);
-
-    List<TopicInfo> topicsListMap = null;
-    if (totalRecs > 0) {
-      topicsListMap = new ArrayList<>();
-    }
-
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    List<String> numList = new ArrayList<>();
-    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-    for (int i = 0; i < topicsFromSOT.size(); i++) {
-      int counterInc = counterIncrement();
-      if (i >= startVar && i < lastVar) {
-        TopicInfo mp = new TopicInfo();
-        mp.setSequence(counterInc + "");
-        Topic topicSOT = topicsFromSOT.get(i);
-
-        List<String> envList = topicSOT.getEnvironmentsList();
-        envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
-
-        mp.setTopicid(topicSOT.getTopicid());
-        mp.setEnvId(topicSOT.getEnvironment());
-        mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
-        mp.setTopicName(topicSOT.getTopicname());
-        mp.setTeamId(topicSOT.getTeamId());
-        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
-
-        mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
-        mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
-        mp.setDescription(topicSOT.getDescription());
-
-        mp.setTotalNoPages(totalPages + "");
-        mp.setCurrentPage(pageNo);
-
-        mp.setAllPageNos(numList);
-
-        if (topicsListMap != null) {
-          topicsListMap.add(mp);
-        }
-      }
-    }
-
-    return topicsListMap;
   }
 
   public String getUserName() {

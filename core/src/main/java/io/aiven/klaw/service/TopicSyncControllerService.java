@@ -24,6 +24,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwMetadataUpdates;
@@ -751,63 +752,36 @@ public class TopicSyncControllerService {
             .sorted(new TopicControllerService.TopicNameComparator())
             .collect(Collectors.toList());
 
-    return getTopicInfoList(topicsFromSOT, pageNo, currentPage, listAllEnvs, orderOfEnvs, tenantId);
-  }
+    return topicsFromSOT.isEmpty()
+        ? null
+        : Pager.getItemsList(
+            pageNo,
+            currentPage,
+            21,
+            topicsFromSOT,
+            (pageContext, topicSOT) -> {
+              int counterInc = counterIncrement();
+              TopicInfo mp = new TopicInfo();
+              mp.setSequence(counterInc + "");
 
-  private List<TopicInfo> getTopicInfoList(
-      List<Topic> topicsFromSOT,
-      String pageNo,
-      String currentPage,
-      List<Env> listAllEnvs,
-      String orderOfEnvs,
-      int tenantId) {
-    int totalRecs = topicsFromSOT.size();
-    int recsPerPage = 21;
+              List<String> envList = topicSOT.getEnvironmentsList();
+              envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
-    int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-    int requestPageNo = Integer.parseInt(pageNo);
+              mp.setTopicid(topicSOT.getTopicid());
+              mp.setEnvName(topicSOT.getEnvironment());
+              mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
+              mp.setTopicName(topicSOT.getTopicname());
+              mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
 
-    List<TopicInfo> topicsListMap = null;
-    if (totalRecs > 0) topicsListMap = new ArrayList<>();
+              mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
+              mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
+              mp.setDescription(topicSOT.getDescription());
 
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    List<String> numList = new ArrayList<>();
-    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-    for (int i = 0; i < topicsFromSOT.size(); i++) {
-      int counterInc = counterIncrement();
-      if (i >= startVar && i < lastVar) {
-        TopicInfo mp = new TopicInfo();
-        mp.setSequence(counterInc + "");
-        Topic topicSOT = topicsFromSOT.get(i);
-
-        List<String> envList = topicSOT.getEnvironmentsList();
-        envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
-
-        mp.setTopicid(topicSOT.getTopicid());
-        mp.setEnvName(topicSOT.getEnvironment());
-        mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
-        mp.setTopicName(topicSOT.getTopicname());
-        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
-
-        mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
-        mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
-        mp.setDescription(topicSOT.getDescription());
-
-        mp.setTotalNoPages(totalPages + "");
-        mp.setCurrentPage(pageNo);
-        mp.setAllPageNos(numList);
-
-        if (topicsListMap != null) {
-          topicsListMap.add(mp);
-        }
-      }
-    }
-
-    return topicsListMap;
+              mp.setTotalNoPages(pageContext.getTotalPages());
+              mp.setCurrentPage(pageContext.getPageNo());
+              mp.setAllPageNos(pageContext.getAllPageNos());
+              return mp;
+            });
   }
 
   private int counterIncrement() {

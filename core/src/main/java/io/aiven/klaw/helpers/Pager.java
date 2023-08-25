@@ -1,4 +1,4 @@
-package io.aiven.klaw.service;
+package io.aiven.klaw.helpers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,45 +19,36 @@ public class Pager {
 
   private static void getAllPagesList(
       String pageNo, String currentPage, int totalPages, List<String> numList) {
-    if (currentPage != null
-        && !currentPage.equals("")
-        && !currentPage.equals(pageNo)
-        && Integer.parseInt(pageNo) > 1
-        && totalPages > 1) {
-      numList.add("<<");
-      numList.add("<");
-    } else if (currentPage != null
-        && currentPage.equals(pageNo)
-        && Integer.parseInt(pageNo) > 1
-        && totalPages > 1) {
+    final int pageNoInt = Integer.parseInt(pageNo);
+    if (currentPage != null && pageNoInt > 1 && totalPages > 1 && !currentPage.isEmpty()) {
       numList.add("<<");
       numList.add("<");
     }
 
-    if (totalPages > Integer.parseInt(pageNo)) {
+    if (totalPages > pageNoInt) {
       numList.add(pageNo);
       numList.add(">");
       numList.add(">>");
-    } else if (totalPages == Integer.parseInt(pageNo)) {
+    } else if (totalPages == pageNoInt) {
       numList.add(pageNo);
     }
   }
 
-  public static <T> List<T> getItemsList(
+  public static <INPUT, OUTPUT> List<OUTPUT> getItemsList(
       String pageNo,
       String currentPage,
-      List<T> aclListMap,
-      BiFunction<PageContext, T, T> consumer) {
+      List<INPUT> aclListMap,
+      BiFunction<PageContext, INPUT, OUTPUT> consumer) {
     return getItemsList(pageNo, currentPage, DEFAULT_REC_PER_PAGE, aclListMap, consumer);
   }
 
-  public static <T> List<T> getItemsList(
+  public static <INPUT, OUTPUT> List<OUTPUT> getItemsList(
       String pageNo,
       String currentPage,
       int recsPerPage,
-      List<T> aclListMap,
-      BiFunction<PageContext, T, T> consumer) {
-    List<T> aclListMapUpdated = new ArrayList<>();
+      List<INPUT> aclListMap,
+      BiFunction<PageContext, INPUT, OUTPUT> consumer) {
+    List<OUTPUT> aclListMapUpdated = new ArrayList<>();
 
     int totalRecs = aclListMap.size();
     int totalPages =

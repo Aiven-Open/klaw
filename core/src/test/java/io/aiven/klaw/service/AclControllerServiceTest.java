@@ -24,6 +24,7 @@ import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
@@ -89,6 +90,7 @@ public class AclControllerServiceTest {
     Env env = new Env();
     env.setName("DEV");
     env.setId("1");
+    env.setClusterId(1);
     ReflectionTestUtils.setField(aclControllerService, "manageDatabase", manageDatabase);
     ReflectionTestUtils.setField(aclControllerService, "commonUtilsService", commonUtilsService);
     ReflectionTestUtils.setField(
@@ -96,6 +98,7 @@ public class AclControllerServiceTest {
         "rolesPermissionsControllerService",
         rolesPermissionsControllerService);
     when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequests);
+    when(commonUtilsService.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     loginMock();
   }
 
@@ -142,6 +145,9 @@ public class AclControllerServiceTest {
     hashMap.put("result", ApiResultStatus.SUCCESS.value);
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt())).thenReturn(topicList);
     when(handleDbRequests.requestForAcl(any())).thenReturn(hashMap);
+    Env env = new Env();
+    env.setClusterId(1);
+    when(commonUtilsService.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     stubUserInfo();
     mockKafkaFlavor();
 
@@ -304,8 +310,6 @@ public class AclControllerServiceTest {
 
     stubUserInfo();
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -873,8 +877,6 @@ public class AclControllerServiceTest {
   public void getAclRequests_OrderBy_NEWEST_FIRST() {
     stubUserInfo();
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -922,8 +924,6 @@ public class AclControllerServiceTest {
   public void getAclRequests_OrderBy_OLDEST_FIRST() {
     stubUserInfo();
     when(commonUtilsService.getTenantId(userDetails.getUsername())).thenReturn(1);
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -986,8 +986,6 @@ public class AclControllerServiceTest {
         .thenReturn(getAclRequests("testtopic", 16));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn(teamName);
 
     List<AclRequestsResponseModel> listReqs =

@@ -16,6 +16,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.KwKafkaConnector;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncConnectorUpdates;
 import io.aiven.klaw.model.cluster.ConnectorState;

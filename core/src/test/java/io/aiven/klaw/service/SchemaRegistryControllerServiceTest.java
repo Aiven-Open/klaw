@@ -148,7 +148,6 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 
     List<SchemaRequestsResponseModel> listReqs =
@@ -671,7 +670,6 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 
     List<SchemaRequestsResponseModel> ordered_response =
@@ -719,7 +717,6 @@ public class SchemaRegistryControllerServiceTest {
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
     when(handleDbRequests.getAllUsersInfoForTeam(anyInt(), anyInt())).thenReturn(List.of(userInfo));
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(this.env);
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("teamname");
 
     List<SchemaRequestsResponseModel> ordered_response =

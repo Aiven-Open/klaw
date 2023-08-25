@@ -30,6 +30,7 @@ import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwTenantModel;
 import io.aiven.klaw.model.enums.ApiResultStatus;

@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.AclRequests;
-import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.ServiceAccounts;
 import io.aiven.klaw.dao.Team;
@@ -28,6 +27,7 @@ import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
@@ -111,7 +111,10 @@ public class AclControllerService {
     String kafkaFlavor =
         manageDatabase
             .getClusters(KafkaClustersType.KAFKA, tenantId)
-            .get(getEnvDetails(aclRequestsModel.getEnvironment(), tenantId).getClusterId())
+            .get(
+                commonUtilsService
+                    .getEnvDetails(aclRequestsModel.getEnvironment(), tenantId)
+                    .getClusterId())
             .getKafkaFlavor();
 
     if (AclType.CONSUMER == aclRequestsModel.getAclType()) {
@@ -291,7 +294,9 @@ public class AclControllerService {
               activityLog.setTotalNoPages(pageContext.getTotalPages());
               activityLog.setCurrentPage(pageContext.getPageNo());
               activityLog.setEnvironmentName(
-                  getEnvDetails(activityLog.getEnvironment(), tenantId).getName());
+                  commonUtilsService
+                      .getEnvDetails(activityLog.getEnvironment(), tenantId)
+                      .getName());
               return activityLog;
             });
     return getAclRequestsModels(aclReqs, tenantId, userName);
@@ -474,7 +479,9 @@ public class AclControllerService {
           aclRequestsModel.setTeamname(
               manageDatabase.getTeamNameFromTeamId(tenantId, aclRequestsModel.getTeamId()));
           aclRequestsModel.setEnvironmentName(
-              getEnvDetails(aclRequestsModel.getEnvironment(), tenantId).getName());
+              commonUtilsService
+                  .getEnvDetails(aclRequestsModel.getEnvironment(), tenantId)
+                  .getName());
           return aclRequestsModel;
         });
   }
@@ -819,15 +826,6 @@ public class AclControllerService {
         .validateIfConsumerGroupUsedByAnotherTeam(teamId, tenantId, consumerGroup);
   }
 
-  public Env getEnvDetails(String envId, int tenantId) {
-
-    Optional<Env> envFound =
-        manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(env -> Objects.equals(env.getId(), envId))
-            .findFirst();
-    return envFound.orElse(null);
-  }
-
   public List<OffsetDetails> getConsumerOffsets(
       String envId, String consumerGroupId, String topicName) {
     List<OffsetDetails> consumerOffsetInfoList = new ArrayList<>();
@@ -836,7 +834,7 @@ public class AclControllerService {
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
-              .get(getEnvDetails(envId, tenantId).getClusterId());
+              .get(commonUtilsService.getEnvDetails(envId, tenantId).getClusterId());
       consumerOffsetInfoList =
           clusterApiService.getConsumerOffsets(
               kwClusters.getBootstrapServers(),
@@ -878,7 +876,7 @@ public class AclControllerService {
       KwClusters kwClusters =
           manageDatabase
               .getClusters(KafkaClustersType.KAFKA, tenantId)
-              .get(getEnvDetails(envId, tenantId).getClusterId());
+              .get(commonUtilsService.getEnvDetails(envId, tenantId).getClusterId());
       return clusterApiService.getAivenServiceAccountDetails(
           kwClusters.getProjectName(), kwClusters.getServiceName(), serviceAccount, tenantId);
     } catch (Exception e) {
