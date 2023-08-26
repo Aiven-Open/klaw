@@ -13,6 +13,7 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +39,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class SelectDataJdbc {
   private static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss");
+      DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
 
   @Autowired(required = false)
   private UserInfoRepo userInfoRepo;

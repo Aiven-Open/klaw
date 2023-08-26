@@ -58,7 +58,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -85,6 +86,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class EnvsClustersTenantsControllerService {
+
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
 
   @Autowired private MailUtils mailService;
 
@@ -1111,8 +1115,7 @@ public class EnvsClustersTenantsControllerService {
     if (tenant.isPresent()) {
       kwTenantModel.setTenantName(tenant.get().getTenantName());
       kwTenantModel.setLicenseExpiryDate(
-          ((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-              .format(tenant.get().getLicenseExpiry().getTime())));
+          DATE_TIME_FORMATTER.format(tenant.get().getLicenseExpiry().toInstant()));
       kwTenantModel.setContactPerson(tenant.get().getContactPerson());
       kwTenantModel.setInTrialPhase("true".equals(tenant.get().getInTrial()));
       long timeInMilliSeconds =
