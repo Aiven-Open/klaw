@@ -1116,6 +1116,34 @@
         }
       }
     },
+    "/operationalRequest/consumerOffsetsReset/create" : {
+      "post" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "createConsumerOffsetsResetRequest",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ConsumerOffsetResetRequestModel"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/logout" : {
       "post" : {
         "tags" : [ "util-controller" ],
@@ -2363,6 +2391,91 @@
               "application/json" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/RequestsCountOverview"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequest" : {
+      "get" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "getConsumerOffsetsResetRequests",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        }, {
+          "name" : "requestStatus",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "ALL",
+            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          }
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "RESET_CONSUMER_OFFSETS" ]
+          }
+        }, {
+          "name" : "search",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
+          }
+        }, {
+          "name" : "isMyRequest",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "boolean",
+            "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/OperationalRequestsResponseModel"
+                  }
                 }
               }
             }
@@ -5973,6 +6086,59 @@
         },
         "required" : [ "appName", "remarks", "schemaVersion", "sourceEnvironment", "targetEnvironment", "topicName" ]
       },
+      "ConsumerOffsetResetRequestModel" : {
+        "properties" : {
+          "operationalRequestType" : {
+            "type" : "string",
+            "enum" : [ "RESET_CONSUMER_OFFSETS" ]
+          },
+          "environment" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "requestingTeamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "approvingTeamId" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          },
+          "requestId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "topicname" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+          },
+          "consumerGroup" : {
+            "type" : "string",
+            "pattern" : "^[a-zA-Z0-9._-]{3,}$"
+          },
+          "offsetResetType" : {
+            "type" : "string",
+            "enum" : [ "LATEST", "EARLIEST", "TO_DATE_TIME" ]
+          },
+          "resetTimeStampStr" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "consumerGroup", "description", "environment", "offsetResetType", "operationalRequestType", "topicname" ]
+      },
       "TopicCreateRequestModel" : {
         "properties" : {
           "requestOperationType" : {
@@ -6761,6 +6927,111 @@
             "format" : "int64"
           }
         }
+      },
+      "OperationalRequestsResponseModel" : {
+        "properties" : {
+          "topicname" : {
+            "type" : "string"
+          },
+          "consumerGroup" : {
+            "type" : "string"
+          },
+          "offsetResetType" : {
+            "type" : "string",
+            "enum" : [ "LATEST", "EARLIEST", "TO_DATE_TIME" ]
+          },
+          "resetTimeStampStr" : {
+            "type" : "string"
+          },
+          "description" : {
+            "type" : "string"
+          },
+          "reqId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "environment" : {
+            "type" : "string"
+          },
+          "environmentName" : {
+            "type" : "string"
+          },
+          "requestor" : {
+            "type" : "string"
+          },
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teamname" : {
+            "type" : "string"
+          },
+          "operationalRequestType" : {
+            "type" : "string",
+            "enum" : [ "RESET_CONSUMER_OFFSETS" ]
+          },
+          "requestStatus" : {
+            "type" : "string",
+            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          },
+          "requesttime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "requesttimestring" : {
+            "type" : "string"
+          },
+          "currentPage" : {
+            "type" : "string"
+          },
+          "totalNoPages" : {
+            "type" : "string"
+          },
+          "allPageNos" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "approvingTeamDetails" : {
+            "type" : "string"
+          },
+          "approver" : {
+            "type" : "string"
+          },
+          "approvingtime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "remarks" : {
+            "type" : "string"
+          },
+          "appname" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "approvingTeamId" : {
+            "type" : "string"
+          },
+          "sequence" : {
+            "type" : "string"
+          },
+          "possibleTeams" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "deletable" : {
+            "type" : "boolean"
+          },
+          "editable" : {
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "allPageNos", "approvingTeamDetails", "consumerGroup", "currentPage", "description", "environment", "environmentName", "offsetResetType", "operationalRequestType", "reqId", "requestStatus", "requestor", "requesttime", "requesttimestring", "teamId", "teamname", "topicname", "totalNoPages" ]
       },
       "RegisterUserInfoModelResponse" : {
         "properties" : {
