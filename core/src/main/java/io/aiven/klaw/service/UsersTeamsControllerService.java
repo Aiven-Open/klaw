@@ -392,10 +392,9 @@ public class UsersTeamsControllerService {
                 (!manageDatabase
                         .getHandleDbRequests()
                         .existsComponentsCountForTeam(teamModel.getTeamId(), tenantId))
-                    && (manageDatabase
+                    && (!manageDatabase
                         .getHandleDbRequests()
-                        .getAllUsersInfoForTeam(teamModel.getTeamId(), tenantId)
-                        .isEmpty())
+                        .existsUsersInfoForTeam(teamModel.getTeamId(), tenantId))
                     && allUsersInfo.stream()
                         .noneMatch(
                             userInfo ->
@@ -448,7 +447,7 @@ public class UsersTeamsControllerService {
     }
 
     int tenantId = commonUtilsService.getTenantId(getUserName());
-    if (manageDatabase.getHandleDbRequests().getAllUsersInfoForTeam(teamId, tenantId).size() > 0) {
+    if (manageDatabase.getHandleDbRequests().existsUsersInfoForTeam(teamId, tenantId)) {
       return ApiResponse.notOk(TEAMS_ERR_103);
     }
 

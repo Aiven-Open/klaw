@@ -239,6 +239,8 @@ public interface HandleDbRequests {
 
   List<UserInfo> getAllUsersInfoForTeam(Integer teamId, int tenantId);
 
+  boolean existsUsersInfoForTeam(Integer teamId, int tenantId);
+
   List<RegisterUserInfo> getAllRegisterUsersInfoForTenant(int tenantId);
 
   List<RegisterUserInfo> getAllRegisterUsersInformation();
