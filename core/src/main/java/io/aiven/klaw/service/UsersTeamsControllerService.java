@@ -34,6 +34,7 @@ import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KwConstants;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
@@ -795,38 +796,20 @@ public class UsersTeamsControllerService {
         });
     userInfoModels.sort(Comparator.comparing(UserInfoModelResponse::getUsername));
 
-    return getPagedUsers(pageNo, userInfoModels);
-  }
-
-  private List<UserInfoModelResponse> getPagedUsers(
-      String pageNo, List<UserInfoModelResponse> userListMap) {
-    List<UserInfoModelResponse> aclListMapUpdated = new ArrayList<>();
-
-    int totalRecs = userListMap.size();
-    int recsPerPage = 20;
-
-    int totalPages =
-        userListMap.size() / recsPerPage + (userListMap.size() % recsPerPage > 0 ? 1 : 0);
-
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    for (int i = 0; i < totalRecs; i++) {
-
-      if (i >= startVar && i < lastVar) {
-        UserInfoModelResponse mp = userListMap.get(i);
-
-        mp.setTotalNoPages(totalPages + "");
-        List<String> numList = new ArrayList<>();
-        for (int k = 1; k <= totalPages; k++) {
-          numList.add("" + k);
-        }
-        mp.setAllPageNos(numList);
-        aclListMapUpdated.add(mp);
-      }
-    }
-    return aclListMapUpdated;
+    return Pager.getItemsList(
+        pageNo,
+        "",
+        userInfoModels,
+        (pageContext, mp) -> {
+          mp.setTotalNoPages(pageContext.getTotalPages());
+          List<String> numList = new ArrayList<>();
+          int totalPages = Integer.parseInt(pageContext.getTotalPages());
+          for (int k = 1; k <= totalPages; k++) {
+            numList.add("" + k);
+          }
+          mp.setAllPageNos(numList);
+          return mp;
+        });
   }
 
   public UserInfoModelResponse getMyProfileInfo() {

@@ -422,7 +422,6 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getAllTopicRequests(
             anyString(), anyString(), eq(null), eq(null), eq(null), eq(false), anyInt()))
         .thenReturn(getListTopicRequests());
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
     List<TopicRequestsResponseModel> listTopicRqs =
@@ -450,7 +449,6 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getAllTopicRequests(
             anyString(), anyString(), eq(null), eq(null), eq(null), eq(false), anyInt()))
         .thenReturn(topicRequests);
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics());
@@ -481,7 +479,6 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getAllTopicRequests(
             anyString(), anyString(), eq(null), eq(null), eq(null), eq(false), anyInt()))
         .thenReturn(topicRequests);
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(utilMethods.getTopics());
@@ -585,7 +582,6 @@ public class TopicControllerServiceTest {
         .thenReturn(listTopicReqs);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestsResponseModel> topicList =
@@ -626,7 +622,6 @@ public class TopicControllerServiceTest {
         .thenReturn(listTopicReqs);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFTATEAM");
 
     List<TopicRequestsResponseModel> topicList =
@@ -936,7 +931,6 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(commonUtilsService.getTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
@@ -963,7 +957,6 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(commonUtilsService.getTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
@@ -994,7 +987,6 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(commonUtilsService.getTopics(any(), any(), anyInt()))
         .thenReturn(getSyncTopics("topic", 4));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
@@ -1030,7 +1022,6 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
         .thenReturn(Collections.singletonList("1"));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(commonUtilsService.getTopics(envSel, null, 1)).thenReturn(getSyncTopics("topic", 4));
 
     List<List<TopicInfo>> topicsList =
@@ -1268,7 +1259,6 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getAllTopicRequests(
             anyString(), eq(null), eq(null), eq(null), eq(null), eq(false), anyInt()))
         .thenReturn(generateRequests(50));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
     List<TopicRequestsResponseModel> ordered_response =
@@ -1304,7 +1294,6 @@ public class TopicControllerServiceTest {
     when(handleDbRequests.getAllTopicRequests(
             anyString(), eq(null), eq(null), eq(null), eq(null), eq(false), anyInt()))
         .thenReturn(generateRequests(50));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(manageDatabase.getTeamNameFromTeamId(anyInt(), anyInt())).thenReturn("INFRATEAM");
 
     List<TopicRequestsResponseModel> ordered_response =
@@ -1348,8 +1337,6 @@ public class TopicControllerServiceTest {
         .thenReturn(topicRequests);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<TopicRequestsResponseModel> ordered_response =
         topicControllerService.getTopicRequests(
             "1",
@@ -1397,8 +1384,6 @@ public class TopicControllerServiceTest {
         .thenReturn(topicRequests);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     when(commonUtilsService.getTopicsForTopicName(eq("Topic0"), eq(101)))
         .thenReturn(List.of(getTopic("Topic0")));
     when(commonUtilsService.getFilteredTopicsForTenant(any()))

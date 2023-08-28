@@ -253,42 +253,6 @@ public class CommonUtilsService {
     return chartsJsOverview;
   }
 
-  public String deriveCurrentPage(String pageNo, String currentPage, int totalPages) {
-    switch (pageNo) {
-      case ">" -> pageNo = (Integer.parseInt(currentPage) + 1) + "";
-      case ">>" -> pageNo = totalPages + "";
-      case "<" -> pageNo = (Integer.parseInt(currentPage) - 1) + "";
-      case "<<" -> pageNo = "1";
-    }
-    return pageNo;
-  }
-
-  public void getAllPagesList(
-      String pageNo, String currentPage, int totalPages, List<String> numList) {
-    if (currentPage != null
-        && !currentPage.equals("")
-        && !currentPage.equals(pageNo)
-        && Integer.parseInt(pageNo) > 1
-        && totalPages > 1) {
-      numList.add("<<");
-      numList.add("<");
-    } else if (currentPage != null
-        && currentPage.equals(pageNo)
-        && Integer.parseInt(pageNo) > 1
-        && totalPages > 1) {
-      numList.add("<<");
-      numList.add("<");
-    }
-
-    if (totalPages > Integer.parseInt(pageNo)) {
-      numList.add(pageNo);
-      numList.add(">");
-      numList.add(">>");
-    } else if (totalPages == Integer.parseInt(pageNo)) {
-      numList.add(pageNo);
-    }
-  }
-
   public boolean addPublicKeyToTrustStore(String fileName, Integer tenantId) {
     KeyStore ks;
     fileName = fileName + tenantId + ".pem";
