@@ -1,5 +1,6 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
+import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
 import static io.aiven.klaw.helpers.KwConstants.REQUESTOR_SUBSCRIPTIONS;
 
 import com.google.common.collect.Lists;
@@ -13,8 +14,6 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.DashboardStats;
 import io.aiven.klaw.repository.*;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,8 +37,6 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class SelectDataJdbc {
-  private static final DateTimeFormatter DATE_TIME_FORMATTER =
-      DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
 
   @Autowired(required = false)
   private UserInfoRepo userInfoRepo;
@@ -182,7 +179,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
     }
@@ -307,7 +304,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       if (!wildcardFilter
@@ -629,7 +626,7 @@ public class SelectDataJdbc {
 
       try {
         row.setRequesttimestring(
-            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       filterAndAddTopicRequest(topicRequests, row, wildcardSearch, wildcardFilter);
@@ -796,7 +793,7 @@ public class SelectDataJdbc {
     for (KafkaConnectorRequest row : topicRequestListSub) {
       try {
         row.setRequesttimestring(
-            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       if (!wildcardSearch || row.getConnectorName().toLowerCase().contains(search.toLowerCase()))
@@ -962,7 +959,7 @@ public class SelectDataJdbc {
 
     for (ActivityLog row : activityList) {
       row.setActivityTimeString(
-          DATE_TIME_FORMATTER.format(row.getActivityTime().toLocalDateTime()));
+          DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getActivityTime().toLocalDateTime()));
     }
 
     return activityList;
@@ -1983,7 +1980,7 @@ public class SelectDataJdbc {
     for (OperationalRequest row : operationRequestListSub) {
       try {
         row.setRequesttimestring(
-            DATE_TIME_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
+            DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(row.getRequesttime().toLocalDateTime()));
       } catch (Exception ignored) {
       }
       filterAndAddOperationalRequest(operationalRequests, row, wildcardSearch, wildcardFilter);
