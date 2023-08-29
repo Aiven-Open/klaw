@@ -25,7 +25,8 @@ const formatAdvancedConfig = (
     entries.map((config) => [config.configKey, config.configValue])
   );
 
-  return JSON.stringify(entriesToFlatObject, null, 2);
+  const flatObjectToJsonString = JSON.stringify(entriesToFlatObject, null, 2);
+  return flatObjectToJsonString;
 };
 
 const Label = ({ children }: { children: React.ReactNode }) => (
