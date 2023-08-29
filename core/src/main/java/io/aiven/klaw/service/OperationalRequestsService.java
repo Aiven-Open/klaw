@@ -4,6 +4,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_101;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.dao.OperationalRequest;
 import io.aiven.klaw.dao.UserInfo;
@@ -21,6 +22,7 @@ import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
 import java.sql.Timestamp;
 import java.time.ZoneOffset;
@@ -32,6 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +45,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class OperationalRequestsService {
 
-  public static final String OFFSET_RESET_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+  public static final String OFFSET_RESET_TIMESTAMP_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
   private final ManageDatabase manageDatabase;
   private final MailUtils mailService;
   private final ClusterApiService clusterApiService;
@@ -103,7 +106,7 @@ public class OperationalRequestsService {
     DateTimeFormatter df = DateTimeFormatter.ofPattern(OFFSET_RESET_TIMESTAMP_FORMAT);
     DateTimeFormatter dfUTC = df.withZone(ZoneOffset.UTC);
 
-    ZonedDateTime parsedDate = ZonedDateTime.parse(timeStampStr, dfUTC);
+    ZonedDateTime parsedDate = ZonedDateTime.parse(timeStampStr.substring(0, 19), dfUTC);
     return Timestamp.from(parsedDate.toInstant());
   }
 
@@ -264,12 +267,12 @@ public class OperationalRequestsService {
     return Comparator.comparing(OperationalRequest::getRequesttime);
   }
 
-  public ApiResponse resetConsumerOffsets(String reqId) {
+  public ApiResponse approveOperationalRequests(String reqId) {
     log.info("approveConsumerOffsetRequests {}", reqId);
     final String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
+        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_REQS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
@@ -327,5 +330,33 @@ public class OperationalRequestsService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  public EnvIdInfo validateOffsetRequestDetails(
+      String envId, String topicName, String consumerGroup) {
+    log.debug("validateOffsetRequestDetails {} {} {}", envId, topicName, consumerGroup);
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+    int teamId = commonUtilsService.getTeamId(userName);
+
+    List<Acl> aclList =
+        manageDatabase.getHandleDbRequests().getSyncAcls(envId, topicName, tenantId);
+
+    Optional<Acl> aclFound =
+        aclList.stream()
+            .filter(
+                acl ->
+                    acl.getTeamId().equals(teamId)
+                        && acl.getConsumergroup() != null
+                        && acl.getConsumergroup().equals(consumerGroup))
+            .findFirst();
+    if (aclFound.isPresent()) {
+      EnvIdInfo envIdInfo = new EnvIdInfo();
+      envIdInfo.setId(envId);
+      envIdInfo.setName(commonUtilsService.getEnvDetails(envId, tenantId).getName());
+      return envIdInfo;
+    } else {
+      return null;
+    }
   }
 }

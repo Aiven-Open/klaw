@@ -46,6 +46,7 @@ public class AuthenticationInfo {
   @NotNull private String syncSchemas;
   @NotNull private String approveAtleastOneRequest;
   @NotNull private String approveDeclineTopics;
+  @NotNull private String approveDeclineOperationalReqs;
   @NotNull private String approveDeclineSubscriptions;
   @NotNull private String approveDeclineSchemas;
   @NotNull private String approveDeclineConnectors;

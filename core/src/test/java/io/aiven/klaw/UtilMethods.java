@@ -519,7 +519,6 @@ public class UtilMethods {
     consumerOffsetResetRequestModel.setRequestor("kwusera");
     consumerOffsetResetRequestModel.setTopicname("testtopic");
     consumerOffsetResetRequestModel.setEnvironment("1");
-    consumerOffsetResetRequestModel.setDescription("Test desc");
     consumerOffsetResetRequestModel.setRequestor("kwusera");
     consumerOffsetResetRequestModel.setOffsetResetType(OffsetResetType.LATEST);
     consumerOffsetResetRequestModel.setConsumerGroup("testconsumergroup");

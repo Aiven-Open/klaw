@@ -6,6 +6,7 @@ import io.aiven.klaw.model.enums.OperationalRequestType;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
 import io.aiven.klaw.service.OperationalRequestsService;
 import jakarta.validation.Valid;
@@ -38,6 +39,19 @@ public class OperationalRequestsController {
     return new ResponseEntity<>(
         operationalRequestsService.createConsumerOffsetsResetRequest(
             consumerOffsetResetRequestModel),
+        HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/validateOffsetRequestDetails",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<EnvIdInfo> validateOffsetRequestDetails(
+      @RequestParam(value = "envId") String envId,
+      @RequestParam(value = "topicName") String topicName,
+      @RequestParam(value = "consumerGroup") String consumerGroup) {
+    return new ResponseEntity<>(
+        operationalRequestsService.validateOffsetRequestDetails(envId, topicName, consumerGroup),
         HttpStatus.OK);
   }
 

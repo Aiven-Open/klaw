@@ -84,9 +84,6 @@ public class OperationalRequest implements Serializable {
   @Column(name = "approvingteamid")
   private String approvingTeamId;
 
-  @Column(name = "description")
-  private String description;
-
   @Transient private String environmentName;
 
   @Transient private String requesttimestring;
