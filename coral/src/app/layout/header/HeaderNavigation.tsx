@@ -30,10 +30,7 @@ function HeaderNavigation() {
         }}
       >
         <DropdownMenu.Trigger>
-          <PrimaryDropdownButton
-            aria-label="Request a new"
-            tooltip="Request a new"
-          >
+          <PrimaryDropdownButton aria-label="Request a new">
             Request a new
           </PrimaryDropdownButton>
         </DropdownMenu.Trigger>
