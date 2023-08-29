@@ -2,7 +2,7 @@ function objectHasProperty<T extends string>(
   object: unknown,
   key: T
 ): object is Record<T, unknown> {
-  return !!(
+  return (
     object !== null &&
     object !== undefined &&
     Object.prototype.hasOwnProperty.call(object, key)
