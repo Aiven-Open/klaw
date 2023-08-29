@@ -1,4 +1,4 @@
-// "teamName" is a optional parameter for the getTopics api,
+// "teamName" is an optional parameter for the getTopics api,
 // but we still need an identifier in frontend
 // to be able to set "All teams" as a visible option
 // for the user, UUID makes sure we don't overlap with an

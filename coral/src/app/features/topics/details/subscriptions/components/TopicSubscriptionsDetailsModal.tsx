@@ -84,7 +84,7 @@ const TopicSubscriptionsDetailsModal = ({
           aclReqNo: req_no,
         });
       },
-      // Service accout data is only available for Aiven clusters
+      // Service account data is only available for Aiven clusters
       enabled: isAivenCluster,
     }
   );

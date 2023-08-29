@@ -59,27 +59,27 @@ const FiltersProvider = ({
   const [searchParams, setSearchParams] = useSearchParams();
 
   //
-  const initialvalues = { ...emptyValues, ...defaultValues };
+  const initialValues = { ...emptyValues, ...defaultValues };
 
   const environment =
-    searchParams.get("environment") ?? initialvalues.environment;
+    searchParams.get("environment") ?? initialValues.environment;
   const aclType =
-    (searchParams.get("aclType") as AclType | "ALL") ?? initialvalues.aclType;
+    (searchParams.get("aclType") as AclType | "ALL") ?? initialValues.aclType;
   const status =
-    (searchParams.get("status") as RequestStatus) ?? initialvalues.status;
-  const teamId = searchParams.get("teamId") ?? initialvalues.teamId;
+    (searchParams.get("status") as RequestStatus) ?? initialValues.status;
+  const teamId = searchParams.get("teamId") ?? initialValues.teamId;
   const showOnlyMyRequests = searchParams.get("showOnlyMyRequests") === "true";
   const requestType =
     (searchParams.get("requestType") as RequestOperationType | "ALL") ??
-    initialvalues.requestType;
-  const search = searchParams.get("search") ?? initialvalues.search;
-  const paginated = initialvalues.paginated;
+    initialValues.requestType;
+  const search = searchParams.get("search") ?? initialValues.search;
+  const paginated = initialValues.paginated;
 
   const setFilterValue = ({ name, value }: SetFiltersParams) => {
     const parsedValue = typeof value === "boolean" ? String(value) : value;
     searchParams.set(name, parsedValue);
 
-    if (value === initialvalues[name]) {
+    if (value === initialValues[name]) {
       searchParams.delete(name);
     }
 

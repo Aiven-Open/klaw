@@ -1,4 +1,4 @@
-import { Box, GhostButton, Icon } from "@aivenio/aquarium";
+import { Box, Button, Icon } from "@aivenio/aquarium";
 import chevronBackward from "@aivenio/aquarium/dist/src/icons/chevronBackward";
 import chevronLeft from "@aivenio/aquarium/dist/src/icons/chevronLeft";
 import chevronRight from "@aivenio/aquarium/dist/src/icons/chevronRight";
@@ -32,16 +32,16 @@ function Pagination(props: PaginationProps) {
         alignItems={"center"}
       >
         <li aria-hidden={currentPageIsFirstPage}>
-          <GhostButton
+          <Button.Ghost
             disabled={currentPageIsFirstPage}
             onClick={() => onUpdatePage(1)}
           >
             <span className={"visually-hidden"}>Go to first page</span>
             <Icon aria-hidden={true} icon={chevronBackward} />
-          </GhostButton>
+          </Button.Ghost>
         </li>
         <li aria-hidden={currentPageIsFirstPage}>
-          <GhostButton
+          <Button.Ghost
             disabled={currentPageIsFirstPage}
             onClick={() => onUpdatePage(activePage - 1)}
           >
@@ -49,13 +49,13 @@ function Pagination(props: PaginationProps) {
               Go to previous page, page {activePage - 1}
             </span>
             <Icon aria-hidden={true} icon={chevronLeft} />
-          </GhostButton>
+          </Button.Ghost>
         </li>
         <li aria-hidden={true}>
           Page {activePage} of {totalPages}
         </li>
         <li aria-hidden={currentPageIsLastPage}>
-          <GhostButton
+          <Button.Ghost
             disabled={currentPageIsLastPage}
             onClick={() => onUpdatePage(activePage + 1)}
           >
@@ -63,10 +63,10 @@ function Pagination(props: PaginationProps) {
               Go to next page, page {activePage + 1}
             </span>
             <Icon aria-hidden={true} icon={chevronRight} />
-          </GhostButton>
+          </Button.Ghost>
         </li>
         <li aria-hidden={currentPageIsLastPage}>
-          <GhostButton
+          <Button.Ghost
             disabled={currentPageIsLastPage}
             onClick={() => onUpdatePage(totalPages)}
           >
@@ -74,7 +74,7 @@ function Pagination(props: PaginationProps) {
               Go to last page, page {totalPages}
             </span>
             <Icon aria-hidden={true} icon={chevronForward} />
-          </GhostButton>
+          </Button.Ghost>
         </li>
       </Box>
     </nav>

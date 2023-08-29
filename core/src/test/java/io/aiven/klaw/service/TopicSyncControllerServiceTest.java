@@ -517,7 +517,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
-    when(commonUtilsService.deriveCurrentPage("1", "", 0)).thenReturn("0");
     List<Topic> topics = utilMethods.generateTopics(14);
 
     // from the cluster
@@ -549,7 +548,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
-    when(commonUtilsService.deriveCurrentPage("1", "", 0)).thenReturn("0");
     List<Topic> topics = utilMethods.generateTopics(14);
 
     // from the cluster
@@ -577,7 +575,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics = utilMethods.generateTopics(13);
 
     // from the cluster
@@ -610,7 +607,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics = utilMethods.generateTopics(14);
 
     // from the cluster
@@ -642,7 +638,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics = utilMethods.generateTopics(12);
 
     // from the cluster
@@ -675,7 +670,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics = utilMethods.generateTopics(14);
 
     // from the cluster
@@ -707,7 +701,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(1));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics = utilMethods.generateTopics(12);
 
     // from the cluster
@@ -769,7 +762,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics =
         utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
@@ -843,7 +835,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics =
         utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
@@ -917,7 +908,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics =
         utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
@@ -993,7 +983,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics =
         utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, numberOfTopicsInDB));
 
@@ -1041,7 +1030,6 @@ public class TopicSyncControllerServiceTest {
     // Get KwCluster Settings
     when(manageDatabase.getClusters(eq(KafkaClustersType.KAFKA), eq(101)))
         .thenReturn(getKwClusters(4));
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     List<Topic> topics = utilMethods.generateTopics(Arrays.copyOfRange(namesOfTopics, 0, 1));
 
     // from the cluster

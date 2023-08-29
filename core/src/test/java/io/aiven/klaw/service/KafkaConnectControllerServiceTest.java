@@ -253,8 +253,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -298,8 +296,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -343,8 +339,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -389,8 +383,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectorRequests(50));
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -436,8 +428,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(connectorRequests);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     List<KafkaConnectorRequestsResponseModel> ordered_response =
         kafkaConnectControllerService.getConnectorRequests(
             "1",
@@ -485,8 +475,6 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(connectorRequests);
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt()))
-        .thenReturn("1", "2");
     when(handleDbRequests.getConnectorsFromName(eq("Conn0"), eq(TENANT_ID)))
         .thenReturn(List.of(getKwKafkaConnector()));
     List<KafkaConnectorRequestsResponseModel> ordered_response =

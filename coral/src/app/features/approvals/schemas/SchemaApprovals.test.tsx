@@ -608,7 +608,7 @@ describe("SchemaApprovals", () => {
   describe("enables user to approve a request with quick action", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
@@ -629,7 +629,7 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -706,7 +706,7 @@ describe("SchemaApprovals", () => {
   describe("enables user to approve a request through details modal", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
@@ -727,7 +727,7 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -831,7 +831,7 @@ describe("SchemaApprovals", () => {
   describe("enables user to decline a request with quick action", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
@@ -852,7 +852,7 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -1001,7 +1001,7 @@ describe("SchemaApprovals", () => {
   describe("enables user to decline a request through details modal", () => {
     const testRequest = mockedApiResponseSchemaRequests.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
@@ -1022,7 +1022,7 @@ describe("SchemaApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });

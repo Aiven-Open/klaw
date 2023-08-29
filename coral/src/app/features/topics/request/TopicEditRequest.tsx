@@ -180,7 +180,7 @@ function TopicEditRequest() {
     if (topicDetailsForEnv?.topicId === undefined) {
       // this case should never happen, as we redirect user and show an error
       // if there is no `topicDetailsForEnv` or `topicDetailsForEnv.topicId`,
-      // so we want want to throw an Error here to not hide a bug
+      // so we want to throw an Error here to not hide a bug
       throw Error("No topicId set!");
     } else {
       const requestTopicEditParams = {

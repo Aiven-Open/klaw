@@ -64,7 +64,7 @@ describe("MyRequestsFilter", () => {
     );
   });
 
-  it("unsets the showOnlyMyRequests and page search parameter when user untoggles the switch", async () => {
+  it("unsets the showOnlyMyRequests and page search parameter when user un-toggles the switch", async () => {
     window.history.replaceState(null, "", "/?showOnlyMyRequests=true");
     customRender(<WrappedMyRequestsFilter />, {
       browserRouter: true,

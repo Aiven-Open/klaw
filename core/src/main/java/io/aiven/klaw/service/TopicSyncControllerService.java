@@ -24,6 +24,7 @@ import io.aiven.klaw.dao.TopicRequest;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import io.aiven.klaw.helpers.KlawResourceUtils;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.helpers.UtilMethods;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwMetadataUpdates;
@@ -155,7 +156,17 @@ public class TopicSyncControllerService {
 
     if (!"-1".equals(pageNo)) { // scheduler call
       topicRequestModelList =
-          getPagedTopicReqModels(pageNo, currentPage, topicRequestModelList, tenantId);
+          Pager.getItemsList(
+              pageNo,
+              currentPage,
+              topicRequestModelList,
+              (pageContext, mp) -> {
+                mp.setTotalNoPages(pageContext.getTotalPages());
+                mp.setAllPageNos(pageContext.getAllPageNos());
+                mp.setCurrentPage(pageContext.getPageNo());
+                mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId()));
+                return mp;
+              });
     }
 
     syncTopicsList.setResultSet(topicRequestModelList);
@@ -268,44 +279,17 @@ public class TopicSyncControllerService {
     topicRequestModelList.addAll(deletedTopicsFromClusterList);
 
     sizeOfTopics.add(topicRequestModelList.size());
-    return getPagedTopicReqModels(pageNo, currentPage, topicRequestModelList, tenantId);
-  }
-
-  private List<TopicSyncResponseModel> getPagedTopicReqModels(
-      String pageNo,
-      String currentPage,
-      List<TopicSyncResponseModel> totalTopicSyncList,
-      int tenantId) {
-    List<TopicSyncResponseModel> pagedTopicSyncList = new ArrayList<>();
-
-    int totalRecs = totalTopicSyncList.size();
-    int recsPerPage = 20;
-
-    int totalPages =
-        totalTopicSyncList.size() / recsPerPage
-            + (totalTopicSyncList.size() % recsPerPage > 0 ? 1 : 0);
-
-    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    List<String> numList = new ArrayList<>();
-    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-    for (int i = 0; i < totalRecs; i++) {
-
-      if (i >= startVar && i < lastVar) {
-        TopicSyncResponseModel mp = totalTopicSyncList.get(i);
-
-        mp.setTotalNoPages(totalPages + "");
-        mp.setAllPageNos(numList);
-        mp.setCurrentPage(pageNo);
-        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId()));
-        pagedTopicSyncList.add(mp);
-      }
-    }
-    return pagedTopicSyncList;
+    return Pager.getItemsList(
+        pageNo,
+        currentPage,
+        topicRequestModelList,
+        (pageContext, mp) -> {
+          mp.setTotalNoPages(pageContext.getTotalPages());
+          mp.setAllPageNos(pageContext.getAllPageNos());
+          mp.setCurrentPage(pageContext.getPageNo());
+          mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, mp.getTeamId()));
+          return mp;
+        });
   }
 
   private List<TopicSyncResponseModel> getSyncTopicListRecon(
@@ -768,63 +752,36 @@ public class TopicSyncControllerService {
             .sorted(new TopicControllerService.TopicNameComparator())
             .collect(Collectors.toList());
 
-    return getTopicInfoList(topicsFromSOT, pageNo, currentPage, listAllEnvs, orderOfEnvs, tenantId);
-  }
+    return topicsFromSOT.isEmpty()
+        ? null
+        : Pager.getItemsList(
+            pageNo,
+            currentPage,
+            21,
+            topicsFromSOT,
+            (pageContext, topicSOT) -> {
+              int counterInc = counterIncrement();
+              TopicInfo mp = new TopicInfo();
+              mp.setSequence(counterInc + "");
 
-  private List<TopicInfo> getTopicInfoList(
-      List<Topic> topicsFromSOT,
-      String pageNo,
-      String currentPage,
-      List<Env> listAllEnvs,
-      String orderOfEnvs,
-      int tenantId) {
-    int totalRecs = topicsFromSOT.size();
-    int recsPerPage = 21;
+              List<String> envList = topicSOT.getEnvironmentsList();
+              envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
 
-    int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-    int requestPageNo = Integer.parseInt(pageNo);
+              mp.setTopicid(topicSOT.getTopicid());
+              mp.setEnvName(topicSOT.getEnvironment());
+              mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
+              mp.setTopicName(topicSOT.getTopicname());
+              mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
 
-    List<TopicInfo> topicsListMap = null;
-    if (totalRecs > 0) topicsListMap = new ArrayList<>();
+              mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
+              mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
+              mp.setDescription(topicSOT.getDescription());
 
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    List<String> numList = new ArrayList<>();
-    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-    for (int i = 0; i < topicsFromSOT.size(); i++) {
-      int counterInc = counterIncrement();
-      if (i >= startVar && i < lastVar) {
-        TopicInfo mp = new TopicInfo();
-        mp.setSequence(counterInc + "");
-        Topic topicSOT = topicsFromSOT.get(i);
-
-        List<String> envList = topicSOT.getEnvironmentsList();
-        envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
-
-        mp.setTopicid(topicSOT.getTopicid());
-        mp.setEnvName(topicSOT.getEnvironment());
-        mp.setEnvironmentsList(KlawResourceUtils.getConvertedEnvs(listAllEnvs, envList));
-        mp.setTopicName(topicSOT.getTopicname());
-        mp.setTeamname(manageDatabase.getTeamNameFromTeamId(tenantId, topicSOT.getTeamId()));
-
-        mp.setNoOfReplicas(topicSOT.getNoOfReplicas());
-        mp.setNoOfPartitions(topicSOT.getNoOfPartitions());
-        mp.setDescription(topicSOT.getDescription());
-
-        mp.setTotalNoPages(totalPages + "");
-        mp.setCurrentPage(pageNo);
-        mp.setAllPageNos(numList);
-
-        if (topicsListMap != null) {
-          topicsListMap.add(mp);
-        }
-      }
-    }
-
-    return topicsListMap;
+              mp.setTotalNoPages(pageContext.getTotalPages());
+              mp.setCurrentPage(pageContext.getPageNo());
+              mp.setAllPageNos(pageContext.getAllPageNos());
+              return mp;
+            });
   }
 
   private int counterIncrement() {

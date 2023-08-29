@@ -12,14 +12,14 @@
     * [Goals of testing approach](#goals-of-testing-approach)
     * [How to test](#how-to-test)
         + [How to get the best out of our libs](#how-to-get-the-best-out-of-our-libs)
-            - [Use `screen` when possible](#use--screen--when-possible)
-            - [follow the [recommended priority how to use queries](https://testing-library.com/docs/queries/about/#priority)](#follow-the--recommended-priority-how-to-use-queries--https---testing-librarycom-docs-queries-about--priority-)
-            - [make use of the [jest-dom matcher](https://github.com/testing-library/jest-dom)](#make-use-of-the--jest-dom-matcher--https---githubcom-testing-library-jest-dom-)
+            - [Use `screen` when possible](#use-screen-when-possible)
+            - [follow the [recommended priority how to use queries](https://testing-library.com/docs/queries/about/#priority)](#follow-the-recommended-priority-how-to-use-queries)
+            - [make use of the [jest-dom matcher](https://github.com/testing-library/jest-dom)](#make-use-of-the-jest-dom-matcher)
                 * [Example and benefits of jest-dom matcher](#example-and-benefits-of-jest-dom-matcher)
         + [How to structure test files](#how-to-structure-test-files)
         + [How to group tests meaningful](#how-to-group-tests-meaningful)
-            - [Example: Grouping tests that check the default markup is rendered](#example--grouping-tests-that-check-the-default-markup-is-rendered)
-            - [Example: Grouping tests that test user interaction](#example--grouping-tests-that-test-user-interaction)
+            - [Example: Grouping tests that check the default markup is rendered](#example-grouping-tests-that-check-the-default-markup-is-rendered)
+            - [Example: Grouping tests that test user interaction](#example-grouping-tests-that-test-user-interaction)
     * [How to write test descriptions](#how-to-write-test-descriptions)
         + [General tip](#general-tip)
         + [Recommended rules](#recommended-rules)
@@ -111,7 +111,8 @@ We recommend to use screen where it is possible. It helps developer experience b
 
 A great benefit is that this can help us making our markup more accessible. If you can't use the recommended query, you should check if there is a reason for that. 
 
-**Example**: There is a alert and you can't query it other than with looking for the text? That means assistive technology also has no information that this is a warning. Changing that element to have an [alert role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role) enables you to use the recommended queries. And it makes the content more accessible!
+**Example**: There is an alert, and you can't query it other than with looking for the text? That means assistive 
+technology also has no information that this is a warning. Changing that element to have an [alert role](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/alert_role) enables you to use the recommended queries. And it makes the content more accessible!
 
 **💡 Tip to remember the right query**
 
@@ -129,7 +130,8 @@ throwSuggestions: true
 
 This adds the config only to your test file. No others are not affected! The config is making mistakes and still experimental, so we won't use it in a general config. It's up to you if you want to remove it in your test file after writing the tests. 
 
-⚠️ Note: it only suggests a better query if the element in the component is semantically correct / accessible. It only solve something on the test side (using better queries to make test implicitly test more important things), not on the code side.
+⚠️ Note: it only suggests a better query if the element in the component is semantically correct / accessible. It 
+only solves something on the test side (using better queries to make test implicitly test more important things), not on the code side.
 
 ##### make use of the [jest-dom matcher](https://github.com/testing-library/jest-dom)
 
@@ -157,7 +159,7 @@ It’s not necessary to use `toBeVisible()` on e.g. form elements. If they are n
 
 `.toBeChecked()` is another custom matcher from jest-dom. Only a valid, semantic and at least mostly accessible html element can be asserted with this. It can't be used on a `button type="button"` for example. This implicitly make sure all these things are working correctly.
 
-#### How to structure test files 
+#### How to structure test files
 
 The first `describe` block:
 
@@ -312,9 +314,9 @@ This block can:
 
 Examples:
 
-- describe *“renders all necessary elements"*
-- describe *“when user selects a certain environment"*
-- describe *“handles the form for deleting a topic"*
+- describe *"renders all necessary elements"*
+- describe *"when user selects a certain environment"*
+- describe *"handles the form for deleting a topic"*
 
 The `it` block contains the specification itself. Together with its assertion it describes the expected outcome. Keep in mind that **one-assertion-per-it** is a good rule to follow for small tests. 
 
@@ -324,13 +326,13 @@ We read the `it` together with the description itself:
 it('closes the modal when user confirms')
 ```
 
-Is read as *“it closes the modal when user confirms"*
+Is read as *"it closes the modal when user confirms"*
 
 Examples:
 
-- it *“shows an input element"*
-- it *“changes the color when user clicks button"*
-- it *“disables the button when required input is missing"*
+- it *"shows an input element"*
+- it *"changes the color when user clicks button"*
+- it *"disables the button when required input is missing"*
 
 #### Recommended rules
 

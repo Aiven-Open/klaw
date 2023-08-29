@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Typography } from "@aivenio/aquarium";
+import { Box, Button, Typography } from "@aivenio/aquarium";
 import cross from "@aivenio/aquarium/icons/cross";
 import { ReactElement, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -158,7 +158,7 @@ function Modal(props: ModalProps) {
                 {isDialog && dialogTitle && <>{dialogTitle}</>}
               </div>
               {close && (
-                <IconButton
+                <Button.Icon
                   aria-label="Close modal"
                   icon={cross}
                   onClick={close}

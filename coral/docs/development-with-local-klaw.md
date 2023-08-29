@@ -7,7 +7,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 ## Table of content
 
 * [First setup](#first-setup)
-+ [Note on login and authentication](#note-to-login-and-authentication)
++ [Note on login and authentication](#note-on-login-and-authentication)
     * [Login ](#login)
     * [Authentication expired](#authentication-expired)
     - [🙋Potential browser problem](#potential-browser-problem)
@@ -44,11 +44,13 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
         - Go to your [local Klaw](http://localhost:9097/login)
         - Login as superadmin with: `superadmin`, password `kwsuperadmin123$$` (see [application.properties](../../core/src/main/resources/application.properties))
         - Go back to the [proxy](http://localhost:1337)
-11. As superadmin, create one ore more users [proxy](http://localhost:1337/users)
-   "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating the user views in Coral first, so you'll need to login to Coral with a "user" account to have access to all functionality.
+11. As superadmin, create one or more users [proxy](http://localhost:1337/users)
+   "User" and "superadmin" are roles that have authorization to different views and functionality. We're migrating 
+    the user views in Coral first, so you'll need to log in to Coral with a "user" account to have access to all 
+    functionality.
 12. As superadmin, add a cluster and environment - you can follow our [official documentation](https://www.klaw-project.io/docs/getstarted)
     - When configuring Kafka clusters: the bootstrap server for Kafka cluster is running on `http://klaw-kafka:9092` in docker
-    - When confuguring schema registry: the bootstrap server for schema registry is running on `http://klaw-schema-registry:8081` in docker.
+    - When configuring schema registry: the bootstrap server for schema registry is running on `http://klaw-schema-registry:8081` in docker.
     - Do not forget to set the following configuration options in the [settings](`http://localhost:1337/serverConfig`) (Dashboard -> settings)
       - Cluster API URL (klaw.clusterapi.url): `http://klaw-cluster-api:9343` (running in docker)
       - Base sync cluster, order of topic promotion environments, topic request envs (klaw.tenant.config): you may copy the example provided, replacing the environment names with the ones you created. For example, if you have only created a `DEV` environment:
@@ -72,7 +74,7 @@ Please check out the [proxy README](../proxy/README.md) for more detailed inform
 
 The correct redirect for login and authentication is **not** working yet.
 
-##### Login 
+##### Login
 
 - Go to your [local Klaw](http://localhost:9097/login)
 - Login with your credentials
@@ -81,7 +83,8 @@ The correct redirect for login and authentication is **not** working yet.
 ![gif showing the three steps described above](assets/login.gif)
 
 ##### Authentication expired
-Related to that the proxy currently also does not redirect you to the login if your access expires. If you're getting related errors from your API, please login again like described above 🙏
+Related to that the proxy currently also does not redirect you to the login if your access expires. If you're 
+getting related errors from your API, please log in again like described above 🙏
 
 ![gif showing a redirect error. Pressing the reload button of the browser while the authentication has expired. We see a loading spinner that does not stop. The network tab shows a successful call to `getAuth` and a failed call to `login`. The console shows an error log "Access to fetch at localhost:9097/login from origin http:localhost:1337 has been blocked by CORS policy.](assets/expired1.gif)
 
@@ -90,7 +93,7 @@ Related to that the proxy currently also does not redirect you to the login if y
 
 
 #### 🙋Potential browser problem
-**The proxy and Klaw are running with `http`. Your browser may show you an error (SSL connection error), because it tries to automatically upgrade to https, without making an http request for security. You have to allow `localhost` to be accessed via http explicitly.** 
+**The proxy and Klaw are running with `http`. Your browser may show you an error (SSL connection error), because it tries to automatically upgrade to https, without making a http request for security. You have to allow `localhost` to be accessed via http explicitly.** 
 
 ℹ️ When you're done, you can run either: 
 - `pnpm dev:stop` to stop all containers in docker (enables a fast restart) 

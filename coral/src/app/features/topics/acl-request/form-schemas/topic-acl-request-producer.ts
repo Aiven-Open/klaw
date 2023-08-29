@@ -37,7 +37,7 @@ const topicProducerFormSchema = z
     teamId,
   })
   // We check if the user has entered valid values for acl_ssl or acl_ip
-  // We need two different refine fns because we need to specify the path for the message to be dispalyed correctly
+  // We need two different refine fns because we need to specify the path for the message to be displayed correctly
   // And we can't know which path is relevant if we do both checks in the same refine
   .refine(
     ({ aclIpPrincipleType, acl_ip }) => {

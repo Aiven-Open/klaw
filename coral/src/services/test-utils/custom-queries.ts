@@ -32,6 +32,7 @@ function getDefinitionList(component: RenderResult) {
  *
  * @param list a HTMLDListElement, ideally the result from
  * `getDefinitionList`
+ * @param term string of the definition term
  */
 function getByTermInList(list: HTMLDListElement, term: string) {
   const allTerms = within(list).getAllByRole("term");

@@ -165,7 +165,6 @@ public class KafkaConnectSyncControllerServiceTest {
             eq(1),
             anyBoolean()))
         .thenReturn(getConnectorStatus(3));
-    when(commonUtilsService.deriveCurrentPage(eq("1"), eq("1"), eq(1))).thenReturn("1");
     List<KafkaConnectorModelResponse> result =
         kafkaConnectSyncControllerService.getSyncConnectors("2", "1", "1", null, false);
 
@@ -204,7 +203,6 @@ public class KafkaConnectSyncControllerServiceTest {
             eq(1),
             anyBoolean()))
         .thenReturn(getConnectorStatus(5));
-    when(commonUtilsService.deriveCurrentPage(eq("1"), eq("1"), eq(1))).thenReturn("1");
     List<KafkaConnectorModelResponse> result =
         kafkaConnectSyncControllerService.getSyncConnectors("2", "1", "1", null, false);
 
@@ -243,7 +241,6 @@ public class KafkaConnectSyncControllerServiceTest {
             eq(1),
             anyBoolean()))
         .thenReturn(getConnectorStatus(0));
-    when(commonUtilsService.deriveCurrentPage(eq("1"), eq("1"), eq(1))).thenReturn("1");
     List<KafkaConnectorModelResponse> result =
         kafkaConnectSyncControllerService.getSyncConnectors("2", "1", "1", null, false);
 

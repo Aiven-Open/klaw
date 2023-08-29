@@ -10,7 +10,7 @@ The structure is inspired in big parts by:
 * [🏁️ Primary goals of this structure](#-primary-goals-of-this-structure)
 * [🗂️ Folder and file naming](#-folder-and-file-naming)
 * [💁 Outline folder structure](#-outline-folder-structure)
-* [ℹ️ In-depth explanation](#-in-depth-explanation)
+* [ℹ️ In-depth explanation](#ℹ-in-depth-explanation)
   + [First level: `app` folder](#first-level-app-folder)
     - [Second level: `app/assets`](#second-level-appassets)
     - [Second level: `app/components`](#second-level-appcomponents)

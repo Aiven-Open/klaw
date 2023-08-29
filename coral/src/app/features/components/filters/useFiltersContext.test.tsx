@@ -6,7 +6,7 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 
 describe("useFiltersValues.tsx", () => {
-  describe("should get correct filter values from search paramns", () => {
+  describe("should get correct filter values from search params", () => {
     afterEach(() => {
       cleanup();
     });

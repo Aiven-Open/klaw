@@ -563,7 +563,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to approve a request", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
 
@@ -583,7 +583,7 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.clearAllMocks();
       cleanup();
     });
@@ -660,7 +660,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to approve a request with quick action", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
@@ -679,7 +679,7 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -756,7 +756,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to approve a request through details modal", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
@@ -775,7 +775,7 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -879,7 +879,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to decline a request with quick action", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
@@ -898,7 +898,7 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });
@@ -1047,7 +1047,7 @@ describe("ConnectorApprovals", () => {
   describe("enables user to decline a request through details modal", () => {
     const testRequest = mockedApiResponseConnectorRequests.entries[0];
 
-    const orignalConsoleError = console.error;
+    const originalConsoleError = console.error;
     beforeEach(async () => {
       console.error = jest.fn();
       mockGetSyncConnectorsEnvironments.mockResolvedValue(
@@ -1066,7 +1066,7 @@ describe("ConnectorApprovals", () => {
     });
 
     afterEach(() => {
-      console.error = orignalConsoleError;
+      console.error = originalConsoleError;
       jest.resetAllMocks();
       cleanup();
     });

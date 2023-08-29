@@ -32,7 +32,7 @@ enum ConnectorOverviewTabEnum {
   OVERVIEW = "CONNECTOR_OVERVIEW_TAB_ENUM_overview",
   DOCUMENTATION = "CONNECTOR_OVERVIEW_TAB_ENUM_documentation",
   HISTORY = "CONNECTOR_OVERVIEW_TAB_ENUM_history",
-  SETTINGS = "CONNECTOR_OVERVIEW_TAB_ENUM_setttings",
+  SETTINGS = "CONNECTOR_OVERVIEW_TAB_ENUM_settings",
 }
 
 enum RequestsTabEnum {

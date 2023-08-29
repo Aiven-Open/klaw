@@ -5,11 +5,11 @@ import static io.aiven.klaw.model.enums.AuthenticationType.DATABASE;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.ActivityLog;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.DbAuthInfo;
 import java.util.*;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,48 +61,21 @@ public class UiConfigControllerService {
               .getActivityLog(userName, env, true, tenantId); // all teams reqs
     }
 
-    return getActivityLogsPaginated(pageNo, origActivityList, currentPage, tenantId);
-  }
-
-  private List<ActivityLog> getActivityLogsPaginated(
-      String pageNo, List<ActivityLog> origActivityList, String currentPage, int tenantId) {
-    List<ActivityLog> newList = new ArrayList<>();
-
-    if (origActivityList != null && origActivityList.size() > 0) {
-      int totalRecs = origActivityList.size();
-      int recsPerPage = 20;
-      int totalPages = totalRecs / recsPerPage + (totalRecs % recsPerPage > 0 ? 1 : 0);
-      List<String> numList = new ArrayList<>();
-
-      pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-
-      int requestPageNo = Integer.parseInt(pageNo);
-      int startVar = (requestPageNo - 1) * recsPerPage;
-      int lastVar = (requestPageNo) * (recsPerPage);
-
-      commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-      for (int i = 0; i < totalRecs; i++) {
-        ActivityLog activityLog = origActivityList.get(i);
-        if (i >= startVar && i < lastVar) {
+    return Pager.getItemsList(
+        pageNo,
+        currentPage,
+        origActivityList,
+        (pageContext, activityLog) -> {
           activityLog.setEnvName(
               getEnvName(activityLog.getEnv(), activityLog.getActivityName(), tenantId));
           activityLog.setDetails(activityLog.getDetails().replaceAll("null", ""));
-          activityLog.setAllPageNos(numList);
-          activityLog.setTotalNoPages("" + totalPages);
-          activityLog.setCurrentPage(pageNo);
+          activityLog.setAllPageNos(pageContext.getAllPageNos());
+          activityLog.setTotalNoPages(pageContext.getTotalPages());
+          activityLog.setCurrentPage(pageContext.getPageNo());
           activityLog.setTeam(
               manageDatabase.getTeamNameFromTeamId(tenantId, activityLog.getTeamId()));
-
-          newList.add(activityLog);
-        }
-      }
-    }
-    newList =
-        newList.stream()
-            .sorted(Collections.reverseOrder(Comparator.comparing(ActivityLog::getActivityTime)))
-            .collect(Collectors.toList());
-    return newList;
+          return activityLog;
+        });
   }
 
   public String getEnvName(String envId, String activityName, int tenantId) {

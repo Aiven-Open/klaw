@@ -15,6 +15,7 @@ import io.aiven.klaw.dao.KwClusters;
 import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.helpers.Pager;
 import io.aiven.klaw.model.AclInfo;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.SyncAclUpdates;
@@ -36,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,16 @@ public class AclSyncControllerService {
   @Autowired private final ClusterApiService clusterApiService;
 
   @Autowired private CommonUtilsService commonUtilsService;
+
+  private final BiFunction<Pager.PageContext, AclInfo, AclInfo> aclInfoToPageFunction =
+      (pageContext, aclInfo) -> {
+        int counterInc = counterIncrement();
+        aclInfo.setSequence(counterInc + "");
+        aclInfo.setTotalNoPages(pageContext.getTotalPages());
+        aclInfo.setCurrentPage(pageContext.getPageNo());
+        aclInfo.setAllPageNos(pageContext.getAllPageNos());
+        return aclInfo;
+      };
 
   AclSyncControllerService(ClusterApiService clusterApiService, MailUtils mailService) {
     this.clusterApiService = clusterApiService;
@@ -405,7 +417,8 @@ public class AclSyncControllerService {
     List<Acl> aclsFromSOT = getAclsFromSOT(env, topicNameSearch, true, tenantId);
 
     TOPIC_COUNTER = 0;
-    return getAclsList(
+
+    return Pager.getItemsList(
         pageNo,
         currentPage,
         applyFiltersAcls(
@@ -414,7 +427,8 @@ public class AclSyncControllerService {
             aclsFromSOT,
             showAllAclsOfClusterAndMetadata,
             tenantId,
-            kwClusters.getKafkaFlavor()));
+            kwClusters.getKafkaFlavor()),
+        aclInfoToPageFunction);
   }
 
   public List<AclInfo> getSyncBackAcls(
@@ -437,13 +451,12 @@ public class AclSyncControllerService {
       aclsFromSOT = getAclsFromSOT(envId, topicNameSearch, true, tenantId);
     }
 
-    List<AclInfo> aclInfoList;
     Integer loggedInUserTeam = commonUtilsService.getTeamId(userName);
-    aclInfoList =
-        getAclsList(
-            pageNo, currentPage, applyFiltersAclsForSOT(loggedInUserTeam, aclsFromSOT, tenantId));
-
-    return aclInfoList;
+    return Pager.getItemsList(
+        pageNo,
+        currentPage,
+        applyFiltersAclsForSOT(loggedInUserTeam, aclsFromSOT, tenantId),
+        aclInfoToPageFunction);
   }
 
   private List<AclInfo> applyFiltersAclsForSOT(
@@ -704,38 +717,6 @@ public class AclSyncControllerService {
       teamList = teamListUpdated;
     }
     return teamList;
-  }
-
-  private List<AclInfo> getAclsList(String pageNo, String currentPage, List<AclInfo> aclListMap) {
-    List<AclInfo> aclListMapUpdated = new ArrayList<>();
-
-    int totalRecs = aclListMap.size();
-    int recsPerPage = 20;
-    int totalPages =
-        aclListMap.size() / recsPerPage + (aclListMap.size() % recsPerPage > 0 ? 1 : 0);
-
-    pageNo = commonUtilsService.deriveCurrentPage(pageNo, currentPage, totalPages);
-    int requestPageNo = Integer.parseInt(pageNo);
-    int startVar = (requestPageNo - 1) * recsPerPage;
-    int lastVar = (requestPageNo) * (recsPerPage);
-
-    List<String> numList = new ArrayList<>();
-    commonUtilsService.getAllPagesList(pageNo, currentPage, totalPages, numList);
-
-    for (int i = 0; i < totalRecs; i++) {
-      int counterInc = counterIncrement();
-      if (i >= startVar && i < lastVar) {
-        AclInfo mp = aclListMap.get(i);
-        mp.setSequence(counterInc + "");
-
-        mp.setTotalNoPages(totalPages + "");
-        mp.setCurrentPage(pageNo);
-        mp.setAllPageNos(numList);
-
-        aclListMapUpdated.add(mp);
-      }
-    }
-    return aclListMapUpdated;
   }
 
   private int counterIncrement() {

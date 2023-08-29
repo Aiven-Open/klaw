@@ -441,7 +441,7 @@ function checkForKlawErrors<TResponse extends SomeObject>(
 function handleError(
   errorOrResponse: Error | Response | KlawApiError
 ): Promise<never> {
-  // errorOrResponse is an Response when the api response
+  // errorOrResponse is a Response when the api response
   // was identified as an error `checkStatus` and we've
   // not yet read the body stream
   if (errorOrResponse instanceof Response) {
@@ -450,7 +450,7 @@ function handleError(
       // these endpoints are all meant for enabling "batch" processing,
       // for example to delete multiple requests
       // this is currently not implemented as a feature.
-      // If this endpoints contain an error, it will be contained
+      // If these endpoints contain an error, it will be contained
       // in the first (and only) entry of the ApiResponse[]
       // see more details: https://github.com/aiven/klaw/pull/921#issue-1641959704
       const bodyToCheck = isArray(body) ? body[0] : body;
@@ -460,7 +460,7 @@ function handleError(
       }
 
       const httpError: HTTPError = {
-        // bodycheck is unknown here, so we need to coerce its type to avoid TS errors
+        // bodyToCheck is unknown here, so we need to coerce its type to avoid TS errors
         data: bodyToCheck as string | SomeObject,
         status: errorOrResponse.status,
         statusText: errorOrResponse.statusText,

@@ -126,7 +126,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
     when(clusterApiService.getSchemasFromCluster(anyString(), any(), anyString(), anyInt()))
@@ -161,7 +160,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
     when(clusterApiService.getSchemasFromCluster(anyString(), any(), anyString(), anyInt()))
@@ -222,7 +220,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
 
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(topics);
     Map<String, Set<String>> topicSchemaVersionsInDb = utilMethods.getTopicSchemaVersionsInDb();
@@ -254,7 +251,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 0)).thenReturn("1");
 
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(topics);
     when(handleDbRequests.getTopicAndVersionsForEnvAndTenantId(anyString(), anyInt()))
@@ -489,7 +485,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
 
     when(clusterApiService.getSchemasFromCluster(anyString(), any(), anyString(), anyInt()))
@@ -530,12 +525,10 @@ public class SchemaRegistrySyncControllerServiceTest {
     Map<Integer, KwClusters> kwClustersMap = new HashMap<>();
     kwClustersMap.put(1, utilMethods.getKwClusters());
 
-    when(commonUtilsService.deriveCurrentPage(anyString(), anyString(), anyInt())).thenReturn("1");
     when(handleDbRequests.getEnvDetails(anyString(), anyInt())).thenReturn(env);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(3))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(new ArrayList<>());
     Map<String, Set<String>> topicSchemaVersionsInDb = utilMethods.getTopicSchemaVersionsInDb();
@@ -587,7 +580,6 @@ public class SchemaRegistrySyncControllerServiceTest {
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(manageDatabase.getTeamNameFromTeamId(eq(101), eq(10))).thenReturn("Team1");
-    when(commonUtilsService.deriveCurrentPage("1", "", 1)).thenReturn("1");
     when(manageDatabase.getClusters(any(), anyInt())).thenReturn(kwClustersMap);
     when(manageDatabase.getTopicsForTenant(anyInt())).thenReturn(topics);
     Map<String, Set<String>> topicSchemaVersionsInDb = utilMethods.getTopicSchemaVersionsInDb();

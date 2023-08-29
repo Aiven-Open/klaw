@@ -8,9 +8,9 @@ const textButtonSubmenuOpened = "Topics submenu, open. Click to close.";
 const textSubmenuList = "Topics submenu";
 
 const subNavigationLinks = [
-  { name: "Submenu link one", href: "topcis-link-one" },
-  { name: "Submenu link two", href: "topcis-link-two" },
-  { name: "Submenu link three", href: "topcis-link-three" },
+  { name: "Submenu link one", href: "topics-link-one" },
+  { name: "Submenu link two", href: "topics-link-two" },
+  { name: "Submenu link three", href: "topics-link-three" },
 ];
 
 describe("MainNavigationSubmenuList.tsx", () => {

@@ -230,7 +230,6 @@ export default function AclApprovalsTable({
             declineInProgress ||
             actionsDisabled ||
             request.requestStatus !== "CREATED",
-          tooltip: `Decline ACL request for topic ${request.topicname}`,
           icon: declineInProgress ? loadingIcon : deleteIcon,
           loading: declineInProgress,
         };
