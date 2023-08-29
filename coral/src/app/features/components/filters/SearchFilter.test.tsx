@@ -6,7 +6,7 @@ import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 describe("SearchFilter.tsx", () => {
   const placeholder = "Search something";
-  const description = "This is a description for screenreaders";
+  const description = "This is a description for screen readers";
 
   describe("renders default view when no query is set", () => {
     beforeAll(async () => {

@@ -52,7 +52,7 @@ describe("SchemaRequest", () => {
   });
   // This block still covers important cases, but it could be brittle
   // due to its dependency on the async process of the api call
-  // We'll add a helper for controlling api mocks better (get a loading state etc)
+  // We'll add a helper for controlling api mocks better (get a loading state etc.)
   describe("handles loading and error state when fetching the requests", () => {
     const originalConsoleError = console.error;
     beforeEach(() => {

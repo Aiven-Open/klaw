@@ -1,4 +1,4 @@
-import { Box, DropdownMenu, PrimaryDropdownButton } from "@aivenio/aquarium";
+import { Box, DropdownMenu, Button } from "@aivenio/aquarium";
 import notifications from "@aivenio/aquarium/dist/module/icons/notifications";
 import questionMark from "@aivenio/aquarium/dist/module/icons/questionMark";
 import user from "@aivenio/aquarium/dist/module/icons/user";
@@ -30,9 +30,9 @@ function HeaderNavigation() {
         }}
       >
         <DropdownMenu.Trigger>
-          <PrimaryDropdownButton aria-label="Request a new">
+          <Button.PrimaryDropdown aria-label="Request a new">
             Request a new
-          </PrimaryDropdownButton>
+          </Button.PrimaryDropdown>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>
           <DropdownMenu.Item key="topic" icon={codeBlock}>

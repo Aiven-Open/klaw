@@ -28,7 +28,7 @@ function DisabledButtonTooltip({
       // aria-hidden is currently not forwarded, but it is added for semantics purposes
       // while the tooltip has role "tooltip", it's not in the text
       // near the element, so screen reader won't be able to access the
-      // information correctly. Also the element related to the tooltip
+      // information correctly. Also, the element related to the tooltip
       // does not build a relation by using aria-describedby.
       aria-hidden="true"
       content={props.tooltip}

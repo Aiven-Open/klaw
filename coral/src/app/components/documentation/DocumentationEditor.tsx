@@ -98,7 +98,7 @@ function DocumentationEditor({
               />
               {/* The <SyntaxHighlighter> is showing the current value of the */}
               {/* <textarea> as an improved visual feedback for users. It is */}
-              {/* hidden from assitive technology so this does not get the */}
+              {/* hidden from assistive technology so this does not get the */}
               {/* same information twice */}
               <div aria-hidden={"true"}>
                 <SyntaxHighlighter

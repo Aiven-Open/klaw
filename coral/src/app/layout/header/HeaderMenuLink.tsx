@@ -23,7 +23,7 @@ function HeaderMenuLink(props: HeaderMenuLinkProps) {
       onMouseEnter={toggleOpen}
       onMouseLeave={toggleOpen}
       // Allow displaying the tooltip when navigating with keyboard
-      // Because the Tooltip is rendered outside of the main DOM hierarchy, it is ignored by screen readers
+      // Because the Tooltip is rendered outside the main DOM hierarchy, it is ignored by screen readers
       // So we can display it with keyboard navigation for users who use keyboard navigation, but not a screen reader
       onFocus={toggleOpen}
       onBlur={toggleOpen}

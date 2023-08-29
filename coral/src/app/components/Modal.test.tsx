@@ -172,7 +172,7 @@ describe("Modal.tsx", () => {
         expect(button).toBeEnabled();
       });
 
-      it("shows two buttons when secodary and primary action are given", () => {
+      it("shows two buttons when secondary and primary action are given", () => {
         const buttons = screen.getAllByRole("button");
 
         expect(buttons).toHaveLength(2);

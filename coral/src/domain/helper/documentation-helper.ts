@@ -14,7 +14,7 @@ import rehypeStringify from "rehype-stringify";
  *  We still want to offer a markdown-only editor for adding/editing
  *  documentation in coral and keep the option to also use that as
  *  saved format later. That's why we need to handle the transformation
- *  between markdown - html on `domain` level. Outsidt of the domain
+ *  between markdown - html on `domain` level. Outside the domain
  *  directory, there's no information about stringified html.
  */
 
@@ -27,7 +27,7 @@ type MarkdownStringBrand = string & {
 
 type MarkdownString = Awaited<ReturnType<typeof createMarkdown>>;
 
-// very unique string to be able to identify documentation
+// unique string to be able to identify documentation
 // transformation errors that otherwise can't be determined
 const DOCUMENTATION_TRANSFORM_ERROR =
   "6e6c85af-71b4-4021-b7fe-bf99c81f2c6aZ-d3841163-ba74-4db4-b874-35b973d2a80e-32e866bd-99d0-4a64-ac15-5b73104ab0ff";

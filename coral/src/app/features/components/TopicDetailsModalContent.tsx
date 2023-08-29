@@ -26,7 +26,6 @@ const formatAdvancedConfig = (
   );
 
   const flatObjectToJsonString = JSON.stringify(entriesToFlatObject, null, 2);
-
   return flatObjectToJsonString;
 };
 

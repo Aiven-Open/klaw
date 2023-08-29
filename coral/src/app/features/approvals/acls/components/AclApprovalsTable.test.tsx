@@ -290,12 +290,12 @@ describe("AclApprovalsTable", () => {
     expect(within(userNames).getByRole("list")).toBeVisible();
     expect(within(userNames).getAllByRole("listitem")).toHaveLength(2);
 
-    const ipAdresses = cells.filter((cell) => {
+    const ipAddresses = cells.filter((cell) => {
       return cell.textContent === "3.3.3.323.3.3.33";
     })[0];
 
-    expect(within(ipAdresses).getByRole("list")).toBeVisible();
-    expect(within(ipAdresses).getAllByRole("listitem")).toHaveLength(2);
+    expect(within(ipAddresses).getByRole("list")).toBeVisible();
+    expect(within(ipAddresses).getAllByRole("listitem")).toHaveLength(2);
   });
 
   it("disables action buttons when status is not CREATED", () => {

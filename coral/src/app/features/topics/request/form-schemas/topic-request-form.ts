@@ -121,7 +121,7 @@ function validateTopicName(
   }
 
   // zod already verifies that it's 3 chars at least
-  // also has to follow this pattern (eg. "prefix_a" not being valid)
+  // also has to follow this pattern (e.g. "prefix_a" not being valid)
   const defaultTopicNamePattern = /^[a-zA-Z0-9._-]*$/;
   if (!defaultTopicNamePattern.test(topicname)) {
     ctx.addIssue({

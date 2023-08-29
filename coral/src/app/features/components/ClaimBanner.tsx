@@ -23,7 +23,7 @@ const ClaimBanner = ({
   errorMessage,
   entityOwner,
 }: ClaimBannerProps) => {
-  // if there is a open claim request, hasOpenRequest is true, too
+  // if there is an open claim request, hasOpenRequest is true, too
   if (hasOpenRequest && !hasOpenClaimRequest) {
     // We do not render an InternalLinkButton to the Requests page for this state...
     // .. because a user cannot see the requests opened by members of other teams

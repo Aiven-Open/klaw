@@ -293,9 +293,7 @@ function _MultiInput<T extends FieldValues>({
                 return true;
               }
 
-              const isCurrentItemValid = itemsErrors[index] === undefined;
-
-              return isCurrentItemValid;
+              return itemsErrors[index] === undefined;
             }}
             helperText={
               itemsErrors !== undefined ? itemErrorsAccumulatedMessages : error

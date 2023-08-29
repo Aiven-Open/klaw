@@ -21,7 +21,7 @@
 2. run `pnpm install`
 3. run `pnpm add-precommit` the first time you install the repository to set the custom directory for our pre commit hooks.
 4. Run development:
-   4.1. If you have not setup a remote API mode, please follow [First setup](../docs/development-with-remote-api.
+   4.1. If you have not set up a remote API mode, please follow [First setup](../docs/development-with-remote-api.
    md#first-setup)
    4.2. If you already have a setup, run `pnpm dev`
 5. [Create new Vite mode for remote API development](#create-new-vite-mode-for-remote-api-development)

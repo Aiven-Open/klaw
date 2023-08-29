@@ -35,7 +35,7 @@ type TopicSchemaRequestProps = {
 // in this test. I also couldn't find a way to manually set / validate the value in this component.
 // without a valid 'schemafull', I couldn't test behavior when submitting the form (submit is not enabled)
 // Since that is are important test cases, I opted for the bad practice rather in order to
-// be able to add this tests. I created na issue in github related to MonacoEditor testing already.
+// be able to add this tests. I created na issue in GitHub related to MonacoEditor testing already.
 function TopicSchemaRequest(props: TopicSchemaRequestProps) {
   const { topicName } = props;
   const [searchParams] = useSearchParams();

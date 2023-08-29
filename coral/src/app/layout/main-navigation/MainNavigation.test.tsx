@@ -108,7 +108,7 @@ describe("MainNavigation.tsx", () => {
     });
 
     it(`renders icons for all nav links that are hidden from assistive technology`, () => {
-      // every navlink and submenu link has one icon
+      // every nav link and submenu link has one icon
       // every submenu link has an icon to indicate opened/closed
       const iconAmount = navLinks.length + submenuItems.length * 2;
       const nav = screen.getByRole("navigation", {

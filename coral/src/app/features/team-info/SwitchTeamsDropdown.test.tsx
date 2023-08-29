@@ -112,7 +112,7 @@ describe("SwitchTeamsDropdown", () => {
       expect(button).toBeVisible();
     });
 
-    it("show the current team hidden for screenreader", () => {
+    it("show the current team hidden for screen reader", () => {
       const button = screen.getByRole("button", { name: "Change your team" });
       const text = within(button).getByText(testCurrentTeam);
 
