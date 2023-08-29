@@ -913,6 +913,10 @@ public class SelectDataJdbc {
     return userInfoRepo.findAllByTeamIdAndTenantId(teamId, tenantId);
   }
 
+  public boolean existsUsersInfoForTeam(Integer teamId, int tenantId) {
+    return userInfoRepo.existsByTeamIdAndTenantId(teamId, tenantId);
+  }
+
   public List<Env> selectAllEnvs(KafkaClustersType type, int tenantId) {
     if (KafkaClustersType.ALL == type) {
       return envRepo.findAllByTenantId(tenantId);

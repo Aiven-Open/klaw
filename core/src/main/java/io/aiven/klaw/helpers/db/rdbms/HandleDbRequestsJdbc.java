@@ -541,6 +541,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public boolean existsUsersInfoForTeam(Integer teamId, int tenantId) {
+    return jdbcSelectHelper.existsUsersInfoForTeam(teamId, tenantId);
+  }
+
+  @Override
   public List<RegisterUserInfo> getAllRegisterUsersInfoForTenant(int tenantId) {
     return jdbcSelectHelper.selectAllRegisterUsersInfoForTenant(tenantId);
   }

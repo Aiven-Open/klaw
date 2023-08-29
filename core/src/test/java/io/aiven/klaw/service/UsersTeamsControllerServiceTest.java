@@ -22,7 +22,6 @@ import io.aiven.klaw.model.response.ResetPasswordInfo;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.UserInfoModelResponse;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -246,14 +245,11 @@ public class UsersTeamsControllerServiceTest {
     when(manageDatabase.getTeamObjForTenant(tenantId)).thenReturn(utilMethods.getTeams());
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.existsComponentsCountForTeam(teamId, tenantId)).thenReturn(false);
-    when(handleDbRequests.getAllUsersInfoForTeam(teamId, tenantId))
-        .thenReturn(Collections.emptyList());
+    when(handleDbRequests.existsUsersInfoForTeam(teamId, tenantId)).thenReturn(false);
     List<TeamModelResponse> teams = usersTeamsControllerService.getAllTeamsSU();
     assertThat(teams.get(0).isShowDeleteTeam()).isTrue();
 
     when(handleDbRequests.existsComponentsCountForTeam(teamId, tenantId)).thenReturn(true);
-    when(handleDbRequests.getAllUsersInfoForTeam(teamId, tenantId))
-        .thenReturn(Collections.emptyList());
     teams = usersTeamsControllerService.getAllTeamsSU();
     assertThat(teams.get(0).isShowDeleteTeam()).isFalse();
   }
@@ -268,8 +264,7 @@ public class UsersTeamsControllerServiceTest {
     when(mailService.getUserName(any())).thenReturn("testuser");
     when(manageDatabase.getRolesPermissionsPerTenant(anyInt()))
         .thenReturn(utilMethods.getRolesPermsMap());
-    when(handleDbRequests.getAllUsersInfoForTeam(teamId, tenantId))
-        .thenReturn(Collections.singletonList(new UserInfo()));
+    when(handleDbRequests.existsUsersInfoForTeam(teamId, tenantId)).thenReturn(true);
     ApiResponse apiResponse = usersTeamsControllerService.deleteTeam(teamId);
     assertThat(apiResponse.getMessage())
         .isEqualTo("Not allowed to delete this team, as there are associated users.");
@@ -277,7 +272,6 @@ public class UsersTeamsControllerServiceTest {
 
   @Test
   void deleteUserFailureHasRequests() throws KlawException {
-    UserInfoModel userInfoModel = utilMethods.getUserInfoMock();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.getUsersInfo(anyString())).thenReturn(userInfo);
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
