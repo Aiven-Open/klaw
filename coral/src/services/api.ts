@@ -35,8 +35,10 @@ const API_BASE_URL = getHTTPBaseAPIUrl();
 
 const API_PATHS = {
   getConsumerOffsetsResetRequests: "/operationalRequest",
-  validateOffsetRequestDetails: "/operationalRequest/consumerOffsetsReset/validate",
-  createConsumerOffsetsResetRequest: "/operationalRequest/consumerOffsetsReset/create",
+  validateOffsetRequestDetails:
+    "/operationalRequest/consumerOffsetsReset/validate",
+  createConsumerOffsetsResetRequest:
+    "/operationalRequest/consumerOffsetsReset/create",
   restartConnector: "/connector/restart",
   getConnectorsToManage: "/getConnectorsToManage",
   resetCacheClusterApi: "/schemas/resetCache",

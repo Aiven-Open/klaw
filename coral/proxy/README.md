@@ -68,7 +68,7 @@ Checks if Klaw core and Klaw cluster-api are running in the right ports in your 
 
 This is the alias for `pnpm dev --mode=[start|restart] --testEnv=true`.
 
-Runs the `pnpm dev` command with the mode flag start or restart and an additional flag "testEnv". When 
+Runs the `pnpm dev` command with the mode flag start or restart and an additional flag "testEnv". When
 `--testEnv=true` is set, we additionally check and, if necessary, set up a sandbox environment for Klaw.
 
 **Use `pnpm:[start|restart]:testEnv` when:**
