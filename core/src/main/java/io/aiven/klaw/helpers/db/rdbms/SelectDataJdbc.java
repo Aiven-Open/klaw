@@ -1886,6 +1886,13 @@ public class SelectDataJdbc {
             tenantId, env, requestStatus, requestOperationType, connectorName);
   }
 
+  public boolean existsClaimConnectorRequest(
+      String connectorName, String requestStatus, int tenantId) {
+    return kafkaConnectorRequestsRepo
+        .existsByTenantIdAndRequestStatusAndRequestOperationTypeAndConnectorName(
+            tenantId, requestStatus, RequestOperationType.CLAIM.value, connectorName);
+  }
+
   public boolean existsSchemaForTopic(String topicName, String env, int tenantId) {
     return messageSchemaRepo.existsByTenantIdAndTopicnameAndEnvironment(tenantId, topicName, env);
   }

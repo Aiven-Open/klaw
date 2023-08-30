@@ -13,7 +13,7 @@ public class TopicOverview extends ResourceOverviewAttributes {
   private List<AclOverviewInfo> prefixedAclInfoList;
   private List<AclOverviewInfo> transactionalAclInfoList;
   private List<ResourceHistory> topicHistoryList;
-  @NotNull private PromotionStatus topicPromotionDetails;
+  @NotNull private TopicPromotionStatus topicPromotionDetails;
   @NotNull private List<EnvIdInfo> availableEnvironments;
 
   private String topicDocumentation;

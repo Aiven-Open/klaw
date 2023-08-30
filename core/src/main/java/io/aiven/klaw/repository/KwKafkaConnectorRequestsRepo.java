@@ -28,6 +28,9 @@ public interface KwKafkaConnectorRequestsRepo
       String requestOperationType,
       String connectorName);
 
+  boolean existsByTenantIdAndRequestStatusAndRequestOperationTypeAndConnectorName(
+      int tenantId, String requestStatus, String requestOperationType, String connectorName);
+
   List<KafkaConnectorRequest> findAllByTenantId(int tenantId);
 
   default boolean existsConnectorRequestsForEnvTenantIdAndCreatedStatus(

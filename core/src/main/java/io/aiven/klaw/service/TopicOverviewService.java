@@ -19,8 +19,8 @@ import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.response.AclOverviewInfo;
 import io.aiven.klaw.model.response.EnvIdInfo;
-import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.TopicOverview;
+import io.aiven.klaw.model.response.TopicPromotionStatus;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -342,9 +342,9 @@ public class TopicOverviewService extends BaseOverviewService {
                   env.getAssociatedEnv().getId(), tenantId));
         }
       } else {
-        PromotionStatus promotionStatus = new PromotionStatus();
-        promotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
-        topicOverview.setTopicPromotionDetails(promotionStatus);
+        TopicPromotionStatus topicPromotionStatus = new TopicPromotionStatus();
+        topicPromotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
+        topicOverview.setTopicPromotionDetails(topicPromotionStatus);
         if (topicInfoList.size() > 0) {
           topicInfoList
               .get(0)
@@ -358,9 +358,9 @@ public class TopicOverviewService extends BaseOverviewService {
         }
       }
     } catch (Exception e) {
-      PromotionStatus promotionStatus = new PromotionStatus();
-      promotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
-      topicOverview.setTopicPromotionDetails(promotionStatus);
+      TopicPromotionStatus topicPromotionStatus = new TopicPromotionStatus();
+      topicPromotionStatus.setStatus(PromotionStatusType.NOT_AUTHORIZED);
+      topicOverview.setTopicPromotionDetails(topicPromotionStatus);
     }
   }
 
@@ -405,14 +405,14 @@ public class TopicOverviewService extends BaseOverviewService {
         .isPresent();
   }
 
-  private PromotionStatus getTopicPromotionEnv(
+  private TopicPromotionStatus getTopicPromotionEnv(
       String topicSearch, List<Topic> topics, int tenantId, String environmentId) {
-    PromotionStatus promotionStatus = new PromotionStatus();
+    TopicPromotionStatus topicPromotionStatus = new TopicPromotionStatus();
     try {
       if (topics == null) {
         topics = manageDatabase.getHandleDbRequests().getTopics(topicSearch, tenantId);
       }
-      promotionStatus.setTopicName(topicSearch);
+      topicPromotionStatus.setTopicName(topicSearch);
       String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
       List<String> envOrderList = KlawResourceUtils.getOrderedEnvsList(orderEnvs);
 
@@ -420,28 +420,28 @@ public class TopicOverviewService extends BaseOverviewService {
         List<String> envList =
             topics.stream().map(Topic::getEnvironment).collect(Collectors.toList());
 
-        generatePromotionDetails(tenantId, promotionStatus, envList, orderEnvs);
+        generatePromotionDetails(tenantId, topicPromotionStatus, envList, orderEnvs);
         // Ex : If topic exists in D, T, then promotion to A is displayed when topic overview is for
         // T env
-        if (promotionStatus.getTargetEnvId() != null) {
-          String targetEnvId = promotionStatus.getTargetEnvId();
+        if (topicPromotionStatus.getTargetEnvId() != null) {
+          String targetEnvId = topicPromotionStatus.getTargetEnvId();
           if (!((envOrderList.indexOf(targetEnvId) - envOrderList.indexOf(environmentId)) == 1)
               || !envOrderList.contains(environmentId)) {
-            promotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
+            topicPromotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
           } else if (isTopicPromoteRequestOpen(
-              topicSearch, promotionStatus.getTargetEnvId(), tenantId)) {
-            promotionStatus.setStatus(PromotionStatusType.REQUEST_OPEN);
+              topicSearch, topicPromotionStatus.getTargetEnvId(), tenantId)) {
+            topicPromotionStatus.setStatus(PromotionStatusType.REQUEST_OPEN);
           }
         }
 
-        return promotionStatus;
+        return topicPromotionStatus;
       }
     } catch (Exception e) {
       log.error("getTopicPromotionEnv error ", e);
-      promotionStatus.setStatus(PromotionStatusType.FAILURE);
-      promotionStatus.setError(TOPIC_OVW_ERR_101);
+      topicPromotionStatus.setStatus(PromotionStatusType.FAILURE);
+      topicPromotionStatus.setError(TOPIC_OVW_ERR_101);
     }
 
-    return promotionStatus;
+    return topicPromotionStatus;
   }
 }

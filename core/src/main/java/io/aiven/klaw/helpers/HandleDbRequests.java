@@ -182,6 +182,8 @@ public interface HandleDbRequests {
       String env,
       int tenantId);
 
+  boolean existsClaimConnectorRequest(String connectorName, String requestStatus, int tenantId);
+
   boolean existsSchemaForTopic(String topicName, String env, int tenantId);
 
   List<AclRequests> getAllAclRequests(

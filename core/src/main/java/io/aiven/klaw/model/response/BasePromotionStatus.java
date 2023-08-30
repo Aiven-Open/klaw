@@ -5,16 +5,10 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class PromotionStatus {
+public class BasePromotionStatus {
   @NotNull private PromotionStatusType status;
-
   private String sourceEnv;
-
   private String targetEnv;
-
   private String targetEnvId;
-
-  private String topicName;
-
   private String error;
 }
