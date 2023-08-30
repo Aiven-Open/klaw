@@ -7,6 +7,7 @@ enum Routes {
   CONNECTOR_OVERVIEW = "/connector/:connectorName",
   CONNECTOR_REQUEST = "/connectors/request",
   CONNECTOR_EDIT_REQUEST = "/connector/:connectorName/request-update",
+  CONNECTOR_PROMOTION_REQUEST = "/connector/:connectorName/request-promotion",
   TOPIC_REQUEST = "/topics/request",
   TOPIC_ACL_REQUEST = "/topic/:topicName/subscribe",
   TOPIC_SCHEMA_REQUEST = "/topic/:topicName/request-schema",
