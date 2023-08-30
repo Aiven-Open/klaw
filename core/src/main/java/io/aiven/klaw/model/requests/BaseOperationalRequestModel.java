@@ -16,8 +16,6 @@ public class BaseOperationalRequestModel implements Serializable {
 
   @NotNull private String environment;
 
-  @NotNull private String description;
-
   private Integer requestingTeamId;
 
   private String approvingTeamId;

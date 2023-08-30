@@ -26,6 +26,8 @@ public class RequestService {
 
   @Autowired private AclControllerService aclControllerService;
 
+  @Autowired private OperationalRequestsService operationalRequestsService;
+
   public List<ApiResponse> processApprovalRequests(RequestVerdict requestVerdict) {
     return requestVerdict.getReqIds().stream()
         .map(req -> processApprovalRequests(req, requestVerdict.getRequestEntityType()))
@@ -39,6 +41,7 @@ public class RequestService {
         case ACL -> aclControllerService.approveAclRequests(reqId);
         case SCHEMA -> schemaRegistryControllerService.execSchemaRequests(reqId);
         case CONNECTOR -> kafkaConnectControllerService.approveConnectorRequests(reqId);
+        case OPERATIONAL -> operationalRequestsService.approveOperationalRequests(reqId);
         default -> undeterinableResource();
       };
     } catch (Exception ex) {

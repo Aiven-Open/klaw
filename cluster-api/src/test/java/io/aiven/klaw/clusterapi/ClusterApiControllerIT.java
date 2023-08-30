@@ -394,7 +394,7 @@ public class ClusterApiControllerIT {
                                 AclOperation.WRITE,
                                 AclPermissionType.ALLOW)))
                     .values()));
-    Collection<AclBinding> aclBindings = aclBindingFutureList.get(0).get();
+    Collection<AclBinding> aclBindings = aclBindingFutureList.get(0).get(3, TimeUnit.SECONDS);
 
     assertThat(aclBindings.size()).isEqualTo(1);
   }

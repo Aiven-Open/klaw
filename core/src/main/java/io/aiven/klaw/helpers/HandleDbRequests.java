@@ -77,6 +77,8 @@ public interface HandleDbRequests {
       OperationalRequestType operationalRequestType,
       String requestStatus,
       String env,
+      String topicName,
+      String consumerGroup,
       String wildcardSearch,
       boolean isMyRequest,
       int tenantId);
@@ -140,6 +142,8 @@ public interface HandleDbRequests {
   List<Acl> getSyncAcls(String env, int tenantId);
 
   List<Acl> getSyncAcls(String env, String topic, int tenantId);
+
+  List<Acl> getSyncAcls(String env, String topic, int teamId, String consumerGroup, int tenantId);
 
   List<Acl> getPrefixedAclsSOT(String env, int tenantId);
 

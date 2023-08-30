@@ -1039,6 +1039,12 @@ public class SelectDataJdbc {
     return aclRepo.findAllByEnvironmentAndTopicnameAndTenantId(env, topic, tenantId);
   }
 
+  public List<Acl> selectSyncAcls(
+      String env, String topic, int teamId, String consumerGroup, int tenantId) {
+    return aclRepo.findAllByEnvironmentAndTopicnameAndTeamIdAndConsumergroupAndTenantId(
+        env, topic, teamId, consumerGroup, tenantId);
+  }
+
   public List<RegisterUserInfo> selectAllRegisterUsersInfoForTenant(int tenantId) {
     return registerInfoRepo.findAllByStatusAndTenantId("PENDING", tenantId);
   }
@@ -1908,16 +1914,20 @@ public class SelectDataJdbc {
       Integer teamId,
       OperationalRequestType operationalRequestType,
       String env,
+      String topicName,
+      String consumerGroup,
       String wildcardSearch,
       boolean isMyRequest) {
     if (log.isDebugEnabled()) {
       log.debug(
-          "selectFilteredOperationalRequests {} {} {} {} {} {}",
+          "selectFilteredOperationalRequests {} {} {} {} {} {} {} {}",
           showRequestsOfAllTeams,
           requestor,
           requestStatus,
           teamId,
           env,
+          topicName,
+          consumerGroup,
           wildcardSearch);
     }
     Integer teamSelected = selectUserInfo(requestor).getTeamId();
@@ -1931,6 +1941,8 @@ public class SelectDataJdbc {
                   operationalRequestType,
                   showRequestsOfAllTeams ? null : teamSelected,
                   env,
+                  topicName,
+                  consumerGroup,
                   requestStatus,
                   tenantId,
                   null,
@@ -1950,6 +1962,8 @@ public class SelectDataJdbc {
                     operationalRequestType,
                     null,
                     env,
+                    topicName,
+                    consumerGroup,
                     requestStatus,
                     tenantId,
                     null,
@@ -1961,6 +1975,8 @@ public class SelectDataJdbc {
                     operationalRequestType,
                     teamSelected,
                     env,
+                    topicName,
+                    consumerGroup,
                     requestStatus,
                     tenantId,
                     null,
@@ -1993,6 +2009,8 @@ public class SelectDataJdbc {
       OperationalRequestType operationalRequestType,
       Integer teamId,
       String environment,
+      String topicName,
+      String consumerGroup,
       String requestStatus,
       int tenantId,
       String approvingTeam,
@@ -2000,7 +2018,12 @@ public class SelectDataJdbc {
 
     OperationalRequest request = new OperationalRequest();
     request.setTenantId(tenantId);
-
+    if (topicName != null) {
+      request.setTopicname(topicName);
+    }
+    if (consumerGroup != null) {
+      request.setConsumerGroup(consumerGroup);
+    }
     if (operationalRequestType != null) {
       request.setOperationalRequestType(operationalRequestType);
     }

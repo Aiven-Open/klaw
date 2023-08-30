@@ -1,9 +1,13 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_101;
+import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_102;
+import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_103;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_101;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
+import io.aiven.klaw.dao.Acl;
 import io.aiven.klaw.dao.OperationalRequest;
 import io.aiven.klaw.dao.UserInfo;
 import io.aiven.klaw.error.KlawException;
@@ -21,11 +25,10 @@ import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
+import io.aiven.klaw.model.response.EnvIdInfo;
 import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
 import java.sql.Timestamp;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -71,14 +74,47 @@ public class OperationalRequestsService {
     consumerOffsetResetRequestModel.setRequestor(userName);
     consumerOffsetResetRequestModel.setRequestingTeamId(commonUtilsService.getTeamId(userName));
 
+    // validations
+
+    // check for owner of the acl consumer group
+    EnvIdInfo envIdInfo =
+        validateOffsetRequestDetails(
+            consumerOffsetResetRequestModel.getEnvironment(),
+            consumerOffsetResetRequestModel.getTopicname(),
+            consumerOffsetResetRequestModel.getConsumerGroup());
+    if (envIdInfo == null) {
+      return ApiResponse.notOk(OP_REQS_ERR_101);
+    }
+
+    // if reset type is date time, timestamp field is mandatory
+    if (consumerOffsetResetRequestModel.getOffsetResetType() == OffsetResetType.TO_DATE_TIME
+        && consumerOffsetResetRequestModel.getResetTimeStampStr() == null) {
+      return ApiResponse.notOk(OP_REQS_ERR_102);
+    }
+
+    // check if a request already exists
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+    List<OperationalRequest> operationalRequests =
+        dbHandle.getOperationalRequests(
+            userName,
+            OperationalRequestType.RESET_CONSUMER_OFFSETS,
+            RequestStatus.CREATED.value,
+            consumerOffsetResetRequestModel.getEnvironment(),
+            consumerOffsetResetRequestModel.getTopicname(),
+            consumerOffsetResetRequestModel.getConsumerGroup(),
+            null,
+            false,
+            commonUtilsService.getTenantId(userName));
+    if (!operationalRequests.isEmpty()) {
+      return ApiResponse.notOk(OP_REQS_ERR_103);
+    }
 
     OperationalRequest operationalRequest = new OperationalRequest();
     copyProperties(consumerOffsetResetRequestModel, operationalRequest);
     operationalRequest.setTenantId(commonUtilsService.getTenantId(userName));
     if (operationalRequest.getOffsetResetType() == OffsetResetType.TO_DATE_TIME) {
       operationalRequest.setResetTimeStamp(
-          getUTCTimeStamp(consumerOffsetResetRequestModel.getResetTimeStampStr()));
+          getTimeStamp(consumerOffsetResetRequestModel.getResetTimeStampStr()));
     }
     String result = dbHandle.requestForConsumerOffsetsReset(operationalRequest).get("result");
 
@@ -99,11 +135,9 @@ public class OperationalRequestsService {
         : ApiResponse.notOk(result);
   }
 
-  private Timestamp getUTCTimeStamp(String timeStampStr) {
-    DateTimeFormatter df = DateTimeFormatter.ofPattern(OFFSET_RESET_TIMESTAMP_FORMAT);
-    DateTimeFormatter dfUTC = df.withZone(ZoneOffset.UTC);
-
-    ZonedDateTime parsedDate = ZonedDateTime.parse(timeStampStr, dfUTC);
+  // expected timestamp in format constant OFFSET_RESET_TIMESTAMP_FORMAT
+  private Timestamp getTimeStamp(String timeStampStr) {
+    ZonedDateTime parsedDate = ZonedDateTime.parse(timeStampStr);
     return Timestamp.from(parsedDate.toInstant());
   }
 
@@ -113,6 +147,8 @@ public class OperationalRequestsService {
       OperationalRequestType operationalRequestType,
       String requestStatus,
       String env,
+      String topicName,
+      String consumerGroup,
       String wildcardSearch,
       Order order,
       boolean isMyRequest) {
@@ -125,6 +161,8 @@ public class OperationalRequestsService {
             operationalRequestType,
             requestStatus,
             env,
+            topicName,
+            consumerGroup,
             wildcardSearch,
             isMyRequest,
             commonUtilsService.getTenantId(userName));
@@ -246,12 +284,12 @@ public class OperationalRequestsService {
     return Comparator.comparing(OperationalRequest::getRequesttime);
   }
 
-  public ApiResponse resetConsumerOffsets(String reqId) {
+  public ApiResponse approveOperationalRequests(String reqId) {
     log.info("approveConsumerOffsetRequests {}", reqId);
     final String userDetails = getUserName();
     int tenantId = commonUtilsService.getTenantId(userDetails);
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_SUBSCRIPTIONS)) {
+        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_REQS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
     ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
@@ -309,5 +347,31 @@ public class OperationalRequestsService {
 
   private Object getPrincipal() {
     return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+  }
+
+  public EnvIdInfo validateOffsetRequestDetails(
+      String envId, String topicName, String consumerGroup) {
+    log.debug("validateOffsetRequestDetails {} {} {}", envId, topicName, consumerGroup);
+    String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
+    int teamId = commonUtilsService.getTeamId(userName);
+
+    if (consumerGroup == null || consumerGroup.equals("")) {
+      return null;
+    }
+
+    List<Acl> aclList =
+        manageDatabase
+            .getHandleDbRequests()
+            .getSyncAcls(envId, topicName, teamId, consumerGroup, tenantId);
+
+    if (!aclList.isEmpty()) {
+      EnvIdInfo envIdInfo = new EnvIdInfo();
+      envIdInfo.setId(envId);
+      envIdInfo.setName(commonUtilsService.getEnvDetails(envId, tenantId).getName());
+      return envIdInfo;
+    } else {
+      return null;
+    }
   }
 }

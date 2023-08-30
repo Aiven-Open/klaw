@@ -1129,7 +1129,7 @@ databaseChangeLog:
                     type: INT
               tableName: kwdatamigration
     - changeSet:
-        id: 14-08-2023 New table to store operational requests like reset offsets
+        id: 14-08-2023 New table to store operational requests like consumer reset offsets
         author: muralibasani
         changes:
           - createTable:
@@ -1198,7 +1198,4 @@ databaseChangeLog:
                 - column:
                     name: otherparams
                     type: VARCHAR(150)
-                - column:
-                    name: description
-                    type: VARCHAR(100)
               tableName: kwoperationalrequests

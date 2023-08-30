@@ -111,6 +111,9 @@ export type paths = {
   "/promote/schema": {
     post: operations["promoteSchema"];
   };
+  "/operationalRequest/consumerOffsetsReset/create": {
+    post: operations["createConsumerOffsetsResetRequest"];
+  };
   "/logout": {
     post: operations["logout"];
   };
@@ -246,6 +249,12 @@ export type paths = {
   "/requests/statistics": {
     /** Get counts of all request entity types for different status,operation types */
     get: operations["getRequestStatistics"];
+  };
+  "/operationalRequest": {
+    get: operations["getConsumerOffsetsResetRequests"];
+  };
+  "/operationalRequest/consumerOffsetsReset/validate": {
+    get: operations["validateOffsetRequestDetails"];
   };
   "/getUserInfoFromRegistrationId": {
     get: operations["getRegistrationInfoFromId"];
@@ -697,7 +706,7 @@ export type components = {
     RequestVerdict: {
       reason?: string;
       /** @enum {string} */
-      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
+      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
       reqIds: (string)[];
     };
     RegisterUserInfoModel: {
@@ -737,6 +746,25 @@ export type components = {
       forceRegister?: boolean;
       appName: string;
       remarks: string;
+    };
+    ConsumerOffsetResetRequestModel: {
+      /** @enum {string} */
+      operationalRequestType: "RESET_CONSUMER_OFFSETS";
+      environment: string;
+      /** Format: int32 */
+      requestingTeamId?: number;
+      approvingTeamId?: string;
+      otherParams?: string;
+      appname?: string;
+      remarks?: string;
+      requestor?: string;
+      /** Format: int32 */
+      requestId?: number;
+      topicname: string;
+      consumerGroup: string;
+      /** @enum {string} */
+      offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
+      resetTimeStampStr?: string;
     };
     TopicCreateRequestModel: {
       /** @enum {string} */
@@ -985,7 +1013,7 @@ export type components = {
     };
     RequestEntityStatusCount: {
       /** @enum {string} */
-      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
+      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
       requestStatusCountSet?: (components["schemas"]["RequestStatusCount"])[];
       requestsOperationTypeCountSet?: (components["schemas"]["RequestsOperationTypeCount"])[];
     };
@@ -1003,6 +1031,44 @@ export type components = {
       requestOperationType?: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
       /** Format: int64 */
       count?: number;
+    };
+    OperationalRequestsResponseModel: {
+      topicname: string;
+      consumerGroup: string;
+      /** @enum {string} */
+      offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
+      resetTimeStampStr?: string;
+      description: string;
+      /** Format: int32 */
+      reqId: number;
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      operationalRequestType: "RESET_CONSUMER_OFFSETS";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      approvingTeamId?: string;
+      sequence?: string;
+      possibleTeams?: (string)[];
+      deletable?: boolean;
+      editable?: boolean;
     };
     RegisterUserInfoModelResponse: {
       username: string;
@@ -1119,8 +1185,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
       topicOwner?: boolean;
+      highestEnv?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1527,6 +1593,7 @@ export type components = {
       syncSchemas: string;
       approveAtleastOneRequest: string;
       approveDeclineTopics: string;
+      approveDeclineOperationalReqs: string;
       approveDeclineSubscriptions: string;
       approveDeclineSchemas: string;
       approveDeclineConnectors: string;
@@ -2184,6 +2251,21 @@ export type operations = {
     requestBody: {
       content: {
         "application/json": components["schemas"]["SchemaPromotion"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  createConsumerOffsetsResetRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConsumerOffsetResetRequestModel"];
       };
     };
     responses: {
@@ -2858,6 +2940,47 @@ export type operations = {
       default: {
         content: {
           "application/json": components["schemas"]["RequestsCountOverview"];
+        };
+      };
+    };
+  };
+  getConsumerOffsetsResetRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        env?: string;
+        topicName?: string;
+        consumerGroup?: string;
+        operationType?: "RESET_CONSUMER_OFFSETS";
+        search?: string;
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+        isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["OperationalRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  validateOffsetRequestDetails: {
+    parameters: {
+      query: {
+        envId: string;
+        topicName: string;
+        consumerGroup: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvIdInfo"];
         };
       };
     };
