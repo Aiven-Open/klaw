@@ -88,9 +88,12 @@ app.controller("requestConsumerOffsetResetCtrl", function($scope, $http, $locati
         $scope.validateOffsetRequestDetails = function(envSelected, topicSelected, consumerGroup) {
             $http({
                 method: "GET",
-                url: "validateOffsetRequestDetails",
+                url: "operationalRequest/consumerOffsetsReset/validate",
                 headers : { 'Content-Type' : 'application/json' },
-                params: {'envId' : envSelected,  'topicName' : topicSelected, 'consumerGroup' : consumerGroup }
+                params: {'envId' : envSelected,
+                    'topicName' : topicSelected,
+                    'consumerGroup' : consumerGroup
+                }
             }).success(function(output) {
                 if(!output){
                     $scope.alertnote = "Unable to retrieve offset details. Redirecting to home page.";
@@ -172,7 +175,7 @@ app.controller("requestConsumerOffsetResetCtrl", function($scope, $http, $locati
                              });
                     }
                     else{
-                            $scope.alert = "Topic Request : "+output.message;
+                            $scope.alert = "Reset Request : "+output.message;
                             $scope.showSubmitFailed('','');
                         }
                 }).error(

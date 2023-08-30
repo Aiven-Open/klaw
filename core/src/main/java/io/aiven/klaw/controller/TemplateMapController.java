@@ -330,7 +330,7 @@ public class TemplateMapController {
     return checkAuth("requestTopics.html", request, response, abstractAuthenticationToken);
   }
 
-  @RequestMapping(value = "/requestConsumerOffsetReset", method = RequestMethod.GET)
+//  @RequestMapping(value = "/requestConsumerOffsetReset", method = RequestMethod.GET)
   public String requestConsumerOffsetReset(
       ModelMap model,
       HttpServletRequest request,

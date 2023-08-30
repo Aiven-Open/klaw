@@ -474,4 +474,11 @@ public class KlawErrorMessages {
       "There is no associated Schema environment configured.";
 
   public static final String SCH_SYNC_ERR_102 = "404 Not Found";
+
+  public static final String OP_REQS_ERR_101 =
+      "Sorry, your team does not own this acl - consumer group !!";
+
+  public static final String OP_REQS_ERR_102 = "Required Timestamp is missing to reset the offset.";
+
+  public static final String OP_REQS_ERR_103 = "Failure. A reset request already exists.";
 }

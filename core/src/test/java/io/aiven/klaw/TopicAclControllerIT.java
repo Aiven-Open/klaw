@@ -29,6 +29,7 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.AclRequestsModel;
+import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.requests.KwClustersModel;
 import io.aiven.klaw.model.requests.SchemaRequestModel;
@@ -37,6 +38,7 @@ import io.aiven.klaw.model.requests.TopicRequestModel;
 import io.aiven.klaw.model.requests.UserInfoModel;
 import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.KwClustersModelResponse;
+import io.aiven.klaw.model.response.OperationalRequestsResponseModel;
 import io.aiven.klaw.model.response.SchemaOverview;
 import io.aiven.klaw.model.response.TeamModelResponse;
 import io.aiven.klaw.model.response.TopicOverview;
@@ -1368,5 +1370,52 @@ public class TopicAclControllerIT {
         .extracting(ResourceHistory::getRemarks)
         .containsExactlyInAnyOrder(
             "TOPIC Create", "ACL Create Consumer - User:*", "SCHEMA Create Version : 1");
+  }
+
+  @Test
+  @Order(40)
+  public void createOffsetResetRequest() throws Exception {
+    ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
+        utilMethods.getConsumerOffsetResetRequest(topicId1);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(consumerOffsetResetRequestModel);
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/operationalRequest/consumerOffsetsReset/create")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .content(jsonReq)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+  }
+
+  @Test
+  @Order(41)
+  public void getOffsetResetRequests() throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/operationalRequest")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .param("pageNo", "1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    List<OperationalRequestsResponseModel> operationalRequestList =
+        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(operationalRequestList.size()).isEqualTo(1);
+    assertThat(operationalRequestList.get(0).getTopicname())
+        .isEqualTo(utilMethods.getConsumerOffsetResetRequest(topicId1).getTopicname());
+    assertThat(operationalRequestList.get(0).getConsumerGroup())
+        .isEqualTo(utilMethods.getConsumerOffsetResetRequest(topicId1).getConsumerGroup());
+    assertThat(operationalRequestList.get(0).getOffsetResetType())
+        .isEqualTo(utilMethods.getConsumerOffsetResetRequest(topicId1).getOffsetResetType());
   }
 }

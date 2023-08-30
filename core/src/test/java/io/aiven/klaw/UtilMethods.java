@@ -513,15 +513,15 @@ public class UtilMethods {
     return topicRequest;
   }
 
-  public ConsumerOffsetResetRequestModel getConsumerOffsetResetRequest() {
+  public ConsumerOffsetResetRequestModel getConsumerOffsetResetRequest(int topicId) {
     ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
         new ConsumerOffsetResetRequestModel();
     consumerOffsetResetRequestModel.setRequestor("kwusera");
-    consumerOffsetResetRequestModel.setTopicname("testtopic");
+    consumerOffsetResetRequestModel.setTopicname("testtopic" + topicId);
     consumerOffsetResetRequestModel.setEnvironment("1");
     consumerOffsetResetRequestModel.setRequestor("kwusera");
     consumerOffsetResetRequestModel.setOffsetResetType(OffsetResetType.LATEST);
-    consumerOffsetResetRequestModel.setConsumerGroup("testconsumergroup");
+    consumerOffsetResetRequestModel.setConsumerGroup("mygrp1");
     consumerOffsetResetRequestModel.setOperationalRequestType(
         OperationalRequestType.RESET_CONSUMER_OFFSETS);
     return consumerOffsetResetRequestModel;

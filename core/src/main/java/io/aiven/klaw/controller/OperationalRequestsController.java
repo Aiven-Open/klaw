@@ -43,7 +43,7 @@ public class OperationalRequestsController {
   }
 
   @RequestMapping(
-      value = "/validateOffsetRequestDetails",
+      value = "/operationalRequest/consumerOffsetsReset/validate",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<EnvIdInfo> validateOffsetRequestDetails(
@@ -64,6 +64,8 @@ public class OperationalRequestsController {
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
       @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "topicName", required = false) String topicName,
+      @RequestParam(value = "consumerGroup", required = false) String consumerGroup,
       @RequestParam(value = "operationType", required = false)
           OperationalRequestType operationalRequestType,
       @RequestParam(value = "search", required = false) String search,
@@ -78,6 +80,8 @@ public class OperationalRequestsController {
             operationalRequestType,
             requestStatus.value,
             env,
+            topicName,
+            consumerGroup,
             search,
             order,
             isMyRequest),

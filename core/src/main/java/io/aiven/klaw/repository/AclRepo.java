@@ -20,6 +20,9 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
   List<Acl> findAllByEnvironmentAndTopicnameAndTenantId(
       String environment, String topicName, int tenantId);
 
+  List<Acl> findAllByEnvironmentAndTopicnameAndTeamIdAndConsumergroupAndTenantId(
+      String environment, String topicName, int teamId, String consumerGroup, int tenantId);
+
   List<Acl> findAllByEnvironmentAndAclPatternTypeAndTenantId(
       String environment, String aclPatternType, int tenantId);
 
