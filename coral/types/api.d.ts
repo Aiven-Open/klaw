@@ -253,6 +253,9 @@ export type paths = {
   "/operationalRequest": {
     get: operations["getConsumerOffsetsResetRequests"];
   };
+  "/operationalRequest/consumerOffsetsReset/validate": {
+    get: operations["validateOffsetRequestDetails"];
+  };
   "/getUserInfoFromRegistrationId": {
     get: operations["getRegistrationInfoFromId"];
   };
@@ -703,7 +706,7 @@ export type components = {
     RequestVerdict: {
       reason?: string;
       /** @enum {string} */
-      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
+      requestEntityType: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
       reqIds: (string)[];
     };
     RegisterUserInfoModel: {
@@ -748,7 +751,6 @@ export type components = {
       /** @enum {string} */
       operationalRequestType: "RESET_CONSUMER_OFFSETS";
       environment: string;
-      description: string;
       /** Format: int32 */
       requestingTeamId?: number;
       approvingTeamId?: string;
@@ -1015,7 +1017,7 @@ export type components = {
     };
     RequestEntityStatusCount: {
       /** @enum {string} */
-      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "USER";
+      requestEntityType?: "TOPIC" | "ACL" | "SCHEMA" | "CONNECTOR" | "OPERATIONAL" | "USER";
       requestStatusCountSet?: (components["schemas"]["RequestStatusCount"])[];
       requestsOperationTypeCountSet?: (components["schemas"]["RequestsOperationTypeCount"])[];
     };
@@ -1178,8 +1180,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      topicOwner?: boolean;
       highestEnv?: boolean;
+      topicOwner?: boolean;
     };
     TopicPromotionStatus: {
       /** @enum {string} */
@@ -1604,6 +1606,7 @@ export type components = {
       syncSchemas: string;
       approveAtleastOneRequest: string;
       approveDeclineTopics: string;
+      approveDeclineOperationalReqs: string;
       approveDeclineSubscriptions: string;
       approveDeclineSchemas: string;
       approveDeclineConnectors: string;
@@ -2960,6 +2963,8 @@ export type operations = {
         currentPage?: string;
         requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
+        topicName?: string;
+        consumerGroup?: string;
         operationType?: "RESET_CONSUMER_OFFSETS";
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
@@ -2971,6 +2976,23 @@ export type operations = {
       200: {
         content: {
           "application/json": (components["schemas"]["OperationalRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  validateOffsetRequestDetails: {
+    parameters: {
+      query: {
+        envId: string;
+        topicName: string;
+        consumerGroup: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["EnvIdInfo"];
         };
       };
     };

@@ -151,6 +151,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       OperationalRequestType operationalRequestType,
       String requestStatus,
       String env,
+      String topicName,
+      String consumerGroup,
       String wildcardSearch,
       boolean isMyRequest,
       int tenantId) {
@@ -163,6 +165,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         null,
         operationalRequestType,
         env,
+        topicName,
+        consumerGroup,
         wildcardSearch,
         isMyRequest);
   }
@@ -323,6 +327,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public List<Acl> getSyncAcls(String env, String topic, int tenantId) {
     return jdbcSelectHelper.selectSyncAcls(env, topic, tenantId);
+  }
+
+  @Override
+  public List<Acl> getSyncAcls(
+      String env, String topic, int teamId, String consumerGroup, int tenantId) {
+    return jdbcSelectHelper.selectSyncAcls(env, topic, teamId, consumerGroup, tenantId);
   }
 
   @Override

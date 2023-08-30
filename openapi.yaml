@@ -2429,6 +2429,20 @@
             "type" : "string"
           }
         }, {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "consumerGroup",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
           "name" : "operationType",
           "in" : "query",
           "required" : false,
@@ -2471,6 +2485,46 @@
                   "items" : {
                     "$ref" : "#/components/schemas/OperationalRequestsResponseModel"
                   }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequest/consumerOffsetsReset/validate" : {
+      "get" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "validateOffsetRequestDetails",
+        "parameters" : [ {
+          "name" : "envId",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "topicName",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "consumerGroup",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/EnvIdInfo"
                 }
               }
             }
@@ -5953,7 +6007,7 @@
           },
           "requestEntityType" : {
             "type" : "string",
-            "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
+            "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "OPERATIONAL", "USER" ]
           },
           "reqIds" : {
             "type" : "array",
@@ -6090,9 +6144,6 @@
           "environment" : {
             "type" : "string"
           },
-          "description" : {
-            "type" : "string"
-          },
           "requestingTeamId" : {
             "type" : "integer",
             "format" : "int32"
@@ -6132,7 +6183,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "consumerGroup", "description", "environment", "offsetResetType", "operationalRequestType", "topicname" ]
+        "required" : [ "consumerGroup", "environment", "offsetResetType", "operationalRequestType", "topicname" ]
       },
       "TopicCreateRequestModel" : {
         "properties" : {
@@ -6881,7 +6932,7 @@
         "properties" : {
           "requestEntityType" : {
             "type" : "string",
-            "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "USER" ]
+            "enum" : [ "TOPIC", "ACL", "SCHEMA", "CONNECTOR", "OPERATIONAL", "USER" ]
           },
           "requestStatusCountSet" : {
             "type" : "array",
@@ -7349,10 +7400,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },
@@ -8557,6 +8608,9 @@
           "approveDeclineTopics" : {
             "type" : "string"
           },
+          "approveDeclineOperationalReqs" : {
+            "type" : "string"
+          },
           "approveDeclineSubscriptions" : {
             "type" : "string"
           },
@@ -8591,7 +8645,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
+        "required" : [ "adAuthRoleEnabled", "addDeleteEditClusters", "addDeleteEditEnvs", "addEditRoles", "addTeams", "addUser", "approveAtleastOneRequest", "approveDeclineConnectors", "approveDeclineOperationalReqs", "approveDeclineSchemas", "approveDeclineSubscriptions", "approveDeclineTopics", "authenticationType", "broadcastText", "canShutdownKw", "canSwitchTeams", "canUpdatePermissions", "companyinfo", "contextPath", "coralEnabled", "kafka_clusters_count", "kafkaconnect_clusters_count", "klawversion", "manageConnectors", "myteamtopics", "notifications", "notificationsAcls", "notificationsConnectors", "notificationsSchemas", "notificationsUsers", "pendingApprovalsRedirectionPage", "requestItems", "saasEnabled", "schema_clusters_count", "showAddDeleteTenants", "showServerConfigEnvProperties", "supportlink", "syncBackAcls", "syncBackSchemas", "syncBackTopics", "syncConnectors", "syncSchemas", "syncTopicsAcls", "teamId", "teamname", "teamsize", "tenantActiveStatus", "tenantName", "updateServerConfig", "username", "userrole", "viewKafkaConnect", "viewTopics" ]
       },
       "KwPropertiesResponse" : {
         "properties" : {
