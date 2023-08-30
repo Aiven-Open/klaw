@@ -819,6 +819,10 @@ export type components = {
       topicName: string;
       env: string;
     };
+    ConnectorClaimRequestModel: {
+      connectorName: string;
+      env: string;
+    };
     AclRequestsModel: {
       /** @enum {string} */
       requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
@@ -1130,8 +1134,8 @@ export type components = {
       sourceEnv?: string;
       targetEnv?: string;
       targetEnvId?: string;
-      topicName?: string;
       error?: string;
+      topicName?: string;
     };
     ResourceHistory: {
       environmentName: string;
@@ -1185,8 +1189,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      topicOwner?: boolean;
       highestEnv?: boolean;
+      topicOwner?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1326,6 +1330,7 @@ export type components = {
       connectorOwner: boolean;
       highestEnv: boolean;
       hasOpenRequest: boolean;
+      hasOpenClaimRequest: boolean;
       allPageNos?: (string)[];
       totalNoPages?: string;
       currentPage?: string;
@@ -1510,14 +1515,22 @@ export type components = {
     ConnectorOverview: {
       connectorInfoList: (components["schemas"]["KafkaConnectorModelResponse"])[];
       connectorHistoryList?: (components["schemas"]["ResourceHistory"])[];
-      promotionDetails?: {
-        [key: string]: string | undefined;
-      };
+      promotionDetails: components["schemas"]["ConnectorPromotionStatus"];
       connectorExists: boolean;
       availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       connectorDocumentation?: string;
       /** Format: int32 */
       connectorIdForDocumentation: number;
+    };
+    ConnectorPromotionStatus: {
+      /** @enum {string} */
+      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
+      sourceEnv?: string;
+      targetEnv?: string;
+      targetEnvId?: string;
+      error?: string;
+      connectorName?: string;
+      sourceConnectorConfig?: string;
     };
     ConnectorOverviewPerEnv: {
       connectorExists?: boolean;
@@ -2680,10 +2693,9 @@ export type operations = {
     };
   };
   createClaimConnectorRequest: {
-    parameters: {
-      query: {
-        connectorName: string;
-        env: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConnectorClaimRequestModel"];
       };
     };
     responses: {

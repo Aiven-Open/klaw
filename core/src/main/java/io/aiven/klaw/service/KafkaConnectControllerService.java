@@ -43,6 +43,7 @@ import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
+import io.aiven.klaw.model.response.*;
 import io.aiven.klaw.model.response.ConnectorOverview;
 import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
 import io.aiven.klaw.model.response.EnvIdInfo;
@@ -54,7 +55,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -401,10 +401,12 @@ public class KafkaConnectControllerService {
 
     connectorInfo.setHighestEnv(
         checkIsHighestEnv(connectorInfo.getEnvironmentId(), connectorInfo.getEnvironmentsList()));
-
+    connectorInfo.setHasOpenClaimRequest(
+        isClaimRequestOpen(tenantId, connectorSOT.getConnectorName()));
     connectorInfo.setHasOpenRequest(
-        isConnectorRequestOpen(
-            tenantId, connectorSOT.getConnectorName(), connectorSOT.getEnvironment()));
+        connectorInfo.isHasOpenClaimRequest()
+            || isConnectorRequestOpen(
+                tenantId, connectorSOT.getConnectorName(), connectorSOT.getEnvironment()));
   }
 
   private boolean isConnectorRequestOpen(int tenantId, String connectorName, String environment) {
@@ -412,6 +414,25 @@ public class KafkaConnectControllerService {
     return manageDatabase
         .getHandleDbRequests()
         .existsConnectorRequest(connectorName, RequestStatus.CREATED.value, environment, tenantId);
+  }
+
+  private boolean isClaimRequestOpen(int tenantId, String connectorName) {
+
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsClaimConnectorRequest(connectorName, RequestStatus.CREATED.value, tenantId);
+  }
+
+  private boolean isPromoteRequestOpen(int tenantId, String connectorName, String environment) {
+
+    return manageDatabase
+        .getHandleDbRequests()
+        .existsConnectorRequest(
+            connectorName,
+            RequestStatus.CREATED.value,
+            RequestOperationType.PROMOTE.value,
+            environment,
+            tenantId);
   }
 
   private int topicCounter = 0;
@@ -1121,13 +1142,18 @@ public class KafkaConnectControllerService {
         connectorOverview.setPromotionDetails(
             getConnectorPromotionEnv(connectorNamesearch, connectors, tenantId));
 
-        if (connectorOverview.getPromotionDetails().get("status").equals("success")
+        if (connectorOverview.getPromotionDetails().getStatus().equals(PromotionStatusType.SUCCESS)
             && !StringUtils.isEmpty(envId)) {
-          if (!connectorOverview.getPromotionDetails().get("sourceEnv").equals(envId)) {
-            Map<String, String> hashMap = new HashMap<>();
-            hashMap.put("status", PromotionStatusType.NO_PROMOTION.value);
-            connectorOverview.setPromotionDetails(hashMap);
+          if (!connectorOverview.getPromotionDetails().getSourceEnv().equals(envId)) {
+            connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.NO_PROMOTION);
           }
+        }
+
+        if (isPromoteRequestOpen(
+            tenantId,
+            connectorNamesearch,
+            connectorOverview.getPromotionDetails().getTargetEnvId())) {
+          connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.REQUEST_OPEN);
         }
 
         if (connectorInfoList.size() > 0) {
@@ -1137,17 +1163,20 @@ public class KafkaConnectControllerService {
         }
 
       } else {
-        Map<String, String> hashMap = new HashMap<>();
-        hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-        connectorOverview.setPromotionDetails(hashMap);
+        connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.NOT_AUTHORIZED);
       }
 
       // Check if request open && set the highestEnv
       connectorInfoList.forEach(
           connectorInfo -> {
+            connectorInfo.setHasOpenClaimRequest(
+                isClaimRequestOpen(tenantId, connectorInfo.getConnectorName()));
             connectorInfo.setHasOpenRequest(
-                isConnectorRequestOpen(
-                    tenantId, connectorInfo.getConnectorName(), connectorInfo.getEnvironmentId()));
+                connectorInfo.isHasOpenClaimRequest()
+                    || isConnectorRequestOpen(
+                        tenantId,
+                        connectorInfo.getConnectorName(),
+                        connectorInfo.getEnvironmentId()));
             connectorInfo.setHighestEnv(
                 checkIsHighestEnv(
                     connectorInfo.getEnvironmentId(),
@@ -1162,9 +1191,9 @@ public class KafkaConnectControllerService {
 
     } catch (Exception e) {
       log.error("Exception:", e);
-      Map<String, String> hashMap = new HashMap<>();
-      hashMap.put("status", ApiResultStatus.NOT_AUTHORIZED.value);
-      connectorOverview.setPromotionDetails(hashMap);
+      ConnectorPromotionStatus status = new ConnectorPromotionStatus();
+      status.setStatus(PromotionStatusType.NOT_AUTHORIZED);
+      connectorOverview.setPromotionDetails(status);
     }
 
     return connectorOverview;
@@ -1288,14 +1317,14 @@ public class KafkaConnectControllerService {
     return connectorOverviewPerEnv;
   }
 
-  private Map<String, String> getConnectorPromotionEnv(
+  private ConnectorPromotionStatus getConnectorPromotionEnv(
       String topicSearch, List<KwKafkaConnector> kafkaConnectors, int tenantId) {
-    Map<String, String> hashMap = new HashMap<>();
+    ConnectorPromotionStatus promotionStatus = new ConnectorPromotionStatus();
     try {
       if (kafkaConnectors == null)
         kafkaConnectors = manageDatabase.getHandleDbRequests().getConnectors(topicSearch, tenantId);
 
-      hashMap.put("connectorName", topicSearch);
+      promotionStatus.setConnectorName(topicSearch);
 
       if (kafkaConnectors != null && kafkaConnectors.size() > 0) {
         List<String> envList = new ArrayList<>();
@@ -1306,8 +1335,8 @@ public class KafkaConnectControllerService {
             commonUtilsService.getEnvProperty(tenantId, "ORDER_OF_KAFKA_CONNECT_ENVS");
         if (orderOfEnvs.length() == 0) {
           // No promotion order set return no promotion
-          hashMap.put("status", PromotionStatusType.NO_PROMOTION.value);
-          return hashMap;
+          promotionStatus.setStatus(PromotionStatusType.NO_PROMOTION);
+          return promotionStatus;
         }
 
         envList.sort(Comparator.comparingInt(orderOfEnvs::indexOf));
@@ -1322,27 +1351,27 @@ public class KafkaConnectControllerService {
         List<String> orderdEnvs = Arrays.asList(orderOfEnvs.split(","));
 
         if (orderdEnvs.indexOf(lastEnv) == orderdEnvs.size() - 1) {
-          hashMap.put("status", PromotionStatusType.NO_PROMOTION.value); // PRD
+          promotionStatus.setStatus(PromotionStatusType.NO_PROMOTION); // PRD
         } else {
-          hashMap.put("status", ApiResultStatus.SUCCESS.value);
-          hashMap.put("sourceEnv", lastEnv);
-          hashMap.put("sourceConnectorConfig", sourceConnectorConfig.get());
+          promotionStatus.setStatus(PromotionStatusType.SUCCESS);
+          promotionStatus.setSourceEnv(lastEnv);
+          promotionStatus.setSourceConnectorConfig(sourceConnectorConfig.get());
           String targetEnv = orderdEnvs.get(orderdEnvs.indexOf(lastEnv) + 1);
           if (getKafkaConnectEnvDetails(targetEnv) != null) {
-            hashMap.put("targetEnv", getKafkaConnectEnvDetails(targetEnv).getName());
+            promotionStatus.setTargetEnv(getKafkaConnectEnvDetails(targetEnv).getName());
           }
-          hashMap.put("targetEnvId", targetEnv);
+          promotionStatus.setTargetEnvId(targetEnv);
         }
 
-        return hashMap;
+        return promotionStatus;
       }
     } catch (Exception e) {
       log.error("getConnectorPromotionEnv ", e);
-      hashMap.put("status", ApiResultStatus.FAILURE.value);
-      hashMap.put("error", KAFKA_CONNECT_ERR_120);
+      promotionStatus.setStatus(PromotionStatusType.FAILURE);
+      promotionStatus.setError(KAFKA_CONNECT_ERR_120);
     }
 
-    return hashMap;
+    return promotionStatus;
   }
 
   public ApiResponse saveConnectorDocumentation(KafkaConnectorModel topicInfo) {
@@ -1507,6 +1536,6 @@ public class KafkaConnectControllerService {
             .stream()
             .filter(env -> Objects.equals(env.getId(), envId))
             .findFirst();
-    return envFound.orElse(null);
+    return envFound.orElse(new Env());
   }
 }

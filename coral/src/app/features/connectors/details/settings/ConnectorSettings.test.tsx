@@ -41,6 +41,7 @@ const testConnectorInfo: KlawApiModel<"KafkaConnectorModelResponse"> = {
   connectorOwner: true,
   highestEnv: true,
   hasOpenRequest: false,
+  hasOpenClaimRequest: false,
   connectorConfig:
     '{\n  "connector.class" : "io.confluent.connect.storage.tools.SchemaSourceConnector",\n  "tasks.max" : "1",\n  "name" : "release240",\n  "topic" : "testtopic",\n  "topics.regex" : "*"\n}',
   environmentName: "DEV",
@@ -56,7 +57,7 @@ const testConnectorOverview: ConnectorOverview = {
     sourceConnectorConfig:
       '{\n  "connector.class" : "io.confluent.connect.storage.tools.SchemaSourceConnector",\n  "tasks.max" : "1",\n  "name" : "release240",\n  "topic" : "testtopic",\n  "topics.regex" : "*"\n}',
     targetEnv: "TST",
-    status: "success",
+    status: "SUCCESS",
   },
   connectorExists: true,
   availableEnvironments: [

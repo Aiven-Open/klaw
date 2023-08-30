@@ -38,6 +38,7 @@ const testConnectorOverview: ConnectorOverview = {
     showDeleteConnector: true,
     connectorDeletable: true,
     hasOpenRequest: false,
+    hasOpenClaimRequest: false,
     highestEnv: false,
     connectorOwner: false,
     connectorConfig:
@@ -52,7 +53,7 @@ const testConnectorOverview: ConnectorOverview = {
     sourceConnectorConfig:
       '{\n  "connector.class" : "io.confluent.connect.storage.tools.SchemaSourceConnector",\n  "tasks.max" : "1",\n  "name" : "my-connector",\n  "topic" : "testtopic",\n  "topics.regex" : "*"\n}',
     targetEnv: "ACC",
-    status: "success",
+    status: "SUCCESS",
   },
   connectorExists: true,
   availableEnvironments: [

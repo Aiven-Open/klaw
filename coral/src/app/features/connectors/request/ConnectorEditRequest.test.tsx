@@ -39,6 +39,7 @@ const testConnectorDetailsPerEnvResponse = {
     connectorOwner: false,
     highestEnv: false,
     hasOpenRequest: false,
+    hasOpenClaimRequest: false,
     connectorConfig:
       '{\n  "connector.class" : "io.confluent.connect.storage.tools.SchemaSourceConnector",\n  "tasks.max" : "1",\n  "name" : "Aindriu45",\n  "topic" : "NewTopic",\n  "topics.regex" : "*"\n}',
     environmentName: "DEV",

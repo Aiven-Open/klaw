@@ -35,6 +35,14 @@ const testConnectorOverview: ConnectorOverview = {
     connectorName: "documentation-test-connector",
     connectorOwner: true,
   } as ConnectorOverview["connectorInfo"],
+  promotionDetails: {
+    status: "SUCCESS",
+    sourceEnv: "DEV",
+    targetEnv: "TST",
+    targetEnvId: "3",
+    connectorName: "connector",
+    sourceConnectorConfig: "{}",
+  },
   connectorExists: true,
 };
 

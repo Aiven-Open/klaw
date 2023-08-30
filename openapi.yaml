@@ -1885,21 +1885,16 @@
       "post" : {
         "tags" : [ "kafka-connect-controller" ],
         "operationId" : "createClaimConnectorRequest",
-        "parameters" : [ {
-          "name" : "connectorName",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "env",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ConnectorClaimRequestModel"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -6336,6 +6331,17 @@
         },
         "required" : [ "env", "topicName" ]
       },
+      "ConnectorClaimRequestModel" : {
+        "properties" : {
+          "connectorName" : {
+            "type" : "string"
+          },
+          "env" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "connectorName", "env" ]
+      },
       "AclRequestsModel" : {
         "properties" : {
           "requestOperationType" : {
@@ -7249,10 +7255,10 @@
           "targetEnvId" : {
             "type" : "string"
           },
-          "topicName" : {
+          "error" : {
             "type" : "string"
           },
-          "error" : {
+          "topicName" : {
             "type" : "string"
           }
         },
@@ -7418,10 +7424,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },
@@ -7811,6 +7817,9 @@
           "hasOpenRequest" : {
             "type" : "boolean"
           },
+          "hasOpenClaimRequest" : {
+            "type" : "boolean"
+          },
           "allPageNos" : {
             "type" : "array",
             "items" : {
@@ -7851,7 +7860,7 @@
             "type" : "string"
           }
         },
-        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorOwner", "connectorStatus", "environmentId", "failedTasks", "hasOpenRequest", "highestEnv", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
+        "required" : [ "connectorDeletable", "connectorId", "connectorName", "connectorOwner", "connectorStatus", "environmentId", "failedTasks", "hasOpenClaimRequest", "hasOpenRequest", "highestEnv", "runningTasks", "showDeleteConnector", "showEditConnector", "teamId", "teamName" ]
       },
       "EnvModelResponse" : {
         "properties" : {
@@ -8341,10 +8350,7 @@
             }
           },
           "promotionDetails" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
+            "$ref" : "#/components/schemas/ConnectorPromotionStatus"
           },
           "connectorExists" : {
             "type" : "boolean"
@@ -8363,7 +8369,34 @@
             "format" : "int32"
           }
         },
-        "required" : [ "availableEnvironments", "connectorExists", "connectorIdForDocumentation", "connectorInfoList" ]
+        "required" : [ "availableEnvironments", "connectorExists", "connectorIdForDocumentation", "connectorInfoList", "promotionDetails" ]
+      },
+      "ConnectorPromotionStatus" : {
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "enum" : [ "SUCCESS", "NOT_AUTHORIZED", "REQUEST_OPEN", "NO_PROMOTION", "FAILURE" ]
+          },
+          "sourceEnv" : {
+            "type" : "string"
+          },
+          "targetEnv" : {
+            "type" : "string"
+          },
+          "targetEnvId" : {
+            "type" : "string"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "connectorName" : {
+            "type" : "string"
+          },
+          "sourceConnectorConfig" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "status" ]
       },
       "ConnectorOverviewPerEnv" : {
         "properties" : {

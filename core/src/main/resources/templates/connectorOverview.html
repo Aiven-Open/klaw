@@ -538,7 +538,7 @@
 								</table>
 							</div>
 
-							<div ng-show="promotionDetails.status ==='success'">
+							<div ng-show="promotionDetails.status ==='SUCCESS'">
 								<table width="100%" class="table color-table success-table">
 									<tr>
 										<td width="15%">
@@ -552,13 +552,13 @@
 
 										<td width="5%"></td>
 										<td width="20%" align="right">
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'false' && selectedEnvId == promotionDetails.sourceEnv"
+												<button ng-show="promotionDetails.status =='SUCCESS' && firstPromote == 'false' && selectedEnvId == promotionDetails.sourceEnv"
 														type="button"
 														ng-click="onFirstPromote(promotionDetails.targetEnvId)"
 														class="btn btn-rounded btn-block btn-outline-info">
 													Promote to {{promotionDetails.targetEnv}}
 												</button>
-												<button ng-show="promotionDetails.status =='success' && firstPromote == 'true' && selectedEnvId == promotionDetails.sourceEnv"
+												<button ng-show="promotionDetails.status =='SUCCESS' && firstPromote == 'true' && selectedEnvId == promotionDetails.sourceEnv"
 														type="button"
 														ng-click="onFinalPromote(promotionDetails.targetEnvId)"
 														class="btn btn-rounded btn-block btn-outline-info">
