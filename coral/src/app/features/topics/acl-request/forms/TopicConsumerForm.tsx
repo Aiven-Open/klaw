@@ -70,7 +70,7 @@ const TopicConsumerForm = ({
     topicConsumerForm.resetField("acl_ssl");
   }, [aclIpPrincipleType]);
 
-  const { mutateAsync, isLoading, isError, error } = useMutation({
+  const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: async (payload: TopicConsumerFormSchema) => {
       const { teamId, error } = await getTopicTeam({
         topicName: payload.topicname,
@@ -105,7 +105,7 @@ const TopicConsumerForm = ({
   const onSubmitTopicConsumer: SubmitHandler<TopicConsumerFormSchema> = (
     formData
   ) => {
-    return mutateAsync(formData);
+    return mutate(formData);
   };
 
   function cancelRequest() {

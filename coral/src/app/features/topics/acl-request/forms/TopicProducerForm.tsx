@@ -88,7 +88,7 @@ const TopicProducerForm = ({
     topicProducerForm.trigger("topicname");
   }, [aclPatternType]);
 
-  const { mutateAsync, isLoading, isError, error } = useMutation({
+  const { mutate, isLoading, isError, error } = useMutation({
     mutationFn: async (payload: TopicProducerFormSchema) => {
       const { teamId, error } = await getTopicTeam({
         topicName: payload.topicname,
@@ -123,7 +123,7 @@ const TopicProducerForm = ({
   const onSubmitTopicProducer: SubmitHandler<TopicProducerFormSchema> = (
     formData
   ) => {
-    return mutateAsync(formData);
+    mutate(formData);
   };
 
   function cancelRequest() {
