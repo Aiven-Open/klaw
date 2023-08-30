@@ -2,7 +2,7 @@ import { Alert, Banner, Box, Spacing } from "@aivenio/aquarium";
 import { ReactElement } from "react";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import illustration from "src/app/images/topic-details-banner-Illustration.svg";
-import { PromotionStatus } from "src/domain/promotion";
+import { TopicPromotionStatus } from "src/domain/promotion";
 
 type RequestTypeLocal = "CLAIM" | "ALL" | "PROMOTE";
 type EntityTypeLocal = "schema" | "topic";
@@ -13,7 +13,7 @@ interface PromotionBannerProps {
   // so we can't rely on it to be part of
   // the promotionDetails
   entityName: string;
-  promotionDetails: PromotionStatus;
+  promotionDetails: TopicPromotionStatus;
   type: EntityTypeLocal;
   promoteElement: ReactElement;
   hasOpenClaimRequest: boolean;

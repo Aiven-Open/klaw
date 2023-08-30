@@ -999,7 +999,7 @@ public class KafkaConnectControllerServiceTest {
                 eq(CONNECTOR_NAME),
                 eq(RequestStatus.CREATED.value),
                 eq(RequestOperationType.PROMOTE.value),
-                eq("PRD"),
+                eq("2"),
                 eq(101)))
         .thenReturn(true);
 

@@ -7,10 +7,7 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.Order;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
-import io.aiven.klaw.model.requests.KafkaConnectorDeleteRequestModel;
-import io.aiven.klaw.model.requests.KafkaConnectorModel;
-import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
-import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
+import io.aiven.klaw.model.requests.*;
 import io.aiven.klaw.model.response.ConnectorOverview;
 import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
 import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
@@ -199,10 +196,10 @@ public class KafkaConnectController {
       value = "/createClaimConnectorRequest",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> createClaimConnectorRequest(
-      @RequestParam("connectorName") String connectorName, @RequestParam("env") String envId)
-      throws KlawException {
+      @Valid @RequestBody ConnectorClaimRequestModel claimRequestModel) throws KlawException {
     return new ResponseEntity<>(
-        kafkaConnectControllerService.createClaimConnectorRequest(connectorName, envId),
+        kafkaConnectControllerService.createClaimConnectorRequest(
+            claimRequestModel.getConnectorName(), claimRequestModel.getEnv()),
         HttpStatus.OK);
   }
 

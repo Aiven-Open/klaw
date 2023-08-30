@@ -1146,12 +1146,14 @@ public class KafkaConnectControllerService {
             && !StringUtils.isEmpty(envId)) {
           if (!connectorOverview.getPromotionDetails().getSourceEnv().equals(envId)) {
             connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.NO_PROMOTION);
-          } else if (isPromoteRequestOpen(
-              tenantId,
-              connectorNamesearch,
-              connectorOverview.getPromotionDetails().getTargetEnv())) {
-            connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.REQUEST_OPEN);
           }
+        }
+
+        if (isPromoteRequestOpen(
+            tenantId,
+            connectorNamesearch,
+            connectorOverview.getPromotionDetails().getTargetEnvId())) {
+          connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.REQUEST_OPEN);
         }
 
         if (connectorInfoList.size() > 0) {

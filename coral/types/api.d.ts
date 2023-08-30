@@ -111,6 +111,9 @@ export type paths = {
   "/promote/schema": {
     post: operations["promoteSchema"];
   };
+  "/operationalRequest/consumerOffsetsReset/create": {
+    post: operations["createConsumerOffsetsResetRequest"];
+  };
   "/logout": {
     post: operations["logout"];
   };
@@ -246,6 +249,9 @@ export type paths = {
   "/requests/statistics": {
     /** Get counts of all request entity types for different status,operation types */
     get: operations["getRequestStatistics"];
+  };
+  "/operationalRequest": {
+    get: operations["getConsumerOffsetsResetRequests"];
   };
   "/getUserInfoFromRegistrationId": {
     get: operations["getRegistrationInfoFromId"];
@@ -738,6 +744,26 @@ export type components = {
       appName: string;
       remarks: string;
     };
+    ConsumerOffsetResetRequestModel: {
+      /** @enum {string} */
+      operationalRequestType: "RESET_CONSUMER_OFFSETS";
+      environment: string;
+      description: string;
+      /** Format: int32 */
+      requestingTeamId?: number;
+      approvingTeamId?: string;
+      otherParams?: string;
+      appname?: string;
+      remarks?: string;
+      requestor?: string;
+      /** Format: int32 */
+      requestId?: number;
+      topicname: string;
+      consumerGroup: string;
+      /** @enum {string} */
+      offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
+      resetTimeStampStr?: string;
+    };
     TopicCreateRequestModel: {
       /** @enum {string} */
       requestOperationType: "CREATE" | "UPDATE" | "PROMOTE" | "CLAIM" | "DELETE";
@@ -789,6 +815,10 @@ export type components = {
     };
     TopicClaimRequestModel: {
       topicName: string;
+      env: string;
+    };
+    ConnectorClaimRequestModel: {
+      connectorName: string;
       env: string;
     };
     AclRequestsModel: {
@@ -1004,6 +1034,44 @@ export type components = {
       /** Format: int64 */
       count?: number;
     };
+    OperationalRequestsResponseModel: {
+      topicname: string;
+      consumerGroup: string;
+      /** @enum {string} */
+      offsetResetType: "LATEST" | "EARLIEST" | "TO_DATE_TIME";
+      resetTimeStampStr?: string;
+      description: string;
+      /** Format: int32 */
+      reqId: number;
+      environment: string;
+      environmentName: string;
+      requestor: string;
+      /** Format: int32 */
+      teamId: number;
+      teamname: string;
+      /** @enum {string} */
+      operationalRequestType: "RESET_CONSUMER_OFFSETS";
+      /** @enum {string} */
+      requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+      /** Format: date-time */
+      requesttime: string;
+      requesttimestring: string;
+      currentPage: string;
+      totalNoPages: string;
+      allPageNos: (string)[];
+      approvingTeamDetails: string;
+      approver?: string;
+      /** Format: date-time */
+      approvingtime?: string;
+      remarks?: string;
+      appname?: string;
+      otherParams?: string;
+      approvingTeamId?: string;
+      sequence?: string;
+      possibleTeams?: (string)[];
+      deletable?: boolean;
+      editable?: boolean;
+    };
     RegisterUserInfoModelResponse: {
       username: string;
       fullname: string;
@@ -1058,15 +1126,6 @@ export type components = {
       consumergroup?: string;
       transactionalId?: string;
     };
-    PromotionStatus: {
-      /** @enum {string} */
-      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
-      sourceEnv?: string;
-      targetEnv?: string;
-      targetEnvId?: string;
-      topicName?: string;
-      error?: string;
-    };
     ResourceHistory: {
       environmentName: string;
       teamName: string;
@@ -1087,7 +1146,7 @@ export type components = {
       prefixedAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       transactionalAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       topicHistoryList?: (components["schemas"]["ResourceHistory"])[];
-      topicPromotionDetails: components["schemas"]["PromotionStatus"];
+      topicPromotionDetails: components["schemas"]["TopicPromotionStatus"];
       availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       topicDocumentation?: string;
       /** Format: int32 */
@@ -1119,8 +1178,17 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
       topicOwner?: boolean;
+      highestEnv?: boolean;
+    };
+    TopicPromotionStatus: {
+      /** @enum {string} */
+      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
+      sourceEnv?: string;
+      targetEnv?: string;
+      targetEnvId?: string;
+      error?: string;
+      topicName?: string;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1260,6 +1328,7 @@ export type components = {
       connectorOwner: boolean;
       highestEnv: boolean;
       hasOpenRequest: boolean;
+      hasOpenClaimRequest: boolean;
       allPageNos?: (string)[];
       totalNoPages?: string;
       currentPage?: string;
@@ -1379,7 +1448,7 @@ export type components = {
       allSchemaVersions?: (number)[];
       /** Format: int32 */
       latestVersion?: number;
-      schemaPromotionDetails: components["schemas"]["PromotionStatus"];
+      schemaPromotionDetails: components["schemas"]["TopicPromotionStatus"];
       schemaDetailsPerEnv?: components["schemas"]["SchemaDetailsPerEnv"];
     };
     KwReport: {
@@ -1444,14 +1513,22 @@ export type components = {
     ConnectorOverview: {
       connectorInfoList: (components["schemas"]["KafkaConnectorModelResponse"])[];
       connectorHistoryList?: (components["schemas"]["ResourceHistory"])[];
-      promotionDetails?: {
-        [key: string]: string | undefined;
-      };
+      promotionDetails?: components["schemas"]["ConnectorPromotionStatus"];
       connectorExists: boolean;
       availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       connectorDocumentation?: string;
       /** Format: int32 */
       connectorIdForDocumentation: number;
+    };
+    ConnectorPromotionStatus: {
+      /** @enum {string} */
+      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
+      sourceEnv?: string;
+      targetEnv?: string;
+      targetEnvId?: string;
+      error?: string;
+      connectorName?: string;
+      sourceConnectorConfig?: string;
     };
     ConnectorOverviewPerEnv: {
       connectorExists?: boolean;
@@ -2195,6 +2272,21 @@ export type operations = {
       };
     };
   };
+  createConsumerOffsetsResetRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConsumerOffsetResetRequestModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
   logout: {
     responses: {
       /** @description OK */
@@ -2598,10 +2690,9 @@ export type operations = {
     };
   };
   createClaimConnectorRequest: {
-    parameters: {
-      query: {
-        connectorName: string;
-        env: string;
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConnectorClaimRequestModel"];
       };
     };
     responses: {
@@ -2858,6 +2949,28 @@ export type operations = {
       default: {
         content: {
           "application/json": components["schemas"]["RequestsCountOverview"];
+        };
+      };
+    };
+  };
+  getConsumerOffsetsResetRequests: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        env?: string;
+        operationType?: "RESET_CONSUMER_OFFSETS";
+        search?: string;
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+        isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["OperationalRequestsResponseModel"])[];
         };
       };
     };

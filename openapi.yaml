@@ -1885,21 +1885,16 @@
       "post" : {
         "tags" : [ "kafka-connect-controller" ],
         "operationId" : "createClaimConnectorRequest",
-        "parameters" : [ {
-          "name" : "connectorName",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "env",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/ConnectorClaimRequestModel"
+              }
+            }
+          },
+          "required" : true
+        },
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -6285,6 +6280,17 @@
         },
         "required" : [ "env", "topicName" ]
       },
+      "ConnectorClaimRequestModel" : {
+        "properties" : {
+          "connectorName" : {
+            "type" : "string"
+          },
+          "env" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "connectorName", "env" ]
+      },
       "AclRequestsModel" : {
         "properties" : {
           "requestOperationType" : {
@@ -7343,10 +7349,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },
@@ -7490,13 +7496,13 @@
       },
       "Scales" : {
         "properties" : {
-          "xaxes" : {
+          "yaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
             }
           },
-          "yaxes" : {
+          "xaxes" : {
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/YAx"
