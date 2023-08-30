@@ -10,7 +10,7 @@ const promotionDetails: KlawApiModel<"PromotionStatus"> = {
   targetEnvId: "2",
 };
 const testTopicName = "my-test-topic";
-
+const testConnectorName = "my-connector";
 describe("PromotionBanner", () => {
   describe("does not show a promotion banner at all dependent on promotion details", () => {
     afterEach(cleanup);
@@ -200,6 +200,44 @@ describe("PromotionBanner", () => {
     });
   });
 
+  describe("handles banner for entity with an open request (type connector)", () => {
+    beforeAll(() => {
+      customRender(
+        <PromotionBanner
+          entityName={testConnectorName}
+          promotionDetails={promotionDetails}
+          type={"connector"}
+          promoteElement={<></>}
+          hasOpenClaimRequest={false}
+          hasOpenRequest={true}
+          hasError={false}
+          errorMessage={""}
+        />,
+        { browserRouter: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows information about the open request", () => {
+      const information = screen.getByText(
+        `You cannot promote the connector at this time. ${testConnectorName} has a pending request.`
+      );
+
+      expect(information).toBeVisible();
+    });
+
+    it("shows a link to open requests", () => {
+      const link = screen.getByRole("link", { name: "View request" });
+
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute(
+        "href",
+        "/requests/connectors?search=my-connector&requestType=ALL&status=CREATED&page=1"
+      );
+    });
+  });
+
   describe("handles banner for entity with an open claim request (type schema)", () => {
     beforeAll(() => {
       customRender(
@@ -272,6 +310,44 @@ describe("PromotionBanner", () => {
       expect(link).toHaveAttribute(
         "href",
         "/approvals/topics?search=my-test-topic&requestType=CLAIM&status=CREATED&page=1"
+      );
+    });
+  });
+
+  describe("handles banner for entity with an open claim request (type connector)", () => {
+    beforeAll(() => {
+      customRender(
+        <PromotionBanner
+          entityName={testConnectorName}
+          promotionDetails={promotionDetails}
+          type={"connector"}
+          promoteElement={<></>}
+          hasOpenClaimRequest={true}
+          hasOpenRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
+        { browserRouter: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows information about the open request", () => {
+      const information = screen.getByText(
+        `You cannot promote the connector at this time. A claim request for ${testConnectorName} is in progress.`
+      );
+
+      expect(information).toBeVisible();
+    });
+
+    it("shows a link to open requests", () => {
+      const link = screen.getByRole("link", { name: "View request" });
+
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute(
+        "href",
+        "/approvals/connectors?search=my-connector&requestType=CLAIM&status=CREATED&page=1"
       );
     });
   });
@@ -354,6 +430,46 @@ describe("PromotionBanner", () => {
     });
   });
 
+  describe("handles banner for entity with an open promotion request (type topic)", () => {
+    beforeAll(() => {
+      customRender(
+        <PromotionBanner
+          entityName={testConnectorName}
+          promotionDetails={{ ...promotionDetails, status: "REQUEST_OPEN" }}
+          type={"connector"}
+          promoteElement={<></>}
+          hasOpenRequest={false}
+          hasOpenClaimRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
+        { browserRouter: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows information about the open request", () => {
+      const information = screen.getByText(
+        `You cannot promote the connector at this time. An promotion request for ${testConnectorName} is already in progress.`
+      );
+
+      expect(information).toBeVisible();
+    });
+
+    it("shows a link to open requests", () => {
+      const link = screen.getByRole("link", {
+        name: "View request",
+      });
+
+      expect(link).toBeVisible();
+      expect(link).toHaveAttribute(
+        "href",
+        "/requests/connectors?search=my-connector&requestType=PROMOTE&status=CREATED&page=1"
+      );
+    });
+  });
+
   describe("handles banner for entity that can be promoted (type schema)", () => {
     const promoteElement = <div data-testid={"another-test-promote-element"} />;
     beforeAll(() => {
@@ -426,7 +542,42 @@ describe("PromotionBanner", () => {
     });
   });
 
-  describe("handles error for promotion (type schema and topic)", () => {
+  describe("handles banner for entity that can be promoted (type connector)", () => {
+    const promoteElement = <div data-testid={"test-promote-element"} />;
+    beforeAll(() => {
+      customRender(
+        <PromotionBanner
+          entityName={testConnectorName}
+          promotionDetails={promotionDetails}
+          type={"connector"}
+          promoteElement={promoteElement}
+          hasOpenRequest={false}
+          hasOpenClaimRequest={false}
+          hasError={false}
+          errorMessage={""}
+        />,
+        { browserRouter: true }
+      );
+    });
+
+    afterAll(cleanup);
+
+    it("shows information about possible promotion", () => {
+      const information = screen.getByText(
+        `This connector has not yet been promoted to the ${promotionDetails.targetEnv} environment.`
+      );
+
+      expect(information).toBeVisible();
+    });
+
+    it("renders a given component as element handling the promotion", () => {
+      const promotionElement = screen.getByTestId("test-promote-element");
+
+      expect(promotionElement).toBeVisible();
+    });
+  });
+
+  describe("handles error for promotion (type schema, topic and connector)", () => {
     const originalConsoleError = console.error;
 
     beforeEach(() => {
