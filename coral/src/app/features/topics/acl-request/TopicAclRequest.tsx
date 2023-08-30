@@ -1,22 +1,20 @@
 import { Box } from "@aivenio/aquarium";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useForm } from "src/app/components/Form";
 import AclTypeField from "src/app/features/topics/acl-request/fields/AclTypeField";
-import SkeletonForm from "src/app/features/topics/acl-request/forms/SkeletonForm";
-import TopicConsumerForm from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
-import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicProducerForm";
-import useExtendedEnvironments from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
 import topicConsumerFormSchema, {
   TopicConsumerFormSchema,
 } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-consumer";
 import topicProducerFormSchema, {
   TopicProducerFormSchema,
 } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-producer";
-import { getTopicTeam, TopicTeam } from "src/domain/topic";
-import { AclType } from "src/domain/acl";
 import { environment } from "src/app/features/topics/acl-request/form-schemas/topic-acl-request-shared-fields";
+import SkeletonForm from "src/app/features/topics/acl-request/forms/SkeletonForm";
+import TopicConsumerForm from "src/app/features/topics/acl-request/forms/TopicConsumerForm";
+import TopicProducerForm from "src/app/features/topics/acl-request/forms/TopicProducerForm";
+import useExtendedEnvironments from "src/app/features/topics/acl-request/queries/useExtendedEnvironments";
+import { AclType } from "src/domain/acl";
 
 const TopicAclRequest = () => {
   const navigate = useNavigate();
@@ -32,6 +30,9 @@ const TopicAclRequest = () => {
       aclType: "PRODUCER",
       aclPatternType: topicName !== undefined ? "LITERAL" : undefined,
       environment: searchParams.get("env") ?? undefined,
+      // teamId is required, but we only add it to the form data when submitting the form
+      // as it depends on the topicname and aclpatterntype fiewlds
+      teamId: 0,
     },
   });
 
@@ -43,6 +44,11 @@ const TopicAclRequest = () => {
       aclType: "CONSUMER",
       consumergroup: "",
       environment: searchParams.get("env") ?? undefined,
+      // teamId is required, but we only add it to the form data when submitting the form...
+      // ...as it depends on the topicname and aclPatternType fields.
+      // We need to give it a default value, otherwise the submit handler of the Form would not trigger...
+      /// ... because the form data would be missing a required value.
+      teamId: 0,
     },
   });
 
@@ -79,42 +85,6 @@ const TopicAclRequest = () => {
       topicProducerForm.watch("environment"),
       topicConsumerForm.watch("environment"),
     ]
-  );
-
-  const selectedPatternType =
-    aclType === "PRODUCER"
-      ? topicProducerForm.watch("aclPatternType")
-      : "LITERAL";
-  const selectedTopicName =
-    aclType === "PRODUCER"
-      ? topicProducerForm.watch("topicname")
-      : topicConsumerForm.watch("topicname");
-
-  useQuery<TopicTeam, Error>(
-    ["topicTeam", selectedTopicName, selectedPatternType, aclType],
-    {
-      queryFn: () =>
-        getTopicTeam({
-          topicName: selectedTopicName,
-          patternType: selectedPatternType,
-        }),
-      onSuccess: ({ error, teamId }) => {
-        // If error is not undefined, the other properties will be undefined
-        // Then it means that the topic and pattern type the user has chosen are incompatible
-        // And therefore no single team can be returned
-        // Example: pattern type is PREFIXED, but different topics with the prefix have different teams
-        // We therefore need to error
-        // @TODO this should be an error notification, not a runtime error
-        if (error !== undefined || teamId === undefined) {
-          throw new Error(error);
-        }
-        return aclType === "PRODUCER"
-          ? topicProducerForm.setValue("teamId", teamId)
-          : topicConsumerForm.setValue("teamId", teamId);
-      },
-      enabled: selectedTopicName !== undefined,
-      keepPreviousData: true,
-    }
   );
 
   // If the environment selected is an Aiven cluster, some fields can only have a certain value,
