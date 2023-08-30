@@ -15,6 +15,9 @@ import {
 } from "src/app/router_utils";
 import { ConnectorOverview } from "src/domain/connector";
 import { getConnectorOverview } from "src/domain/connector/connector-api";
+import { Box } from "@aivenio/aquarium";
+import { ClaimBanner } from "src/app/features/components/ClaimBanner";
+import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
 
 type ConnectorOverviewProps = {
   connectorName: string;
@@ -40,6 +43,7 @@ function findMatchingTab(
 function ConnectorDetails(props: ConnectorOverviewProps) {
   const { connectorName } = props;
   const { state: initialEnvironment }: { state: string | null } = useLocation();
+  const [showClaimModal, setShowClaimModal] = useState(false);
 
   const matches = useMatches();
   const currentTab = findMatchingTab(matches);
@@ -78,7 +82,18 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
   }
 
   return (
-    <div>
+    <>
+      {showClaimModal && (
+        <ClaimConfirmationModal
+          onSubmit={() => {
+            setShowClaimModal(false);
+            console.log("submit");
+          }}
+          onClose={() => setShowClaimModal(false)}
+          isLoading={false}
+          entity={"connector"}
+        />
+      )}
       <EntityDetailsHeader
         entity={{ name: connectorName, type: "connector" }}
         entityExists={Boolean(connectorData?.connectorExists)}
@@ -91,6 +106,28 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         hasPendingRequest={Boolean(connectorData?.connectorInfo.hasOpenRequest)}
       />
 
+      {connectorData?.connectorInfo !== undefined &&
+        !connectorData.connectorInfo.connectorOwner && (
+          <Box marginBottom={"l1"}>
+            <ClaimBanner
+              entityType={"connector"}
+              entityName={connectorName}
+              //@TODO use data when api is ready
+              //connectorData?.connectorInfo.hasOpenClaimRequest (not implemented yet)
+              hasOpenClaimRequest={false}
+              entityOwner={connectorData.connectorInfo.teamName}
+              //@TODO use data when api is ready
+              //connectorData?.connectorInfo.hasOpenRequest
+              hasOpenRequest={false}
+              claimEntity={() => setShowClaimModal(true)}
+              //@TODO use data when api is ready
+              isError={false}
+              //@TODO use data when api is ready
+              errorMessage={""}
+            />
+          </Box>
+        )}
+
       <ConnectorOverviewResourcesTabs
         isError={connectorIsError}
         error={connectorError}
@@ -100,7 +137,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
         connectorOverview={connectorData}
         connectorIsRefetching={connectorIsRefetching}
       />
-    </div>
+    </>
   );
 }
 
