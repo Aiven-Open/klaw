@@ -15,8 +15,9 @@ import io.aiven.klaw.dao.metadata.KwRequests;
 import io.aiven.klaw.helpers.HandleDbRequests;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -77,6 +78,10 @@ public class ExportImportDataService {
   private static final String ADMIN_CONFIG_PREFIX = "admin_config";
   private static final String KW_DATA_PREFIX = "kwdata";
   private static final String KW_REQUEST_DATA_PREFIX = "kwrequests_data";
+
+  private static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm-ss").withZone(ZoneId.systemDefault());
+
   @Autowired ManageDatabase manageDatabase;
 
   @SchedulerLock(
@@ -264,8 +269,6 @@ public class ExportImportDataService {
   }
 
   private String getTimeStamp() {
-    String dataPattern = "yyyy-MM-dd-HH-mm-ss";
-    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dataPattern);
-    return simpleDateFormat.format(new Date());
+    return DATE_TIME_FORMATTER.format(Instant.now());
   }
 }

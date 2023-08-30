@@ -44,12 +44,17 @@ import io.aiven.klaw.model.requests.KafkaConnectorModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRequestModel;
 import io.aiven.klaw.model.requests.KafkaConnectorRestartModel;
 import io.aiven.klaw.model.response.*;
-import java.text.SimpleDateFormat;
+import io.aiven.klaw.model.response.ConnectorOverview;
+import io.aiven.klaw.model.response.ConnectorOverviewPerEnv;
+import io.aiven.klaw.model.response.EnvIdInfo;
+import io.aiven.klaw.model.response.KafkaConnectorModelResponse;
+import io.aiven.klaw.model.response.KafkaConnectorRequestsResponseModel;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -80,6 +85,9 @@ public class KafkaConnectControllerService {
 
   public static final TypeReference<ArrayList<ResourceHistory>> VALUE_TYPE_REF =
       new TypeReference<>() {};
+
+  public static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss");
 
   @Value("${klaw.connect.sensitive.fields:password}")
   private String kafkaConnectorSensitiveFields;
@@ -725,17 +733,16 @@ public class KafkaConnectControllerService {
         connectorHistoryList.addAll(existingConnectorHistory);
       }
 
-      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-
       ResourceHistory connectorHistory = new ResourceHistory();
       connectorHistory.setTeamName(
           manageDatabase.getTeamNameFromTeamId(tenantId, connectorRequest.getTeamId()));
       connectorHistory.setEnvironmentName(
           getKafkaConnectEnvDetails(connectorRequest.getEnvironment()).getName());
       connectorHistory.setRequestedBy(connectorRequest.getRequestor());
-      connectorHistory.setRequestedTime(simpleDateFormat.format(connectorRequest.getRequesttime()));
+      connectorHistory.setRequestedTime(
+          DATE_TIME_FORMATTER.format(connectorRequest.getRequesttime().toInstant()));
       connectorHistory.setApprovedBy(userName);
-      connectorHistory.setApprovedTime(simpleDateFormat.format(new Date()));
+      connectorHistory.setApprovedTime(DATE_TIME_FORMATTER.format(Instant.now()));
       connectorHistory.setRemarks("Connector " + connectorRequest.getRequestOperationType());
       connectorHistoryList.add(connectorHistory);
 

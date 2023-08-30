@@ -914,10 +914,11 @@ public class KafkaConnectControllerServiceTest {
         .hasMessage("Sorry, your team does not own the connector !!");
   }
 
-// NEW
+  // NEW
   @Test
   @Order(23)
-  public void getConnectorOverview_WithClaimRequestsOpenAndNoOtherRequestOpen() throws KlawException {
+  public void getConnectorOverview_WithClaimRequestsOpenAndNoOtherRequestOpen()
+      throws KlawException {
     // A promotion is available for the tst connector but we are checking for the dev one and that
     // has already been promoted to tst.
     Set<String> envListIds = new HashSet<>();
@@ -930,23 +931,26 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectors(2));
     when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
     when(commonUtilsService.getEnvProperty(
-        eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
         .thenReturn("0,1,2,3");
     when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
         .thenReturn("0,1,2");
     when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
         .thenReturn(generateEnvironments());
     when(manageDatabase
-             .getHandleDbRequests()
-             .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
 
     when(manageDatabase
-             .getHandleDbRequests()
-             .existsConnectorRequest(
-                 eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
         .thenReturn(false);
-    when(manageDatabase.getHandleDbRequests().existsClaimConnectorRequest(eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq(101)))
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsClaimConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq(101)))
         .thenReturn(true);
 
     ConnectorOverview response =
@@ -972,34 +976,41 @@ public class KafkaConnectControllerServiceTest {
         .thenReturn(generateKafkaConnectors(2));
     when(commonUtilsService.getEnvsFromUserId(eq(USERNAME))).thenReturn(Set.of("0", "1", "2", "3"));
     when(commonUtilsService.getEnvProperty(
-        eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
+            eq(TENANT_ID), eq("REQUEST_CONNECTORS_OF_KAFKA_CONNECT_ENVS")))
         .thenReturn("0,1,2,3");
     when(commonUtilsService.getEnvProperty(eq(TENANT_ID), eq(ORDER_OF_KAFKA_CONNECT_ENVS)))
         .thenReturn("0,1,2");
     when(manageDatabase.getKafkaConnectEnvList(commonUtilsService.getTenantId(eq(USERNAME))))
         .thenReturn(generateEnvironments());
     when(manageDatabase
-             .getHandleDbRequests()
-             .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
+            .getHandleDbRequests()
+            .getConnectorsFromName(eq(CONNECTOR_NAME), eq(TENANT_ID)))
         .thenReturn(generateKafkaConnectors(2));
 
     when(manageDatabase
-             .getHandleDbRequests()
-             .existsConnectorRequest(
-                 eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq("1"), eq(101)))
         .thenReturn(true);
 
-    when(manageDatabase.getHandleDbRequests().existsConnectorRequest(eq(CONNECTOR_NAME), eq(RequestStatus.CREATED.value), eq(RequestOperationType.PROMOTE.value), eq("PRD"), eq(101)))
+    when(manageDatabase
+            .getHandleDbRequests()
+            .existsConnectorRequest(
+                eq(CONNECTOR_NAME),
+                eq(RequestStatus.CREATED.value),
+                eq(RequestOperationType.PROMOTE.value),
+                eq("PRD"),
+                eq(101)))
         .thenReturn(true);
 
     ConnectorOverview response =
         kafkaConnectControllerService.getConnectorOverview(CONNECTOR_NAME, "1");
 
     assertThat(response.getConnectorInfoList().get(0).isHasOpenRequest()).isTrue();
-    assertThat(response.getPromotionDetails().getStatus()).isEqualTo(PromotionStatusType.REQUEST_OPEN);
+    assertThat(response.getPromotionDetails().getStatus())
+        .isEqualTo(PromotionStatusType.REQUEST_OPEN);
     assertThat(response.getAvailableEnvironments()).hasSize(2);
   }
-
 
   private static Team createTeam(String teamName, int teamId) {
     Team t = new Team();

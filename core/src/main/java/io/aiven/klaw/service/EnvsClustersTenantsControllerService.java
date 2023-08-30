@@ -10,6 +10,7 @@ import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_105;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_106;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_107;
 import static io.aiven.klaw.error.KlawErrorMessages.ENV_CLUSTER_TNT_ERR_108;
+import static io.aiven.klaw.helpers.KwConstants.DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_EXPIRY_DEFAULT_TENANT;
 import static io.aiven.klaw.helpers.KwConstants.DAYS_TRIAL_PERIOD;
 import static io.aiven.klaw.helpers.KwConstants.DEFAULT_TENANT_ID;
@@ -58,7 +59,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -1111,8 +1111,7 @@ public class EnvsClustersTenantsControllerService {
     if (tenant.isPresent()) {
       kwTenantModel.setTenantName(tenant.get().getTenantName());
       kwTenantModel.setLicenseExpiryDate(
-          ((new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss"))
-              .format(tenant.get().getLicenseExpiry().getTime())));
+          DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER.format(tenant.get().getLicenseExpiry().toInstant()));
       kwTenantModel.setContactPerson(tenant.get().getContactPerson());
       kwTenantModel.setInTrialPhase("true".equals(tenant.get().getInTrial()));
       long timeInMilliSeconds =
