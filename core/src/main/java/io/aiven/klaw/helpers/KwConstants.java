@@ -1,5 +1,7 @@
 package io.aiven.klaw.helpers;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -135,4 +137,7 @@ public class KwConstants {
       "/topics/serviceAccountDetails/project/projectName/service/serviceName/user/userName";
   public static final String URI_AIVEN_SERVICE_ACCOUNTS =
       "/topics/serviceAccounts/project/projectName/service/serviceName";
+
+  public static final DateTimeFormatter DATE_TIME_DDMMMYYYY_HHMMSS_FORMATTER =
+      DateTimeFormatter.ofPattern("dd-MMM-yyyy HH:mm:ss").withZone(ZoneId.systemDefault());
 }

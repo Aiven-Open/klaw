@@ -33,7 +33,9 @@ import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -74,6 +76,9 @@ public class CommonUtilsService {
 
   public static final String BASE_URL_ADDRESS = "BASE_URL_ADDRESS";
   public static final String BASE_URL_NAME = "BASE_URL_NAME";
+
+  public static final DateTimeFormatter DATE_TIME_FORMATTER =
+      DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
 
   public static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -715,15 +720,13 @@ public class CommonUtilsService {
         }
       }
 
-      SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MMM-dd HH:mm:ss");
-
       ResourceHistory topicHistory = new ResourceHistory();
       topicHistory.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, ownerTeamId));
       topicHistory.setEnvironmentName(getEnvDetails(topicEnvironment, tenantId).getName());
       topicHistory.setRequestedBy(requestor);
-      topicHistory.setRequestedTime(simpleDateFormat.format(requestedTime));
+      topicHistory.setRequestedTime(DATE_TIME_FORMATTER.format(requestedTime.toInstant()));
       topicHistory.setApprovedBy(userName);
-      topicHistory.setApprovedTime(simpleDateFormat.format(new Date()));
+      topicHistory.setApprovedTime(DATE_TIME_FORMATTER.format(Instant.now()));
       topicHistory.setRemarks(remarks);
       topicHistoryList.add(topicHistory);
 
