@@ -1233,8 +1233,8 @@ export type components = {
       scales?: components["schemas"]["Scales"];
     };
     Scales: {
-      xaxes?: (components["schemas"]["YAx"])[];
       yaxes?: (components["schemas"]["YAx"])[];
+      xaxes?: (components["schemas"]["YAx"])[];
     };
     TeamOverview: {
       producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
