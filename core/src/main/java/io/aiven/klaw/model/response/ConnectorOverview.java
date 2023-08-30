@@ -9,7 +9,7 @@ import lombok.Data;
 public class ConnectorOverview {
   @NotNull List<KafkaConnectorModelResponse> connectorInfoList;
   private List<ResourceHistory> connectorHistoryList;
-  ConnectorPromotionStatus promotionDetails;
+  @NotNull ConnectorPromotionStatus promotionDetails;
   @NotNull boolean connectorExists;
   @NotNull private List<EnvIdInfo> availableEnvironments;
   String connectorDocumentation;

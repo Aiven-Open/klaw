@@ -8,6 +8,6 @@ import lombok.Data;
 public class SchemaOverview extends ResourceOverviewAttributes {
   private List<Integer> allSchemaVersions;
   private Integer latestVersion;
-  @NotNull private TopicPromotionStatus schemaPromotionDetails;
+  @NotNull private PromotionStatus schemaPromotionDetails;
   private SchemaDetailsPerEnv schemaDetailsPerEnv;
 }

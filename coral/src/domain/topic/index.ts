@@ -23,7 +23,8 @@ import {
   TopicSchemaOverview,
   TopicTeam,
 } from "src/domain/topic/topic-types";
-
+import { PromotionStatus } from "src/domain/promotion/promotion-types";
+export type { PromotionStatus };
 export {
   requestTopicClaim,
   requestTopicDeletion,

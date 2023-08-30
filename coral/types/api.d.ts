@@ -1128,6 +1128,15 @@ export type components = {
       consumergroup?: string;
       transactionalId?: string;
     };
+    PromotionStatus: {
+      /** @enum {string} */
+      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
+      sourceEnv?: string;
+      targetEnv?: string;
+      targetEnvId?: string;
+      error?: string;
+      topicName?: string;
+    };
     ResourceHistory: {
       environmentName: string;
       teamName: string;
@@ -1148,7 +1157,7 @@ export type components = {
       prefixedAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       transactionalAclInfoList?: (components["schemas"]["AclOverviewInfo"])[];
       topicHistoryList?: (components["schemas"]["ResourceHistory"])[];
-      topicPromotionDetails: components["schemas"]["TopicPromotionStatus"];
+      topicPromotionDetails: components["schemas"]["PromotionStatus"];
       availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       topicDocumentation?: string;
       /** Format: int32 */
@@ -1182,15 +1191,6 @@ export type components = {
       clusterId: number;
       highestEnv?: boolean;
       topicOwner?: boolean;
-    };
-    TopicPromotionStatus: {
-      /** @enum {string} */
-      status: "SUCCESS" | "NOT_AUTHORIZED" | "REQUEST_OPEN" | "NO_PROMOTION" | "FAILURE";
-      sourceEnv?: string;
-      targetEnv?: string;
-      targetEnvId?: string;
-      error?: string;
-      topicName?: string;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -1233,8 +1233,8 @@ export type components = {
       scales?: components["schemas"]["Scales"];
     };
     Scales: {
-      yaxes?: (components["schemas"]["YAx"])[];
       xaxes?: (components["schemas"]["YAx"])[];
+      yaxes?: (components["schemas"]["YAx"])[];
     };
     TeamOverview: {
       producerAclsPerTeamsOverview?: components["schemas"]["ChartsJsOverview"];
@@ -1450,7 +1450,7 @@ export type components = {
       allSchemaVersions?: (number)[];
       /** Format: int32 */
       latestVersion?: number;
-      schemaPromotionDetails: components["schemas"]["TopicPromotionStatus"];
+      schemaPromotionDetails: components["schemas"]["PromotionStatus"];
       schemaDetailsPerEnv?: components["schemas"]["SchemaDetailsPerEnv"];
     };
     KwReport: {
@@ -1515,7 +1515,7 @@ export type components = {
     ConnectorOverview: {
       connectorInfoList: (components["schemas"]["KafkaConnectorModelResponse"])[];
       connectorHistoryList?: (components["schemas"]["ResourceHistory"])[];
-      promotionDetails?: components["schemas"]["ConnectorPromotionStatus"];
+      promotionDetails: components["schemas"]["ConnectorPromotionStatus"];
       connectorExists: boolean;
       availableEnvironments: (components["schemas"]["EnvIdInfo"])[];
       connectorDocumentation?: string;

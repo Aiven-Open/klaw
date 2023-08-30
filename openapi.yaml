@@ -7240,6 +7240,30 @@
         },
         "required" : [ "aclPatternType", "environment", "environmentName", "kafkaFlavorType", "req_no", "showDeleteAcl", "teamid", "teamname", "topicname", "topictype" ]
       },
+      "PromotionStatus" : {
+        "properties" : {
+          "status" : {
+            "type" : "string",
+            "enum" : [ "SUCCESS", "NOT_AUTHORIZED", "REQUEST_OPEN", "NO_PROMOTION", "FAILURE" ]
+          },
+          "sourceEnv" : {
+            "type" : "string"
+          },
+          "targetEnv" : {
+            "type" : "string"
+          },
+          "targetEnvId" : {
+            "type" : "string"
+          },
+          "error" : {
+            "type" : "string"
+          },
+          "topicName" : {
+            "type" : "string"
+          }
+        },
+        "required" : [ "status" ]
+      },
       "ResourceHistory" : {
         "properties" : {
           "environmentName" : {
@@ -7314,7 +7338,7 @@
             }
           },
           "topicPromotionDetails" : {
-            "$ref" : "#/components/schemas/TopicPromotionStatus"
+            "$ref" : "#/components/schemas/PromotionStatus"
           },
           "availableEnvironments" : {
             "type" : "array",
@@ -7408,30 +7432,6 @@
           }
         },
         "required" : [ "clusterId", "description", "envId", "envName", "hasACL", "hasOpenACLRequest", "hasOpenClaimRequest", "hasOpenRequest", "hasOpenSchemaRequest", "hasOpenTopicRequest", "hasSchema", "noOfPartitions", "noOfReplicas", "showDeleteTopic", "showEditTopic", "teamId", "teamname", "topicDeletable", "topicName" ]
-      },
-      "TopicPromotionStatus" : {
-        "properties" : {
-          "status" : {
-            "type" : "string",
-            "enum" : [ "SUCCESS", "NOT_AUTHORIZED", "REQUEST_OPEN", "NO_PROMOTION", "FAILURE" ]
-          },
-          "sourceEnv" : {
-            "type" : "string"
-          },
-          "targetEnv" : {
-            "type" : "string"
-          },
-          "targetEnvId" : {
-            "type" : "string"
-          },
-          "error" : {
-            "type" : "string"
-          },
-          "topicName" : {
-            "type" : "string"
-          }
-        },
-        "required" : [ "status" ]
       },
       "TopicBaseConfig" : {
         "properties" : {
@@ -8172,7 +8172,7 @@
             "format" : "int32"
           },
           "schemaPromotionDetails" : {
-            "$ref" : "#/components/schemas/TopicPromotionStatus"
+            "$ref" : "#/components/schemas/PromotionStatus"
           },
           "schemaDetailsPerEnv" : {
             "$ref" : "#/components/schemas/SchemaDetailsPerEnv"
@@ -8369,7 +8369,7 @@
             "format" : "int32"
           }
         },
-        "required" : [ "availableEnvironments", "connectorExists", "connectorIdForDocumentation", "connectorInfoList" ]
+        "required" : [ "availableEnvironments", "connectorExists", "connectorIdForDocumentation", "connectorInfoList", "promotionDetails" ]
       },
       "ConnectorPromotionStatus" : {
         "properties" : {

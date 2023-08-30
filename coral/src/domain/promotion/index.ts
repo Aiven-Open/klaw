@@ -1,3 +1,3 @@
-import { TopicPromotionStatus } from "src/domain/promotion/promotion-types";
+import { PromotionStatus } from "src/domain/promotion/promotion-types";
 
-export type { TopicPromotionStatus };
+export type { PromotionStatus };

@@ -1,5 +1,5 @@
 import { KlawApiModel } from "types/utils";
 
-type TopicPromotionStatus = KlawApiModel<"TopicPromotionStatus">;
+type PromotionStatus = KlawApiModel<"PromotionStatus">;
 
-export type { TopicPromotionStatus };
+export type { PromotionStatus };

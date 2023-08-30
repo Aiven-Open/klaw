@@ -11,9 +11,9 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.PromotionStatusType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.enums.RequestStatus;
+import io.aiven.klaw.model.response.PromotionStatus;
 import io.aiven.klaw.model.response.SchemaDetailsPerEnv;
 import io.aiven.klaw.model.response.SchemaOverview;
-import io.aiven.klaw.model.response.TopicPromotionStatus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -305,7 +305,7 @@ public class SchemaOverviewService extends BaseOverviewService {
       Env schemaEnv,
       List<String> kafkaEnvIds) {
     log.debug("SchemaEnv Id {} KafkaEnvIds {}", schemaEnv.getId(), kafkaEnvIds);
-    TopicPromotionStatus promotionDetails = new TopicPromotionStatus();
+    PromotionStatus promotionDetails = new PromotionStatus();
     String orderEnvs = commonUtilsService.getEnvProperty(tenantId, ORDER_OF_TOPIC_ENVS);
     generatePromotionDetails(
         tenantId,
@@ -315,7 +315,7 @@ public class SchemaOverviewService extends BaseOverviewService {
             : null,
         orderEnvs);
     if (schemaOverview.getSchemaPromotionDetails() == null) {
-      TopicPromotionStatus searchOverviewPromotionDetails = new TopicPromotionStatus();
+      PromotionStatus searchOverviewPromotionDetails = new PromotionStatus();
       schemaOverview.setSchemaPromotionDetails(searchOverviewPromotionDetails);
     }
 
@@ -330,7 +330,7 @@ public class SchemaOverviewService extends BaseOverviewService {
   }
 
   private boolean verifyIfTopicExistsInTargetSchemaEnv(
-      List<String> kafkaEnvIds, TopicPromotionStatus promotionDetails, int tenantId) {
+      List<String> kafkaEnvIds, PromotionStatus promotionDetails, int tenantId) {
     if (promotionDetails.getTargetEnvId() == null) {
       return false;
     }

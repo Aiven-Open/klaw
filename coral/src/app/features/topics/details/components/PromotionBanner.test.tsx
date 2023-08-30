@@ -3,7 +3,7 @@ import { PromotionBanner } from "src/app/features/topics/details/components/Prom
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import { KlawApiModel } from "types/utils";
 
-const promotionDetails: KlawApiModel<"TopicPromotionStatus"> = {
+const promotionDetails: KlawApiModel<"PromotionStatus"> = {
   status: "SUCCESS",
   targetEnv: "TST",
   sourceEnv: "DEV",
