@@ -3,6 +3,7 @@ package io.aiven.klaw.helpers;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import org.apache.commons.lang3.math.NumberUtils;
 
 public class Pager {
   public static final int DEFAULT_REC_PER_PAGE = 20;
@@ -13,24 +14,26 @@ public class Pager {
       case ">>" -> totalPages;
       case "<" -> Integer.parseInt(currentPage) - 1;
       case "<<" -> 1;
-      default -> currentPage.isBlank() ? 1 : Integer.parseInt(currentPage);
+      default -> currentPage.isBlank() || !NumberUtils.isCreatable(currentPage)
+          ? 1
+          : Integer.parseInt(currentPage);
     };
   }
 
   private static void getAllPagesList(
-      String pageNo, String currentPage, int totalPages, List<String> numList) {
-    final int pageNoInt = Integer.parseInt(pageNo);
-    if (currentPage != null && pageNoInt > 1 && totalPages > 1 && !currentPage.isEmpty()) {
+      int pageNo, String currentPage, int totalPages, List<String> numList) {
+
+    if (currentPage != null && pageNo > 1 && totalPages > 1 && !currentPage.isEmpty()) {
       numList.add("<<");
       numList.add("<");
     }
 
-    if (totalPages > pageNoInt) {
-      numList.add(pageNo);
+    if (totalPages > pageNo) {
+      numList.add(Integer.toString(pageNo));
       numList.add(">");
       numList.add(">>");
-    } else if (totalPages == pageNoInt) {
-      numList.add(pageNo);
+    } else if (totalPages == pageNo) {
+      numList.add(Integer.toString(pageNo));
     }
   }
 
@@ -59,9 +62,9 @@ public class Pager {
     final int lastVar = Math.min(requestPageNo * recsPerPage, totalRecs);
 
     List<String> numList = new ArrayList<>();
-    getAllPagesList(pageNo, currentPage, totalPages, numList);
+    getAllPagesList(requestPageNo, currentPage, totalPages, numList);
 
-    PageContext pageContext = PageContext.of(totalPages, numList, pageNo);
+    PageContext pageContext = PageContext.of(totalPages, numList, Integer.toString(requestPageNo));
     for (int i = startVar; i < lastVar; i++) {
       aclListMapUpdated.add(consumer.apply(pageContext, aclListMap.get(i)));
     }
