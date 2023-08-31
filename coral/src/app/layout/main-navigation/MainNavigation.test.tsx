@@ -34,16 +34,18 @@ const navLinks = [
   { name: "Audit log", linkTo: "/activityLog" },
 ];
 
-const submenuItems = [{ name: "Users and teams", links: ["Users", "Teams"] }];
+const submenuItems = [
+  { name: "Configuration", links: ["Users", "Teams", "Environments"] },
+];
 
 const navOrderFirstLevel = [
   { name: "Dashboard", isSubmenu: false },
   { name: "Topics", isSubmenu: false },
   { name: "Connectors", isSubmenu: false },
-  { name: "Users and teams", isSubmenu: true },
   { name: "Approve requests", isSubmenu: false },
   { name: "My team's requests", isSubmenu: false },
   { name: "Audit log", isSubmenu: false },
+  { name: "Configuration", isSubmenu: true },
 ];
 
 describe("MainNavigation.tsx", () => {
@@ -202,15 +204,17 @@ describe("MainNavigation.tsx", () => {
 
     describe("user can navigate backward through first level navigation", () => {
       beforeEach(() => {
-        const lastElement =
-          navOrderFirstLevel[navOrderFirstLevel.length - 1].name;
+        const lastElement = navOrderFirstLevel[navOrderFirstLevel.length - 1];
         customRender(<MainNavigation />, {
           memoryRouter: true,
           queryClient: true,
         });
-        const lastNavItem = screen.getByRole("link", {
-          name: lastElement,
-        });
+        const lastNavItem = screen.getByRole(
+          lastElement.isSubmenu ? "button" : "link",
+          {
+            name: new RegExp(lastElement.name, "i"),
+          }
+        );
         lastNavItem.focus();
       });
 
@@ -221,8 +225,7 @@ describe("MainNavigation.tsx", () => {
         const name = link.name;
         const element = link.isSubmenu ? "button" : "link";
         const numbersOfTabs = index;
-
-        it(`sets focus to link ${link.name} when user shift+tabs ${numbersOfTabs} times`, async () => {
+        it(`sets focus to ${element} ${link.name} when user shift+tabs ${numbersOfTabs} times`, async () => {
           const link = screen.getByRole(element, {
             name: new RegExp(name, "i"),
           });

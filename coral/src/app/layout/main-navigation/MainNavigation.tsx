@@ -1,16 +1,16 @@
 import { Box, Divider } from "@aivenio/aquarium";
-import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import add from "@aivenio/aquarium/dist/src/icons/add";
+import codeBlock from "@aivenio/aquarium/dist/src/icons/codeBlock";
 import database from "@aivenio/aquarium/dist/src/icons/database";
 import dataflow02 from "@aivenio/aquarium/dist/src/icons/dataflow02";
 import list from "@aivenio/aquarium/dist/src/icons/list";
-import people from "@aivenio/aquarium/dist/src/icons/people";
+import settings from "@aivenio/aquarium/dist/src/icons/settings";
 import tickCircle from "@aivenio/aquarium/dist/src/icons/tickCircle";
 import { useLocation } from "react-router-dom";
+import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 import MainNavigationLink from "src/app/layout/main-navigation/MainNavigationLink";
 import MainNavigationSubmenuList from "src/app/layout/main-navigation/MainNavigationSubmenuList";
 import { Routes } from "src/app/router_utils";
-import { TeamInfo } from "src/app/features/team-info/TeamInfo";
 
 function MainNavigation() {
   const { pathname } = useLocation();
@@ -61,12 +61,6 @@ function MainNavigation() {
           />
         </li>
         <li>
-          <MainNavigationSubmenuList icon={people} text={"Users and teams"}>
-            <MainNavigationLink to={`/users`} linkText={"Users"} />
-            <MainNavigationLink to={`/teams`} linkText={"Teams"} />
-          </MainNavigationSubmenuList>
-        </li>
-        <li>
           <MainNavigationLink
             icon={tickCircle}
             to={Routes.APPROVALS}
@@ -88,6 +82,25 @@ function MainNavigation() {
             to={`/activityLog`}
             linkText={"Audit log"}
           />
+        </li>
+        <Box aria-hidden={"true"} paddingTop={"l1"} paddingBottom={"l2"}>
+          <Divider direction="horizontal" size={2} />
+        </Box>
+        <li>
+          <MainNavigationSubmenuList icon={settings} text={"Configuration"}>
+            <MainNavigationLink
+              to={`/configuration/users`}
+              linkText={"Users"}
+            />
+            <MainNavigationLink
+              to={`/configuration/teams`}
+              linkText={"Teams"}
+            />
+            <MainNavigationLink
+              to={`/configuration/environments`}
+              linkText={"Environments"}
+            />
+          </MainNavigationSubmenuList>
         </li>
       </ul>
     </Box>
