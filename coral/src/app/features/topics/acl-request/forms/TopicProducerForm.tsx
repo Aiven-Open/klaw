@@ -95,9 +95,10 @@ const TopicProducerForm = ({
         patternType: payload.aclPatternType,
       });
 
-      // teamId will actually never be undefined, but will be 0 when there is an error
+      // When error !== undefined, teamId will not be undefined, but will be 0
       // However, the openapi.yaml definition doesn't reflect that, so we need to check for undefined
       // So that teamId in the happy path can be typed properly
+      // Related issue: https://github.com/Aiven-Open/klaw/issues/1710
       if (error !== undefined || teamId === undefined) {
         const errorMessage =
           error || "There was an error fetching the topic team.";
