@@ -112,13 +112,11 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
             <ClaimBanner
               entityType={"connector"}
               entityName={connectorName}
-              //@TODO use data when api is ready
-              //connectorData?.connectorInfo.hasOpenClaimRequest (not implemented yet)
-              hasOpenClaimRequest={false}
+              hasOpenClaimRequest={
+                connectorData?.connectorInfo.hasOpenClaimRequest
+              }
               entityOwner={connectorData.connectorInfo.teamName}
-              //@TODO use data when api is ready
-              //connectorData?.connectorInfo.hasOpenRequest
-              hasOpenRequest={false}
+              hasOpenRequest={connectorData?.connectorInfo.hasOpenRequest}
               claimEntity={() => setShowClaimModal(true)}
               //@TODO use data when api is ready
               isError={false}
