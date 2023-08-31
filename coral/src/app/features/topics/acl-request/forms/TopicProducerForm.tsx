@@ -102,7 +102,7 @@ const TopicProducerForm = ({
         const errorMessage =
           error || "There was an error fetching the topic team.";
         // We need to throw an error here instead of setting an error on the field for two reasons:
-        // - we need to prevent the useMutatino to reach onSuccess (which would navigate away)
+        // - we need to prevent the useMutation to reach onSuccess (which would navigate away)
         // - the error is a response from the getTopicTeam call, so is treated like a form submission error...
         // ... even if it's not strictly a form submission error
         throw new Error(errorMessage);
