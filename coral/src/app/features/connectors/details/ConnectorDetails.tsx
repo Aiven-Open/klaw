@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   Navigate,
@@ -13,11 +13,13 @@ import {
   ConnectorOverviewTabEnum,
   isConnectorsOverviewTabEnum,
 } from "src/app/router_utils";
-import { ConnectorOverview } from "src/domain/connector";
+import { ConnectorOverview, requestConnectorClaim } from "src/domain/connector";
 import { getConnectorOverview } from "src/domain/connector/connector-api";
-import { Box } from "@aivenio/aquarium";
+import { Box, useToast } from "@aivenio/aquarium";
 import { ClaimBanner } from "src/app/features/components/ClaimBanner";
 import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
+import { HTTPError } from "src/services/api";
+import { parseErrorMsg } from "src/services/mutation-utils";
 
 type ConnectorOverviewProps = {
   connectorName: string;
@@ -43,14 +45,21 @@ function findMatchingTab(
 function ConnectorDetails(props: ConnectorOverviewProps) {
   const { connectorName } = props;
   const { state: initialEnvironment }: { state: string | null } = useLocation();
+
   const [showClaimModal, setShowClaimModal] = useState(false);
-
-  const matches = useMatches();
-  const currentTab = findMatchingTab(matches);
-
   const [environmentId, setEnvironmentId] = useState<string | undefined>(
     initialEnvironment ?? undefined
   );
+
+  const [claimErrorMessage, setClaimErrorMessage] = useState<
+    string | undefined
+  >();
+
+  const toast = useToast();
+
+  const matches = useMatches();
+
+  const currentTab = findMatchingTab(matches);
 
   const {
     data: connectorData,
@@ -58,13 +67,45 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     error: connectorError,
     isLoading: connectorIsLoading,
     isRefetching: connectorIsRefetching,
-  } = useQuery(["connector-overview", connectorName, environmentId], {
+    refetch: refetchConnectors,
+  } = useQuery({
+    queryKey: ["connector-overview", connectorName, environmentId],
     queryFn: () =>
       getConnectorOverview({
         connectornamesearch: connectorName,
         environmentId,
       }),
   });
+
+  const {
+    mutate: createClaimConnectorRequest,
+    isLoading: isLoadingCreateClaimConnectorRequest,
+    isError: isErrorCreateClaimConnectorRequest,
+  } = useMutation(
+    (remark?: string) =>
+      requestConnectorClaim({
+        connectorName: connectorData?.connectorInfo.connectorName || "",
+        env: connectorData?.connectorInfo.environmentId || "",
+        remark,
+      }),
+    {
+      onSuccess: () => {
+        refetchConnectors().then(() => {
+          toast({
+            message: "Connector claim request successfully created",
+            position: "bottom-left",
+            variant: "default",
+          });
+        });
+      },
+      onError: (error: HTTPError) => {
+        setClaimErrorMessage(parseErrorMsg(error));
+      },
+      onSettled: () => {
+        setShowClaimModal(false);
+      },
+    }
+  );
 
   useEffect(() => {
     if (
@@ -85,12 +126,9 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     <>
       {showClaimModal && (
         <ClaimConfirmationModal
-          onSubmit={() => {
-            setShowClaimModal(false);
-            console.log("submit");
-          }}
+          onSubmit={createClaimConnectorRequest}
           onClose={() => setShowClaimModal(false)}
-          isLoading={false}
+          isLoading={isLoadingCreateClaimConnectorRequest}
           entity={"connector"}
         />
       )}
@@ -118,10 +156,8 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
               entityOwner={connectorData.connectorInfo.teamName}
               hasOpenRequest={connectorData?.connectorInfo.hasOpenRequest}
               claimEntity={() => setShowClaimModal(true)}
-              //@TODO use data when api is ready
-              isError={false}
-              //@TODO use data when api is ready
-              errorMessage={""}
+              isError={isErrorCreateClaimConnectorRequest}
+              errorMessage={claimErrorMessage}
             />
           </Box>
         )}

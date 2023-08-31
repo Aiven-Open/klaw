@@ -240,7 +240,7 @@ const requestConnectorClaim = (params: ConnectorClaimPayload) => {
   return api.post<
     KlawApiResponse<"createClaimConnectorRequest">,
     KlawApiModel<"ConnectorClaimRequestModel">
-  >(API_PATHS.createClaimTopicRequest, payload);
+  >(API_PATHS.createClaimConnectorRequest, payload);
 };
 
 export {

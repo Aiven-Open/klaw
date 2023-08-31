@@ -6,12 +6,25 @@ import {
 } from "@testing-library/react";
 import { within } from "@testing-library/react/pure";
 import { ConnectorDetails } from "src/app/features/connectors/details/ConnectorDetails";
-import { ConnectorOverview, getConnectorOverview } from "src/domain/connector";
+import {
+  ConnectorOverview,
+  getConnectorOverview,
+  requestConnectorClaim,
+} from "src/domain/connector";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 import userEvent from "@testing-library/user-event";
 
 const mockMatches = jest.fn();
 const mockedNavigate = jest.fn();
+const mockedUseToast = jest.fn();
+const mockGetConnectorOverview = getConnectorOverview as jest.MockedFunction<
+  typeof getConnectorOverview
+>;
+
+const mockRequestConnectorClaim = requestConnectorClaim as jest.MockedFunction<
+  typeof requestConnectorClaim
+>;
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () =>
@@ -24,9 +37,10 @@ jest.mock("react-router-dom", () => ({
 
 jest.mock("src/domain/connector/connector-api");
 
-const mockGetConnectorOverview = getConnectorOverview as jest.MockedFunction<
-  typeof getConnectorOverview
->;
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
 
 const testConnectorName = "my-connector";
 const testConnectorOverview: ConnectorOverview = {
@@ -75,45 +89,43 @@ const testConnectorOverview: ConnectorOverview = {
 };
 
 describe("ConnectorDetails", () => {
-  beforeAll(() => {
-    mockedNavigate.mockImplementation(() => {
-      return <div data-testid={"react-router-navigate"} />;
-    });
-  });
-
   describe("fetches the connector overview based on connector name", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockGetConnectorOverview.mockResolvedValue(testConnectorOverview);
       mockMatches.mockImplementation(() => [
         {
           id: "CONNECTOR_OVERVIEW_TAB_ENUM_overview",
         },
       ]);
+      customRender(<ConnectorDetails connectorName={testConnectorName} />, {
+        memoryRouter: true,
+        queryClient: true,
+      });
     });
 
-    afterAll(() => {
+    afterEach(() => {
       cleanup();
       jest.resetAllMocks();
     });
 
     it("fetches connector overview and schema data on first load of page", async () => {
-      customRender(<ConnectorDetails connectorName={testConnectorName} />, {
-        memoryRouter: true,
-        queryClient: true,
+      expect(mockGetConnectorOverview).toHaveBeenNthCalledWith(1, {
+        connectornamesearch: testConnectorName,
+        environmentId: undefined,
       });
-      await waitFor(() =>
-        expect(mockGetConnectorOverview).toHaveBeenCalledWith({
+    });
+
+    it("updates the environment based on lowest environment of the connector", async () => {
+      await waitFor(() => {
+        expect(mockGetConnectorOverview).toHaveBeenNthCalledWith(2, {
           connectornamesearch: testConnectorName,
           environmentId: testConnectorOverview.availableEnvironments[0].id,
-        })
-      );
+        });
+      });
     });
 
     it("fetches the data anew when user changes environment", async () => {
-      customRender(<ConnectorDetails connectorName={testConnectorName} />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
+      await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
 
       const select = await screen.findByRole("combobox", {
         name: "Select environment",
@@ -125,7 +137,7 @@ describe("ConnectorDetails", () => {
       );
 
       await waitFor(() =>
-        expect(mockGetConnectorOverview).toHaveBeenCalledWith({
+        expect(mockGetConnectorOverview).toHaveBeenNthCalledWith(3, {
           connectornamesearch: testConnectorName,
           environmentId: testConnectorOverview.availableEnvironments[1].id,
         })
@@ -138,10 +150,7 @@ describe("ConnectorDetails", () => {
       mockGetConnectorOverview.mockResolvedValue(testConnectorOverview);
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
-      cleanup();
-    });
+    afterEach(cleanup);
 
     it("shows the tablist with Overview as currently active panel", () => {
       mockMatches.mockImplementationOnce(() => [
@@ -187,10 +196,7 @@ describe("ConnectorDetails", () => {
       mockGetConnectorOverview.mockResolvedValue(testConnectorOverview);
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
-      cleanup();
-    });
+    afterEach(cleanup);
 
     it("does render content if the route matches an existing tab", () => {
       mockMatches.mockImplementation(() => [
@@ -239,10 +245,7 @@ describe("ConnectorDetails", () => {
       ]);
     });
 
-    afterEach(() => {
-      cleanup();
-      jest.clearAllMocks();
-    });
+    afterEach(cleanup);
 
     it("does not renders the Claim connector banner when user is topic owner", async () => {
       mockGetConnectorOverview.mockResolvedValue(testConnectorOverview);
@@ -296,7 +299,7 @@ describe("ConnectorDetails", () => {
   describe("allows users to claim a connector when they are not connector owner", () => {
     const originalConsoleError = console.error;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       console.error = jest.fn();
       mockMatches.mockImplementation(() => [
         {
@@ -315,17 +318,17 @@ describe("ConnectorDetails", () => {
         memoryRouter: true,
         queryClient: true,
       });
+
+      await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
     });
 
     afterEach(() => {
       console.error = originalConsoleError;
       cleanup();
-      jest.clearAllMocks();
+      jest.resetAllMocks();
     });
 
     it("shows a modal when clicking the Claim connector button", async () => {
-      await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
-
       const button = await waitFor(() =>
         screen.getByRole("button", { name: "Claim connector" })
       );
@@ -339,8 +342,6 @@ describe("ConnectorDetails", () => {
     });
 
     it("sends a request when clicking the submit button without entering a message", async () => {
-      await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
-
       const button = await waitFor(() =>
         screen.getByRole("button", { name: "Claim connector" })
       );
@@ -357,33 +358,10 @@ describe("ConnectorDetails", () => {
 
       await userEvent.click(submitButton);
 
-      //expect api call when api is ready
-      expect(console.error).not.toHaveBeenCalled();
-    });
-
-    it("sends a request when clicking the submit button with the message entered by the user", async () => {
-      await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
-
-      const button = await waitFor(() =>
-        screen.getByRole("button", { name: "Claim connector" })
-      );
-
-      await userEvent.click(button);
-
-      const modal = screen.getByRole("dialog", { name: "Claim connector" });
-
-      expect(modal).toBeVisible();
-
-      const submitButton = screen.getByRole("button", {
-        name: "Request claim connector",
+      expect(mockRequestConnectorClaim).toHaveBeenCalledWith({
+        connectorName: testConnectorOverview.connectorInfo.connectorName,
+        env: testConnectorOverview.connectorInfo.environmentId,
       });
-
-      const textArea = screen.getByRole("textbox");
-
-      await userEvent.type(textArea, "hello");
-      await userEvent.click(submitButton);
-
-      //expect api call when api is ready
       expect(console.error).not.toHaveBeenCalled();
     });
 
@@ -408,23 +386,69 @@ describe("ConnectorDetails", () => {
 
       expect(modal).not.toBeVisible();
 
-      // await waitFor(() =>
-      // @TODO when api is ready
-      // expect(mockedUseToast).toHaveBeenCalledWith({
-      //   message: "Topic claim request successfully created",
-      //   position: "bottom-left",
-      //   variant: "default",
-      // })
-      // );
+      await waitFor(() =>
+        expect(mockedUseToast).toHaveBeenCalledWith({
+          message: "Connector claim request successfully created",
+          position: "bottom-left",
+          variant: "default",
+        })
+      );
       expect(console.error).not.toHaveBeenCalled();
     });
 
-    xit("closes the modal displays an alert when request was not successful", async () => {
-      const mockErrorMessage = "There was an error";
-      await waitForElementToBeRemoved(screen.getByPlaceholderText("Loading"));
+    it("refetches connector overview after successful request", async () => {
+      const button = await waitFor(() =>
+        screen.getByRole("button", { name: "Claim connector" })
+      );
+      await userEvent.click(button);
+      const submitButton = screen.getByRole("button", {
+        name: "Request claim connector",
+      });
 
-      //@TODO when api is ready
-      // mockRequestTopicClaim.mockRejectedValue(mockErrorMessage);
+      await userEvent.click(submitButton);
+
+      await waitFor(() => {
+        // 1. api call inital page load
+        // 2. api call for updating environment
+        expect(mockGetConnectorOverview).toHaveBeenNthCalledWith(3, {
+          connectornamesearch: "my-connector",
+          environmentId: "3",
+        });
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("sends a request when clicking the submit button with the message entered by the user", async () => {
+      const button = await waitFor(() =>
+        screen.getByRole("button", { name: "Claim connector" })
+      );
+
+      await userEvent.click(button);
+
+      const modal = screen.getByRole("dialog", { name: "Claim connector" });
+
+      expect(modal).toBeVisible();
+
+      const submitButton = screen.getByRole("button", {
+        name: "Request claim connector",
+      });
+
+      const textArea = screen.getByRole("textbox");
+
+      await userEvent.type(textArea, "hello");
+      await userEvent.click(submitButton);
+
+      expect(mockRequestConnectorClaim).toHaveBeenCalledWith({
+        connectorName: testConnectorOverview.connectorInfo.connectorName,
+        env: testConnectorOverview.connectorInfo.environmentId,
+        remark: "hello",
+      });
+      expect(console.error).not.toHaveBeenCalled();
+    });
+
+    it("closes the modal displays an alert when request was not successful", async () => {
+      const mockErrorMessage = "There was an error";
+      mockRequestConnectorClaim.mockRejectedValue(mockErrorMessage);
 
       const button = await waitFor(() =>
         screen.getByRole("button", { name: "Claim connector" })
