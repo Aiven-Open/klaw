@@ -1095,6 +1095,23 @@ public class KafkaConnectControllerService {
         connectorInfo.setConnectorConfig(conn.getConnectorConfig());
         connectorInfo.setTeamName(manageDatabase.getTeamNameFromTeamId(tenantId, conn.getTeamId()));
         connectorInfo.setTeamId(conn.getTeamId());
+        // set booleans
+        connectorInfo.setHasOpenClaimRequest(
+            isClaimRequestOpen(tenantId, connectorInfo.getConnectorName()));
+        connectorInfo.setHasOpenRequest(
+            connectorInfo.isHasOpenClaimRequest()
+                || isConnectorRequestOpen(
+                    tenantId, connectorInfo.getConnectorName(), connectorInfo.getEnvironmentId()));
+        connectorInfo.setHighestEnv(
+            checkIsHighestEnv(
+                connectorInfo.getEnvironmentId(), connectorOverview.getAvailableEnvironments()));
+        connectorInfo.setConnectorOwner(
+            Objects.equals(connectorInfo.getTeamId(), loggedInUserTeam));
+        connectorInfo.setShowDeleteConnector(
+            connectorInfo.isConnectorOwner()
+                && connectorInfo.isHighestEnv()
+                && !connectorInfo.isHasOpenRequest());
+
         if (Objects.equals(syncCluster, conn.getEnvironment())) {
           connectorOverview.setConnectorDocumentation(conn.getDocumentation());
           connectorOverview.setConnectorIdForDocumentation(conn.getConnectorId());
@@ -1165,29 +1182,6 @@ public class KafkaConnectControllerService {
       } else {
         connectorOverview.getPromotionDetails().setStatus(PromotionStatusType.NOT_AUTHORIZED);
       }
-
-      // Check if request open && set the highestEnv
-      connectorInfoList.forEach(
-          connectorInfo -> {
-            connectorInfo.setHasOpenClaimRequest(
-                isClaimRequestOpen(tenantId, connectorInfo.getConnectorName()));
-            connectorInfo.setHasOpenRequest(
-                connectorInfo.isHasOpenClaimRequest()
-                    || isConnectorRequestOpen(
-                        tenantId,
-                        connectorInfo.getConnectorName(),
-                        connectorInfo.getEnvironmentId()));
-            connectorInfo.setHighestEnv(
-                checkIsHighestEnv(
-                    connectorInfo.getEnvironmentId(),
-                    connectorOverview.getAvailableEnvironments()));
-            connectorInfo.setConnectorOwner(
-                Objects.equals(connectorInfo.getTeamId(), loggedInUserTeam));
-            connectorInfo.setShowDeleteConnector(
-                connectorInfo.isConnectorOwner()
-                    && connectorInfo.isHighestEnv()
-                    && !connectorInfo.isHasOpenRequest());
-          });
 
     } catch (Exception e) {
       log.error("Exception:", e);
