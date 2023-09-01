@@ -67,7 +67,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     error: connectorError,
     isLoading: connectorIsLoading,
     isRefetching: connectorIsRefetching,
-    refetch: refetchConnectors,
+    refetch: refetchConnector,
   } = useQuery({
     queryKey: ["connector-overview", connectorName, environmentId],
     queryFn: () =>
@@ -90,7 +90,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
       }),
     {
       onSuccess: () => {
-        refetchConnectors().then(() => {
+        refetchConnector().then(() => {
           toast({
             message: "Connector claim request successfully created",
             position: "bottom-left",
