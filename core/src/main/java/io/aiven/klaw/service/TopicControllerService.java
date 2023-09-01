@@ -1090,7 +1090,7 @@ public class TopicControllerService {
 
     if (topicListUpdated != null && topicListUpdated.size() > 0) {
       DisplayHelper.updateTeamNamesForDisplay(
-          topicListUpdated, TopicInfo::getTeamname, TopicInfo::setTopicName);
+          topicListUpdated, TopicInfo::getTeamname, TopicInfo::setTeamname);
       return getPagedList(topicListUpdated);
     }
 
