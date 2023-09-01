@@ -20,6 +20,10 @@ const mockGetConnectorOverview = getConnectorOverview as jest.MockedFunction<
   typeof getConnectorOverview
 >;
 
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => jest.fn(),
+}));
 describe("ConnectorOverviewPage", () => {
   describe("renders the component handling header and tabs for connector-overview", () => {
     beforeAll(() => {
