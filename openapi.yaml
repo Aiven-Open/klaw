@@ -5415,6 +5415,249 @@
           }
         }
       }
+    },
+    "/environments/schemaRegistry" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getSchemaRegEnvsPaginated",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/schemaRegistry/{envId}" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getSchemaRegEnv",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "envId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/kafka" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getKafkaEnvsPaginated",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/kafka/{envId}" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getKafkaEnv",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "envId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/connect" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getKafkaConnectEnvsPaginated",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/environments/connect/{envId}" : {
+      "get" : {
+        "tags" : [ "envs-clusters-tenants-controller" ],
+        "operationId" : "getKafkaConnectEnv",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "envId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "searchEnvParam",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/EnvModelResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components" : {

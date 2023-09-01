@@ -384,8 +384,17 @@ public class EnvsClustersTenantsControllerService {
   }
 
   public List<EnvModelResponse> getEnvsPaginated(
-      String envId, String pageNo, String searchEnvParam) {
+      KafkaClustersType type, String envId, String pageNo, String searchEnvParam) {
     List<EnvModelResponse> envListMap = getKafkaEnvs();
+    switch (type) {
+      case KAFKA:
+        envListMap = getKafkaEnvs();
+      case SCHEMA_REGISTRY:
+        envListMap = getSchemaRegEnvs();
+      case KAFKA_CONNECT:
+        envListMap = getKafkaConnectEnvs();
+    }
+
     if (envId != null && !envId.equals("")) {
       envListMap =
           envListMap.stream()
