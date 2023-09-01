@@ -8,7 +8,6 @@ import {
   useOutletContext,
 } from "react-router-dom";
 import { EntityDetailsHeader } from "src/app/features/components/EntityDetailsHeader";
-import { TopicClaimConfirmationModal } from "src/app/features/topics/details/components/TopicClaimConfirmationModal";
 import { TopicOverviewResourcesTabs } from "src/app/features/topics/details/components/TopicDetailsResourceTabs";
 import {
   TOPIC_OVERVIEW_TAB_ID_INTO_PATH,
@@ -24,6 +23,7 @@ import {
 import { HTTPError } from "src/services/api";
 import { parseErrorMsg } from "src/services/mutation-utils";
 import { ClaimBanner } from "src/app/features/components/ClaimBanner";
+import { ClaimConfirmationModal } from "src/app/features/components/ClaimConfirmationModal";
 
 type TopicOverviewProps = {
   topicName: string;
@@ -137,10 +137,11 @@ function TopicDetails(props: TopicOverviewProps) {
   return (
     <>
       {showClaimModal && (
-        <TopicClaimConfirmationModal
+        <ClaimConfirmationModal
           onSubmit={createClaimTopicRequest}
           onClose={() => setShowClaimModal(false)}
           isLoading={createClaimTopicRequestIsLoading}
+          entity={"topic"}
         />
       )}
       <EntityDetailsHeader

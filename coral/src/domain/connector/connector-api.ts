@@ -5,6 +5,7 @@ import {
   transformConnectorRequestApiResponse,
 } from "src/domain/connector/connector-transformer";
 import {
+  ConnectorClaimPayload,
   ConnectorDocumentationMarkdown,
   DeleteConnectorPayload,
 } from "src/domain/connector/connector-types";
@@ -230,6 +231,18 @@ async function requestConnectorDeletion({
   >(API_PATHS.createConnectorDeleteRequest, payloadWithoutRemark);
 }
 
+const requestConnectorClaim = (params: ConnectorClaimPayload) => {
+  const payload: KlawApiModel<"ConnectorClaimRequestModel"> = {
+    env: params.env,
+    connectorName: params.connectorName,
+  };
+
+  return api.post<
+    KlawApiResponse<"createClaimConnectorRequest">,
+    KlawApiModel<"ConnectorClaimRequestModel">
+  >(API_PATHS.createClaimConnectorRequest, payload);
+};
+
 export {
   approveConnectorRequest,
   requestConnectorCreation,
@@ -243,4 +256,5 @@ export {
   getConnectorRequestsForApprover,
   getConnectors,
   updateConnectorDocumentation,
+  requestConnectorClaim,
 };
