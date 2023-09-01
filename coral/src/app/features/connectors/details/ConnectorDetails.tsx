@@ -67,7 +67,7 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     error: connectorError,
     isLoading: connectorIsLoading,
     isRefetching: connectorIsRefetching,
-    refetch: refetchConnector,
+    refetch: refetchConnectors,
   } = useQuery({
     queryKey: ["connector-overview", connectorName, environmentId],
     queryFn: () =>
@@ -82,15 +82,23 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     isLoading: isLoadingCreateClaimConnectorRequest,
     isError: isErrorCreateClaimConnectorRequest,
   } = useMutation(
-    (remark?: string) =>
+    ({
+      remark,
+      connectorName,
+      env,
+    }: {
+      remark?: string;
+      connectorName: string;
+      env: string;
+    }) =>
       requestConnectorClaim({
-        connectorName: connectorData?.connectorInfo.connectorName || "",
-        env: connectorData?.connectorInfo.environmentId || "",
+        connectorName,
+        env,
         remark,
       }),
     {
       onSuccess: () => {
-        refetchConnector().then(() => {
+        refetchConnectors().then(() => {
           toast({
             message: "Connector claim request successfully created",
             position: "bottom-left",
@@ -122,11 +130,25 @@ function ConnectorDetails(props: ConnectorOverviewProps) {
     );
   }
 
+  function submitRequest(remark: string | undefined) {
+    if (connectorData?.connectorInfo === undefined) {
+      console.error(
+        "Users should never be able to access the request when connectorData is not set."
+      );
+      return;
+    }
+    createClaimConnectorRequest({
+      remark,
+      connectorName: connectorData.connectorInfo.connectorName,
+      env: connectorData.connectorInfo.environmentId,
+    });
+  }
+
   return (
     <>
       {showClaimModal && (
         <ClaimConfirmationModal
-          onSubmit={createClaimConnectorRequest}
+          onSubmit={(remark) => submitRequest(remark)}
           onClose={() => setShowClaimModal(false)}
           isLoading={isLoadingCreateClaimConnectorRequest}
           entity={"connector"}
