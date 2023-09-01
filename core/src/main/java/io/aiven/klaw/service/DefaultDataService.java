@@ -10,6 +10,7 @@ import io.aiven.klaw.model.enums.PermissionType;
 import io.aiven.klaw.model.response.EnvParams;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -254,12 +255,23 @@ public class DefaultDataService {
     }
     kwPropertiesList.add(kwProperties21);
 
-    KwProperties kwProperties22 =
-        new KwProperties(
-            "klaw.tenant.config",
-            tenantId,
-            KwConstants.TENANT_CONFIG,
-            "Base sync cluster, order of topic promotion environments, topic request envs");
+    KwProperties kwProperties22;
+    if (quickStartEnabled) {
+      kwProperties22 =
+          new KwProperties(
+              "klaw.tenant.config",
+              tenantId,
+              KwConstants.TENANT_CONFIG_QUICK_START,
+              "Base sync cluster, order of topic promotion environments, topic request envs");
+    } else {
+      kwProperties22 =
+          new KwProperties(
+              "klaw.tenant.config",
+              tenantId,
+              KwConstants.TENANT_CONFIG,
+              "Base sync cluster, order of topic promotion environments, topic request envs");
+    }
+
     kwPropertiesList.add(kwProperties22);
 
     KwProperties kwProperties23 =
@@ -531,8 +543,11 @@ public class DefaultDataService {
       envParams.setMaxPartitions("1");
       envParams.setDefaultRepFactor("1");
       envParams.setMaxRepFactor("1");
-      envParams.setTopicPrefix(null);
-      envParams.setTopicSuffix(null);
+      envParams.setReplicationFactorList(Collections.singletonList("1"));
+      envParams.setPartitionsList(List.of("1", "2"));
+      envParams.setTopicPrefix(Collections.emptyList());
+      envParams.setTopicSuffix(Collections.emptyList());
+      envParams.setTopicRegex(Collections.emptyList());
       envKafka.setParams(envParams);
       envKafka.setTenantId(KwConstants.DEFAULT_TENANT_ID);
       envKafka.setEnvExists("true");
