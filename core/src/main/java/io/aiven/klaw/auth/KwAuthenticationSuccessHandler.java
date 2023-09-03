@@ -17,6 +17,9 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
   @Value("${server.servlet.context-path:}")
   private String contextPath;
 
+  @Value("${klaw.quickstart.enabled:false}")
+  private boolean quickStartEnabled;
+
   @Override
   public void onAuthenticationSuccess(
       HttpServletRequest request, HttpServletResponse response, Authentication authentication)
@@ -32,6 +35,11 @@ public class KwAuthenticationSuccessHandler extends SavedRequestAwareAuthenticat
     String indexPage = "index";
     String rootPath = "/";
     String providerRoute = "{{ provider }}";
+    String coralTopicsUri = "/coral/topics";
+
+    if (quickStartEnabled) {
+      return coralTopicsUri;
+    }
 
     if (defaultSavedRequest == null) {
       return indexPage;

@@ -513,7 +513,7 @@ public class DefaultDataService {
               encryptorSecretKey));
       // Add kafka cluster
       KwClusters kwClusterKafka = new KwClusters();
-      kwClusterKafka.setClusterName("DEV");
+      kwClusterKafka.setClusterName("STG");
       kwClusterKafka.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
       kwClusterKafka.setBootstrapServers(dockerKafkaHost);
       kwClusterKafka.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
@@ -523,7 +523,7 @@ public class DefaultDataService {
 
       // Add sr cluster
       KwClusters kwClusterSchemaRegistry = new KwClusters();
-      kwClusterSchemaRegistry.setClusterName("DEV");
+      kwClusterSchemaRegistry.setClusterName("STG");
       kwClusterSchemaRegistry.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
       kwClusterSchemaRegistry.setBootstrapServers(dockerSRHost);
       kwClusterSchemaRegistry.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
@@ -536,7 +536,7 @@ public class DefaultDataService {
           handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, KwConstants.DEFAULT_TENANT_ID);
       Env envKafka = new Env();
       envKafka.setClusterId(kwClusters.get(0).getClusterId());
-      envKafka.setName("DEV");
+      envKafka.setName("STG");
       envKafka.setType(KafkaClustersType.KAFKA.value);
       EnvParams envParams = new EnvParams();
       envParams.setDefaultPartitions("1");
@@ -559,7 +559,7 @@ public class DefaultDataService {
               KafkaClustersType.SCHEMA_REGISTRY, KwConstants.DEFAULT_TENANT_ID);
       Env envSR = new Env();
       envSR.setClusterId(kwClustersSR.get(0).getClusterId());
-      envSR.setName("DEV");
+      envSR.setName("STG");
       envSR.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
       EnvParams envParamsSR = new EnvParams();
       envSR.setParams(envParamsSR);
