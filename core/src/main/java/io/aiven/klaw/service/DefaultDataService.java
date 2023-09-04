@@ -242,37 +242,7 @@ public class DefaultDataService {
             "Enable View or retrieve schemas");
     kwPropertiesList.add(kwProperties20);
 
-    KwProperties kwProperties21;
-
-    if (quickStartEnabled) {
-      kwProperties21 =
-          new KwProperties(
-              "klaw.clusterapi.url", tenantId, dockerClusterApiHost, "Cluster Api URL");
-    } else {
-      kwProperties21 =
-          new KwProperties(
-              "klaw.clusterapi.url", tenantId, KwConstants.CLUSTERAPI_URL, "Cluster Api URL");
-    }
-    kwPropertiesList.add(kwProperties21);
-
-    KwProperties kwProperties22;
-    if (quickStartEnabled) {
-      kwProperties22 =
-          new KwProperties(
-              "klaw.tenant.config",
-              tenantId,
-              KwConstants.TENANT_CONFIG_QUICK_START,
-              "Base sync cluster, order of topic promotion environments, topic request envs");
-    } else {
-      kwProperties22 =
-          new KwProperties(
-              "klaw.tenant.config",
-              tenantId,
-              KwConstants.TENANT_CONFIG,
-              "Base sync cluster, order of topic promotion environments, topic request envs");
-    }
-
-    kwPropertiesList.add(kwProperties22);
+    handleQuickStartKwProperties(tenantId, kwPropertiesList);
 
     KwProperties kwProperties23 =
         new KwProperties(
@@ -334,6 +304,34 @@ public class DefaultDataService {
             "Email notification body for a new Topic Update Request");
     kwPropertiesList.add(kwProperties37);
     return kwPropertiesList;
+  }
+
+  private void handleQuickStartKwProperties(int tenantId, List<KwProperties> kwPropertiesList) {
+    KwProperties kwProperties21;
+    KwProperties kwProperties22;
+    if (quickStartEnabled) {
+      kwProperties21 =
+          new KwProperties(
+              "klaw.clusterapi.url", tenantId, dockerClusterApiHost, "Cluster Api URL");
+      kwProperties22 =
+          new KwProperties(
+              "klaw.tenant.config",
+              tenantId,
+              KwConstants.TENANT_CONFIG_QUICK_START,
+              "Base sync cluster, order of topic promotion environments, topic request envs");
+    } else {
+      kwProperties21 =
+          new KwProperties(
+              "klaw.clusterapi.url", tenantId, KwConstants.CLUSTERAPI_URL, "Cluster Api URL");
+      kwProperties22 =
+          new KwProperties(
+              "klaw.tenant.config",
+              tenantId,
+              KwConstants.TENANT_CONFIG,
+              "Base sync cluster, order of topic promotion environments, topic request envs");
+    }
+    kwPropertiesList.add(kwProperties21);
+    kwPropertiesList.add(kwProperties22);
   }
 
   public List<KwRolesPermissions> createDefaultRolesPermissions(
