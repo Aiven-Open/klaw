@@ -31,7 +31,7 @@
         <netty-all.version>4.1.80.Final</netty-all.version>
         <node.version>v18.12.1</node.version>
         <npm.version>8.19.2</npm.version>
-        <pnpm.version>7.14.0</pnpm.version>
+        <pnpm.version>8.7.1</pnpm.version>
         <shedlock.version>5.6.0</shedlock.version>
         <snakeyaml.version>1.33</snakeyaml.version>
         <springdoc-openapi-maven-plugin.version>1.4</springdoc-openapi-maven-plugin.version>
