@@ -23,12 +23,10 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.EnvParams;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
@@ -224,32 +222,54 @@ class EnvsClustersTenantsControllerServiceTest {
   @WithMockUser(
       username = "james",
       authorities = {"ADMIN", "USER"})
-  void getEnvs(KafkaClustersType type, String searchBy,String pageNo, int expectedMatches) throws KlawValidationException, KlawException {
+  void getEnvs(KafkaClustersType type, String searchBy, String pageNo, int expectedMatches)
+      throws KlawValidationException, KlawException {
 
     when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
-    //dependent on the type
-    when(manageDatabase.getKafkaEnvList(eq(101))).thenReturn(List.of(buildEnv("1",101,"DEV",type,1),buildEnv("2",101,"TST",type,2),buildEnv("3",101,"PRD",type,3)));
-    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(List.of(buildEnv("1",101,"DEV",type,1),buildEnv("2",101,"TST",type,2),buildEnv("3",101,"PRD",type,3)));
-    when(manageDatabase.getKafkaConnectEnvList(eq(101))).thenReturn(List.of(buildEnv("1",101,"DEV",type,1),buildEnv("2",101,"TST",type,2),buildEnv("3",101,"PRD",type,3)));
+    // dependent on the type
+    when(manageDatabase.getKafkaEnvList(eq(101)))
+        .thenReturn(
+            List.of(
+                buildEnv("1", 101, "DEV", type, 1),
+                buildEnv("2", 101, "TST", type, 2),
+                buildEnv("3", 101, "PRD", type, 3)));
+    when(manageDatabase.getSchemaRegEnvList(eq(101)))
+        .thenReturn(
+            List.of(
+                buildEnv("1", 101, "DEV", type, 1),
+                buildEnv("2", 101, "TST", type, 2),
+                buildEnv("3", 101, "PRD", type, 3)));
+    when(manageDatabase.getKafkaConnectEnvList(eq(101)))
+        .thenReturn(
+            List.of(
+                buildEnv("1", 101, "DEV", type, 1),
+                buildEnv("2", 101, "TST", type, 2),
+                buildEnv("3", 101, "PRD", type, 3)));
 
-    when(manageDatabase.getClusters(eq(type),eq(101))).thenReturn(buildClusters(type,3));
-    when(manageDatabase
-             .getTenantMap()).thenReturn(new HashMap<>(){{put(101,"");}});
-    when(commonUtilsService.isNotAuthorizedUser(any(),any())).thenReturn(false);
+    when(manageDatabase.getClusters(eq(type), eq(101))).thenReturn(buildClusters(type, 3));
+    when(manageDatabase.getTenantMap())
+        .thenReturn(
+            new HashMap<>() {
+              {
+                put(101, "");
+              }
+            });
+    when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 
     List<EnvModelResponse> response = service.getEnvsPaginated(type, "", pageNo, searchBy);
-    
+
     assertThat(response).hasSize(expectedMatches);
   }
 
   private static Stream<Arguments> getEnvs() {
-    return Stream.of(Arguments.arguments(KafkaClustersType.KAFKA,"","1",3),
-                     Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY,"","1",3),
-                     Arguments.arguments(KafkaClustersType.KAFKA_CONNECT,"","1",3),
-                     Arguments.arguments(KafkaClustersType.KAFKA_CONNECT,"DEV","1",1),
-                     Arguments.arguments(KafkaClustersType.KAFKA,"3","1",1),
-                     Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY,"PREPROD","1",0),
-                     Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY,"","2",0));
+    return Stream.of(
+        Arguments.arguments(KafkaClustersType.KAFKA, "", "1", 3),
+        Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY, "", "1", 3),
+        Arguments.arguments(KafkaClustersType.KAFKA_CONNECT, "", "1", 3),
+        Arguments.arguments(KafkaClustersType.KAFKA_CONNECT, "DEV", "1", 1),
+        Arguments.arguments(KafkaClustersType.KAFKA, "3", "1", 1),
+        Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY, "PREPROD", "1", 0),
+        Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY, "", "2", 0));
   }
 
   private static Env generateKafkaEnv(String id, String Kafka) {
@@ -316,16 +336,17 @@ class EnvsClustersTenantsControllerServiceTest {
     return mapping;
   }
 
-  private static Map<Integer,KwClusters> buildClusters(KafkaClustersType type, int numberOfClusters){
+  private static Map<Integer, KwClusters> buildClusters(
+      KafkaClustersType type, int numberOfClusters) {
     Map<Integer, KwClusters> map = new HashMap<>();
-    for(int i=1;i<=numberOfClusters;i++) {
+    for (int i = 1; i <= numberOfClusters; i++) {
       KwClusters cluster = new KwClusters();
       cluster.setClusterName(Integer.toString(i));
       cluster.setServiceName(Integer.toString(i));
       cluster.setProjectName(Integer.toString(i));
       cluster.setTenantId(101);
       cluster.setClusterType(type.value);
-      map.put(i,cluster);
+      map.put(i, cluster);
     }
     return map;
   }

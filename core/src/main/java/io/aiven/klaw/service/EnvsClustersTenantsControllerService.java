@@ -403,7 +403,10 @@ public class EnvsClustersTenantsControllerService {
                   env -> {
                     if (env.getName().toLowerCase().contains(searchEnvParam.toLowerCase())
                         || env.getClusterName().toLowerCase().contains(searchEnvParam.toLowerCase())
-                        || (env.getOtherParams() !=null && env.getOtherParams().toLowerCase().contains(searchEnvParam.toLowerCase()))
+                        || (env.getOtherParams() != null
+                            && env.getOtherParams()
+                                .toLowerCase()
+                                .contains(searchEnvParam.toLowerCase()))
                         || manageDatabase
                             .getTenantMap()
                             .get(env.getTenantId())
