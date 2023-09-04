@@ -49,7 +49,8 @@ This is the setup you every time. You can find the different ways how to run the
 
 - [node](https://nodejs.org/en/) needs to be installed <br/> 
     -> see [nvmrc](.nvmrc) or the `engines` definition in [package.json](package.json) for version).
-- Coral uses [pnpm](https://pnpm.io/) (version 7) as a package manager. Read their official documentation [how to install](https://pnpm.io/installation) pnpm. 
+- Coral uses [pnpm](https://pnpm.io/) (version 8) as a package manager. Read their official documentation [how to 
+  install](https://pnpm.io/installation) pnpm. 
 
 1. navigate to this directory
 2. run `pnpm install`
