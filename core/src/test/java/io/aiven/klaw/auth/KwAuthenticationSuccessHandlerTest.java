@@ -42,7 +42,8 @@ public class KwAuthenticationSuccessHandlerTest {
     when(httpServletRequest.getSession()).thenReturn(httpSession);
     defaultSavedRequest = null;
     when(httpSession.getAttribute(springSavedReqAttribute)).thenReturn(defaultSavedRequest);
-    String redirectedPage = kwAuthenticationSuccessHandler.getRedirectPage(httpServletRequest);
+    String redirectedPage =
+        kwAuthenticationSuccessHandler.getRedirectPage(httpServletRequest, null);
     assertThat(redirectedPage).isEqualTo("index");
   }
 
@@ -51,7 +52,8 @@ public class KwAuthenticationSuccessHandlerTest {
     when(httpServletRequest.getSession()).thenReturn(httpSession);
     when(httpSession.getAttribute(springSavedReqAttribute)).thenReturn(defaultSavedRequest);
     when(defaultSavedRequest.getRequestURI()).thenReturn("/login");
-    String redirectedPage = kwAuthenticationSuccessHandler.getRedirectPage(httpServletRequest);
+    String redirectedPage =
+        kwAuthenticationSuccessHandler.getRedirectPage(httpServletRequest, null);
     assertThat(redirectedPage).isEqualTo("index");
   }
 
@@ -60,7 +62,8 @@ public class KwAuthenticationSuccessHandlerTest {
     when(httpServletRequest.getSession()).thenReturn(httpSession);
     when(httpSession.getAttribute(springSavedReqAttribute)).thenReturn(defaultSavedRequest);
     when(defaultSavedRequest.getServletPath()).thenReturn("/{{ provider }}");
-    String redirectedPage = kwAuthenticationSuccessHandler.getRedirectPage(httpServletRequest);
+    String redirectedPage =
+        kwAuthenticationSuccessHandler.getRedirectPage(httpServletRequest, null);
     assertThat(redirectedPage).isEqualTo("/");
   }
 
@@ -70,7 +73,8 @@ public class KwAuthenticationSuccessHandlerTest {
     when(httpSession.getAttribute(springSavedReqAttribute)).thenReturn(defaultSavedRequest);
     when(defaultSavedRequest.getRequestURI()).thenReturn("/browseTopics");
     when(defaultSavedRequest.getQueryString()).thenReturn("topicName=testtopic");
-    String redirectedPage = kwAuthenticationSuccessHandler.getRedirectPage(httpServletRequest);
+    String redirectedPage =
+        kwAuthenticationSuccessHandler.getRedirectPage(httpServletRequest, null);
     assertThat(redirectedPage).isEqualTo("/browseTopics?topicName=testtopic");
   }
 }
