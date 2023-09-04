@@ -1,5 +1,6 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.helpers.KwConstants.ORDER_OF_TOPIC_ENVS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,10 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.config.ManageDatabase;
-import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.dao.EnvID;
-import io.aiven.klaw.dao.EnvTag;
-import io.aiven.klaw.dao.UserInfo;
+import io.aiven.klaw.dao.*;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
@@ -23,13 +21,22 @@ import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.EntityType;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.requests.EnvModel;
+import io.aiven.klaw.model.response.EnvModelResponse;
 import io.aiven.klaw.model.response.EnvParams;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -212,6 +219,39 @@ class EnvsClustersTenantsControllerServiceTest {
     verify(handleDbRequestsJdbc, times(2)).addNewEnv(any(Env.class));
   }
 
+  @ParameterizedTest(name = "{2}: actual={0} / expected={1}")
+  @MethodSource
+  @WithMockUser(
+      username = "james",
+      authorities = {"ADMIN", "USER"})
+  void getEnvs(KafkaClustersType type, String searchBy,String pageNo, int expectedMatches) throws KlawValidationException, KlawException {
+
+    when(commonUtilsService.getEnvProperty(eq(101), eq(ORDER_OF_TOPIC_ENVS))).thenReturn("1,2,3");
+    //dependent on the type
+    when(manageDatabase.getKafkaEnvList(eq(101))).thenReturn(List.of(buildEnv("1",101,"DEV",type,1),buildEnv("2",101,"TST",type,2),buildEnv("3",101,"PRD",type,3)));
+    when(manageDatabase.getSchemaRegEnvList(eq(101))).thenReturn(List.of(buildEnv("1",101,"DEV",type,1),buildEnv("2",101,"TST",type,2),buildEnv("3",101,"PRD",type,3)));
+    when(manageDatabase.getKafkaConnectEnvList(eq(101))).thenReturn(List.of(buildEnv("1",101,"DEV",type,1),buildEnv("2",101,"TST",type,2),buildEnv("3",101,"PRD",type,3)));
+
+    when(manageDatabase.getClusters(eq(type),eq(101))).thenReturn(buildClusters(type,3));
+    when(manageDatabase
+             .getTenantMap()).thenReturn(new HashMap<>(){{put(101,"");}});
+    when(commonUtilsService.isNotAuthorizedUser(any(),any())).thenReturn(false);
+
+    List<EnvModelResponse> response = service.getEnvsPaginated(type, "", pageNo, searchBy);
+    
+    assertThat(response).hasSize(expectedMatches);
+  }
+
+  private static Stream<Arguments> getEnvs() {
+    return Stream.of(Arguments.arguments(KafkaClustersType.KAFKA,"","1",3),
+                     Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY,"","1",3),
+                     Arguments.arguments(KafkaClustersType.KAFKA_CONNECT,"","1",3),
+                     Arguments.arguments(KafkaClustersType.KAFKA_CONNECT,"DEV","1",1),
+                     Arguments.arguments(KafkaClustersType.KAFKA,"3","1",1),
+                     Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY,"PREPROD","1",0),
+                     Arguments.arguments(KafkaClustersType.SCHEMA_REGISTRY,"","2",0));
+  }
+
   private static Env generateKafkaEnv(String id, String Kafka) {
     Env kafkaEnv = new Env();
     kafkaEnv.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
@@ -272,6 +312,21 @@ class EnvsClustersTenantsControllerServiceTest {
     mapping.setType(type.value);
     mapping.setEnvExists("true");
     mapping.setClusterId(clusterId);
+    mapping.setOtherParams("emptyIsh");
     return mapping;
+  }
+
+  private static Map<Integer,KwClusters> buildClusters(KafkaClustersType type, int numberOfClusters){
+    Map<Integer, KwClusters> map = new HashMap<>();
+    for(int i=1;i<=numberOfClusters;i++) {
+      KwClusters cluster = new KwClusters();
+      cluster.setClusterName(Integer.toString(i));
+      cluster.setServiceName(Integer.toString(i));
+      cluster.setProjectName(Integer.toString(i));
+      cluster.setTenantId(101);
+      cluster.setClusterType(type.value);
+      map.put(i,cluster);
+    }
+    return map;
   }
 }
