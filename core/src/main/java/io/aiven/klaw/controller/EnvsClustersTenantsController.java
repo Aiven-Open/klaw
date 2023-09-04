@@ -247,7 +247,7 @@ public class EnvsClustersTenantsController {
   }
 
   @RequestMapping(
-      value = "/environments/connect",
+      value = "/environments/kafkaconnect",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<EnvModelResponse>> getKafkaConnectEnvsPaginated(
@@ -260,7 +260,7 @@ public class EnvsClustersTenantsController {
   }
 
   @RequestMapping(
-      value = "/environments/connect/{envId}",
+      value = "/environments/kafkaconnect/{envId}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<List<EnvModelResponse>> getKafkaConnectEnv(

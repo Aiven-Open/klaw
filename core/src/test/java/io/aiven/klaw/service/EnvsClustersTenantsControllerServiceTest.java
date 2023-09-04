@@ -217,7 +217,7 @@ class EnvsClustersTenantsControllerServiceTest {
     verify(handleDbRequestsJdbc, times(2)).addNewEnv(any(Env.class));
   }
 
-  @ParameterizedTest(name = "{2}: actual={0} / expected={1}")
+  @ParameterizedTest(name = "actual={0} / search={1} / pageNo={2} / expectedNumberOfMatches={4}")
   @MethodSource
   @WithMockUser(
       username = "james",

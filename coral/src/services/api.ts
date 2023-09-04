@@ -161,7 +161,7 @@ const API_PATHS = {
   getEnvsBaseClusterFilteredForTeam: "/getEnvsBaseClusterFilteredForTeam",
   getSchemaRegEnvsPaginated: "/environments/schemaRegistry",
   getKafkaEnvsPaginated: "/environments/kafka",
-  getKafkaConnectEnvsPaginated: "/environments/connect",
+  getKafkaConnectEnvsPaginated: "/environments/kafkaconnect",
   getEnvParams: "/getEnvParams",
   getEnvDetails: "/getEnvDetails",
   getDbAuth: "/getDbAuth",
@@ -235,7 +235,7 @@ const DYNAMIC_API_PATHS = {
   getKafkaEnv: ({ envId }: Parameters<GetKafkaEnv>[0]) =>
     `/environments/kafka/${envId}` as keyof ApiPaths,
   getKafkaConnectEnv: ({ envId }: Parameters<GetConnectEnv>[0]) =>
-    `/environments/connect/${envId}` as keyof ApiPaths,
+    `/environments/kafkaconnect/${envId}` as keyof ApiPaths,
   getSchemaRegEnv: ({ envId }: Parameters<GetSchemaRegEnv>[0]) =>
     `/environments/schemaRegistry/${envId}` as keyof ApiPaths,
 } satisfies {

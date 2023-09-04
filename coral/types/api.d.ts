@@ -502,17 +502,17 @@ export type paths = {
   "/environments/schemaRegistry/{envId}": {
     get: operations["getSchemaRegEnv"];
   };
+  "/environments/kafkaconnect": {
+    get: operations["getKafkaConnectEnvsPaginated"];
+  };
+  "/environments/kafkaconnect/{envId}": {
+    get: operations["getKafkaConnectEnv"];
+  };
   "/environments/kafka": {
     get: operations["getKafkaEnvsPaginated"];
   };
   "/environments/kafka/{envId}": {
     get: operations["getKafkaEnv"];
-  };
-  "/environments/connect": {
-    get: operations["getKafkaConnectEnvsPaginated"];
-  };
-  "/environments/connect/{envId}": {
-    get: operations["getKafkaConnectEnv"];
   };
 };
 
@@ -4203,7 +4203,7 @@ export type operations = {
       };
     };
   };
-  getKafkaEnvsPaginated: {
+  getKafkaConnectEnvsPaginated: {
     parameters: {
       query: {
         pageNo: string;
@@ -4219,7 +4219,7 @@ export type operations = {
       };
     };
   };
-  getKafkaEnv: {
+  getKafkaConnectEnv: {
     parameters: {
       query: {
         pageNo: string;
@@ -4238,7 +4238,7 @@ export type operations = {
       };
     };
   };
-  getKafkaConnectEnvsPaginated: {
+  getKafkaEnvsPaginated: {
     parameters: {
       query: {
         pageNo: string;
@@ -4254,7 +4254,7 @@ export type operations = {
       };
     };
   };
-  getKafkaConnectEnv: {
+  getKafkaEnv: {
     parameters: {
       query: {
         pageNo: string;
