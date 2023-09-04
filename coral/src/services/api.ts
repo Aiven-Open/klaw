@@ -159,6 +159,9 @@ const API_PATHS = {
   getEnvsForSchemaRequests: "/getEnvsForSchemaRequests",
   getEnvsBaseCluster: "/getEnvsBaseCluster",
   getEnvsBaseClusterFilteredForTeam: "/getEnvsBaseClusterFilteredForTeam",
+  getSchemaRegEnvsPaginated: "/environments/schemaRegistry",
+  getKafkaEnvsPaginated: "/environments/kafka",
+  getKafkaConnectEnvsPaginated: "/environments/kafkaconnect",
   getEnvParams: "/getEnvParams",
   getEnvDetails: "/getEnvDetails",
   getDbAuth: "/getDbAuth",
@@ -196,7 +199,12 @@ const API_PATHS = {
 } satisfies {
   [key in keyof Omit<
     ApiOperations,
-    "getSchemaOfTopicFromSource" | "getSwitchTeams" | "getTopicRequest"
+    | "getSchemaOfTopicFromSource"
+    | "getSwitchTeams"
+    | "getTopicRequest"
+    | "getKafkaEnv"
+    | "getKafkaConnectEnv"
+    | "getSchemaRegEnv"
   >]: keyof ApiPaths;
 };
 
@@ -208,6 +216,9 @@ type GetSchemaOfTopicFromSource = (params: {
 }) => keyof ApiPaths;
 type GetSwitchTeams = (params: { userId: string }) => keyof ApiPaths;
 type GetTopicRequest = (params: { topicReqId: string }) => keyof ApiPaths;
+type GetKafkaEnv = (params: { envId: string }) => keyof ApiPaths;
+type GetConnectEnv = (params: { envId: string }) => keyof ApiPaths;
+type GetSchemaRegEnv = (params: { envId: string }) => keyof ApiPaths;
 
 const DYNAMIC_API_PATHS = {
   getSchemaOfTopicFromSource: ({
@@ -221,11 +232,28 @@ const DYNAMIC_API_PATHS = {
     `/user/${userId}/switchTeamsList` as keyof ApiPaths,
   getTopicRequest: ({ topicReqId }: Parameters<GetTopicRequest>[0]) =>
     `/topic/request/${topicReqId}` as keyof ApiPaths,
+  getKafkaEnv: ({ envId }: Parameters<GetKafkaEnv>[0]) =>
+    `/environments/kafka/${envId}` as keyof ApiPaths,
+  getKafkaConnectEnv: ({ envId }: Parameters<GetConnectEnv>[0]) =>
+    `/environments/kafkaconnect/${envId}` as keyof ApiPaths,
+  getSchemaRegEnv: ({ envId }: Parameters<GetSchemaRegEnv>[0]) =>
+    `/environments/schemaRegistry/${envId}` as keyof ApiPaths,
 } satisfies {
   [key in keyof Pick<
     ApiOperations,
-    "getSchemaOfTopicFromSource" | "getSwitchTeams" | "getTopicRequest"
-  >]: GetSchemaOfTopicFromSource | GetSwitchTeams | GetTopicRequest;
+    | "getSchemaOfTopicFromSource"
+    | "getSwitchTeams"
+    | "getTopicRequest"
+    | "getKafkaEnv"
+    | "getKafkaConnectEnv"
+    | "getSchemaRegEnv"
+  >]:
+    | GetSchemaOfTopicFromSource
+    | GetSwitchTeams
+    | GetTopicRequest
+    | GetKafkaEnv
+    | GetConnectEnv
+    | GetSchemaRegEnv;
 };
 
 type Params = URLSearchParams;

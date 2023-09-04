@@ -496,6 +496,24 @@ export type paths = {
   "/getAclCommands": {
     get: operations["getAclCommand"];
   };
+  "/environments/schemaRegistry": {
+    get: operations["getSchemaRegEnvsPaginated"];
+  };
+  "/environments/schemaRegistry/{envId}": {
+    get: operations["getSchemaRegEnv"];
+  };
+  "/environments/kafkaconnect": {
+    get: operations["getKafkaConnectEnvsPaginated"];
+  };
+  "/environments/kafkaconnect/{envId}": {
+    get: operations["getKafkaConnectEnv"];
+  };
+  "/environments/kafka": {
+    get: operations["getKafkaEnvsPaginated"];
+  };
+  "/environments/kafka/{envId}": {
+    get: operations["getKafkaEnv"];
+  };
 };
 
 export type webhooks = Record<string, never>;
@@ -4146,6 +4164,111 @@ export type operations = {
       200: {
         content: {
           "application/json": components["schemas"]["AclCommands"];
+        };
+      };
+    };
+  };
+  getSchemaRegEnvsPaginated: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getSchemaRegEnv: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+      path: {
+        envId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getKafkaConnectEnvsPaginated: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getKafkaConnectEnv: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+      path: {
+        envId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getKafkaEnvsPaginated: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
+        };
+      };
+    };
+  };
+  getKafkaEnv: {
+    parameters: {
+      query: {
+        pageNo: string;
+        searchEnvParam?: string;
+      };
+      path: {
+        envId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["EnvModelResponse"])[];
         };
       };
     };
