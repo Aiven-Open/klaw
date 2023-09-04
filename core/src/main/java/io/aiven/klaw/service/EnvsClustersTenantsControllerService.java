@@ -20,6 +20,7 @@ import static io.aiven.klaw.helpers.KwConstants.REQUEST_TOPICS_OF_ENVS;
 import static io.aiven.klaw.helpers.KwConstants.SUPERADMIN_ROLE;
 import static io.aiven.klaw.model.enums.RolesType.SUPERADMIN;
 import static io.aiven.klaw.service.UsersTeamsControllerService.MASKED_PWD;
+import static java.util.stream.Collectors.toList;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -59,21 +60,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,7 +197,7 @@ public class EnvsClustersTenantsControllerService {
       kwClustersModelList =
           kwClustersModelList.stream()
               .filter(env -> Objects.equals((env.getClusterId() + "").toLowerCase(), clusterId))
-              .collect(Collectors.toList());
+              .collect(toList());
     }
 
     if (searchClusterParam != null && !searchClusterParam.equals("")) {
@@ -215,7 +206,7 @@ public class EnvsClustersTenantsControllerService {
               .filter(
                   env ->
                       env.getClusterName().toLowerCase().contains(searchClusterParam.toLowerCase()))
-              .collect(Collectors.toList());
+              .collect(toList());
       List<KwClustersModelResponse> envListMap2 =
           kwClustersModelList.stream()
               .filter(
@@ -385,65 +376,49 @@ public class EnvsClustersTenantsControllerService {
 
   public List<EnvModelResponse> getEnvsPaginated(
       KafkaClustersType type, String envId, String pageNo, String searchEnvParam) {
-    List<EnvModelResponse> envListMap = getKafkaEnvs();
-    switch (type) {
-      case KAFKA:
-        envListMap = getKafkaEnvs();
-      case SCHEMA_REGISTRY:
-        envListMap = getSchemaRegEnvs();
-      case KAFKA_CONNECT:
-        envListMap = getKafkaConnectEnvs();
-    }
+    List<EnvModelResponse> envListMap;
+    envListMap =
+        switch (type) {
+          case KAFKA:
+            yield getKafkaEnvs();
+          case SCHEMA_REGISTRY:
+            yield getSchemaRegEnvs();
+          case KAFKA_CONNECT:
+            yield getKafkaConnectEnvs();
+          case ALL:
+            yield Stream.of(getKafkaEnvs(), getSchemaRegEnvs(), getKafkaConnectEnvs())
+                .flatMap(Collection::stream)
+                .toList();
+        };
 
     if (envId != null && !envId.equals("")) {
       envListMap =
-          envListMap.stream()
-              .filter(env -> Objects.equals(env.getId(), envId))
-              .collect(Collectors.toList());
+          envListMap.stream().filter(env -> Objects.equals(env.getId(), envId)).collect(toList());
     }
 
     if (searchEnvParam != null && !searchEnvParam.equals("")) {
-      List<EnvModelResponse> envListMap1 =
-          envListMap.stream()
-              .filter(env -> env.getName().toLowerCase().contains(searchEnvParam.toLowerCase()))
-              .collect(Collectors.toList());
-      List<EnvModelResponse> envListMap2 =
-          envListMap.stream()
-              .filter(
-                  env -> env.getClusterName().toLowerCase().contains(searchEnvParam.toLowerCase()))
-              .toList();
-      List<EnvModelResponse> envListMap3 =
-          envListMap.stream()
-              .filter(
-                  env -> env.getOtherParams().toLowerCase().contains(searchEnvParam.toLowerCase()))
-              .toList();
-      List<EnvModelResponse> envListMap4 =
-          envListMap.stream()
-              .filter(
-                  env ->
-                      manageDatabase
-                          .getTenantMap()
-                          .get(env.getTenantId())
-                          .toLowerCase()
-                          .contains(searchEnvParam.toLowerCase()))
-              .toList();
-      envListMap1.addAll(envListMap2);
-      envListMap1.addAll(envListMap3);
-      envListMap1.addAll(envListMap4);
-
-      // remove duplicates
       envListMap =
-          envListMap1.stream()
-              .collect(
-                  Collectors.collectingAndThen(
-                      Collectors.toCollection(
-                          () -> new TreeSet<>(Comparator.comparing(EnvModelResponse::getId))),
-                      ArrayList::new));
+          envListMap.stream()
+              .filter(
+                  env -> {
+                    if (env.getName().toLowerCase().contains(searchEnvParam.toLowerCase())
+                        || env.getClusterName().toLowerCase().contains(searchEnvParam.toLowerCase())
+                        || env.getOtherParams().toLowerCase().contains(searchEnvParam.toLowerCase())
+                        || manageDatabase
+                            .getTenantMap()
+                            .get(env.getTenantId())
+                            .toLowerCase()
+                            .contains(searchEnvParam.toLowerCase())) {
+                      return true;
+                    }
+                    return false;
+                  })
+              .toList();
     }
 
     return Pager.getItemsList(
-        pageNo,
         "",
+        pageNo,
         10,
         envListMap,
         (pageContext, mp) -> {
@@ -551,7 +526,7 @@ public class EnvsClustersTenantsControllerService {
                   }
                   return found;
                 })
-            .collect(Collectors.toList());
+            .collect(toList());
     return envModelList;
   }
 
@@ -564,9 +539,7 @@ public class EnvsClustersTenantsControllerService {
         getPrincipal(), PermissionType.ADD_EDIT_DELETE_ENVS)) {
       final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
       listEnvs =
-          listEnvs.stream()
-              .filter(env -> allowedEnvIdSet.contains(env.getId()))
-              .collect(Collectors.toList());
+          listEnvs.stream().filter(env -> allowedEnvIdSet.contains(env.getId())).collect(toList());
     }
 
     List<EnvModelResponse> envModelList =
@@ -636,7 +609,7 @@ public class EnvsClustersTenantsControllerService {
       envActualList =
           envActualList.stream()
               .filter(env -> !env.getId().equals(newEnv.getId()))
-              .collect(Collectors.toList());
+              .collect(toList());
     }
 
     // Same name per type (kafka, kafkaconnect) in tenant not posssible.
