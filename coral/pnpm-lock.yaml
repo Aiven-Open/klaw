@@ -143,8 +143,8 @@ devDependencies:
     specifier: ^7.4.0
     version: 7.4.0(eslint@8.39.0)
   eslint-plugin-no-relative-import-paths:
-    specifier: ^1.4.0
-    version: 1.5.0
+    specifier: ^1.5.2
+    version: 1.5.2
   eslint-plugin-react:
     specifier: ^7.32.2
     version: 7.32.2(eslint@8.39.0)
@@ -4818,8 +4818,8 @@ packages:
       lodash: 4.17.21
     dev: true
 
-  /eslint-plugin-no-relative-import-paths@1.5.0:
-    resolution: {integrity: sha512-4if/PGGzpSP+DfOscGZ2nYd8XObc5rN9Ux5lhDzAVqLEaz8XD3ikzApSogXBdf+lnpTsTE5LJSqXFmFpNkZ3LQ==}
+  /eslint-plugin-no-relative-import-paths@1.5.2:
+    resolution: {integrity: sha512-wMlL+TVuDhKk1plP+w3L4Hc7+u89vUkrOYq6/0ARjcYqwc9/YaS9uEXNzaqAk+WLoEgakzNL5JgJJw6m4qd5zw==}
     dev: true
 
   /eslint-plugin-react@7.32.2(eslint@8.39.0):
@@ -7349,7 +7349,7 @@ packages:
       levn: 0.3.0
       prelude-ls: 1.1.2
       type-check: 0.3.2
-      word-wrap: 1.2.3
+      word-wrap: 1.2.5
     dev: true
 
   /optionator@0.9.1:
@@ -7361,7 +7361,7 @@ packages:
       levn: 0.4.1
       prelude-ls: 1.2.1
       type-check: 0.4.0
-      word-wrap: 1.2.3
+      word-wrap: 1.2.5
     dev: true
 
   /ora@5.4.1:
@@ -9159,8 +9159,8 @@ packages:
       isexe: 2.0.0
     dev: true
 
-  /word-wrap@1.2.3:
-    resolution: {integrity: sha512-Hz/mrNwitNRh/HUAtM/VT/5VH+ygD6DV7mYKZAtHOrbs8U7lvPS6xf7EJKMF0uW1KJCl0H701g3ZGus+muE5vQ==}
+  /word-wrap@1.2.5:
+    resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
     dev: true
 
