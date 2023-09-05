@@ -5,6 +5,7 @@ import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,6 +31,8 @@ public class EnvModelResponse implements Serializable {
   @NotNull private String clusterName;
 
   @NotNull private ClusterStatus envStatus;
+
+  @NotNull private LocalDateTime envStatusTime;
 
   @NotNull private String otherParams;
 

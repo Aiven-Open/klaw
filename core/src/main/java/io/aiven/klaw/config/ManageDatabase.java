@@ -574,6 +574,23 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     }
   }
 
+  public void addEnvToCache(int tenantId, Env env) {
+
+    switch (env.getType()) {
+      case "kafka":
+        addEnvToCache(kafkaEnvListPerTenant.get(tenantId), env);
+      case "schemaregistry":
+        addEnvToCache(schemaRegEnvListPerTenant.get(tenantId), env);
+      case "kafkaconnect":
+        addEnvToCache(kafkaConnectEnvListPerTenant.get(tenantId), env);
+    }
+    addEnvToCache(allEnvListPerTenant.get(tenantId), env);
+  }
+
+  private void addEnvToCache(List<Env> envs, Env env) {
+    envs.stream().filter(e -> e.equals(env.getId())).findFirst().ifPresent(e -> e = env);
+  }
+
   public List<Topic> getTopicsForTenant(int tenantId) {
     return topicsPerTenant.get(tenantId);
   }

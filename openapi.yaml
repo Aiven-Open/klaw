@@ -7388,9 +7388,13 @@
           "envStatus" : {
             "type" : "string",
             "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
+          },
+          "lastUpdateTime" : {
+            "type" : "string",
+            "format" : "date-time"
           }
         },
-        "required" : [ "envStatus", "result" ]
+        "required" : [ "envStatus", "lastUpdateTime", "result" ]
       },
       "TopicsCountPerEnv" : {
         "properties" : {
@@ -8134,6 +8138,10 @@
             "type" : "string",
             "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
           },
+          "envStatusTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
           "otherParams" : {
             "type" : "string"
           },
@@ -8161,7 +8169,7 @@
             "writeOnly" : true
           }
         },
-        "required" : [ "allPageNos", "clusterId", "clusterName", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
+        "required" : [ "allPageNos", "clusterId", "clusterName", "envStatus", "envStatusTime", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
       },
       "AclInfo" : {
         "properties" : {

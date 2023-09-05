@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawBadRequestException;
 import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawValidationException;
 import io.aiven.klaw.model.ApiResponse;
@@ -388,7 +389,7 @@ public class EnvsClustersTenantsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<EnvUpdatedStatus> getUpdateEnvStatus(
-      @RequestParam(value = "envId") String envId) throws KlawException {
+      @RequestParam(value = "envId") String envId) throws KlawBadRequestException {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getUpdateEnvStatus(envId), HttpStatus.OK);
   }
