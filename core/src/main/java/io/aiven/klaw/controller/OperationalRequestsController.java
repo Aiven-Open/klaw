@@ -1,5 +1,6 @@
 package io.aiven.klaw.controller;
 
+import io.aiven.klaw.error.KlawException;
 import io.aiven.klaw.error.KlawNotAuthorizedException;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.OperationalRequestType;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,6 +44,16 @@ public class OperationalRequestsController {
         HttpStatus.OK);
   }
 
+  @PostMapping(
+      value = "/operationalRequest/delete/reqId/{operationalRequestId}",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> deleteOperationalRequest(
+      @PathVariable(value = "operationalRequestId") String operationalRequestId)
+      throws KlawException {
+    return new ResponseEntity<>(
+        operationalRequestsService.deleteOperationalRequest(operationalRequestId), HttpStatus.OK);
+  }
+
   @RequestMapping(
       value = "/operationalRequest/consumerOffsetsReset/validate",
       method = RequestMethod.GET,
@@ -59,7 +71,7 @@ public class OperationalRequestsController {
       value = "/operationalRequest",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<OperationalRequestsResponseModel>> getConsumerOffsetsResetRequests(
+  public ResponseEntity<List<OperationalRequestsResponseModel>> getOperationalRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
@@ -74,7 +86,7 @@ public class OperationalRequestsController {
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
     return new ResponseEntity<>(
-        operationalRequestsService.getConsumerOffsetsResetRequests(
+        operationalRequestsService.getOperationalRequests(
             pageNo,
             currentPage,
             operationalRequestType,

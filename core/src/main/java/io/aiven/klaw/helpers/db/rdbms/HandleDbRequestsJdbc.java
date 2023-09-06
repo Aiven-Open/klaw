@@ -907,6 +907,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public String deleteOperationalRequest(int operationalRequestId, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteOperationalRequest(operationalRequestId, userName, tenantId);
+  }
+
+  @Override
   public String deleteTopic(int topicId, int tenantId) {
     return jdbcDeleteHelper.deleteTopic(topicId, tenantId);
   }

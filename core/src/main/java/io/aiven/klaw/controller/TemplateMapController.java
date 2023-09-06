@@ -276,6 +276,15 @@ public class TemplateMapController {
     return checkAuth("myTopicRequests.html", request, response, abstractAuthenticationToken);
   }
 
+  @RequestMapping(value = "/myOperationalRequests", method = RequestMethod.GET)
+  public String myOperationalRequests(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("myOperationalRequests.html", request, response, abstractAuthenticationToken);
+  }
+
   @RequestMapping(value = "/myConnectorRequests", method = RequestMethod.GET)
   public String myConnectorRequests(
       ModelMap model,
@@ -330,7 +339,7 @@ public class TemplateMapController {
     return checkAuth("requestTopics.html", request, response, abstractAuthenticationToken);
   }
 
-  //  @RequestMapping(value = "/requestConsumerOffsetReset", method = RequestMethod.GET)
+  @RequestMapping(value = "/requestConsumerOffsetReset", method = RequestMethod.GET)
   public String requestConsumerOffsetReset(
       ModelMap model,
       HttpServletRequest request,
