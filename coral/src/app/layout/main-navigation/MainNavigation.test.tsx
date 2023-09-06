@@ -16,6 +16,11 @@ jest.mock("src/app/context-provider/AuthProvider", () => ({
   },
 }));
 
+const isFeatureFlagActiveMock = jest.fn();
+jest.mock("src/services/feature-flags/utils", () => ({
+  isFeatureFlagActive: () => isFeatureFlagActiveMock(),
+}));
+
 const navLinks = [
   {
     name: "Dashboard",
@@ -35,7 +40,19 @@ const navLinks = [
 ];
 
 const submenuItems = [
-  { name: "Configuration", links: ["Users", "Teams", "Environments"] },
+  {
+    name: "Configuration",
+    links: [
+      { name: "Users", linkTo: "/users" },
+      { name: "Teams", linkTo: "/teams" },
+      {
+        name: "Environments",
+        linkTo: isFeatureFlagActiveMock()
+          ? `/configuration/environments`
+          : `/envs`,
+      },
+    ],
+  },
 ];
 
 const navOrderFirstLevel = [
@@ -130,7 +147,10 @@ describe("MainNavigation.tsx", () => {
       });
     });
 
-    afterEach(cleanup);
+    afterEach(() => {
+      cleanup();
+      jest.clearAllMocks();
+    });
 
     submenuItems.forEach((submenu) => {
       describe(`shows all submenu items for ${submenu.name} when user opens menu`, () => {
@@ -163,9 +183,21 @@ describe("MainNavigation.tsx", () => {
           const list = screen.getByRole("list", {
             name: `${submenu.name} submenu`,
           });
-          submenu.links.forEach((linkText) => {
-            const link = within(list).getByRole("link", { name: linkText });
+
+          // Check correct value if FEATURE_FLAG_CONFIGURATIONS === true
+          isFeatureFlagActiveMock.mockReturnValue(true);
+          submenu.links.forEach(({ name, linkTo }) => {
+            const link = within(list).getByRole("link", { name });
             expect(link).toBeVisible();
+            expect(link).toHaveAttribute("href", linkTo);
+          });
+
+          // Check correct value if FEATURE_FLAG_CONFIGURATIONS === false
+          isFeatureFlagActiveMock.mockReturnValue(false);
+          submenu.links.forEach(({ name, linkTo }) => {
+            const link = within(list).getByRole("link", { name });
+            expect(link).toBeVisible();
+            expect(link).toHaveAttribute("href", linkTo);
           });
         });
       });
