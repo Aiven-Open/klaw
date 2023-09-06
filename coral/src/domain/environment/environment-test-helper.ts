@@ -14,6 +14,7 @@ const defaultEnvironmentDTO: KlawApiModel<"EnvModelResponse"> = {
     "default.partitions=2,max.partitions=2,default.replication.factor=1,max.replication.factor=1,topic.prefix=,topic.suffix=",
   showDeleteEnv: false,
   totalNoPages: "1",
+  currentPage: "1",
   allPageNos: ["1"],
   associatedEnv: undefined,
   clusterType: "ALL",

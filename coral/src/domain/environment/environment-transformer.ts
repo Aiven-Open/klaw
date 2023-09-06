@@ -92,8 +92,7 @@ function transformPaginatedEnvironmentApiResponse(
 
   return {
     totalPages: Number(apiResponse[0].totalNoPages),
-    currentPage: 0,
-    // currentPage: Number(apiResponse[0].currentPage),
+    currentPage: Number(apiResponse[0].currentPage),
     entries: envData.flat(),
   };
 }
