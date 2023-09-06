@@ -19,6 +19,9 @@ public class DeleteDataJdbc {
   TopicRequestsRepo topicRequestsRepo;
 
   @Autowired(required = false)
+  OperationalRequestsRepo operationalRequestsRepo;
+
+  @Autowired(required = false)
   private TopicRepo topicRepo;
 
   @Autowired(required = false)
@@ -110,6 +113,27 @@ public class DeleteDataJdbc {
     if (topicReq.isPresent() && topicReq.get().getRequestor().equals(userName)) {
       topicReq.get().setRequestStatus(RequestStatus.DELETED.value);
       topicRequestsRepo.save(topicReq.get());
+      return ApiResultStatus.SUCCESS.value;
+    }
+    return ApiResultStatus.FAILURE.value
+        + " Unable to verify ownership of this request. you may only delete your own requests.";
+  }
+
+  public String deleteOperationalRequest(int operationalReqId, String userName, int tenantId) {
+    log.debug("deleteOperationalRequest {}", operationalReqId);
+
+    OperationalRequestID operationalRequestID = new OperationalRequestID();
+    operationalRequestID.setTenantId(tenantId);
+    operationalRequestID.setReqId(operationalReqId);
+
+    Optional<OperationalRequest> operationalRequest =
+        operationalRequestsRepo.findById(operationalRequestID);
+    // UserName is transient and is not set in the database but the requestor is. Both are set to
+    // the userName when the request is created.
+    if (operationalRequest.isPresent()
+        && operationalRequest.get().getRequestor().equals(userName)) {
+      operationalRequest.get().setRequestStatus(RequestStatus.DELETED.value);
+      operationalRequestsRepo.save(operationalRequest.get());
       return ApiResultStatus.SUCCESS.value;
     }
     return ApiResultStatus.FAILURE.value

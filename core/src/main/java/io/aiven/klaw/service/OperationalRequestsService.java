@@ -141,7 +141,7 @@ public class OperationalRequestsService {
     return Timestamp.from(parsedDate.toInstant());
   }
 
-  public List<OperationalRequestsResponseModel> getConsumerOffsetsResetRequests(
+  public List<OperationalRequestsResponseModel> getOperationalRequests(
       String pageNo,
       String currentPage,
       OperationalRequestType operationalRequestType,
@@ -152,7 +152,8 @@ public class OperationalRequestsService {
       String wildcardSearch,
       Order order,
       boolean isMyRequest) {
-    log.debug("getTopicRequests page {} operationalRequestType {}", pageNo, operationalRequestType);
+    log.debug(
+        "getOperationalRequests page {} operationalRequestType {}", pageNo, operationalRequestType);
     String userName = getUserName();
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     List<OperationalRequest> operationalRequests =
@@ -203,14 +204,20 @@ public class OperationalRequestsService {
         rolesPermissionsControllerService.getApproverRoles("TOPICS", tenantId);
     List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
-    for (OperationalRequest topicReq : operationalRequestList) {
+    for (OperationalRequest operationalRequest : operationalRequestList) {
       operationalRequestModel = new OperationalRequestsResponseModel();
-      copyProperties(topicReq, operationalRequestModel);
-      operationalRequestModel.setRequestStatus(RequestStatus.of(topicReq.getRequestStatus()));
-      operationalRequestModel.setOperationalRequestType(topicReq.getOperationalRequestType());
+      copyProperties(operationalRequest, operationalRequestModel);
+      operationalRequestModel.setRequestStatus(
+          RequestStatus.of(operationalRequest.getRequestStatus()));
+      operationalRequestModel.setOperationalRequestType(
+          operationalRequest.getOperationalRequestType());
+      if (operationalRequest.getResetTimeStamp() != null) {
+        operationalRequestModel.setResetTimeStampStr(
+            operationalRequest.getResetTimeStamp().toString() + " (UTC)");
+      }
 
       operationalRequestModel.setTeamname(
-          manageDatabase.getTeamNameFromTeamId(tenantId, topicReq.getRequestingTeamId()));
+          manageDatabase.getTeamNameFromTeamId(tenantId, operationalRequest.getRequestingTeamId()));
 
       // show approving info only before approvals
       if (RequestStatus.APPROVED != operationalRequestModel.getRequestStatus()) {
@@ -372,6 +379,32 @@ public class OperationalRequestsService {
       return envIdInfo;
     } else {
       return null;
+    }
+  }
+
+  public ApiResponse deleteOperationalRequest(String operationalRequestId) throws KlawException {
+    log.info("deleteOperationalRequest {}", operationalRequestId);
+
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.REQUEST_CREATE_OPERATIONAL_CHANGES)) {
+      return ApiResponse.NOT_AUTHORIZED;
+    }
+    String userName = getUserName();
+    try {
+      String deleteOperationalReqStatus =
+          manageDatabase
+              .getHandleDbRequests()
+              .deleteOperationalRequest(
+                  Integer.parseInt(operationalRequestId),
+                  userName,
+                  commonUtilsService.getTenantId(getUserName()));
+
+      return ApiResultStatus.SUCCESS.value.equals(deleteOperationalReqStatus)
+          ? ApiResponse.ok(deleteOperationalReqStatus)
+          : ApiResponse.notOk(deleteOperationalReqStatus);
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
     }
   }
 }

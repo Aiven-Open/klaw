@@ -401,6 +401,8 @@ public interface HandleDbRequests {
 
   String deleteTopicRequest(int topicId, String userName, int tenantId);
 
+  String deleteOperationalRequest(int operationalReqId, String userName, int tenantId);
+
   String deleteTopic(int topicId, int tenantId);
 
   String deleteConnector(int connectorId, int tenantId);

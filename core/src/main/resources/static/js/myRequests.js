@@ -344,6 +344,36 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
+        $scope.getMyOperationalRequests = function(pageNoSelected, overwriteFlag) {
+            if($scope.overwriteReqsType)
+                $scope.overwriteReqsType = false;
+            else
+                $scope.validateSearchParams(overwriteFlag);
+
+            $http({
+                method: "GET",
+                url: "operationalRequest",
+                headers : { 'Content-Type' : 'application/json' },
+                params: {'pageNo' : pageNoSelected,
+                    'currentPage' : $scope.currentPageSelected,
+                    'requestStatus': $scope.requestsType }
+            }).success(function(output) {
+                $scope.operationalRequests = output;
+                if(output!=null && output.length>0){
+                    $scope.resultPages = output[0].allPageNos;
+                    $scope.resultPageSelected = pageNoSelected;
+                    $scope.currentPageSelected = output[0].currentPage;
+                }
+
+            }).error(
+                function(error)
+                {
+                    $scope.alert = error;
+                    $scope.topicRequests = null;
+                }
+            );
+        }
+
         $scope.getMyConnectorRequests = function(pageNoSelected, overwriteFlag) {
             if($scope.overwriteReqsType)
                $scope.overwriteReqsType = false;
@@ -446,6 +476,36 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
             );
         }
 
+        $scope.deleteOperationalRequest = function(operationalReqId) {
+            swal({
+                title: "Are you sure?",
+                text: "You would like to delete the request ?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes, delete it!",
+                cancelButtonText: "No, cancel please!",
+                closeOnConfirm: true,
+                closeOnCancel: true
+            }).then(function(isConfirm) {
+                if (isConfirm.dismiss !== "cancel") {
+                    $http({
+                        method: "POST",
+                        url: "operationalRequest/delete/reqId/" + operationalReqId,
+                        headers: {'Content-Type': 'application/json'},
+                    }).success(function (output) {
+                        $scope.alert = "Operational change Delete Request : " + output.message;
+                        $scope.getMyOperationalRequests(1);
+                    }).error(
+                        function (error) {
+                            $scope.handleValidationErrors(error);
+                        }
+                    );
+                } else {
+                    return;
+                }
+            });
+        }
 
     $scope.deleteTopicRequest = function(topicId) {
         swal({
