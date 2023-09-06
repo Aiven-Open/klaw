@@ -5,7 +5,7 @@ import illustration from "src/app/images/topic-details-banner-Illustration.svg";
 import { PromotionStatus } from "src/domain/topic";
 
 type RequestTypeLocal = "CLAIM" | "ALL" | "PROMOTE";
-type EntityTypeLocal = "schema" | "topic";
+type EntityTypeLocal = "schema" | "topic" | "connector";
 
 interface PromotionBannerProps {
   // `entityName` is only optional on
@@ -57,7 +57,7 @@ function createText({
   entityName,
   requestType,
 }: {
-  type: "schema" | "topic";
+  type: EntityTypeLocal;
   entityName: string;
   requestType: RequestTypeLocal;
 }): string {
