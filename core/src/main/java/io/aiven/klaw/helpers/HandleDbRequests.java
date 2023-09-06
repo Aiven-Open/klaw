@@ -359,6 +359,8 @@ public interface HandleDbRequests {
 
   CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver);
 
+  String updateOperationalChangeRequest(OperationalRequest operationalRequest, String approver);
+
   String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 
   Integer getNextClusterId(int tenantId);

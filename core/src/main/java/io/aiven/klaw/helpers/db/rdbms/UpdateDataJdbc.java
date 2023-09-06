@@ -218,6 +218,17 @@ public class UpdateDataJdbc {
     return saveResult;
   }
 
+  public String updateOperationalChangeRequest(
+      OperationalRequest operationalRequest, String approver) {
+    log.debug("updateOperationalChangeRequest {} {}", operationalRequest.getTopicname(), approver);
+    operationalRequest.setApprover(approver);
+    operationalRequest.setRequestStatus(RequestStatus.APPROVED.value);
+    operationalRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
+    operationalRequestsRepo.save(operationalRequest);
+
+    return ApiResultStatus.SUCCESS.value;
+  }
+
   public String updateConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {
     log.debug("updateConnectorRequest {} {}", connectorRequest.getConnectorName(), approver);
     connectorRequest.setApprover(approver);

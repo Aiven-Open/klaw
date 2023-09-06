@@ -843,6 +843,12 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public String updateOperationalChangeRequest(
+      OperationalRequest operationalRequest, String approver) {
+    return jdbcUpdateHelper.updateOperationalChangeRequest(operationalRequest, approver);
+  }
+
+  @Override
   public String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver) {
     return jdbcUpdateHelper.updateConnectorRequest(topicRequest, approver);
   }
