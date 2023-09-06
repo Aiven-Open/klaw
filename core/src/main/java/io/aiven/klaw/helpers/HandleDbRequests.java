@@ -98,6 +98,16 @@ public interface HandleDbRequests {
   List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
 
+  List<OperationalRequest> getCreatedOperationalRequests(
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      Integer teamId,
+      String env,
+      OperationalRequestType operationalRequestType,
+      String wildcardSearch);
+
   List<KafkaConnectorRequest> getAllConnectorRequests(
       String requestor,
       RequestOperationType requestOperationType,
@@ -117,6 +127,8 @@ public interface HandleDbRequests {
       String search);
 
   TopicRequest getTopicRequestsForTopic(int topicId, int tenantId);
+
+  OperationalRequest getOperationalRequestsForId(int reqId, int tenantId);
 
   KafkaConnectorRequest getConnectorRequestsForConnector(int connectorId, int tenantId);
 
@@ -376,6 +388,8 @@ public interface HandleDbRequests {
   String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver);
 
   String declineTopicRequest(TopicRequest topicRequest, String approver);
+
+  String declineOperationalRequest(OperationalRequest topicRequest, String approver);
 
   String declineConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 

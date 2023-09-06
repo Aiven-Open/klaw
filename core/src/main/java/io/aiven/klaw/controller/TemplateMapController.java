@@ -258,6 +258,15 @@ public class TemplateMapController {
     return checkAuth("execTopics.html", request, response, abstractAuthenticationToken);
   }
 
+  @RequestMapping(value = "/execOperationalChanges", method = RequestMethod.GET)
+  public String execOperationalChanges(
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
+    return checkAuth("execOperationalChanges.html", request, response, abstractAuthenticationToken);
+  }
+
   @RequestMapping(value = "/execConnectors", method = RequestMethod.GET)
   public String execConnectors(
       ModelMap model,

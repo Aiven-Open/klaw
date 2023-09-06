@@ -201,6 +201,31 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         requestor, status, showRequestsOfAllTeams, tenantId, null, null, null, null);
   }
 
+  @Override
+  public List<OperationalRequest> getCreatedOperationalRequests(
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      Integer teamId,
+      String env,
+      OperationalRequestType operationalRequestType,
+      String wildcardSearch) {
+    return jdbcSelectHelper.selectFilteredOperationalRequests(
+        true,
+        requestor,
+        status,
+        showRequestsOfAllTeams,
+        tenantId,
+        teamId,
+        operationalRequestType,
+        env,
+        null,
+        null,
+        wildcardSearch,
+        false);
+  }
+
   public List<TopicRequest> getCreatedTopicRequests(
       String requestor,
       String status,
@@ -266,6 +291,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public TopicRequest getTopicRequestsForTopic(int topicId, int tenantId) {
     return jdbcSelectHelper.selectTopicRequestsForTopic(topicId, tenantId);
+  }
+
+  public OperationalRequest getOperationalRequestsForId(int reqId, int tenantId) {
+    return jdbcSelectHelper.selectOperationalRequestsForId(reqId, tenantId);
   }
 
   public KafkaConnectorRequest getConnectorRequestsForConnector(int connectorId, int tenantId) {
@@ -831,6 +860,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public String declineTopicRequest(TopicRequest topicRequest, String approver) {
     return jdbcUpdateHelper.declineTopicRequest(topicRequest, approver);
+  }
+
+  public String declineOperationalRequest(OperationalRequest operationalRequest, String approver) {
+    return jdbcUpdateHelper.declineOperationalRequest(operationalRequest, approver);
   }
 
   public String declineConnectorRequest(KafkaConnectorRequest topicRequest, String approver) {

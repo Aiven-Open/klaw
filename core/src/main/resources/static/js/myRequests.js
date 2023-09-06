@@ -227,6 +227,12 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                         if(alertMessage == "true" && !overwriteFlag)
                             $scope.alert = "Topic request is successfully created !!"
                     }
+                    if (sParameterName[0] == "opReqCreated")
+                    {
+                        alertMessage = sParameterName[1];
+                        if(alertMessage == "true" && !overwriteFlag)
+                            $scope.alert = "Operational request is successfully created !!"
+                    }
                     if (sParameterName[0] == "topicPromotionCreated")
                     {
                         alertMessage = sParameterName[1];
@@ -352,7 +358,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "operationalRequest",
+                url: "operationalRequests/myTeamRequests",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                     'currentPage' : $scope.currentPageSelected,
