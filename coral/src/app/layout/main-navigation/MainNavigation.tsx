@@ -17,7 +17,7 @@ import { FeatureFlag } from "src/services/feature-flags/types";
 function MainNavigation() {
   const { pathname } = useLocation();
   const configurationLinksEnabled = useFeatureFlag(
-    FeatureFlag.FEATURE_FLAG_CONFIGURATION_LINKS
+    FeatureFlag.FEATURE_FLAG_CONFIGURATIONS
   );
 
   return (

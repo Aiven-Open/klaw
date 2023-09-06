@@ -147,11 +147,7 @@ export default defineConfig(({ mode }) => {
         FEATURE_FLAG_EDIT_CONNECTOR: ["development", "remote-api", "local-api"]
           .includes(mode)
           .toString(),
-        FEATURE_FLAG_CONFIGURATION_LINKS: [
-          "development",
-          "remote-api",
-          "local-api",
-        ]
+        FEATURE_FLAG_CONFIGURATIONS: ["development", "remote-api", "local-api"]
           .includes(mode)
           .toString(),
       },
