@@ -390,8 +390,8 @@ public class OperationalRequestsService {
 
   public ApiResponse approveOperationalRequests(String reqId) {
     log.info("approveConsumerOffsetRequests {}", reqId);
-    final String userDetails = getUserName();
-    int tenantId = commonUtilsService.getTenantId(userDetails);
+    final String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
     if (commonUtilsService.isNotAuthorizedUser(
         getPrincipal(), PermissionType.APPROVE_OPERATIONAL_REQS)) {
       return ApiResponse.NOT_AUTHORIZED;
@@ -419,6 +419,7 @@ public class OperationalRequestsService {
       return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
     }
 
+    String updateOffsetReqStatus = "";
     if (apiResponse.isSuccess()) {
       if (apiResponse.getData() instanceof Map) {
         Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter =
@@ -431,6 +432,10 @@ public class OperationalRequestsService {
                 + offsetPositionsBeforeAndAfter.get(OffsetsTiming.AFTER_OFFSET_RESET);
         String offsetResetDetails =
             resetConsumerGroupOffsetsRequest.getConsumerGroup() + "\n" + beforeReset + afterReset;
+
+        updateOffsetReqStatus =
+            dbHandle.updateOperationalChangeRequest(operationalRequest, userName);
+
         mailService.sendMail(
             operationalRequest.getTopicname(),
             offsetResetDetails,
@@ -444,7 +449,9 @@ public class OperationalRequestsService {
       }
     }
 
-    return apiResponse.isSuccess() ? ApiResponse.SUCCESS : ApiResponse.FAILURE;
+    return updateOffsetReqStatus.equals(ApiResultStatus.SUCCESS.value)
+        ? ApiResponse.SUCCESS
+        : ApiResponse.FAILURE;
   }
 
   private void checkIsAuthorized(PermissionType permission) throws KlawNotAuthorizedException {
