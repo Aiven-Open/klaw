@@ -45,11 +45,31 @@ public class OperationalRequestsController {
   }
 
   @PostMapping(
-      value = "/operationalRequest/delete/reqId/{operationalRequestId}",
+      value = "/operationalRequest/approve/reqId/{reqId}",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> approveOperationalRequest(
+      @PathVariable("reqId") String reqId) {
+    return new ResponseEntity<>(
+        operationalRequestsService.approveOperationalRequests(reqId), HttpStatus.OK);
+  }
+
+  @PostMapping(
+      value = "/operationalRequest/decline/reqId/{reqId}",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> declineOperationalRequest(
+      @PathVariable("reqId") String reqId,
+      @RequestParam("reasonForDecline") String reasonForDecline)
+      throws KlawException {
+    return new ResponseEntity<>(
+        operationalRequestsService.declineOperationalRequest(reqId, reasonForDecline),
+        HttpStatus.OK);
+  }
+
+  @PostMapping(
+      value = "/operationalRequest/delete/reqId/{reqId}",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteOperationalRequest(
-      @PathVariable(value = "operationalRequestId") String operationalRequestId)
-      throws KlawException {
+      @PathVariable(value = "reqId") String operationalRequestId) throws KlawException {
     return new ResponseEntity<>(
         operationalRequestsService.deleteOperationalRequest(operationalRequestId), HttpStatus.OK);
   }
@@ -68,10 +88,10 @@ public class OperationalRequestsController {
   }
 
   @RequestMapping(
-      value = "/operationalRequest",
+      value = "/operationalRequests/myTeamRequests",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<OperationalRequestsResponseModel>> getOperationalRequests(
+  public ResponseEntity<List<OperationalRequestsResponseModel>> getMyTeamOperationalRequests(
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
       @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
@@ -97,6 +117,34 @@ public class OperationalRequestsController {
             search,
             order,
             isMyRequest),
+        HttpStatus.OK);
+  }
+
+  @RequestMapping(
+      value = "/operationalRequests/approver",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<List<OperationalRequestsResponseModel>> getOperationalRequestsToApprove(
+      @RequestParam("pageNo") String pageNo,
+      @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
+      @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
+      @RequestParam(value = "env", required = false) String env,
+      @RequestParam(value = "operationType", required = false)
+          OperationalRequestType operationalRequestType,
+      @RequestParam(value = "search", required = false) String search,
+      @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
+          Order order,
+      @RequestParam(value = "teamId", required = false) Integer teamId) {
+    return new ResponseEntity<>(
+        operationalRequestsService.getOperationalRequestsForApprover(
+            pageNo,
+            currentPage,
+            requestStatus.value,
+            operationalRequestType,
+            teamId,
+            env,
+            search,
+            order),
         HttpStatus.OK);
   }
 }

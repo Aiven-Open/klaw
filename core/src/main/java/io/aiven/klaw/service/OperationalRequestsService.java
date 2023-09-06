@@ -3,7 +3,9 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_101;
+import static io.aiven.klaw.model.enums.MailType.RESET_CONSUMER_OFFSET_DENIED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -38,6 +40,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -207,6 +210,7 @@ public class OperationalRequestsService {
     for (OperationalRequest operationalRequest : operationalRequestList) {
       operationalRequestModel = new OperationalRequestsResponseModel();
       copyProperties(operationalRequest, operationalRequestModel);
+      operationalRequestModel.setTeamId(operationalRequest.getRequestingTeamId());
       operationalRequestModel.setRequestStatus(
           RequestStatus.of(operationalRequest.getRequestStatus()));
       operationalRequestModel.setOperationalRequestType(
@@ -231,6 +235,99 @@ public class OperationalRequestsService {
       operationalRequestModelList.add(setRequestorPermissions(operationalRequestModel, userName));
     }
     return operationalRequestModelList;
+  }
+
+  public List<OperationalRequestsResponseModel> getOperationalRequestsForApprover(
+      String pageNo,
+      String currentPage,
+      String requestStatus,
+      OperationalRequestType operationalRequestType,
+      Integer teamId,
+      String env,
+      String wildcardSearch,
+      Order order) {
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "getOperationalRequestsForApprover pageNo {} requestStatus {} operationalRequestType {} teamId {} env {} wildcardSearch {}",
+          pageNo,
+          requestStatus,
+          operationalRequestType,
+          teamId,
+          env,
+          wildcardSearch);
+    }
+
+    String userName = getUserName();
+    List<OperationalRequest> operationalRequestList;
+    int tenantId = commonUtilsService.getTenantId(userName);
+    // get requests relevant to your teams or all teams
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
+      operationalRequestList =
+          manageDatabase
+              .getHandleDbRequests()
+              .getCreatedOperationalRequests(
+                  userName,
+                  requestStatus,
+                  false,
+                  tenantId,
+                  teamId,
+                  env,
+                  operationalRequestType,
+                  wildcardSearch);
+    } else {
+      operationalRequestList =
+          manageDatabase
+              .getHandleDbRequests()
+              .getCreatedOperationalRequests(
+                  userName,
+                  requestStatus,
+                  false,
+                  tenantId,
+                  teamId,
+                  env,
+                  operationalRequestType,
+                  wildcardSearch);
+    }
+
+    operationalRequestList = filterByTenantAndSort(order, userName, operationalRequestList);
+    operationalRequestList =
+        Pager.getItemsList(
+            pageNo,
+            currentPage,
+            10,
+            operationalRequestList,
+            (pageContext, activityLog) -> {
+              activityLog.setAllPageNos(pageContext.getAllPageNos());
+              activityLog.setTotalNoPages(pageContext.getTotalPages());
+              activityLog.setCurrentPage(pageContext.getPageNo());
+              activityLog.setEnvironmentName(
+                  commonUtilsService
+                      .getEnvDetails(activityLog.getEnvironment(), tenantId)
+                      .getName());
+              return activityLog;
+            });
+
+    return updateCreateOperationalReqsList(operationalRequestList, tenantId);
+  }
+
+  private List<OperationalRequestsResponseModel> updateCreateOperationalReqsList(
+      List<OperationalRequest> topicsList, int tenantId) {
+    List<OperationalRequestsResponseModel> topicRequestModelList =
+        getOperationalRequestModels(topicsList);
+
+    for (OperationalRequestsResponseModel operationalRequestsResponseModel :
+        topicRequestModelList) {
+      operationalRequestsResponseModel.setTeamname(
+          manageDatabase.getTeamNameFromTeamId(
+              tenantId, operationalRequestsResponseModel.getTeamId()));
+      operationalRequestsResponseModel.setEnvironmentName(
+          commonUtilsService
+              .getEnvDetails(operationalRequestsResponseModel.getEnvironment(), tenantId)
+              .getName());
+    }
+
+    return topicRequestModelList;
   }
 
   private OperationalRequestsResponseModel setRequestorPermissions(
@@ -299,12 +396,20 @@ public class OperationalRequestsService {
         getPrincipal(), PermissionType.APPROVE_OPERATIONAL_REQS)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
-    ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
-        ResetConsumerGroupOffsetsRequest.builder().build();
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     OperationalRequest operationalRequest =
         dbHandle.getOperationalRequest(Integer.parseInt(reqId), tenantId);
+    ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
+        ResetConsumerGroupOffsetsRequest.builder()
+            .consumerGroup(operationalRequest.getConsumerGroup())
+            .topicName(operationalRequest.getTopicname())
+            .offsetResetType(operationalRequest.getOffsetResetType())
+            .consumerGroupResetTimestampMilliSecs(
+                operationalRequest.getOffsetResetType() == OffsetResetType.TO_DATE_TIME
+                    ? operationalRequest.getResetTimeStamp().getTime()
+                    : null)
+            .build();
     ApiResponse apiResponse;
     try {
       apiResponse =
@@ -404,6 +509,51 @@ public class OperationalRequestsService {
           : ApiResponse.notOk(deleteOperationalReqStatus);
     } catch (Exception e) {
       log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
+    }
+  }
+
+  public ApiResponse declineOperationalRequest(String reqId, String reasonForDecline)
+      throws KlawException {
+    log.debug("declineOperationalRequest {} {}", reqId, reasonForDecline);
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_REQS)) {
+      return ApiResponse.NOT_AUTHORIZED;
+    }
+
+    String userName = getUserName();
+    HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+    OperationalRequest operationalRequest =
+        dbHandle.getOperationalRequestsForId(
+            Integer.parseInt(reqId), commonUtilsService.getTenantId(userName));
+
+    if (!RequestStatus.CREATED.value.equals(operationalRequest.getRequestStatus())) {
+      return ApiResponse.notOk(REQ_ERR_101);
+    }
+
+    // tenant filtering
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
+    if (!allowedEnvIdSet.contains(operationalRequest.getEnvironment())) {
+      return ApiResponse.NOT_AUTHORIZED;
+    }
+
+    try {
+      String result = dbHandle.declineOperationalRequest(operationalRequest, userName);
+      mailService.sendMail(
+          operationalRequest.getTopicname(),
+          null,
+          reasonForDecline,
+          operationalRequest.getRequestor(),
+          operationalRequest.getApprover(),
+          NumberUtils.toInt(operationalRequest.getApprovingTeamId(), -1),
+          dbHandle,
+          RESET_CONSUMER_OFFSET_DENIED,
+          commonUtilsService.getLoginUrl());
+
+      return ApiResultStatus.SUCCESS.value.equals(result)
+          ? ApiResponse.ok(result)
+          : ApiResponse.notOk(result);
+    } catch (Exception e) {
       throw new KlawException(e.getMessage());
     }
   }
