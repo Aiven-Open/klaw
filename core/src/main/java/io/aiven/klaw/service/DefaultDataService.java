@@ -2,18 +2,46 @@ package io.aiven.klaw.service;
 
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.helpers.KwConstants;
+import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
+import io.aiven.klaw.model.enums.KafkaClustersType;
+import io.aiven.klaw.model.enums.KafkaFlavors;
+import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.PermissionType;
+import io.aiven.klaw.model.response.EnvParams;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.jasypt.util.text.BasicTextEncryptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class DefaultDataService {
+
+  @Value("${klaw.quickstart.enabled:false}")
+  private boolean quickStartEnabled;
+
+  @Value("${klaw.docker.clusterapi.host:host.docker.internal:9343}")
+  private String dockerClusterApiHost;
+
+  @Value("${klaw.docker.kafka.cluster:host.docker.internal:9092}")
+  private String dockerKafkaHost;
+
+  @Value("${klaw.docker.sr.cluster:host.docker.internal:8081}")
+  private String dockerSRHost;
+
+  @Value("${klaw.quickstart.default.user1:william}")
+  private String quickStartUser1;
+
+  @Value("${klaw.quickstart.default.user2:jennifer}")
+  private String quickStartUser2;
+
+  @Value("${klaw.quickstart.default.pwd:welcome}")
+  private String quickStartUserPwd;
 
   public UserInfo getUser(
       int tenantId,
@@ -214,18 +242,7 @@ public class DefaultDataService {
             "Enable View or retrieve schemas");
     kwPropertiesList.add(kwProperties20);
 
-    KwProperties kwProperties21 =
-        new KwProperties(
-            "klaw.clusterapi.url", tenantId, KwConstants.CLUSTERAPI_URL, "Cluster Api URL");
-    kwPropertiesList.add(kwProperties21);
-
-    KwProperties kwProperties22 =
-        new KwProperties(
-            "klaw.tenant.config",
-            tenantId,
-            KwConstants.TENANT_CONFIG,
-            "Base sync cluster, order of topic promotion environments, topic request envs");
-    kwPropertiesList.add(kwProperties22);
+    handleQuickStartKwProperties(tenantId, kwPropertiesList);
 
     KwProperties kwProperties23 =
         new KwProperties(
@@ -287,6 +304,34 @@ public class DefaultDataService {
             "Email notification body for a new Topic Update Request");
     kwPropertiesList.add(kwProperties37);
     return kwPropertiesList;
+  }
+
+  private void handleQuickStartKwProperties(int tenantId, List<KwProperties> kwPropertiesList) {
+    KwProperties kwProperties21;
+    KwProperties kwProperties22;
+    if (quickStartEnabled) {
+      kwProperties21 =
+          new KwProperties(
+              "klaw.clusterapi.url", tenantId, dockerClusterApiHost, "Cluster Api URL");
+      kwProperties22 =
+          new KwProperties(
+              "klaw.tenant.config",
+              tenantId,
+              KwConstants.TENANT_CONFIG_QUICK_START,
+              "Base sync cluster, order of topic promotion environments, topic request envs");
+    } else {
+      kwProperties21 =
+          new KwProperties(
+              "klaw.clusterapi.url", tenantId, KwConstants.CLUSTERAPI_URL, "Cluster Api URL");
+      kwProperties22 =
+          new KwProperties(
+              "klaw.tenant.config",
+              tenantId,
+              KwConstants.TENANT_CONFIG,
+              "Base sync cluster, order of topic promotion environments, topic request envs");
+    }
+    kwPropertiesList.add(kwProperties21);
+    kwPropertiesList.add(kwProperties22);
   }
 
   public List<KwRolesPermissions> createDefaultRolesPermissions(
@@ -430,5 +475,98 @@ public class DefaultDataService {
     productDetails.setVersion(version);
 
     return productDetails;
+  }
+
+  public void handleQuickStartData(
+      HandleDbRequestsJdbc handleDbRequests, String encryptorSecretKey, String infraTeam) {
+    if (quickStartEnabled) {
+      // verify if quick start data already exists tbd
+      List<KwClusters> kwClusters =
+          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, KwConstants.DEFAULT_TENANT_ID);
+      if (!kwClusters.isEmpty()) {
+        return;
+      }
+
+      handleDbRequests.addNewUser(
+          getUser(
+              KwConstants.DEFAULT_TENANT_ID,
+              quickStartUserPwd,
+              KwConstants.USER_ROLE,
+              handleDbRequests
+                  .getTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
+                  .getTeamId(),
+              "",
+              quickStartUser1,
+              encryptorSecretKey));
+      handleDbRequests.addNewUser(
+          getUser(
+              KwConstants.DEFAULT_TENANT_ID,
+              quickStartUserPwd,
+              KwConstants.USER_ROLE,
+              handleDbRequests
+                  .getTeamDetailsFromName(infraTeam, KwConstants.DEFAULT_TENANT_ID)
+                  .getTeamId(),
+              "",
+              quickStartUser2,
+              encryptorSecretKey));
+      // Add kafka cluster
+      KwClusters kwClusterKafka = new KwClusters();
+      kwClusterKafka.setClusterName("STG");
+      kwClusterKafka.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+      kwClusterKafka.setBootstrapServers(dockerKafkaHost);
+      kwClusterKafka.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
+      kwClusterKafka.setClusterType(KafkaClustersType.KAFKA.value);
+      kwClusterKafka.setTenantId(KwConstants.DEFAULT_TENANT_ID);
+      handleDbRequests.addNewCluster(kwClusterKafka);
+
+      // Add sr cluster
+      KwClusters kwClusterSchemaRegistry = new KwClusters();
+      kwClusterSchemaRegistry.setClusterName("STG");
+      kwClusterSchemaRegistry.setKafkaFlavor(KafkaFlavors.APACHE_KAFKA.value);
+      kwClusterSchemaRegistry.setBootstrapServers(dockerSRHost);
+      kwClusterSchemaRegistry.setProtocol(KafkaSupportedProtocol.PLAINTEXT);
+      kwClusterSchemaRegistry.setClusterType(KafkaClustersType.SCHEMA_REGISTRY.value);
+      kwClusterSchemaRegistry.setTenantId(KwConstants.DEFAULT_TENANT_ID);
+      handleDbRequests.addNewCluster(kwClusterSchemaRegistry);
+
+      // Add kafka environment
+      kwClusters =
+          handleDbRequests.getAllClusters(KafkaClustersType.KAFKA, KwConstants.DEFAULT_TENANT_ID);
+      Env envKafka = new Env();
+      envKafka.setClusterId(kwClusters.get(0).getClusterId());
+      envKafka.setName("STG");
+      envKafka.setType(KafkaClustersType.KAFKA.value);
+      EnvParams envParams = new EnvParams();
+      envParams.setDefaultPartitions("1");
+      envParams.setMaxPartitions("1");
+      envParams.setDefaultRepFactor("1");
+      envParams.setMaxRepFactor("1");
+      envParams.setReplicationFactorList(Collections.singletonList("1"));
+      envParams.setPartitionsList(List.of("1", "2"));
+      envParams.setTopicPrefix(Collections.emptyList());
+      envParams.setTopicSuffix(Collections.emptyList());
+      envParams.setTopicRegex(Collections.emptyList());
+      envKafka.setParams(envParams);
+      envKafka.setTenantId(KwConstants.DEFAULT_TENANT_ID);
+      envKafka.setEnvExists("true");
+      handleDbRequests.addNewEnv(envKafka);
+
+      // Add sr environment
+      List<KwClusters> kwClustersSR =
+          handleDbRequests.getAllClusters(
+              KafkaClustersType.SCHEMA_REGISTRY, KwConstants.DEFAULT_TENANT_ID);
+      Env envSR = new Env();
+      envSR.setClusterId(kwClustersSR.get(0).getClusterId());
+      envSR.setName("STG");
+      envSR.setType(KafkaClustersType.SCHEMA_REGISTRY.value);
+      EnvParams envParamsSR = new EnvParams();
+      envSR.setParams(envParamsSR);
+      envSR.setTenantId(KwConstants.DEFAULT_TENANT_ID);
+      EnvTag envTag = new EnvTag();
+      envTag.setId(handleDbRequests.getAllEnvs(KwConstants.DEFAULT_TENANT_ID).get(0).getId());
+      envSR.setAssociatedEnv(envTag);
+      envSR.setEnvExists("true");
+      handleDbRequests.addNewEnv(envSR);
+    }
   }
 }
