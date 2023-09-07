@@ -4,6 +4,9 @@ import {
   getAllEnvironmentsForSchema,
   getEnvironmentsForSchemaRequest,
   getAllEnvironmentsForConnector,
+  getPaginatedEnvironmentsForTopicAndAcl,
+  getPaginatedEnvironmentsForConnector,
+  getPaginatedEnvironmentsForSchema,
 } from "src/domain/environment/environment-api";
 import { mockgetEnvironmentsForTopicRequest } from "src/domain/environment/environment-api.msw";
 import {
@@ -20,5 +23,8 @@ export {
   getAllEnvironmentsForSchema,
   getEnvironmentsForSchemaRequest,
   getAllEnvironmentsForConnector,
+  getPaginatedEnvironmentsForTopicAndAcl,
+  getPaginatedEnvironmentsForSchema,
+  getPaginatedEnvironmentsForConnector,
 };
 export type { Environment, EnvironmentInfo };

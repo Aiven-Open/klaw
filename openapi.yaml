@@ -7667,10 +7667,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },
@@ -8143,6 +8143,9 @@
           "totalNoPages" : {
             "type" : "string"
           },
+          "currentPage" : {
+            "type" : "string"
+          },
           "allPageNos" : {
             "type" : "array",
             "items" : {
@@ -8161,7 +8164,7 @@
             "writeOnly" : true
           }
         },
-        "required" : [ "allPageNos", "clusterId", "clusterName", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
+        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
       },
       "AclInfo" : {
         "properties" : {

@@ -1,4 +1,4 @@
-import { KlawApiModel } from "types/utils";
+import { KlawApiModel, Paginated, ResolveIntersectionTypes } from "types/utils";
 
 type EnvironmentParams = KlawApiModel<"EnvParams">;
 // KlawApiModel<"EnvModel">
@@ -36,7 +36,11 @@ type Environment = {
 
 type EnvironmentInfo = KlawApiModel<"EnvIdInfo">;
 
+type EnvironmentPaginatedApiResponse = ResolveIntersectionTypes<
+  Paginated<Environment[]>
+>;
+
 const ALL_ENVIRONMENTS_VALUE = "ALL";
 
-export type { Environment, EnvironmentInfo };
+export type { Environment, EnvironmentInfo, EnvironmentPaginatedApiResponse };
 export { ALL_ENVIRONMENTS_VALUE };
