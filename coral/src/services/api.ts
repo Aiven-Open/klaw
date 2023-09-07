@@ -34,7 +34,11 @@ const CONTENT_TYPE_JSON = "application/json" as const;
 const API_BASE_URL = getHTTPBaseAPIUrl();
 
 const API_PATHS = {
-  getConsumerOffsetsResetRequests: "/operationalRequest",
+  approveOperationalRequest: "/operationalRequest/approve/reqId/{reqId}",
+  declineOperationalRequest: "/operationalRequest/decline/reqId/{reqId}",
+  deleteOperationalRequest: "/operationalRequest/delete/reqId/{reqId}",
+  getOperationalRequestsToApprove: "/operationalRequests/approver",
+  getMyTeamOperationalRequests: "/operationalRequests/myTeamRequests",
   validateOffsetRequestDetails:
     "/operationalRequest/consumerOffsetsReset/validate",
   createConsumerOffsetsResetRequest:
