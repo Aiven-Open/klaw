@@ -448,12 +448,11 @@ NativeSelect.Skeleton = BaseNativeSelect.Skeleton;
 
 type ButtonProps = React.ComponentProps<typeof Button.Primary>;
 function _SubmitButton<T extends FieldValues>({
-  formContext: {
-    formState: { isSubmitting },
-  },
+  formContext: { formState },
   ...props
 }: ButtonProps & FormRegisterProps<T>) {
-  return <Button.Primary {...props} loading={isSubmitting} type="submit" />;
+  const loadingProp = props.loading || formState.isSubmitting;
+  return <Button.Primary {...props} loading={loadingProp} type="submit" />;
 }
 
 const SubmitButtonMemo = memo(
@@ -464,6 +463,11 @@ const SubmitButtonMemo = memo(
   }
 ) as typeof _SubmitButton;
 
+/*** Pass `loading` property to button when
+ * onSubmitHandler does not
+ * pass a Promise, e.g. when using
+ * `mutate` from react-query
+ */
 // eslint-disable-next-line import/exports-last,import/group-exports
 export const SubmitButton = <T extends FieldValues>(
   props: ButtonProps
