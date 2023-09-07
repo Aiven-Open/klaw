@@ -448,10 +448,12 @@ NativeSelect.Skeleton = BaseNativeSelect.Skeleton;
 
 type ButtonProps = React.ComponentProps<typeof Button.Primary>;
 function _SubmitButton<T extends FieldValues>({
-  formContext: { formState },
+  formContext: {
+    formState: { isSubmitting },
+  },
   ...props
 }: ButtonProps & FormRegisterProps<T>) {
-  const loadingProp = props.loading || formState.isSubmitting;
+  const loadingProp = props.loading || isSubmitting;
   return <Button.Primary {...props} loading={loadingProp} type="submit" />;
 }
 
