@@ -35,11 +35,12 @@ type Environment = {
 };
 
 type EnvironmentInfo = KlawApiModel<"EnvIdInfo">;
-interface Test extends Paginated<Environment[]> {
+interface PaginatedEnvironmentsWithTotalEnvs extends Paginated<Environment[]> {
   totalEnvs: number;
 }
 
-type EnvironmentPaginatedApiResponse = ResolveIntersectionTypes<Test>;
+type EnvironmentPaginatedApiResponse =
+  ResolveIntersectionTypes<PaginatedEnvironmentsWithTotalEnvs>;
 
 const ALL_ENVIRONMENTS_VALUE = "ALL";
 
