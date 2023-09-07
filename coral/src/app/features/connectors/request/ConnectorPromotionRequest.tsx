@@ -129,7 +129,7 @@ function ConnectorPromotionRequest() {
       setTargetEnv(targetEnvFromUrl);
       setSourceEnv(sourceEnvFromUrl);
     }
-  }, [isFetchedEnvironments]);
+  }, [isFetchedEnvironments, isErrorEnvironments]);
 
   const {
     data: connectorDetails,
