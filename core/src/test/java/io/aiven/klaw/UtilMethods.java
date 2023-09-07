@@ -25,6 +25,7 @@ import io.aiven.klaw.model.charts.Title;
 import io.aiven.klaw.model.cluster.SchemaInfoOfTopic;
 import io.aiven.klaw.model.cluster.SchemasInfoOfClusterResponse;
 import io.aiven.klaw.model.cluster.consumergroup.OffsetResetType;
+import io.aiven.klaw.model.cluster.consumergroup.OffsetsTiming;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
 import io.aiven.klaw.model.enums.AclPatternType;
 import io.aiven.klaw.model.enums.AclPermissionType;
@@ -1152,5 +1153,16 @@ public class UtilMethods {
 
     IntStream.range(0, actual.size())
         .forEach(i -> Assertions.assertEquals(actual.get(i), expected.get(i)));
+  }
+
+  public static Map<OffsetsTiming, Map<String, Long>> getOffsetsTimingMapMap() {
+    Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter = new HashMap<>();
+    Map<String, Long> beforeReset = new HashMap<>();
+    beforeReset.put("1", 12345L);
+    Map<String, Long> afterReset = new HashMap<>();
+    beforeReset.put("1", 12340L);
+    offsetPositionsBeforeAndAfter.put(OffsetsTiming.BEFORE_OFFSET_RESET, beforeReset);
+    offsetPositionsBeforeAndAfter.put(OffsetsTiming.AFTER_OFFSET_RESET, afterReset);
+    return offsetPositionsBeforeAndAfter;
   }
 }

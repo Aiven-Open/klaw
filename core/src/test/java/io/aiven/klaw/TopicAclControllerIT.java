@@ -1463,13 +1463,8 @@ public class TopicAclControllerIT {
   @Test
   @Order(46)
   public void approveOffsetRequest() throws Exception {
-    Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter = new HashMap<>();
-    Map<String, Long> beforeReset = new HashMap<>();
-    beforeReset.put("1", 12345L);
-    Map<String, Long> afterReset = new HashMap<>();
-    beforeReset.put("1", 12340L);
-    offsetPositionsBeforeAndAfter.put(OffsetsTiming.BEFORE_OFFSET_RESET, beforeReset);
-    offsetPositionsBeforeAndAfter.put(OffsetsTiming.AFTER_OFFSET_RESET, afterReset);
+    Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter =
+        UtilMethods.getOffsetsTimingMapMap();
 
     ApiResponse apiResponse =
         ApiResponse.builder().success(true).data(offsetPositionsBeforeAndAfter).build();
