@@ -111,8 +111,17 @@ export type paths = {
   "/promote/schema": {
     post: operations["promoteSchema"];
   };
+  "/operationalRequest/delete/reqId/{reqId}": {
+    post: operations["deleteOperationalRequest"];
+  };
+  "/operationalRequest/decline/reqId/{reqId}": {
+    post: operations["declineOperationalRequest"];
+  };
   "/operationalRequest/consumerOffsetsReset/create": {
     post: operations["createConsumerOffsetsResetRequest"];
+  };
+  "/operationalRequest/approve/reqId/{reqId}": {
+    post: operations["approveOperationalRequest"];
   };
   "/logout": {
     post: operations["logout"];
@@ -250,8 +259,11 @@ export type paths = {
     /** Get counts of all request entity types for different status,operation types */
     get: operations["getRequestStatistics"];
   };
-  "/operationalRequest": {
-    get: operations["getConsumerOffsetsResetRequests"];
+  "/operationalRequests/myTeamRequests": {
+    get: operations["getMyTeamOperationalRequests"];
+  };
+  "/operationalRequests/approver": {
+    get: operations["getOperationalRequestsToApprove"];
   };
   "/operationalRequest/consumerOffsetsReset/validate": {
     get: operations["validateOffsetRequestDetails"];
@@ -1207,8 +1219,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      highestEnv?: boolean;
       topicOwner?: boolean;
+      highestEnv?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
@@ -2293,10 +2305,58 @@ export type operations = {
       };
     };
   };
+  deleteOperationalRequest: {
+    parameters: {
+      path: {
+        reqId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  declineOperationalRequest: {
+    parameters: {
+      query: {
+        reasonForDecline: string;
+      };
+      path: {
+        reqId: string;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
   createConsumerOffsetsResetRequest: {
     requestBody: {
       content: {
         "application/json": components["schemas"]["ConsumerOffsetResetRequestModel"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  approveOperationalRequest: {
+    parameters: {
+      path: {
+        reqId: string;
       };
     };
     responses: {
@@ -2974,7 +3034,7 @@ export type operations = {
       };
     };
   };
-  getConsumerOffsetsResetRequests: {
+  getMyTeamOperationalRequests: {
     parameters: {
       query: {
         pageNo: string;
@@ -2987,6 +3047,28 @@ export type operations = {
         search?: string;
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": (components["schemas"]["OperationalRequestsResponseModel"])[];
+        };
+      };
+    };
+  };
+  getOperationalRequestsToApprove: {
+    parameters: {
+      query: {
+        pageNo: string;
+        currentPage?: string;
+        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        env?: string;
+        operationType?: "RESET_CONSUMER_OFFSETS";
+        search?: string;
+        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
+        teamId?: number;
       };
     };
     responses: {
