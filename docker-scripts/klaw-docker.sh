@@ -62,6 +62,17 @@ deployDeveloperEnv() {
   echo `pwd`
   echo "Deploy developer Klaw"
   docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml up -d
+
+
+  # Use 'docker-compose ps' to get information about running containers
+  container_info=$(docker-compose -f docker-scripts/docker-compose-klaw-v2.yaml ps -q klaw-core)
+
+  if [ -n "$container_info" ]; then
+    container_address=$(docker port "$container_info" 9097)
+    echo "Klaw container is running at $container_address"
+  else
+    echo "Klaw container not found or not running"
+  fi
 }
 
 
