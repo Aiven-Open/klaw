@@ -6,6 +6,7 @@
   "license": "Apache-2.0",
   "engineStrict": true,
   "scripts": {
+    "build-klaw": "./setup-env.sh",
     "test": "playwright test",
     "lint": "prettier --check . && eslint .",
     "reformat": "prettier --write . && eslint --fix .",
