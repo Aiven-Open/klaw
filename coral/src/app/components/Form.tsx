@@ -463,10 +463,12 @@ const SubmitButtonMemo = memo(
   }
 ) as typeof _SubmitButton;
 
-/*** Pass `loading` property to button when
- * onSubmitHandler does not
- * pass a Promise, e.g. when using
- * `mutate` from react-query
+/*** Loading state can rely on `isSubmitting` from
+ * form state, but only when `onSubmit` returns a Promise
+ * and that promise has a catch which calls Promise.reject().
+ * see https://github.com/Aiven-Open/klaw/issues/1439#issuecomment-1699202614
+ * If this is not the case (e.g. when using `mutate` from react-query)
+ * we can pass a `loading` prop to get the loading state
  */
 // eslint-disable-next-line import/exports-last,import/group-exports
 export const SubmitButton = <T extends FieldValues>(
