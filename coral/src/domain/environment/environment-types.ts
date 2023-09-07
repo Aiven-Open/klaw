@@ -36,11 +36,11 @@ type Environment = {
 
 type EnvironmentInfo = KlawApiModel<"EnvIdInfo">;
 
-type EnvironmentApiResponse = ResolveIntersectionTypes<
+type EnvironmentPaginatedApiResponse = ResolveIntersectionTypes<
   Paginated<Environment[]>
 >;
 
 const ALL_ENVIRONMENTS_VALUE = "ALL";
 
-export type { Environment, EnvironmentInfo, EnvironmentApiResponse };
+export type { Environment, EnvironmentInfo, EnvironmentPaginatedApiResponse };
 export { ALL_ENVIRONMENTS_VALUE };

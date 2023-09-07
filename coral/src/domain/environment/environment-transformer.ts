@@ -1,7 +1,7 @@
 import isString from "lodash/isString";
 import {
   Environment,
-  EnvironmentApiResponse,
+  EnvironmentPaginatedApiResponse,
 } from "src/domain/environment/environment-types";
 import { KlawApiModel } from "types/utils";
 
@@ -48,7 +48,7 @@ function transformEnvironmentApiResponse(
 
 function transformPaginatedEnvironmentApiResponse(
   apiResponse: KlawApiModel<"EnvModelResponse">[]
-): EnvironmentApiResponse {
+): EnvironmentPaginatedApiResponse {
   if (apiResponse.length === 0) {
     return {
       totalPages: 0,

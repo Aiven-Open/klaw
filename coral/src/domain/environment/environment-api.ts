@@ -4,7 +4,7 @@ import {
 } from "src/domain/environment/environment-transformer";
 import {
   Environment,
-  EnvironmentApiResponse,
+  EnvironmentPaginatedApiResponse,
 } from "src/domain/environment/environment-types";
 import api, { API_PATHS } from "src/services/api";
 import { convertQueryValuesToString } from "src/services/api-helper";
@@ -29,7 +29,7 @@ const getAllEnvironmentsForTopicAndAcl = async (): Promise<Environment[]> => {
 
 const getPaginatedEnvironmentsForTopicAndAcl = async (
   params: KlawApiRequestQueryParameters<"getKafkaEnvsPaginated">
-): Promise<EnvironmentApiResponse> => {
+): Promise<EnvironmentPaginatedApiResponse> => {
   const queryParams = convertQueryValuesToString({
     pageNo: params.pageNo,
     ...(params.searchEnvParam && { searchEnvParam: params.searchEnvParam }),
@@ -61,7 +61,7 @@ const getAllEnvironmentsForSchema = async (): Promise<Environment[]> => {
 
 const getPaginatedEnvironmentsForSchema = async (
   params: KlawApiRequestQueryParameters<"getSchemaRegEnvsPaginated">
-): Promise<EnvironmentApiResponse> => {
+): Promise<EnvironmentPaginatedApiResponse> => {
   const queryParams = convertQueryValuesToString({
     pageNo: params.pageNo,
     ...(params.searchEnvParam && { searchEnvParam: params.searchEnvParam }),
@@ -92,7 +92,7 @@ const getAllEnvironmentsForConnector = async (): Promise<Environment[]> => {
 
 const getPaginatedEnvironmentsForConnector = async (
   params: KlawApiRequestQueryParameters<"getKafkaConnectEnvsPaginated">
-): Promise<EnvironmentApiResponse> => {
+): Promise<EnvironmentPaginatedApiResponse> => {
   const queryParams = convertQueryValuesToString({
     pageNo: params.pageNo,
     ...(params.searchEnvParam && { searchEnvParam: params.searchEnvParam }),
