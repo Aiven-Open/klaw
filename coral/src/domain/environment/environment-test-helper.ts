@@ -15,6 +15,7 @@ const defaultEnvironmentDTO: KlawApiModel<"EnvModelResponse"> = {
   showDeleteEnv: false,
   totalNoPages: "1",
   currentPage: "1",
+  totalRecs: 1,
   allPageNos: ["1"],
   associatedEnv: undefined,
   clusterType: "ALL",
