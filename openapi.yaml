@@ -1116,6 +1116,65 @@
         }
       }
     },
+    "/operationalRequest/delete/reqId/{reqId}" : {
+      "post" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "deleteOperationalRequest",
+        "parameters" : [ {
+          "name" : "reqId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequest/decline/reqId/{reqId}" : {
+      "post" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "declineOperationalRequest",
+        "parameters" : [ {
+          "name" : "reqId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "reasonForDecline",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/operationalRequest/consumerOffsetsReset/create" : {
       "post" : {
         "tags" : [ "operational-requests-controller" ],
@@ -1130,6 +1189,32 @@
           },
           "required" : true
         },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequest/approve/reqId/{reqId}" : {
+      "post" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "approveOperationalRequest",
+        "parameters" : [ {
+          "name" : "reqId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -2393,10 +2478,10 @@
         }
       }
     },
-    "/operationalRequest" : {
+    "/operationalRequests/myTeamRequests" : {
       "get" : {
         "tags" : [ "operational-requests-controller" ],
-        "operationId" : "getConsumerOffsetsResetRequests",
+        "operationId" : "getMyTeamOperationalRequests",
         "parameters" : [ {
           "name" : "pageNo",
           "in" : "query",
@@ -2473,6 +2558,91 @@
           "schema" : {
             "type" : "boolean",
             "default" : false
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/OperationalRequestsResponseModel"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequests/approver" : {
+      "get" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "getOperationalRequestsToApprove",
+        "parameters" : [ {
+          "name" : "pageNo",
+          "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "currentPage",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : ""
+          }
+        }, {
+          "name" : "requestStatus",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "CREATED",
+            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
+          }
+        }, {
+          "name" : "env",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "operationType",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "enum" : [ "RESET_CONSUMER_OFFSETS" ]
+          }
+        }, {
+          "name" : "search",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "order",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "string",
+            "default" : "DESC_REQUESTED_TIME",
+            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
+          }
+        }, {
+          "name" : "teamId",
+          "in" : "query",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -7667,10 +7837,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           }
         },
