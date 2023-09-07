@@ -10,6 +10,7 @@ import AclApprovalsPage from "src/app/pages/approvals/acls";
 import ConnectorApprovalsPage from "src/app/pages/approvals/connectors";
 import SchemaApprovalsPage from "src/app/pages/approvals/schemas";
 import TopicApprovalsPage from "src/app/pages/approvals/topics";
+import EnvironmentsPage from "src/app/pages/configuration/environments";
 import ConnectorsPage from "src/app/pages/connectors";
 import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
 import ConnectorEditRequest from "src/app/pages/connectors/edit-request";
@@ -39,6 +40,8 @@ import {
   ApprovalsTabEnum,
   CONNECTOR_OVERVIEW_TAB_ID_INTO_PATH,
   ConnectorOverviewTabEnum,
+  ENVIRONMENT_TAB_ID_INTO_PATH,
+  EnvironmentsTabEnum,
   REQUESTS_TAB_ID_INTO_PATH,
   RequestsTabEnum,
   Routes,
@@ -203,6 +206,38 @@ const routes: Array<RouteObject> = [
             element: <ConnectorApprovalsPage />,
             id: ApprovalsTabEnum.CONNECTORS,
           },
+        ],
+      },
+      {
+        path: Routes.CONFIGURATION,
+        children: [
+          createRouteBehindFeatureFlag({
+            path: Routes.ENVIRONMENTS,
+            featureFlag: FeatureFlag.FEATURE_FLAG_CONFIGURATIONS,
+            redirectRouteWithoutFeatureFlag: Routes.TOPICS,
+            element: <EnvironmentsPage />,
+            children: [
+              {
+                path: ENVIRONMENT_TAB_ID_INTO_PATH[EnvironmentsTabEnum.KAFKA],
+                element: <div>Kafka</div>,
+                id: EnvironmentsTabEnum.KAFKA,
+              },
+              {
+                path: ENVIRONMENT_TAB_ID_INTO_PATH[
+                  EnvironmentsTabEnum.SCHEMA_REGISTRY
+                ],
+                element: <div>Schema registry</div>,
+                id: EnvironmentsTabEnum.SCHEMA_REGISTRY,
+              },
+              {
+                path: ENVIRONMENT_TAB_ID_INTO_PATH[
+                  EnvironmentsTabEnum.KAFKA_CONNECT
+                ],
+                element: <div>Kafka connect</div>,
+                id: EnvironmentsTabEnum.KAFKA_CONNECT,
+              },
+            ],
+          }),
         ],
       },
     ],
