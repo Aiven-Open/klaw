@@ -1116,7 +1116,7 @@
         }
       }
     },
-    "/operationalRequest/delete/reqId/{reqId}" : {
+    "/operationalRequest/reqId/{reqId}/delete" : {
       "post" : {
         "tags" : [ "operational-requests-controller" ],
         "operationId" : "deleteOperationalRequest",
@@ -1142,7 +1142,7 @@
         }
       }
     },
-    "/operationalRequest/decline/reqId/{reqId}" : {
+    "/operationalRequest/reqId/{reqId}/decline" : {
       "post" : {
         "tags" : [ "operational-requests-controller" ],
         "operationId" : "declineOperationalRequest",
@@ -1156,6 +1156,32 @@
         }, {
           "name" : "reasonForDecline",
           "in" : "query",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/operationalRequest/reqId/{reqId}/approve" : {
+      "post" : {
+        "tags" : [ "operational-requests-controller" ],
+        "operationId" : "approveOperationalRequest",
+        "parameters" : [ {
+          "name" : "reqId",
+          "in" : "path",
           "required" : true,
           "schema" : {
             "type" : "string"
@@ -1189,32 +1215,6 @@
           },
           "required" : true
         },
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "$ref" : "#/components/schemas/ApiResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/operationalRequest/approve/reqId/{reqId}" : {
-      "post" : {
-        "tags" : [ "operational-requests-controller" ],
-        "operationId" : "approveOperationalRequest",
-        "parameters" : [ {
-          "name" : "reqId",
-          "in" : "path",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        } ],
         "responses" : {
           "200" : {
             "description" : "OK",
@@ -2478,11 +2478,18 @@
         }
       }
     },
-    "/operationalRequests/myTeamRequests" : {
+    "/operationalRequests/requestsFor/{requestsFor}" : {
       "get" : {
         "tags" : [ "operational-requests-controller" ],
-        "operationId" : "getMyTeamOperationalRequests",
+        "operationId" : "getOperationalRequests",
         "parameters" : [ {
+          "name" : "requestsFor",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
           "name" : "pageNo",
           "in" : "query",
           "required" : true,
@@ -2500,10 +2507,9 @@
         }, {
           "name" : "requestStatus",
           "in" : "query",
-          "required" : false,
+          "required" : true,
           "schema" : {
             "type" : "string",
-            "default" : "ALL",
             "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
           }
         }, {
@@ -2558,91 +2564,6 @@
           "schema" : {
             "type" : "boolean",
             "default" : false
-          }
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "OK",
-            "content" : {
-              "application/json" : {
-                "schema" : {
-                  "type" : "array",
-                  "items" : {
-                    "$ref" : "#/components/schemas/OperationalRequestsResponseModel"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/operationalRequests/approver" : {
-      "get" : {
-        "tags" : [ "operational-requests-controller" ],
-        "operationId" : "getOperationalRequestsToApprove",
-        "parameters" : [ {
-          "name" : "pageNo",
-          "in" : "query",
-          "required" : true,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "currentPage",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string",
-            "default" : ""
-          }
-        }, {
-          "name" : "requestStatus",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string",
-            "default" : "CREATED",
-            "enum" : [ "CREATED", "DELETED", "DECLINED", "APPROVED", "ALL" ]
-          }
-        }, {
-          "name" : "env",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "operationType",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string",
-            "enum" : [ "RESET_CONSUMER_OFFSETS" ]
-          }
-        }, {
-          "name" : "search",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string"
-          }
-        }, {
-          "name" : "order",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "string",
-            "default" : "DESC_REQUESTED_TIME",
-            "enum" : [ "ASC_REQUESTED_TIME", "DESC_REQUESTED_TIME" ]
-          }
-        }, {
-          "name" : "teamId",
-          "in" : "query",
-          "required" : false,
-          "schema" : {
-            "type" : "integer",
-            "format" : "int32"
           }
         } ],
         "responses" : {

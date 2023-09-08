@@ -105,6 +105,8 @@ public interface HandleDbRequests {
       int tenantId,
       Integer teamId,
       String env,
+      String topicName,
+      String consumerGroup,
       OperationalRequestType operationalRequestType,
       String wildcardSearch);
 
@@ -359,7 +361,8 @@ public interface HandleDbRequests {
 
   CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver);
 
-  String updateOperationalChangeRequest(OperationalRequest operationalRequest, String approver);
+  String updateOperationalChangeRequest(
+      OperationalRequest operationalRequest, String approver, RequestStatus requestStatus);
 
   String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 
@@ -390,8 +393,6 @@ public interface HandleDbRequests {
   String updateSchemaRequestDecline(SchemaRequest schemaRequest, String approver);
 
   String declineTopicRequest(TopicRequest topicRequest, String approver);
-
-  String declineOperationalRequest(OperationalRequest topicRequest, String approver);
 
   String declineConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 

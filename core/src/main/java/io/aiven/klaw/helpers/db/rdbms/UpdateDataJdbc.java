@@ -119,10 +119,11 @@ public class UpdateDataJdbc {
     return ApiResultStatus.SUCCESS.value;
   }
 
-  public String declineOperationalRequest(OperationalRequest operationalRequest, String approver) {
-    log.debug("declineOperationalRequest {} {}", operationalRequest.getTopicname(), approver);
+  public String updateOperationalChangeRequest(
+      OperationalRequest operationalRequest, String approver, RequestStatus requestStatus) {
+    log.debug("updateOperationalChangeRequest {} {}", operationalRequest.getTopicname(), approver);
     operationalRequest.setApprover(approver);
-    operationalRequest.setRequestStatus(RequestStatus.DECLINED.value);
+    operationalRequest.setRequestStatus(requestStatus.value);
     operationalRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     operationalRequestsRepo.save(operationalRequest);
 
@@ -216,17 +217,6 @@ public class UpdateDataJdbc {
     }
 
     return saveResult;
-  }
-
-  public String updateOperationalChangeRequest(
-      OperationalRequest operationalRequest, String approver) {
-    log.debug("updateOperationalChangeRequest {} {}", operationalRequest.getTopicname(), approver);
-    operationalRequest.setApprover(approver);
-    operationalRequest.setRequestStatus(RequestStatus.APPROVED.value);
-    operationalRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
-    operationalRequestsRepo.save(operationalRequest);
-
-    return ApiResultStatus.SUCCESS.value;
   }
 
   public String updateConnectorRequest(KafkaConnectorRequest connectorRequest, String approver) {

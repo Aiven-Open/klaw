@@ -413,7 +413,8 @@ public class DefaultDataService {
     defaultUserPermissionsList.put(
         "APPROVE_CONNECTORS", PermissionType.APPROVE_CONNECTORS.getDescription());
     defaultUserPermissionsList.put(
-        "APPROVE_OPERATIONAL_REQS", PermissionType.APPROVE_OPERATIONAL_REQS.getDescription());
+        PermissionType.APPROVE_OPERATIONAL_CHANGES.name(),
+        PermissionType.APPROVE_OPERATIONAL_CHANGES.getDescription());
     defaultUserPermissionsList.put(
         "VIEW_CONNECTORS", PermissionType.VIEW_CONNECTORS.getDescription());
     defaultUserPermissionsList.put("VIEW_TOPICS", PermissionType.VIEW_TOPICS.getDescription());

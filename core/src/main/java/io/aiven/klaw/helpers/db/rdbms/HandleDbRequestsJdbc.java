@@ -209,6 +209,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
       int tenantId,
       Integer teamId,
       String env,
+      String topicName,
+      String consumerGroup,
       OperationalRequestType operationalRequestType,
       String wildcardSearch) {
     return jdbcSelectHelper.selectFilteredOperationalRequests(
@@ -220,8 +222,8 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         teamId,
         operationalRequestType,
         env,
-        null,
-        null,
+        topicName,
+        consumerGroup,
         wildcardSearch,
         false);
   }
@@ -844,8 +846,9 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   @Override
   public String updateOperationalChangeRequest(
-      OperationalRequest operationalRequest, String approver) {
-    return jdbcUpdateHelper.updateOperationalChangeRequest(operationalRequest, approver);
+      OperationalRequest operationalRequest, String approver, RequestStatus requestStatus) {
+    return jdbcUpdateHelper.updateOperationalChangeRequest(
+        operationalRequest, approver, requestStatus);
   }
 
   @Override
@@ -866,10 +869,6 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public String declineTopicRequest(TopicRequest topicRequest, String approver) {
     return jdbcUpdateHelper.declineTopicRequest(topicRequest, approver);
-  }
-
-  public String declineOperationalRequest(OperationalRequest operationalRequest, String approver) {
-    return jdbcUpdateHelper.declineOperationalRequest(operationalRequest, approver);
   }
 
   public String declineConnectorRequest(KafkaConnectorRequest topicRequest, String approver) {

@@ -204,7 +204,7 @@ public class OperationalRequestsServiceTest {
     when(handleDbRequests.getOperationalRequest(anyInt(), anyInt())).thenReturn(getReqs().get(0));
     when(clusterApiService.resetConsumerOffsets(any(), anyString(), anyInt()))
         .thenReturn(apiResponse);
-    when(handleDbRequests.updateOperationalChangeRequest(any(), anyString()))
+    when(handleDbRequests.updateOperationalChangeRequest(any(), anyString(), any()))
         .thenReturn(ApiResultStatus.SUCCESS.value);
     ApiResponse apiResponse1 = operationalRequestsService.approveOperationalRequests("1001");
     assertThat(apiResponse1.isSuccess()).isTrue();

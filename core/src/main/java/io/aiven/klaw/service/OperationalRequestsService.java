@@ -242,22 +242,23 @@ public class OperationalRequestsService {
       String currentPage,
       String requestStatus,
       OperationalRequestType operationalRequestType,
-      Integer teamId,
       String env,
+      String topicName,
+      String consumerGroup,
       String wildcardSearch,
       Order order) {
     if (log.isDebugEnabled()) {
       log.debug(
-          "getOperationalRequestsForApprover pageNo {} requestStatus {} operationalRequestType {} teamId {} env {} wildcardSearch {}",
+          "getOperationalRequestsForApprover pageNo {} requestStatus {} operationalRequestType {} env {} wildcardSearch {}",
           pageNo,
           requestStatus,
           operationalRequestType,
-          teamId,
           env,
           wildcardSearch);
     }
 
     String userName = getUserName();
+    int teamId = commonUtilsService.getTeamId(userName);
     List<OperationalRequest> operationalRequestList;
     int tenantId = commonUtilsService.getTenantId(userName);
     // get requests relevant to your teams or all teams
@@ -273,6 +274,8 @@ public class OperationalRequestsService {
                   tenantId,
                   teamId,
                   env,
+                  topicName,
+                  consumerGroup,
                   operationalRequestType,
                   wildcardSearch);
     } else {
@@ -286,6 +289,8 @@ public class OperationalRequestsService {
                   tenantId,
                   teamId,
                   env,
+                  topicName,
+                  consumerGroup,
                   operationalRequestType,
                   wildcardSearch);
     }
@@ -393,7 +398,7 @@ public class OperationalRequestsService {
     final String userName = getUserName();
     int tenantId = commonUtilsService.getTenantId(userName);
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_REQS)) {
+        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -434,7 +439,8 @@ public class OperationalRequestsService {
             resetConsumerGroupOffsetsRequest.getConsumerGroup() + "\n" + beforeReset + afterReset;
 
         updateOffsetReqStatus =
-            dbHandle.updateOperationalChangeRequest(operationalRequest, userName);
+            dbHandle.updateOperationalChangeRequest(
+                operationalRequest, userName, RequestStatus.APPROVED);
 
         mailService.sendMail(
             operationalRequest.getTopicname(),
@@ -524,7 +530,7 @@ public class OperationalRequestsService {
       throws KlawException {
     log.debug("declineOperationalRequest {} {}", reqId, reasonForDecline);
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_REQS)) {
+        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
 
@@ -545,7 +551,9 @@ public class OperationalRequestsService {
     }
 
     try {
-      String result = dbHandle.declineOperationalRequest(operationalRequest, userName);
+      String result =
+          dbHandle.updateOperationalChangeRequest(
+              operationalRequest, userName, RequestStatus.DECLINED);
       mailService.sendMail(
           operationalRequest.getTopicname(),
           null,

@@ -63,7 +63,7 @@ app.controller("execOperationalChangesCtrl", function($scope, $http, $location, 
 
             $http({
                 method: "GET",
-                url: "/operationalRequests/approver",
+                url: "/operationalRequests/requestsFor/approver",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                  'currentPage' : $scope.currentPageSelected,
@@ -119,7 +119,7 @@ app.controller("execOperationalChangesCtrl", function($scope, $http, $location, 
                         if (isConfirm.dismiss !== "cancel") {
                             $http({
                                         method: "POST",
-                                        url: "operationalRequest/approve/reqId/" + topicId,
+                                        url: "operationalRequest/reqId/" + topicId + "/approve",
                                         headers : { 'Content-Type' : 'application/json' },
                                     }).success(function(output) {
 
@@ -198,7 +198,7 @@ app.controller("execOperationalChangesCtrl", function($scope, $http, $location, 
                             if (isConfirm.dismiss !== "cancel") {
                                 $http({
                                         method: "POST",
-                                        url: "operationalRequest/decline/reqId/" + reqNo,
+                                        url: "operationalRequest/reqId/" + reqNo + "/decline",
                                         headers : { 'Content-Type' : 'application/json' },
                                         params: {'reasonForDecline' : reason },
                                         data: { 'reasonForDecline' : reason}

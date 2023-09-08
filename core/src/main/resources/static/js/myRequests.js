@@ -358,7 +358,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
 
             $http({
                 method: "GET",
-                url: "operationalRequests/myTeamRequests",
+                url: "operationalRequests/requestsFor/myTeam",
                 headers : { 'Content-Type' : 'application/json' },
                 params: {'pageNo' : pageNoSelected,
                     'currentPage' : $scope.currentPageSelected,
@@ -497,7 +497,7 @@ app.controller("myRequestsCtrl", function($scope, $http, $location, $window) {
                 if (isConfirm.dismiss !== "cancel") {
                     $http({
                         method: "POST",
-                        url: "operationalRequest/delete/reqId/" + operationalReqId,
+                        url: "operationalRequest/reqId/" + operationalReqId + "/delete",
                         headers: {'Content-Type': 'application/json'},
                     }).success(function (output) {
                         $scope.alert = "Operational change Delete Request : " + output.message;

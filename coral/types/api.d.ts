@@ -111,17 +111,17 @@ export type paths = {
   "/promote/schema": {
     post: operations["promoteSchema"];
   };
-  "/operationalRequest/delete/reqId/{reqId}": {
+  "/operationalRequest/reqId/{reqId}/delete": {
     post: operations["deleteOperationalRequest"];
   };
-  "/operationalRequest/decline/reqId/{reqId}": {
+  "/operationalRequest/reqId/{reqId}/decline": {
     post: operations["declineOperationalRequest"];
+  };
+  "/operationalRequest/reqId/{reqId}/approve": {
+    post: operations["approveOperationalRequest"];
   };
   "/operationalRequest/consumerOffsetsReset/create": {
     post: operations["createConsumerOffsetsResetRequest"];
-  };
-  "/operationalRequest/approve/reqId/{reqId}": {
-    post: operations["approveOperationalRequest"];
   };
   "/logout": {
     post: operations["logout"];
@@ -259,11 +259,8 @@ export type paths = {
     /** Get counts of all request entity types for different status,operation types */
     get: operations["getRequestStatistics"];
   };
-  "/operationalRequests/myTeamRequests": {
-    get: operations["getMyTeamOperationalRequests"];
-  };
-  "/operationalRequests/approver": {
-    get: operations["getOperationalRequestsToApprove"];
+  "/operationalRequests/requestsFor/{requestsFor}": {
+    get: operations["getOperationalRequests"];
   };
   "/operationalRequest/consumerOffsetsReset/validate": {
     get: operations["validateOffsetRequestDetails"];
@@ -2338,10 +2335,10 @@ export type operations = {
       };
     };
   };
-  createConsumerOffsetsResetRequest: {
-    requestBody: {
-      content: {
-        "application/json": components["schemas"]["ConsumerOffsetResetRequestModel"];
+  approveOperationalRequest: {
+    parameters: {
+      path: {
+        reqId: string;
       };
     };
     responses: {
@@ -2353,10 +2350,10 @@ export type operations = {
       };
     };
   };
-  approveOperationalRequest: {
-    parameters: {
-      path: {
-        reqId: string;
+  createConsumerOffsetsResetRequest: {
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["ConsumerOffsetResetRequestModel"];
       };
     };
     responses: {
@@ -3034,12 +3031,12 @@ export type operations = {
       };
     };
   };
-  getMyTeamOperationalRequests: {
+  getOperationalRequests: {
     parameters: {
       query: {
         pageNo: string;
         currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
+        requestStatus: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
         env?: string;
         topicName?: string;
         consumerGroup?: string;
@@ -3048,27 +3045,8 @@ export type operations = {
         order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
         isMyRequest?: boolean;
       };
-    };
-    responses: {
-      /** @description OK */
-      200: {
-        content: {
-          "application/json": (components["schemas"]["OperationalRequestsResponseModel"])[];
-        };
-      };
-    };
-  };
-  getOperationalRequestsToApprove: {
-    parameters: {
-      query: {
-        pageNo: string;
-        currentPage?: string;
-        requestStatus?: "CREATED" | "DELETED" | "DECLINED" | "APPROVED" | "ALL";
-        env?: string;
-        operationType?: "RESET_CONSUMER_OFFSETS";
-        search?: string;
-        order?: "ASC_REQUESTED_TIME" | "DESC_REQUESTED_TIME";
-        teamId?: number;
+      path: {
+        requestsFor: string;
       };
     };
     responses: {

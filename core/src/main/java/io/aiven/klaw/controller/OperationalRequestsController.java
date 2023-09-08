@@ -45,7 +45,7 @@ public class OperationalRequestsController {
   }
 
   @PostMapping(
-      value = "/operationalRequest/approve/reqId/{reqId}",
+      value = "/operationalRequest/reqId/{reqId}/approve",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> approveOperationalRequest(
       @PathVariable("reqId") String reqId) {
@@ -54,7 +54,7 @@ public class OperationalRequestsController {
   }
 
   @PostMapping(
-      value = "/operationalRequest/decline/reqId/{reqId}",
+      value = "/operationalRequest/reqId/{reqId}/decline",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> declineOperationalRequest(
       @PathVariable("reqId") String reqId,
@@ -66,7 +66,7 @@ public class OperationalRequestsController {
   }
 
   @PostMapping(
-      value = "/operationalRequest/delete/reqId/{reqId}",
+      value = "/operationalRequest/reqId/{reqId}/delete",
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<ApiResponse> deleteOperationalRequest(
       @PathVariable(value = "reqId") String operationalRequestId) throws KlawException {
@@ -88,13 +88,14 @@ public class OperationalRequestsController {
   }
 
   @RequestMapping(
-      value = "/operationalRequests/myTeamRequests",
+      value = "/operationalRequests/requestsFor/{requestsFor}",
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<OperationalRequestsResponseModel>> getMyTeamOperationalRequests(
+  public ResponseEntity<List<OperationalRequestsResponseModel>> getOperationalRequests(
+      @PathVariable(value = "requestsFor") String requestsFor,
       @RequestParam("pageNo") String pageNo,
       @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestStatus", defaultValue = "ALL") RequestStatus requestStatus,
+      @RequestParam(value = "requestStatus") RequestStatus requestStatus,
       @RequestParam(value = "env", required = false) String env,
       @RequestParam(value = "topicName", required = false) String topicName,
       @RequestParam(value = "consumerGroup", required = false) String consumerGroup,
@@ -105,46 +106,33 @@ public class OperationalRequestsController {
           Order order,
       @RequestParam(value = "isMyRequest", required = false, defaultValue = "false")
           boolean isMyRequest) {
-    return new ResponseEntity<>(
-        operationalRequestsService.getOperationalRequests(
-            pageNo,
-            currentPage,
-            operationalRequestType,
-            requestStatus.value,
-            env,
-            topicName,
-            consumerGroup,
-            search,
-            order,
-            isMyRequest),
-        HttpStatus.OK);
-  }
-
-  @RequestMapping(
-      value = "/operationalRequests/approver",
-      method = RequestMethod.GET,
-      produces = {MediaType.APPLICATION_JSON_VALUE})
-  public ResponseEntity<List<OperationalRequestsResponseModel>> getOperationalRequestsToApprove(
-      @RequestParam("pageNo") String pageNo,
-      @RequestParam(value = "currentPage", defaultValue = "") String currentPage,
-      @RequestParam(value = "requestStatus", defaultValue = "CREATED") RequestStatus requestStatus,
-      @RequestParam(value = "env", required = false) String env,
-      @RequestParam(value = "operationType", required = false)
-          OperationalRequestType operationalRequestType,
-      @RequestParam(value = "search", required = false) String search,
-      @RequestParam(value = "order", required = false, defaultValue = "DESC_REQUESTED_TIME")
-          Order order,
-      @RequestParam(value = "teamId", required = false) Integer teamId) {
-    return new ResponseEntity<>(
-        operationalRequestsService.getOperationalRequestsForApprover(
-            pageNo,
-            currentPage,
-            requestStatus.value,
-            operationalRequestType,
-            teamId,
-            env,
-            search,
-            order),
-        HttpStatus.OK);
+    if (requestsFor != null && requestsFor.equals("myTeam")) {
+      return new ResponseEntity<>(
+          operationalRequestsService.getOperationalRequests(
+              pageNo,
+              currentPage,
+              operationalRequestType,
+              requestStatus.value,
+              env,
+              topicName,
+              consumerGroup,
+              search,
+              order,
+              isMyRequest),
+          HttpStatus.OK);
+    } else {
+      return new ResponseEntity<>(
+          operationalRequestsService.getOperationalRequestsForApprover(
+              pageNo,
+              currentPage,
+              requestStatus.value,
+              operationalRequestType,
+              env,
+              topicName,
+              consumerGroup,
+              search,
+              order),
+          HttpStatus.OK);
+    }
   }
 }

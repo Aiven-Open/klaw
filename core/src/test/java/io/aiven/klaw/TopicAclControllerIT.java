@@ -1402,7 +1402,7 @@ public class TopicAclControllerIT {
   public void deleteOffsetRequest() throws Exception {
     String response =
         mvc.perform(
-                MockMvcRequestBuilders.post("/operationalRequest/delete/reqId/" + 1001)
+                MockMvcRequestBuilders.post("/operationalRequest/reqId/" + 1001 + "/delete")
                     .with(user(user1).password(PASSWORD).roles("USER"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1433,7 +1433,7 @@ public class TopicAclControllerIT {
   public void declineOffsetRequest() throws Exception {
     String response =
         mvc.perform(
-                MockMvcRequestBuilders.post("/operationalRequest/decline/reqId/" + 1002)
+                MockMvcRequestBuilders.post("/operationalRequest/reqId/" + 1002 + "/decline")
                     .with(user(user2).password(PASSWORD).roles("USER"))
                     .param("reasonForDecline", "not required")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -1472,7 +1472,7 @@ public class TopicAclControllerIT {
         .thenReturn(apiResponse);
     String response =
         mvc.perform(
-                MockMvcRequestBuilders.post("/operationalRequest/approve/reqId/" + 1003)
+                MockMvcRequestBuilders.post("/operationalRequest/reqId/" + 1003 + "/approve")
                     .with(user(user2).password(PASSWORD).roles("USER"))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON))
@@ -1508,7 +1508,7 @@ public class TopicAclControllerIT {
       throws Exception {
     String response =
         mvc.perform(
-                MockMvcRequestBuilders.get("/operationalRequests/myTeamRequests")
+                MockMvcRequestBuilders.get("/operationalRequests/requestsFor/myTeam")
                     .with(user(user1).password(PASSWORD).roles("USER"))
                     .param("pageNo", "1")
                     .param("requestStatus", status)
