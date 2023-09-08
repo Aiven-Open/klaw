@@ -51,6 +51,7 @@ import {
 import { getRouterBasename } from "src/config";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
+import { ConnectorPromotionRequestPage } from "src/app/pages/connectors/promotion-request";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -282,6 +283,13 @@ const routes: Array<RouteObject> = [
         path: Routes.CONNECTOR_EDIT_REQUEST,
         element: <ConnectorEditRequest />,
         featureFlag: FeatureFlag.FEATURE_FLAG_EDIT_CONNECTOR,
+        redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
+      }),
+
+      createRouteBehindFeatureFlag({
+        path: Routes.CONNECTOR_PROMOTION_REQUEST,
+        element: <ConnectorPromotionRequestPage />,
+        featureFlag: FeatureFlag.FEATURE_FLAG_CONNECTOR_OVERVIEW,
         redirectRouteWithoutFeatureFlag: Routes.CONNECTORS,
       }),
     ],

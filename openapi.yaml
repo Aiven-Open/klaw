@@ -8234,11 +8234,18 @@
           "totalNoPages" : {
             "type" : "string"
           },
+          "currentPage" : {
+            "type" : "string"
+          },
           "allPageNos" : {
             "type" : "array",
             "items" : {
               "type" : "string"
             }
+          },
+          "totalRecs" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "associatedEnv" : {
             "$ref" : "#/components/schemas/EnvTag"
@@ -8252,7 +8259,7 @@
             "writeOnly" : true
           }
         },
-        "required" : [ "allPageNos", "clusterId", "clusterName", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "type" ]
+        "required" : [ "allPageNos", "clusterId", "clusterName", "currentPage", "envStatus", "id", "name", "otherParams", "params", "showDeleteEnv", "tenantId", "tenantName", "totalNoPages", "totalRecs", "type" ]
       },
       "AclInfo" : {
         "properties" : {

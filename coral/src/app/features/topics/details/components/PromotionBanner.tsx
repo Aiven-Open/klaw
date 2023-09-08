@@ -2,7 +2,7 @@ import { Alert, Banner, Box, Spacing } from "@aivenio/aquarium";
 import { ReactElement } from "react";
 import { InternalLinkButton } from "src/app/components/InternalLinkButton";
 import illustration from "src/app/images/topic-details-banner-Illustration.svg";
-import { PromotionStatus } from "src/domain/topic";
+import { PromotionStatus } from "src/domain/promotion";
 
 type RequestTypeLocal = "CLAIM" | "ALL" | "PROMOTE";
 type EntityTypeLocal = "schema" | "topic" | "connector";

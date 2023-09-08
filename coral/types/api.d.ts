@@ -1384,7 +1384,10 @@ export type components = {
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;
+      currentPage: string;
       allPageNos: (string)[];
+      /** Format: int32 */
+      totalRecs: number;
       associatedEnv?: components["schemas"]["EnvTag"];
       params: components["schemas"]["EnvParams"];
       /** @enum {string} */

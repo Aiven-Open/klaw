@@ -6,6 +6,8 @@ describe("environment-test-helper.ts", () => {
       const nameToTest = "TST";
       const result = {
         allPageNos: ["1"],
+        currentPage: "1",
+        totalRecs: 1,
         clusterId: 1,
         clusterName: "DEV",
         defaultPartitions: undefined,
