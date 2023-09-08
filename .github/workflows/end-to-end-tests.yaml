@@ -2,16 +2,10 @@
 # It will build and deploy Klaw and run E2E tests against it.
 name: E2E tests
 on:
-
-  pull_request:
-    types:
-      - synchronize
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
-  test:
+  end-to-end-tests:
     permissions:
       actions: write
     timeout-minutes: 60
