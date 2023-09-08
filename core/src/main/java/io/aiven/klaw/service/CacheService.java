@@ -12,6 +12,7 @@ public class CacheService<T> {
 
   public static final String URL_SEPERATOR = "/";
   public static final String TENANT = "tenant";
+  public static final String ID = "id";
   Map<Integer, Map<Integer, T>> cache;
 
   RestTemplate rest;
@@ -141,7 +142,7 @@ public class CacheService<T> {
         + URL_SEPERATOR
         + tenantId
         + URL_SEPERATOR
-        + "id"
+        + ID
         + URL_SEPERATOR
         + id;
   }

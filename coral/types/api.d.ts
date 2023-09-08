@@ -1231,8 +1231,8 @@ export type components = {
       hasSchema: boolean;
       /** Format: int32 */
       clusterId: number;
-      topicOwner?: boolean;
       highestEnv?: boolean;
+      topicOwner?: boolean;
     };
     TopicBaseConfig: {
       topicName: string;
