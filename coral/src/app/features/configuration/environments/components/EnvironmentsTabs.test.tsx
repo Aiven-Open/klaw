@@ -169,6 +169,16 @@ describe("EnvironmentsTabs", () => {
   describe("Tab navigation", () => {
     beforeEach(() => {
       user = userEvent.setup();
+      getPaginatedEnvironmentsForTopicAndAclSpy.mockResolvedValue(
+        mockedKafkaTotalEnvs
+      );
+      getPaginatedEnvironmentsForSchemaSpy.mockResolvedValue(
+        mockedSchemaTotalEnvs
+      );
+      getPaginatedEnvironmentsForConnectorSpy.mockResolvedValue(
+        mockedConnectorTotalEnvs
+      );
+
       customRender(
         <EnvironmentsTabs currentTab={EnvironmentsTabEnum.KAFKA} />,
         {
