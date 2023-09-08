@@ -598,7 +598,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   private void updateTeamToEnvMappings(int tenantId) {
-    //TODO remove this 
+    //TODO remove this
     envsOfTenantsMap.put(
         tenantId,
         allEnvListPerTenant.getCache(tenantId).values().stream()
