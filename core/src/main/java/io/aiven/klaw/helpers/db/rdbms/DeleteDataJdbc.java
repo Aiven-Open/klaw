@@ -1,5 +1,7 @@
 package io.aiven.klaw.helpers.db.rdbms;
 
+import static io.aiven.klaw.error.KlawErrorMessages.DELETE_REQ_ERR;
+
 import io.aiven.klaw.dao.*;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.RequestStatus;
@@ -17,6 +19,9 @@ public class DeleteDataJdbc {
 
   @Autowired(required = false)
   TopicRequestsRepo topicRequestsRepo;
+
+  @Autowired(required = false)
+  OperationalRequestsRepo operationalRequestsRepo;
 
   @Autowired(required = false)
   private TopicRepo topicRepo;
@@ -112,8 +117,27 @@ public class DeleteDataJdbc {
       topicRequestsRepo.save(topicReq.get());
       return ApiResultStatus.SUCCESS.value;
     }
-    return ApiResultStatus.FAILURE.value
-        + " Unable to verify ownership of this request. you may only delete your own requests.";
+    return ApiResultStatus.FAILURE.value + DELETE_REQ_ERR;
+  }
+
+  public String deleteOperationalRequest(int operationalReqId, String userName, int tenantId) {
+    log.debug("deleteOperationalRequest {}", operationalReqId);
+
+    OperationalRequestID operationalRequestID = new OperationalRequestID();
+    operationalRequestID.setTenantId(tenantId);
+    operationalRequestID.setReqId(operationalReqId);
+
+    Optional<OperationalRequest> operationalRequest =
+        operationalRequestsRepo.findById(operationalRequestID);
+    // UserName is transient and is not set in the database but the requestor is. Both are set to
+    // the userName when the request is created.
+    if (operationalRequest.isPresent()
+        && operationalRequest.get().getRequestor().equals(userName)) {
+      operationalRequest.get().setRequestStatus(RequestStatus.DELETED.value);
+      operationalRequestsRepo.save(operationalRequest.get());
+      return ApiResultStatus.SUCCESS.value;
+    }
+    return ApiResultStatus.FAILURE.value + DELETE_REQ_ERR;
   }
 
   public String deleteTopic(int topicId, int tenantId) {
@@ -148,8 +172,7 @@ public class DeleteDataJdbc {
       return ApiResultStatus.SUCCESS.value;
     }
 
-    return ApiResultStatus.FAILURE.value
-        + " Unable to verify ownership of this request. you may only delete your own requests.";
+    return ApiResultStatus.FAILURE.value + DELETE_REQ_ERR;
   }
 
   public String deleteAclRequest(int aclId, String userName, int tenantId) {
@@ -164,8 +187,7 @@ public class DeleteDataJdbc {
       return ApiResultStatus.SUCCESS.value;
     }
 
-    return ApiResultStatus.FAILURE.value
-        + " Unable to verify ownership of this request. you may only delete your own requests.";
+    return ApiResultStatus.FAILURE.value + DELETE_REQ_ERR;
   }
 
   public String deleteEnvironment(String envId, int tenantId) {

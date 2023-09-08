@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-
-<html ng-app="myRequestsApp" ng-controller="myRequestsCtrl">
+<html lang="en">
+<html ng-app="execOperationalChangesApp" ng-controller="execOperationalChangesCtrl">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,7 +20,7 @@
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-	<title>My Schema Requests | Kafka Self-service Topic Management Portal</title>
+	<title>Approve Operational Changes | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
 	<!--
@@ -30,15 +30,14 @@
 		  -->
 	<!-- Custom CSS -->
 	<link href="assets/css/style.css" rel="stylesheet">
-	<link href="assets/css/custom.css" rel="stylesheet">
 	<!-- You can change the theme colors from here -->
 	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
 	<link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
-	<script src="js/myRequests.js"></script>
-
+	<script src="js/execOperationalChanges.js"></script>
+	<link rel="stylesheet" href="assets/css/custom.css" />
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -48,11 +47,7 @@
 
 	<![endif]-->
 </head>
-<style>
-	.demo-checkbox label, .demo-radio-button label {
-  min-width: 15px;
-  margin-bottom: 20px; }
-</style>
+
 
 <body class="fix-header card-no-border logo-center" ng-init="getAuth();">
 <!-- ============================================================== -->
@@ -88,10 +83,19 @@
 				<!-- toggle and nav items -->
 				<!-- ============================================================== -->
 				<ul class="navbar-nav mr-auto mt-md-0">
+					<!-- This is  -->
 
+					<!-- ============================================================== -->
+					<!-- Search -->
+					<!-- ============================================================== -->
 					<a href="index"><img class="header-logo" src="assets/images/klaw_logo.png"/></a>
+
 				</ul>
+				<!-- ============================================================== -->
+				<!-- User profile and search -->
+				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
+					<!-- ============================================================== -->
 					<li class="nav-item d-none d-md-block search-box"> <a
 							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
 							href="requestTopics"><i class="mdi mdi-plus"></i></a>
@@ -100,13 +104,14 @@
 							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
 							href="javascript:void(0)" ng-click="refreshPage()"><i class="mdi mdi-reload"></i></a>
 					</li>
+
 					<li ng-if="dashboardDetails.approveAtleastOneRequest=='Authorized'" class="nav-item dropdown">
 						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
 								class="mdi mdi-email"></i>
 							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
 						</a>
-						<div  class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
+						<div class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
 							<ul>
 								<li>
 									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
@@ -337,18 +342,18 @@
 						</ul>
 					</li>
 					<li ng-show="dashboardDetails.viewTopics=='Authorized'">
-						<a class="has-arrow" href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
+						<a class="has-arrow " href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
 					</li>
-					<li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
+              					<li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
 						<a class="has-arrow " href="kafkaConnectors" aria-expanded="false"><i class="mdi mdi-lan-connect"></i><span class="hide-menu">Apache Kafka Connect</span></a>
 					</li>
-					<li class="two-column active" ng-show="dashboardDetails.requestItems=='Authorized'">
-						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
+					<li class="two-column" ng-show="dashboardDetails.requestItems=='Authorized'">
+                        <a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
 					<li><a href="requestConnector">Request Connector</a></li>
 
-							<li><a href="myTopicRequests">My Topic Requests</a></li>
+							<li><a href="myoperationalRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
 							<li><a href="mySchemaRequests">My Schema Requests</a></li>
 								<li><a href="myConnectorRequests">My Connector Requests</a></li>
@@ -399,7 +404,7 @@
 					</li>
 					<li class="nav-devider"></li>
 					<li class="nav-small-cap">EXTRA COMPONENTS</li>
-					<li ng-show="dashboardDetails.approveAtleastOneRequest=='Authorized'">
+					<li class="active" ng-show="dashboardDetails.approveAtleastOneRequest=='Authorized'">
 						<a class="has-arrow " href="#" aria-expanded="false"><i class="mdi mdi-chemical-weapon"></i><span class="hide-menu">Approve</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li ng-show="dashboardDetails.approveDeclineTopics=='Authorized'"><a href="execTopics">Topic Request</a></li>
@@ -427,18 +432,16 @@
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid" ng-init="getMySchemaRequests(1, false);getRequestStatuses();">
+		<div class="container-fluid" ng-init="getMyOperationalRequests(1, false);getRequestStatuses();">
 			<div class="row page-titles">
 			</div>
 
-			<!-- Row -->
-
-			<div class="row" ng-if="dashboardDetails.coralEnabled === 'true'">
-				<div class="ribbon-wrapper card col-lg-6 col-md-6 col-xlg-2 col-xs-6">
-					<div class="ribbon ribbon-success">New user interface available</div>
-					<p class="ribbon-content">
-						Check out the new interface for <a href="coral/requests/schemas">my team's requests.</a>
-					</p>
+			<div class="row" ng-show="dashboardDetails.approveDeclineTopics!='Authorized'">
+				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+					<div class="ribbon-wrapper card">
+						<div class="ribbon ribbon-warning">Notification</div>
+						<p class="ribbon-content">You are not authorized to access this page !!</p>
+					</div>
 				</div>
 			</div>
 
@@ -456,107 +459,141 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-show="schemaRequests.length == 0">
+			<div class="row" ng-if="dashboardDetails.coralEnabled === 'true'">
+				<div class="ribbon-wrapper card col-lg-6 col-md-6 col-xlg-2 col-xs-6">
+					<div class="ribbon ribbon-success">New user interface available</div>
+					<p class="ribbon-content">
+						Check out the new interface for <a href="coral/approvals/topics">topic approvals.</a>
+					</p>
+				</div>
+			</div>
+
+			<div class="row" ng-show="operationalRequests.length == 0">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">No requests found !! </p>
+						<p class="ribbon-content">No pending Operational requests !! </p>
 					</div>
 				</div>
 			</div>
-			<!-- Row -->
 
-			<table width="100%"><tr>
-				<td align="left" width="65%"><h4 class="card-title">My Team Schema Requests</h4></td>
-				<td align="right" width="20%">
-					<div class="form-group has-success">
-						<label class="text-success">Filter on Status</label>
-						<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestTypeSchema(requestTypeSelected);"
-								ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
-
-						</select>
+			<div class="row" ng-show="showDeclinePanel == 'true'">
+				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
+					<div class="card">
+						<div class="card-body">
+							<h4>Submit Reason to decline Operational request: {{topicForDecline}}</h4>
+							<input type="text" ng-model="reasonForRejection" class="form-control">
+							<button type="button" ng-click="declineWithReason()"
+									class="btn waves-effect waves-light btn-rounded btn-sm btn-danger">Decline</button>
+						</div>
 					</div>
-				</td>
-				<td align="right" width="15%">
-					<a href="requestSchema">
-						<button type="button"
-								class="btn waves-effect waves-light btn-rounded btn-sm btn-secondary">Request a Schema</button>
-					</a>
-				</td>
-			</tr>
+				</div>
+			</div>
+
+			<table width="100%">
+				<tr>
+					<td align="left" width="80%">
+						<h4 class="card-title">Operational change Approvals</h4></td>
+					<td align="right" width="20%">
+						<div class="form-group has-success">
+							<label class="text-success">Filter on Status</label>
+							<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
+									ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
+
+							</select>
+						</div>
+					</td>
+				</tr>
 			</table>
 
 			<hr size="1" color="black">
 
-			<div align="center" ng-show="schemaRequests.length > 0">
+			<div align="center" ng-show="operationalRequests.length >0 && dashboardDetails.approveDeclineTopics=='Authorized'">
 
-				<div ng-repeat="schemaRequest in schemaRequests">
+				<div ng-repeat="operationalRequest in operationalRequests">
 
-					<div class="row" ng-show="schemaRequest.topicname != null">
+					<div class="row" ng-show="operationalRequest.topicname != null">
 
-						<div class="col-md-12" ng-show="schemaRequest.topicname != null">
+						<div class="col-md-12" ng-show="operationalRequest.topicname != null">
 							<div class="card">
 								<div class="card-body">
 									<div>
 										<table width="100%">
 											<tr>
-												<td align="left">
-													<h3 class="card-title">Topic : <a href="topicOverview?topicname={{schemaRequest.topicname}}"> {{ schemaRequest.topicname }}</a></h3>
+												<td align="left"><h3 class="card-title">Topic : {{ operationalRequest.topicname }}</h3></td>
+												<td align="right" ng-show="operationalRequest.requestStatus == 'CREATED' && userlogged != operationalRequest.requestor">
+													<button type="button" ng-click="execTopicRequestUp(operationalRequest.reqId);" class="btn btn-success btn-circle"><i class="fa fa-check"></i>
+													</button>
+													<button type="button" ng-click="execTopicRequestReject(operationalRequest.reqId);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
+													</button>
 												</td>
-												<td align="right">
-
-												</button>
-													<button type="button" ng-click="deleteSchemaRequest(schemaRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
-													</button></td>
 											</tr>
 										</table>
 									</div>
 									<hr size="1" color="black">
 									<div class="d-flex flex-row">
-
-										<div class="p-2 border-right" style="width:10%">
+										<div class="p-2 border-right" style="width:12%">
 											<h6 class="text-primary">Cluster</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.environmentName }}</span>
+											<span class="badge badge-info">{{ operationalRequest.environmentName }}</span>
 										</b>
 										</div>
-
-										<div class="p-2 border-right" style="width:10%">
-											<h6 class="text-primary">Requestor</h6><b>{{ schemaRequest.requestor }}</b>
+										<div class="p-2 border-right" style="width:15%">
+											<h6 class="text-primary">consumerGroup</h6><b>{{ operationalRequest.consumerGroup }}</b>
 										</div>
 										<div class="p-2 border-right" style="width:15%">
-											<h6 class="text-primary">Team</h6><b>{{ schemaRequest.teamname }}</b>
+											<h6 class="text-primary">OffsetResetType</h6><b>{{ operationalRequest.offsetResetType }}</b>
 										</div>
-										<div ng-show="schemaRequest.requestStatus == 'CREATED'" class="p-2 border-right" style="width:10%">
+
+										<div class="p-2 border-right" style="width:15%">
+											<h6 class="text-primary">Reset TimeStamp </h6><b>{{ operationalRequest.resetTimeStampStr }}</b>
+										</div>
+
+										<div class="p-2 border-right" style="width:15%">
+											<h6 class="text-primary">Team</h6><b>{{ operationalRequest.teamname }}</b>
+										</div>
+
+										<div ng-show="operationalRequest.requestStatus == 'CREATED'" class="p-2 border-right" style="width:10%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-success">{{ schemaRequest.requestStatus }}</span></b>
+											<span class="badge badge-success">{{ operationalRequest.requestStatus }}</span></b>
 										</div>
-										<div ng-show="schemaRequest.requestStatus != 'CREATED'" class="p-2 border-right" style="width:10%">
+										<div ng-show="operationalRequest.requestStatus != 'CREATED'" class="p-2 border-right" style="width:10%">
 											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.requestStatus }}</span></b>
+											<span class="badge badge-info">{{ operationalRequest.requestStatus }}</span></b>
 										</div>
-										
-						                <div class="p-2 border-right" style="width:12%">
-							                <h6 class="text-primary">Request Type</h6><b>
-							                <span class="badge badge-info">{{ schemaRequest.requestOperationType }} Schema</span></b>
-						                </div>
 
 										<div class="p-2" style="width:15%">
-											<h6 class="text-primary">Date Requested</h6><b>{{ schemaRequest.requesttimestring }}</b>
-										</div>
-
-										<div class="p-2 border-left" ng-show="schemaRequest.requestStatus == 'APPROVED'" style="width:10%">
-											<h6 class="text-primary">Approver</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.approver }}</span></b>
-										</div>
-										<div ng-show="schemaRequest.requestStatus != 'APPROVED'" class="p-2 border-left" style="width:10%;align:center;">
-											<h6 class="text-primary">Approving Info</h6>
-											<a class="mytooltip" href="javascript:void(0)">
-												<i class="fas fa-users"></i>
-												<span class="tooltip-content3">{{ schemaRequest.approvingTeamDetails}}</span>
-											</a>
+											<h6 class="text-primary">Date Requested</h6><b>{{ operationalRequest.requesttimestring }}</b>
 										</div>
 									</div>
-									<textarea class="form-control" style="background-color:#70C6DA;color:black;" disabled  rows="10">{{ schemaRequest.schemafull}}</textarea>
+									<br>
+									<div class="d-flex flex-row">
+										<div class="p-2 border-right" style="width:20%">
+											<h6 class="text-primary">Request Type</h6><b>
+											<span class="badge badge-info">{{ operationalRequest.operationalRequestType }}</span></b>
+										</div>
+
+										<div class="p-2 border-right" style="width:10%">
+											<h6 class="text-primary">Requestor</h6><b>{{ operationalRequest.requestor }}</b>
+										</div>
+										<div class="p-2 border-left" style="width:20%">
+											<h6 class="text-primary">Remarks</h6><b>{{ operationalRequest.remarks }}</b>
+										</div>
+
+										<div ng-show="operationalRequest.requestStatus != 'CREATED'" class="p-2 border-left" style="width:10%">
+											<h6 class="text-primary">Approver</h6><b>
+											<span class="badge badge-success">{{ operationalRequest.approver }}</span></b>
+										</div>
+
+										<div ng-show="operationalRequest.requestStatus == 'CREATED'" class="p-2 border-left" style="width:15%">
+											<h6 class="text-primary">Status</h6><b>
+											<span class="badge badge-success">{{ operationalRequest.requestStatus }}</span></b>
+										</div>
+										<div ng-show="operationalRequest.requestStatus != 'CREATED'" class="p-2 border-left" style="width:15%">
+											<h6 class="text-primary">Status</h6><b>
+											<span class="badge badge-info">{{ operationalRequest.requestStatus }}</span></b>
+										</div>
+									</div>
+
 								</div>
 							</div>
 						</div>
@@ -566,34 +603,39 @@
 
 				</div>
 
+				<div class="dataTables_paginate paging_simple_numbers"  ng-show="operationalRequests.length>0">
+					<ul class="pagination">
+						<li class="paginate_button page-item active" disabled>
+							<a href="#" class="page-link">Pages</a>
+						</li>
+						<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
+							<a href="#" class="page-link" ng-click="getMyOperationalRequests(allPages, false)">{{allPages}}</a>
+						</li>
+					</ul>
+				</div>
 
 			</div>
 
 
-			<div class="dataTables_paginate paging_simple_numbers"  ng-show="schemaRequests.length>0">
-				<ul class="pagination">
-					<li class="paginate_button page-item active" disabled>
-						<a href="#" class="page-link">Pages</a>
-					</li>
-					<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
-						<a href="#" class="page-link" ng-click="getMySchemaRequests(allPages, false)">{{allPages}}</a>
-					</li>
-				</ul>
-			</div>
+
+			<div id="successbar">{{ alert }}</div>
+			<div id="alertbar">{{ alertnote }}</div>
 
 		</div>
-
 		<!-- footer -->
 		<!-- ============================================================== -->
 		<footer class="footer">
 			<a href="https://klaw-project.io">klaw-project.io</a>
 		</footer>
-
+		<!-- ============================================================== -->
+		<!-- End footer -->
+		<!-- ============================================================== -->
 	</div>
 	<!-- ============================================================== -->
 	<!-- End Page wrapper  -->
 	<!-- ============================================================== -->
 </div>
+<!-- ============================================================== -->
 <!-- All Jquery -->
 <!-- ============================================================== -->
 <script src="assets/plugins/jquery/jquery.min.js"></script>
@@ -619,9 +661,8 @@
 <script src="assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
 -->
 <!-- Chart JS -->
-<script src="assets/plugins/gauge/gauge.min.js"></script>
-<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
 <!-- <script src="assets/js/widget-data.js"></script> -->
+<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
 </body>
 
 </html>

@@ -98,6 +98,18 @@ public interface HandleDbRequests {
   List<TopicRequest> getCreatedTopicRequests(
       String requestor, String status, boolean showRequestsOfAllTeams, int tenantId);
 
+  List<OperationalRequest> getCreatedOperationalRequests(
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      Integer teamId,
+      String env,
+      String topicName,
+      String consumerGroup,
+      OperationalRequestType operationalRequestType,
+      String wildcardSearch);
+
   List<KafkaConnectorRequest> getAllConnectorRequests(
       String requestor,
       RequestOperationType requestOperationType,
@@ -117,6 +129,8 @@ public interface HandleDbRequests {
       String search);
 
   TopicRequest getTopicRequestsForTopic(int topicId, int tenantId);
+
+  OperationalRequest getOperationalRequestsForId(int reqId, int tenantId);
 
   KafkaConnectorRequest getConnectorRequestsForConnector(int connectorId, int tenantId);
 
@@ -347,6 +361,9 @@ public interface HandleDbRequests {
 
   CRUDResponse<Topic> updateTopicRequest(TopicRequest topicRequest, String approver);
 
+  String updateOperationalChangeRequest(
+      OperationalRequest operationalRequest, String approver, RequestStatus requestStatus);
+
   String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver);
 
   Integer getNextClusterId(int tenantId);
@@ -400,6 +417,8 @@ public interface HandleDbRequests {
   String deleteConnectorRequest(int topicId, int tenantId);
 
   String deleteTopicRequest(int topicId, String userName, int tenantId);
+
+  String deleteOperationalRequest(int operationalReqId, String userName, int tenantId);
 
   String deleteTopic(int topicId, int tenantId);
 

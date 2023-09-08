@@ -171,7 +171,7 @@ app.controller("requestConsumerOffsetResetCtrl", function($scope, $http, $locati
                                  text: "Consumer offset reset Request : "+output.message,
                                  showConfirmButton: true
                              }).then(function(isConfirm){
-                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myTopicRequests?reqsType=CREATED&topicCreated=true";
+                                    $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/myOperationalRequests?reqsType=CREATED&opReqCreated=true";
                              });
                     }
                     else{
