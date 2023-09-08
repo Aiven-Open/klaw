@@ -9,7 +9,6 @@ COMMAND=$1
 PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
 
 build () {
-
 	echo "Build Klaw project binaries"
 	mvn spotless:apply
 	mvn clean install
@@ -21,6 +20,9 @@ build () {
 
 }
 
+# This is only for use in E2E tests. It skips testing to
+# speed up the process. This assumes that the code it runs
+# against is unit/integration tested.
 buildForUITests () {
 	echo "Build Klaw project binaries"
   mvn clean install -Dmaven.test.skip=true

@@ -6,8 +6,10 @@
   "license": "Apache-2.0",
   "engineStrict": true,
   "scripts": {
-    "build-klaw": "./setup-env.sh",
-    "test": "playwright test",
+    "__build-klaw": "./setup-env.sh",
+    "__wait-for-local-klaw": "./wait-for-klaw.sh",
+    "__test": "playwright test",
+    "test-local": "pnpm __build-klaw && pnpm __wait-for-local-klaw && pnpm __test",
     "lint": "prettier --check . && eslint .",
     "reformat": "prettier --write . && eslint --fix .",
     "lint-staged": "lint-staged",
