@@ -1991,6 +1991,84 @@
         }
       }
     },
+    "/cache/environment/tenant/{tenantId}/id/{id}" : {
+      "post" : {
+        "tags" : [ "cache" ],
+        "operationId" : "addEnvToCache",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Env"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "cache" ],
+        "operationId" : "removeEnvFromCache",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/addTenantId" : {
       "post" : {
         "tags" : [ "envs-clusters-tenants-controller" ],
@@ -4181,7 +4259,8 @@
           "in" : "query",
           "required" : true,
           "schema" : {
-            "type" : "string"
+            "type" : "integer",
+            "format" : "int32"
           }
         } ],
         "responses" : {
@@ -6675,6 +6754,109 @@
         },
         "required" : [ "connectorName", "envId", "includeOnlyFailedTasks" ]
       },
+      "Env" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "name" : {
+            "type" : "string"
+          },
+          "stretchCode" : {
+            "type" : "string"
+          },
+          "clusterId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "type" : {
+            "type" : "string"
+          },
+          "otherParams" : {
+            "type" : "string"
+          },
+          "envExists" : {
+            "type" : "string"
+          },
+          "envStatus" : {
+            "type" : "string",
+            "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
+          },
+          "envStatusTime" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "associatedEnv" : {
+            "$ref" : "#/components/schemas/EnvTag"
+          },
+          "params" : {
+            "$ref" : "#/components/schemas/EnvParams"
+          }
+        }
+      },
+      "EnvParams" : {
+        "properties" : {
+          "defaultPartitions" : {
+            "type" : "string"
+          },
+          "maxPartitions" : {
+            "type" : "string"
+          },
+          "partitionsList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "defaultRepFactor" : {
+            "type" : "string"
+          },
+          "maxRepFactor" : {
+            "type" : "string"
+          },
+          "replicationFactorList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "topicPrefix" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "topicSuffix" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "topicRegex" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
+          "applyRegex" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "EnvTag" : {
+        "properties" : {
+          "id" : {
+            "type" : "string"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
       "KwTenantModel" : {
         "properties" : {
           "tenantName" : {
@@ -6756,65 +6938,6 @@
           }
         },
         "required" : [ "clusterId", "name", "type" ]
-      },
-      "EnvParams" : {
-        "properties" : {
-          "defaultPartitions" : {
-            "type" : "string"
-          },
-          "maxPartitions" : {
-            "type" : "string"
-          },
-          "partitionsList" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "defaultRepFactor" : {
-            "type" : "string"
-          },
-          "maxRepFactor" : {
-            "type" : "string"
-          },
-          "replicationFactorList" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "topicPrefix" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "topicSuffix" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "topicRegex" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
-          },
-          "applyRegex" : {
-            "type" : "boolean"
-          }
-        }
-      },
-      "EnvTag" : {
-        "properties" : {
-          "id" : {
-            "type" : "string"
-          },
-          "name" : {
-            "type" : "string"
-          }
-        }
       },
       "KwClustersModel" : {
         "properties" : {
@@ -7389,12 +7512,12 @@
             "type" : "string",
             "enum" : [ "OFFLINE", "ONLINE", "NOT_KNOWN" ]
           },
-          "lastUpdateTime" : {
+          "envStatusTime" : {
             "type" : "string",
             "format" : "date-time"
           }
         },
-        "required" : [ "envStatus", "lastUpdateTime", "result" ]
+        "required" : [ "envStatus", "envStatusTime", "result" ]
       },
       "TopicsCountPerEnv" : {
         "properties" : {

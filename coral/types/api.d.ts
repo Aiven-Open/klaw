@@ -207,6 +207,10 @@ export type paths = {
   "/chPwd": {
     post: operations["changePwd"];
   };
+  "/cache/environment/tenant/{tenantId}/id/{id}": {
+    post: operations["addEnvToCache"];
+    delete: operations["removeEnvFromCache"];
+  };
   "/addTenantId": {
     post: operations["addTenantId"];
   };
@@ -872,6 +876,40 @@ export type components = {
       envId: string;
       includeOnlyFailedTasks: boolean;
     };
+    Env: {
+      id?: string;
+      /** Format: int32 */
+      tenantId?: number;
+      name?: string;
+      stretchCode?: string;
+      /** Format: int32 */
+      clusterId?: number;
+      type?: string;
+      otherParams?: string;
+      envExists?: string;
+      /** @enum {string} */
+      envStatus?: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime?: string;
+      associatedEnv?: components["schemas"]["EnvTag"];
+      params?: components["schemas"]["EnvParams"];
+    };
+    EnvParams: {
+      defaultPartitions?: string;
+      maxPartitions?: string;
+      partitionsList?: (string)[];
+      defaultRepFactor?: string;
+      maxRepFactor?: string;
+      replicationFactorList?: (string)[];
+      topicPrefix?: (string)[];
+      topicSuffix?: (string)[];
+      topicRegex?: (string)[];
+      applyRegex?: boolean;
+    };
+    EnvTag: {
+      id?: string;
+      name?: string;
+    };
     KwTenantModel: {
       tenantName: string;
       tenantDesc: string;
@@ -898,22 +936,6 @@ export type components = {
       /** Format: int32 */
       tenantId?: number;
       params?: components["schemas"]["EnvParams"];
-    };
-    EnvParams: {
-      defaultPartitions?: string;
-      maxPartitions?: string;
-      partitionsList?: (string)[];
-      defaultRepFactor?: string;
-      maxRepFactor?: string;
-      replicationFactorList?: (string)[];
-      topicPrefix?: (string)[];
-      topicSuffix?: (string)[];
-      topicRegex?: (string)[];
-      applyRegex?: boolean;
-    };
-    EnvTag: {
-      id?: string;
-      name?: string;
     };
     KwClustersModel: {
       /** Format: int32 */
@@ -1114,6 +1136,8 @@ export type components = {
       result: string;
       /** @enum {string} */
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime: string;
     };
     TopicsCountPerEnv: {
       status?: string;
@@ -1372,6 +1396,8 @@ export type components = {
       clusterName: string;
       /** @enum {string} */
       envStatus: "OFFLINE" | "ONLINE" | "NOT_KNOWN";
+      /** Format: date-time */
+      envStatusTime: string;
       otherParams: string;
       showDeleteEnv: boolean;
       totalNoPages: string;
@@ -2770,6 +2796,43 @@ export type operations = {
       };
     };
   };
+  addEnvToCache: {
+    parameters: {
+      path: {
+        tenantId: number;
+        id: number;
+      };
+    };
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["Env"];
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
+  removeEnvFromCache: {
+    parameters: {
+      path: {
+        tenantId: number;
+        id: number;
+      };
+    };
+    responses: {
+      /** @description OK */
+      200: {
+        content: {
+          "application/json": components["schemas"]["ApiResponse"];
+        };
+      };
+    };
+  };
   addTenantId: {
     requestBody: {
       content: {
@@ -3665,7 +3728,7 @@ export type operations = {
   getEnvParams: {
     parameters: {
       query: {
-        envSelected: string;
+        envSelected: number;
       };
     };
     responses: {

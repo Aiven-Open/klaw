@@ -2,7 +2,6 @@ package io.aiven.klaw.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.model.response.EnvParams;
 import io.aiven.klaw.service.CacheService;
 import io.aiven.klaw.service.HighAvailabilityUtilsService;
 import java.time.Duration;
@@ -67,11 +66,5 @@ public class CacheConfig {
   @Bean
   public CacheService<Env> allEnvListPerTenant() {
     return new CacheService<Env>("environment", uiApiServers, highAvailabilityUtilsService);
-  }
-
-  @Bean
-  public CacheService<EnvParams> envParamsMapPerTenant() {
-    return new CacheService<EnvParams>(
-        "environment/params", uiApiServers, highAvailabilityUtilsService);
   }
 }

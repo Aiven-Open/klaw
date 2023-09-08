@@ -1279,7 +1279,10 @@ public class EnvsClustersTenantsControllerService {
       status = ClusterStatus.OFFLINE;
       log.error("Error from getUpdateEnvStatus ", e);
     }
+    LocalDateTime statusTime = LocalDateTime.now(ZoneOffset.UTC);
     env.get().setEnvStatus(status);
+    env.get().setEnvStatusTime(statusTime);
+
     // Is this required can we remove it?
     kwClusters.setClusterStatus(status);
     manageDatabase.getHandleDbRequests().addNewCluster(kwClusters);
@@ -1288,7 +1291,7 @@ public class EnvsClustersTenantsControllerService {
 
     envUpdatedStatus.setResult(ApiResultStatus.SUCCESS.value);
     envUpdatedStatus.setEnvStatus(status);
-    envUpdatedStatus.setLastUpdateTime(LocalDateTime.now(ZoneOffset.UTC));
+    envUpdatedStatus.setEnvStatusTime(statusTime);
 
     return envUpdatedStatus;
   }
