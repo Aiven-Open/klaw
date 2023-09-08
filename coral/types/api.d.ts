@@ -1377,6 +1377,8 @@ export type components = {
       totalNoPages: string;
       currentPage: string;
       allPageNos: (string)[];
+      /** Format: int32 */
+      totalRecs: number;
       associatedEnv?: components["schemas"]["EnvTag"];
       params: components["schemas"]["EnvParams"];
       /** @enum {string} */

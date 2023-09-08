@@ -41,6 +41,8 @@ public class EnvModelResponse implements Serializable {
 
   @NotNull private List<String> allPageNos;
 
+  @NotNull private int totalRecs;
+
   private EnvTag associatedEnv;
 
   @NotNull private EnvParams params;
