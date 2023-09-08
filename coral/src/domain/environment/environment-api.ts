@@ -69,7 +69,7 @@ const getPaginatedEnvironmentsForSchema = async (
 
   const apiResponse = await api.get<
     KlawApiResponse<"getSchemaRegEnvsPaginated">
-  >(API_PATHS.getKafkaEnvsPaginated, new URLSearchParams(queryParams));
+  >(API_PATHS.getSchemaRegEnvsPaginated, new URLSearchParams(queryParams));
 
   return transformPaginatedEnvironmentApiResponse(apiResponse);
 };
@@ -100,7 +100,7 @@ const getPaginatedEnvironmentsForConnector = async (
 
   const apiResponse = await api.get<
     KlawApiResponse<"getKafkaConnectEnvsPaginated">
-  >(API_PATHS.getKafkaEnvsPaginated, new URLSearchParams(queryParams));
+  >(API_PATHS.getKafkaConnectEnvsPaginated, new URLSearchParams(queryParams));
 
   return transformPaginatedEnvironmentApiResponse(apiResponse);
 };
