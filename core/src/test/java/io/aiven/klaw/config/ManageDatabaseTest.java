@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import io.aiven.klaw.dao.Topic;
 import io.aiven.klaw.helpers.db.rdbms.HandleDbRequestsJdbc;
+import io.aiven.klaw.service.HighAvailabilityUtilsService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,9 +26,13 @@ public class ManageDatabaseTest {
   private ManageDatabase manageDatabase = new ManageDatabase();
   @Mock private HandleDbRequestsJdbc handleDbRequests;
 
+  @Mock HighAvailabilityUtilsService highAvailabilityUtilsService;
+
   @BeforeEach
   public void setUp() {
     ReflectionTestUtils.setField(manageDatabase, "handleDbRequests", handleDbRequests);
+    ReflectionTestUtils.setField(
+        manageDatabase, "highAvailabilityUtilsService", highAvailabilityUtilsService);
     when(handleDbRequests.getAllTopics(eq(TENANT_ID))).thenReturn(new ArrayList<>());
     manageDatabase.loadTopicsForOneTenant(TENANT_ID);
   }

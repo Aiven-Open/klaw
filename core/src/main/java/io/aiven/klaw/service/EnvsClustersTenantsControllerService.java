@@ -463,10 +463,8 @@ public class EnvsClustersTenantsControllerService {
     return envModelList;
   }
 
-  public EnvParams getEnvParams(String targetEnv) {
-    return manageDatabase
-        .getEnvParamsMap(commonUtilsService.getTenantId(getUserName()))
-        .get(targetEnv);
+  public EnvParams getEnvParams(Integer targetEnv) {
+    return manageDatabase.getEnvParams(commonUtilsService.getTenantId(getUserName()), targetEnv);
   }
 
   public List<EnvModelResponse> getSchemaRegEnvs() {
@@ -642,8 +640,7 @@ public class EnvsClustersTenantsControllerService {
       env.setAssociatedEnv(envTag);
       String result = manageDatabase.getHandleDbRequests().addNewEnv(env);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        commonUtilsService.updateMetadata(
-            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.CREATE, null);
+        manageDatabase.addEnvToCache(tenantId, env, false);
         return ApiResponse.ok(result);
       } else {
         return ApiResponse.notOk(result);
@@ -854,8 +851,7 @@ public class EnvsClustersTenantsControllerService {
       String result =
           manageDatabase.getHandleDbRequests().deleteEnvironmentRequest(envId, tenantId);
       if (result.equals(ApiResultStatus.SUCCESS.value)) {
-        commonUtilsService.updateMetadata(
-            tenantId, EntityType.ENVIRONMENT, MetadataOperationType.DELETE, null);
+        manageDatabase.removeEnvFromCache(tenantId, Integer.valueOf(envId), false);
         return ApiResponse.ok(result);
       } else {
         return ApiResponse.notOk(result);
@@ -927,6 +923,8 @@ public class EnvsClustersTenantsControllerService {
               .getEnvDetails(existingEnv.getAssociatedEnv().getId(), tenantId);
       linkedEnv.setAssociatedEnv(null);
       manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+      // remove from cache
+      manageDatabase.addEnvToCache(tenantId, linkedEnv, false);
     }
   }
 
@@ -944,6 +942,8 @@ public class EnvsClustersTenantsControllerService {
     }
     linkedEnv.setAssociatedEnv(new EnvTag(envId, envName));
     manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
+    // add update to cache
+    manageDatabase.addEnvToCache(tenantId, linkedEnv, false);
   }
 
   private String getUserName() {
@@ -1284,7 +1284,7 @@ public class EnvsClustersTenantsControllerService {
     kwClusters.setClusterStatus(status);
     manageDatabase.getHandleDbRequests().addNewCluster(kwClusters);
 
-    manageDatabase.addEnvToCache(tenantId, env.get());
+    manageDatabase.addEnvToCache(tenantId, env.get(), false);
 
     envUpdatedStatus.setResult(ApiResultStatus.SUCCESS.value);
     envUpdatedStatus.setEnvStatus(status);

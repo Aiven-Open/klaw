@@ -161,7 +161,7 @@ public class EnvsClustersTenantsController {
       method = RequestMethod.GET,
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<EnvParams> getEnvParams(
-      @RequestParam(value = "envSelected") String envSelected) {
+      @RequestParam(value = "envSelected") Integer envSelected) {
     return new ResponseEntity<>(
         envsClustersTenantsControllerService.getEnvParams(envSelected), HttpStatus.OK);
   }

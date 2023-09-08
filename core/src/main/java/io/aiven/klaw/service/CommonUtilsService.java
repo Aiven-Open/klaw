@@ -25,7 +25,6 @@ import io.aiven.klaw.model.enums.RequestEntityType;
 import io.aiven.klaw.model.enums.RequestOperationType;
 import io.aiven.klaw.model.requests.ResetEntityCache;
 import java.io.*;
-import java.net.InetAddress;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -38,7 +37,6 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -54,9 +52,7 @@ import org.jasypt.util.text.BasicTextEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.core.env.Environment;
 import org.springframework.http.*;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -73,9 +69,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @Service
 @Slf4j
 public class CommonUtilsService {
-
-  public static final String BASE_URL_ADDRESS = "BASE_URL_ADDRESS";
-  public static final String BASE_URL_NAME = "BASE_URL_NAME";
 
   public static final DateTimeFormatter DATE_TIME_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy-MMM-dd HH:mm:ss").withZone(ZoneId.systemDefault());
@@ -109,14 +102,9 @@ public class CommonUtilsService {
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
 
-  @Autowired Environment environment;
-
   @Autowired ManageDatabase manageDatabase;
 
-  private static Map<String, String> baseUrlsMap;
-
-  private static HttpComponentsClientHttpRequestFactory requestFactory =
-      ClusterApiService.requestFactory;
+  @Autowired HighAvailabilityUtilsService highAvailabilityUtilsService;
 
   @Value("${klaw.uiapi.servers:server1,server2}")
   private String uiApiServers;
@@ -128,8 +116,7 @@ public class CommonUtilsService {
   private InMemoryUserDetailsManager inMemoryUserDetailsManager;
 
   private RestTemplate getRestTemplate() {
-    if (uiApiServers.toLowerCase().startsWith("https")) return new RestTemplate(requestFactory);
-    else return new RestTemplate();
+    return highAvailabilityUtilsService.getRestTemplate();
   }
 
   public Authentication getAuthentication() {
@@ -417,21 +404,6 @@ public class CommonUtilsService {
           + kwContextPath;
   }
 
-  public Map<String, String> getBaseIpUrlFromEnvironment() {
-    if (baseUrlsMap != null && !baseUrlsMap.isEmpty()) {
-      return baseUrlsMap;
-    } else {
-      baseUrlsMap = new HashMap<>();
-      String hostAddress = InetAddress.getLoopbackAddress().getHostAddress();
-      String hostName = InetAddress.getLoopbackAddress().getHostName();
-      int port = Integer.parseInt(Objects.requireNonNull(environment.getProperty("server.port")));
-
-      baseUrlsMap.put(BASE_URL_ADDRESS, hostAddress + ":" + port);
-      baseUrlsMap.put(BASE_URL_NAME, hostName + ":" + port);
-      return baseUrlsMap;
-    }
-  }
-
   public void resetCacheOnOtherServers(KwMetadataUpdates kwMetadataUpdates) {
     log.info("invokeResetEndpoints");
     try {
@@ -446,18 +418,9 @@ public class CommonUtilsService {
             basePath = server + "/" + kwContextPath;
           }
 
-          Map<String, String> baseUrlsFromEnv = getBaseIpUrlFromEnvironment();
-
           // ignore metadata cache reset on local.
-          if (baseUrlsFromEnv != null && !baseUrlsFromEnv.isEmpty()) {
-            if (baseUrlsFromEnv.containsKey(BASE_URL_ADDRESS)
-                && basePath.contains(baseUrlsFromEnv.get(BASE_URL_ADDRESS))) {
-              continue;
-            }
-            if (baseUrlsFromEnv.containsKey(BASE_URL_NAME)
-                && basePath.contains(baseUrlsFromEnv.get(BASE_URL_NAME))) {
-              continue;
-            }
+          if (highAvailabilityUtilsService.isLocalServerUrl(basePath)) {
+            continue;
           }
 
           if (kwMetadataUpdates.getEntityValue() == null) {
@@ -771,10 +734,6 @@ public class CommonUtilsService {
   }
 
   public Env getEnvDetails(String envId, int tenantId) {
-    Optional<Env> envFound =
-        manageDatabase.getKafkaEnvList(tenantId).stream()
-            .filter(env -> Objects.equals(env.getId(), envId))
-            .findFirst();
-    return envFound.orElse(null);
+    return manageDatabase.getKafkaEnv(tenantId, Integer.valueOf(envId)).orElse(null);
   }
 }
