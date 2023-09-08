@@ -230,7 +230,6 @@ type RemoveEnvFromCache = (params: {
   id: string;
 }) => keyof ApiPaths;
 
-
 const DYNAMIC_API_PATHS = {
   getSchemaOfTopicFromSource: ({
     source,
@@ -249,16 +248,10 @@ const DYNAMIC_API_PATHS = {
     `/environments/kafkaconnect/${envId}` as keyof ApiPaths,
   getSchemaRegEnv: ({ envId }: Parameters<GetSchemaRegEnv>[0]) =>
     `/environments/schemaRegistry/${envId}` as keyof ApiPaths,
-  addEnvToCache: ({
-        tenantId,
-        id,
-      }: Parameters<AddEnvToCache>[0]) =>
-        `/environment/tenant/${tenantId}/id/${id}` as keyof ApiPaths,
-  removeEnvFromCache: ({
-        tenantId,
-        id,
-      }: Parameters<RemoveEnvFromCache>[0]) =>
-        `/environment/tenant/${tenantId}/id/${id}` as keyof ApiPaths,
+  addEnvToCache: ({ tenantId, id }: Parameters<AddEnvToCache>[0]) =>
+    `/environment/tenant/${tenantId}/id/${id}` as keyof ApiPaths,
+  removeEnvFromCache: ({ tenantId, id }: Parameters<RemoveEnvFromCache>[0]) =>
+    `/environment/tenant/${tenantId}/id/${id}` as keyof ApiPaths,
 } satisfies {
   [key in keyof Pick<
     ApiOperations,
