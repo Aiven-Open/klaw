@@ -64,7 +64,8 @@ public class Pager {
     List<String> numList = new ArrayList<>();
     getAllPagesList(requestPageNo, currentPage, totalPages, numList);
 
-    PageContext pageContext = PageContext.of(totalPages, numList, Integer.toString(requestPageNo));
+    PageContext pageContext =
+        PageContext.of(totalPages, numList, Integer.toString(requestPageNo), totalRecs);
     for (int i = startVar; i < lastVar; i++) {
       aclListMapUpdated.add(consumer.apply(pageContext, aclListMap.get(i)));
     }
@@ -75,15 +76,18 @@ public class Pager {
     private final String totalPages;
     private final List<String> allPageNos;
     private final String pageNo;
+    private final int totalRecs;
 
-    private PageContext(int totalPages, List<String> allPageNos, String pageNo) {
+    private PageContext(int totalPages, List<String> allPageNos, String pageNo, int totalRecs) {
       this.totalPages = totalPages + "";
       this.allPageNos = allPageNos;
       this.pageNo = pageNo;
+      this.totalRecs = totalRecs;
     }
 
-    public static PageContext of(int totalPages, List<String> allPageNos, String pageNo) {
-      return new PageContext(totalPages, allPageNos, pageNo);
+    public static PageContext of(
+        int totalPages, List<String> allPageNos, String pageNo, int totalRecs) {
+      return new PageContext(totalPages, allPageNos, pageNo, totalRecs);
     }
 
     public String getTotalPages() {
@@ -96,6 +100,10 @@ public class Pager {
 
     public String getPageNo() {
       return pageNo;
+    }
+
+    public int getTotalRecs() {
+      return totalRecs;
     }
   }
 }

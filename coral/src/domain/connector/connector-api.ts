@@ -243,6 +243,21 @@ const requestConnectorClaim = (params: ConnectorClaimPayload) => {
   >(API_PATHS.createClaimConnectorRequest, payload);
 };
 
+const requestConnectorPromotion = (
+  connectorPayload: Omit<
+    KlawApiRequest<"createConnectorRequest">,
+    "requestOperationType"
+  >
+) => {
+  return api.post<
+    KlawApiResponse<"createConnectorRequest">,
+    KlawApiRequest<"createConnectorRequest">
+  >(API_PATHS.createConnectorRequest, {
+    ...connectorPayload,
+    requestOperationType: "PROMOTE",
+  });
+};
+
 export {
   approveConnectorRequest,
   requestConnectorCreation,
@@ -257,4 +272,5 @@ export {
   getConnectors,
   updateConnectorDocumentation,
   requestConnectorClaim,
+  requestConnectorPromotion,
 };

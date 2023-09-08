@@ -435,6 +435,8 @@ public class EnvsClustersTenantsControllerService {
             numList.add("" + k);
           }
           mp.setAllPageNos(numList);
+          mp.setCurrentPage(pageContext.getPageNo());
+          mp.setTotalRecs(pageContext.getTotalRecs());
           return mp;
         });
   }
