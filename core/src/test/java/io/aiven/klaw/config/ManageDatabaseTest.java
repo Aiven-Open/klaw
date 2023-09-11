@@ -31,8 +31,6 @@ public class ManageDatabaseTest {
   @BeforeEach
   public void setUp() {
     ReflectionTestUtils.setField(manageDatabase, "handleDbRequests", handleDbRequests);
-    ReflectionTestUtils.setField(
-        manageDatabase, "highAvailabilityUtilsService", highAvailabilityUtilsService);
     when(handleDbRequests.getAllTopics(eq(TENANT_ID))).thenReturn(new ArrayList<>());
     manageDatabase.loadTopicsForOneTenant(TENANT_ID);
   }

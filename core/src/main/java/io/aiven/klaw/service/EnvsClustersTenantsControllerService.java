@@ -925,7 +925,7 @@ public class EnvsClustersTenantsControllerService {
               .getEnvDetails(existingEnv.getAssociatedEnv().getId(), tenantId);
       linkedEnv.setAssociatedEnv(null);
       manageDatabase.getHandleDbRequests().addNewEnv(linkedEnv);
-      // remove from cache
+      // add to cache
       manageDatabase.addEnvToCache(tenantId, linkedEnv, false);
     }
   }

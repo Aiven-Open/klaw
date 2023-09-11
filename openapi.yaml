@@ -2078,7 +2078,7 @@
     },
     "/cache/environment/tenant/{tenantId}/id/{id}" : {
       "post" : {
-        "tags" : [ "cache" ],
+        "tags" : [ "cache-controller" ],
         "operationId" : "addEnvToCache",
         "parameters" : [ {
           "name" : "tenantId",
@@ -2121,7 +2121,7 @@
         }
       },
       "delete" : {
-        "tags" : [ "cache" ],
+        "tags" : [ "cache-controller" ],
         "operationId" : "removeEnvFromCache",
         "parameters" : [ {
           "name" : "tenantId",
@@ -7885,10 +7885,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "topicOwner" : {
+          "highestEnv" : {
             "type" : "boolean"
           },
-          "highestEnv" : {
+          "topicOwner" : {
             "type" : "boolean"
           }
         },

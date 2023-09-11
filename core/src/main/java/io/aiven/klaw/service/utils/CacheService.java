@@ -1,5 +1,6 @@
-package io.aiven.klaw.service;
+package io.aiven.klaw.service.utils;
 
+import io.aiven.klaw.service.HighAvailabilityUtilsService;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -7,6 +8,14 @@ import org.springframework.http.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * This cache provides a standardised way with built in inter instance update to other caches when
+ * working in a multi cluster deployment. Standard querying mechanisms are provided to ensure that
+ * the most efficient use of the cache is used along with the ability to use Java Streams with the
+ * output for complex queries.
+ *
+ * @param <T> The Entity Type that is to be stored in this Cache.
+ */
 @Slf4j
 public class CacheService<T> {
 
@@ -17,22 +26,18 @@ public class CacheService<T> {
 
   RestTemplate rest;
 
-  private String urlEndpoint;
+  private final String urlEndpoint;
 
-  private HighAvailabilityUtilsService utilsService;
-
-  private String clusterUrlsAsString;
+  private final HighAvailabilityUtilsService utilsService;
 
   private List<String> clusterUrls;
 
-  public CacheService(
-      String endpoint, String clusterUrlsAsString, HighAvailabilityUtilsService utilsService) {
+  public CacheService(String endpoint, HighAvailabilityUtilsService utilsService) {
     // TODO an interface needs to be added to allow the passing in of different communication
     // methods (kafka/https/rabbitmq etc) to allow any org to use what they want for maintaining
     // cache.
     this.cache = new HashMap<>();
     this.urlEndpoint = "cache" + URL_SEPERATOR + endpoint;
-    this.clusterUrlsAsString = clusterUrlsAsString;
     this.utilsService = utilsService;
   }
 
@@ -83,10 +88,17 @@ public class CacheService<T> {
     return cache.get(tenantId);
   }
 
+  public List<T> getCacheAsList(Integer tenantId) {
+    if (!cache.containsKey(tenantId)) {
+      cache.put(tenantId, new HashMap<>());
+    }
+    return new ArrayList<>(cache.get(tenantId).values());
+  }
+
   // Implement Interface here so sync can be done via kafka if wanted
   private void sendHighAvailabilityUpdate(int tenantId, Integer id, T entry) {
 
-    if (!isLazyLoaded()) {
+    if (isLazyLoaded()) {
       throw new RuntimeException("Unable to load High Availability Cache");
     }
 
@@ -114,7 +126,7 @@ public class CacheService<T> {
 
   private void sendHighAvailabilityRemove(int tenantId, Integer id) {
 
-    if (!isLazyLoaded()) {
+    if (isLazyLoaded()) {
       throw new RuntimeException("Unable to load High Availability Cache");
     }
 
@@ -136,15 +148,8 @@ public class CacheService<T> {
     } else {
       url = url + URL_SEPERATOR + urlEndpoint;
     }
-    return url
-        + URL_SEPERATOR
-        + TENANT
-        + URL_SEPERATOR
-        + tenantId
-        + URL_SEPERATOR
-        + ID
-        + URL_SEPERATOR
-        + id;
+    return String.join(
+        URL_SEPERATOR, url, TENANT, Integer.toString(tenantId), ID, Integer.toString(id));
   }
 
   private boolean isLazyLoaded() {
@@ -153,6 +158,6 @@ public class CacheService<T> {
       this.rest = utilsService.getRestTemplate();
       this.clusterUrls = utilsService.getHAClusterUrls();
     }
-    return (rest != null || clusterUrls != null);
+    return (rest == null && clusterUrls == null);
   }
 }

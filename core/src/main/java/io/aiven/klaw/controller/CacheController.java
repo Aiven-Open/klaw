@@ -3,7 +3,6 @@ package io.aiven.klaw.controller;
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
 import io.aiven.klaw.model.ApiResponse;
-import io.aiven.klaw.model.enums.*;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/cache")
 @Slf4j
-public class Cache {
+public class CacheController {
 
   @Autowired ManageDatabase manageDatabase;
 

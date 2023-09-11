@@ -24,9 +24,8 @@ import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.EnvModel;
 import io.aiven.klaw.model.response.EnvParams;
-import io.aiven.klaw.service.CacheService;
 import io.aiven.klaw.service.DefaultDataService;
-import io.aiven.klaw.service.HighAvailabilityUtilsService;
+import io.aiven.klaw.service.utils.CacheService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -114,10 +113,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   private static List<String> reqStatusList;
 
   @Autowired private DefaultDataService defaultDataService;
-  @Autowired private HighAvailabilityUtilsService highAvailabilityUtilsService;
-
-  @Value("${klaw.uiapi.servers:server1,server2}")
-  private String uiApiServers;
 
   @Value("${klaw.login.authentication.type}")
   private String authenticationType;
@@ -320,7 +315,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   public List<Env> getKafkaEnvListAllTenants(int tenantId) {
-    return new ArrayList(kafkaEnvListPerTenant.getCache(tenantId).values());
+    return kafkaEnvListPerTenant.getCacheAsList(tenantId);
   }
 
   public Integer getAllTeamsSize() {
@@ -361,22 +356,22 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   public List<Env> getKafkaEnvList(int tenantId) {
     // Return a copy of the environments so no changes can be made to the cache
-    return new ArrayList<>(kafkaEnvListPerTenant.getCache(tenantId).values());
+    return kafkaEnvListPerTenant.getCacheAsList(tenantId);
   }
 
   public List<Env> getSchemaRegEnvList(int tenantId) {
     // Return a copy of the environments so no changes can be made to the cache
-    return new ArrayList<>(schemaRegEnvListPerTenant.getCache(tenantId).values());
+    return schemaRegEnvListPerTenant.getCacheAsList(tenantId);
   }
 
   public List<Env> getKafkaConnectEnvList(int tenantId) {
     // Return a copy of the environments so no changes can be made to the cache
-    return new ArrayList<>(kafkaConnectEnvListPerTenant.getCache(tenantId).values());
+    return kafkaConnectEnvListPerTenant.getCacheAsList(tenantId);
   }
 
   public List<Env> getAllEnvList(int tenantId) {
     // Return a copy of the environments so no changes can be made to the cache
-    return new ArrayList<>(allEnvListPerTenant.getCache(tenantId).values());
+    return allEnvListPerTenant.getCacheAsList(tenantId);
   }
 
   public Optional<Env> getEnv(int tenantId, Integer envId) {
@@ -581,17 +576,13 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   public void addEnvToCache(int tenantId, Env env, boolean isLocal) {
 
-    switch (env.getType()) {
-      case "kafka":
-        kafkaEnvListPerTenant.addOrUpdate(tenantId, Integer.valueOf(env.getId()), env, isLocal);
-        break;
-      case "schemaregistry":
-        schemaRegEnvListPerTenant.addOrUpdate(tenantId, Integer.valueOf(env.getId()), env, isLocal);
-        break;
-      case "kafkaconnect":
-        kafkaConnectEnvListPerTenant.addOrUpdate(
-            tenantId, Integer.valueOf(env.getId()), env, isLocal);
-        break;
+    switch (KafkaClustersType.of(env.getType())) {
+      case KAFKA -> kafkaEnvListPerTenant.addOrUpdate(
+          tenantId, Integer.valueOf(env.getId()), env, isLocal);
+      case SCHEMA_REGISTRY -> schemaRegEnvListPerTenant.addOrUpdate(
+          tenantId, Integer.valueOf(env.getId()), env, isLocal);
+      case KAFKA_CONNECT -> kafkaConnectEnvListPerTenant.addOrUpdate(
+          tenantId, Integer.valueOf(env.getId()), env, isLocal);
     }
     allEnvListPerTenant.addOrUpdate(tenantId, Integer.valueOf(env.getId()), env, isLocal);
     updateTeamToEnvMappings(tenantId);
@@ -617,16 +608,12 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     if (env.isEmpty()) {
       return;
     }
-    switch (env.get().getType()) {
-      case "kafka":
-        kafkaEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
-        break;
-      case "schemaregistry":
-        schemaRegEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
-        break;
-      case "kafkaconnect":
-        kafkaConnectEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
-        break;
+    switch (KafkaClustersType.of(env.get().getType())) {
+      case KAFKA -> kafkaEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
+      case SCHEMA_REGISTRY -> schemaRegEnvListPerTenant.remove(
+          tenantId, Integer.valueOf(envId), isLocal);
+      case KAFKA_CONNECT -> kafkaConnectEnvListPerTenant.remove(
+          tenantId, Integer.valueOf(envId), isLocal);
     }
     allEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
     updateTeamToEnvMappings(tenantId);
@@ -939,6 +926,12 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     kwSchemaRegClustersPertenant.remove(tenantId);
     kwKafkaConnectClustersPertenant.remove(tenantId);
     kwAllClustersPertenant.remove(tenantId);
+
+    // delete EnvDetails
+    allEnvListPerTenant.removeCache(tenantId);
+    kafkaEnvListPerTenant.removeCache(tenantId);
+    schemaRegEnvListPerTenant.removeCache(tenantId);
+    kafkaConnectEnvListPerTenant.removeCache(tenantId);
 
     return ApiResultStatus.SUCCESS.value;
   }

@@ -1,13 +1,13 @@
 package io.aiven.klaw.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.aiven.klaw.constants.CacheConstants;
 import io.aiven.klaw.dao.Env;
-import io.aiven.klaw.service.CacheService;
 import io.aiven.klaw.service.HighAvailabilityUtilsService;
+import io.aiven.klaw.service.utils.CacheService;
 import java.time.Duration;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
@@ -21,9 +21,6 @@ import org.springframework.context.annotation.Primary;
 public class CacheConfig {
 
   @Autowired private HighAvailabilityUtilsService highAvailabilityUtilsService;
-
-  @Value("${klaw.uiapi.servers:server1,server2}")
-  private String uiApiServers;
 
   @Primary
   public CacheManager cacheManager() {
@@ -50,21 +47,21 @@ public class CacheConfig {
 
   @Bean
   public CacheService<Env> kafkaEnvListPerTenant() {
-    return new CacheService<Env>("environment", uiApiServers, highAvailabilityUtilsService);
+    return new CacheService<>(CacheConstants.ENVIRONMENT_PATH, highAvailabilityUtilsService);
   }
 
   @Bean
   public CacheService<Env> schemaRegEnvListPerTenant() {
-    return new CacheService<Env>("environment", uiApiServers, highAvailabilityUtilsService);
+    return new CacheService<>(CacheConstants.ENVIRONMENT_PATH, highAvailabilityUtilsService);
   }
 
   @Bean
   public CacheService<Env> kafkaConnectEnvListPerTenant() {
-    return new CacheService<Env>("environment", uiApiServers, highAvailabilityUtilsService);
+    return new CacheService<>(CacheConstants.ENVIRONMENT_PATH, highAvailabilityUtilsService);
   }
 
   @Bean
   public CacheService<Env> allEnvListPerTenant() {
-    return new CacheService<Env>("environment", uiApiServers, highAvailabilityUtilsService);
+    return new CacheService<>(CacheConstants.ENVIRONMENT_PATH, highAvailabilityUtilsService);
   }
 }
