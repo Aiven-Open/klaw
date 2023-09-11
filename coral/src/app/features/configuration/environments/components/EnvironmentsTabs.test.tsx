@@ -167,6 +167,26 @@ describe("EnvironmentsTabs", () => {
   });
 
   describe("Tab navigation", () => {
+    const getPaginatedEnvironmentsForTopicAndAclSpy = jest
+      .spyOn(environmentsApi, "getPaginatedEnvironmentsForTopicAndAcl")
+      .mockImplementation(() => {
+        throw Error(
+          "getPaginatedEnvironmentsForTopicAndAcl return must be mocked"
+        );
+      });
+    const getPaginatedEnvironmentsForSchemaSpy = jest
+      .spyOn(environmentsApi, "getPaginatedEnvironmentsForSchema")
+      .mockImplementation(() => {
+        throw Error("getPaginatedEnvironmentsForSchema return must be mocked");
+      });
+    const getPaginatedEnvironmentsForConnectorSpy = jest
+      .spyOn(environmentsApi, "getPaginatedEnvironmentsForConnector")
+      .mockImplementation(() => {
+        throw Error(
+          "getPaginatedEnvironmentsForConnector return must be mocked"
+        );
+      });
+
     beforeEach(() => {
       user = userEvent.setup();
       getPaginatedEnvironmentsForTopicAndAclSpy.mockResolvedValue(
