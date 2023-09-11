@@ -602,9 +602,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   public void removeEnvFromCache(int tenantId, int envId, boolean isLocal) {
-
     Optional<Env> env = allEnvListPerTenant.get(tenantId, Integer.valueOf(envId));
-
     if (env.isEmpty()) {
       return;
     }

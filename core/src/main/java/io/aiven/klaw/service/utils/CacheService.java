@@ -1,9 +1,10 @@
 package io.aiven.klaw.service.utils;
 
+import io.aiven.klaw.error.KlawException;
+import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.service.HighAvailabilityUtilsService;
 import java.util.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -105,17 +106,10 @@ public class CacheService<T> {
     for (String url : clusterUrls) {
       try {
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("Accept", MediaType.APPLICATION_JSON_VALUE);
-        HttpEntity<T> request = new HttpEntity<>(entry, headers);
-        rest.exchange(
-            getUrl(url, tenantId, id),
-            HttpMethod.POST,
-            request,
-            new ParameterizedTypeReference<>() {});
+        HttpEntity<T> request = new HttpEntity<>(entry, utilsService.createHeaders());
+        rest.postForObject(getUrl(url, tenantId, id), request, ApiResponse.class);
 
-      } catch (RestClientException clientException) {
+      } catch (KlawException | RestClientException clientException) {
         log.error(
             "Exception while sending HA updates to another instance {} in the cluster.",
             url,
@@ -132,8 +126,12 @@ public class CacheService<T> {
 
     for (String url : clusterUrls) {
       try {
-        rest.delete(getUrl(url, tenantId, id));
-      } catch (RestClientException clientException) {
+        rest.exchange(
+            getUrl(url, tenantId, id),
+            HttpMethod.DELETE,
+            new HttpEntity<>(utilsService.createHeaders()),
+            Void.class);
+      } catch (RestClientException | KlawException clientException) {
         log.error(
             "Exception while sending HA updates to another instance {} in the cluster.",
             url,

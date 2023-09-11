@@ -1,11 +1,23 @@
 package io.aiven.klaw.service;
 
+import static io.aiven.klaw.error.KlawErrorMessages.CLUSTER_API_ERR_117;
+
+import io.aiven.klaw.error.KlawException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import java.net.InetAddress;
+import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import javax.crypto.spec.SecretKeySpec;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -14,11 +26,19 @@ import org.springframework.web.client.RestTemplate;
 @Slf4j
 public class HighAvailabilityUtilsService {
 
+  public static final String BEARER = "Bearer ";
+  public static final String AUTHORIZATION = "Authorization";
   @Autowired Environment environment;
 
   private static HttpComponentsClientHttpRequestFactory requestFactory = null;
 
   private static Map<String, String> baseUrlsMap;
+
+  @Value("${klaw.clusterapi.access.base64.secret:#{''}}")
+  private String clusterApiAccessBase64Secret;
+
+  @Value("${klaw.clusterapi.access.username}")
+  private String apiUser;
 
   @Value("${klaw.uiapi.servers:server1,server2}")
   private String clusterUrlsAsString;
@@ -76,5 +96,37 @@ public class HighAvailabilityUtilsService {
     } else {
       return new ArrayList<>();
     }
+  }
+
+  public HttpHeaders createHeaders() throws KlawException {
+    HttpHeaders httpHeaders = new HttpHeaders();
+    String authHeader = BEARER + generateToken(apiUser);
+    httpHeaders.set(AUTHORIZATION, authHeader);
+    httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+
+    return httpHeaders;
+  }
+
+  private String generateToken(String username) throws KlawException {
+    if (clusterApiAccessBase64Secret.isBlank()) {
+      log.error(CLUSTER_API_ERR_117);
+      throw new KlawException(CLUSTER_API_ERR_117);
+    }
+
+    Key hmacKey =
+        new SecretKeySpec(
+            Base64.decodeBase64(clusterApiAccessBase64Secret),
+            SignatureAlgorithm.HS256.getJcaName());
+    Instant now = Instant.now();
+
+    return Jwts.builder()
+        .claim("name", username)
+        .claim("Role", "CACHE_ADMIN")
+        .setSubject(username)
+        .setId(UUID.randomUUID().toString())
+        .setIssuedAt(Date.from(now))
+        .setExpiration(Date.from(now.plus(3L, ChronoUnit.MINUTES))) // expiry in 3 minutes
+        .signWith(hmacKey)
+        .compact();
   }
 }
