@@ -79,14 +79,8 @@ const mockGetPaginatedEnvironmentsForConnector =
 describe("EnvironmentsTabs", () => {
   let user: ReturnType<typeof userEvent.setup>;
 
-  afterAll(() => {
-    mockGetPaginatedEnvironmentsForTopicAndAcl.mockReset();
-    mockGetPaginatedEnvironmentsForSchema.mockReset();
-    mockGetPaginatedEnvironmentsForConnector.mockReset();
-  });
-
   describe("Tab badges", () => {
-    beforeAll(() => {
+    beforeEach(() => {
       mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedKafkaTotalEnvs
       );
@@ -96,6 +90,7 @@ describe("EnvironmentsTabs", () => {
       mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(
         mockedConnectorTotalEnvs
       );
+
       customRender(
         <EnvironmentsTabs currentTab={EnvironmentsTabEnum.KAFKA} />,
         {
@@ -105,7 +100,9 @@ describe("EnvironmentsTabs", () => {
       );
     });
 
-    afterAll(() => {
+    afterEach(() => {
+      jest.clearAllMocks();
+
       cleanup();
     });
 
@@ -152,7 +149,7 @@ describe("EnvironmentsTabs", () => {
 
     afterEach(() => {
       cleanup();
-      mockedNavigate.mockReset();
+      jest.clearAllMocks();
     });
 
     it('navigates to correct URL when "Kafka" tab is clicked', async () => {
