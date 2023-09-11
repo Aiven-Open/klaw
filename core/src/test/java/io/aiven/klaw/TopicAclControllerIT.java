@@ -23,11 +23,13 @@ import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.KwPropertiesModel;
 import io.aiven.klaw.model.ResourceHistory;
 import io.aiven.klaw.model.TopicInfo;
+import io.aiven.klaw.model.cluster.consumergroup.OffsetsTiming;
 import io.aiven.klaw.model.enums.ApiResultStatus;
 import io.aiven.klaw.model.enums.ClusterStatus;
 import io.aiven.klaw.model.enums.KafkaClustersType;
 import io.aiven.klaw.model.enums.KafkaSupportedProtocol;
 import io.aiven.klaw.model.enums.RequestOperationType;
+import io.aiven.klaw.model.enums.RequestStatus;
 import io.aiven.klaw.model.requests.AclRequestsModel;
 import io.aiven.klaw.model.requests.ConsumerOffsetResetRequestModel;
 import io.aiven.klaw.model.requests.EnvModel;
@@ -1374,22 +1376,8 @@ public class TopicAclControllerIT {
 
   @Test
   @Order(40)
-  public void createOffsetResetRequest() throws Exception {
-    ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
-        utilMethods.getConsumerOffsetResetRequest(topicId1);
-    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(consumerOffsetResetRequestModel);
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.post("/operationalRequest/consumerOffsetsReset/create")
-                    .with(user(user1).password(PASSWORD).roles("USER"))
-                    .content(jsonReq)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
-
+  public void createOffsetResetRequestToDelete() throws Exception {
+    String response = createOffsetRequest();
     ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
     assertThat(response1.isSuccess()).isTrue();
   }
@@ -1397,19 +1385,8 @@ public class TopicAclControllerIT {
   @Test
   @Order(41)
   public void getOffsetResetRequests() throws Exception {
-    String response =
-        mvc.perform(
-                MockMvcRequestBuilders.get("/operationalRequest")
-                    .with(user(user1).password(PASSWORD).roles("USER"))
-                    .param("pageNo", "1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
     List<OperationalRequestsResponseModel> operationalRequestList =
-        OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+        getOperationalRequestsFromStatus(RequestStatus.CREATED.name());
     assertThat(operationalRequestList.size()).isEqualTo(1);
     assertThat(operationalRequestList.get(0).getTopicname())
         .isEqualTo(utilMethods.getConsumerOffsetResetRequest(topicId1).getTopicname());
@@ -1417,5 +1394,131 @@ public class TopicAclControllerIT {
         .isEqualTo(utilMethods.getConsumerOffsetResetRequest(topicId1).getConsumerGroup());
     assertThat(operationalRequestList.get(0).getOffsetResetType())
         .isEqualTo(utilMethods.getConsumerOffsetResetRequest(topicId1).getOffsetResetType());
+    assertThat(operationalRequestList.get(0).getRequestStatus()).isEqualTo(RequestStatus.CREATED);
+  }
+
+  @Test
+  @Order(42)
+  public void deleteOffsetRequest() throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/operationalRequest/reqId/" + 1001 + "/delete")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+    List<OperationalRequestsResponseModel> operationalRequestList =
+        getOperationalRequestsFromStatus(RequestStatus.DELETED.name());
+    assertThat(operationalRequestList.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(43)
+  public void createOffsetResetRequestToDecline() throws Exception {
+    String response = createOffsetRequest();
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+    List<OperationalRequestsResponseModel> operationalRequestList =
+        getOperationalRequestsFromStatus(RequestStatus.CREATED.name());
+    assertThat(operationalRequestList.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(44)
+  public void declineOffsetRequest() throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/operationalRequest/reqId/" + 1002 + "/decline")
+                    .with(user(user2).password(PASSWORD).roles("USER"))
+                    .param("reasonForDecline", "not required")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+    List<OperationalRequestsResponseModel> operationalRequestList =
+        getOperationalRequestsFromStatus(RequestStatus.DECLINED.name());
+    assertThat(operationalRequestList.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(45)
+  public void createOffsetResetRequestToApprove() throws Exception {
+    String response = createOffsetRequest();
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+    List<OperationalRequestsResponseModel> operationalRequestList =
+        getOperationalRequestsFromStatus(RequestStatus.CREATED.name());
+    assertThat(operationalRequestList.size()).isEqualTo(1);
+  }
+
+  @Test
+  @Order(46)
+  public void approveOffsetRequest() throws Exception {
+    Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter =
+        UtilMethods.getOffsetsTimingMapMap();
+
+    ApiResponse apiResponse =
+        ApiResponse.builder().success(true).data(offsetPositionsBeforeAndAfter).build();
+    when(clusterApiService.resetConsumerOffsets(any(), anyString(), anyInt()))
+        .thenReturn(apiResponse);
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.post("/operationalRequest/reqId/" + 1003 + "/approve")
+                    .with(user(user2).password(PASSWORD).roles("USER"))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+    ApiResponse response1 = OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
+    assertThat(response1.isSuccess()).isTrue();
+    List<OperationalRequestsResponseModel> operationalRequestList =
+        getOperationalRequestsFromStatus(RequestStatus.APPROVED.name());
+    assertThat(operationalRequestList.size()).isEqualTo(1);
+  }
+
+  private String createOffsetRequest() throws Exception {
+    ConsumerOffsetResetRequestModel consumerOffsetResetRequestModel =
+        utilMethods.getConsumerOffsetResetRequest(topicId1);
+    String jsonReq = OBJECT_MAPPER.writer().writeValueAsString(consumerOffsetResetRequestModel);
+
+    return mvc.perform(
+            MockMvcRequestBuilders.post("/operationalRequest/consumerOffsetsReset/create")
+                .with(user(user1).password(PASSWORD).roles("USER"))
+                .content(jsonReq)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+  }
+
+  private List<OperationalRequestsResponseModel> getOperationalRequestsFromStatus(String status)
+      throws Exception {
+    String response =
+        mvc.perform(
+                MockMvcRequestBuilders.get("/operationalRequests/requestsFor/myTeam")
+                    .with(user(user1).password(PASSWORD).roles("USER"))
+                    .param("pageNo", "1")
+                    .param("requestStatus", status)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    return OBJECT_MAPPER.readValue(response, new TypeReference<>() {});
   }
 }

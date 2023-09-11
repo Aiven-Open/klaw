@@ -3,7 +3,9 @@ package io.aiven.klaw.service;
 import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_102;
 import static io.aiven.klaw.error.KlawErrorMessages.OP_REQS_ERR_103;
+import static io.aiven.klaw.error.KlawErrorMessages.REQ_ERR_101;
 import static io.aiven.klaw.error.KlawErrorMessages.TOPICS_ERR_101;
+import static io.aiven.klaw.model.enums.MailType.RESET_CONSUMER_OFFSET_DENIED;
 import static org.springframework.beans.BeanUtils.copyProperties;
 
 import io.aiven.klaw.config.ManageDatabase;
@@ -38,6 +40,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -141,7 +144,7 @@ public class OperationalRequestsService {
     return Timestamp.from(parsedDate.toInstant());
   }
 
-  public List<OperationalRequestsResponseModel> getConsumerOffsetsResetRequests(
+  public List<OperationalRequestsResponseModel> getOperationalRequests(
       String pageNo,
       String currentPage,
       OperationalRequestType operationalRequestType,
@@ -152,7 +155,8 @@ public class OperationalRequestsService {
       String wildcardSearch,
       Order order,
       boolean isMyRequest) {
-    log.debug("getTopicRequests page {} operationalRequestType {}", pageNo, operationalRequestType);
+    log.debug(
+        "getOperationalRequests page {} operationalRequestType {}", pageNo, operationalRequestType);
     String userName = getUserName();
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     List<OperationalRequest> operationalRequests =
@@ -203,14 +207,21 @@ public class OperationalRequestsService {
         rolesPermissionsControllerService.getApproverRoles("TOPICS", tenantId);
     List<UserInfo> userList = manageDatabase.getUsersPerTeamAndTenant(userTeamId, tenantId);
 
-    for (OperationalRequest topicReq : operationalRequestList) {
+    for (OperationalRequest operationalRequest : operationalRequestList) {
       operationalRequestModel = new OperationalRequestsResponseModel();
-      copyProperties(topicReq, operationalRequestModel);
-      operationalRequestModel.setRequestStatus(RequestStatus.of(topicReq.getRequestStatus()));
-      operationalRequestModel.setOperationalRequestType(topicReq.getOperationalRequestType());
+      copyProperties(operationalRequest, operationalRequestModel);
+      operationalRequestModel.setTeamId(operationalRequest.getRequestingTeamId());
+      operationalRequestModel.setRequestStatus(
+          RequestStatus.of(operationalRequest.getRequestStatus()));
+      operationalRequestModel.setOperationalRequestType(
+          operationalRequest.getOperationalRequestType());
+      if (operationalRequest.getResetTimeStamp() != null) {
+        operationalRequestModel.setResetTimeStampStr(
+            operationalRequest.getResetTimeStamp().toString() + " (UTC)");
+      }
 
       operationalRequestModel.setTeamname(
-          manageDatabase.getTeamNameFromTeamId(tenantId, topicReq.getRequestingTeamId()));
+          manageDatabase.getTeamNameFromTeamId(tenantId, operationalRequest.getRequestingTeamId()));
 
       // show approving info only before approvals
       if (RequestStatus.APPROVED != operationalRequestModel.getRequestStatus()) {
@@ -224,6 +235,104 @@ public class OperationalRequestsService {
       operationalRequestModelList.add(setRequestorPermissions(operationalRequestModel, userName));
     }
     return operationalRequestModelList;
+  }
+
+  public List<OperationalRequestsResponseModel> getOperationalRequestsForApprover(
+      String pageNo,
+      String currentPage,
+      String requestStatus,
+      OperationalRequestType operationalRequestType,
+      String env,
+      String topicName,
+      String consumerGroup,
+      String wildcardSearch,
+      Order order) {
+    if (log.isDebugEnabled()) {
+      log.debug(
+          "getOperationalRequestsForApprover pageNo {} requestStatus {} operationalRequestType {} env {} wildcardSearch {}",
+          pageNo,
+          requestStatus,
+          operationalRequestType,
+          env,
+          wildcardSearch);
+    }
+
+    String userName = getUserName();
+    int teamId = commonUtilsService.getTeamId(userName);
+    List<OperationalRequest> operationalRequestList;
+    int tenantId = commonUtilsService.getTenantId(userName);
+    // get requests relevant to your teams or all teams
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.APPROVE_ALL_REQUESTS_TEAMS)) {
+      operationalRequestList =
+          manageDatabase
+              .getHandleDbRequests()
+              .getCreatedOperationalRequests(
+                  userName,
+                  requestStatus,
+                  false,
+                  tenantId,
+                  teamId,
+                  env,
+                  topicName,
+                  consumerGroup,
+                  operationalRequestType,
+                  wildcardSearch);
+    } else {
+      operationalRequestList =
+          manageDatabase
+              .getHandleDbRequests()
+              .getCreatedOperationalRequests(
+                  userName,
+                  requestStatus,
+                  false,
+                  tenantId,
+                  teamId,
+                  env,
+                  topicName,
+                  consumerGroup,
+                  operationalRequestType,
+                  wildcardSearch);
+    }
+
+    operationalRequestList = filterByTenantAndSort(order, userName, operationalRequestList);
+    operationalRequestList =
+        Pager.getItemsList(
+            pageNo,
+            currentPage,
+            10,
+            operationalRequestList,
+            (pageContext, activityLog) -> {
+              activityLog.setAllPageNos(pageContext.getAllPageNos());
+              activityLog.setTotalNoPages(pageContext.getTotalPages());
+              activityLog.setCurrentPage(pageContext.getPageNo());
+              activityLog.setEnvironmentName(
+                  commonUtilsService
+                      .getEnvDetails(activityLog.getEnvironment(), tenantId)
+                      .getName());
+              return activityLog;
+            });
+
+    return updateCreateOperationalReqsList(operationalRequestList, tenantId);
+  }
+
+  private List<OperationalRequestsResponseModel> updateCreateOperationalReqsList(
+      List<OperationalRequest> topicsList, int tenantId) {
+    List<OperationalRequestsResponseModel> topicRequestModelList =
+        getOperationalRequestModels(topicsList);
+
+    for (OperationalRequestsResponseModel operationalRequestsResponseModel :
+        topicRequestModelList) {
+      operationalRequestsResponseModel.setTeamname(
+          manageDatabase.getTeamNameFromTeamId(
+              tenantId, operationalRequestsResponseModel.getTeamId()));
+      operationalRequestsResponseModel.setEnvironmentName(
+          commonUtilsService
+              .getEnvDetails(operationalRequestsResponseModel.getEnvironment(), tenantId)
+              .getName());
+    }
+
+    return topicRequestModelList;
   }
 
   private OperationalRequestsResponseModel setRequestorPermissions(
@@ -286,18 +395,26 @@ public class OperationalRequestsService {
 
   public ApiResponse approveOperationalRequests(String reqId) {
     log.info("approveConsumerOffsetRequests {}", reqId);
-    final String userDetails = getUserName();
-    int tenantId = commonUtilsService.getTenantId(userDetails);
+    final String userName = getUserName();
+    int tenantId = commonUtilsService.getTenantId(userName);
     if (commonUtilsService.isNotAuthorizedUser(
-        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_REQS)) {
+        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
       return ApiResponse.NOT_AUTHORIZED;
     }
-    ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
-        ResetConsumerGroupOffsetsRequest.builder().build();
 
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     OperationalRequest operationalRequest =
         dbHandle.getOperationalRequest(Integer.parseInt(reqId), tenantId);
+    ResetConsumerGroupOffsetsRequest resetConsumerGroupOffsetsRequest =
+        ResetConsumerGroupOffsetsRequest.builder()
+            .consumerGroup(operationalRequest.getConsumerGroup())
+            .topicName(operationalRequest.getTopicname())
+            .offsetResetType(operationalRequest.getOffsetResetType())
+            .consumerGroupResetTimestampMilliSecs(
+                operationalRequest.getOffsetResetType() == OffsetResetType.TO_DATE_TIME
+                    ? operationalRequest.getResetTimeStamp().getTime()
+                    : null)
+            .build();
     ApiResponse apiResponse;
     try {
       apiResponse =
@@ -307,6 +424,7 @@ public class OperationalRequestsService {
       return ApiResponse.notOk(ApiResultStatus.FAILURE.value);
     }
 
+    String updateOffsetReqStatus = "";
     if (apiResponse.isSuccess()) {
       if (apiResponse.getData() instanceof Map) {
         Map<OffsetsTiming, Map<String, Long>> offsetPositionsBeforeAndAfter =
@@ -319,6 +437,11 @@ public class OperationalRequestsService {
                 + offsetPositionsBeforeAndAfter.get(OffsetsTiming.AFTER_OFFSET_RESET);
         String offsetResetDetails =
             resetConsumerGroupOffsetsRequest.getConsumerGroup() + "\n" + beforeReset + afterReset;
+
+        updateOffsetReqStatus =
+            dbHandle.updateOperationalChangeRequest(
+                operationalRequest, userName, RequestStatus.APPROVED);
+
         mailService.sendMail(
             operationalRequest.getTopicname(),
             offsetResetDetails,
@@ -332,7 +455,9 @@ public class OperationalRequestsService {
       }
     }
 
-    return apiResponse.isSuccess() ? ApiResponse.SUCCESS : ApiResponse.FAILURE;
+    return updateOffsetReqStatus.equals(ApiResultStatus.SUCCESS.value)
+        ? ApiResponse.SUCCESS
+        : ApiResponse.FAILURE;
   }
 
   private void checkIsAuthorized(PermissionType permission) throws KlawNotAuthorizedException {
@@ -372,6 +497,79 @@ public class OperationalRequestsService {
       return envIdInfo;
     } else {
       return null;
+    }
+  }
+
+  public ApiResponse deleteOperationalRequest(String operationalRequestId) throws KlawException {
+    log.info("deleteOperationalRequest {}", operationalRequestId);
+
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.REQUEST_CREATE_OPERATIONAL_CHANGES)) {
+      return ApiResponse.NOT_AUTHORIZED;
+    }
+    String userName = getUserName();
+    try {
+      String deleteOperationalReqStatus =
+          manageDatabase
+              .getHandleDbRequests()
+              .deleteOperationalRequest(
+                  Integer.parseInt(operationalRequestId),
+                  userName,
+                  commonUtilsService.getTenantId(getUserName()));
+
+      return ApiResultStatus.SUCCESS.value.equals(deleteOperationalReqStatus)
+          ? ApiResponse.ok(deleteOperationalReqStatus)
+          : ApiResponse.notOk(deleteOperationalReqStatus);
+    } catch (Exception e) {
+      log.error(e.getMessage());
+      throw new KlawException(e.getMessage());
+    }
+  }
+
+  public ApiResponse declineOperationalRequest(String reqId, String reasonForDecline)
+      throws KlawException {
+    log.debug("declineOperationalRequest {} {}", reqId, reasonForDecline);
+    if (commonUtilsService.isNotAuthorizedUser(
+        getPrincipal(), PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
+      return ApiResponse.NOT_AUTHORIZED;
+    }
+
+    String userName = getUserName();
+    HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+    OperationalRequest operationalRequest =
+        dbHandle.getOperationalRequestsForId(
+            Integer.parseInt(reqId), commonUtilsService.getTenantId(userName));
+
+    if (!RequestStatus.CREATED.value.equals(operationalRequest.getRequestStatus())) {
+      return ApiResponse.notOk(REQ_ERR_101);
+    }
+
+    // tenant filtering
+    final Set<String> allowedEnvIdSet = commonUtilsService.getEnvsFromUserId(userName);
+    if (!allowedEnvIdSet.contains(operationalRequest.getEnvironment())) {
+      return ApiResponse.NOT_AUTHORIZED;
+    }
+
+    try {
+      String result =
+          dbHandle.updateOperationalChangeRequest(
+              operationalRequest, userName, RequestStatus.DECLINED);
+      mailService.sendMail(
+          operationalRequest.getTopicname(),
+          null,
+          reasonForDecline,
+          operationalRequest.getRequestor(),
+          operationalRequest.getApprover(),
+          NumberUtils.toInt(operationalRequest.getApprovingTeamId(), -1),
+          dbHandle,
+          RESET_CONSUMER_OFFSET_DENIED,
+          commonUtilsService.getLoginUrl());
+
+      return ApiResultStatus.SUCCESS.value.equals(result)
+          ? ApiResponse.ok(result)
+          : ApiResponse.notOk(result);
+    } catch (Exception e) {
+      throw new KlawException(e.getMessage());
     }
   }
 }

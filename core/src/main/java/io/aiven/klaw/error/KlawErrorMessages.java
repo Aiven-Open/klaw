@@ -481,4 +481,7 @@ public class KlawErrorMessages {
   public static final String OP_REQS_ERR_102 = "Required Timestamp is missing to reset the offset.";
 
   public static final String OP_REQS_ERR_103 = "Failure. A reset request already exists.";
+
+  public static final String DELETE_REQ_ERR =
+      " Unable to verify ownership of this request. you may only delete your own requests.";
 }

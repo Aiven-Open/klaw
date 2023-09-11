@@ -201,6 +201,33 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
         requestor, status, showRequestsOfAllTeams, tenantId, null, null, null, null);
   }
 
+  @Override
+  public List<OperationalRequest> getCreatedOperationalRequests(
+      String requestor,
+      String status,
+      boolean showRequestsOfAllTeams,
+      int tenantId,
+      Integer teamId,
+      String env,
+      String topicName,
+      String consumerGroup,
+      OperationalRequestType operationalRequestType,
+      String wildcardSearch) {
+    return jdbcSelectHelper.selectFilteredOperationalRequests(
+        true,
+        requestor,
+        status,
+        showRequestsOfAllTeams,
+        tenantId,
+        teamId,
+        operationalRequestType,
+        env,
+        topicName,
+        consumerGroup,
+        wildcardSearch,
+        false);
+  }
+
   public List<TopicRequest> getCreatedTopicRequests(
       String requestor,
       String status,
@@ -266,6 +293,10 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
 
   public TopicRequest getTopicRequestsForTopic(int topicId, int tenantId) {
     return jdbcSelectHelper.selectTopicRequestsForTopic(topicId, tenantId);
+  }
+
+  public OperationalRequest getOperationalRequestsForId(int reqId, int tenantId) {
+    return jdbcSelectHelper.selectOperationalRequestsForId(reqId, tenantId);
   }
 
   public KafkaConnectorRequest getConnectorRequestsForConnector(int connectorId, int tenantId) {
@@ -814,6 +845,13 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   }
 
   @Override
+  public String updateOperationalChangeRequest(
+      OperationalRequest operationalRequest, String approver, RequestStatus requestStatus) {
+    return jdbcUpdateHelper.updateOperationalChangeRequest(
+        operationalRequest, approver, requestStatus);
+  }
+
+  @Override
   public String updateConnectorRequest(KafkaConnectorRequest topicRequest, String approver) {
     return jdbcUpdateHelper.updateConnectorRequest(topicRequest, approver);
   }
@@ -904,6 +942,11 @@ public class HandleDbRequestsJdbc implements HandleDbRequests {
   @Override
   public String deleteTopicRequest(int topicId, String userName, int tenantId) {
     return jdbcDeleteHelper.deleteTopicRequest(topicId, userName, tenantId);
+  }
+
+  @Override
+  public String deleteOperationalRequest(int operationalRequestId, String userName, int tenantId) {
+    return jdbcDeleteHelper.deleteOperationalRequest(operationalRequestId, userName, tenantId);
   }
 
   @Override
