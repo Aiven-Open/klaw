@@ -40,7 +40,7 @@ dependencies:
     version: 7.43.9(react@18.2.0)
   react-markdown:
     specifier: ^8.0.7
-    version: 8.0.7(@types/react@18.2.0)(react@18.2.0)
+    version: 8.0.7(@types/react@18.2.21)(react@18.2.0)
   react-router-dom:
     specifier: ^6.10.0
     version: 6.10.0(react-dom@18.2.0)(react@18.2.0)
@@ -96,7 +96,7 @@ devDependencies:
     version: 14.0.0(react-dom@18.2.0)(react@18.2.0)
   '@testing-library/react-hooks':
     specifier: ^8.0.1
-    version: 8.0.1(@types/react@18.2.0)(react-dom@18.2.0)(react-test-renderer@18.2.0)(react@18.2.0)
+    version: 8.0.1(@types/react@18.2.21)(react-dom@18.2.0)(react-test-renderer@18.2.0)(react@18.2.0)
   '@testing-library/user-event':
     specifier: ^14.4.3
     version: 14.4.3(@testing-library/dom@9.3.1)
@@ -110,8 +110,8 @@ devDependencies:
     specifier: ^18.17.14
     version: 18.17.14
   '@types/react':
-    specifier: ^18.2.0
-    version: 18.2.0
+    specifier: ^18.2.21
+    version: 18.2.21
   '@types/react-dom':
     specifier: ^18.2.1
     version: 18.2.1
@@ -2890,7 +2890,7 @@ packages:
       redent: 3.0.0
     dev: true
 
-  /@testing-library/react-hooks@8.0.1(@types/react@18.2.0)(react-dom@18.2.0)(react-test-renderer@18.2.0)(react@18.2.0):
+  /@testing-library/react-hooks@8.0.1(@types/react@18.2.21)(react-dom@18.2.0)(react-test-renderer@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-Aqhl2IVmLt8IovEVarNDFuJDVWVvhnr9/GCU6UUnrYXwgDFF9h2L2o2P9KBni1AST5sT6riAyoukFLyjQUgD/g==}
     engines: {node: '>=12'}
     peerDependencies:
@@ -2907,7 +2907,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.19.4
-      '@types/react': 18.2.0
+      '@types/react': 18.2.21
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-error-boundary: 3.1.4(react@18.2.0)
@@ -3132,17 +3132,17 @@ packages:
   /@types/react-dom@18.2.1:
     resolution: {integrity: sha512-8QZEV9+Kwy7tXFmjJrp3XUKQSs9LTnE0KnoUb0YCguWBiNW0Yfb2iBMYZ08WPg35IR6P3Z0s00B15SwZnO26+w==}
     dependencies:
-      '@types/react': 18.2.0
+      '@types/react': 18.2.21
     dev: true
 
   /@types/react-syntax-highlighter@15.5.7:
     resolution: {integrity: sha512-bo5fEO5toQeyCp0zVHBeggclqf5SQ/Z5blfFmjwO5dkMVGPgmiwZsJh9nu/Bo5L7IHTuGWrja6LxJVE2uB5ZrQ==}
     dependencies:
-      '@types/react': 18.2.0
+      '@types/react': 18.2.21
     dev: false
 
-  /@types/react@18.2.0:
-    resolution: {integrity: sha512-0FLj93y5USLHdnhIhABk83rm8XEGA7kH3cr+YUlvxoUGp1xNt/DINUMvqPxLyOQMzLmZe8i4RTHbvb8MC7NmrA==}
+  /@types/react@18.2.21:
+    resolution: {integrity: sha512-neFKG/sBAwGxHgXiIxnbm3/AAVQ/cMRS93hvBpg8xYRbeQSPVABp9U2bRnPf0iI4+Ucdv3plSxKK+3CW2ENJxA==}
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
@@ -7504,7 +7504,7 @@ packages:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
     dev: false
 
-  /react-markdown@8.0.7(@types/react@18.2.0)(react@18.2.0):
+  /react-markdown@8.0.7(@types/react@18.2.21)(react@18.2.0):
     resolution: {integrity: sha512-bvWbzG4MtOU62XqBx3Xx+zB2raaFFsq4mYiAzfjXJMEz2sixgeAfraA3tvzULF02ZdOMUOKTBFFaZJDDrq+BJQ==}
     peerDependencies:
       '@types/react': '>=16'
@@ -7512,7 +7512,7 @@ packages:
     dependencies:
       '@types/hast': 2.3.4
       '@types/prop-types': 15.7.5
-      '@types/react': 18.2.0
+      '@types/react': 18.2.21
       '@types/unist': 2.0.6
       comma-separated-tokens: 2.0.3
       hast-util-whitespace: 2.0.1
