@@ -10,7 +10,8 @@ import {
   getPaginatedEnvironmentsForConnector,
   getPaginatedEnvironmentsForSchema,
   getPaginatedEnvironmentsForTopicAndAcl,
-} from "src/domain/environment/environment-api";
+} from "src/domain/environment";
+
 import { EnvironmentPaginatedApiResponse } from "src/domain/environment/environment-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
 
@@ -79,18 +80,25 @@ const mockGetPaginatedEnvironmentsForConnector =
 describe("EnvironmentsTabs", () => {
   let user: ReturnType<typeof userEvent.setup>;
 
+  beforeEach(() => {
+    mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
+      mockedKafkaTotalEnvs
+    );
+    mockGetPaginatedEnvironmentsForSchema.mockResolvedValue(
+      mockedSchemaTotalEnvs
+    );
+    mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(
+      mockedConnectorTotalEnvs
+    );
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
   describe("Tab badges", () => {
     beforeEach(() => {
-      mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
-        mockedKafkaTotalEnvs
-      );
-      mockGetPaginatedEnvironmentsForSchema.mockResolvedValue(
-        mockedSchemaTotalEnvs
-      );
-      mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(
-        mockedConnectorTotalEnvs
-      );
-
       customRender(
         <EnvironmentsTabs currentTab={EnvironmentsTabEnum.KAFKA} />,
         {
@@ -101,8 +109,6 @@ describe("EnvironmentsTabs", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
-
       cleanup();
     });
 
@@ -128,15 +134,6 @@ describe("EnvironmentsTabs", () => {
   describe("Tab navigation", () => {
     beforeEach(() => {
       user = userEvent.setup();
-      mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
-        mockedKafkaTotalEnvs
-      );
-      mockGetPaginatedEnvironmentsForSchema.mockResolvedValue(
-        mockedSchemaTotalEnvs
-      );
-      mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(
-        mockedConnectorTotalEnvs
-      );
 
       customRender(
         <EnvironmentsTabs currentTab={EnvironmentsTabEnum.KAFKA} />,
@@ -149,7 +146,6 @@ describe("EnvironmentsTabs", () => {
 
     afterEach(() => {
       cleanup();
-      jest.clearAllMocks();
     });
 
     it('navigates to correct URL when "Kafka" tab is clicked', async () => {
