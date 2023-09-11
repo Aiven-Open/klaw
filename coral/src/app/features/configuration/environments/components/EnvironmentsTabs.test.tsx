@@ -69,25 +69,24 @@ const mockedConnectorTotalEnvs: EnvironmentPaginatedApiResponse = {
   entries: [],
 };
 
+const getPaginatedEnvironmentsForTopicAndAclSpy = jest
+  .spyOn(environmentsApi, "getPaginatedEnvironmentsForTopicAndAcl")
+  .mockImplementation(() => {
+    throw Error("getPaginatedEnvironmentsForTopicAndAcl return must be mocked");
+  });
+const getPaginatedEnvironmentsForSchemaSpy = jest
+  .spyOn(environmentsApi, "getPaginatedEnvironmentsForSchema")
+  .mockImplementation(() => {
+    throw Error("getPaginatedEnvironmentsForSchema return must be mocked");
+  });
+const getPaginatedEnvironmentsForConnectorSpy = jest
+  .spyOn(environmentsApi, "getPaginatedEnvironmentsForConnector")
+  .mockImplementation(() => {
+    throw Error("getPaginatedEnvironmentsForConnector return must be mocked");
+  });
+
 describe("EnvironmentsTabs", () => {
   let user: ReturnType<typeof userEvent.setup>;
-  const getPaginatedEnvironmentsForTopicAndAclSpy = jest
-    .spyOn(environmentsApi, "getPaginatedEnvironmentsForTopicAndAcl")
-    .mockImplementation(() => {
-      throw Error(
-        "getPaginatedEnvironmentsForTopicAndAcl return must be mocked"
-      );
-    });
-  const getPaginatedEnvironmentsForSchemaSpy = jest
-    .spyOn(environmentsApi, "getPaginatedEnvironmentsForSchema")
-    .mockImplementation(() => {
-      throw Error("getPaginatedEnvironmentsForSchema return must be mocked");
-    });
-  const getPaginatedEnvironmentsForConnectorSpy = jest
-    .spyOn(environmentsApi, "getPaginatedEnvironmentsForConnector")
-    .mockImplementation(() => {
-      throw Error("getPaginatedEnvironmentsForConnector return must be mocked");
-    });
 
   afterAll(() => {
     getPaginatedEnvironmentsForTopicAndAclSpy.mockReset();
