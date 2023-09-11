@@ -352,7 +352,8 @@
 							<li><a href="myTopicRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
 							<li><a href="mySchemaRequests">My Schema Requests</a></li>
-					<li><a href="myConnectorRequests">My Connector Requests</a></li>
+								<li><a href="myConnectorRequests">My Connector Requests</a></li>
+							<li><a href="myOperationalRequests">My Operational Requests</a></li>
 						</ul>
 					</li>
 					<li class="nav-devider"></li>
@@ -406,7 +407,8 @@
 							<li ng-show="dashboardDetails.approveDeclineSubscriptions=='Authorized'"><a href="execAcls">Acl Request</a></li>
 							<li ng-show="dashboardDetails.approveDeclineSchemas=='Authorized'"><a href="execSchemas">Schema Request</a></li>
 					<li ng-show="dashboardDetails.approveDeclineConnectors=='Authorized'"><a href="execConnectors">KafkaConnect Request</a></li>
-							  <li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
+							  							  <li ng-show="dashboardDetails.addUser=='Authorized'"><a href="execUsers">User Request</a></li>
+							  <li ng-show="dashboardDetails.approveDeclineOperationalReqs=='Authorized'"><a href="execOperationalChanges">Operational changes</a></li>
 						</ul>
 					</li>
 
@@ -750,14 +752,14 @@
 															</div>
 
 															<!-- Check for consumer, and consumer group is not 'na' and owner of the acl-->
-<!--															<div class="p-2 border-left" style="width:5%"-->
-<!--																 ng-show="aclRequest.topictype == 'Consumer' && aclRequest.consumergroup != '-na-' && aclRequest.showDeleteAcl == true">-->
-<!--																<a href="requestConsumerOffsetReset?topic={{topicSelectedParam}}&envId={{aclRequest.environment}}&consumerGroup={{aclRequest.consumergroup}}">-->
-<!--																	<button  type="button" class="btn btn-xs btn-secondary btn-outline-light">-->
-<!--																		Reset Consumer offsets-->
-<!--																	</button>-->
-<!--																</a>-->
-<!--															</div>-->
+															<div class="p-2 border-left" style="width:5%"
+																 ng-show="aclRequest.topictype == 'Consumer' && aclRequest.consumergroup != '-na-' && aclRequest.showDeleteAcl == true">
+																<a href="requestConsumerOffsetReset?topic={{topicSelectedParam}}&envId={{aclRequest.environment}}&consumerGroup={{aclRequest.consumergroup}}">
+																	<button  type="button" class="btn btn-xs btn-secondary btn-outline-light">
+																		Reset Consumer offsets
+																	</button>
+																</a>
+															</div>
 
 															<div class="p-2 border-left" style="width:5%">
 																<a ng-show="aclRequest.showDeleteAcl == true && aclRequest.kafkaFlavorType == 'AIVEN_FOR_APACHE_KAFKA'" class="mytooltip" href="javascript:void(0)">

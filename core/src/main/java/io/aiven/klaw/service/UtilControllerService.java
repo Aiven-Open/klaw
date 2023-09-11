@@ -458,7 +458,7 @@ public class UtilControllerService implements InitializingBean {
       }
 
       if (commonUtilsService.isNotAuthorizedUser(
-          userName, PermissionType.APPROVE_OPERATIONAL_REQS)) {
+          userName, PermissionType.APPROVE_OPERATIONAL_CHANGES)) {
         approveDeclineOperationalReqs = "NotAuthorized";
       } else {
         approveDeclineOperationalReqs = ApiResultStatus.AUTHORIZED.value;

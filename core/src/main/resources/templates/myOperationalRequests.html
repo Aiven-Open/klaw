@@ -20,7 +20,7 @@
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-	<title>My Schema Requests | Kafka Self-service Topic Management Portal</title>
+	<title>My Operational Requests | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
 	<!--
@@ -348,7 +348,7 @@
 							<li><a href="requestTopics">Request Topic</a></li>
 					<li><a href="requestConnector">Request Connector</a></li>
 
-							<li><a href="myTopicRequests">My Topic Requests</a></li>
+							<li><a href="myoperationalRequests">My Topic Requests</a></li>
 							<li><a href="myAclRequests">My Acl Requests</a></li>
 							<li><a href="mySchemaRequests">My Schema Requests</a></li>
 								<li><a href="myConnectorRequests">My Connector Requests</a></li>
@@ -427,7 +427,7 @@
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid" ng-init="getMySchemaRequests(1, false);getRequestStatuses();">
+		<div class="container-fluid" ng-init="getMyOperationalRequests(1, false);getRequestStatuses();">
 			<div class="row page-titles">
 			</div>
 
@@ -437,7 +437,7 @@
 				<div class="ribbon-wrapper card col-lg-6 col-md-6 col-xlg-2 col-xs-6">
 					<div class="ribbon ribbon-success">New user interface available</div>
 					<p class="ribbon-content">
-						Check out the new interface for <a href="coral/requests/schemas">my team's requests.</a>
+						Check out the new interface for <a href="coral/requests/topics">my team's requests.</a>
 					</p>
 				</div>
 			</div>
@@ -456,7 +456,7 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-show="schemaRequests.length == 0">
+			<div class="row" ng-show="operationalRequests.length == 0">
 				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
 					<div class="ribbon-wrapper card">
 						<div class="ribbon ribbon-warning">Notification</div>
@@ -467,116 +467,127 @@
 			<!-- Row -->
 
 			<table width="100%"><tr>
-				<td align="left" width="65%"><h4 class="card-title">My Team Schema Requests</h4></td>
+				<td align="left" width="65%"><h4 class="card-title">My Team Operational Requests</h4></td>
 				<td align="right" width="20%">
 					<div class="form-group has-success">
 						<label class="text-success">Filter on Status</label>
-						<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestTypeSchema(requestTypeSelected);"
+						<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestType(requestTypeSelected);"
 								ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
 
 						</select>
 					</div>
-				</td>
-				<td align="right" width="15%">
-					<a href="requestSchema">
-						<button type="button"
-								class="btn waves-effect waves-light btn-rounded btn-sm btn-secondary">Request a Schema</button>
-					</a>
 				</td>
 			</tr>
 			</table>
 
 			<hr size="1" color="black">
 
-			<div align="center" ng-show="schemaRequests.length > 0">
+			<div ng-repeat="operationalRequest in operationalRequests">
 
-				<div ng-repeat="schemaRequest in schemaRequests">
+				<div class="row" ng-show="operationalRequest.topicname != null">
 
-					<div class="row" ng-show="schemaRequest.topicname != null">
+					<div class="col-md-12">
+						<div class="card">
 
-						<div class="col-md-12" ng-show="schemaRequest.topicname != null">
-							<div class="card">
-								<div class="card-body">
-									<div>
-										<table width="100%">
-											<tr>
-												<td align="left">
-													<h3 class="card-title">Topic : <a href="topicOverview?topicname={{schemaRequest.topicname}}"> {{ schemaRequest.topicname }}</a></h3>
-												</td>
-												<td align="right">
-
+							<div class="card-body">
+								<div>
+									<table width="100%">
+										<tr>
+											<td align="left">
+												<h3 class="card-title">Topic : {{ operationalRequest.topicname }}</h3>
+											</td>
+											<td ng-show="operationalRequest.requestStatus == 'CREATED'" align="right" width="2%">
+												<button type="button" ng-click="deleteOperationalRequest(operationalRequest.reqId);" class="btn btn-danger btn-circle">
+													<i class="fa fa-times"></i>
 												</button>
-													<button type="button" ng-click="deleteSchemaRequest(schemaRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
-													</button></td>
-											</tr>
-										</table>
-									</div>
-									<hr size="1" color="black">
-									<div class="d-flex flex-row">
-
-										<div class="p-2 border-right" style="width:10%">
-											<h6 class="text-primary">Cluster</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.environmentName }}</span>
-										</b>
-										</div>
-
-										<div class="p-2 border-right" style="width:10%">
-											<h6 class="text-primary">Requestor</h6><b>{{ schemaRequest.requestor }}</b>
-										</div>
-										<div class="p-2 border-right" style="width:15%">
-											<h6 class="text-primary">Team</h6><b>{{ schemaRequest.teamname }}</b>
-										</div>
-										<div ng-show="schemaRequest.requestStatus == 'CREATED'" class="p-2 border-right" style="width:10%">
-											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-success">{{ schemaRequest.requestStatus }}</span></b>
-										</div>
-										<div ng-show="schemaRequest.requestStatus != 'CREATED'" class="p-2 border-right" style="width:10%">
-											<h6 class="text-primary">Status</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.requestStatus }}</span></b>
-										</div>
-										
-						                <div class="p-2 border-right" style="width:12%">
-							                <h6 class="text-primary">Request Type</h6><b>
-							                <span class="badge badge-info">{{ schemaRequest.requestOperationType }} Schema</span></b>
-						                </div>
-
-										<div class="p-2" style="width:15%">
-											<h6 class="text-primary">Date Requested</h6><b>{{ schemaRequest.requesttimestring }}</b>
-										</div>
-
-										<div class="p-2 border-left" ng-show="schemaRequest.requestStatus == 'APPROVED'" style="width:10%">
-											<h6 class="text-primary">Approver</h6><b>
-											<span class="badge badge-info">{{ schemaRequest.approver }}</span></b>
-										</div>
-										<div ng-show="schemaRequest.requestStatus != 'APPROVED'" class="p-2 border-left" style="width:10%;align:center;">
-											<h6 class="text-primary">Approving Info</h6>
-											<a class="mytooltip" href="javascript:void(0)">
-												<i class="fas fa-users"></i>
-												<span class="tooltip-content3">{{ schemaRequest.approvingTeamDetails}}</span>
-											</a>
-										</div>
-									</div>
-									<textarea class="form-control" style="background-color:#70C6DA;color:black;" disabled  rows="10">{{ schemaRequest.schemafull}}</textarea>
+											</td>
+										</tr>
+									</table>
 								</div>
+								<hr size="1" color="black">
+								<div class="d-flex flex-row">
+
+									<div class="p-2 border-right" style="width:12%">
+										<h6 class="text-primary">Environment</h6><b>
+										<span class="badge badge-warning">{{ operationalRequest.environmentName }}</span>
+									</b>
+									</div>
+									<div class="p-2 border-right" style="width:15%">
+										<h6 class="text-primary">consumerGroup</h6><b>{{ operationalRequest.consumerGroup }}</b>
+									</div>
+									<div class="p-2 border-right" style="width:15%">
+										<h6 class="text-primary">OffsetResetType</h6><b>{{ operationalRequest.offsetResetType }}</b>
+									</div>
+
+									<div class="p-2 border-right" style="width:15%">
+										<h6 class="text-primary">Reset TimeStamp </h6><b>{{ operationalRequest.resetTimeStampStr }}</b>
+									</div>
+
+									<div class="p-2 border-right" style="width:15%">
+										<h6 class="text-primary">Team</h6><b>{{ operationalRequest.teamname }}</b>
+									</div>
+
+									<div ng-show="operationalRequest.requestStatus == 'CREATED'" class="p-2 border-right" style="width:10%">
+										<h6 class="text-primary">Status</h6><b>
+										<span class="badge badge-success">{{ operationalRequest.requestStatus }}</span></b>
+									</div>
+									<div ng-show="operationalRequest.requestStatus != 'CREATED'" class="p-2 border-right" style="width:10%">
+										<h6 class="text-primary">Status</h6><b>
+										<span class="badge badge-info">{{ operationalRequest.requestStatus }}</span></b>
+									</div>
+
+									<div class="p-2" style="width:15%">
+										<h6 class="text-primary">Date Requested</h6><b>{{ operationalRequest.requesttimestring }}</b>
+									</div>
+
+								</div>
+								<br>
+								<div class="d-flex flex-row">
+
+									<div class="p-2 border-right" style="width:20%">
+										<h6 class="text-primary">Request Type</h6><b>
+										<span class="badge badge-info">{{ operationalRequest.operationalRequestType }}</span></b>
+									</div>
+
+									<div class="p-2 border-right" style="width:10%">
+										<h6 class="text-primary">Requestor</h6><b>{{ operationalRequest.requestor }}</b>
+									</div>
+
+
+									<div class="p-2 border-left" style="width:20%">
+										<h6 class="text-primary">Remarks</h6><b>
+										{{ operationalRequest.remarks }}</b>
+									</div>
+									<div class="p-2 border-left" style="width:10%" ng-show="operationalRequest.requestStatus == 'APPROVED'">
+										<h6 class="text-primary">Approver</h6><b>
+										<span class="badge badge-info">{{ operationalRequest.approver }}</span></b>
+									</div>
+									<div ng-show="operationalRequest.requestStatus != 'APPROVED'" class="p-2 border-left" style="width:10%;align:center;">
+										<h6 class="text-primary">Approving Info</h6>
+										<a class="mytooltip" href="javascript:void(0)">
+											<i class="fas fa-users"></i>
+											<span class="tooltip-content3">{{ operationalRequest.approvingTeamDetails}}</span>
+										</a>
+									</div>
+								</div>
+
+
 							</div>
 						</div>
-
 					</div>
-
 
 				</div>
 
 
 			</div>
 
-
-			<div class="dataTables_paginate paging_simple_numbers"  ng-show="schemaRequests.length>0">
+			<div class="dataTables_paginate paging_simple_numbers"  ng-show="operationalRequests.length>0">
 				<ul class="pagination">
 					<li class="paginate_button page-item active" disabled>
 						<a href="#" class="page-link">Pages</a>
 					</li>
 					<li class="paginate_button page-item" ng-repeat="allPages in resultPages">
-						<a href="#" class="page-link" ng-click="getMySchemaRequests(allPages, false)">{{allPages}}</a>
+						<a href="#" class="page-link" ng-click="getMyOperationalRequests(allPages, false)">{{allPages}}</a>
 					</li>
 				</ul>
 			</div>
