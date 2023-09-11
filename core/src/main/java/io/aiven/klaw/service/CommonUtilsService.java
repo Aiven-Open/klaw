@@ -473,8 +473,7 @@ public class CommonUtilsService {
   }
 
   public Set<String> getEnvsFromUserId(String userName) {
-    return new HashSet<>(
-        manageDatabase.getTeamsAndAllowedEnvs(getTeamId(userName), getTenantId(userName)));
+    return new HashSet<>(manageDatabase.getAllEnvIds(getTenantId(userName)));
   }
 
   public int getTenantId(String userId) {

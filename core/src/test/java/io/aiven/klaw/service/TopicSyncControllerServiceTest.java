@@ -218,8 +218,7 @@ public class TopicSyncControllerServiceTest {
     when(tenantConfig.get(anyInt())).thenReturn(tenantConfigModel);
     when(tenantConfigModel.getBaseSyncEnvironment()).thenReturn("1");
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
 
     ApiResponse result = topicSyncControllerService.updateSyncTopics(topicUpdates);
     assertThat(result.getMessage()).isEqualTo("No record updated.");

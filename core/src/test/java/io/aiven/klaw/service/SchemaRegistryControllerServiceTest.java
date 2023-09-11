@@ -282,8 +282,7 @@ public class SchemaRegistryControllerServiceTest {
     }
     when(handleDbRequests.updateSchemaRequest(any(), anyString()))
         .thenThrow(new RuntimeException("Error in registering"));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getTenantId(anyString())).thenReturn(101);
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
 

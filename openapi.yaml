@@ -1991,6 +1991,84 @@
         }
       }
     },
+    "/cache/team/tenant/{tenantId}/id/{id}" : {
+      "post" : {
+        "tags" : [ "cache" ],
+        "operationId" : "addTeamToCache",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/Team"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "cache" ],
+        "operationId" : "removeTeamFromCache",
+        "parameters" : [ {
+          "name" : "tenantId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ApiResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/cache/environment/tenant/{tenantId}/id/{id}" : {
       "post" : {
         "tags" : [ "cache" ],
@@ -6754,6 +6832,60 @@
         },
         "required" : [ "connectorName", "envId", "includeOnlyFailedTasks" ]
       },
+      "ServiceAccounts" : {
+        "properties" : {
+          "numberOfAllowedAccounts" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "serviceAccountsList" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            },
+            "uniqueItems" : true
+          }
+        }
+      },
+      "Team" : {
+        "properties" : {
+          "teamId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teamname" : {
+            "type" : "string"
+          },
+          "tenantId" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "teammail" : {
+            "type" : "string"
+          },
+          "app" : {
+            "type" : "string"
+          },
+          "teamphone" : {
+            "type" : "string"
+          },
+          "contactperson" : {
+            "type" : "string"
+          },
+          "requestTopicsEnvs" : {
+            "type" : "string"
+          },
+          "restrictionsObj" : {
+            "type" : "string"
+          },
+          "serviceAccounts" : {
+            "$ref" : "#/components/schemas/ServiceAccounts"
+          },
+          "otherParams" : {
+            "type" : "string"
+          }
+        }
+      },
       "Env" : {
         "properties" : {
           "id" : {
@@ -6979,21 +7111,6 @@
           }
         },
         "required" : [ "bootstrapServers", "clusterName", "clusterType", "kafkaFlavor", "protocol" ]
-      },
-      "ServiceAccounts" : {
-        "properties" : {
-          "numberOfAllowedAccounts" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "serviceAccountsList" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            },
-            "uniqueItems" : true
-          }
-        }
       },
       "TeamModelResponse" : {
         "properties" : {

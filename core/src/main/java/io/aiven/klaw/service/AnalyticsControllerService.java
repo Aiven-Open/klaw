@@ -99,7 +99,7 @@ public class AnalyticsControllerService {
     AclsCountPerEnv aclsCountPerEnv = new AclsCountPerEnv();
 
     // tenant filtering
-    List<String> allowedEnvIdList = manageDatabase.getEnvsOfTenantsMap().get(tenantId);
+    List<String> allowedEnvIdList = manageDatabase.getAllEnvIds(tenantId);
     if (aclsPerEnvList != null) {
       try {
         aclsPerEnvList =
@@ -282,7 +282,7 @@ public class AnalyticsControllerService {
 
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = manageDatabase.getEnvsOfTenantsMap().get(tenantId);
+      List<String> allowedEnvIdList = manageDatabase.getAllEnvIds(tenantId);
       if (partitionsCountList != null) {
         partitionsCountList =
             partitionsCountList.stream()
@@ -319,7 +319,7 @@ public class AnalyticsControllerService {
 
     // tenant filtering
     try {
-      List<String> allowedEnvIdList = manageDatabase.getEnvsOfTenantsMap().get(tenantId);
+      List<String> allowedEnvIdList = manageDatabase.getAllEnvIds(tenantId);
       if (aclsPerEnvList != null) {
         aclsPerEnvList =
             aclsPerEnvList.stream()
@@ -356,7 +356,7 @@ public class AnalyticsControllerService {
       title = title + " (" + manageDatabase.getTeamNameFromTeamId(tenantId, teamId) + ")";
     } else {
       // tenant filtering
-      List<String> allowedEnvIdList = manageDatabase.getEnvsOfTenantsMap().get(tenantId);
+      List<String> allowedEnvIdList = manageDatabase.getAllEnvIds(tenantId);
 
       try {
         activityCountList =

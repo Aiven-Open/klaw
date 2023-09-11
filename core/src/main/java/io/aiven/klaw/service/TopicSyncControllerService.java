@@ -86,12 +86,11 @@ public class TopicSyncControllerService {
   }
 
   public void getReconTopicsScheduled() {
-    Map<Integer, List<String>> envTenantMap = manageDatabase.getEnvsOfTenantsMap();
     Map<Integer, String> tenantMap = manageDatabase.getTenantMap();
-    List<Integer> tenants = new ArrayList<>(envTenantMap.keySet());
+    List<Integer> tenants = new ArrayList<>(tenantMap.keySet());
 
     for (Integer tenantId : tenants) {
-      List<String> envsStrList = envTenantMap.get(tenantId);
+      List<String> envsStrList = manageDatabase.getAllEnvIds(tenantId);
       StringBuilder reconStr = new StringBuilder();
       reconStr.append("Tenant : ").append(tenantMap.get(tenantId)).append("\n");
 

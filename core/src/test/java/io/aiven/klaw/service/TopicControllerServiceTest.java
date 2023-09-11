@@ -140,8 +140,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
@@ -162,8 +161,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
@@ -186,8 +184,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
@@ -206,8 +203,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvListsIncorrect1());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     Map<String, String> res = new HashMap<>();
     res.put("result", ApiResultStatus.FAILURE.value);
@@ -322,8 +318,7 @@ public class TopicControllerServiceTest {
         .thenReturn(Collections.emptyList());
     when(commonUtilsService.getTopicsForTopicName(anyString(), anyInt()))
         .thenReturn(List.of(getTopic(topicName)));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     try {
       ApiResponse apiResponse =
           topicControllerService.createTopicDeleteRequest(topicName, envId, false);
@@ -1020,8 +1015,7 @@ public class TopicControllerServiceTest {
   public void getTopicsSearchFailureNotExistingSearch() {
     String envSel = "1", pageNo = "1", topicNameSearch = "demo";
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getTopics(envSel, null, 1)).thenReturn(getSyncTopics("topic", 4));
 
     List<List<TopicInfo>> topicsList =
@@ -1128,8 +1122,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
@@ -1150,8 +1143,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
@@ -1174,8 +1166,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 
@@ -1194,8 +1185,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvListsIncorrect1());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
     Map<String, String> res = new HashMap<>();
     res.put("result", ApiResultStatus.FAILURE.value);
@@ -1367,8 +1357,7 @@ public class TopicControllerServiceTest {
   @Order(53)
   public void getClaimRequests_WhereTopicIsNotDeleted() {
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(commonUtilsService.getEnvsFromUserId(anyString()))
         .thenReturn(new HashSet<>(Collections.singletonList("1")));
@@ -1520,8 +1509,7 @@ public class TopicControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(handleDbRequests.requestForTopic(any())).thenReturn(resultMap);
     when(commonUtilsService.getEnvProperty(anyInt(), anyString())).thenReturn("1");
 

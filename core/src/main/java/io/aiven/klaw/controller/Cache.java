@@ -2,6 +2,7 @@ package io.aiven.klaw.controller;
 
 import io.aiven.klaw.config.ManageDatabase;
 import io.aiven.klaw.dao.Env;
+import io.aiven.klaw.dao.Team;
 import io.aiven.klaw.model.ApiResponse;
 import io.aiven.klaw.model.enums.*;
 import jakarta.validation.Valid;
@@ -38,6 +39,28 @@ public class Cache {
   public ResponseEntity<ApiResponse> removeEnvFromCache(
       @PathVariable("tenantId") Integer tenantId, @PathVariable("id") Integer id) {
     manageDatabase.removeEnvFromCache(tenantId, id, true);
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @PostMapping(
+      value = "/team/tenant/{tenantId}/id/{id}",
+      produces = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> addTeamToCache(
+      @PathVariable("tenantId") Integer tenantId,
+      @PathVariable("id") Integer id,
+      @Valid @RequestBody Team team) {
+    manageDatabase.addTeamToCache(tenantId, team, true);
+    return new ResponseEntity<>(HttpStatus.OK);
+  }
+
+  @DeleteMapping(
+      value = "/team/tenant/{tenantId}/id/{id}",
+      produces = {MediaType.APPLICATION_JSON_VALUE},
+      consumes = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<ApiResponse> removeTeamFromCache(
+      @PathVariable("tenantId") Integer tenantId, @PathVariable("id") Integer id) {
+    manageDatabase.removeTeamFromCache(tenantId, id, true);
     return new ResponseEntity<>(HttpStatus.OK);
   }
 }

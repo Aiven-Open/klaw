@@ -89,8 +89,8 @@ class AnalyticsControllerServiceTest {
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
     Mockito.when(handleDbRequestsJdbc.getAclsCountByEnv(null, TestConstants.TENANT_ID))
         .thenReturn(TestConstants.ACLS_COUNT_BY_ENV_ID);
-    Mockito.when(manageDatabase.getEnvsOfTenantsMap())
-        .thenReturn(Map.of(TestConstants.TENANT_ID, List.of(TestConstants.ENV_ID)));
+    Mockito.when(manageDatabase.getAllEnvIds(eq(TestConstants.TENANT_ID)))
+        .thenReturn(List.of(TestConstants.ENV_ID));
 
     AclsCountPerEnv actual = analyticsControllerService.getAclsCountPerEnv(TestConstants.ENV_ID);
 
@@ -350,8 +350,8 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             manageDatabase.getTeamNameFromTeamId(TestConstants.TENANT_ID, TestConstants.TEAM_ID))
         .thenReturn(TestConstants.TEAM_NAME);
-    Mockito.when(manageDatabase.getEnvsOfTenantsMap())
-        .thenReturn(Map.of(TestConstants.TENANT_ID, List.of(TestConstants.ENV_ID)));
+    Mockito.when(manageDatabase.getAllEnvIds(eq(TestConstants.TENANT_ID)))
+        .thenReturn(List.of(TestConstants.ENV_ID));
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 anyList(),
@@ -381,8 +381,8 @@ class AnalyticsControllerServiceTest {
     Mockito.when(
             manageDatabase.getTeamNameFromTeamId(TestConstants.TENANT_ID, TestConstants.TEAM_ID))
         .thenReturn(TestConstants.TEAM_NAME);
-    Mockito.when(manageDatabase.getEnvsOfTenantsMap())
-        .thenReturn(Map.of(TestConstants.TENANT_ID, List.of(TestConstants.ENV_ID)));
+    Mockito.when(manageDatabase.getAllEnvIds(eq(TestConstants.TENANT_ID)))
+        .thenReturn(List.of(TestConstants.ENV_ID));
     Mockito.when(
             commonUtilsService.getChartsJsOverview(
                 anyList(),
@@ -406,8 +406,8 @@ class AnalyticsControllerServiceTest {
     ChartsJsOverview expected = new ChartsJsOverview();
 
     Mockito.when(manageDatabase.getHandleDbRequests()).thenReturn(handleDbRequestsJdbc);
-    Mockito.when(manageDatabase.getEnvsOfTenantsMap())
-        .thenReturn(Map.of(TestConstants.TENANT_ID, List.of(TestConstants.ENV_ID)));
+    Mockito.when(manageDatabase.getAllEnvIds(eq(TestConstants.TENANT_ID)))
+        .thenReturn(List.of(TestConstants.ENV_ID));
     Mockito.when(
             handleDbRequestsJdbc.getActivityLogForLastDays(
                 eq(30), any(), eq(TestConstants.TENANT_ID)))

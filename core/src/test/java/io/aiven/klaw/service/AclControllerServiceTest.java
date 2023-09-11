@@ -616,8 +616,7 @@ public class AclControllerServiceTest {
 
     stubUserInfo();
     when(handleDbRequests.getAcl(anyInt(), anyInt())).thenReturn(aclReq);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
 
     ApiResponse apiResp = aclControllerService.approveAclRequests(req_no);
     assertThat(apiResp.getMessage()).isEqualTo("This request does not exist anymore.");

@@ -29,7 +29,6 @@ import io.aiven.klaw.service.DefaultDataService;
 import io.aiven.klaw.service.HighAvailabilityUtilsService;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,7 +58,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   @Autowired HandleDbRequestsJdbc handleDbRequests;
   private static Map<Integer, Map<String, Map<String, String>>> kwPropertiesMapPerTenant;
 
-  private static Map<Integer, List<Team>> teamsPerTenant;
+  @Autowired private CacheService<Team> teamsPerTenant;
 
   private static Map<Integer, List<UserInfo>> usersPerTenant;
 
@@ -67,14 +66,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
 
   private static Set<String> serviceAccounts;
 
-  // key is tenant id, value is list of envs
-  private static Map<Integer, List<String>> envsOfTenantsMap;
-
-  // key is tenantid id, value is hashmap of teamId and allowed envs
-  private static Map<Integer, Map<Integer, List<String>>> teamsAndAllowedEnvsPerTenant;
-
   // key is tenantid id, value is hashmap of team Id as key and teamname as value
-  private static Map<Integer, Map<Integer, String>> teamIdAndNamePerTenant;
 
   // EnvModel lists for status
   private static Map<Integer, List<EnvModel>> envModelsClustersStatus;
@@ -326,7 +318,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   public Integer getAllTeamsSize() {
     int allTeamSize = 0;
     for (Integer tenantId : tenantMap.keySet()) {
-      allTeamSize += teamIdAndNamePerTenant.get(tenantId).size();
+      allTeamSize += teamsPerTenant.getCache(tenantId).keySet().size();
       allTeamSize = allTeamSize - 1; // removing "All teams"
     }
     return allTeamSize;
@@ -401,18 +393,22 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     return kafkaEnvListPerTenant.get(tenantId, targetEnv).orElseGet(null).getParams();
   }
 
-  public List<String> getTeamsAndAllowedEnvs(Integer teamId, int tenantId) {
-    return teamsAndAllowedEnvsPerTenant.get(tenantId).get(teamId);
+  public List<String> getAllEnvIds(int tenantId) {
+    return allEnvListPerTenant.getCache(tenantId).values().stream()
+        .map(Env::getId)
+        .collect(Collectors.toList());
   }
 
   // return team ids
   public Set<Integer> getTeamsForTenant(int tenantId) {
-    return teamsAndAllowedEnvsPerTenant.get(tenantId).keySet();
+    return teamsPerTenant.getCache(tenantId).values().stream()
+        .map(Team::getTeamId)
+        .collect(Collectors.toSet());
   }
 
   // return teams
   public List<Team> getTeamObjForTenant(int tenantId) {
-    return teamsPerTenant.get(tenantId);
+    return new ArrayList<>(teamsPerTenant.getCache(tenantId).values());
   }
 
   public Set<String> getAllServiceAccounts(int tenantId) {
@@ -432,32 +428,26 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   public List<String> getTeamNamesForTenant(int tenantId) {
-    return teamsPerTenant.get(tenantId).stream().map(Team::getTeamname).toList();
+    return teamsPerTenant.getCache(tenantId).values().stream().map(Team::getTeamname).toList();
   }
 
   public Integer getTeamIdFromTeamName(int tenantId, String teamName) {
-    Optional<Map.Entry<Integer, String>> optionalTeam;
+
     if (teamName != null) {
-      optionalTeam =
-          teamIdAndNamePerTenant.get(tenantId).entrySet().stream()
-              .filter(a -> Objects.equals(a.getValue(), teamName))
-              .findFirst();
+      return teamsPerTenant.getCache(tenantId).values().stream()
+          .filter(team -> Objects.equals(team.getTeamname(), teamName))
+          .map(Team::getTeamId)
+          .findFirst()
+          .orElse(null);
     } else {
       return null;
     }
-
-    // unknown team
-    return optionalTeam.map(Map.Entry::getKey).orElse(null);
   }
 
   public String getTeamNameFromTeamId(int tenantId, int teamId) {
-    return teamIdAndNamePerTenant
-        .getOrDefault(tenantId, Collections.emptyMap())
-        .getOrDefault(teamId, "UNKNOWN-TEAM"); // empty string in case of unknown team
-  }
-
-  public Map<Integer, List<String>> getEnvsOfTenantsMap() {
-    return envsOfTenantsMap;
+    return teamsPerTenant.get(tenantId, teamId).isPresent()
+        ? teamsPerTenant.get(tenantId, teamId).get().getTeamname()
+        : "UNKNOWN-TEAM";
   }
 
   public Map<Integer, String> getTenantMap() {
@@ -492,7 +482,7 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   }
 
   private void loadEnvsForAllTenants() {
-    envsOfTenantsMap = new HashMap<>(); // key is tenantid, value is list of envs
+
     for (Integer tenantId : tenantMap.keySet()) {
       loadEnvsForOneTenant(tenantId);
     }
@@ -517,22 +507,18 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
     List<String> envList3 = kafkaConnectEnvList.stream().map(Env::getId).toList();
     envList1.addAll(envList2);
     envList1.addAll(envList3);
-
-    envsOfTenantsMap.put(tenantId, envList1);
   }
 
   private void loadTenantTeamsUsersForAllTenants() {
-    teamsAndAllowedEnvsPerTenant = new HashMap<>();
-    teamIdAndNamePerTenant = new HashMap<>();
-    teamsPerTenant = new HashMap<>();
+
     usersPerTenant = new HashMap<>();
     allUsersAllTenants = new ArrayList<>();
 
-    List<Team> allTeams;
-
     for (Integer tenantId : tenantMap.keySet()) {
-      allTeams = handleDbRequests.getAllTeams(tenantId);
-      teamsPerTenant.put(tenantId, allTeams);
+      Map<Integer, Team> allTeams =
+          handleDbRequests.getAllTeams(tenantId).stream()
+              .collect(Collectors.toMap(Team::getTeamId, Function.identity()));
+      teamsPerTenant.addAll(tenantId, allTeams);
       loadTenantTeamsForOneTenant(allTeams, tenantId);
     }
 
@@ -594,20 +580,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
         break;
     }
     allEnvListPerTenant.addOrUpdate(tenantId, Integer.valueOf(env.getId()), env, isLocal);
-    updateTeamToEnvMappings(tenantId);
-  }
-
-  private void updateTeamToEnvMappings(int tenantId) {
-    // TODO remove this
-    envsOfTenantsMap.put(
-        tenantId,
-        allEnvListPerTenant.getCache(tenantId).values().stream()
-            .map(Env::getId)
-            .collect(Collectors.toList()));
-    Map<Integer, List<String>> teamsAndEnvs = new HashMap<>();
-    teamsAndAllowedEnvsPerTenant.get(tenantId).keySet().stream()
-        .forEach(teamId -> teamsAndEnvs.put(teamId, envsOfTenantsMap.get(tenantId)));
-    teamsAndAllowedEnvsPerTenant.put(tenantId, teamsAndEnvs);
   }
 
   public void removeEnvFromCache(int tenantId, int envId, boolean isLocal) {
@@ -629,33 +601,28 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
         break;
     }
     allEnvListPerTenant.remove(tenantId, Integer.valueOf(envId), isLocal);
-    updateTeamToEnvMappings(tenantId);
+  }
+
+  public void removeTeamFromCache(int tenantId, int teamId, boolean isLocal) {
+    teamsPerTenant.remove(tenantId, teamId, isLocal);
+  }
+
+  public void addTeamToCache(int tenantId, Team team, boolean isLocal) {
+    teamsPerTenant.addOrUpdate(tenantId, team.getTeamId(), team, isLocal);
   }
 
   public List<Topic> getTopicsForTenant(int tenantId) {
     return topicsPerTenant.get(tenantId);
   }
 
-  public void loadTenantTeamsForOneTenant(List<Team> allTeams, Integer tenantId) {
+  public void loadTenantTeamsForOneTenant(Map<Integer, Team> allTeams, Integer tenantId) {
     if (allTeams == null) {
-      allTeams = handleDbRequests.getAllTeams(tenantId);
-      teamsPerTenant.put(tenantId, allTeams);
+      allTeams =
+          handleDbRequests.getAllTeams(tenantId).stream()
+              .collect(Collectors.toMap(Team::getTeamId, Function.identity()));
+      teamsPerTenant.addAll(tenantId, allTeams);
     }
 
-    Map<Integer, List<String>> teamsAndAllowedEnvs = new HashMap<>();
-    Map<Integer, String> teamsAndNames = new HashMap<>();
-
-    List<Team> teamList =
-        allTeams.stream().filter(team -> Objects.equals(team.getTenantId(), tenantId)).toList();
-
-    for (Team team : teamList) {
-      teamsAndAllowedEnvs.put(team.getTeamId(), envsOfTenantsMap.get(tenantId));
-      teamsAndNames.put(team.getTeamId(), team.getTeamname());
-    }
-    teamsAndNames.put(1, "All teams");
-
-    teamsAndAllowedEnvsPerTenant.put(tenantId, teamsAndAllowedEnvs);
-    teamIdAndNamePerTenant.put(tenantId, teamsAndNames);
     updateAllServiceAccounts(tenantId);
   }
 
@@ -930,7 +897,6 @@ public class ManageDatabase implements ApplicationContextAware, InitializingBean
   // delete tenant
   public String deleteTenant(int tenantId) {
     tenantMap.remove(tenantId);
-    teamsAndAllowedEnvsPerTenant.remove(tenantId);
     usersPerTenant.remove(tenantId);
     kwPropertiesMapPerTenant.remove(tenantId);
     rolesPermsMapPerTenant.remove(tenantId);

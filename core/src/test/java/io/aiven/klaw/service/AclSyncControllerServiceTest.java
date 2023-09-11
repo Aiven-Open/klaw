@@ -121,8 +121,7 @@ public class AclSyncControllerServiceTest {
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
     when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
 
     try {
       aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
@@ -137,8 +136,7 @@ public class AclSyncControllerServiceTest {
     List<SyncAclUpdates> updates = new ArrayList<>();
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     ApiResponse resultResp = aclSyncControllerService.updateSyncAcls(updates);
     assertThat(resultResp.getMessage()).isEqualTo("No record updated.");
   }
@@ -149,8 +147,7 @@ public class AclSyncControllerServiceTest {
     when(handleDbRequests.addToSyncacls(anyList())).thenThrow(new RuntimeException("Error"));
     stubUserInfo();
     when(commonUtilsService.isNotAuthorizedUser(any(), any())).thenReturn(false);
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
 
     try {
       aclSyncControllerService.updateSyncAcls(utilMethods.getSyncAclsUpdates());
@@ -165,8 +162,7 @@ public class AclSyncControllerServiceTest {
     String envSelected = "1", pageNo = "1", topicNameSearch = "testtopic1";
 
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(clusterApiService.getAcls(anyString(), any(), any(), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
@@ -194,8 +190,7 @@ public class AclSyncControllerServiceTest {
     String envSelected = "1", pageNo = "1", topicNameSearch = "testtopic1";
 
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(clusterApiService.getAcls(anyString(), any(), any(), anyInt()))
         .thenReturn(utilMethods.getClusterAclsNonApacheKafka());
@@ -227,8 +222,7 @@ public class AclSyncControllerServiceTest {
     String envSelected = "1", pageNo = "1", topicNameSearch = "testtopic1";
 
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
 
     when(handleDbRequests.getAllTeamsOfUsers(anyString(), anyInt()))
@@ -273,8 +267,7 @@ public class AclSyncControllerServiceTest {
     String envSelected = "1", pageNo = "1", topicNameSearch = "test";
 
     stubUserInfo();
-    when(manageDatabase.getTeamsAndAllowedEnvs(anyInt(), anyInt()))
-        .thenReturn(Collections.singletonList("1"));
+    when(manageDatabase.getAllEnvIds(anyInt())).thenReturn(Collections.singletonList("1"));
     when(manageDatabase.getKafkaEnvList(anyInt())).thenReturn(utilMethods.getEnvLists());
     when(clusterApiService.getAcls(anyString(), any(), any(KafkaSupportedProtocol.class), anyInt()))
         .thenReturn(utilMethods.getClusterAcls());
