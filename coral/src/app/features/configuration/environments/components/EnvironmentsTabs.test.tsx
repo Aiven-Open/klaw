@@ -6,21 +6,13 @@ import {
   EnvironmentsTabEnum,
   Routes,
 } from "src/app/router_utils";
-import * as environmentsApi from "src/domain/environment/environment-api";
+import {
+  getPaginatedEnvironmentsForConnector,
+  getPaginatedEnvironmentsForSchema,
+  getPaginatedEnvironmentsForTopicAndAcl,
+} from "src/domain/environment/environment-api";
 import { EnvironmentPaginatedApiResponse } from "src/domain/environment/environment-types";
 import { customRender } from "src/services/test-utils/render-with-wrappers";
-
-class Deferred<T> {
-  public promise: Promise<T>;
-  public resolve!: (value: T | PromiseLike<T>) => void;
-  public reject!: (value: T | PromiseLike<T>) => void;
-  constructor() {
-    this.promise = new Promise((resolve, reject) => {
-      this.resolve = resolve;
-      this.reject = reject;
-    });
-  }
-}
 
 const mockedNavigate = jest.fn();
 jest.mock("react-router-dom", () => ({
@@ -69,48 +61,40 @@ const mockedConnectorTotalEnvs: EnvironmentPaginatedApiResponse = {
   entries: [],
 };
 
-const getPaginatedEnvironmentsForTopicAndAclSpy = jest
-  .spyOn(environmentsApi, "getPaginatedEnvironmentsForTopicAndAcl")
-  .mockImplementation(() => {
-    throw Error("getPaginatedEnvironmentsForTopicAndAcl return must be mocked");
-  });
-const getPaginatedEnvironmentsForSchemaSpy = jest
-  .spyOn(environmentsApi, "getPaginatedEnvironmentsForSchema")
-  .mockImplementation(() => {
-    throw Error("getPaginatedEnvironmentsForSchema return must be mocked");
-  });
-const getPaginatedEnvironmentsForConnectorSpy = jest
-  .spyOn(environmentsApi, "getPaginatedEnvironmentsForConnector")
-  .mockImplementation(() => {
-    throw Error("getPaginatedEnvironmentsForConnector return must be mocked");
-  });
+jest.mock("src/domain/environment/environment-api.ts");
+
+const mockGetPaginatedEnvironmentsForTopicAndAcl =
+  getPaginatedEnvironmentsForTopicAndAcl as jest.MockedFunction<
+    typeof getPaginatedEnvironmentsForTopicAndAcl
+  >;
+const mockGetPaginatedEnvironmentsForSchema =
+  getPaginatedEnvironmentsForSchema as jest.MockedFunction<
+    typeof getPaginatedEnvironmentsForSchema
+  >;
+const mockGetPaginatedEnvironmentsForConnector =
+  getPaginatedEnvironmentsForConnector as jest.MockedFunction<
+    typeof getPaginatedEnvironmentsForConnector
+  >;
 
 describe("EnvironmentsTabs", () => {
   let user: ReturnType<typeof userEvent.setup>;
 
   afterAll(() => {
-    getPaginatedEnvironmentsForTopicAndAclSpy.mockReset();
-    getPaginatedEnvironmentsForSchemaSpy.mockReset();
-    getPaginatedEnvironmentsForConnectorSpy.mockReset();
+    mockGetPaginatedEnvironmentsForTopicAndAcl.mockReset();
+    mockGetPaginatedEnvironmentsForSchema.mockReset();
+    mockGetPaginatedEnvironmentsForConnector.mockReset();
   });
 
   describe("Tab badges", () => {
-    let manualKafka: Deferred<EnvironmentPaginatedApiResponse>;
-    let manualSchema: Deferred<EnvironmentPaginatedApiResponse>;
-    let manualConnector: Deferred<EnvironmentPaginatedApiResponse>;
-
     beforeAll(() => {
-      manualKafka = new Deferred();
-      manualSchema = new Deferred();
-      manualConnector = new Deferred();
-      getPaginatedEnvironmentsForTopicAndAclSpy.mockReturnValue(
-        manualKafka.promise
+      mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedKafkaTotalEnvs
       );
-      getPaginatedEnvironmentsForSchemaSpy.mockReturnValue(
-        manualSchema.promise
+      mockGetPaginatedEnvironmentsForSchema.mockResolvedValue(
+        mockedSchemaTotalEnvs
       );
-      getPaginatedEnvironmentsForConnectorSpy.mockReturnValue(
-        manualConnector.promise
+      mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(
+        mockedConnectorTotalEnvs
       );
       customRender(
         <EnvironmentsTabs currentTab={EnvironmentsTabEnum.KAFKA} />,
@@ -125,43 +109,21 @@ describe("EnvironmentsTabs", () => {
       cleanup();
     });
 
-    describe("while environment count requests are in flight", () => {
-      it("renders a tab for Kafka", () => {
-        screen.getByRole("tab", { name: "Kafka" });
+    it("renders correctenvironments count for Kafka", async () => {
+      await screen.findByRole("tab", {
+        name: "Kafka, 1 environment",
       });
+    });
 
-      it("renders a tab for Schema registry", () => {
-        screen.getByRole("tab", { name: "Schema Registry" });
+    it("renders correctenvironments count for Schema Registry", async () => {
+      await screen.findByRole("tab", {
+        name: "Schema Registry, 2 environments",
       });
+    });
 
-      it("renders a tab for Kafka Connect", () => {
-        screen.getByRole("tab", { name: "Kafka Connect" });
-      });
-
-      describe("when environment count requests resolve", () => {
-        beforeAll(() => {
-          manualKafka.resolve(mockedKafkaTotalEnvs);
-          manualSchema.resolve(mockedSchemaTotalEnvs);
-          manualConnector.resolve(mockedConnectorTotalEnvs);
-        });
-
-        it("renders correctenvironments count for Kafka", async () => {
-          await screen.findByRole("tab", {
-            name: "Kafka, 1 environment",
-          });
-        });
-
-        it("renders correctenvironments count for Schema Registry", async () => {
-          await screen.findByRole("tab", {
-            name: "Schema Registry, 2 environments",
-          });
-        });
-
-        it("renders correctenvironments count for Kafka Connect", async () => {
-          await screen.findByRole("tab", {
-            name: "Kafka Connect, no environments",
-          });
-        });
+    it("renders correctenvironments count for Kafka Connect", async () => {
+      await screen.findByRole("tab", {
+        name: "Kafka Connect, no environments",
       });
     });
   });
@@ -169,13 +131,13 @@ describe("EnvironmentsTabs", () => {
   describe("Tab navigation", () => {
     beforeEach(() => {
       user = userEvent.setup();
-      getPaginatedEnvironmentsForTopicAndAclSpy.mockResolvedValue(
+      mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
         mockedKafkaTotalEnvs
       );
-      getPaginatedEnvironmentsForSchemaSpy.mockResolvedValue(
+      mockGetPaginatedEnvironmentsForSchema.mockResolvedValue(
         mockedSchemaTotalEnvs
       );
-      getPaginatedEnvironmentsForConnectorSpy.mockResolvedValue(
+      mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(
         mockedConnectorTotalEnvs
       );
 
