@@ -95,7 +95,7 @@ function MainNavigation() {
           <MainNavigationSubmenuList
             icon={settings}
             text={"Configuration"}
-            expanded={pathname.startsWith(Routes.CONFIGURATION)}
+            defaultExpanded={pathname.startsWith(Routes.CONFIGURATION)}
           >
             <MainNavigationLink to={`/users`} linkText={"Users"} />
             <MainNavigationLink to={`/teams`} linkText={"Teams"} />

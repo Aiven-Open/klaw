@@ -25,7 +25,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
     );
   });
 
-  describe('renders a collapsed submenu when "expanded" is not explicit set', () => {
+  describe('renders a collapsed submenu when "default" is not explicit set', () => {
     beforeAll(() => {
       render(
         <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
@@ -92,7 +92,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
         <MainNavigationSubmenuList
           icon={mockIcon}
           text={"Topics"}
-          expanded={true}
+          defaultExpanded={true}
         >
           {testMainNavigationLinks}
         </MainNavigationSubmenuList>
