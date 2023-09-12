@@ -16,6 +16,11 @@ type Environment = {
   name: KlawApiModel<"EnvModelResponse">["name"];
   id: KlawApiModel<"EnvModelResponse">["id"];
   type: KlawApiModel<"EnvModelResponse">["type"];
+  clusterName: KlawApiModel<"EnvModelResponse">["clusterName"];
+  tenantName: KlawApiModel<"EnvModelResponse">["tenantName"];
+  envStatus: KlawApiModel<"EnvModelResponse">["envStatus"];
+  // This property is optional because only Schema Registry environments get it
+  associatedKafkaEnv?: KlawApiModel<"EnvModelResponse">["associatedEnv"];
   // even though the openapi definition defines `params` as required
   // some endpoints don't have a `params` property,
   // so we need to make sure that we know where to

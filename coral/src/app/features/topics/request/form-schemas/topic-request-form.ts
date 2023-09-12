@@ -35,6 +35,13 @@ const environmentField: z.ZodType<Environment> = z.object({
   id: z.string(),
   type: z.string(),
   params: environmentParams.optional(),
+  clusterName: z.string(),
+  tenantName: z.string(),
+  envStatus: z.union([
+    z.literal("ONLINE"),
+    z.literal("OFFLINE"),
+    z.literal("NOT_KNOWN"),
+  ]),
 });
 
 const advancedConfigurationField = z.string().optional();

@@ -41,6 +41,9 @@ function transformEnvironmentApiResponse(
         },
       }),
       type: environment?.type,
+      clusterName: environment?.clusterName,
+      tenantName: environment?.tenantName,
+      envStatus: environment?.envStatus,
     };
     return rv;
   });
@@ -87,6 +90,9 @@ function transformPaginatedEnvironmentApiResponse(
         },
       }),
       type: environment?.type,
+      clusterName: environment?.clusterName,
+      tenantName: environment?.tenantName,
+      envStatus: environment?.envStatus,
     };
     return rv;
   });
