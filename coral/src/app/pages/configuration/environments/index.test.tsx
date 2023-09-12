@@ -37,35 +37,36 @@ const mockGetPaginatedEnvironmentsForConnector =
   >;
 
 describe("Environments page", () => {
-  beforeEach(() => {
-    mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
-      mockedResponse
-    );
-    mockGetPaginatedEnvironmentsForSchema.mockResolvedValue(mockedResponse);
-    mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(mockedResponse);
-  });
   describe("renders Environments page with correct text", () => {
     beforeAll(() => {
-      mockMatches.mockImplementation(() => [
-        {
-          id: "ENVIRONMENTS_TAB_ENUM_kafka",
-        },
-      ]);
-
-      customRender(<EnvironmentsPage />, {
-        memoryRouter: true,
-        queryClient: true,
-      });
+      mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
+        mockedResponse
+      );
+      mockGetPaginatedEnvironmentsForSchema.mockResolvedValue(mockedResponse);
+      mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(
+        mockedResponse
+      );
     });
 
-    afterAll(cleanup);
+    mockMatches.mockImplementation(() => [
+      {
+        id: "ENVIRONMENTS_TAB_ENUM_kafka",
+      },
+    ]);
 
-    it("renders a headline", () => {
-      const headline = screen.getByRole("heading", {
-        name: "Environments",
-      });
-
-      expect(headline).toBeVisible();
+    customRender(<EnvironmentsPage />, {
+      memoryRouter: true,
+      queryClient: true,
     });
+  });
+
+  afterAll(cleanup);
+
+  it("renders a headline", () => {
+    const headline = screen.getByRole("heading", {
+      name: "Environments",
+    });
+
+    expect(headline).toBeVisible();
   });
 });

@@ -47,18 +47,21 @@ function EnvironmentsTabs({ currentTab }: Props) {
     ["getPaginatedEnvironmentsForTopicAndAcl"],
     {
       queryFn: () => getPaginatedEnvironmentsForTopicAndAcl({ pageNo: "1" }),
+      refetchOnMount: false,
     }
   );
   const { data: schemaRegistryEnvs } = useQuery(
     ["getPaginatedEnvironmentsForSchema"],
     {
       queryFn: () => getPaginatedEnvironmentsForSchema({ pageNo: "1" }),
+      refetchOnMount: false,
     }
   );
   const { data: kafkaConnectEnvs } = useQuery(
     ["getPaginatedEnvironmentsForConnector"],
     {
       queryFn: () => getPaginatedEnvironmentsForConnector({ pageNo: "1" }),
+      refetchOnMount: false,
     }
   );
 
