@@ -42,6 +42,9 @@ const environmentField: z.ZodType<Environment> = z.object({
     z.literal("OFFLINE"),
     z.literal("NOT_KNOWN"),
   ]),
+  associatedEnv: z
+    .object({ id: z.string().optional(), name: z.string().optional() })
+    .optional(),
 });
 
 const advancedConfigurationField = z.string().optional();
