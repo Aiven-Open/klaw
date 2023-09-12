@@ -11,9 +11,13 @@ import ConnectorApprovalsPage from "src/app/pages/approvals/connectors";
 import SchemaApprovalsPage from "src/app/pages/approvals/schemas";
 import TopicApprovalsPage from "src/app/pages/approvals/topics";
 import EnvironmentsPage from "src/app/pages/configuration/environments";
+import KafkaEnvironmentsPage from "src/app/pages/configuration/environments/kafka";
+import KafkaConnectEnvironmentsPage from "src/app/pages/configuration/environments/kafka-connect";
+import SchemaRegistryEnvironmentsPage from "src/app/pages/configuration/environments/schema-registry";
 import ConnectorsPage from "src/app/pages/connectors";
 import { ConnectorDetailsPage } from "src/app/pages/connectors/details";
 import ConnectorEditRequest from "src/app/pages/connectors/edit-request";
+import { ConnectorPromotionRequestPage } from "src/app/pages/connectors/promotion-request";
 import RequestConnector from "src/app/pages/connectors/request";
 import NotFound from "src/app/pages/not-found";
 import RequestsPage from "src/app/pages/requests";
@@ -51,7 +55,6 @@ import {
 import { getRouterBasename } from "src/config";
 import { createRouteBehindFeatureFlag } from "src/services/feature-flags/route-utils";
 import { FeatureFlag } from "src/services/feature-flags/types";
-import { ConnectorPromotionRequestPage } from "src/app/pages/connectors/promotion-request";
 
 const routes: Array<RouteObject> = [
   // Login is currently the responsibility of the
@@ -219,21 +222,21 @@ const routes: Array<RouteObject> = [
             children: [
               {
                 path: ENVIRONMENT_TAB_ID_INTO_PATH[EnvironmentsTabEnum.KAFKA],
-                element: <div>Kafka</div>,
+                element: <KafkaEnvironmentsPage />,
                 id: EnvironmentsTabEnum.KAFKA,
               },
               {
                 path: ENVIRONMENT_TAB_ID_INTO_PATH[
                   EnvironmentsTabEnum.SCHEMA_REGISTRY
                 ],
-                element: <div>Schema registry</div>,
+                element: <SchemaRegistryEnvironmentsPage />,
                 id: EnvironmentsTabEnum.SCHEMA_REGISTRY,
               },
               {
                 path: ENVIRONMENT_TAB_ID_INTO_PATH[
                   EnvironmentsTabEnum.KAFKA_CONNECT
                 ],
-                element: <div>Kafka connect</div>,
+                element: <KafkaConnectEnvironmentsPage />,
                 id: EnvironmentsTabEnum.KAFKA_CONNECT,
               },
             ],
