@@ -25,10 +25,14 @@ describe("MainNavigationSubmenuList.tsx", () => {
     );
   });
 
-  describe('renders a collapsed submenu when "default" is not explicit set', () => {
+  describe('renders a collapsed submenu when "defaultExpanded" is set to false', () => {
     beforeAll(() => {
       render(
-        <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
+        <MainNavigationSubmenuList
+          icon={mockIcon}
+          text={"Topics"}
+          defaultExpanded={false}
+        >
           {testMainNavigationLinks}
         </MainNavigationSubmenuList>
       );
@@ -86,7 +90,7 @@ describe("MainNavigationSubmenuList.tsx", () => {
     });
   });
 
-  describe('renders a expanded submenu when "expanded" is set to true', () => {
+  describe('renders a expanded submenu when "defaultExpanded" is set to true', () => {
     beforeAll(() => {
       render(
         <MainNavigationSubmenuList
@@ -177,7 +181,11 @@ describe("MainNavigationSubmenuList.tsx", () => {
     describe(`user can open a closed submenu`, () => {
       beforeEach(() => {
         render(
-          <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
+          <MainNavigationSubmenuList
+            icon={mockIcon}
+            text={"Topics"}
+            defaultExpanded={false}
+          >
             {testMainNavigationLinks}
           </MainNavigationSubmenuList>
         );
@@ -228,12 +236,16 @@ describe("MainNavigationSubmenuList.tsx", () => {
 
     describe(`user can close a open submenu`, () => {
       // case could have been covered with rendering
-      // with "expanded" property, but that is a temp
+      // with "defaultExpanded" property, but that is a temp
       // implementation and the tests should be
       // future proofed
       beforeEach(async () => {
         render(
-          <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
+          <MainNavigationSubmenuList
+            icon={mockIcon}
+            text={"Topics"}
+            defaultExpanded={false}
+          >
             {testMainNavigationLinks}
           </MainNavigationSubmenuList>
         );
@@ -292,7 +304,11 @@ describe("MainNavigationSubmenuList.tsx", () => {
     describe(`user can open and close submenu`, () => {
       beforeEach(() => {
         render(
-          <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
+          <MainNavigationSubmenuList
+            icon={mockIcon}
+            text={"Topics"}
+            defaultExpanded={false}
+          >
             {testMainNavigationLinks}
           </MainNavigationSubmenuList>
         );
@@ -342,7 +358,11 @@ describe("MainNavigationSubmenuList.tsx", () => {
     describe(`user navigate through an open submenu`, () => {
       beforeEach(() => {
         render(
-          <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
+          <MainNavigationSubmenuList
+            icon={mockIcon}
+            text={"Topics"}
+            defaultExpanded={false}
+          >
             {testMainNavigationLinks}
           </MainNavigationSubmenuList>
         );
@@ -377,7 +397,11 @@ describe("MainNavigationSubmenuList.tsx", () => {
     describe(`user can navigate backward through an open submenu`, () => {
       beforeEach(async () => {
         render(
-          <MainNavigationSubmenuList icon={mockIcon} text={"Topics"}>
+          <MainNavigationSubmenuList
+            icon={mockIcon}
+            text={"Topics"}
+            defaultExpanded={false}
+          >
             {testMainNavigationLinks}
           </MainNavigationSubmenuList>
         );

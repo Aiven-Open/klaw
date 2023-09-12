@@ -10,11 +10,11 @@ type MainNavigationSubmenuItemProps = {
   icon: typeof data;
   text: string;
   children: ReactElement<typeof MainNavigationLink>[];
-  defaultExpanded?: boolean;
+  defaultExpanded: boolean;
 };
 
 function MainNavigationSubmenuList(props: MainNavigationSubmenuItemProps) {
-  const { icon, text, children, defaultExpanded = false } = props;
+  const { icon, text, children, defaultExpanded } = props;
   const [open, setOpen] = useState<boolean>(defaultExpanded);
 
   const buttonText = open
