@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-
-<html ng-app="myRequestsApp" ng-controller="myRequestsCtrl">
+<html lang="en">
+<html ng-app="editAclRequestApp" ng-controller="editAclRequestCtrl">
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,7 +20,7 @@
 
 	<!-- Favicon icon -->
 	<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon.png">
-	<title>My Requests | Kafka Self-service Topic Management Portal</title>
+	<title>Edit Acl request | Kafka Self-service Topic Management Portal</title>
 	<link rel="canonical" href="https://www.wrappixel.com/templates/materialpro/" />
 	<!-- chartist CSS -->
 	<!--
@@ -30,14 +30,14 @@
 		  -->
 	<!-- Custom CSS -->
 	<link href="assets/css/style.css" rel="stylesheet">
-	<link href="assets/css/custom.css" rel="stylesheet">
 	<!-- You can change the theme colors from here -->
 	<link href="assets/css/colors/blue-dark.css" id="theme" rel="stylesheet">
 	<link href="assets/plugins/sweetalert/sweetalert.css" rel="stylesheet" type="text/css">
 
 	<script src="lib/angular.min.js"></script>
 	<script src="lib/angular-route.min.js"></script>
-	<script src="js/myRequests.js"></script>
+	<script src="js/editAclRequest.js"></script>
+	<link rel="stylesheet" href="assets/css/custom.css" />
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -47,11 +47,6 @@
 
 	<![endif]-->
 </head>
-<style>
-	.demo-checkbox label, .demo-radio-button label {
-  min-width: 15px;
-  margin-bottom: 20px; }
-</style>
 
 <body class="fix-header card-no-border logo-center" ng-init="getAuth();">
 <!-- ============================================================== -->
@@ -87,7 +82,11 @@
 				<!-- toggle and nav items -->
 				<!-- ============================================================== -->
 				<ul class="navbar-nav mr-auto mt-md-0">
+					<!-- This is  -->
 
+					<!-- ============================================================== -->
+					<!-- Search -->
+					<!-- ============================================================== -->
 					<a href="index"><img class="header-logo" src="assets/images/klaw_logo.png"/></a>
 
 				</ul>
@@ -95,7 +94,6 @@
 				<!-- User profile and search -->
 				<!-- ============================================================== -->
 				<ul class="navbar-nav my-lg-0">
-					<!-- ============================================================== -->
 					<li class="nav-item d-none d-md-block search-box"> <a
 							class="nav-link d-none d-md-block text-muted waves-effect waves-dark"
 							href="requestTopics"><i class="mdi mdi-plus"></i></a>
@@ -105,12 +103,12 @@
 							href="javascript:void(0)" ng-click="refreshPage()"><i class="mdi mdi-reload"></i></a>
 					</li>
 					<li ng-if="dashboardDetails.approveAtleastOneRequest=='Authorized'" class="nav-item dropdown">
-						<a class="nav-link dropdown-toggle text-muted waves-effect waves-dark" href="" id="2"
+						<a class="nav-link dropdown-toggle text-muted text-muted waves-effect waves-dark" href=""
 						   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> <i
-								class="mdi mdi-email"></i>
+								class="mdi mdi-message"></i>
 							<div class="notify"> <span class="heartbit"></span> <span class="point"></span> </div>
 						</a>
-						<div  class="dropdown-menu mailbox dropdown-menu-right scale-up" aria-labelledby="2">
+						<div  class="dropdown-menu dropdown-menu-right mailbox scale-up">
 							<ul>
 								<li>
 									<h5 class="font-medium py-3 px-4 border-bottom mb-0">Approval Requests</h5>
@@ -198,7 +196,8 @@
 							</ul>
 						</div>
 					</li>
-
+					<!-- ============================================================== -->
+					<!-- Language -->
 					<!-- ============================================================== -->
 					<li class="nav-item dropdown mega-dropdown">
 						<a
@@ -224,7 +223,6 @@
 									<h4 class="mb-3">Help</h4>
 									<!-- List style -->
 									<ul class="list-style-none">
-
 										<li>
 											<table>
 												<tr>
@@ -344,10 +342,7 @@
 					<li ng-show="dashboardDetails.viewTopics=='Authorized'">
 						<a class="has-arrow" href="browseTopics" aria-expanded="false"><i class="mdi mdi-bullseye"></i><span class="hide-menu">Topics</span></a>
 					</li>
-					<li ng-show="dashboardDetails.viewKafkaConnect=='Authorized'">
-						<a class="has-arrow " href="kafkaConnectors" aria-expanded="false"><i class="mdi mdi-lan-connect"></i><span class="hide-menu">Apache Kafka Connect</span></a>
-					</li>
-					<li class="two-column active" ng-show="dashboardDetails.requestItems=='Authorized'">
+					<li class="two-column active"  ng-show="dashboardDetails.requestItems=='Authorized'">
 						<a class="has-arrow" href="#" aria-expanded="false"><i class="mdi mdi-chart-bubble"></i><span class="hide-menu">Requests</span></a>
 						<ul aria-expanded="false" class="collapse">
 							<li><a href="requestTopics">Request Topic</a></li>
@@ -426,22 +421,22 @@
 		<!-- End Sidebar scroll-->
 	</aside>
 
+	<!-- Page wrapper  -->
 	<!-- ============================================================== -->
 	<div class="page-wrapper">
 		<!-- ============================================================== -->
 		<!-- Container fluid  -->
 		<!-- ============================================================== -->
-		<div class="container-fluid" ng-init="getMyAclRequests(1, false);getRequestStatuses();">
+		<div class="container-fluid">
 			<div class="row page-titles">
 			</div>
-
-			<!-- Row -->
 
 			<div class="row" ng-if="dashboardDetails.coralEnabled === 'true'">
 				<div class="ribbon-wrapper card col-lg-6 col-md-6 col-xlg-2 col-xs-6">
 					<div class="ribbon ribbon-success">New user interface available</div>
 					<p class="ribbon-content">
-						Check out the new interface for <a href="coral/requests/acls">my team's requests.</a>
+						Check out the new interface for <a
+							href="coral/topic/{{ addAcl.topicname }}/subscribe?env={{addAcl.envId}}">requesting ACLs.</a>
 					</p>
 				</div>
 			</div>
@@ -460,188 +455,322 @@
 
 			<!-- Row -->
 
-			<div class="row" ng-show="aclRequests.length == 0">
-				<div  class="col-lg-12 col-md-6 col-xlg-2 col-xs-12" >
-					<div class="ribbon-wrapper card">
-						<div class="ribbon ribbon-warning">Notification</div>
-						<p class="ribbon-content">No requests found !! </p>
+			<div class="row" ng-init="getEnvs();loadParams();">
+				<div class="col-lg-12">
+					<div class="card card-outline-success">
+						<div class="card-body">
+							<form id="form">
+								<div class="form-body">
+
+									<table class="table color-table success-table" width="100%"><tr>
+										<td align="left"><h3 class="card-title">Edit ACL (Access Control) Request</h3>
+										</td>
+										<td align="right">
+											<a href="browseTopics">
+												<i class="fas fa-arrow-alt-circle-left"></i>
+												<button type="button"
+														class="btn waves-effect waves-light btn-rounded btn-outline-info">Back to Topics</button>
+											</a>
+										</td></tr>
+									</table>
+
+									<hr size="1" color="black">
+
+									<!--/row-->
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Environment</label>
+												<input disabled name="addAcl.environmentName"
+													   type="text" value="{{addAcl.environmentName}}" class="form-control">
+											</div>
+										</div>
+										<!--/span-->
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Topic Owner Team</label>
+												<input disabled ng-model="addAcl.teamname" type="text" placeholder="topicownerteam" class="form-control">
+												<small class="form-control-feedback"> On selecting a topic, this team field is filled automatically. </small>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
+
+									<!-- Non Aiven -->
+									<div ng-show="aivenCluster==false" class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">ACL Type</label>
+												<select class="form-control custom-select" ng-change="changeTopicType()" ng-model="addAcl.aclType"
+														ng-options="topType as topType for topType in TopReqTypeList">
+												</select>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Consumer Group (Only for consumers)</label>
+												<input ng-disabled="disable_consumergrp" ng-model="addAcl.consumergroup" type="text"
+													   class="form-control">
+												<small class="form-control-feedback"> Enabled for ACL Type as Consumer </small>
+											</div>
+										</div>
+									</div>
+									<!-- Aiven -->
+									<div ng-show="aivenCluster==true" class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">ACL Type</label>
+												<select class="form-control custom-select" ng-change="changeAivenTopicType()" ng-model="addAcl.aclType"
+														ng-options="topType as topType for topType in TopReqTypeList">
+
+												</select>
+											</div>
+										</div>
+									</div>
+
+									<!-- row Non Aiven -->
+									<div ng-show="aivenCluster==false"  class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Topic Pattern Type</label>
+												<div class="demo-radio-button" ng-init="addAcl.aclPatternType='LITERAL'">
+													<input class="radio-col-orange" ng-change="onSelectAclPattern('LITERAL')" ng-model="addAcl.aclPatternType"
+														   name="addAcl.grouppattern"
+														   type="radio" id="radio_lit" value="LITERAL" checked/>
+													<label for="radio_lit">LITERAL</label>
+
+													<input ng-show="enablePrefixedTopicPattern == 'true'" class="radio-col-orange" ng-change="onSelectAclPattern('PREFIXED')"
+														   ng-model="addAcl.aclPatternType"
+														   name="addAcl.grouppattern" type="radio" id="radio_pre" value="PREFIXED" />
+													<label ng-show="enablePrefixedTopicPattern == 'true'" for="radio_pre">PREFIXED</label>
+												</div>
+											</div>
+										</div>
+
+										<!--/span-->
+										<div class="col-md-6">
+											<div ng-show="aclpattern=='LITERAL'" class="form-group">
+												<label>Topic</label>
+												<select disabled class="form-control custom-select"  ng-model="addAcl.topicname"
+														ng-blur="getTopicTeam(addAcl.topicname)"
+														ng-options="topic as topic for topic in alltopics">
+												</select>
+											</div>
+											<div ng-show="aclpattern=='PREFIXED'" class="form-group">
+												<label>Topic Prefix Pattern</label>
+												<input ng-model="addAcl.topicpattern" minlength="3" type="text"
+													   ng-blur="getTopicTeam(addAcl.topicpattern)"
+													   class="form-control">
+												<small class="form-control-feedback">
+													This pattern will be applied to match the prefix of the Topic name. Only one prefix. Ex : retail-</small>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
+
+									<!-- row Aiven -->
+									<div ng-show="aivenCluster==true"  class="row">
+										<!--/span-->
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Topic</label>
+												<select disabled class="form-control custom-select"  ng-model="addAcl.topicname"
+														ng-blur="getTopicTeam(addAcl.topicname)"
+														ng-options="topic as topic for topic in alltopics">
+												</select>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
+									<!--/row-->
+
+									<!--/row Non Aiven-->
+									<div ng-show="aivenCluster==false && disable_consumergrp == true"  class="row">
+										<div class="col-md-6">
+										</div>
+										<div class="col-md-6">
+											<div ng-show="aclpattern=='LITERAL'" class="form-group">
+												<label>Transactional ID (Optional)</label>
+												<input ng-model="addAcl.transactionalId" type="text" class="form-control">
+												<small class="form-control-feedback">
+													(necessary for exactly-once semantics on producer)</small>
+											</div>
+										</div>
+									</div>
+
+									<!--/row Non Aiven-->
+									<div ng-show="aivenCluster==false" class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label class="control-label">Acl IP or Principal Or Username based</label>
+												<div class="demo-radio-button" ng-init="acl_ip_ssl='IP'">
+													<input class="radio-col-orange" ng-change="onSelectAcl('IP')" ng-model="acl_ip_ssl" name="aclipgroup1"
+														   type="radio" id="radio_11" value="IP" checked/>
+													<label for="radio_11">IP Address</label>
+													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="acl_ip_ssl"
+														   name="aclipgroup1" type="radio" id="radio_31" value="SSL" />
+													<label for="radio_31">Principal / Username</label>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
+									<!--/row Aiven-->
+									<div ng-if="aivenCluster==true" class="row">
+										<div class="col-md-12">
+											<div class="form-group">
+												<label class="control-label">Acl Service Account based</label>
+												<div class="demo-radio-button" ng-init="acl_ip_ssl='SSL'">
+													<input class="radio-col-orange" ng-change="onSelectAcl('SSL')" ng-model="acl_ip_ssl"
+														   name="group1" type="radio" id="radio_2" value="SSL" checked/>
+													<label for="radio_2">Service Account</label>
+												</div>
+
+											</div>
+										</div>
+									</div>
+
+									<!--/row Non Aiven-->
+									<div ng-if="aivenCluster==false"  class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>IP Address</label>
+
+												<table>
+													<tr valign="top" ng-repeat="oneipaddress in addAcl.acl_ip track by $index">
+														<td width="95%">
+															<input ng-disabled="disable_ip" ng-model="addAcl.acl_ip[$index]" name="acl_ip[$index]"
+																   type="text" placeholder="" class="form-control" id="ip_record[$index]">
+														</td>
+														<td ng-show="!disable_ip  && alc_ipaddresslength-1 == $index">
+															<button type="button" class="btn btn-info  mb-2" ng-click="addAclRecord($index);">
+															<i class="ti-plus"></i>
+															</button>
+														</td>
+														<td ng-show="alc_ipaddresslength > 1">
+															<button type="button" class="btn btn-info  mb-2" ng-click="removeAclRecord($index);">
+																<i class="ti-minus"></i>
+															</button>
+														</td>
+													</tr>
+												</table>
+
+												<small class="form-control-feedback"> Ex: 11.124.14.156 </small>
+
+											</div>
+										</div>
+
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Principal / Username</label>
+												<table>
+													<tr valign="top" ng-repeat="onessl in addAcl.acl_ssl track by $index">
+														<td width="95%">
+															<input ng-disabled="disable_ssl" ng-model="addAcl.acl_ssl[$index]" name="acl_ssl[$index]"
+																   type="text" placeholder="" class="form-control" id="ssl_record[$index]">
+														</td>
+														<td ng-show="!disable_ssl && alc_ssllength-1 == $index">
+															<button type="button" class="btn btn-info  mb-2" ng-click="addAclSslRecord($index);">
+																<i class="ti-plus"></i>
+															</button>
+														</td>
+														<td ng-show="alc_ssllength > 1">
+															<button type="button" class="btn btn-info  mb-2" ng-click="removeAclSslRecord($index);">
+																<i class="ti-minus"></i>
+															</button>
+														</td>
+													</tr>
+												</table>
+												<small class="form-control-feedback"> Ex: CN=myhost,OU=IS,OU=OU,OU=Services,O=Org</small>
+												<br>
+												<small class="form-control-feedback"> Ex: alice</small>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
+
+									<!-- row Aiven-->
+									<div ng-if="aivenCluster==true" class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label>Service Account</label>
+												<table>
+													<tr valign="top" ng-repeat="onessl in addAcl.acl_ssl track by $index">
+														<td width="95%">
+															<input ng-model="addAcl.acl_ssl[$index]" name="addAcl.acl_ssl[$index]"
+																   type="text" placeholder="" class="form-control" id="ssl_record[$index]">
+														</td>
+														<td ng-show="alc_ssllength-1 == $index">
+															<button type="button" class="btn btn-info  mb-2" ng-click="addAclSslRecord($index);">
+																<i class="ti-plus"></i>
+															</button>
+														</td>
+														<td ng-show="alc_ssllength > 1">
+															<button type="button" class="btn btn-info  mb-2" ng-click="removeAclSslRecord($index);">
+																<i class="ti-minus"></i>
+															</button>
+														</td>
+													</tr>
+												</table>
+
+												<small class="form-control-feedback"> Ex: alice</small><br>
+												<small class="form-control-feedback"> <b>Note:</b> Service Account is created in Aiven Console if it doesn't exist !</small>
+												<br>
+												<small class="form-control-feedback" ng-if = "serviceAccounts != null && serviceAccounts.length > 0">
+													<b>Note:</b>
+													The following service accounts exist for your team in this environment !!
+													<table style="border: 1px gray;">
+														<tr valign="top" ng-repeat="serviceAccount in serviceAccounts track by $index">
+															<td>{{ serviceAccount }}</td>
+														</tr>
+													</table>
+												</small>
+												<small class="form-control-feedback" ng-if = "serviceAccounts == null || serviceAccounts.length == 0">
+													<b>Note:</b>
+													There are no service accounts for this environment !!
+												</small>
+											</div>
+										</div>
+										<!--/span-->
+									</div>
+
+									<div class="row">
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="control-label">Remarks</label>
+												<input class="form-control" maxlength="75" placeholder="Any specific comments"
+														  ng-model="addAcl.remarks">
+											</div>
+										</div>
+										<div class="col-md-6">
+
+										</div>
+										<!--/span-->
+									</div>
+
+									<!--/row-->
+
+								</div>
+
+								<div id="alertbar">{{ alertnote }}</div>
+
+								<div class="form-actions">
+									<button ng-click="addAcl();" class="btn btn-outline-primary"> <i class="fa fa-check"></i>
+										Submit</button>
+									<button type="button" ng-click="cancelRequest();" class="btn btn-outline-inverse">Cancel</button>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
 			</div>
 			<!-- Row -->
-
-
-			<table width="100%"><tr>
-				<td align="left" width="65%"><h4 class="card-title">My Team Subscription Requests</h4></td>
-				<td align="right" width="20%">
-					<div class="form-group has-success">
-						<label class="text-success">Filter on Status</label>
-						<select ng-init="requestTypeSelected = 'CREATED'" class="form-control custom-select" ng-change="onChangeRequestAclsType(requestTypeSelected);"
-								ng-model="requestTypeSelected" ng-options="requestTypeStatus as requestTypeStatus for requestTypeStatus in requestTypeStatuses">
-
-						</select>
-					</div>
-				</td>
-				<td align="right" width="15%">
-					<a href="browseTopics">
-						<button type="button"
-								class="btn waves-effect waves-light btn-rounded btn-sm btn-secondary">BrowseTopics</button>
-					</a>
-				</td>
-			</tr>
-			</table>
-
-			<hr size="1" color="black">
-
-			<div ng-repeat="aclRequest in aclRequests">
-
-				<div class="row" ng-show="aclRequest.topicname != null">
-
-					<div class="col-md-12" ng-show="aclRequest.topicname != null">
-						<div class="card">
-
-							<div class="card-body">
-								<div>
-									<table width="100%">
-										<tr>
-											<td align="left">
-												<h3 ng-show="aclRequest.aclPatternType == 'LITERAL'" class="card-title">Topic : <a href="topicOverview?topicname={{aclRequest.topicname}}">{{ aclRequest.topicname }}</a></h3>
-
-												<h3 ng-show="aclRequest.aclPatternType == 'PREFIXED'" class="card-title">Topic : {{ aclRequest.topicname }} (PREFIXED)</h3>
-											</td>
-											<td ng-show="aclRequest.requestStatus == 'CREATED'" align="right">
-												<button type="button" ng-click="deleteAclRequest(aclRequest.req_no);" class="btn btn-danger btn-circle"><i class="fa fa-times"></i>
-												</button>
-											</td>
-											<td ng-show="aclRequest.requestStatus == 'CREATED' && aclRequest.requestor === userlogged &&
-														aclRequest.requestOperationType != 'DELETE' && aclRequest.requestOperationType != 'CLAIM'" align="right" width="2%">
-												<a href="editAclRequest?aclRequestId={{ aclRequest.req_no }}">
-													<button type="button" class="btn btn-info btn-circle">
-														<i class="fa fa-edit"></i>
-													</button>
-												</a>
-											</td>
-										</tr>
-									</table>
-								</div>
-								<hr size="1" color="black">
-								<div class="d-flex flex-row">
-
-									<div ng-show="aclRequest.aclType == 'PRODUCER'" style="width:15%" class="p-2 pl-0 border-right">
-										<h6 class="text-primary">AclType</h6><b>
-										<span class="badge badge-info">{{ aclRequest.aclType }}</span></b>
-									</div>
-
-									<div ng-show="aclRequest.aclType == 'CONSUMER'" style="width:15%" class="p-2 pl-0 border-right">
-										<h6 class="text-primary">AclType</h6><b>
-										<span class="badge badge-primary">{{ aclRequest.aclType }}</span></b>
-									</div>
-
-
-									<div class="p-2 border-right" style="width:15%">
-										<h6 class="text-primary">Environment</h6><b>
-										<span class="badge badge-warning">{{ aclRequest.environmentName }}</span>
-									</b>
-									</div>
-									<div  style="width:20%" class="p-2 border-right" ng-show="aclRequest.aclType == 'CONSUMER'">
-										<h6 class="text-primary">Consumer Group</h6><b>{{ aclRequest.consumergroup }}</b>
-									</div>
-									<div ng-show="aclRequest.acl_ip.length != 0" class="p-2 border-right" style="width:15%">
-										<h6 class="text-primary">IP Address</h6>
-										<li ng-repeat="oneip in aclRequest.acl_ip">
-											<b>{{ oneip }}</b>
-										</li>
-									</div>
-									<div ng-show="aclRequest.acl_ip.length == 0" class="p-2 border-right" style="width:15%">
-										<h6 class="text-primary">IP Address</h6><b>*</b>
-									</div>
-									<div ng-show="aclRequest.acl_ssl.length != 0" class="p-2 border-right" style="width:30%">
-										<h6 class="text-primary">Principal / Username</h6>
-										<table>
-											<tr ng-repeat="onessl in aclRequest.acl_ssl">
-												<td>
-													<b>{{ onessl }}</b>
-												</td>
-											</tr>
-										</table>
-									</div>
-									<div ng-show="aclRequest.requestStatus == 'CREATED'" class="p-2 border-right" style="width:30%">
-										<h6 class="text-primary">Status</h6><b>
-										<span class="badge badge-success">{{ aclRequest.requestStatus }}</span></b>
-									</div>
-									<div ng-show="aclRequest.requestStatus != 'CREATED'" class="p-2 border-right" style="width:30%">
-										<h6 class="text-primary">Status</h6><b>
-										<span class="badge badge-info">{{ aclRequest.requestStatus }}</span></b>
-									</div>
-
-								</div>
-								<br>
-								<div class="d-flex flex-row">
-									<div class="p-2 border-right" style="width:15%">
-										<h6 class="text-primary">Requestor</h6><b>{{ aclRequest.requestor }}</b>
-									</div>
-									<div class="p-2 border-right" style="width:15%">
-										<h6 class="text-primary">Requesting Team</h6><b>{{ aclRequest.requestingTeamName }}</b>
-									</div>
-
-									<div ng-show="aclRequest.requestOperationType == 'CREATE'" class="p-2 border-right" style="width:15%">
-										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-info">{{ aclRequest.requestOperationType }} Acl</span></b>
-									</div>
-									<div ng-show="aclRequest.requestOperationType == 'DELETE'" class="p-2 border-right" style="width:15%">
-										<h6 class="text-primary">Request Type</h6><b>
-										<span class="badge badge-danger">{{ aclRequest.requestOperationType }} Acl</span></b>
-									</div>
-
-									<div class="p-2 border-right" style="width:15%">
-										<h6 class="text-primary">Date Requested</h6><b>{{ aclRequest.requesttimestring }}</b>
-									</div>
-									<div class="p-2" style="width:15%">
-										<h6 class="text-primary">Topic Pattern</h6><b>{{ aclRequest.aclPatternType }}</b>
-									</div>
-									<div ng-show="aclRequest.transactionalId != null" class="p-2 border-left" style="width:15%">
-										<h6 class="text-primary">Transactional ID</h6><b>{{ aclRequest.transactionalId }}</b>
-									</div>
-									<div class="p-2 border-left" style="width:15%" ng-show="aclRequest.requestStatus == 'APPROVED'">
-										<h6 class="text-primary">Approver</h6><b>
-										<span class="badge badge-info">{{ aclRequest.approver }}</span></b>
-									</div>
-									<div ng-show="aclRequest.requestStatus != 'APPROVED'" class="p-2 border-left" style="width:15%;align:center;">
-										<h6 class="text-primary">Approving Info</h6>
-										<a class="mytooltip" href="javascript:void(0)">
-											<i class="fas fa-users"></i>
-											<span class="tooltip-content3">{{ aclRequest.approvingTeamDetails}}</span>
-										</a>
-									</div>
-								</div>
-
-
-							</div>
-						</div>
-					</div>
-
-				</div>
-
-
-			</div>
-
-			<div class="dataTables_paginate paging_simple_numbers"  ng-show="aclRequests.length>0">
-				<ul class="pagination">
-					<li class="paginate_button page-item active" disabled>
-						<a href="#" class="page-link">Pages</a>
-					</li>
-					<li class="paginate_button page-item" ng-repeat="allPagesAcl in resultPagesAcl">
-						<a href="#" class="page-link" ng-click="getMyAclRequests(allPagesAcl, false)">{{allPagesAcl}}</a>
-					</li>
-				</ul>
-			</div>
-
-			<!-- ============================================================== -->
 			<!-- End Right sidebar -->
 			<!-- ============================================================== -->
 		</div>
+		<!-- ============================================================== -->
 
-		<!-- footer -->
 		<!-- ============================================================== -->
 		<footer class="footer">
 			<a href="https://klaw-project.io">klaw-project.io</a>
@@ -679,9 +808,8 @@
 <script src="assets/plugins/datatables.net-bs4/js/dataTables.responsive.min.js"></script>
 -->
 <!-- Chart JS -->
-<script src="assets/plugins/gauge/gauge.min.js"></script>
-<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
 <!-- <script src="assets/js/widget-data.js"></script> -->
+<script src="assets/plugins/sweetalert/sweetalert.min.js"></script>
 </body>
 
 </html>

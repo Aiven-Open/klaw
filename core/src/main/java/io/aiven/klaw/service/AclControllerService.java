@@ -904,4 +904,13 @@ public class AclControllerService {
     }
     return serviceAccountsOfTeam;
   }
+
+  public AclRequestsResponseModel getAclRequest(Integer aclRequestId) {
+    String loggedInUser = getCurrentUserName();
+    int tenantId = commonUtilsService.getTenantId(loggedInUser);
+    HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
+    AclRequests aclReq = dbHandle.getAcl(aclRequestId, tenantId);
+    aclReq.setEnvironmentName(commonUtilsService.getEnvDetails(aclReq.getEnvironment(), tenantId).getName());
+    return getAclRequestsModels(List.of(aclReq), tenantId, loggedInUser).get(0);
+  }
 }

@@ -13,6 +13,7 @@ import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
 import io.aiven.klaw.model.response.TopicOverview;
+import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -231,5 +233,18 @@ public class AclController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<Set<String>> getAivenServiceAccounts(@RequestParam("env") String envId) {
     return new ResponseEntity<>(aclControllerService.getAivenServiceAccounts(envId), HttpStatus.OK);
+  }
+
+  /**
+   * @param aclRequestId requestId of Acl
+   * @return Acl Request details
+   */
+  @RequestMapping(
+          value = "/acl/request/{aclRequestId}",
+          method = RequestMethod.GET,
+          produces = {MediaType.APPLICATION_JSON_VALUE})
+  public ResponseEntity<AclRequestsResponseModel> getAclRequest(
+          @PathVariable Integer aclRequestId) {
+    return new ResponseEntity<>(aclControllerService.getAclRequest(aclRequestId), HttpStatus.OK);
   }
 }
