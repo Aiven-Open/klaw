@@ -1,7 +1,6 @@
 import { Box, DropdownMenu, Button } from "@aivenio/aquarium";
 import notifications from "@aivenio/aquarium/dist/module/icons/notifications";
 import questionMark from "@aivenio/aquarium/dist/module/icons/questionMark";
-import user from "@aivenio/aquarium/dist/module/icons/user";
 import code from "@aivenio/aquarium/icons/code";
 import codeBlock from "@aivenio/aquarium/icons/codeBlock";
 import dataflow02 from "@aivenio/aquarium/icons/dataflow02";
@@ -9,6 +8,7 @@ import people from "@aivenio/aquarium/icons/people";
 import { useNavigate } from "react-router-dom";
 import HeaderMenuLink from "src/app/layout/header/HeaderMenuLink";
 import { Routes } from "src/app/router_utils";
+import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
 
 const requestNewEntityPaths: { [key: string]: string } = {
   topic: Routes.TOPIC_REQUEST,
@@ -68,11 +68,7 @@ function HeaderNavigation() {
             />
           </li>
           <li>
-            <HeaderMenuLink
-              icon={user}
-              linkText={"Go to your profile"}
-              href={`/myProfile`}
-            />
+            <ProfileDropdown />
           </li>
         </Box>
       </nav>
