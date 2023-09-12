@@ -26,8 +26,6 @@ public class ManageDatabaseTest {
   private ManageDatabase manageDatabase = new ManageDatabase();
   @Mock private HandleDbRequestsJdbc handleDbRequests;
 
-  @Mock HighAvailabilityUtilsService highAvailabilityUtilsService;
-
   @BeforeEach
   public void setUp() {
     ReflectionTestUtils.setField(manageDatabase, "handleDbRequests", handleDbRequests);

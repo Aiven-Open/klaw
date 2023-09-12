@@ -68,10 +68,8 @@ public class HighAvailabilityUtilsService {
           && basePath.contains(baseUrlsFromEnv.get(BASE_URL_ADDRESS))) {
         return true;
       }
-      if (baseUrlsFromEnv.containsKey(BASE_URL_NAME)
-          && basePath.contains(baseUrlsFromEnv.get(BASE_URL_NAME))) {
-        return true;
-      }
+      return baseUrlsFromEnv.containsKey(BASE_URL_NAME)
+          && basePath.contains(baseUrlsFromEnv.get(BASE_URL_NAME));
     }
     return false;
   }
