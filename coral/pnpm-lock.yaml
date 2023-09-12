@@ -12,8 +12,8 @@ dependencies:
     specifier: ^2.9.10
     version: 2.9.10(react-hook-form@7.43.9)
   '@monaco-editor/react':
-    specifier: ^4.5.0
-    version: 4.5.0(monaco-editor@0.37.1)(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^4.5.2
+    version: 4.5.2(monaco-editor@0.37.1)(react-dom@18.2.0)(react@18.2.0)
   '@tanstack/react-query':
     specifier: ^4.29.5
     version: 4.29.5(react-dom@18.2.0)(react@18.2.0)
@@ -1277,8 +1277,8 @@ packages:
       state-local: 1.0.7
     dev: false
 
-  /@monaco-editor/react@4.5.0(monaco-editor@0.37.1)(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-VJMkp5Fe1+w8pLEq8tZPHZKu8zDXQIA1FtiDTSNccg1D3wg1YIZaH2es2Qpvop1k62g3c/YySRb3bnGXu2XwYQ==}
+  /@monaco-editor/react@4.5.2(monaco-editor@0.37.1)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-emcWu6vg1OpXPiYll4aPOaXe8bwYB4UaaNTwtArFLgMoNGBzRZb2Xn0Bra2HMIFM7QLgs7fCGunHO5LkfT2LBA==}
     peerDependencies:
       monaco-editor: '>= 0.25.0 < 1'
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
