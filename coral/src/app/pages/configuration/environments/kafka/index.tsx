@@ -1,5 +1,5 @@
 import PreviewBanner from "src/app/components/PreviewBanner";
-import KafkaEnvironments from "src/app/features/environments/KafkaEnvironments";
+import KafkaEnvironments from "src/app/features/configuration/environments/Kafka/KafkaEnvironments";
 
 const KafkaEnvironmentsPage = () => {
   return (
