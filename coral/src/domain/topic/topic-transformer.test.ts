@@ -230,9 +230,8 @@ describe("topic-transformer.ts", () => {
         topicIdForDocumentation: 1,
       };
 
-      const transformedResponse = await transformTopicOverviewResponse(
-        mockedResponse
-      );
+      const transformedResponse =
+        await transformTopicOverviewResponse(mockedResponse);
 
       const result: TopicOverview = {
         availableEnvironments: [],
@@ -364,9 +363,8 @@ describe("topic-transformer.ts", () => {
         ],
       };
 
-      const transformedResponse = await transformTopicOverviewResponse(
-        mockedResponse
-      );
+      const transformedResponse =
+        await transformTopicOverviewResponse(mockedResponse);
 
       const result: TopicOverview = {
         availableEnvironments: [],
