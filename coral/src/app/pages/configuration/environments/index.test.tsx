@@ -37,16 +37,12 @@ const mockGetPaginatedEnvironmentsForConnector =
   >;
 
 describe("Environments page", () => {
-  describe("renders Environments page with correct text", () => {
-    beforeAll(() => {
-      mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
-        mockedResponse
-      );
-      mockGetPaginatedEnvironmentsForSchema.mockResolvedValue(mockedResponse);
-      mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(
-        mockedResponse
-      );
-    });
+  beforeEach(() => {
+    mockGetPaginatedEnvironmentsForTopicAndAcl.mockResolvedValue(
+      mockedResponse
+    );
+    mockGetPaginatedEnvironmentsForSchema.mockResolvedValue(mockedResponse);
+    mockGetPaginatedEnvironmentsForConnector.mockResolvedValue(mockedResponse);
 
     mockMatches.mockImplementation(() => [
       {
@@ -60,13 +56,18 @@ describe("Environments page", () => {
     });
   });
 
-  afterAll(cleanup);
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
 
-  it("renders a headline", () => {
-    const headline = screen.getByRole("heading", {
-      name: "Environments",
+  describe("renders Environments page with correct text", () => {
+    it("renders a headline", () => {
+      const headline = screen.getByRole("heading", {
+        name: "Environments",
+      });
+
+      expect(headline).toBeVisible();
     });
-
-    expect(headline).toBeVisible();
   });
 });
