@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { ConnectorRequest } from "src/domain/connector";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import {
@@ -6,6 +6,7 @@ import {
   type ConnectorRequestsTableProps,
 } from "src/app/features/requests/connectors/components/ConnectorRequestsTable";
 import userEvent from "@testing-library/user-event";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedRequests: ConnectorRequest[] = [
   {
@@ -58,14 +59,15 @@ const mockedRequests: ConnectorRequest[] = [
 
 describe("ConnectorRequestsTable", () => {
   function renderFromProps(props?: Partial<ConnectorRequestsTableProps>): void {
-    render(
+    customRender(
       <ConnectorRequestsTable
         requests={mockedRequests}
         onDetails={jest.fn()}
         onDelete={jest.fn()}
         ariaLabel={"Connector requests"}
         {...props}
-      />
+      />,
+      { memoryRouter: true }
     );
   }
 
@@ -85,13 +87,30 @@ describe("ConnectorRequestsTable", () => {
     screen.getByText("No Connector request matched your criteria.");
   });
 
-  it("has column to describe the connector name", () => {
+  it("has column with connector name as string when request type is CREATE", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[0]
     ).toHaveTextContent("Name");
     expect(within(getNthRow(1)).getAllByRole("cell")[0]).toHaveTextContent(
       "test-connector-1"
+    );
+  });
+
+  it("has column with connector name as link when request type is not CREATE", () => {
+    renderFromProps();
+
+    const nameSecondTopicInResponse = mockedRequests[1].connectorName;
+    const topicNameCell = within(getNthRow(2)).getAllByRole("cell")[0];
+    expect(topicNameCell).toHaveTextContent(nameSecondTopicInResponse);
+
+    const link = within(topicNameCell).getByRole("link", {
+      name: nameSecondTopicInResponse,
+    });
+
+    expect(link).toHaveAttribute(
+      "href",
+      `/connector/${nameSecondTopicInResponse}/overview`
     );
   });
 

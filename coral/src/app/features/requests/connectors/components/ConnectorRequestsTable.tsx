@@ -1,4 +1,9 @@
-import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
+import {
+  DataTable,
+  DataTableColumn,
+  EmptyState,
+  InlineIcon,
+} from "@aivenio/aquarium";
 import {
   requestOperationTypeChipStatusMap,
   requestOperationTypeNameMap,
@@ -10,6 +15,8 @@ import {
 import type { ConnectorRequest } from "src/domain/connector";
 import infoIcon from "@aivenio/aquarium/dist/src/icons/infoSign";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
+import { Link } from "react-router-dom";
+import link from "@aivenio/aquarium/icons/link";
 
 type ConnectorRequestTableRow = {
   id: ConnectorRequest["connectorId"];
@@ -37,7 +44,25 @@ function ConnectorRequestsTable({
   onDelete,
 }: Props) {
   const columns: Array<DataTableColumn<ConnectorRequestTableRow>> = [
-    { type: "text", field: "connectorName", headerName: "Name" },
+    {
+      type: "custom",
+      headerName: "Name",
+      UNSAFE_render: ({
+        connectorName,
+        requestOperationType,
+      }: ConnectorRequestTableRow) => {
+        if (requestOperationType !== "CREATE") {
+          return (
+            <Link to={`/connector/${connectorName}/overview`}>
+              {connectorName} <InlineIcon icon={link} />
+            </Link>
+          );
+        } else {
+          return <>{connectorName}</>;
+        }
+      },
+    },
+
     {
       type: "status",
       headerName: "Environment",
