@@ -2,6 +2,7 @@ import { Box, DropdownMenu, Typography, Icon } from "@aivenio/aquarium";
 import user from "@aivenio/aquarium/dist/src/icons/user";
 import logOut from "@aivenio/aquarium/dist/src/icons/logOut";
 import classes from "src/app/layout/header/ProfileDropdown.module.css";
+import { logoutUser } from "src/domain/auth-user";
 
 type MenuItem = {
   path: string;
@@ -30,7 +31,21 @@ function ProfileDropdown() {
   }
   function onDropdownClick(actionKey: string | number) {
     if (actionKey === LOGOUT_KEY) {
-      console.log("LOGOUT");
+      logoutUser()
+        .catch((error) => {
+          // after calling /logout, we will receive a 401 error
+          // based on transformHTTPRedirectToLoginTo401 in `api.ts`
+          // which confirms the user is not authorized anymore
+          // only in case the status is different we need to
+          // surface the error.
+          if (error.status !== 401) {
+            throw error;
+          }
+        })
+        .finally(() => {
+          window.location.assign(`${window.origin}/login`);
+        });
+
       return;
     } else {
       const selectedItem = menuItems[actionKey as number];

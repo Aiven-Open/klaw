@@ -1,6 +1,7 @@
 import { cleanup, screen, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ProfileDropdown } from "src/app/layout/header/ProfileDropdown";
+import { logoutUser } from "src/domain/auth-user";
 
 const menuItems = [
   { path: "/myProfile", name: "My profile" },
@@ -8,6 +9,9 @@ const menuItems = [
   { path: "/changePwd", name: "Change password" },
 ];
 
+jest.mock("src/domain/auth-user/auth-user-api");
+
+const mockLogoutUser = logoutUser as jest.MockedFunction<typeof logoutUser>;
 describe("ProfileDropdown", () => {
   const user = userEvent.setup();
 
@@ -93,6 +97,52 @@ describe("ProfileDropdown", () => {
           `http://localhost${path}`
         );
       });
+    });
+  });
+
+  describe("handles user log out", () => {
+    beforeEach(() => {
+      // calling '/logout` successfully will  resolve in us
+      // receiving a 401 error so this is mocking the real behavior
+      mockLogoutUser.mockRejectedValue({ status: 401 });
+      Object.defineProperty(window, "location", {
+        value: {
+          assign: jest.fn(),
+        },
+        writable: true,
+      });
+      render(<ProfileDropdown />);
+    });
+
+    afterEach(() => {
+      jest.restoreAllMocks();
+      cleanup();
+    });
+
+    it("logs out user when they clock log out in menu", async () => {
+      const button = screen.getByRole("button", {
+        name: "Open profile menu",
+      });
+      await user.click(button);
+
+      const logout = screen.getByRole("menuitem", { name: "Log out" });
+      await user.click(logout);
+
+      expect(mockLogoutUser).toHaveBeenCalled();
+    });
+
+    it("redirects user to /login when they have logged out", async () => {
+      const button = screen.getByRole("button", {
+        name: "Open profile menu",
+      });
+      await user.click(button);
+
+      const logout = screen.getByRole("menuitem", { name: "Log out" });
+      await user.click(logout);
+
+      expect(window.location.assign).toHaveBeenCalledWith(
+        "http://localhost/login"
+      );
     });
   });
 });
