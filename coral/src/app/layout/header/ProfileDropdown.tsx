@@ -90,7 +90,7 @@ function ProfileDropdown() {
             icon={user}
             height={80}
             width={80}
-            className={classes.profileDropdownDeaderIcon}
+            className={classes.profileDropdownHeaderIcon}
           />
         </Box.Flex>
       }
