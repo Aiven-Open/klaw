@@ -39,6 +39,12 @@ function ProfileDropdown() {
 
   function onDropdownClick(actionKey: string | number) {
     if (actionKey === LOGOUT_KEY) {
+      toast({
+        message: "You are being logged out of Klaw...",
+        position: "bottom-left",
+        variant: "default",
+        duration: 30 * 1000,
+      });
       logoutUser().catch((error) => {
         if (error.status !== 401) {
           toast({
@@ -49,11 +55,6 @@ function ProfileDropdown() {
           });
           console.error(error);
         } else {
-          // after calling /logout, we will receive a 401 error
-          // based on transformHTTPRedirectToLoginTo401 in `api.ts`
-          // which confirms the user is not authorized anymore
-          // only in case the status is different we need to
-          // surface the error.
           window.location.assign(`${window.origin}/login`);
         }
       });

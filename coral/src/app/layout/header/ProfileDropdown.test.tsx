@@ -137,6 +137,22 @@ describe("ProfileDropdown", () => {
       expect(mockLogoutUser).toHaveBeenCalled();
     });
 
+    it("shows a progress notification to user while logout is in progress", async () => {
+      const button = screen.getByRole("button", {
+        name: "Open profile menu",
+      });
+      await user.click(button);
+
+      const logout = screen.getByRole("menuitem", { name: "Log out" });
+      await user.click(logout);
+
+      expect(mockedUseToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "You are being logged out of Klaw...",
+        })
+      );
+    });
+
     it("redirects user to /login when they have logged out", async () => {
       const button = screen.getByRole("button", {
         name: "Open profile menu",
