@@ -28,11 +28,8 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
 
   List<Acl> findAllByTenantId(int tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwacls where teamid != :teamId and tenantid = :tenantId and consumergroup = :consumerGroup)",
-      nativeQuery = true)
-  boolean validateIfConsumerGroupUsedByAnotherTeam(
+
+  boolean existsByTeamIdAndTenantIdAndConsumerGroup(
       @Param("teamId") Integer teamId,
       @Param("tenantId") Integer tenantId,
       @Param("consumerGroup") String consumerGroup);
@@ -46,10 +43,7 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
   List<Object[]> findAllAclsCountForEnv(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value = "select exists(select 1 from kwacls where teamid = :teamId and tenantid = :tenantId)",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
+  boolean existsByTeamIdAndTenantId(
       @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
 
   @Query(
