@@ -1068,7 +1068,7 @@ public class SelectDataJdbc {
 
   public boolean validateIfConsumerGroupUsedByAnotherTeam(
       Integer teamId, int tenantId, String consumerGroup) {
-    return aclRepo.existsByTeamIdAndTenantIdAndConsumerGroup(teamId, tenantId, consumerGroup);
+    return aclRepo.existsByTeamIdNotAndTenantIdAndConsumergroup(teamId, tenantId, consumerGroup);
   }
 
   public Team selectTeamDetails(Integer teamId, int tenantId) {

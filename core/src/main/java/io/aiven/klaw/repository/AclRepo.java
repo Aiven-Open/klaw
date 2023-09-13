@@ -28,10 +28,8 @@ public interface AclRepo extends CrudRepository<Acl, AclID> {
 
   List<Acl> findAllByTenantId(int tenantId);
 
-  boolean existsByTeamIdAndTenantIdAndConsumerGroup(
-      @Param("teamId") Integer teamId,
-      @Param("tenantId") Integer tenantId,
-      @Param("consumerGroup") String consumerGroup);
+  boolean existsByTeamIdNotAndTenantIdAndConsumergroup(
+      Integer teamId, Integer tenantId, String consumerGroup);
 
   boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
