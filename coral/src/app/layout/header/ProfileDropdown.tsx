@@ -1,4 +1,10 @@
-import { Box, DropdownMenu, Typography, Icon } from "@aivenio/aquarium";
+import {
+  Box,
+  DropdownMenu,
+  Typography,
+  Icon,
+  useToast,
+} from "@aivenio/aquarium";
 import user from "@aivenio/aquarium/dist/src/icons/user";
 import logOut from "@aivenio/aquarium/dist/src/icons/logOut";
 import classes from "src/app/layout/header/ProfileDropdown.module.css";
@@ -26,25 +32,31 @@ const menuItems: MenuItem[] = [
 
 const LOGOUT_KEY = "logout";
 function ProfileDropdown() {
+  const toast = useToast();
   function navigateToAngular(path: string) {
     window.location.assign(`${window.origin}${path}`);
   }
+
   function onDropdownClick(actionKey: string | number) {
     if (actionKey === LOGOUT_KEY) {
-      logoutUser()
-        .catch((error) => {
+      logoutUser().catch((error) => {
+        if (error.status !== 401) {
+          toast({
+            message:
+              "Something went wrong in the log out process. Please try again or contact your administrator.",
+            position: "bottom-left",
+            variant: "danger",
+          });
+          console.error(error);
+        } else {
           // after calling /logout, we will receive a 401 error
           // based on transformHTTPRedirectToLoginTo401 in `api.ts`
           // which confirms the user is not authorized anymore
           // only in case the status is different we need to
           // surface the error.
-          if (error.status !== 401) {
-            throw error;
-          }
-        })
-        .finally(() => {
           window.location.assign(`${window.origin}/login`);
-        });
+        }
+      });
 
       return;
     } else {

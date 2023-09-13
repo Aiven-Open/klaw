@@ -12,6 +12,12 @@ const menuItems = [
 jest.mock("src/domain/auth-user/auth-user-api");
 
 const mockLogoutUser = logoutUser as jest.MockedFunction<typeof logoutUser>;
+
+const mockedUseToast = jest.fn();
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => mockedUseToast,
+}));
 describe("ProfileDropdown", () => {
   const user = userEvent.setup();
 
@@ -100,7 +106,7 @@ describe("ProfileDropdown", () => {
     });
   });
 
-  describe("handles user log out", () => {
+  describe("handles user sucessfully login out", () => {
     beforeEach(() => {
       // calling '/logout` successfully will  resolve in us
       // receiving a 401 error so this is mocking the real behavior
@@ -115,11 +121,11 @@ describe("ProfileDropdown", () => {
     });
 
     afterEach(() => {
-      jest.restoreAllMocks();
+      jest.resetAllMocks();
       cleanup();
     });
 
-    it("logs out user when they clock log out in menu", async () => {
+    it("logs out user when they click log out in menu", async () => {
       const button = screen.getByRole("button", {
         name: "Open profile menu",
       });
@@ -143,6 +149,64 @@ describe("ProfileDropdown", () => {
       expect(window.location.assign).toHaveBeenCalledWith(
         "http://localhost/login"
       );
+    });
+  });
+
+  describe("handles error in logout process", () => {
+    const testError = {
+      status: 500,
+      message: "bad error",
+    };
+    const originalConsoleError = console.error;
+
+    beforeEach(() => {
+      mockLogoutUser.mockRejectedValue(testError);
+
+      console.error = jest.fn();
+      Object.defineProperty(window, "location", {
+        value: {
+          assign: jest.fn(),
+        },
+        writable: true,
+      });
+      render(<ProfileDropdown />);
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+      jest.resetAllMocks();
+      cleanup();
+    });
+
+    it("does not redirect user to /login", async () => {
+      const button = screen.getByRole("button", {
+        name: "Open profile menu",
+      });
+      await user.click(button);
+
+      const logout = screen.getByRole("menuitem", { name: "Log out" });
+      await user.click(logout);
+
+      expect(window.location.assign).not.toHaveBeenCalled();
+      expect(console.error).toHaveBeenCalledWith(testError);
+    });
+
+    it("shows error notification to the user", async () => {
+      const button = screen.getByRole("button", {
+        name: "Open profile menu",
+      });
+      await user.click(button);
+
+      const logout = screen.getByRole("menuitem", { name: "Log out" });
+      await user.click(logout);
+
+      expect(mockedUseToast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message:
+            "Something went wrong in the log out process. Please try again or contact your administrator.",
+        })
+      );
+      expect(console.error).toHaveBeenCalledWith(testError);
     });
   });
 });

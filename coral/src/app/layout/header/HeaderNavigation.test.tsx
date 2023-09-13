@@ -13,6 +13,11 @@ jest.mock("src/services/feature-flags/utils", () => ({
   isFeatureFlagActive: () => isFeatureFlagActiveMock(),
 }));
 
+jest.mock("@aivenio/aquarium", () => ({
+  ...jest.requireActual("@aivenio/aquarium"),
+  useToast: () => jest.fn(),
+}));
+
 const quickLinksNavItems = [
   { name: "Go to approve requests", linkTo: Routes.APPROVALS },
   {
