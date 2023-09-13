@@ -41,6 +41,10 @@ function transformEnvironmentApiResponse(
         },
       }),
       type: environment?.type,
+      clusterName: environment?.clusterName,
+      tenantName: environment?.tenantName,
+      envStatus: environment?.envStatus,
+      associatedEnv: environment?.associatedEnv,
     };
     return rv;
   });
@@ -87,6 +91,10 @@ function transformPaginatedEnvironmentApiResponse(
         },
       }),
       type: environment?.type,
+      clusterName: environment?.clusterName,
+      tenantName: environment?.tenantName,
+      envStatus: environment?.envStatus,
+      associatedEnv: environment?.associatedEnv,
     };
     return rv;
   });
