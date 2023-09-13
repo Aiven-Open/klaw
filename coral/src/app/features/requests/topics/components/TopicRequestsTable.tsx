@@ -1,4 +1,9 @@
-import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
+import {
+  DataTable,
+  DataTableColumn,
+  EmptyState,
+  InlineIcon,
+} from "@aivenio/aquarium";
 import infoIcon from "@aivenio/aquarium/dist/src/icons/infoSign";
 import deleteIcon from "@aivenio/aquarium/dist/src/icons/delete";
 import { TopicRequest } from "src/domain/topic/topic-types";
@@ -10,6 +15,8 @@ import {
   requestOperationTypeChipStatusMap,
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
+import { Link } from "react-router-dom";
+import link from "@aivenio/aquarium/icons/link";
 
 interface TopicRequestTableRow {
   id: TopicRequest["topicid"];
@@ -37,7 +44,24 @@ function TopicRequestsTable({
   ariaLabel,
 }: TopicRequestsTableProps) {
   const columns: Array<DataTableColumn<TopicRequestTableRow>> = [
-    { type: "text", field: "topicname", headerName: "Topic" },
+    {
+      type: "custom",
+      headerName: "Topic",
+      UNSAFE_render: ({
+        topicname,
+        requestOperationType,
+      }: TopicRequestTableRow) => {
+        if (requestOperationType !== "CREATE") {
+          return (
+            <Link to={`/topic/${topicname}/overview`}>
+              {topicname} <InlineIcon icon={link} />
+            </Link>
+          );
+        } else {
+          return <>{topicname}</>;
+        }
+      },
+    },
     {
       type: "status",
       headerName: "Environment",

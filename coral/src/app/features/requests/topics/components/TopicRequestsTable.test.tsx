@@ -1,4 +1,4 @@
-import { cleanup, render, screen, within } from "@testing-library/react";
+import { cleanup, screen, within } from "@testing-library/react";
 import { TopicRequest } from "src/domain/topic";
 import { mockIntersectionObserver } from "src/services/test-utils/mock-intersection-observer";
 import {
@@ -6,6 +6,7 @@ import {
   type TopicRequestsTableProps,
 } from "src/app/features/requests/topics/components/TopicRequestsTable";
 import userEvent from "@testing-library/user-event";
+import { customRender } from "src/services/test-utils/render-with-wrappers";
 
 const mockedRequests: TopicRequest[] = [
   {
@@ -55,7 +56,6 @@ const mockedRequests: TopicRequest[] = [
         configValue: "snappy",
       },
     ],
-
     requestOperationType: "UPDATE",
     requestor: "bcrusher",
     requesttime: "1994-23-05T13:37:00.001+00:00",
@@ -75,14 +75,15 @@ const mockedRequests: TopicRequest[] = [
 
 describe("TopicRequestsTable", () => {
   function renderFromProps(props?: Partial<TopicRequestsTableProps>): void {
-    render(
+    customRender(
       <TopicRequestsTable
         requests={mockedRequests}
         onDetails={jest.fn()}
         onDelete={jest.fn()}
         ariaLabel={"Topic requests, page 1 of 10"}
         {...props}
-      />
+      />,
+      { memoryRouter: true }
     );
   }
 
@@ -102,13 +103,30 @@ describe("TopicRequestsTable", () => {
     screen.getByText("No Topic request matched your criteria.");
   });
 
-  it("has column to describe the topic", () => {
+  it("has column with topic name as text when request type is CREATE", () => {
     renderFromProps();
     expect(
       within(getNthRow(0)).getAllByRole("columnheader")[0]
     ).toHaveTextContent("Topic");
     expect(within(getNthRow(1)).getAllByRole("cell")[0]).toHaveTextContent(
       "test-topic-1"
+    );
+  });
+
+  it("has column with topic name as link when request type is not CREATE", () => {
+    renderFromProps();
+
+    const nameSecondTopicInResponse = mockedRequests[1].topicname;
+    const topicNameCell = within(getNthRow(2)).getAllByRole("cell")[0];
+    expect(topicNameCell).toHaveTextContent(nameSecondTopicInResponse);
+
+    const link = within(topicNameCell).getByRole("link", {
+      name: nameSecondTopicInResponse,
+    });
+
+    expect(link).toHaveAttribute(
+      "href",
+      `/topic/${nameSecondTopicInResponse}/overview`
     );
   });
 
