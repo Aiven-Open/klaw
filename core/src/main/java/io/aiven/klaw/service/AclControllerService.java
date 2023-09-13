@@ -147,6 +147,9 @@ public class AclControllerService {
     copyProperties(aclRequestsModel, aclRequestsDao);
     aclRequestsDao.setAclType(aclRequestsModel.getAclType().value);
     aclRequestsDao.setRequestOperationType(aclRequestsModel.getRequestOperationType().value);
+    if (aclRequestsModel.getRequestId() != null) {
+      aclRequestsDao.setReq_no(aclRequestsModel.getRequestId());
+    }
     handleIpAddressAndCNString(aclRequestsModel, aclRequestsDao);
 
     aclRequestsDao.setTenantId(tenantId);
@@ -910,7 +913,8 @@ public class AclControllerService {
     int tenantId = commonUtilsService.getTenantId(loggedInUser);
     HandleDbRequests dbHandle = manageDatabase.getHandleDbRequests();
     AclRequests aclReq = dbHandle.getAcl(aclRequestId, tenantId);
-    aclReq.setEnvironmentName(commonUtilsService.getEnvDetails(aclReq.getEnvironment(), tenantId).getName());
+    aclReq.setEnvironmentName(
+        commonUtilsService.getEnvDetails(aclReq.getEnvironment(), tenantId).getName());
     return getAclRequestsModels(List.of(aclReq), tenantId, loggedInUser).get(0);
   }
 }

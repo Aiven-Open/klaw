@@ -422,7 +422,7 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
                     $window.location.href = $window.location.origin + $scope.dashboardDetails.contextPath + "/browseTopics";
                 }
 
-        $scope.addAcl = function() {
+        $scope.submitEditAclRequest = function() {
 
             $scope.alert = null;
             $scope.alertnote = null;
@@ -430,14 +430,14 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
 
             var aclpatterntypetype;
 
-            if(!$scope.addAcl.envName  || $scope.addAcl.envName === "")
+            if(!$scope.addAcl.environment  || !$scope.addAcl.environmentName)
             {
                 $scope.alertnote = "Please select an environment";
                 $scope.showAlertToast();
                 return;
             }
 
-            if(!$scope.addAcl.topicreqtype)
+            if(!$scope.addAcl.aclType)
             {
                $scope.alertnote = "Please select an ACL type";
                $scope.showAlertToast();
@@ -448,21 +448,21 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
                 $scope.addAcl.consumergroup = '-na-';
             }
 
-            if($scope.addAcl.topicreqtype.value === 'CONSUMER' && !$scope.addAcl.consumergroup)
+            if($scope.addAcl.aclType === 'CONSUMER' && !$scope.addAcl.consumergroup)
             {
                 $scope.alertnote = "CONSUMER group is not filled."
                 $scope.showAlertToast();
                 return;
             }
 
-            if($scope.addAcl.topicreqtype.value === 'PRODUCER' && !$scope.addAcl.acl_lit_pre)
+            if($scope.addAcl.aclType === 'PRODUCER' && !$scope.addAcl.aclPatternType)
             {
                 $scope.alertnote = "Please select acl literal type."
                 $scope.showAlertToast();
                 return;
             }
 
-            if($scope.addAcl.acl_lit_pre === 'PREFIXED'){
+            if($scope.addAcl.aclPatternType === 'PREFIXED'){
                 if($scope.addAcl.topicpattern && $scope.addAcl.topicpattern.length > 2)
                     {
                     }
@@ -473,6 +473,7 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
                     return;
                  }
                 $scope.addAcl.topicname = $scope.addAcl.topicpattern;
+
                 aclpatterntypetype = 'PREFIXED';
                 $scope.getTopicTeam($scope.addAcl.topicpattern);
                 if(!$scope.verifyIfTopicExistsOnEnv($scope.addAcl.topicpattern)){
@@ -481,8 +482,9 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
                     return;
                 }
             }
-            else
+            else{
                 aclpatterntypetype = 'LITERAL';
+            }
 
             if($scope.aivenCluster === false){
                 if($scope.acl_ip_ssl === 'IP')
@@ -491,10 +493,9 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
                     $scope.addAcl.acl_ip = [""];
             }
 
-            if(!$scope.addAcl.team || !$scope.addAcl.topicname )
+            if(!$scope.addAcl.teamId || !$scope.addAcl.topicname )
             {
-                //alert("This topic is not owned by any team. Synchronize the metadata.");
-                if($scope.addAcl.acl_lit_pre === 'PREFIXED'){
+                if($scope.addAcl.aclPatternType === 'PREFIXED'){
                     $scope.alertnote = "There are no matching topics with this prefix. Synchronize the metadata.";
                 }
                 else
@@ -540,9 +541,9 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
             else if($scope.acl_ip_ssl === 'SSL')
                 $scope.addAcl.acl_ip = null;
 
-             serviceInput['environment'] = $scope.addAcl.envName;
+             serviceInput['environment'] = $scope.addAcl.environment;
              serviceInput['topicname'] = $scope.addAcl.topicname;
-             serviceInput['aclType'] = $scope.addAcl.topicreqtype.value;
+             serviceInput['aclType'] = $scope.addAcl.aclType;
              serviceInput['teamId'] = $scope.addAcl.teamId;
              serviceInput['appname'] = "App";//$scope.addAcl.app;
              serviceInput['remarks'] = $scope.addAcl.remarks;
@@ -552,7 +553,8 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
              serviceInput['aclPatternType'] = aclpatterntypetype;
              serviceInput['transactionalId'] = $scope.addAcl.transactionalId;
              serviceInput['aclIpPrincipleType'] = $scope.selectedAclType;
-             serviceInput['requestOperationType'] = 'CREATE';
+            serviceInput['requestOperationType'] = 'CREATE';
+            serviceInput['requestId'] = $scope.addAcl.req_no;
 
             $http({
                 method: "POST",
@@ -616,9 +618,14 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
                 if(output != null && output !== ''){
                     $scope.addAcl = $scope.aclRequestDetail;
 
+                    // $scope.addAcl.acl_ip=[""];
+                    // $scope.addAcl.acl_ssl=[""];
+                    // $scope.alc_ipaddresslength = $scope.addAcl.acl_ip.length;
+                    // $scope.alc_ssllength = $scope.addAcl.acl_ssl.length;
+
                     $scope.onChangeEnvironment($scope.addAcl.environment);
                     $scope.changeTopicType();
-                    if($scope.aclIpPrincipleType === 'IP_ADDRESS'){
+                    if($scope.addAcl.aclIpPrincipleType === 'IP_ADDRESS'){
                         $scope.acl_ip_ssl = "IP";
                         $scope.selectedAclType="IP_ADDRESS";
                         $scope.onSelectAcl('IP');
@@ -643,10 +650,7 @@ app.controller("editAclRequestCtrl", function($scope, $http, $location, $window)
             );
         }
 
-        $scope.addAcl.acl_ip=[""];
-        $scope.addAcl.acl_ssl=[""];
-        $scope.alc_ipaddresslength = $scope.addAcl.acl_ip.length;
-        $scope.alc_ssllength = $scope.addAcl.acl_ssl.length;
+
 
         $scope.addAclRecord = function(indexToAdd){
              $scope.addAcl.acl_ip.push("");

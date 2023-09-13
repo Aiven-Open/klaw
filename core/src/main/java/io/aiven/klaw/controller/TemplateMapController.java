@@ -369,10 +369,10 @@ public class TemplateMapController {
 
   @RequestMapping(value = "/editAclRequest", method = RequestMethod.GET)
   public String editAclRequest(
-          ModelMap model,
-          HttpServletRequest request,
-          HttpServletResponse response,
-          AbstractAuthenticationToken abstractAuthenticationToken) {
+      ModelMap model,
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AbstractAuthenticationToken abstractAuthenticationToken) {
     return checkAuth("editAclRequest.html", request, response, abstractAuthenticationToken);
   }
 

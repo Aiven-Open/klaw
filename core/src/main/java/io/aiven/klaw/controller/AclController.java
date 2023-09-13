@@ -13,7 +13,6 @@ import io.aiven.klaw.model.response.AclRequestsResponseModel;
 import io.aiven.klaw.model.response.OffsetDetails;
 import io.aiven.klaw.model.response.ServiceAccountDetails;
 import io.aiven.klaw.model.response.TopicOverview;
-import io.aiven.klaw.model.response.TopicRequestsResponseModel;
 import io.aiven.klaw.service.AclControllerService;
 import io.aiven.klaw.service.TopicOverviewService;
 import jakarta.validation.Valid;
@@ -240,11 +239,11 @@ public class AclController {
    * @return Acl Request details
    */
   @RequestMapping(
-          value = "/acl/request/{aclRequestId}",
-          method = RequestMethod.GET,
-          produces = {MediaType.APPLICATION_JSON_VALUE})
+      value = "/acl/request/{aclRequestId}",
+      method = RequestMethod.GET,
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public ResponseEntity<AclRequestsResponseModel> getAclRequest(
-          @PathVariable Integer aclRequestId) {
+      @PathVariable Integer aclRequestId) {
     return new ResponseEntity<>(aclControllerService.getAclRequest(aclRequestId), HttpStatus.OK);
   }
 }
