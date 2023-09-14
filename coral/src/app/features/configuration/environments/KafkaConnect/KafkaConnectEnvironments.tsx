@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
@@ -8,7 +7,7 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import KafkaConnectEnvironmentsTable from "src/app/features/configuration/environments/KafkaConnect/components/KafkaConnectEnvironmentsTable";
-import { getPaginatedEnvironmentsForConnector } from "src/domain/environment";
+import getPaginatedEnvironments from "src/app/features/configuration/environments/hooks/getPaginatedEnvironments";
 
 const KafkaConnectEnvironments = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,34 +20,28 @@ const KafkaConnectEnvironments = () => {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
   }
-  const {
-    data: kafkaConnectEnvs,
-    isLoading,
-    isError,
-    error,
-  } = useQuery(["getPaginatedEnvironmentsForConnector", currentPage, search], {
-    queryFn: () =>
-      getPaginatedEnvironmentsForConnector({
-        pageNo: String(currentPage),
-        searchEnvParam: search.length === 0 ? undefined : search,
-      }),
+
+  const { environments, isLoading, isError, error } = getPaginatedEnvironments({
+    type: "kafkaconnect",
+    currentPage,
+    search,
   });
 
   const pagination =
-    kafkaConnectEnvs && kafkaConnectEnvs.totalPages > 1 ? (
+    environments && environments.totalPages > 1 ? (
       <Pagination
-        activePage={kafkaConnectEnvs.currentPage}
-        totalPages={kafkaConnectEnvs.totalPages}
+        activePage={environments.currentPage}
+        totalPages={environments.totalPages}
         setActivePage={handleChangePage}
       />
     ) : undefined;
 
   const table = (
     <KafkaConnectEnvironmentsTable
-      environments={kafkaConnectEnvs?.entries ?? []}
+      environments={environments?.entries ?? []}
       ariaLabel={`Kafka Connect Environments overview, page ${
-        kafkaConnectEnvs?.currentPage ?? 0
-      } of ${kafkaConnectEnvs?.totalPages ?? 0}`}
+        environments?.currentPage ?? 0
+      } of ${environments?.totalPages ?? 0}`}
     />
   );
 

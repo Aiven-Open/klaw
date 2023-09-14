@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
@@ -8,7 +7,7 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import KafkaEnvironmentsTable from "src/app/features/configuration/environments/Kafka/components/KafkaEnvironmentsTable";
-import { getPaginatedEnvironmentsForTopicAndAcl } from "src/domain/environment";
+import getPaginatedEnvironments from "src/app/features/configuration/environments/hooks/getPaginatedEnvironments";
 
 const KafkaEnvironments = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,37 +20,28 @@ const KafkaEnvironments = () => {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
   }
-  const {
-    data: kafkaEnvs,
-    isLoading,
-    isError,
-    error,
-  } = useQuery(
-    ["getPaginatedEnvironmentsForTopicAndAcl", currentPage, search],
-    {
-      queryFn: () =>
-        getPaginatedEnvironmentsForTopicAndAcl({
-          pageNo: String(currentPage),
-          searchEnvParam: search.length === 0 ? undefined : search,
-        }),
-    }
-  );
+
+  const { environments, isLoading, isError, error } = getPaginatedEnvironments({
+    type: "kafka",
+    currentPage,
+    search,
+  });
 
   const pagination =
-    kafkaEnvs && kafkaEnvs.totalPages > 1 ? (
+    environments && environments.totalPages > 1 ? (
       <Pagination
-        activePage={kafkaEnvs.currentPage}
-        totalPages={kafkaEnvs.totalPages}
+        activePage={environments.currentPage}
+        totalPages={environments.totalPages}
         setActivePage={handleChangePage}
       />
     ) : undefined;
 
   const table = (
     <KafkaEnvironmentsTable
-      environments={kafkaEnvs?.entries ?? []}
+      environments={environments?.entries ?? []}
       ariaLabel={`Kafka Environments overview, page ${
-        kafkaEnvs?.currentPage ?? 0
-      } of ${kafkaEnvs?.totalPages ?? 0}`}
+        environments?.currentPage ?? 0
+      } of ${environments?.totalPages ?? 0}`}
     />
   );
 

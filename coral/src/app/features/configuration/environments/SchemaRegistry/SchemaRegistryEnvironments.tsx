@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Pagination } from "src/app/components/Pagination";
 import { SearchFilter } from "src/app/features/components/filters/SearchFilter";
@@ -8,7 +7,7 @@ import {
 } from "src/app/features/components/filters/useFiltersContext";
 import { TableLayout } from "src/app/features/components/layouts/TableLayout";
 import SchemaRegistryEnvironmentsTable from "src/app/features/configuration/environments/SchemaRegistry/components/SchemaRegistryEnvironmentsTable";
-import { getPaginatedEnvironmentsForSchema } from "src/domain/environment";
+import getPaginatedEnvironments from "src/app/features/configuration/environments/hooks/getPaginatedEnvironments";
 
 const SchemaRegistryEnvironments = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -21,34 +20,27 @@ const SchemaRegistryEnvironments = () => {
     searchParams.set("page", page.toString());
     setSearchParams(searchParams);
   }
-  const {
-    data: schemaRegistryEnvs,
-    isLoading,
-    isError,
-    error,
-  } = useQuery(["getPaginatedEnvironmentsForSchema", currentPage, search], {
-    queryFn: () =>
-      getPaginatedEnvironmentsForSchema({
-        pageNo: String(currentPage),
-        searchEnvParam: search.length === 0 ? undefined : search,
-      }),
+  const { environments, isLoading, isError, error } = getPaginatedEnvironments({
+    type: "schemaregistry",
+    currentPage,
+    search,
   });
 
   const pagination =
-    schemaRegistryEnvs && schemaRegistryEnvs.totalPages > 1 ? (
+    environments && environments.totalPages > 1 ? (
       <Pagination
-        activePage={schemaRegistryEnvs.currentPage}
-        totalPages={schemaRegistryEnvs.totalPages}
+        activePage={environments.currentPage}
+        totalPages={environments.totalPages}
         setActivePage={handleChangePage}
       />
     ) : undefined;
 
   const table = (
     <SchemaRegistryEnvironmentsTable
-      environments={schemaRegistryEnvs?.entries ?? []}
+      environments={environments?.entries ?? []}
       ariaLabel={`Schema Registry Environments overview, page ${
-        schemaRegistryEnvs?.currentPage ?? 0
-      } of ${schemaRegistryEnvs?.totalPages ?? 0}`}
+        environments?.currentPage ?? 0
+      } of ${environments?.totalPages ?? 0}`}
     />
   );
 

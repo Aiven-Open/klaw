@@ -1,17 +1,12 @@
 import { Tabs } from "@aivenio/aquarium";
-import { useQuery } from "@tanstack/react-query";
 import { NavigateFunction, Outlet, useNavigate } from "react-router-dom";
+import getPaginatedEnvironments from "src/app/features/configuration/environments/hooks/getPaginatedEnvironments";
 import {
   ENVIRONMENT_TAB_ID_INTO_PATH,
   EnvironmentsTabEnum,
   Routes,
   isEnvironmentsTabEnum,
 } from "src/app/router_utils";
-import {
-  getPaginatedEnvironmentsForConnector,
-  getPaginatedEnvironmentsForSchema,
-  getPaginatedEnvironmentsForTopicAndAcl,
-} from "src/domain/environment";
 
 type Props = {
   currentTab: EnvironmentsTabEnum;
@@ -43,28 +38,18 @@ function getBadgeValue(amountOfEnvs: number | undefined): number | undefined {
 function EnvironmentsTabs({ currentTab }: Props) {
   const navigate = useNavigate();
 
-  const { data: kafkaEnvs } = useQuery(
-    ["getPaginatedEnvironmentsForTopicAndAcl"],
-    {
-      queryFn: () => getPaginatedEnvironmentsForTopicAndAcl({ pageNo: "1" }),
-      refetchOnMount: false,
-    }
-  );
-  const { data: schemaRegistryEnvs } = useQuery(
-    ["getPaginatedEnvironmentsForSchema"],
-    {
-      queryFn: () => getPaginatedEnvironmentsForSchema({ pageNo: "1" }),
-      refetchOnMount: false,
-    }
-  );
-  const { data: kafkaConnectEnvs } = useQuery(
-    ["getPaginatedEnvironmentsForConnector"],
-    {
-      queryFn: () => getPaginatedEnvironmentsForConnector({ pageNo: "1" }),
-      refetchOnMount: false,
-    }
-  );
-
+  const { environments: kafkaEnvs } = getPaginatedEnvironments({
+    type: "kafka",
+    currentPage: 1,
+  });
+  const { environments: schemaRegistryEnvs } = getPaginatedEnvironments({
+    type: "schemaregistry",
+    currentPage: 1,
+  });
+  const { environments: kafkaConnectEnvs } = getPaginatedEnvironments({
+    type: "kafkaconnect",
+    currentPage: 1,
+  });
   return (
     <Tabs
       value={currentTab}
