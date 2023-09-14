@@ -1,4 +1,9 @@
-import { DataTable, DataTableColumn, EmptyState } from "@aivenio/aquarium";
+import {
+  DataTable,
+  DataTableColumn,
+  EmptyState,
+  InlineIcon,
+} from "@aivenio/aquarium";
 import infoSign from "@aivenio/aquarium/icons/infoSign";
 import tickCircle from "@aivenio/aquarium/icons/tickCircle";
 import deleteIcon from "@aivenio/aquarium/icons/delete";
@@ -12,6 +17,8 @@ import {
   requestOperationTypeNameMap,
 } from "src/app/features/approvals/utils/request-operation-type-helper";
 import { ConnectorRequest } from "src/domain/connector";
+import { Link } from "react-router-dom";
+import link from "@aivenio/aquarium/icons/link";
 
 interface ConnectorRequestTableData {
   id: ConnectorRequest["connectorId"];
@@ -45,7 +52,24 @@ function ConnectorApprovalsTable({
   isBeingDeclined,
 }: ConnectorApprovalsTableProps) {
   const columns: Array<DataTableColumn<ConnectorRequestTableData>> = [
-    { type: "text", field: "connectorName", headerName: "Connector name" },
+    {
+      type: "custom",
+      headerName: "Connector name",
+      UNSAFE_render: ({
+        connectorName,
+        requestOperationType,
+      }: ConnectorRequestTableData) => {
+        if (requestOperationType !== "CREATE") {
+          return (
+            <Link to={`/connector/${connectorName}/overview`}>
+              {connectorName} <InlineIcon icon={link} />
+            </Link>
+          );
+        } else {
+          return <>{connectorName}</>;
+        }
+      },
+    },
     {
       type: "status",
       headerName: "Environment",
