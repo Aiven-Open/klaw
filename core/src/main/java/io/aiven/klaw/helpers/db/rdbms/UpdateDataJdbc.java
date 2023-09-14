@@ -15,6 +15,7 @@ import io.aiven.klaw.repository.KwKafkaConnectorRequestsRepo;
 import io.aiven.klaw.repository.KwPropertiesRepo;
 import io.aiven.klaw.repository.KwRolesPermsRepo;
 import io.aiven.klaw.repository.MessageSchemaRepo;
+import io.aiven.klaw.repository.OperationalRequestsRepo;
 import io.aiven.klaw.repository.RegisterInfoRepo;
 import io.aiven.klaw.repository.SchemaRequestRepo;
 import io.aiven.klaw.repository.TeamRepo;
@@ -39,6 +40,9 @@ public class UpdateDataJdbc {
 
   @Autowired(required = false)
   private TopicRequestsRepo topicRequestsRepo;
+
+  @Autowired(required = false)
+  private OperationalRequestsRepo operationalRequestsRepo;
 
   @Autowired(required = false)
   private KwKafkaConnectorRequestsRepo kafkaConnectorRequestsRepo;
@@ -111,6 +115,17 @@ public class UpdateDataJdbc {
     topicRequest.setRequestStatus(RequestStatus.DECLINED.value);
     topicRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
     topicRequestsRepo.save(topicRequest);
+
+    return ApiResultStatus.SUCCESS.value;
+  }
+
+  public String updateOperationalChangeRequest(
+      OperationalRequest operationalRequest, String approver, RequestStatus requestStatus) {
+    log.debug("updateOperationalChangeRequest {} {}", operationalRequest.getTopicname(), approver);
+    operationalRequest.setApprover(approver);
+    operationalRequest.setRequestStatus(requestStatus.value);
+    operationalRequest.setApprovingtime(new Timestamp(System.currentTimeMillis()));
+    operationalRequestsRepo.save(operationalRequest);
 
     return ApiResultStatus.SUCCESS.value;
   }

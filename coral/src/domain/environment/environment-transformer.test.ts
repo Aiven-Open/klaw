@@ -28,6 +28,9 @@ describe("environment-transformer.ts", () => {
           name: "DEV",
           id: "1337",
           type: "kafka",
+          clusterName: "DEV",
+          tenantName: "default",
+          envStatus: "ONLINE",
         },
       ];
 
@@ -59,6 +62,9 @@ describe("environment-transformer.ts", () => {
             defaultPartitions: 1,
             topicPrefix: ["dev-"],
           },
+          clusterName: "DEV",
+          tenantName: "default",
+          envStatus: "ONLINE",
         },
       ];
       expect(transformEnvironmentApiResponse(testInput)).toEqual(
@@ -101,6 +107,9 @@ describe("environment-transformer.ts", () => {
             topicRegex: ["\\bjon snow\\b"],
             applyRegex: false,
           },
+          clusterName: "DEV",
+          tenantName: "default",
+          envStatus: "ONLINE",
         },
       ];
 
@@ -134,6 +143,9 @@ describe("environment-transformer.ts", () => {
             topicSuffix: ["-one", "-two"],
             topicRegex: [],
           },
+          clusterName: "DEV",
+          tenantName: "default",
+          envStatus: "ONLINE",
         },
       ];
       expect(transformEnvironmentApiResponse(testInput)).toEqual(

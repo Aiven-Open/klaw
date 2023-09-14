@@ -384,6 +384,9 @@ public class DefaultDataService {
     defaultUserPermissionsList.put(
         "REQUEST_CREATE_TOPICS", PermissionType.REQUEST_CREATE_TOPICS.getDescription());
     defaultUserPermissionsList.put(
+        "REQUEST_CREATE_OPERATIONAL_CHANGES",
+        PermissionType.REQUEST_CREATE_OPERATIONAL_CHANGES.getDescription());
+    defaultUserPermissionsList.put(
         "REQUEST_CREATE_SUBSCRIPTIONS",
         PermissionType.REQUEST_CREATE_SUBSCRIPTIONS.getDescription());
     defaultUserPermissionsList.put(
@@ -409,6 +412,9 @@ public class DefaultDataService {
         "APPROVE_SCHEMAS", PermissionType.APPROVE_SCHEMAS.getDescription());
     defaultUserPermissionsList.put(
         "APPROVE_CONNECTORS", PermissionType.APPROVE_CONNECTORS.getDescription());
+    defaultUserPermissionsList.put(
+        PermissionType.APPROVE_OPERATIONAL_CHANGES.name(),
+        PermissionType.APPROVE_OPERATIONAL_CHANGES.getDescription());
     defaultUserPermissionsList.put(
         "VIEW_CONNECTORS", PermissionType.VIEW_CONNECTORS.getDescription());
     defaultUserPermissionsList.put("VIEW_TOPICS", PermissionType.VIEW_TOPICS.getDescription());

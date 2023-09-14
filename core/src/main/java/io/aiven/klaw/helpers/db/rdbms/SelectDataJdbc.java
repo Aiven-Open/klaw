@@ -873,6 +873,16 @@ public class SelectDataJdbc {
     return topicReq.orElse(null);
   }
 
+  public OperationalRequest selectOperationalRequestsForId(int reqId, int tenantId) {
+    log.debug("selectOperationalRequestsForId {}", reqId);
+    OperationalRequestID operationalRequestID = new OperationalRequestID();
+    operationalRequestID.setTenantId(tenantId);
+    operationalRequestID.setReqId(reqId);
+    Optional<OperationalRequest> operationalRequest =
+        operationalRequestsRepo.findById(operationalRequestID);
+    return operationalRequest.orElse(null);
+  }
+
   public KafkaConnectorRequest selectConnectorRequestsForConnector(int connectorId, int tenantId) {
     log.debug("selectConnectorRequestsForConnector {}", connectorId);
     KafkaConnectorRequestID kafkaConnectorRequestID = new KafkaConnectorRequestID();

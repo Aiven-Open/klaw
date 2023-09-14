@@ -41,6 +41,10 @@ function transformEnvironmentApiResponse(
         },
       }),
       type: environment?.type,
+      clusterName: environment?.clusterName,
+      tenantName: environment?.tenantName,
+      envStatus: environment?.envStatus,
+      associatedEnv: environment?.associatedEnv,
     };
     return rv;
   });
@@ -53,6 +57,7 @@ function transformPaginatedEnvironmentApiResponse(
     return {
       totalPages: 0,
       currentPage: 0,
+      totalEnvs: 0,
       entries: [],
     };
   }
@@ -86,6 +91,10 @@ function transformPaginatedEnvironmentApiResponse(
         },
       }),
       type: environment?.type,
+      clusterName: environment?.clusterName,
+      tenantName: environment?.tenantName,
+      envStatus: environment?.envStatus,
+      associatedEnv: environment?.associatedEnv,
     };
     return rv;
   });
@@ -93,6 +102,7 @@ function transformPaginatedEnvironmentApiResponse(
   return {
     totalPages: Number(apiResponse[0].totalNoPages),
     currentPage: Number(apiResponse[0].currentPage),
+    totalEnvs: Number(apiResponse[0].totalRecs),
     entries: envData.flat(),
   };
 }
