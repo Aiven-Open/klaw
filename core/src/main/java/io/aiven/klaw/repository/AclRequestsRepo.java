@@ -24,12 +24,8 @@ public interface AclRequestsRepo
   boolean existsByEnvironmentAndTenantId(
       @Param("envId") String envId, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwaclrequests where teamid = :teamId and tenantid = :tenantId and topicstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
-      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+  boolean existsByTeamIdAndTenantIdAndRequestStatus(
+      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId, String requestStatus);
 
   @Query(
       value =
@@ -38,12 +34,8 @@ public interface AclRequestsRepo
   List<Object[]> findAllRecordsCountForUserId(
       @Param("userId") String userId, @Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwaclrequests where (requestor = :userId) and tenantid = :tenantId and topicstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForUserId(
-      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
+  boolean existsByRequestorAndTenantIdAndRequestStatus(
+      String requestor, Integer tenantId, String requestStatus);
 
   @Query(
       value = "select max(aclid) from kwaclrequests where tenantid = :tenantId",

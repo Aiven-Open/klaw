@@ -49,19 +49,11 @@ public interface KwKafkaConnectorRequestsRepo
       nativeQuery = true)
   Integer getNextConnectorRequestId(@Param("tenantId") Integer tenantId);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwkafkaconnectorrequests where teamid = :teamId and tenantid = :tenantId and connectorstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForTeamId(
-      @Param("teamId") Integer teamId, @Param("tenantId") Integer tenantId);
+  boolean existsByTeamIdAndTenantIdAndRequestStatus(
+      Integer teamId, Integer tenantId, String requestStatus);
 
-  @Query(
-      value =
-          "select exists(select 1 from kwkafkaconnectorrequests where (requestor = :userId) and tenantid = :tenantId and connectorstatus='created')",
-      nativeQuery = true)
-  boolean existsRecordsCountForUserId(
-      @Param("userId") String userId, @Param("tenantId") Integer tenantId);
+  boolean existsByRequestorAndTenantIdAndRequestStatus(
+      String requestor, Integer tenantId, String requestStatus);
 
   @Query(
       value =
