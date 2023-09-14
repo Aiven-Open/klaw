@@ -1,14 +1,9 @@
 package io.aiven.klaw.dao;
 
+import io.aiven.klaw.helpers.AclIPPrincipleTypeConverter;
 import io.aiven.klaw.helpers.AivenAclIdConverter;
 import io.aiven.klaw.model.enums.AclIPPrincipleType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.IdClass;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
 import java.util.List;
@@ -107,6 +102,7 @@ public class AclRequests implements Serializable {
   private Map<String, String> jsonParams;
 
   @Column(name = "aclipprincipletype")
+  @Convert(converter = AclIPPrincipleTypeConverter.class)
   private AclIPPrincipleType aclIpPrincipleType;
 
   @Transient private String totalNoPages;
